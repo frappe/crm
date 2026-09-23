@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-09-13 13:52+0000\n"
-"PO-Revision-Date: 2026-09-13 13:52+0000\n"
+"POT-Creation-Date: 2026-09-20 13:39+0000\n"
+"PO-Revision-Date: 2026-09-20 13:39+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -278,8 +278,8 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:424
-#: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:294
+#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:435
+#: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:306
 msgid "Activity"
 msgstr ""
 
@@ -544,7 +544,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
-#: frontend/src/pages/Lead.vue:346
+#: frontend/src/pages/Lead.vue:357
 msgid "An error occurred"
 msgstr ""
 
@@ -795,7 +795,7 @@ msgstr ""
 
 #: frontend/src/components/CommentBox.vue:49
 #: frontend/src/components/EmailEditor.vue:142 frontend/src/pages/Deal.vue:114
-#: frontend/src/pages/Lead.vue:161
+#: frontend/src/pages/Lead.vue:169
 msgid "Attach a File"
 msgstr ""
 
@@ -803,8 +803,8 @@ msgstr ""
 msgid "Attach file…"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:607 frontend/src/pages/Lead.vue:459
-#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:329
+#: frontend/src/pages/Deal.vue:607 frontend/src/pages/Lead.vue:470
+#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:341
 msgid "Attachments"
 msgstr ""
 
@@ -1262,8 +1262,8 @@ msgstr ""
 msgid "Calling..."
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:592 frontend/src/pages/Lead.vue:444
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:314
+#: frontend/src/pages/Deal.vue:592 frontend/src/pages/Lead.vue:455
+#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:326
 msgid "Calls"
 msgstr ""
 
@@ -1300,12 +1300,20 @@ msgstr ""
 msgid "Canceled"
 msgstr ""
 
-#: crm/api/user.py:144
+#: crm/api/user.py:147
 msgid "Cannot assign this role"
 msgstr ""
 
 #: frontend/src/components/Settings/Users.vue:123
 msgid "Cannot change role of user with Admin access"
+msgstr ""
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:510
+msgid "Cannot convert a lead with status {0}"
+msgstr ""
+
+#: frontend/src/pages/Lead.vue:39 frontend/src/pages/MobileLead.vue:55
+msgid "Cannot convert a lost lead to deal"
 msgstr ""
 
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:70
@@ -1366,7 +1374,7 @@ msgstr ""
 msgid "Change & remove fields"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:92
+#: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:100
 #: frontend/src/pages/MobileContact.vue:37
 #: frontend/src/pages/MobileOrganization.vue:37
 #: frontend/src/pages/Organization.vue:47
@@ -1557,8 +1565,8 @@ msgstr ""
 msgid "Comment sent"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:582 frontend/src/pages/Lead.vue:434
-#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:304
+#: frontend/src/pages/Deal.vue:582 frontend/src/pages/Lead.vue:445
+#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:316
 msgid "Comments"
 msgstr ""
 
@@ -1780,7 +1788,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:487
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
-#: frontend/src/pages/MobileLead.vue:54
+#: frontend/src/pages/MobileLead.vue:59
 msgid "Convert"
 msgstr ""
 
@@ -1792,7 +1800,7 @@ msgstr ""
 #: frontend/src/components/ListBulkActions.vue:78
 #: frontend/src/components/ListBulkActions.vue:195
 #: frontend/src/components/Modals/ConvertToDealModal.vue:7
-#: frontend/src/pages/Lead.vue:38
+#: frontend/src/pages/Lead.vue:43
 msgid "Convert to Deal"
 msgstr ""
 
@@ -2055,8 +2063,8 @@ msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:694
-#: frontend/src/pages/Deal.vue:587 frontend/src/pages/Lead.vue:439
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:309
+#: frontend/src/pages/Deal.vue:587 frontend/src/pages/Lead.vue:450
+#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:321
 msgid "Data"
 msgstr ""
 
@@ -2276,7 +2284,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:1186
 #: frontend/src/components/ViewControls.vue:1197
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
-#: frontend/src/pages/Lead.vue:168 frontend/src/pages/MobileContact.vue:80
+#: frontend/src/pages/Lead.vue:176 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:284
 #: frontend/src/pages/MobileDeal.vue:531
 #: frontend/src/pages/MobileOrganization.vue:73
@@ -2386,7 +2394,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:304
-#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:288
+#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:300
 #: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr ""
@@ -2474,7 +2482,7 @@ msgstr ""
 msgid "Document ID, not the full name"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:451 frontend/src/pages/MobileLead.vue:209
+#: frontend/src/pages/Deal.vue:451 frontend/src/pages/MobileLead.vue:221
 msgid "Document Not Found"
 msgstr ""
 
@@ -2491,7 +2499,7 @@ msgstr ""
 msgid "Document does not exist"
 msgstr ""
 
-#: crm/api/activities.py:20 frontend/src/pages/Lead.vue:343
+#: crm/api/activities.py:20 frontend/src/pages/Lead.vue:354
 #: frontend/src/pages/MobileDeal.vue:359
 msgid "Document not found"
 msgstr ""
@@ -2821,8 +2829,8 @@ msgid "Email settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
-#: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:429
-#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:299
+#: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:440
+#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:311
 msgid "Emails"
 msgstr ""
 
@@ -3015,7 +3023,7 @@ msgstr ""
 msgid "Equals"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:452 frontend/src/pages/MobileLead.vue:210
+#: frontend/src/pages/Deal.vue:452 frontend/src/pages/MobileLead.vue:222
 msgid "Error Occurred"
 msgstr ""
 
@@ -3036,7 +3044,7 @@ msgstr ""
 msgid "Error creating lead: {0}"
 msgstr ""
 
-#: frontend/src/pages/Lead.vue:344 frontend/src/pages/MobileDeal.vue:360
+#: frontend/src/pages/Lead.vue:355 frontend/src/pages/MobileDeal.vue:360
 msgid "Error occurred"
 msgstr ""
 
@@ -3048,8 +3056,8 @@ msgstr ""
 msgid "Error syncing leads"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:774 frontend/src/pages/Lead.vue:504
-#: frontend/src/pages/MobileDeal.vue:630 frontend/src/pages/MobileLead.vue:369
+#: frontend/src/pages/Deal.vue:774 frontend/src/pages/Lead.vue:515
+#: frontend/src/pages/MobileDeal.vue:630 frontend/src/pages/MobileLead.vue:381
 msgid "Error updating field"
 msgstr ""
 
@@ -3650,7 +3658,7 @@ msgstr ""
 msgid "Go to Invite Page"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:104 frontend/src/pages/Lead.vue:151
+#: frontend/src/pages/Deal.vue:104 frontend/src/pages/Lead.vue:159
 msgid "Go to Website"
 msgstr ""
 
@@ -4448,8 +4456,8 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:376
-#: frontend/src/pages/MobileLead.vue:244
+#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:387
+#: frontend/src/pages/MobileLead.vue:256
 msgid "Leads"
 msgstr ""
 
@@ -4649,7 +4657,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:125
 #: frontend/src/components/Activities/ActivityHeader.vue:168
 #: frontend/src/pages/Deal.vue:86 frontend/src/pages/Deals.vue:503
-#: frontend/src/pages/Lead.vue:127 frontend/src/pages/Leads.vue:537
+#: frontend/src/pages/Lead.vue:135 frontend/src/pages/Leads.vue:537
 #: frontend/src/pages/MobileContact.vue:73
 msgid "Make a Call"
 msgstr ""
@@ -5382,8 +5390,8 @@ msgstr ""
 msgid "Note deleted"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:602 frontend/src/pages/Lead.vue:454
-#: frontend/src/pages/MobileDeal.vue:477 frontend/src/pages/MobileLead.vue:324
+#: frontend/src/pages/Deal.vue:602 frontend/src/pages/Lead.vue:465
+#: frontend/src/pages/MobileDeal.vue:477 frontend/src/pages/MobileLead.vue:336
 msgid "Notes"
 msgstr ""
 
@@ -5504,15 +5512,15 @@ msgstr ""
 msgid "Ongoing deals"
 msgstr ""
 
-#: crm/api/user.py:124 crm/api/user.py:157
+#: crm/api/user.py:127 crm/api/user.py:160
 msgid "Only System Managers can assign the Sales Manager role"
 msgstr ""
 
-#: crm/api/user.py:121 crm/api/user.py:151
+#: crm/api/user.py:124 crm/api/user.py:154
 msgid "Only System Managers can assign the System Manager role"
 msgstr ""
 
-#: crm/api/user.py:154 crm/api/user.py:199
+#: crm/api/user.py:157 crm/api/user.py:202
 msgid "Only System Managers can modify other System Managers"
 msgstr ""
 
@@ -5862,15 +5870,15 @@ msgstr ""
 msgid "Please select weekly off day"
 msgstr ""
 
-#: frontend/src/pages/Lead.vue:134
+#: frontend/src/pages/Lead.vue:142
 msgid "Please set a mobile number to make calls"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:109 frontend/src/pages/Lead.vue:156
+#: frontend/src/pages/Deal.vue:109 frontend/src/pages/Lead.vue:164
 msgid "Please set a website to visit"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:98 frontend/src/pages/Lead.vue:146
+#: frontend/src/pages/Deal.vue:98 frontend/src/pages/Lead.vue:154
 msgid "Please set an email address to send emails"
 msgstr ""
 
@@ -6243,7 +6251,7 @@ msgstr ""
 msgid "Remove Group"
 msgstr ""
 
-#: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:98
+#: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:106
 #: frontend/src/pages/MobileContact.vue:43
 #: frontend/src/pages/MobileOrganization.vue:43
 #: frontend/src/pages/Organization.vue:53
@@ -6275,7 +6283,7 @@ msgstr ""
 msgid "Remove Tab"
 msgstr ""
 
-#: crm/api/user.py:173
+#: crm/api/user.py:176
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
 msgstr ""
 
@@ -6901,7 +6909,7 @@ msgstr ""
 msgid "Send Template"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:92 frontend/src/pages/Lead.vue:140
+#: frontend/src/pages/Deal.vue:92 frontend/src/pages/Lead.vue:148
 msgid "Send an Email"
 msgstr ""
 
@@ -6961,7 +6969,7 @@ msgstr ""
 msgid "Set Default Priority"
 msgstr ""
 
-#: frontend/src/pages/Lead.vue:119
+#: frontend/src/pages/Lead.vue:127
 msgid "Set First Name"
 msgstr ""
 
@@ -7510,8 +7518,8 @@ msgstr ""
 msgid "Task"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:597 frontend/src/pages/Lead.vue:449
-#: frontend/src/pages/MobileDeal.vue:472 frontend/src/pages/MobileLead.vue:319
+#: frontend/src/pages/Deal.vue:597 frontend/src/pages/Lead.vue:460
+#: frontend/src/pages/MobileDeal.vue:472 frontend/src/pages/MobileLead.vue:331
 msgid "Tasks"
 msgstr ""
 
@@ -8092,7 +8100,7 @@ msgid "Upload Document"
 msgstr ""
 
 #: frontend/src/components/Activities/WhatsAppBox.vue:160
-#: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:93
+#: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:101
 #: frontend/src/pages/MobileContact.vue:38
 #: frontend/src/pages/MobileOrganization.vue:38
 #: frontend/src/pages/Organization.vue:48
@@ -8151,7 +8159,7 @@ msgstr ""
 msgid "User added to hierarchy"
 msgstr ""
 
-#: crm/api/user.py:203
+#: crm/api/user.py:206
 msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
 msgstr ""
 
@@ -8159,7 +8167,7 @@ msgstr ""
 msgid "User {0} has been removed"
 msgstr ""
 
-#: crm/api/user.py:220
+#: crm/api/user.py:223
 msgid "User {0} has been removed from CRM roles."
 msgstr ""
 
@@ -8303,8 +8311,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Layouts/AppSidebar.vue:717
 #: frontend/src/components/Settings/Settings.vue:227
-#: frontend/src/pages/Deal.vue:612 frontend/src/pages/Lead.vue:464
-#: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:334
+#: frontend/src/pages/Deal.vue:612 frontend/src/pages/Lead.vue:475
+#: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:346
 #: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr ""
@@ -8414,7 +8422,7 @@ msgstr ""
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr ""
 
-#: crm/api/user.py:191
+#: crm/api/user.py:194
 msgid "You cannot remove yourself."
 msgstr ""
 
