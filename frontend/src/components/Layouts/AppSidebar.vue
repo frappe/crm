@@ -442,11 +442,11 @@ async function reconcileOnboarding(currentSteps) {
   const currentNames = currentSteps.map((s) => s.name)
 
   // Server copy is the shared source of truth across the user's browsers.
-  let persisted = []
+  let persisted
   try {
     const status = await call('frappe.onboarding.get_onboarding_status')
     persisted = status?.[ONBOARDING_KEY] || []
-  } catch (e) {
+  } catch {
     return
   }
   // Empty: let the composable seed it from the current steps as usual.
@@ -471,7 +471,7 @@ async function reconcileOnboarding(currentSteps) {
       steps: JSON.stringify(rebuilt),
       appName: 'frappecrm',
     })
-  } catch (e) {
+  } catch {
     return
   }
   // Mirror into localStorage (what the composable reads on load) and reload so
@@ -483,7 +483,7 @@ async function reconcileOnboarding(currentSteps) {
     if (!store[user]) store[user] = {}
     store[user][ONBOARDING_KEY] = rebuilt
     localStorage.setItem('onboardingStatus', JSON.stringify(store))
-  } catch (e) {
+  } catch {
     // ignore malformed local storage; the server copy is already reconciled
   }
   window.location.reload()
