@@ -186,6 +186,7 @@ import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
+import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
@@ -421,6 +422,52 @@ const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
+// The onboarding composable persists the checklist as a positional
+// [{name, completed}] list, seeds it from the current steps ONLY when empty,
+// and never adds newly introduced steps to an existing list. So once a step is
+// added (e.g. create_first_web_form), any browser with a saved list is missing
+// it — skip/complete/reset become no-ops (findIndex returns -1) and the total
+// is wrong. Trying to patch the saved list in place is unreliable because the
+// server copy, the localStorage copy and the composable's in-memory copy all
+// diverge. Instead, bump ONBOARDING_STEPS_VERSION whenever the step set changes:
+// on a version change we clear the saved checklist (local) so the composable
+// reseeds cleanly from the CURRENT steps on reload — its own seed path, which is
+// always role-correct and includes every current step. Runs once per version.
+const ONBOARDING_KEY = 'frappecrm_onboarding_status'
+const ONBOARDING_STEPS_VERSION = '3-webform'
+
+async function resetStaleOnboarding() {
+  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
+  // destructure) — the same key the onboarding composable builds its storage
+  // keys from. Do NOT use user.value here; that is undefined.
+  const vKey = 'crmOnboardingStepsVersion' + user
+  if (localStorage.getItem(vKey) === ONBOARDING_STEPS_VERSION) return
+  // Clear BOTH the local and the server checklist, in order, before reloading.
+  // Clearing only local is not enough: on reload the composable refetches the
+  // server copy and restores the stale list. Await the server clear so the
+  // post-reload refetch sees an empty list and reseeds from the current steps.
+  try {
+    const store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
+    if (store?.[user]) {
+      delete store[user][ONBOARDING_KEY]
+      localStorage.setItem('onboardingStatus', JSON.stringify(store))
+    }
+  } catch (e) {
+    // ignore malformed storage; the server clear below still reseeds clean
+  }
+  localStorage.removeItem('isOnboardingStepsCompleted' + 'frappecrm' + user)
+  try {
+    await call('frappe.onboarding.update_user_onboarding_status', {
+      steps: JSON.stringify([]),
+      appName: 'frappecrm',
+    })
+  } catch (e) {
+    // best effort; a clean local copy still lets the reload reseed
+  }
+  localStorage.setItem(vKey, ONBOARDING_STEPS_VERSION)
+  window.location.reload()
+}
+
 async function getFirstLead() {
   let firstLead = localStorage.getItem('firstLead' + user)
   if (firstLead) return firstLead
@@ -459,6 +506,19 @@ const steps = reactive([
       send('trigger_lead_create', true)
       capture('onboarding_step_clicked_create_first_lead')
     },
+  },
+  {
+    name: 'create_first_web_form',
+    title: __('Create your first web form'),
+    icon: markRaw(WebsiteIcon),
+    completed: false,
+    onClick: () => {
+      minimize.value = true
+      showSettings.value = true
+      activeSettingsPage.value = 'Forms'
+      capture('onboarding_step_clicked_create_first_web_form')
+    },
+    condition: () => isManager(),
   },
   {
     name: 'invite_your_team',
@@ -634,6 +694,10 @@ onMounted(async () => {
     return true
   })
 
+  // On a step-set version change this clears the stale checklist (local +
+  // server) and reloads once; on the next load it returns early and setUp
+  // reseeds from the current steps.
+  await resetStaleOnboarding()
   setUp(filteredSteps)
 })
 
