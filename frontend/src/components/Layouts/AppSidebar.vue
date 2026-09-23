@@ -186,6 +186,7 @@ import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
+import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
@@ -421,6 +422,74 @@ const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
+// The onboarding composable persists the checklist as a positional
+// [{name, completed}] list, seeds it from the current steps ONLY when empty,
+// and never adds newly introduced steps to an existing list. So once a step is
+// added (e.g. create_first_web_form), a saved list is missing it — skip / reset
+// / complete become no-ops (findIndex returns -1) and the total is wrong.
+//
+// Reconcile the saved list to the current steps while never losing progress:
+//   - operate on localStorage, the copy the composable actually reads on load
+//     (checking the server instead would let a reconciled browser and a stale
+//     browser keep overwriting each other);
+//   - order the currently-visible steps to match the UI and preserve their
+//     completion by name; new steps start incomplete;
+//   - keep steps that are saved but not currently visible (e.g. role-only steps
+//     when the role is temporarily absent) so a role change can't erase them;
+//   - skip entirely once onboarding is finished, so a completed checklist is
+//     never rewritten or reopened.
+// It is idempotent: an already-reconciled list produces no change.
+const ONBOARDING_KEY = 'frappecrm_onboarding_status'
+
+async function reconcileOnboarding(currentSteps) {
+  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
+  // destructure) — the same key the composable uses. Not user.value.
+  let store
+  try {
+    store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
+  } catch {
+    return
+  }
+  const persisted = store?.[user]?.[ONBOARDING_KEY]
+  if (!persisted?.length) return // composable seeds an empty list itself
+  if (persisted.every((s) => s.completed)) return // finished: leave untouched
+
+  const doneByName = new Map(persisted.map((s) => [s.name, s.completed]))
+  const currentNames = new Set(currentSteps.map((s) => s.name))
+  const visible = currentSteps.map((s) => ({
+    name: s.name,
+    completed: doneByName.get(s.name) ?? false,
+  }))
+  // Preserve saved-but-not-visible steps (e.g. manager-only steps for a user
+  // whose role was removed) so their completion survives role changes.
+  const hidden = persisted.filter((s) => !currentNames.has(s.name))
+  const merged = [...visible, ...hidden]
+
+  const unchanged =
+    merged.length === persisted.length &&
+    merged.every(
+      (m, i) =>
+        persisted[i]?.name === m.name &&
+        persisted[i]?.completed === m.completed,
+    )
+  if (unchanged) return
+
+  store[user][ONBOARDING_KEY] = merged
+  try {
+    localStorage.setItem('onboardingStatus', JSON.stringify(store))
+    await call('frappe.onboarding.update_user_onboarding_status', {
+      steps: JSON.stringify(merged),
+      appName: 'frappecrm',
+    })
+  } catch {
+    return
+  }
+  // Reload once so the composable re-reads the reconciled list. Only reached
+  // while onboarding is unfinished (completed users returned above), so a
+  // finished checklist is never reopened.
+  window.location.reload()
+}
+
 async function getFirstLead() {
   let firstLead = localStorage.getItem('firstLead' + user)
   if (firstLead) return firstLead
@@ -459,6 +528,19 @@ const steps = reactive([
       send('trigger_lead_create', true)
       capture('onboarding_step_clicked_create_first_lead')
     },
+  },
+  {
+    name: 'create_first_web_form',
+    title: __('Capture leads with a form'),
+    icon: markRaw(WebsiteIcon),
+    completed: false,
+    onClick: () => {
+      minimize.value = true
+      showSettings.value = true
+      activeSettingsPage.value = 'Forms'
+      capture('onboarding_step_clicked_create_first_web_form')
+    },
+    condition: () => isManager(),
   },
   {
     name: 'invite_your_team',
@@ -634,6 +716,9 @@ onMounted(async () => {
     return true
   })
 
+  // Bring an existing saved checklist in line with the current steps (adds
+  // newly introduced steps, preserves completion). No-op when already aligned.
+  await reconcileOnboarding(filteredSteps)
   setUp(filteredSteps)
 })
 
