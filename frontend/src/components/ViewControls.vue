@@ -452,8 +452,15 @@ const view = ref({
   public: false,
 })
 
-const pageLength = computed(() => list.value?.data?.page_length)
-const pageLengthCount = computed(() => list.value?.data?.page_length_count)
+// mirrors the get_data default; undefined would make "Load More" send null
+const DEFAULT_PAGE_LENGTH = 20
+
+const pageLength = computed(
+  () => list.value?.data?.page_length ?? DEFAULT_PAGE_LENGTH,
+)
+const pageLengthCount = computed(
+  () => list.value?.data?.page_length_count ?? DEFAULT_PAGE_LENGTH,
+)
 
 watch(loadMore, (value) => {
   if (!value) return
