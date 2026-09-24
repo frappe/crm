@@ -63,6 +63,31 @@
             />
           </div>
         </div>
+
+        <div
+          class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3 px-2"
+        >
+          {{ __('Crawl') }}
+        </div>
+        <div class="flex gap-4 items-center justify-between py-3 px-2">
+          <div class="flex flex-col">
+            <div class="text-p-base-medium text-ink-gray-7 truncate">
+              {{ __('Max pages') }}
+            </div>
+            <div class="text-p-sm text-ink-gray-5">
+              {{ __('Maximum number of pages crawled per enrichment') }}
+            </div>
+          </div>
+          <div>
+            <FormControl
+              :model-value="settings.doc.max_pages"
+              type="number"
+              min="1"
+              class="w-24"
+              @change="(e) => updateMaxPages(e.target)"
+            />
+          </div>
+        </div>
       </div>
 
       <div
@@ -78,6 +103,7 @@
 <script setup>
 import {
   createDocumentResource,
+  FormControl,
   LoadingIndicator,
   Switch,
   TabButtons,
@@ -98,18 +124,43 @@ const tabOptions = [
   { label: __('Rules'), value: 'rules' },
 ]
 
-// Check fields come back as 0/1, so write the same shape back -- a Boolean would
-// leave the doc differing from originalDoc on every load.
+// A Switch hands us a Boolean, but Check fields come back from the server as
+// 0/1 -- so write that shape back, or the doc would differ from originalDoc on
+// every load. Every other fieldtype (max_pages is an Int) is saved as given.
 function update(fieldname, value) {
-  settings.doc[fieldname] = value ? 1 : 0
+  const isCheck = typeof value === 'boolean'
+  settings.doc[fieldname] = isCheck ? (value ? 1 : 0) : value
+
+  const message = isCheck
+    ? value
+      ? __('Setting enabled successfully')
+      : __('Setting disabled successfully')
+    : __('Setting updated successfully')
+
   settings.save.submit(null, {
-    onSuccess: () =>
-      toast.success(
-        value
-          ? __('Setting enabled successfully')
-          : __('Setting disabled successfully'),
-      ),
+    onSuccess: () => toast.success(message),
     onError: (err) => toast.error(err.messages?.[0] || __('Could not save')),
   })
+}
+
+// The number input reports a string, and an emptied box reports ''. Anything
+// that isn't a positive whole number is refused: saving 0 would leave the
+// crawler fetching no pages at all. The box is put back to the stored value so
+// it never shows a number that wasn't saved -- the bound doc value hasn't
+// changed, so Vue won't re-render the input for us.
+//
+// No upper bound: nothing in crm/domain_enrichment clamps max_pages, so the UI
+// doesn't invent a ceiling the backend doesn't have.
+function updateMaxPages(input) {
+  const pages = Number(input.value)
+
+  if (!Number.isInteger(pages) || pages < 1) {
+    toast.error(__('Max pages must be a whole number of 1 or more'))
+    input.value = settings.doc.max_pages ?? ''
+    return
+  }
+
+  if (pages === settings.doc.max_pages) return
+  update('max_pages', pages)
 }
 </script>
