@@ -41,7 +41,7 @@
             class="flex items-center gap-2 border-b border-outline-gray-2 pb-2"
             :title="template.template_label || template.template_name"
           >
-            <span class="truncate text-base-semibold">
+            <span class="truncate text-base-semibold text-ink-gray-9">
               {{ template.template_label || template.template_name }}
             </span>
             <Badge v-if="template.language" theme="gray" variant="subtle">
