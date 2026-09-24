@@ -1,6 +1,8 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 
@@ -12,6 +14,12 @@ from crm.integrations.api import (
 	get_user_default_calling_medium,
 	is_call_integration_enabled,
 	set_default_calling_medium,
+)
+from crm.integrations.exotel.handler import (
+	EXOTEL_CALL_STATUSES,
+	get_call_log_status,
+	handle_request,
+	normalize_call_status,
 )
 
 
@@ -494,6 +502,140 @@ class TestIntegrations(IntegrationTestCase):
 		# Should return None since lead is converted
 		self.assertIsNone(docname)
 		self.assertIsNone(doctype)
+
+
+class TestExotelCallStatus(IntegrationTestCase):
+	"""Exotel reports status in its own vocabulary, CRM Call Log status is a Select."""
+
+	def get_status_options(self):
+		return frappe.get_meta("CRM Call Log").get_field("status").options.split("\n")
+
+	def test_every_mapped_status_is_a_valid_option(self):
+		"""Whatever we map to has to exist in the Select, or the call log won't save"""
+		options = self.get_status_options()
+		for status in EXOTEL_CALL_STATUSES.values():
+			self.assertIn(status, options)
+
+	def test_normalize_call_status_handles_exotel_casing(self):
+		self.assertEqual(normalize_call_status("no-answer"), "No Answer")
+		self.assertEqual(normalize_call_status("in-progress"), "In Progress")
+		self.assertEqual(normalize_call_status("No_Answer"), "No Answer")
+		self.assertEqual(normalize_call_status(" Completed "), "Completed")
+		self.assertEqual(normalize_call_status("cancelled"), "Canceled")
+
+	def test_normalize_call_status_treats_empty_values_as_unset(self):
+		"""A leg that never connected has no status, rather than an unknown one"""
+		for status in (None, "", "null", "NULL", "undefined"):
+			self.assertIsNone(normalize_call_status(status))
+
+	def test_normalize_call_status_logs_unknown_status(self):
+		"""An unknown status means the mapping is stale, so leave a trace instead of guessing"""
+		frappe.db.delete("Error Log", {"method": "Unknown Exotel call status"})
+
+		self.assertIsNone(normalize_call_status("some-new-exotel-status"))
+
+		error_logs = frappe.get_all(
+			"Error Log", filters={"method": "Unknown Exotel call status"}, pluck="error"
+		)
+		self.assertEqual(len(error_logs), 1)
+		self.assertIn("some-new-exotel-status", error_logs[0])
+
+	def test_incoming_no_answer_without_matching_call_type(self):
+		"""The status reported in #824, which used to be passed through as "no-answer" """
+		status = get_call_log_status({"CallType": "client-hangup", "DialCallStatus": "no-answer"})
+		self.assertEqual(status, "No Answer")
+
+		status = get_call_log_status({"Status": "no-answer"})
+		self.assertEqual(status, "No Answer")
+
+	def test_incoming_null_status_is_unset(self):
+		"""Caller hung up before any agent leg connected"""
+		status = get_call_log_status({"CallType": "client-hangup", "DialCallStatus": "null"})
+		self.assertIsNone(status)
+
+	def test_first_event_without_status_still_creates_call_log(self):
+		"""Status is mandatory on the call log, but a status-less first event must not be dropped.
+
+		Frappe fills an unset Select with its first option on insert, so the log
+		comes out as "Initiated" rather than failing the mandatory check.
+		"""
+		call_sid = "test-exotel-no-status"
+		frappe.db.delete("CRM Call Log", {"id": call_sid})
+		frappe.db.set_single_value("CRM Exotel Settings", "enabled", 1)
+		frappe.db.set_single_value("CRM Exotel Settings", "webhook_verify_token", "test-token")
+		self.addCleanup(frappe.db.delete, "CRM Call Log", {"id": call_sid})
+
+		request = frappe._dict(args={"key": "test-token"}, headers={})
+		with patch.object(frappe.local, "request", request, create=True):
+			handle_request(
+				CallSid=call_sid,
+				Direction="incoming",
+				CallFrom="+0987654321",
+				To="+1234567890",
+				DialWhomNumber="+1234567890",
+				CallType="client-hangup",
+				DialCallStatus="null",
+			)
+
+		self.assertEqual(frappe.db.get_value("CRM Call Log", {"id": call_sid}, "status"), "Initiated")
+
+	def test_incoming_call_type_overrides_are_preserved(self):
+		cases = [
+			({"CallType": "incomplete", "DialCallStatus": "no-answer"}, "No Answer"),
+			({"CallType": "incomplete", "DialCallStatus": "failed"}, "Failed"),
+			({"CallType": "client-hangup", "DialCallStatus": "canceled"}, "Canceled"),
+			# a completed call is completed regardless of what the leg reported
+			({"CallType": "completed", "DialCallStatus": "busy"}, "Completed"),
+			# busy means it is still ringing on another leg
+			({"CallType": "incomplete", "DialCallStatus": "busy"}, "Ringing"),
+		]
+		for payload, expected in cases:
+			with self.subTest(payload=payload):
+				self.assertEqual(get_call_log_status(payload), expected)
+
+	def test_dial_call_status_takes_precedence_over_status(self):
+		payload = {"DialCallStatus": "completed", "Status": "no-answer"}
+		self.assertEqual(get_call_log_status(payload), "Completed")
+
+	def test_outgoing_statuses_are_mapped(self):
+		cases = [
+			("completed", "Completed"),
+			("in-progress", "In Progress"),
+			("no-answer", "No Answer"),
+			("failed", "Failed"),
+			# these used to fall through and be passed on as-is
+			("canceled", "Canceled"),
+			("queued", "Queued"),
+			("ringing", "Ringing"),
+			("initiated", "Initiated"),
+			# busy means it is still ringing on another leg
+			("busy", "Ringing"),
+		]
+		for direction in ("outbound-api", "outbound-dial"):
+			for reported, expected in cases:
+				with self.subTest(direction=direction, status=reported):
+					status = get_call_log_status({"Status": reported}, direction=direction)
+					self.assertEqual(status, expected)
+
+	def test_every_status_is_valid_or_unset(self):
+		"""No payload should ever produce a status the Select would reject"""
+		options = self.get_status_options()
+		payloads = [
+			{},
+			{"Status": "null"},
+			{"Status": "some-new-exotel-status"},
+			{"CallType": "client-hangup", "DialCallStatus": "null"},
+		]
+		for reported in EXOTEL_CALL_STATUSES:
+			payloads.append({"Status": reported})
+			payloads.append({"CallType": "incomplete", "DialCallStatus": reported})
+
+		for direction in ("inbound", "outbound-api", "outbound-dial"):
+			for payload in payloads:
+				with self.subTest(direction=direction, payload=payload):
+					status = get_call_log_status(payload, direction=direction)
+					if status is not None:
+						self.assertIn(status, options)
 
 
 def create_test_call_log(**kwargs):

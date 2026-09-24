@@ -1,14 +1,24 @@
 <template>
-  <div class="space-y-1.5 p-[2px] !-m-[2px]">
-    <label v-if="attrs.label" class="block" :class="labelClasses">
+  <div class="-mx-[2px] space-y-1.5 px-[2px]">
+    <label
+      v-if="attrs.label"
+      class="block"
+      :class="labelClasses"
+      :for="controlId"
+    >
       {{ __(attrs.label) }}
+      <template v-if="required">
+        <span class="select-none text-ink-red-6" aria-hidden="true">*</span>
+        <span class="sr-only">{{ __('(required)') }}</span>
+      </template>
     </label>
     <Autocomplete
       ref="autocomplete"
+      :button-id="controlId"
       v-model="value"
       :options="autocompleteOptions"
       :size="attrs.size || 'sm'"
-      :variant="attrs.variant"
+      :variant="props.variant"
       :placeholder="attrs.placeholder"
       :disabled="attrs.disabled"
       :placement="attrs.placement"
@@ -71,13 +81,15 @@ import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { isTranslatable } from '@/utils'
 import { watchDebounced } from '@vueuse/core'
 import { createResource } from 'frappe-ui'
-import { useAttrs, computed, ref } from 'vue'
+import { useAttrs, computed, ref, useId } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
   filters: { type: [Array, Object, String], default: () => [] },
   modelValue: { type: String, default: '' },
   hideMe: { type: Boolean, default: false },
+  variant: { type: String, default: 'subtle' },
+  required: { type: Boolean, default: false },
   /**
    * Split the dropdown into two labelled groups instead of filtering options
    * out: the ones matching `grouping.filters` first, everything else below.
@@ -90,8 +102,10 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const attrs = useAttrs()
+const controlId = useId()
 
 const valuePropPassed = computed(() => 'value' in attrs)
+const selectedOption = ref(null)
 
 const value = computed({
   get: () => {
@@ -101,10 +115,9 @@ const value = computed({
     return v
   },
   set: (val) => {
-    return (
-      val?.value &&
-      emit(valuePropPassed.value ? 'change' : 'update:modelValue', val?.value)
-    )
+    if (!val?.value) return
+    selectedOption.value = val
+    emit(valuePropPassed.value ? 'change' : 'update:modelValue', val.value)
   },
 })
 
@@ -175,7 +188,12 @@ const options = createResource({
   },
   transform: (data) => {
     let allData = toOptions(data)
-    if (!isGrouped.value && !props.hideMe && props.doctype == 'User') {
+    // When grouped this resource only holds the second group, so retaining the
+    // selection here would file it under the wrong label; see autocompleteOptions.
+    if (isGrouped.value) return allData
+
+    retainSelectedOption(allData)
+    if (!props.hideMe && props.doctype == 'User') {
       allData.unshift({
         label: '@me',
         value: '@me',
@@ -200,9 +218,25 @@ const groupedOptions = createResource({
 
 const autocompleteOptions = computed(() => {
   if (!isGrouped.value) return options.data
+
+  let matching = groupedOptions.data || []
+  const others = options.data || []
+
+  // retainSelectedOption's job for the grouped case: a selection that the
+  // current search text filters out stays visible instead of looking cleared.
+  // Neither group claims it, so it goes to the top of the first one.
+  const selected = selectedOption.value
+  if (
+    selected &&
+    !matching.some((option) => option.value === selected.value) &&
+    !others.some((option) => option.value === selected.value)
+  ) {
+    matching = [selected, ...matching]
+  }
+
   return [
-    { group: props.grouping.label, items: groupedOptions.data || [] },
-    { group: props.grouping.otherLabel, items: options.data || [] },
+    { group: props.grouping.label, items: matching },
+    { group: props.grouping.otherLabel, items: others },
   ].filter((group) => group.items.length)
 })
 
@@ -213,6 +247,13 @@ function stripHtml(html) {
     .replace(/&nbsp;/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+function retainSelectedOption(options) {
+  const selected = selectedOption.value
+  if (!selected || options.some((option) => option.value === selected.value))
+    return
+  options.unshift(selected)
 }
 
 function reload(val, force = false) {
@@ -271,6 +312,7 @@ function negateFilters(filters) {
 }
 
 function clearValue(close) {
+  selectedOption.value = null
   emit(valuePropPassed.value ? 'change' : 'update:modelValue', '')
   close()
 }
@@ -278,7 +320,7 @@ function clearValue(close) {
 const labelClasses = computed(() => {
   return [
     {
-      sm: 'text-xs',
+      sm: 'text-base',
       md: 'text-base',
     }[attrs.size || 'sm'],
     'text-ink-gray-5',

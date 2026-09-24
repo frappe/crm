@@ -24,17 +24,36 @@ echo "Setting the correct git remote..."
 # Here, the git remote is a local file path by default. Let's change it to the upstream repo.
 git remote set-url upstream https://github.com/frappe/crm.git
 
-echo "Creating a new branch..."
-isodate=$(date -u +"%Y-%m-%d")
-branch_name="pot_${BASE_BRANCH}_${isodate}"
-git checkout -b "${branch_name}"
+gh auth setup-git
+
+# One stable branch, not a dated one. The POT file is fully regenerated every run, so a
+# fresh dated branch/PR each week just piles up and conflicts once any one is merged. Reusing
+# a single branch (reset to the base tip, force-pushed) keeps exactly one PR that updates in
+# place and can never conflict, since it's always rebuilt from the current base.
+branch_name="pot_${BASE_BRANCH}"
+
+echo "Resetting ${branch_name} onto ${BASE_BRANCH}..."
+generated_pot=$(mktemp)
+cp crm/locale/main.pot "${generated_pot}"
+git fetch upstream "${BASE_BRANCH}"
+git checkout -f -B "${branch_name}" "upstream/${BASE_BRANCH}"
+cp "${generated_pot}" crm/locale/main.pot
+
+git add crm/locale/main.pot
+if git diff --cached --quiet; then
+  echo "No POT changes; nothing to do."
+  exit 0
+fi
 
 echo "Commiting changes..."
-git add crm/locale/main.pot
 git commit -m "chore: update POT file"
 
-gh auth setup-git
-git push -u upstream "${branch_name}"
+echo "Pushing ${branch_name}..."
+git push -u upstream "${branch_name}" --force
 
-echo "Creating a PR..."
-gh pr create --fill --base "${BASE_BRANCH}" --head "${branch_name}" -R frappe/crm
+if gh pr view "${branch_name}" -R frappe/crm --json state -q '.state' 2>/dev/null | grep -q OPEN; then
+  echo "PR already open for ${branch_name}; force-push updated it."
+else
+  echo "Creating a PR..."
+  gh pr create --fill --base "${BASE_BRANCH}" --head "${branch_name}" -R frappe/crm
+fi

@@ -81,9 +81,6 @@
           width="lg"
         />
       </div>
-      <div v-else-if="activeTab == 'events'" class="flex h-full">
-        <EventNotificationsArea />
-      </div>
       <div v-else class="flex h-full"></div>
     </div>
   </div>
@@ -92,7 +89,6 @@
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
-import EventNotificationsArea from '@/components/EventNotificationsArea.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import {
@@ -100,7 +96,6 @@ import {
   notifications,
   notificationsStore,
 } from '@/stores/notifications'
-import { useEventNotificationAlert } from '@/data/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
@@ -110,13 +105,11 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
-const { handleEventNotification } = useEventNotificationAlert()
 const { capture } = useTelemetry()
 
 const activeTab = ref('all')
 const tabs = [
   { label: __('All'), value: 'all' },
-  { label: __('Events'), value: 'events' },
   // { label: __('Mentions'), value: 'mentions' },
 ]
 
@@ -143,12 +136,10 @@ function markAllAsRead() {
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')
-  $socket.off('event_notification')
 })
 
 onMounted(() => {
   $socket.on('crm_notification', () => notifications.reload())
-  $socket.on('event_notification', (data) => handleEventNotification(data))
 })
 
 function getRoute(notification) {

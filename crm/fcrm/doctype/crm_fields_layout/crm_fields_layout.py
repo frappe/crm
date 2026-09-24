@@ -183,7 +183,7 @@ def get_field_obj(field):
 		field["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
 	elif field.fieldtype == "Select" and field.options:
 		field["placeholder"] = field.get("placeholder") or "Select " + field.label + "..."
-		field["options"] = [{"label": option, "value": option} for option in field.options.split("\n")]
+		field["options"] = [{"label": _(option), "value": option} for option in field.options.split("\n")]
 
 	if field.read_only:
 		field["tooltip"] = "This field is read only and cannot be edited."

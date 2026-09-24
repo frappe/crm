@@ -61,7 +61,7 @@ DESK ADMIN (data)                         ENGINE (code, rule-agnostic)        RE
 | `pipeline.py` | `run(website, cfg, progress)` orchestrates crawl → extract → assemble `EnrichmentResult`. Never writes to the DB. |
 | `mapper.py` | `apply_to_document(doc, result, cfg)` — the **single** result→CRM-field authority, driven by Field Mapping records + write policies. |
 | `tasks.py` | `run_enrichment` (enqueued worker) + `write_run` (the **single** run-history writer). Streams realtime progress; never raises. |
-| `api.py` | Whitelisted `enrich` (enqueue) + `enrich_preview` (bounded sync prefill). Type-annotated; permission- and rate-limited. |
+| `api.py` | Whitelisted `enrich` (enqueue) + `retry` (re-run from a Run). Type-annotated; permission- and rate-limited. |
 | `cross_record.py` | `copy_enrichment_from_organization` — the one link-time Org→Lead/Deal copy. |
 | `install.py` | Idempotent seeder: translates the original constant tables into Rule + Field Mapping records. |
 
@@ -76,15 +76,13 @@ Three doctypes hold all the tunable knowledge. `get_config()` reads them on dema
 
 | Field | Meaning |
 |---|---|
-| `enabled` | Master on/off for the whole feature. |
-| `enable_lead` / `enable_deal` / `enable_organization` | Which doctypes can be enriched. |
-| `auto_enrich` | When `1`, a newly-created CRM **Lead, Deal or Organization** that has a website is enriched automatically in a background job (`after_insert`). A new Deal with a new Organization enriches both (each crawls and writes its own fields). Default `0` — enrichment is otherwise manual via the Enrich button. Gated per doctype by `enable_lead` / `enable_deal` / `enable_organization`. |
+| `enabled` | Master on/off for the whole feature, across Lead, Deal and Organization. |
+| `auto_enrich` | When `1`, a newly-created CRM **Lead, Deal or Organization** that has a website is enriched automatically in a background job (`after_insert`). A new Deal with a new Organization enriches both (each crawls and writes its own fields). Default `0` — enrichment is otherwise manual via the Enrich button. |
 | `max_pages` / `max_depth` | Crawl breadth/depth caps (BFS). |
 | `request_timeout` | Per-request timeout (seconds). |
 | `max_download_bytes` | Hard cap on bytes read per page (streamed). |
 | `retry_count` | Transient-error retries on the session. |
 | `user_agent` | Crawler User-Agent header. |
-| `preview_max_pages` / `preview_timeout` | Bounds for the fast `enrich_preview` (create-modal) path. |
 | `allowed_domains` / `blocked_domains` (child) | SSRF allow/block lists (subdomain-aware). A blocked host is always rejected; if an allow list exists, only listed hosts pass. |
 | `link_priority_order` (child) | `keyword` + `weight`: a crawl-ordering hint — links whose URL/anchor contain these are fetched first (higher weight = sooner). Defaults are seeded on install. |
 | `skip_patterns` (child) | URL substrings/regexes to never crawl. |
@@ -248,10 +246,9 @@ write back to the Organization. The field-writing reuses `mapper.apply_to_docume
   scraped value can never escalate into an insert the user couldn't do by hand. The
   only `ignore_permissions` write is the engine-owned `CRM Enrichment Run` audit log
   — never a cross-record write to data the user can't edit.
-- **Rate limiting.** Every entry point that triggers a fetch — `enrich`, `retry`,
-  and `enrich_preview` — is decorated with `rate_limit(limit=ENRICH_RATE_LIMIT,
-  seconds=60)` (per user, per route). `enrich`/`retry` only enqueue a per-doc-
-  deduplicated job; `enrich_preview` does one synchronous crawl.
+- **Rate limiting.** Every entry point that triggers a fetch — `enrich` and
+  `retry` — is decorated with `rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)`
+  (per user, per route). Both only enqueue a per-doc-deduplicated job.
 
 ---
 
