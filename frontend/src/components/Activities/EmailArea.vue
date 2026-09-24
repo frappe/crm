@@ -93,11 +93,9 @@ function reply(email, reply_all = false) {
   let editor = emailBox.editor
   let message = email.content
   let recipients = email.recipients.split(',').map((r) => r.trim())
-  let addresses = [email.sender, ...recipients, ...(email.cc?.split(',') || [])]
-  let account = editor.from.find((f) =>
-    addresses.some((a) => a.trim() === f.value),
-  )
-  if (account) editor.fromEmail = account.value
+  editor.replyAddresses = [email.sender, email.recipients, email.cc, email.bcc]
+    .flatMap((a) => a?.split(',') || [])
+    .map((a) => a.trim())
   editor.toEmails = [email.sender]
   editor.cc = editor.bcc = false
   editor.ccEmails = []
