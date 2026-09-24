@@ -277,10 +277,15 @@ const from = computed(() => {
   return emails
 })
 
+const replyAddresses = ref([])
+
 watch(
-  from,
-  (fromOptions) => {
-    if (!fromOptions.find((f) => f.value === fromEmail.value)) {
+  [from, replyAddresses],
+  ([fromOptions, addresses]) => {
+    let match = addresses.find((a) => fromOptions.some((f) => f.value === a))
+    if (match) {
+      fromEmail.value = match
+    } else if (!fromOptions.find((f) => f.value === fromEmail.value)) {
       fromEmail.value = fromOptions.length ? fromOptions[0].value : ''
     }
   },
@@ -340,8 +345,8 @@ defineExpose({
   subject,
   cc,
   bcc,
-  from,
   fromEmail,
+  replyAddresses,
   toEmails,
   ccEmails,
   bccEmails,
