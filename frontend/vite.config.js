@@ -81,12 +81,20 @@ export default defineConfig(async ({ mode }) => {
       // `prosemirror-model`, so a nested install of either throws "multiple
       // versions of prosemirror-model were loaded" on mention insert. Unlike
       // optimizeDeps (dev-only) this also applies to the production build.
+      // @framework/ui is aliased to frappe's ui/src, so its own direct deps
+      // (leaflet, cropperjs, vuedraggable) must also come from here: a bench
+      // build never installs apps/frappe/ui/node_modules.
       dedupe: [
         'vue',
         'vue-router',
         'frappe-ui',
         'reka-ui',
         'dompurify',
+        'cropperjs',
+        'leaflet',
+        'leaflet-draw',
+        'leaflet.locatecontrol',
+        'vuedraggable',
         '@tiptap/core',
         '@tiptap/pm',
         '@tiptap/vue-3',

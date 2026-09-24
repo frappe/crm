@@ -26,6 +26,7 @@
     "@vitejs/plugin-vue-jsx": "^5.1.6",
     "@vueuse/integrations": "^10.3.0",
     "@whatsapp/ui": "link:../../whatsapp/ui",
+    "cropperjs": "^2.1.1",
     "dompurify": "^3.3.3",
     "frappe-ui": "1.0.0-beta.29",
     "gemoji": "^8.1.0",
