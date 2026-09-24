@@ -285,6 +285,7 @@ watch(
     let match = addresses.find((a) => fromOptions.some((f) => f.value === a))
     if (match) {
       fromEmail.value = match
+      replyAddresses.value = []
     } else if (!fromOptions.find((f) => f.value === fromEmail.value)) {
       fromEmail.value = fromOptions.length ? fromOptions[0].value : ''
     }
