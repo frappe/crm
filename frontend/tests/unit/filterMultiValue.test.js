@@ -1,7 +1,4 @@
-import {
-  isMultiValueFilter,
-  toFilterValueArray,
-} from '@/utils/fieldTransforms'
+import { isMultiValueFilter, toFilterValueArray } from '@/utils/fieldTransforms'
 
 // Regression coverage for #2125: "in" / "not in" used to render a plain text
 // input for every field, so Select and Link filters lost the picker they get
@@ -11,7 +8,10 @@ import {
 const selectField = { fieldtype: 'Select', options: 'Open\nClosed' }
 const checkField = { fieldtype: 'Check' }
 const linkField = { fieldtype: 'Link', options: 'CRM Organization' }
-const dynamicLinkField = { fieldtype: 'Dynamic Link', options: 'reference_type' }
+const dynamicLinkField = {
+  fieldtype: 'Dynamic Link',
+  options: 'reference_type',
+}
 const dataField = { fieldtype: 'Data' }
 const intField = { fieldtype: 'Int' }
 

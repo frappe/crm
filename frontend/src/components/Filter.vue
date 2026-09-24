@@ -176,10 +176,7 @@ import {
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 import { getFormat } from '@/utils'
-import {
-  isMultiValueFilter,
-  toFilterValueArray,
-} from '@/utils/fieldTransforms'
+import { isMultiValueFilter, toFilterValueArray } from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
