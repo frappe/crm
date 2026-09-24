@@ -339,6 +339,7 @@ defineExpose({
   subject,
   cc,
   bcc,
+  from,
   fromEmail,
   toEmails,
   ccEmails,
