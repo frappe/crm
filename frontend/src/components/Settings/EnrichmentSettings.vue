@@ -15,45 +15,61 @@
     >
       <LoadingIndicator class="size-8" />
     </div>
-    <div v-else class="flex-1 flex flex-col overflow-y-auto">
-      <div class="flex gap-4 items-center justify-between py-3 px-2">
-        <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
-            {{ __('Enable enrichment') }}
+    <div v-else class="flex-1 flex flex-col gap-4 overflow-hidden">
+      <div class="px-2">
+        <TabButtons v-model="tab" :options="tabOptions" />
+      </div>
+
+      <div
+        v-if="tab === 'general'"
+        class="flex-1 flex flex-col overflow-y-auto"
+      >
+        <div class="flex gap-4 items-center justify-between py-3 px-2">
+          <div class="flex flex-col">
+            <div class="text-p-base-medium text-ink-gray-7 truncate">
+              {{ __('Enable enrichment') }}
+            </div>
+            <div class="text-p-sm text-ink-gray-5">
+              {{
+                __(
+                  'Turn on enrichment for this site. When off, the Enrich button is hidden and no record is enriched',
+                )
+              }}
+            </div>
           </div>
-          <div class="text-p-sm text-ink-gray-5">
-            {{
-              __(
-                'Turn on enrichment for this site. When off, the Enrich button is hidden and no record is enriched',
-              )
-            }}
+          <div>
+            <Switch
+              :model-value="Boolean(settings.doc.enabled)"
+              size="sm"
+              @update:model-value="(value) => update('enabled', value)"
+            />
           </div>
         </div>
-        <div>
-          <Switch
-            :model-value="Boolean(settings.doc.enabled)"
-            size="sm"
-            @update:model-value="(value) => update('enabled', value)"
-          />
+        <div class="flex gap-4 items-center justify-between py-3 px-2">
+          <div class="flex flex-col">
+            <div class="text-p-base-medium text-ink-gray-7 truncate">
+              {{ __('Auto-enrich new records') }}
+            </div>
+            <div class="text-p-sm text-ink-gray-5">
+              {{ __('Enrich a new record as soon as it is created') }}
+            </div>
+          </div>
+          <div>
+            <Switch
+              :model-value="Boolean(settings.doc.auto_enrich)"
+              size="sm"
+              :disabled="!settings.doc.enabled"
+              @update:model-value="(value) => update('auto_enrich', value)"
+            />
+          </div>
         </div>
       </div>
-      <div class="flex gap-4 items-center justify-between py-3 px-2">
-        <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
-            {{ __('Auto-enrich new records') }}
-          </div>
-          <div class="text-p-sm text-ink-gray-5">
-            {{ __('Enrich a new record as soon as it is created') }}
-          </div>
-        </div>
-        <div>
-          <Switch
-            :model-value="Boolean(settings.doc.auto_enrich)"
-            size="sm"
-            :disabled="!settings.doc.enabled"
-            @update:model-value="(value) => update('auto_enrich', value)"
-          />
-        </div>
+
+      <div
+        v-else
+        class="flex flex-1 items-center justify-center text-p-sm text-ink-gray-5"
+      >
+        {{ __('Rules coming soon') }}
       </div>
     </div>
   </div>
@@ -64,14 +80,23 @@ import {
   createDocumentResource,
   LoadingIndicator,
   Switch,
+  TabButtons,
   toast,
 } from 'frappe-ui'
+import { ref } from 'vue'
 
 const settings = createDocumentResource({
   doctype: 'CRM Enrichment Settings',
   name: 'CRM Enrichment Settings',
   auto: true,
 })
+
+const tab = ref('general')
+
+const tabOptions = [
+  { label: __('General'), value: 'general' },
+  { label: __('Rules'), value: 'rules' },
+]
 
 // Check fields come back as 0/1, so write the same shape back -- a Boolean would
 // leave the doc differing from originalDoc on every load.
