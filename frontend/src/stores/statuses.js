@@ -1,5 +1,5 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-import { parseColor, isTranslatable } from '@/utils'
+import { parseColor } from '@/utils'
 import { defineStore } from 'pinia'
 import { useTelemetry } from 'frappe-ui/frappe'
 import { createListResource } from 'frappe-ui'
@@ -90,16 +90,10 @@ export const statusesStore = defineStore('crm-statuses', () => {
       }, {})
     }
 
-    let translatable = isTranslatable(
-      doctype == 'deal' ? 'CRM Deal Status' : 'CRM Lead Status',
-    )
-
     let options = []
     for (const status in statusesByName) {
       options.push({
-        label: translatable
-          ? __(statusesByName[status]?.name)
-          : statusesByName[status]?.name,
+        label: __(statusesByName[status]?.name),
         value: statusesByName[status]?.name,
         icon: () => h(IndicatorIcon, { class: statusesByName[status]?.color }),
         onClick: async () => {

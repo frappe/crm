@@ -124,6 +124,16 @@ export default defineConfig(async ({ mode }) => {
       },
     }),
   )
+  config.plugins.push({
+    name: 'crm-html-dir',
+    transformIndexHtml(html, ctx) {
+      if (ctx.server) return html
+      return html.replace(
+        /<html class="h-full" lang="en">/,
+        `<html class="h-full" lang="{{ lang or 'en' }}" dir="{{ layout_direction or 'ltr' }}">`,
+      )
+    },
+  })
 
   return config
 })

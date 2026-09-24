@@ -1,0 +1,310 @@
+/* Physical Tailwind (ml/mr, left/right, border-l/r) does not follow dir=rtl.
+   Flip the utilities the SPA actually uses so Arabic/Hebrew/Persian/Pashto
+   layout matches Frappe Desk. */
+
+html[dir='rtl'] {
+  text-align: start;
+}
+
+html[dir='rtl'] .text-left {
+  text-align: right !important;
+}
+
+html[dir='rtl'] .text-right {
+  text-align: left !important;
+}
+
+html[dir='rtl'] input,
+html[dir='rtl'] textarea,
+html[dir='rtl'] select,
+html[dir='rtl'] [contenteditable='true'],
+html[dir='rtl'] th,
+html[dir='rtl'] td {
+  text-align: start;
+}
+
+/* Sidebar sits on the inline-start edge after dir=rtl; physical border-r
+   would otherwise fall on the window edge instead of the content seam. */
+html[dir='rtl'] [data-slot='sidebar'],
+html[dir='rtl'] .flex.h-screen > .h-full.border-r,
+html[dir='rtl'] .flex.h-screen > .relative.flex.h-full .border-r {
+  border-right-width: 0 !important;
+  border-left-width: 1px !important;
+}
+
+/* Lead/Deal details (border-l) and Contact/Org identity (border-r). */
+html[dir='rtl'] .flex.h-full.overflow-hidden > .relative.border-l {
+  border-left-width: 0 !important;
+  border-right-width: 1px !important;
+}
+
+html[dir='rtl'] .flex.h-full.overflow-hidden > .relative.border-r {
+  border-right-width: 0 !important;
+  border-left-width: 1px !important;
+}
+
+html[dir='rtl'] .absolute.z-10.h-full.w-1.cursor-col-resize.left-0 {
+  left: auto !important;
+  right: 0 !important;
+}
+
+html[dir='rtl'] .absolute.z-10.h-full.w-1.cursor-col-resize.right-0 {
+  right: auto !important;
+  left: 0 !important;
+}
+
+html[dir='rtl'] .lucide-chevron-right,
+html[dir='rtl'] .lucide-chevrons-right,
+html[dir='rtl'] [data-lucide='chevron-right'],
+html[dir='rtl'] [data-lucide='chevrons-right'] {
+  transform: scaleX(-1);
+}
+
+html[dir='rtl'] .lucide-chevron-right.rotate-90 {
+  transform: scaleX(-1) rotate(90deg);
+}
+
+html[dir='rtl'] .mr-1,
+html[dir='rtl'] .mr-1\.5,
+html[dir='rtl'] .mr-2,
+html[dir='rtl'] .mr-3,
+html[dir='rtl'] .mr-4 {
+  margin-right: 0 !important;
+}
+
+html[dir='rtl'] .mr-1 {
+  margin-left: 0.25rem !important;
+}
+html[dir='rtl'] .mr-1\.5 {
+  margin-left: 0.375rem !important;
+}
+html[dir='rtl'] .mr-2 {
+  margin-left: 0.5rem !important;
+}
+html[dir='rtl'] .mr-3 {
+  margin-left: 0.75rem !important;
+}
+html[dir='rtl'] .mr-4 {
+  margin-left: 1rem !important;
+}
+
+html[dir='rtl'] .ml-1,
+html[dir='rtl'] .ml-1\.5,
+html[dir='rtl'] .ml-2,
+html[dir='rtl'] .ml-2\.5,
+html[dir='rtl'] .ml-3,
+html[dir='rtl'] .ml-4,
+html[dir='rtl'] .ml-5 {
+  margin-left: 0 !important;
+}
+
+html[dir='rtl'] .ml-1 {
+  margin-right: 0.25rem !important;
+}
+html[dir='rtl'] .ml-1\.5 {
+  margin-right: 0.375rem !important;
+}
+html[dir='rtl'] .ml-2 {
+  margin-right: 0.5rem !important;
+}
+html[dir='rtl'] .ml-2\.5 {
+  margin-right: 0.625rem !important;
+}
+html[dir='rtl'] .ml-3 {
+  margin-right: 0.75rem !important;
+}
+html[dir='rtl'] .ml-4 {
+  margin-right: 1rem !important;
+}
+html[dir='rtl'] .ml-5 {
+  margin-right: 1.25rem !important;
+}
+
+html[dir='rtl'] .-ml-0\.5 {
+  margin-left: 0 !important;
+  margin-right: -0.125rem !important;
+}
+
+html[dir='rtl'] .pl-1,
+html[dir='rtl'] .pl-2,
+html[dir='rtl'] .pl-3,
+html[dir='rtl'] .pl-4,
+html[dir='rtl'] .pl-5 {
+  padding-left: 0 !important;
+}
+
+html[dir='rtl'] .pl-1 {
+  padding-right: 0.25rem !important;
+}
+html[dir='rtl'] .pl-2 {
+  padding-right: 0.5rem !important;
+}
+html[dir='rtl'] .pl-3 {
+  padding-right: 0.75rem !important;
+}
+html[dir='rtl'] .pl-4 {
+  padding-right: 1rem !important;
+}
+html[dir='rtl'] .pl-5 {
+  padding-right: 1.25rem !important;
+}
+
+html[dir='rtl'] .pr-1,
+html[dir='rtl'] .pr-2,
+html[dir='rtl'] .pr-3,
+html[dir='rtl'] .pr-4,
+html[dir='rtl'] .pr-5 {
+  padding-right: 0 !important;
+}
+
+html[dir='rtl'] .pr-1 {
+  padding-left: 0.25rem !important;
+}
+html[dir='rtl'] .pr-2 {
+  padding-left: 0.5rem !important;
+}
+html[dir='rtl'] .pr-3 {
+  padding-left: 0.75rem !important;
+}
+html[dir='rtl'] .pr-4 {
+  padding-left: 1rem !important;
+}
+html[dir='rtl'] .pr-5 {
+  padding-left: 1.25rem !important;
+}
+
+html[dir='rtl'] .flex.border-b.pr-5 {
+  padding-right: 0 !important;
+  padding-left: 1.25rem !important;
+}
+
+html[dir='rtl'] .-right-1 {
+  right: auto !important;
+  left: -0.25rem !important;
+}
+
+html[dir='rtl'] .fixed.right-0 {
+  right: auto !important;
+  left: 0 !important;
+}
+
+html[dir='rtl'] .origin-top-left {
+  transform-origin: top right !important;
+}
+
+html[dir='rtl'] .rounded-l,
+html[dir='rtl'] .rounded-l-md,
+html[dir='rtl'] .rounded-l-lg,
+html[dir='rtl'] .rounded-l-\[7px\] {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 0.375rem !important;
+  border-bottom-right-radius: 0.375rem !important;
+}
+
+html[dir='rtl'] .rounded-r,
+html[dir='rtl'] .rounded-r-md,
+html[dir='rtl'] .rounded-r-lg {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 0.375rem !important;
+  border-bottom-left-radius: 0.375rem !important;
+}
+
+html[dir='rtl'] [class*='space-x-'] > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* List views use space-x on CSS grid; reversing those margins desyncs columns. */
+html[dir='rtl'] .grid.items-center.space-x-4 {
+  column-gap: 1rem;
+}
+
+html[dir='rtl'] .grid.items-center.space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+html[dir='rtl'] .grid.items-center > .w-fit.pr-2.py-3.flex,
+html[dir='rtl'] .grid.items-center > .w-fit.pe-2.py-3.flex {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  width: 14px !important;
+  min-width: 14px;
+  max-width: 14px;
+  justify-content: center;
+}
+
+html[dir='rtl'] .grid.items-center .truncate {
+  text-align: right;
+}
+
+html[dir='rtl'] a[href^='tel:'],
+html[dir='rtl'] a[href^='mailto:'],
+html[dir='rtl'] input[type='tel'],
+html[dir='rtl'] .tabular-nums {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+html[dir='rtl'] [data-slot='sidebar-item'] a,
+html[dir='rtl'] [data-slot='sidebar-item'] button {
+  text-align: right !important;
+}
+
+html[dir='rtl'] [data-slot='sidebar-item'] .pl-2 {
+  padding-left: 0 !important;
+  padding-right: 0.5rem !important;
+}
+
+html[dir='rtl'] [data-slot='sidebar-item'] .ml-2 {
+  margin-left: 0 !important;
+  margin-right: 0.5rem !important;
+}
+
+html[dir='rtl'] [data-slot='sidebar'] .truncate,
+html[dir='rtl'] [data-slot='sidebar-item'] .truncate {
+  text-align: right;
+}
+
+/* Notifications flyout uses inline left: calc(100% + 1px) for an LTR rail. */
+html[dir='rtl'] .absolute.z-20.h-screen[style*='min-width'] {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  left: auto !important;
+  right: 220px !important;
+  z-index: 40 !important;
+}
+
+html[dir='rtl'] .w-12 > .absolute.z-20.h-screen[style*='min-width'] {
+  right: 3rem !important;
+}
+
+/* Native <select> keeps padding-left / background-position:right physically. */
+html[dir='rtl'] .dialog-content select,
+html[dir='rtl'] .form-control select,
+html[dir='rtl'] select.h-7 {
+  direction: rtl;
+  text-align: right !important;
+  background-position: left 0.45rem center !important;
+  padding-left: 1.7rem !important;
+  padding-right: 0.65rem !important;
+}
+
+html[dir='rtl'] .form-control.prefix select {
+  padding-right: 2rem !important;
+  padding-left: 1.7rem !important;
+}
+
+html[dir='rtl'] .form-control.prefix .relative.flex.items-center > svg,
+html[dir='rtl'] .form-control.prefix .absolute.left-2 {
+  left: auto !important;
+  right: 0.5rem !important;
+}
+
+html[dir='rtl'] .dialog-content .field {
+  text-align: right;
+}

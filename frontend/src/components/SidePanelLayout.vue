@@ -511,6 +511,12 @@ const _sections = computed(() => {
 function parsedField(field) {
   // Clone to avoid mutating the cached layout data
   field = { ...field }
+  if (field.label) {
+    field.label = __(field.label)
+  }
+  if (field.placeholder) {
+    field.placeholder = __(field.placeholder)
+  }
 
   // Merge script property overrides
   const overrides = document.fieldPropertyOverrides?.[field.fieldname]
@@ -520,7 +526,7 @@ function parsedField(field) {
 
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
-      return { label: option, value: option }
+      return { label: __(option), value: option }
     })
 
     if (field.options[0].value !== '' && !field.reqd) {

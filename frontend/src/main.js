@@ -1,11 +1,14 @@
 import './index.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createDialog } from './utils/dialogs'
 import { initSocket } from './socket'
 import router from './router'
 import translationPlugin from './translation'
+import {
+  applyDocumentDirection,
+  resolveBootLanguage,
+} from './utils/rtl'
 import App from './App.vue'
 
 import {
@@ -27,6 +30,8 @@ import { telemetryPlugin } from 'frappe-ui/frappe'
 // injects the lucide SVG sprite into the DOM so the IconPicker and lucide Icons
 // (used for view icons) can render from it
 import { spritePlugin } from 'frappe-ui/icons'
+
+applyDocumentDirection(resolveBootLanguage())
 
 let globalComponents = {
   Button,
@@ -65,6 +70,7 @@ if (import.meta.env.DEV) {
       for (let key in values) {
         window[key] = values[key]
       }
+      applyDocumentDirection(resolveBootLanguage())
       socket = initSocket()
       app.config.globalProperties.$socket = socket
       app.mount('#app')

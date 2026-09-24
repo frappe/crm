@@ -100,11 +100,11 @@ let slaSection = computed(() => {
         color: color,
       },
       {
-        label: 'Status',
+        label: __('Status'),
         value: data.value.communication_status,
         type: 'Select',
         options: communicationStatuses.data?.map((status) => ({
-          label: status.name,
+          label: __(status.name),
           value: status.name,
           onClick: () => {
             capture('sla_status_change')

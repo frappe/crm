@@ -1,5 +1,6 @@
 @import 'frappe-ui/style.css';
 @import 'frappe-ui/list-style.css';
+@import './rtl.css';
 
 @layer components {
   .prose-f {
