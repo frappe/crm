@@ -18,6 +18,7 @@
               <slot name="actions" v-bind="{ section }">
                 <Button
                   v-if="section.showEditButton"
+                  :tooltip="__('Edit Fields Layout')"
                   variant="ghost"
                   class="w-7 mr-2"
                   :icon="EditIcon"
