@@ -736,12 +736,13 @@ if (!dealContacts.data) dealContacts.fetch()
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
-  let mobile_no = primaryContact.mobile_no || null
 
   if (!primaryContact) {
     toast.error(__('No Primary Contact Set'))
     return
   }
+
+  let mobile_no = primaryContact.mobile_no || null
 
   if (!mobile_no) {
     toast.error(__('No Mobile Number Set'))
