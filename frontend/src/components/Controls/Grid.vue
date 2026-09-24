@@ -150,6 +150,7 @@
                             : row[field.options]
                         "
                         :filters="field.filters"
+                        :grouping="field.grouping"
                         :disabled="Boolean(field.disabled)"
                         :onCreate="
                           (value, close) => field.create(v, field, row, close)
@@ -500,7 +501,10 @@ import {
 import { flt } from '@/utils/numberFormat.js'
 import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
-import { parseLinkFilters } from '@/utils/fieldTransforms'
+import {
+  parseLinkFilters,
+  applyContactOrganizationGrouping,
+} from '@/utils/fieldTransforms'
 import { isFetchedFromLink } from '@/utils/fetchFrom'
 import { createDocument } from '@/composables/document'
 import {
@@ -644,6 +648,12 @@ function getFieldObj(field) {
       ...(parseLinkFilters(field.link_filters) || {}),
     })
   }
+
+  field = applyContactOrganizationGrouping(
+    field,
+    parentDoc.value,
+    props.parentDoctype,
+  )
 
   const fieldObjWithFilters = {
     ...field,
