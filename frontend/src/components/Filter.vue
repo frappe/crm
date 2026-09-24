@@ -179,7 +179,14 @@ const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
 const typeNumber = ['Float', 'Int', 'Currency', 'Percent']
 const typeSelect = ['Select']
-const typeString = ['Data', 'Long Text', 'Small Text', 'Text Editor', 'Text']
+const typeString = [
+  'Data',
+  'Long Text',
+  'Small Text',
+  'Text Editor',
+  'Text',
+  'Phone',
+]
 const typeDate = ['Date', 'Datetime']
 const typeDuration = ['Duration']
 const typeRating = ['Rating']

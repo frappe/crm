@@ -35,6 +35,7 @@
           'HTML',
           'Geolocation',
           'Text Editor',
+          'Phone',
         ].includes(field.fieldtype)
       "
       v-model="data[field.fieldname]"
@@ -289,6 +290,14 @@
       :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
+    <PhoneControl
+      v-else-if="field.fieldtype === 'Phone'"
+      :value="data[field.fieldname]"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.disabled || field.read_only)"
+      :description="field.description"
+      @change="(v) => fieldChange(v, field)"
+    />
     <FormControl
       v-else-if="field.options === 'Phone'"
       type="text"
@@ -330,6 +339,7 @@ import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
+import PhoneControl from '@/components/Controls/PhoneControl.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
