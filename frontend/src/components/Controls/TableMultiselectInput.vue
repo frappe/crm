@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="group flex flex-wrap gap-1 min-h-20 p-1.5 rounded text-base bg-surface-gray-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
+      class="group relative flex flex-wrap gap-1 min-h-20 p-1.5 rounded text-base bg-surface-gray-2 hover:bg-surface-gray-3 focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full"
     >
       <Button
         v-for="value in parsedValues"
@@ -10,7 +10,7 @@
         :label="value"
         theme="gray"
         variant="subtle"
-        class="rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
+        class="relative z-10 rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
@@ -26,7 +26,7 @@
           v-if="linkField"
           class="form-control flex-1 truncate cursor-text"
           :value="query"
-          :filters="filters"
+          :filters="linkFilters"
           :doctype="linkField.options"
           :onCreate="create"
           :hideMe="true"
@@ -34,7 +34,9 @@
         >
           <template #target="{ togglePopover }">
             <button
-              class="w-full h-7 cursor-text"
+              type="button"
+              :aria-label="__('Add value')"
+              class="absolute inset-0 h-full w-full cursor-text rounded"
               @click.stop="togglePopover"
             />
           </template>
@@ -49,10 +51,12 @@
 import Link from '@/components/Controls/Link.vue'
 import { createDocument } from '@/composables/document'
 import { getMeta } from '@/stores/meta'
+import { tableMultiselectFilters } from '@/utils/tableMultiselectFilters'
 import { ref, computed, nextTick } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
+  filters: { type: [Array, Object, String], default: () => [] },
   errorMessage: {
     type: Function,
     default: (value) => `${value} is an Invalid value`,
@@ -71,9 +75,9 @@ const query = ref('')
 
 const linkField = ref('')
 
-const filters = computed(() => {
+const linkFilters = computed(() => {
   if (!linkField.value) return []
-  return { name: ['not in', parsedValues.value] }
+  return tableMultiselectFilters(props.filters, parsedValues.value)
 })
 
 const parsedValues = computed(() => {
