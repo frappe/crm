@@ -6,7 +6,7 @@ import { useEnrichmentRules } from './useEnrichmentRules'
 // TODO: confirm platform list with Pratham
 const SOCIAL_PLATFORMS = [
   { label: 'LinkedIn', value: 'linkedin' },
-  { label: 'Youtube', value: 'youtube' },
+  { label: 'YouTube', value: 'youtube' },
   { label: 'X (Twitter)', value: 'twitter' },
 ]
 
