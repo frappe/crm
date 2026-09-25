@@ -1,3 +1,4 @@
+
 <template>
   <LayoutHeader>
     <template #left-header>
@@ -43,18 +44,24 @@
       :tabs="tabs"
       class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
-      <template #tab-panel>
-        <Activities
-          ref="activities"
-          v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
-          doctype="CRM Deal"
-          :docname="dealId"
-          :tabs="tabs"
-          @beforeSave="beforeStatusChange"
-          @afterSave="reloadResources"
-        />
-      </template>
+    <template #tab-panel>
+      <QuotationsList
+        v-if="tabs[tabIndex]?.name === 'Quotations'"
+        :dealId="dealId"
+      />
+
+      <Activities
+        v-else
+        ref="activities"
+        v-model:reload="reload"
+        v-model:tabIndex="tabIndex"
+        doctype="CRM Deal"
+        :docname="dealId"
+        :tabs="tabs"
+        @beforeSave="beforeStatusChange"
+        @afterSave="reloadResources"
+      />
+    </template>
     </Tabs>
     <Resizer side="right" class="flex flex-col justify-between border-l">
       <div
@@ -336,6 +343,7 @@
   />
 </template>
 <script setup>
+import QuotationsList from '@/components/Quotations/QuotationsList.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
@@ -601,6 +609,11 @@ const tabs = computed(() => {
       name: 'Notes',
       label: __('Notes'),
       icon: NoteIcon,
+    },
+    {
+      name: 'Quotations',
+      label: __('Quotations'),
+      icon: DetailsIcon,
     },
     {
       name: 'Attachments',

@@ -32,3 +32,6 @@ def get_deal_contacts(name: str):
 		}
 		deal_contacts.append(_contact)
 	return deal_contacts
+@frappe.whitelist()
+def get_deal_quotations(name):
+    return frappe.db.sql("""select name, status, transaction_date, valid_till, grand_total, currency, docstatus, customer_name from `tabQuotation` where crm_deal = %s order by creation desc""", (name,), as_dict=True)
