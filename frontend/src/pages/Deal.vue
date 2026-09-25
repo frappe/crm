@@ -24,7 +24,7 @@
       />
       <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
       <Dropdown
-        v-if="doc && document.statuses"
+        v-if="doc?.name"
         :options="statuses"
         placement="right"
       >
@@ -50,7 +50,13 @@
       class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
     >
       <template #tab-panel>
+        <QuotationsList
+          v-if="tabs[tabIndex]?.name === 'Quotations'"
+          :dealId="dealId"
+        />
+
         <Activities
+          v-show="tabs[tabIndex]?.name !== 'Quotations'"
           ref="activities"
           v-model:reload="reload"
           v-model:tabIndex="tabIndex"
@@ -321,8 +327,8 @@
     :docname="dealId"
     @after="
       () => {
-        activities?.all_activities?.reload()
-        changeTabTo('attachments')
+        activities?.all_activities?.reload?.()
+        activities?.changeTabTo?.('attachments')
       }
     "
   />
@@ -341,7 +347,9 @@
     :document="document"
   />
 </template>
+
 <script setup>
+import QuotationsList from '@/components/Quotations/QuotationsList.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
@@ -610,6 +618,11 @@ const tabs = computed(() => {
       icon: NoteIcon,
     },
     {
+      name: 'Quotations',
+      label: __('Quotations'),
+      icon: DetailsIcon,
+    },
+    {
       name: 'Attachments',
       label: __('Attachments'),
       icon: AttachmentIcon,
@@ -723,8 +736,6 @@ const dealContacts = createResource({
   params: { name: props.dealId },
   cache: ['deal_contacts', props.dealId],
   transform: (data) => {
-    // get_deal_contacts orders primary first, so expanding the first contact
-    // surfaces the most relevant email and phone without a click.
     data.forEach((contact, index) => {
       contact.opened = index === 0
     })
@@ -791,10 +802,24 @@ const activities = ref(null)
 
 function openEmailBox() {
   let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
-    activities.value.changeTabTo('emails')
+
+  // If currently on Quotations tab, switch to Emails tab
+  if (currentTab?.name === 'Quotations') {
+    let emailsTabIndex = tabs.value.findIndex((t) => t.name === 'Emails')
+    if (emailsTabIndex !== -1) {
+      tabIndex.value = emailsTabIndex
+    }
   }
-  nextTick(() => (activities.value.emailBox.show = true))
+
+  if (!['Emails', 'Comments', 'Activity'].includes(currentTab?.name)) {
+    activities.value?.changeTabTo?.('emails')
+  }
+
+  nextTick(() => {
+    if (activities.value?.emailBox) {
+      activities.value.emailBox.show = true
+    }
+  })
 }
 
 function statusLabel(status) {
