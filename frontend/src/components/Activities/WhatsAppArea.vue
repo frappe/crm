@@ -97,6 +97,7 @@
           <div v-else-if="whatsapp.content_type == 'image'">
             <img
               :src="whatsapp.attach"
+              alt="WhatsApp attachment"
               class="h-40 cursor-pointer rounded-md"
               @click="() => openFileInAnotherTab(whatsapp.attach)"
             />
