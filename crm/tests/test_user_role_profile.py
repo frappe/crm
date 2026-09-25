@@ -2,9 +2,9 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.user import add_existing_users, remove_crm_roles_from_user, update_user_role
+from crm.tests import CRMTestCase as IntegrationTestCase
 
 ROLE_PROFILE = "_Test CRM Sales User Only"
 
