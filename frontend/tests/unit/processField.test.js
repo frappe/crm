@@ -271,4 +271,28 @@ describe('processField', () => {
     expect(result.description).toBe('Help text')
     expect(result.placeholder).toBe('Enter X')
   })
+
+  // ─── Phone fieldtype transform ─────────────────────────────────
+
+  it('preserves Data fieldtype when options="Phone"', () => {
+    const raw = {
+      fieldname: 'mobile_no',
+      fieldtype: 'Data',
+      options: 'Phone',
+      label: 'Mobile No',
+    }
+    const result = processField(raw)
+    expect(result.fieldtype).toBe('Data')
+    expect(result.options).toBe('Phone')
+  })
+
+  it('preserves native Phone fieldtype', () => {
+    const raw = {
+      fieldname: 'phone_field',
+      fieldtype: 'Phone',
+      label: 'Phone Field',
+    }
+    const result = processField(raw)
+    expect(result.fieldtype).toBe('Phone')
+  })
 })
