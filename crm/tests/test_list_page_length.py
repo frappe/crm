@@ -1,7 +1,7 @@
 import json
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.api.doc import get_data
 
@@ -19,7 +19,7 @@ def lead_list(**kwargs):
 	return get_data(**params)
 
 
-class TestListPageLength(IntegrationTestCase):
+class TestListPageLength(FrappeTestCase):
 	"""The response must echo the top-level `page_length` /
 	`page_length_count` that were requested, not a kanban column's (see #2835)."""
 

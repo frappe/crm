@@ -2,7 +2,7 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.api.user import add_existing_users, remove_crm_roles_from_user, update_user_role
 
@@ -29,7 +29,7 @@ def user_roles(email):
 	return {d.role for d in frappe.get_doc("User", email).roles}
 
 
-class TestUserRoleProfile(IntegrationTestCase):
+class TestUserRoleProfile(FrappeTestCase):
 	"""Role changes must not be silently reverted by an assigned Role Profile (#2321)."""
 
 	def setUp(self):
