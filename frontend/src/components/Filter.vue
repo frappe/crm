@@ -160,11 +160,13 @@
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import LinkMultiSelect from '@/components/Controls/LinkMultiSelect.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   Combobox,
   FormControl,
+  MultiSelect,
   createResource,
   Popover,
   DatePicker,
@@ -174,6 +176,7 @@ import {
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 import { getFormat } from '@/utils'
+import { isMultiValueFilter, toFilterValueArray } from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -284,11 +287,14 @@ function convertFilters(data, allFilters) {
     }
 
     if (field) {
+      const operator = oppositeOperatorMap[value[0]]
       f.push({
         field,
         fieldname: key,
-        operator: oppositeOperatorMap[value[0]],
-        value: value[1],
+        operator,
+        value: isMultiValueFilter(field, operator)
+          ? toFilterValueArray(value[1])
+          : value[1],
       })
     }
   }
@@ -430,6 +436,21 @@ function getValueControl(f) {
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
+  } else if (isMultiValueFilter(field, operator)) {
+    if (typeLink.includes(fieldtype)) {
+      return h(LinkMultiSelect, {
+        doctype: options,
+        modelValue: f.value,
+        'onUpdate:modelValue': (v) => updateValue(v, f),
+      })
+    }
+    const _options =
+      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
+    return h(MultiSelect, {
+      options: _options.map((o) => ({ label: o, value: o })),
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
+    })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
     return h(FormControl, { type: 'text' })
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
@@ -479,7 +500,10 @@ function getValueControl(f) {
   }
 }
 
-function getDefaultValue(field) {
+function getDefaultValue(field, operator) {
+  if (isMultiValueFilter(field, operator)) {
+    return []
+  }
   if (typeSelect.includes(field.fieldtype)) {
     return getSelectOptions(field.options)[0]
   }
@@ -511,6 +535,7 @@ function getSelectOptions(options) {
 
 function setfilter(data) {
   if (!data) return
+  const operator = getDefaultOperator(data.fieldtype)
   filters.value.add({
     field: {
       label: data.label,
@@ -519,8 +544,8 @@ function setfilter(data) {
       options: data.options,
     },
     fieldname: data.fieldname,
-    operator: getDefaultOperator(data.fieldtype),
-    value: getDefaultValue(data),
+    operator,
+    value: getDefaultValue(data, operator),
   })
   apply()
 }
@@ -529,10 +554,11 @@ function updateFilter(data, index) {
   if (!data?.fieldname) return
 
   filters.value.delete(Array.from(filters.value)[index])
+  const operator = getDefaultOperator(data.fieldtype)
   filters.value.add({
     fieldname: data.fieldname,
-    operator: getDefaultOperator(data.fieldtype),
-    value: getDefaultValue(data),
+    operator,
+    value: getDefaultValue(data, operator),
     field: {
       label: data.label,
       fieldname: data.fieldname,
@@ -569,7 +595,7 @@ function updateValue(value, filter) {
 }
 
 function updateOperator(filter) {
-  filter.value = getDefaultValue(filter.field)
+  filter.value = getDefaultValue(filter.field, filter.operator)
 
   if (filter.operator === 'is' || filter.operator === 'is not') {
     filter.value = 'set'
@@ -618,6 +644,9 @@ function placeholder(f) {
   if (f.operator === 'between') {
     return __('01/01/2022 to 01/31/2022')
   } else if (f.operator === 'in' || f.operator === 'not in') {
+    if (isMultiValueFilter(f.field, f.operator)) {
+      return __('Select values')
+    }
     if (typeNumber.includes(f.field.fieldtype)) {
       return __('100, 200, 300')
     }
