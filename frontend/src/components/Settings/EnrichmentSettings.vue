@@ -516,6 +516,15 @@ function socialRuleName(platform) {
   return `Social: ${platform}`
 }
 
+// The dropdown shows a label ("X (Twitter)") while the stored value ("twitter")
+// is what actually collides, so a refusal names the platform the way it was
+// picked. A platform the list doesn't carry has only its raw value to give.
+function platformLabel(platform) {
+  const option = SOCIAL_PLATFORMS.find((entry) => entry.value === platform)
+
+  return option?.label || platform
+}
+
 // One platform, one rule. The stored rules are checked on both the value the
 // enricher reads (target_value) and the name the row would take, because a rule
 // renamed or retargeted in Desk can carry one without the other.
@@ -585,7 +594,9 @@ function commitRow(row) {
   // on an untouched platform must not trip over the row's own rule.
   if (row.platform && (!row.name || row.platform !== row.savedPlatform)) {
     if (platformTakenBy(row, row.platform)) {
-      toast.error(__('A rule for {0} already exists', [row.platform]))
+      toast.error(
+        __('A rule for {0} already exists', [platformLabel(row.platform)]),
+      )
       // Back to what is stored -- blank on a row that was never inserted.
       row.platform = row.savedPlatform
       return
@@ -685,6 +696,12 @@ async function updateRow(row) {
     row.savedPlatform = row.platform
     row.savedPattern = row.pattern
     toast.success(__('Social rule updated successfully'))
+
+    // platformTakenBy reads socialRules.data, and target_value / rule_name have
+    // just moved underneath it. Without this, switching a rule from linkedin to
+    // github leaves the list still claiming linkedin is taken, and the next row
+    // to ask for linkedin is refused against a rule that no longer holds it.
+    reloadRules()
   } catch (err) {
     toast.error(err.messages?.[0] || __('Could not save social rule'))
     // Put the row back to what the server last confirmed, so the screen never
