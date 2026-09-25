@@ -174,6 +174,8 @@
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
+import LucideFileText from '~icons/lucide/file-text'
+import { getReportRoute, getReportKey, getReportIcon } from '@/utils/reports'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -212,7 +214,14 @@ import {
 } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
-import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+import {
+  call,
+  createResource,
+  Sidebar,
+  SidebarItem,
+  SidebarLabel,
+  Tooltip,
+} from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -241,6 +250,12 @@ const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
 const { send } = useBroadcast()
+
+const pinnedReports = createResource({
+  url: 'crm.api.report.get_pinned_reports',
+  auto: true,
+  cache: 'pinnedReports',
+})
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -331,6 +346,19 @@ const allViews = computed(() => {
       views: parseView(getPinnedViews()),
     })
   }
+
+  if (pinnedReports.data?.length) {
+    _views.push({
+      name: 'Reports',
+      opened: true,
+      views: pinnedReports.data.map((report) => ({
+        label: report.title || report.report,
+        icon: getReportIcon(report, LucideFileText),
+        key: getReportKey(report),
+        to: getReportRoute(report),
+      })),
+    })
+  }
   return _views
 })
 
@@ -372,6 +400,9 @@ function getIcon(routeName, icon) {
 
 // A saved view's key is its name; a plain nav item's key is its route name.
 function currentRouteKey() {
+  if (route.name === 'Report') {
+    return 'report-' + route.params.reportName
+  }
   return route.query.view || route.name
 }
 
