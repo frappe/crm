@@ -54,15 +54,14 @@ function parseKeywords(text) {
   return keywords
 }
 
-// Not run through __(): rule_name is stored data, and a translated UI must not
-// change what is written to the database.
+// Deliberately the same shape install.py seeds ("Industry: Manufacturing", see
+// _seed_industry_rules), so an industry that is already seeded collides on the
+// unique rule_name instead of quietly getting a second rule.
 //
-// NOTE: install.py's _seed_industry_rules names its rules "Industry: {industry}".
-// This is the name the spec asked for, so the two formats differ; industryTakenBy
-// below also matches on the `industry` field, which is what keeps a second rule
-// off an industry that is already seeded.
+// Not run through __(): rule_name is stored data that has to match a string
+// Python wrote, so a translated UI must not change it.
 function industryRuleName(industry) {
-  return `Industry - ${industry}`
+  return `Industry: ${industry}`
 }
 
 // weight is a Float with a default of 1 and multiplies a rule's hit count in
@@ -101,9 +100,11 @@ export function useIndustryRules() {
 
   function buildRow(rule, patternRows, held) {
     const { keywords, hidden } = splitPatterns(patternRows)
-    // Float fields come back as 0 when never set; the doctype's own default is 1,
-    // so an unweighted rule reads as the 1 it actually scores with.
-    const weight = Number(rule.weight) || 1
+    // Only a rule that has no weight at all falls back to the doctype's default.
+    // A stored 0 is shown as the 0 it is -- the classifier really does score that
+    // rule at nothing, and the box claiming 1 would hide it. Editing such a row
+    // then fails validation, which is the point at which the admin has to fix it.
+    const weight = rule.weight == null ? 1 : Number(rule.weight)
 
     return {
       // The stored values below always come from the reload; only what was being
@@ -141,8 +142,7 @@ export function useIndustryRules() {
 
   // One industry, one rule. The stored rules are checked on both the value the
   // classifier reads (industry) and the name the row would take, because a rule
-  // renamed or re-pointed in Desk can carry one without the other -- and because
-  // the seeded rules use a different rule_name format (see industryRuleName).
+  // renamed or re-pointed in Desk can carry one without the other.
   function industryTakenBy(row, industry) {
     const ruleName = industryRuleName(industry)
 
@@ -186,6 +186,10 @@ export function useIndustryRules() {
       row.weightError = __('Weight must be greater than 0')
       return
     }
+    // Same as the keywords box above: what is on screen becomes exactly what a
+    // save would store, so "1.0" settles to "1" instead of reading as an edit
+    // forever after.
+    row.weight = String(weight)
 
     // A rule with no industry classifies nothing, and the Link's Clear button can
     // empty a stored one. Put it back rather than save a rule that does nothing.
@@ -319,12 +323,14 @@ export function useIndustryRules() {
 
     if (!row.name) return Boolean(row.industry && keywords)
 
-    // A weight the box can't parse is pending on purpose: Save flushes the row,
-    // and commitRow is what puts the error under the box.
+    // The weight is compared as text, because a stored value the box would refuse
+    // (a 0 written in Desk) still has to read as untouched until it is edited.
+    // Once it is edited the row is pending, Save flushes it, and commitRow is
+    // what puts the error under the box.
     return (
       row.industry !== row.savedIndustry ||
       keywords !== row.savedKeywords ||
-      parseWeight(row.weight) !== row.savedWeight
+      String(row.weight).trim() !== String(row.savedWeight)
     )
   }
 

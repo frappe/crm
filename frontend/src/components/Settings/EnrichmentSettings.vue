@@ -227,10 +227,8 @@
             </div>
           </EnrichmentRuleSection>
 
-          <div class="h-px border-t mx-2 mt-4 border-outline-elevation-2" />
-
           <EnrichmentRuleSection
-            class="mt-4"
+            class="mt-8"
             :title="__('Industry rules')"
             :subtitle="
               __('Allow users to enrich leads when a website is available.')
@@ -271,7 +269,7 @@
                 <FormControl
                   :model-value="row.keywords"
                   type="text"
-                  :placeholder="__('factory, production line, plant, OEM')"
+                  :placeholder="__('Keywords')"
                   :class="row.error ? invalidInputClass : ''"
                   @update:model-value="(value) => onKeywordsInput(row, value)"
                   @blur="commitIndustryRow(row)"
