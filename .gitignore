@@ -16,6 +16,7 @@ e2e/.auth
 test-results
 playwright-report
 package-lock.json
+.env
 
 .vscode
 .github/instructions
