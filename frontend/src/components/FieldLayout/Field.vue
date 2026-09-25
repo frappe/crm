@@ -67,29 +67,15 @@
         <IndicatorIcon :class="field.prefix" />
       </template>
     </FormControl>
-    <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
-      <FormControl
-        v-model="data[field.fieldname]"
-        class="form-control"
-        type="checkbox"
-        :disabled="Boolean(field.disabled)"
-        :description="field.description"
-        @change="(e) => fieldChange(e.target.checked, field)"
-      />
-      <label
-        class="text-sm text-ink-gray-5"
-        @click="
-          () => {
-            if (!Boolean(field.disabled)) {
-              data[field.fieldname] = !data[field.fieldname]
-            }
-          }
-        "
-      >
-        {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
-      </label>
-    </div>
+    <Checkbox
+      v-else-if="field.fieldtype == 'Check'"
+      v-model="data[field.fieldname]"
+      :label="__(field.label)"
+      :disabled="Boolean(field.read_only)"
+      :description="field.description"
+      :required="Boolean(field.mandatory)"
+      @update:modelValue="(v) => fieldChange(v, field)"
+    />
     <div
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
       class="flex gap-1"
@@ -360,6 +346,7 @@ import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
 import {
+  Checkbox,
   Combobox,
   Tooltip,
   DatePicker,
