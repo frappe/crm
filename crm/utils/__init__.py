@@ -101,6 +101,19 @@ def seconds_to_duration(seconds: float | int) -> str:
 		return "0s"
 
 
+def get_base_currency() -> str:
+	"""Return the CRM base currency.
+
+	Falls back to the System Settings currency (chosen in the setup wizard)
+	when FCRM Settings has none, and finally to USD.
+	"""
+	return (
+		frappe.db.get_single_value("FCRM Settings", "currency")
+		or frappe.db.get_single_value("System Settings", "currency")
+		or "USD"
+	)
+
+
 def is_admin(user: str | None = None) -> bool:
 	"""
 	Check whether `user` is an admin

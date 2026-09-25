@@ -34,7 +34,25 @@ def after_install(force=False):
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
 	seed_default_rules_and_mappings()
+	set_default_currency()
 	frappe.db.commit()
+
+
+def set_default_currency(_args: dict | None = None):
+	"""Seed the CRM currency from System Settings if it is not set yet.
+
+	Runs after install and again when the setup wizard completes, since on a
+	fresh site the wizard (where the currency is chosen) runs after install.
+	Uses db.set_single_value so the seeded value does not lock the field.
+	"""
+	if frappe.db.get_single_value("FCRM Settings", "currency"):
+		return
+
+	system_currency = frappe.db.get_single_value("System Settings", "currency")
+	if not system_currency:
+		return
+
+	frappe.db.set_single_value("FCRM Settings", "currency", system_currency)
 
 
 def add_default_lead_statuses():
