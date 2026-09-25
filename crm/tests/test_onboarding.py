@@ -3,14 +3,14 @@
 
 import frappe
 from frappe.exceptions import FrappeTypeError
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.api.onboarding import get_first_deal, get_first_lead
 
 SALES_USER = "onboarding-rep@example.com"
 
 
-class TestOnboardingAPI(IntegrationTestCase):
+class TestOnboardingAPI(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
