@@ -37,7 +37,9 @@ describe('scoreCommand', () => {
   })
 
   it('honors fixed ranks and contextual weights', () => {
-    expect(scoreCommand({ title: 'Anything', rank: 2000 }, 'missing')).toBe(2000)
+    expect(scoreCommand({ title: 'Anything', rank: 2000 }, 'missing')).toBe(
+      2000,
+    )
     const normal = scoreCommand({ title: 'Change status' }, 'status')
     const contextual = scoreCommand(
       { title: 'Change status', weight: 1.2 },
@@ -86,12 +88,12 @@ describe('command capability helpers', () => {
     expect(flattenCommandActions([{ items: [action] }])).toEqual([action])
   })
 
-  it('normalizes checkbox and string filter options', () => {
-    expect(commandFilterOptions({ fieldtype: 'Check' })).toEqual([
+  it('normalizes checkbox and string filter options', async () => {
+    expect(await commandFilterOptions({ fieldtype: 'Check' })).toEqual([
       { label: 'Yes', value: '1' },
       { label: 'No', value: '0' },
     ])
-    expect(commandFilterOptions({ options: ['Open'] })).toEqual([
+    expect(await commandFilterOptions({ options: ['Open'] })).toEqual([
       { label: 'Open', value: 'Open' },
     ])
   })
