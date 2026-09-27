@@ -25,6 +25,7 @@ import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 
 const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
+const RECENT_LIMIT = 5
 
 // Contextual groups are named after the page ('Lead', 'List'), not listed below.
 const CONTEXT_RANK = 350
@@ -182,16 +183,17 @@ function scheduleSearch(query, context) {
 
 async function fetchRecords(query, context) {
   const currentRequest = ++context.state.requestId
+  const recent = readRecent(context.user)
   try {
     const data = await call('crm.api.command_palette.search', {
       query,
-      recent_names: JSON.stringify(readRecent(context.user)),
+      recent_names: JSON.stringify(recentNamesByDoctype(recent)),
     })
     if (currentRequest !== context.state.requestId) return
     commandPaletteSearching.value = false
     context.state.error.value = false
     context.state.records.value = data.matches || []
-    context.state.recent.value = data.recent || []
+    context.state.recent.value = sortByRecency(data.recent || [], recent)
     context.state.upcoming.value = data.upcoming || []
   } catch (error) {
     if (currentRequest !== context.state.requestId) return
@@ -391,20 +393,41 @@ function rememberRoute(route, user) {
   const doctype = RECENT_TYPES[route.name]
   if (!doctype) return
   const param = `${route.name.toLowerCase()}Id`
-  const recent = readRecent(user)
-  recent[doctype] = [route.params[param], ...(recent[doctype] || [])]
-    .filter(Boolean)
-    .filter((name, index, names) => names.indexOf(name) === index)
-    .slice(0, 5)
+  const name = route.params[param]
+  if (!name) return
+  const recent = [
+    { doctype, name },
+    ...readRecent(user).filter(
+      (item) => item.doctype !== doctype || item.name !== name,
+    ),
+  ].slice(0, RECENT_LIMIT)
   localStorage.setItem(recentKey(user), JSON.stringify(recent))
 }
 
+// Newest first across doctypes, e.g. [{ doctype: 'CRM Deal', name: 'D-1' }].
 function readRecent(user) {
   try {
-    return JSON.parse(localStorage.getItem(recentKey(user)) || '{}')
+    const recent = JSON.parse(localStorage.getItem(recentKey(user)) || '[]')
+    return Array.isArray(recent) ? recent : []
   } catch {
-    return {}
+    return []
   }
+}
+
+function recentNamesByDoctype(recent) {
+  const names = {}
+  for (const { doctype, name } of recent) {
+    names[doctype] = [...(names[doctype] || []), name]
+  }
+  return names
+}
+
+function sortByRecency(records, recent) {
+  const position = (record) =>
+    recent.findIndex(
+      (item) => item.doctype === record.doctype && item.name === record.name,
+    )
+  return [...records].sort((a, b) => position(a) - position(b))
 }
 
 function recentKey(user) {
