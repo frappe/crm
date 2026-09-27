@@ -264,7 +264,10 @@ def _is_automated_email_sender(sender: str | None) -> bool:
 	if not sender or "@" not in sender:
 		return False
 
-	local = sender.split("@", 1)[0].strip().lower()
+	# Communication.sender may be "Notifications <no-reply@example.com>".
+	match = re.search(r"<?([^<>\s]+@[^<>\s]+)>?", sender)
+	address = match.group(1) if match else sender
+	local = address.split("@", 1)[0].strip().lower()
 	local = re.sub(r"\+.*$", "", local)
 	if local in _AUTOMATED_SENDER_LOCAL_PARTS:
 		return True

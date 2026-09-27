@@ -648,6 +648,8 @@ class TestCreateLeadFromIncomingEmail(FrappeTestCase):
 			"mailer-daemon@example.com",
 			"postmaster@example.com",
 			"donotreply@example.com",
+			"Notifications <no-reply@example.com>",
+			'"Mailer" <mailer-daemon@example.com>',
 		]
 		for sender in senders:
 			with self.subTest(sender=sender):
