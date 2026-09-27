@@ -83,8 +83,9 @@ const serverDefaults = {
 const mounted = []
 
 async function mountUploader(props = {}) {
-  const { default: FilesUploader } =
-    await import('@/components/FilesUploader/FilesUploader.vue')
+  const { default: FilesUploader } = await import(
+    '@/components/FilesUploader/FilesUploader.vue'
+  )
 
   const root = document.createElement('div')
   document.body.appendChild(root)
