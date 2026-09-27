@@ -1,4 +1,5 @@
 import {
+  checkedFirst,
   commandFilterOptions,
   flattenCommandActions,
   fuzzyScore,
@@ -100,6 +101,23 @@ describe('groupCommands', () => {
     expect(groups[0].items.map((command) => command.id)).toEqual([
       'leads',
       'deals',
+    ])
+  })
+})
+
+describe('checkedFirst', () => {
+  it('lifts checked commands and keeps the rest in order', () => {
+    const commands = [
+      { id: 'a' },
+      { id: 'b', checked: true },
+      { id: 'c' },
+      { id: 'd', checked: true },
+    ]
+    expect(checkedFirst(commands).map((command) => command.id)).toEqual([
+      'b',
+      'd',
+      'a',
+      'c',
     ])
   })
 })
