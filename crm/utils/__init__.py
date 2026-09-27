@@ -1,4 +1,5 @@
 import functools
+import re
 
 import frappe
 import phonenumbers
@@ -213,6 +214,9 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 	if frappe.db.exists("CRM Lead", {"email": doc.sender}):
 		return
 
+	if _is_automated_email_sender(doc.sender):
+		return
+
 	lead = frappe.new_doc("CRM Lead")
 	lead.email = doc.sender
 
@@ -232,6 +236,39 @@ def create_lead_from_incoming_email(doc: Communication, method: str | None = Non
 	doc.reference_doctype = "CRM Lead"
 	doc.reference_name = lead.name
 	doc.save(ignore_permissions=True)
+
+
+_AUTOMATED_SENDER_LOCAL_PARTS = frozenset(
+	{
+		"no-reply",
+		"noreply",
+		"no_reply",
+		"donotreply",
+		"do-not-reply",
+		"do_not_reply",
+		"mailer-daemon",
+		"mailer_daemon",
+		"postmaster",
+	}
+)
+
+
+def _is_automated_email_sender(sender: str | None) -> bool:
+	"""Newsletters and machine mail should not become CRM Leads.
+
+	Communication does not store the raw headers, so Auto-Submitted and
+	List-Unsubscribe cannot be checked here. The local-part is the signal
+	that is always on the document.
+	"""
+	if not sender or "@" not in sender:
+		return False
+
+	local = sender.split("@", 1)[0].strip().lower()
+	local = re.sub(r"\+.*$", "", local)
+	if local in _AUTOMATED_SENDER_LOCAL_PARTS:
+		return True
+	# Prefixed machine addresses such as sc-noreply@google.com.
+	return local.endswith(("-noreply", "_noreply", "-no-reply", "_no-reply"))
 
 
 def on_comment_insert(doc: Comment, method: str | None = None):

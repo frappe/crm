@@ -638,6 +638,23 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 		source = frappe.db.get_value("CRM Lead", {"email": "leadsource@example.com"}, "source")
 		self.assertEqual(source, "Email")
 
+	def test_lead_not_created_for_automated_sender(self):
+		"""no-reply, mailer-daemon and postmaster must not become leads."""
+		email_account = self._make_email_account()
+		senders = [
+			"no-reply@dokeos.com",
+			"sc-noreply@google.com",
+			"noreply+notify@example.com",
+			"mailer-daemon@example.com",
+			"postmaster@example.com",
+			"donotreply@example.com",
+		]
+		for sender in senders:
+			with self.subTest(sender=sender):
+				doc = self._incoming_comm(sender, email_account.name)
+				create_lead_from_incoming_email(doc)
+				self.assertFalse(frappe.db.exists("CRM Lead", {"email": sender}))
+
 	def test_lead_created_for_sent_communication_with_communication_type(self):
 		"""A sent communication with communication_type='Communication' should still create a lead.
 
