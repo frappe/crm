@@ -28,7 +28,6 @@ const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
 
 // Contextual groups are named after the page ('Lead', 'List'), not listed below.
 const CONTEXT_RANK = 350
-const RECORD_RANK = 950
 const GROUP_ORDER = {
   Upcoming: 400,
   Recent: 300,
@@ -72,6 +71,7 @@ const SETTINGS_SECTIONS = [
       ['Users', 'users'],
       ['Invite User', 'user-plus'],
       ['Sales Hierarchy', 'network'],
+      ['Workflow Automations', 'workflow'],
       ['Assignment Rules', 'git-branch'],
     ],
   },
@@ -132,11 +132,9 @@ function buildCommands(context) {
     ...settingsCommands(tracked, isManager, whatsappInstalled.value),
     ...(state.error.value ? [searchErrorCommand()] : []),
     ...state.recent.value.map((item) => recordCommand(item, 'Recent', tracked)),
-    // The server matched these on fields the title may not contain.
-    ...state.records.value.map((item, index) => ({
-      ...recordCommand(item, 'Records', tracked),
-      rank: RECORD_RANK - index,
-    })),
+    ...state.records.value.map((item) =>
+      recordCommand(item, 'Records', tracked),
+    ),
   ])
 }
 
@@ -323,7 +321,8 @@ function settingsCommands(tracked, isManager, whatsappInstalled) {
         title: 'Settings',
         group: 'Account',
         icon: 'settings',
-        keywords: 'configure preferences profile users brand telephony erpnext',
+        keywords:
+          'configure preferences profile users brand telephony erpnext automations',
         children: () =>
           settingsChildren(tracked, isManager(), whatsappInstalled),
       },
@@ -368,6 +367,8 @@ function recordCommand(record, group, tracked) {
     {
       id: `record-${record.doctype}-${record.name}`,
       title: record.title,
+      // The server matched these on fields the title may not contain.
+      keywords: record.keywords,
       translate: false,
       subtitle: record.doctype.replace('CRM ', ''),
       group,
