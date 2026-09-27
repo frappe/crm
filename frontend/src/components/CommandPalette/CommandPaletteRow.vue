@@ -6,8 +6,8 @@
       command.disabled
         ? 'text-ink-gray-4'
         : active
-          ? 'text-ink-gray-8'
-          : 'text-ink-gray-7',
+          ? 'text-ink-gray-9'
+          : 'text-ink-gray-6',
     ]"
   >
     <Icon
