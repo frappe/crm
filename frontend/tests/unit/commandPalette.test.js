@@ -73,12 +73,24 @@ describe('groupCommands', () => {
     expect(groupCommands([hidden], 'won')[0].items[0]).toBe(hidden)
   })
 
-  it('keeps ranked records whose title does not contain the query', () => {
-    const record = {
-      id: 'record-lead',
-      title: 'John Smith',
+  it('ranks title matches above records matched on other fields', () => {
+    const byOrg = {
+      id: 'lead',
+      title: 'jane',
+      keywords: 'CRM-LEAD-0001 frappe jane@frappe.io',
       group: 'Records',
-      rank: 950,
+    }
+    const byTitle = { id: 'deal', title: 'frappe', group: 'Records' }
+    const [records] = groupCommands([byOrg, byTitle], 'frappe')
+    expect(records.items.map((command) => command.id)).toEqual(['deal', 'lead'])
+  })
+
+  it('keeps records whose title does not contain the query', () => {
+    const record = {
+      id: 'lead',
+      title: 'John Smith',
+      keywords: 'john@acme.com',
+      group: 'Records',
     }
     expect(groupCommands([record], 'john@acme.com')[0].items[0]).toBe(record)
   })
