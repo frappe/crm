@@ -27,6 +27,7 @@ const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
 
 // Contextual groups are named after the page ('Lead', 'List'), not listed below.
 const CONTEXT_RANK = 350
+const RECORD_RANK = 950
 const GROUP_ORDER = {
   Upcoming: 400,
   Recent: 300,
@@ -130,9 +131,11 @@ function buildCommands(context) {
     ...settingsCommands(tracked, isManager, whatsappInstalled.value),
     ...(state.error.value ? [searchErrorCommand()] : []),
     ...state.recent.value.map((item) => recordCommand(item, 'Recent', tracked)),
-    ...state.records.value.map((item) =>
-      recordCommand(item, 'Records', tracked),
-    ),
+    // The server matched these on fields the title may not contain.
+    ...state.records.value.map((item, index) => ({
+      ...recordCommand(item, 'Records', tracked),
+      rank: RECORD_RANK - index,
+    })),
   ])
 }
 
