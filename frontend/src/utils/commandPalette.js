@@ -64,6 +64,13 @@ export function groupCommands(commands, query = '') {
   return [...groups].map(([title, items]) => ({ title, items }))
 }
 
+export function checkedFirst(commands = []) {
+  return [
+    ...commands.filter((command) => command.checked),
+    ...commands.filter((command) => !command.checked),
+  ]
+}
+
 export function flattenCommandActions(actions = []) {
   return actions.flatMap((action) => action.items || action)
 }
