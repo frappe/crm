@@ -3,7 +3,11 @@
     class="flex h-9 w-full min-w-0 items-center rounded px-2 text-sm"
     :class="[
       active ? 'bg-surface-gray-2' : '',
-      command.disabled ? 'text-ink-gray-4' : 'text-ink-gray-8',
+      command.disabled
+        ? 'text-ink-gray-4'
+        : active
+          ? 'text-ink-gray-8'
+          : 'text-ink-gray-7',
     ]"
   >
     <Icon
