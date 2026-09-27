@@ -218,6 +218,28 @@ watch(commandPaletteOpen, (open) => {
 <style>
 .dialog-content:has(.crm-command-palette) {
   border-radius: 0.55rem;
+  transform-origin: center;
+}
+
+.dialog-content[data-state='open']:has(.crm-command-palette) {
+  animation: palette-open 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes palette-open {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog-content[data-state='open']:has(.crm-command-palette) {
+    animation: none;
+  }
 }
 
 @property --palette-fade-top {
