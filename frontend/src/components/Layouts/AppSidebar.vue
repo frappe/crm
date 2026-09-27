@@ -259,13 +259,12 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links
-        .map((link) => ({
-          label: link.label,
-          icon: link.icon,
-          key: link.route,
-          to: { name: link.route },
-        })),
+      views: links.map((link) => ({
+        label: link.label,
+        icon: link.icon,
+        key: link.route,
+        to: { name: link.route },
+      })),
     },
   ]
   if (getPublicViews().length) {
