@@ -222,7 +222,7 @@ watch(commandPaletteOpen, (open) => {
 }
 
 .dialog-content[data-state='open']:has(.crm-command-palette) {
-  animation: palette-open 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: palette-open 180ms cubic-bezier(0.2, 1, 0.4, 1);
 }
 
 @keyframes palette-open {
