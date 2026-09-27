@@ -9,6 +9,7 @@ const commandProvider = shallowRef(() => [])
 const contextualProvider = shallowRef(() => [])
 const stack = shallowRef([])
 export const commandPaletteLoading = ref(false)
+export const commandPaletteSearching = ref(false)
 let previousFocus = null
 
 export const commandPaletteDepth = computed(() => stack.value.length)
