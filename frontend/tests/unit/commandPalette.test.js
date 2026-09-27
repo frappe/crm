@@ -73,6 +73,16 @@ describe('groupCommands', () => {
     expect(groupCommands([hidden], 'won')[0].items[0]).toBe(hidden)
   })
 
+  it('keeps ranked records whose title does not contain the query', () => {
+    const record = {
+      id: 'record-lead',
+      title: 'John Smith',
+      group: 'Records',
+      rank: 950,
+    }
+    expect(groupCommands([record], 'john@acme.com')[0].items[0]).toBe(record)
+  })
+
   it('keeps source order for equal scores', () => {
     const groups = groupCommands(commands)
     expect(groups[0].items.map((command) => command.id)).toEqual([
