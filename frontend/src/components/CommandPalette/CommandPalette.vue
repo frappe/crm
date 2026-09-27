@@ -194,7 +194,8 @@ function onEscape(event) {
 }
 
 function togglePalette() {
-  commandPaletteOpen.value ? closeCommandPalette() : openCommandPalette()
+  if (commandPaletteOpen.value) closeCommandPalette()
+  else openCommandPalette()
 }
 
 useKeyboardShortcuts({
