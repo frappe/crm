@@ -1,18 +1,23 @@
 {
-    "python.defaultInterpreterPath": "frappe-bench/env/bin/python",
-    "debug.node.autoAttach": "disabled",
-    "sqltools.connections": [
-        {
-            "mysqlOptions": {
-                "authProtocol": "default"
-            },
-            "previewLimit": 50,
-            "server": "mariadb",
-            "port": 3306,
-            "driver": "MariaDB",
-            "name": "MariaDB",
-            "username": "root",
-            "password": "123"
-        }
-    ]
+  "python.defaultInterpreterPath": "frappe-bench/env/bin/python",
+  "debug.node.autoAttach": "disabled",
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "mariadb",
+      "port": 3306,
+      "driver": "MariaDB",
+      "name": "MariaDB",
+      "username": "root",
+      "password": "123"
+    }
+  ],
+  "yaml.schemas": {
+    "https://static.momentic.ai/momentic-test-v2.schema.json": "*.test.yaml",
+    "https://static.momentic.ai/momentic-module-v2.schema.json": "*.module.yaml",
+    "https://static.momentic.ai/momentic-config.schema.json": "momentic.config.yaml"
+  }
 }

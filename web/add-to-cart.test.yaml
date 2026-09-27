@@ -1,0 +1,19 @@
+fileType: momentic/test/v2
+id: maine-lovely-our-elevates-weirdly
+description: Log in, add an item to cart, and verify it appears
+retries: 1
+defaultEnv: web
+disabled: false
+steps:
+  - type:
+      text: "{{env.USERNAME}}"
+      into: username input
+      clear: inputs
+  - type:
+      text: "{{env.PASSWORD}}"
+      into: password input
+      clear: inputs
+  - click: login button
+  - click: add to cart for the Momentic Backpack item
+  - click: Cart icon on the top right of the page
+  - assert: Verify the Momentic Backpack is listed as an item in the cart

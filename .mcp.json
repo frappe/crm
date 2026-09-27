@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "momentic": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "momentic",
+        "mcp",
+        "--config",
+        "momentic.config.yaml"
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+# Overlay that makes the backend run your working tree instead of the clone that
+# `bench get-app` produced. Apply it ONLY after the bench and site exist:
+#
+#   docker compose -f docker/local/docker-compose.yml \
+#                  -f docker/local/docker-compose.live.yml up -d
+#
+# DANGER: with this overlay active, never run `bench init` again, and if any bench
+# command asks "Do you want to rollback these changes? [y/N]" answer N. Rollback is
+# a recursive delete of frappe-bench/, which now contains your repo.
+
+services:
+  frappe:
+    volumes:
+      - bench-data:/home/frappe
+      - ../..:/workspace/crm:ro
+      # Shadows the apps/crm clone with the live repo. The path already exists
+      # by now, so Docker does not create it root-owned.
+      - ../..:/home/frappe/frappe-bench/apps/crm

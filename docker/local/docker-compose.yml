@@ -1,0 +1,68 @@
+# Local development stack for Frappe CRM -- SETUP phase.
+#
+# Separate from ../docker-compose.yml, which runs `bench get-app crm --branch main`
+# and therefore builds UPSTREAM code from GitHub, never this working tree. It also
+# pins --version version-15 while pyproject.toml wants frappe >=16.0.0-dev.
+#
+# SAFETY: during setup the repo is mounted at /workspace/crm, OUTSIDE the bench,
+# and read-only. `bench init` offers to roll back on failure, and that rollback is
+# a recursive delete of the bench directory -- if the repo were mounted inside it,
+# the rollback would delete your working tree. It is mounted inside only by
+# docker-compose.live.yml, which is applied after the bench exists and after
+# `bench init` will never be run again.
+#
+# Only Python/bench runs here. All Node work (vite dev, yarn build, vitest) stays
+# on the host, so the darwin-arm64 node_modules in the repo are never touched by
+# a linux container.
+#
+# See ../../LOCAL_SETUP.md for the walkthrough.
+
+name: crm-local
+
+services:
+  mariadb:
+    image: mariadb:10.6 # matches .github/workflows/ui-tests.yml
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MYSQL_ROOT_PASSWORD: "123"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    healthcheck:
+      # Gate bench on a DB that actually answers, not just a running container.
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uroot", "-p123"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:alpine
+
+  frappe:
+    image: frappe/bench:latest
+    # `sleep infinity`, not `bench start`: setup is driven by hand with
+    # `docker compose exec`, and the server is started explicitly later.
+    command: sleep infinity
+    environment:
+      SHELL: /bin/bash
+    working_dir: /home/frappe
+    volumes:
+      # The bench lives in a volume so it survives `docker compose down`.
+      - bench-data:/home/frappe
+      # Read-only source for `bench get-app`. Outside the bench on purpose.
+      - ../..:/workspace/crm:ro
+    ports:
+      - "8000:8000" # Frappe web server
+      - "9000:9000" # socket.io realtime
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  mariadb-data:
+  bench-data:

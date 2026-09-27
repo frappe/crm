@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec-driven development"
+  short_description: "Improve code correctness using Momentic specs"
+  default_prompt: "Use /momentic-spec to define the affected Momentic tests first, then implement this feature."

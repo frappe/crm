@@ -1,0 +1,70 @@
+# See https://momentic.ai/docs/cli/configuration
+# Project name. Appears in reports and in the Momentic app.
+name: crm-momentic-test
+
+# Globs that select test and module files, relative to this file. Add exclude: ["out/**"] to skip files.
+include:
+  - "**/*.test.yaml"
+  - "**/*.module.yaml"
+
+# How many times Momentic reruns a failed test. Example: retries: 2
+retries: 0
+
+# How many tests run at once. "auto" picks a count from your CPU cores, and a higher one on hosted browsers. Example: parallel: 4
+parallel: auto
+
+# Record video of each test: true, false, or on-fail (keep video for failed tests only).
+recordVideo: on-fail
+
+# Main branch of the repo. New branches seed their step cache from the nearest commit on it. See https://momentic.ai/docs/reliability/step-cache
+gitMainBranch: develop
+
+# Test file format version.
+fileFormat: v2
+
+# Advanced options. See https://momentic.ai/docs/configuration/advanced
+advanced:
+  # Save short AI action goals as bare strings. See https://momentic.ai/docs/configuration/advanced#advanced-aiactionshorthand
+  aiActionShorthand: true
+  # Store a separate step cache per environment. See https://momentic.ai/docs/reliability/step-cache
+  # isolateCachesByEnvironment: true
+
+# Browser settings for every test. See https://momentic.ai/docs/configuration/browser
+browser:
+  # Let the AI act on elements inside iframes. See https://momentic.ai/docs/configuration/browser#browser-autoexpandiframes
+  autoExpandIframes: true
+  # Skip fuzzy cache matching so a cached step does not resolve to the wrong element. See https://momentic.ai/docs/configuration/browser#browser-disablesecondarycacheresolution
+  disableSecondaryCacheResolution: true
+  # Run tests on Momentic hosted browsers instead of local Chromium.
+  # Use this in CI to run tests in parallel without adding machines. See https://momentic.ai/docs/running-tests/hosted-test-environments
+  # remoteBrowser: true
+  # Skip some browser readiness and stability waits. Faster, less accurate on dynamic sites. See https://momentic.ai/docs/running-tests/performance
+  # turbo: true
+  # defaultBrowserType: Chromium
+  # timezone: America/Los_Angeles
+  # pageLoadTimeoutMs: 8000
+  # smartWaitingTimeoutMs: 5000
+
+# AI agent settings. See https://momentic.ai/docs/configuration/ai
+ai:
+  # Reuse decisions from past runs so the AI picks the same elements and assertions. See https://momentic.ai/docs/ai/memory
+  useMemory: true
+  # Let the AI find a path forward when a step fails. See https://momentic.ai/docs/reliability/auto-maintenance#failure-recovery
+  failureRecovery: true
+  # Version of each AI agent. See https://momentic.ai/docs/ai/agents
+  agentConfig:
+    locator: v5
+    assertion: v5
+    visual-assertion: v5
+    text-extraction: v3.0
+    failure-recovery: v2.1
+    android-locator: v2
+    ios-locator: v2
+
+# One entry per environment. Read envVariables in tests as {{env.NAME}}. See https://momentic.ai/docs/configuration/environment-variables
+environments:
+  - name: web
+    baseUrl: https://static.momentic.ai/wizard/index.html
+    envVariables:
+      USERNAME: standard_user
+      PASSWORD: secret_sauce
