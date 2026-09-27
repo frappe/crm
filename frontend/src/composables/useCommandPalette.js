@@ -1,5 +1,5 @@
 import { computed, onBeforeUnmount, ref, shallowRef } from 'vue'
-import { groupCommands } from '@/utils/commandPalette'
+import { checkedFirst, groupCommands } from '@/utils/commandPalette'
 import { toast } from 'frappe-ui'
 
 export const commandPaletteOpen = ref(false)
@@ -95,7 +95,7 @@ export async function runCommandPaletteItem(command) {
 async function openChildren(command) {
   commandPaletteLoading.value = true
   try {
-    const commands = await command.children()
+    const commands = checkedFirst(await command.children())
     stack.value = [...stack.value, { title: command.title, commands }]
     commandPaletteQuery.value = ''
   } catch (error) {
