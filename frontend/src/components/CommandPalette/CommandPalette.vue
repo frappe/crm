@@ -35,7 +35,7 @@
       </div>
 
       <ComboboxOptions
-        class="max-h-[380px] min-h-[7rem] overflow-y-auto py-2"
+        class="crm-command-palette-list max-h-[380px] min-h-[7rem] overflow-y-auto py-2"
         static
         :hold="true"
       >
@@ -46,7 +46,7 @@
           <component
             :is="emptyIcon"
             class="mb-2.5 size-8 opacity-40"
-            :class="{ 'animate-spin': commandPaletteLoading }"
+            :class="{ 'animate-spin': isBusy }"
           />
           <span class="text-base">{{ emptyMessage }}</span>
         </div>
@@ -120,6 +120,7 @@ import {
   commandPaletteLoading,
   commandPaletteOpen,
   commandPaletteQuery,
+  commandPaletteSearching,
   openCommandPalette,
   restoreCommandPaletteFocus,
   runCommandPaletteItem,
@@ -142,8 +143,12 @@ watch([commandPaletteOpen, commandPaletteDepth], () =>
   }),
 )
 
+const isBusy = computed(
+  () => commandPaletteLoading.value || commandPaletteSearching.value,
+)
+
 const emptyIcon = computed(() => {
-  if (commandPaletteLoading.value) return LucideLoaderCircle
+  if (isBusy.value) return LucideLoaderCircle
   return commandPaletteQuery.value ? LucideSearchX : LucideSearch
 })
 
@@ -160,6 +165,7 @@ const hints = computed(() => [
 
 const emptyMessage = computed(() => {
   if (commandPaletteLoading.value) return __('Loading...')
+  if (commandPaletteSearching.value) return __('Searching...')
   return commandPaletteQuery.value
     ? __('No results for "{0}"', [commandPaletteQuery.value])
     : __('Type to search')
@@ -211,5 +217,50 @@ watch(commandPaletteOpen, (open) => {
 <style>
 .dialog-content:has(.crm-command-palette) {
   border-radius: 0.55rem;
+}
+
+@property --palette-fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --palette-fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Scroll-driven edge fade; no fade at either end or when nothing scrolls. */
+.crm-command-palette-list {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 var(--palette-fade-top),
+    #000 calc(100% - var(--palette-fade-bottom)),
+    transparent
+  );
+  animation:
+    palette-fade-top linear both,
+    palette-fade-bottom linear both;
+  animation-timeline: scroll(self), scroll(self);
+  animation-range:
+    0 2rem,
+    calc(100% - 2rem) 100%;
+}
+
+@keyframes palette-fade-top {
+  to {
+    --palette-fade-top: 2.5rem;
+  }
+}
+
+@keyframes palette-fade-bottom {
+  from {
+    --palette-fade-bottom: 2.5rem;
+  }
+  to {
+    --palette-fade-bottom: 0px;
+  }
 }
 </style>
