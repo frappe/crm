@@ -132,7 +132,15 @@ def _search_doctype(doctype: str, config: tuple, query: str):
 		order_by="modified desc",
 		limit_page_length=5,
 	)
-	return [_record(row, doctype, route, title_field) for row in rows]
+	return [
+		{**_record(row, doctype, route, title_field), "keywords": _keywords(row, search_fields)}
+		for row in rows
+	]
+
+
+def _keywords(row, search_fields: list[str]):
+	"""Non-title matched values, so the client can rank title hits above them."""
+	return " ".join(str(row.get(field)) for field in ["name", *search_fields] if row.get(field))
 
 
 def _get_recent(recent: dict):
