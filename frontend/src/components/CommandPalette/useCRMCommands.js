@@ -10,6 +10,7 @@ import { isWhatsappInstalled } from '@/composables/whatsapp'
 import {
   commandPaletteOpen,
   commandPaletteQuery,
+  commandPaletteSearching,
   getCommandPaletteContext,
   setCommandPaletteProvider,
 } from '@/composables/useCommandPalette'
@@ -175,6 +176,7 @@ function onVisibility(open, context) {
 
 function scheduleSearch(query, context) {
   clearTimeout(context.state.timer)
+  commandPaletteSearching.value = query.trim().length >= 2
   if (!query.trim()) return fetchRecords('', context)
   if (query.trim().length < 2) return (context.state.records.value = [])
   context.state.timer = setTimeout(() => fetchRecords(query, context), 180)
@@ -188,12 +190,14 @@ async function fetchRecords(query, context) {
       recent_names: JSON.stringify(readRecent(context.user)),
     })
     if (currentRequest !== context.state.requestId) return
+    commandPaletteSearching.value = false
     context.state.error.value = false
     context.state.records.value = data.matches || []
     context.state.recent.value = data.recent || []
     context.state.upcoming.value = data.upcoming || []
   } catch (error) {
     if (currentRequest !== context.state.requestId) return
+    commandPaletteSearching.value = false
     context.state.error.value = true
     context.state.records.value = []
     console.error('Command palette record search failed', error)
