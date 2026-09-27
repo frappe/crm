@@ -8,6 +8,20 @@ from crm.api.command_palette import _get_recent, _search_all, search
 
 class TestCommandPalette(TestCase):
 	@patch("crm.api.command_palette.frappe.get_list")
+	@patch("crm.api.command_palette.frappe.has_permission", return_value=True)
+	def test_search_returns_matched_fields_as_keywords(self, _has_permission, get_list):
+		get_list.side_effect = lambda doctype, **_kwargs: (
+			[frappe._dict(name="LEAD-1", lead_name="Jane", organization="Frappe", email=None)]
+			if doctype == "CRM Lead"
+			else []
+		)
+
+		[result] = _search_all("frappe")
+
+		self.assertEqual(result["title"], "Jane")
+		self.assertEqual(result["keywords"], "LEAD-1 Jane Frappe")
+
+	@patch("crm.api.command_palette.frappe.get_list")
 	@patch("crm.api.command_palette.frappe.has_permission")
 	def test_search_skips_doctypes_without_read_permission(self, has_permission, get_list):
 		has_permission.side_effect = lambda doctype, _permission: doctype == "CRM Lead"
