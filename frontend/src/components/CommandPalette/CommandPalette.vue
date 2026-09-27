@@ -59,11 +59,12 @@
               {{ __(group.title) }}
             </div>
             <ComboboxOption
-              v-for="item in group.items"
+              v-for="(item, index) in group.items"
               :key="item.id"
               v-slot="{ active }"
               :value="item"
-              class="cursor-pointer px-2"
+              class="cursor-pointer scroll-my-10 px-2"
+              :class="{ 'scroll-mt-16': index === 0 }"
               :disabled="item.disabled"
             >
               <CommandPaletteRow :command="item" :active="active" />
