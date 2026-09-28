@@ -44,9 +44,9 @@ def _get_phone_number_from_profile(doc) -> str | None:
 		return None
 
 	try:
-		if not frappe.db.exists("WhatsApp Profile", profile_name):
+		if not frappe.db.exists("WA Profile", profile_name):
 			return None
-		return frappe.db.get_value("WhatsApp Profile", profile_name, "phone_number")
+		return frappe.db.get_value("WA Profile", profile_name, "phone_number")
 	except Exception:
 		return None
 
@@ -54,7 +54,7 @@ def _get_phone_number_from_profile(doc) -> str | None:
 def _link_profile_to_crm_entities(doc) -> None:
 	"""Link WhatsApp Profile to ALL matching CRM entities (Deal, Lead, Contact).
 
-	Uses Dynamic Link table (WhatsApp Profile.links) to link to matching CRM entities.
+	Uses Dynamic Link table (WA Profile.links) to link to matching CRM entities.
 	Idempotent: skips if already linked.
 	"""
 	profile_name = doc.get("to")
@@ -62,10 +62,10 @@ def _link_profile_to_crm_entities(doc) -> None:
 		return
 
 	try:
-		if not frappe.db.exists("WhatsApp Profile", profile_name):
+		if not frappe.db.exists("WA Profile", profile_name):
 			return
 
-		phone_number = frappe.db.get_value("WhatsApp Profile", profile_name, "phone_number")
+		phone_number = frappe.db.get_value("WA Profile", profile_name, "phone_number")
 		if not phone_number:
 			return
 
@@ -73,7 +73,7 @@ def _link_profile_to_crm_entities(doc) -> None:
 		if not matches:
 			return
 
-		profile = frappe.get_doc("WhatsApp Profile", profile_name)
+		profile = frappe.get_doc("WA Profile", profile_name)
 
 		existing_links = {(link.link_doctype, link.link_name) for link in (profile.links or [])}
 
@@ -126,7 +126,7 @@ def notify_agent(doc, method=None):
 					"notification_type": "WhatsApp",
 					"message": doc.message,
 					"notification_text": notification_text,
-					"reference_doctype": "WhatsApp Message",
+					"reference_doctype": "WA Message",
 					"reference_docname": doc.name,
 					"redirect_to_doctype": doc.reference_doctype,
 					"redirect_to_docname": doc.reference_docname,
@@ -141,22 +141,22 @@ def is_whatsapp_enabled():
 	# the whatsapp app's fields may not exist on the table this tab would query.
 	if "twilio_integration" in frappe.get_installed_apps():
 		return False
-	if not frappe.db.exists("DocType", "WhatsApp Settings"):
+	if not frappe.db.exists("DocType", "WA Settings"):
 		return False
-	default_account = frappe.get_cached_value("WhatsApp Settings", "WhatsApp Settings", "default_account")
+	default_account = frappe.get_cached_value("WA Settings", "WA Settings", "default_account")
 	if not default_account:
 		return False
-	status = frappe.get_cached_value("WhatsApp Account", default_account, "status")
+	status = frappe.get_cached_value("WA Account", default_account, "status")
 	return status == "Active"
 
 
-# Link fields pointing at WhatsApp Account. Frappe refuses to delete a document that
+# Link fields pointing at WA Account. Frappe refuses to delete a document that
 # any of these still reference, so these counts are what makes a delete impossible.
 ACCOUNT_LINK_FIELDS = {
-	"WhatsApp Message": "whatsapp_account",
-	"WhatsApp Profile": "whatsapp_account",
-	"WhatsApp Template": "whatsapp_account",
-	"WhatsApp Log": "account",
+	"WA Message": "whatsapp_account",
+	"WA Profile": "whatsapp_account",
+	"WA Template": "whatsapp_account",
+	"WA Log": "account",
 }
 
 
@@ -177,7 +177,7 @@ def get_account_usage(account: str) -> dict[str, int]:
 
 @frappe.whitelist()
 def is_whatsapp_installed():
-	if not frappe.db.exists("DocType", "WhatsApp Settings"):
+	if not frappe.db.exists("DocType", "WA Settings"):
 		return False
 	return True
 
@@ -188,10 +188,10 @@ def add_roles():
 
 	role_list = ["Sales Manager", "Sales User"]
 	doctypes = [
-		"WhatsApp Message",
-		"WhatsApp Template",
-		"WhatsApp Settings",
-		"WhatsApp Profile",
+		"WA Message",
+		"WA Template",
+		"WA Settings",
+		"WA Profile",
 	]
 	for doctype in doctypes:
 		for role in role_list:

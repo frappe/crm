@@ -164,10 +164,10 @@ class TestGetAccountUsage(FrappeTestCase):
 		self.assertEqual(
 			usage,
 			{
-				"WhatsApp Message": 12,
-				"WhatsApp Profile": 3,
-				"WhatsApp Template": 0,
-				"WhatsApp Log": 5,
+				"WA Message": 12,
+				"WA Profile": 3,
+				"WA Template": 0,
+				"WA Log": 5,
 			},
 		)
 
@@ -179,7 +179,7 @@ class TestGetAccountUsage(FrappeTestCase):
 		):
 			usage = get_account_usage("_Test Account")
 
-		self.assertEqual(set(usage), {"WhatsApp Message", "WhatsApp Profile"})
+		self.assertEqual(set(usage), {"WA Message", "WA Profile"})
 
 	def test_raises_for_user_without_an_allowed_role(self):
 		with patch("frappe.get_roles", return_value=["All", "Guest"]):

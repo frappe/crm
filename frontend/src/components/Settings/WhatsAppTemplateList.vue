@@ -103,11 +103,10 @@ const search = ref('')
 const confirmDelete = ref(false)
 const syncing = ref(false)
 
-const TEMPLATE_API =
-  'whatsapp.whatsapp.doctype.whatsapp_template.whatsapp_template'
+const TEMPLATE_API = 'whatsapp.whatsapp.doctype.wa_template.wa_template'
 
 const templates = createListResource({
-  doctype: 'WhatsApp Template',
+  doctype: 'WA Template',
   cache: 'WhatsApp Templates',
   fields: [
     'name',

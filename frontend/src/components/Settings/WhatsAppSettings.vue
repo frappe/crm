@@ -68,7 +68,7 @@
           <SettingsPage
             v-else
             ref="settingsPage"
-            doctype="WhatsApp Settings"
+            doctype="WA Settings"
             :exclude-fields="['default_account']"
             embedded
             hideHeader

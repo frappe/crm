@@ -110,26 +110,26 @@ const settingInactive = ref(false)
 
 // Labels for the doctypes crm.api.whatsapp.get_account_usage counts.
 const USAGE_LABELS = {
-  'WhatsApp Message': () => __('Messages'),
-  'WhatsApp Profile': () => __('Contacts'),
-  'WhatsApp Template': () => __('Templates'),
-  'WhatsApp Log': () => __('Logs'),
+  'WA Message': () => __('Messages'),
+  'WA Profile': () => __('Contacts'),
+  'WA Template': () => __('Templates'),
+  'WA Log': () => __('Logs'),
 }
 
 const accounts = createListResource({
-  doctype: 'WhatsApp Account',
+  doctype: 'WA Account',
   cache: 'WhatsApp Accounts',
   fields: ['name', 'account_name', 'status', 'phone_id'],
   pageLength: 99,
   auto: true,
 })
 
-// The default account lives on the WhatsApp Settings Single, and the server
+// The default account lives on the WA Settings Single, and the server
 // maintains it: the first account created becomes the default, and deleting the
 // last one clears it. Refetch whenever the list changes underneath us.
 const defaultAccountResource = createResource({
   url: 'frappe.client.get_value',
-  params: { doctype: 'WhatsApp Settings', fieldname: 'default_account' },
+  params: { doctype: 'WA Settings', fieldname: 'default_account' },
   auto: true,
   onSuccess: (data) => {
     defaultAccount.value = data?.default_account || ''
@@ -166,8 +166,8 @@ function isDefault(account) {
 
 function setDefault(account) {
   call('frappe.client.set_value', {
-    doctype: 'WhatsApp Settings',
-    name: 'WhatsApp Settings',
+    doctype: 'WA Settings',
+    name: 'WA Settings',
     fieldname: 'default_account',
     value: account.name,
   })
@@ -225,7 +225,7 @@ function setInactive() {
   const account = blockedAccount.value
   settingInactive.value = true
   call('frappe.client.set_value', {
-    doctype: 'WhatsApp Account',
+    doctype: 'WA Account',
     name: account.name,
     fieldname: 'status',
     value: 'Inactive',

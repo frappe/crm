@@ -15,11 +15,11 @@ def execute():
 
 	Idempotent: safe to run multiple times.
 	"""
-	if not frappe.db.exists("DocType", "WhatsApp Profile"):
+	if not frappe.db.exists("DocType", "WA Profile"):
 		return
 
 	profiles = frappe.get_all(
-		"WhatsApp Profile",
+		"WA Profile",
 		filters={"phone_number": ["!=", ""]},
 		fields=["name", "phone_number"],
 	)
@@ -46,7 +46,7 @@ def _link_single_profile(profile_name: str, phone_number: str):
 	if not matches:
 		return
 
-	profile = frappe.get_doc("WhatsApp Profile", profile_name)
+	profile = frappe.get_doc("WA Profile", profile_name)
 
 	existing_links = {(link.link_doctype, link.link_name) for link in (profile.links or [])}
 
