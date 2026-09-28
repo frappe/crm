@@ -182,7 +182,7 @@ async function convertToDeal() {
     existingContact.value = ''
     existingOrganization.value = ''
     error.value = ''
-    completeStep('convert_lead_to_deal', true, false, () => {
+    completeStep('convert_lead_to_deal', () => {
       localStorage.setItem('firstDeal' + user, _deal)
     })
     capture('convert_lead_to_deal')
