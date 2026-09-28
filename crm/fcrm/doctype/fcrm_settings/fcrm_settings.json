@@ -33,7 +33,8 @@
   "event_notifications",
   "all_day_event_notifications",
   "dropdown_items_tab",
-  "dropdown_items"
+  "dropdown_items",
+  "setup_completed"
  ],
  "fields": [
   {
@@ -210,12 +211,20 @@
    "fieldtype": "Select",
    "label": "Timeline Sort Order",
    "options": "Oldest First\nNewest First"
+  },
+  {
+   "default": "0",
+   "description": "Set once the first admin finishes or skips the setup flow",
+   "fieldname": "setup_completed",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Setup Completed"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-28 06:36:17.344790",
+ "modified": "2026-09-28 07:10:34.454744",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",
