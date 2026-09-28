@@ -1,7 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+
+let setupChecked = false
+export const SETUP_DONE_KEY = 'crm_setup_completed'
+
+async function needsSetup() {
+  // Client-side flag guards against re-prompting if the server persist failed.
+  if (localStorage.getItem(SETUP_DONE_KEY)) return false
+  const completed = await call('frappe.client.get_single_value', {
+    doctype: 'FCRM Settings',
+    field: 'setup_completed',
+  })
+  return !completed
+}
+
+async function getSetupRedirect(to, isAdminUser) {
+  if (to.name === 'Setup') {
+    const allowed = isAdminUser && (await needsSetup().catch(() => false))
+    return allowed ? null : { name: 'Home' }
+  }
+  if (!isAdminUser || setupChecked) return null
+  setupChecked = true
+  const required = await needsSetup().catch(() => false)
+  return required ? { name: 'Setup' } : null
+}
 
 const routes = [
   {
@@ -107,6 +132,11 @@ const routes = [
     component: () => import('@/pages/Welcome.vue'),
   },
   {
+    path: '/setup',
+    name: 'Setup',
+    component: () => import('@/pages/Setup.vue'),
+  },
+  {
     path: '/:invalidpath',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
@@ -130,8 +160,8 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   router.previousRoute = from
 
-  const { isLoggedIn } = sessionStore()
-  const { users, isCrmUser } = usersStore()
+  const { isLoggedIn, user } = sessionStore()
+  const { users, isCrmUser, isAdmin } = usersStore()
 
   if (isLoggedIn && !users.fetched) {
     try {
@@ -142,6 +172,12 @@ router.beforeEach(async (to, from, next) => {
         return next(false)
       }
     }
+  }
+
+  if (isLoggedIn && isCrmUser()) {
+    const isAdminUser = isAdmin() || user === 'Administrator'
+    const redirect = await getSetupRedirect(to, isAdminUser)
+    if (redirect) return next(redirect)
   }
 
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
