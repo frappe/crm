@@ -11,14 +11,14 @@
       variant="solid"
       :label="__('New Email')"
       iconLeft="plus"
-      @click="emailBox.show = true"
+      @click="emailBox.openEmailBox()"
     />
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
       :label="__('New Comment')"
       iconLeft="plus"
-      @click="emailBox.showComment = true"
+      @click="emailBox.openCommentBox()"
     />
     <MultiActionButton
       v-else-if="title == 'Calls'"
