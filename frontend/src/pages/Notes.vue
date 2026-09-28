@@ -138,12 +138,11 @@ import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate, sanitizeHTML, copyToClipboard } from '@/utils'
 import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { call, Dropdown, Tooltip } from 'frappe-ui'
+import { call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ListFooter } from 'frappe-ui/experimental'
 import { ref, watch, onMounted } from 'vue'
 
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const { showModal } = useDoctypeModal()
@@ -175,7 +174,6 @@ function copyNoteLink(name) {
 const noteCallbacks = {
   afterInsert: () => {
     notes.value.reload()
-    updateOnboardingStep('create_first_note')
     capture('note_created')
   },
   afterUpdate: () => {
