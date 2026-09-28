@@ -107,12 +107,11 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate, sanitizeHTML } from '@/utils'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from 'frappe-ui/frappe'
 import { call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const { showModal } = useDoctypeModal()
@@ -134,7 +133,6 @@ watch(
 const noteCallbacks = {
   afterInsert: () => {
     notes.value.reload()
-    updateOnboardingStep('create_first_note')
     capture('note_created')
   },
   afterUpdate: () => {
