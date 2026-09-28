@@ -388,6 +388,9 @@ import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
+import { useCommandPaletteContext } from '@/composables/useCommandPalette'
+import { flattenCommandActions } from '@/utils/commandPalette'
+import { recordCommands } from '@/components/CommandPalette/recordCommands'
 import { useBroadcast } from '@/composables/useBroadcast'
 import {
   createResource,
@@ -565,6 +568,177 @@ const statuses = computed(() => {
   return statusOptions('deal', customStatuses, triggerStatusChange)
 })
 
+useCommandPaletteContext(() => dealCommands())
+
+function dealCommands() {
+  const commands = [
+    dealStatusCommand(),
+    ...flatDealStatusCommands(),
+    ...recordCommands(paletteContext()),
+    ...contactCommands(),
+    ...dealCommunicationCommands(),
+  ]
+  commands.push(...dealScriptCommands())
+  if (canDelete.value) commands.push(deleteDealCommand())
+  return commands
+}
+
+function paletteContext() {
+  return {
+    doctype: 'CRM Deal',
+    docname: props.dealId,
+    group: 'Deal',
+    assignees,
+    tabs,
+    changeTabTo,
+    activities: () => activities.value,
+    hasEmail: () => Boolean(doc.value?.email),
+    openEmailBox,
+    openFileUploader: () => (showFilesUploader.value = true),
+  }
+}
+
+function contactCommands() {
+  const commands = [
+    {
+      id: 'deal-add-contact',
+      title: 'Add contact',
+      group: 'Deal',
+      icon: 'user-round-plus',
+      keywords: 'link person attach contact',
+      children: async () => contactPickerChildren(),
+    },
+  ]
+  if (dealContacts.data?.length > 1) commands.push(primaryContactCommand())
+  return commands
+}
+
+async function contactPickerChildren() {
+  const results = await call('frappe.desk.search.search_link', {
+    txt: '',
+    doctype: 'Contact',
+  })
+  return results
+    .filter(
+      (result) => !dealContacts.data?.some((c) => c.name === result.value),
+    )
+    .map((result) => ({
+      id: `deal-add-contact-${result.value}`,
+      title: result.label || result.value,
+      translate: false,
+      icon: 'user-round',
+      perform: () => addContact(result.value),
+    }))
+}
+
+function primaryContactCommand() {
+  return {
+    id: 'deal-primary-contact',
+    title: 'Set primary contact',
+    group: 'Deal',
+    icon: 'user-round-check',
+    keywords: 'main default contact',
+    children: async () =>
+      dealContacts.data.map((contact) => ({
+        id: `deal-primary-contact-${contact.name}`,
+        title: contact.full_name || contact.name,
+        translate: false,
+        icon: 'user-round',
+        checked: contact.is_primary,
+        perform: () => setPrimaryContact(contact.name),
+      })),
+  }
+}
+
+function dealStatusCommand() {
+  return {
+    id: 'deal-status',
+    title: 'Change status',
+    group: 'Deal',
+    icon: 'circle-dot',
+    children: async () => dealStatusChildren(statuses.value),
+  }
+}
+
+function dealStatusChildren(options) {
+  return options.map((option) => ({
+    id: `deal-status-${option.label}`,
+    title: option.label,
+    translate: false,
+    icon: option.icon,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+// Typing a status name sets it in one Enter, without drilling in.
+function flatDealStatusCommands() {
+  return statuses.value.map((option) => ({
+    id: `deal-status-flat-${option.label}`,
+    title: __('Set status: {0}', [option.label]),
+    translate: false,
+    group: 'Deal',
+    icon: option.icon,
+    hideWhenEmpty: true,
+    keywords: option.label,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+function dealCommunicationCommands() {
+  const commands = []
+  if (doc.value.email) {
+    commands.push({
+      id: 'deal-email',
+      title: 'Send email',
+      group: 'Deal',
+      icon: 'mail',
+      perform: openEmailBox,
+    })
+  }
+  if (callEnabled.value) {
+    commands.push({
+      id: 'deal-call',
+      title: 'Make a call',
+      group: 'Deal',
+      icon: 'phone',
+      perform: triggerCall,
+    })
+  }
+  return commands
+}
+
+function dealScriptCommands() {
+  return flattenCommandActions([
+    ...(document._actions || []),
+    ...(document.actions || []),
+  ])
+    .filter(
+      (action) =>
+        action.label &&
+        action.onClick &&
+        (!action.condition || action.condition()),
+    )
+    .map((action, index) => ({
+      id: `deal-script-${index}-${action.label}`,
+      title: action.label,
+      group: 'Deal',
+      icon: action.icon || 'zap',
+      perform: () => action.onClick(() => {}),
+    }))
+}
+
+function deleteDealCommand() {
+  return {
+    id: 'deal-delete',
+    title: 'Delete deal',
+    group: 'Deal',
+    icon: 'trash-2',
+    perform: deleteDeal,
+  }
+}
+
 usePageMeta(() => {
   return {
     title: title.value,
@@ -624,7 +798,7 @@ const tabs = computed(() => {
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
+const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
@@ -736,7 +910,6 @@ if (!dealContacts.data) dealContacts.fetch()
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
-
   if (!primaryContact) {
     toast.error(__('No Primary Contact Set'))
     return

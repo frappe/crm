@@ -343,6 +343,7 @@ function toggleBCC() {
 
 defineExpose({
   editor,
+  showEmailTemplateSelectorModal,
   subject,
   cc,
   bcc,
