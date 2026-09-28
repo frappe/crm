@@ -267,7 +267,8 @@ import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from 'frappe-ui/frappe'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
@@ -278,7 +279,7 @@ const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 
@@ -553,7 +554,7 @@ function showTask(name) {
 function after(d, isNew = false) {
   let a = d.doctype == 'CRM Task' ? 'task' : 'note'
   if (isNew) {
-    updateOnboardingStep('create_first_' + a)
+    completeStep('create_first_' + a)
     capture(a + '_created')
   } else {
     capture(a + '_updated')

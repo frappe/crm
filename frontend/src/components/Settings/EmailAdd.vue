@@ -1,7 +1,12 @@
 <template>
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
-    <div role="heading" aria-level="1" class="flex flex-col gap-1">
+    <div
+      v-if="!hideHeader"
+      role="heading"
+      aria-level="1"
+      class="flex flex-col gap-1"
+    >
       <h2 class="text-2xl-semibold text-ink-gray-8">
         {{ __('Setup Email') }}
       </h2>
@@ -96,6 +101,7 @@
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,
@@ -106,7 +112,10 @@ import {
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
 
-const emit = defineEmits(['update:step'])
+defineProps({
+  hideHeader: { type: Boolean, default: false },
+})
+const emit = defineEmits(['update:step', 'created'])
 
 const state = reactive({
   service: '',
@@ -123,6 +132,7 @@ const state = reactive({
   create_lead_from_incoming_email: false,
 })
 const { capture } = useTelemetry()
+const { completeStep } = useCrmOnboarding()
 
 const selectedService = ref(null)
 const fields = computed(() =>
@@ -143,6 +153,8 @@ const addEmailRes = createResource({
   },
   onSuccess: () => {
     toast.success(__('Email account created successfully'))
+    completeStep('connect_your_email')
+    emit('created')
     emit('update:step', 'email-list')
   },
   onError: () => {
