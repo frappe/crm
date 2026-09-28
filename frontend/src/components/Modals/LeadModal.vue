@@ -161,7 +161,7 @@ async function createNewLead() {
         show.value = false
         lead.doc = {}
         router.push({ name: 'Lead', params: { leadId: data.name } })
-        completeStep('create_first_lead', true, false, () => {
+        completeStep('create_first_lead', () => {
           localStorage.setItem('firstLead' + user, data.name)
         })
       },
