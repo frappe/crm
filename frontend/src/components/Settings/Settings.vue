@@ -76,6 +76,10 @@ import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
+<<<<<<< HEAD
+=======
+import EnrichmentSettings from '@/components/Settings/Enrichment/EnrichmentSettings.vue'
+>>>>>>> 2a7b974 (feat: improve enrichment settings rules and save flow)
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import WorkflowAutomationPage from '@/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'

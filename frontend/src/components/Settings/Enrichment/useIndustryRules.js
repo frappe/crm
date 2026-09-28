@@ -1,4 +1,4 @@
-import { toast } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { useEnrichmentRules } from './useEnrichmentRules'
 
 // Which pattern rows the comma-separated box is allowed to own -- the rest are
@@ -64,63 +64,42 @@ function industryRuleName(industry) {
   return `Industry: ${industry}`
 }
 
-// weight is a Float with a default of 1 and multiplies a rule's hit count in
-// extractors.apply_keyword_rules. Zero would silently drop the rule out of the
-// score without turning it off, and a negative weight would push against its own
-// match -- neither is something a number box should be able to save by accident.
-function parseWeight(value) {
-  const weight = Number(value)
-
-  if (value === '' || value === null || !Number.isFinite(weight)) return null
-  if (weight <= 0) return null
-
-  return weight
-}
-
 export function useIndustryRules() {
   const rules = useEnrichmentRules({
     ruleType: 'Industry',
-    fields: ['industry', 'weight'],
-    isRowPending,
-    isRowHeld: (row) =>
-      isRowPending(row) || Boolean(row.error) || Boolean(row.weightError),
+    fields: ['industry'],
     buildRow,
     newRow,
+    isRowChanged,
+    validateRow,
+    toInsert,
+    toUpdate,
+    clearErrors,
     messages: {
-      patternsError: __('Could not load rule keywords'),
-      refreshError: __('Could not refresh industry rules'),
       insertError: __('Could not add industry rule'),
       updateError: __('Could not save industry rule'),
       deleteError: __('Could not delete industry rule'),
-      inserted: __('Industry rule added successfully'),
-      updated: __('Industry rule updated successfully'),
-      deleted: __('Industry rule deleted successfully'),
     },
   })
 
   function buildRow(rule, patternRows, held) {
     const { keywords, hidden } = splitPatterns(patternRows)
-    // Only a rule that has no weight at all falls back to the doctype's default.
-    // A stored 0 is shown as the 0 it is -- the classifier really does score that
-    // rule at nothing, and the box claiming 1 would hide it. Editing such a row
-    // then fails validation, which is the point at which the admin has to fix it.
-    const weight = rule.weight == null ? 1 : Number(rule.weight)
 
     return {
       // The stored values below always come from the reload; only what was being
       // edited is laid back on top of them.
       industry: held ? held.industry : rule.industry || '',
       keywords: held ? held.keywords : keywords,
-      // The box holds a string, because a half-typed number ("1.") is not one.
-      weight: held ? held.weight : String(weight),
-      // What the server last confirmed. The dirty check and the rollback on a
-      // failed save both read from here, never from the inputs.
+      // Set when the admin picked "Create New" for an industry that doesn't
+      // exist yet; Save inserts the CRM Industry before the rule that links it.
+      newIndustry: held ? held.newIndustry : false,
+      // What the server last confirmed. The dirty check reads from here, never
+      // from the inputs.
       savedIndustry: rule.industry || '',
       savedKeywords: keywords,
-      savedWeight: weight,
       hidden,
-      error: held ? held.error : '',
-      weightError: held ? held.weightError : '',
+      industryError: held ? held.industryError : '',
+      keywordsError: held ? held.keywordsError : '',
     }
   }
 
@@ -128,217 +107,185 @@ export function useIndustryRules() {
     return {
       industry: '',
       keywords: '',
-      // The doctype's default, so a row added and saved untouched scores the same
-      // as every seeded rule.
-      weight: '1',
+      newIndustry: false,
       savedIndustry: '',
       savedKeywords: '',
-      savedWeight: 1,
       hidden: [],
-      error: '',
-      weightError: '',
+      industryError: '',
+      keywordsError: '',
     }
   }
 
-  // One industry, one rule. The stored rules are checked on both the value the
-  // classifier reads (industry) and the name the row would take, because a rule
-  // renamed or re-pointed in Desk can carry one without the other.
-  function industryTakenBy(row, industry) {
-    const ruleName = industryRuleName(industry)
+  function clearErrors(row) {
+    row.industryError = ''
+    row.keywordsError = ''
+  }
 
-    return (rules.resource.data || []).find(
-      (rule) =>
-        rule.name !== row.name &&
-        (rule.industry === industry || rule.rule_name === ruleName),
+  // Compared the way Save will send it, so space or a trailing comma typed into
+  // an otherwise untouched box doesn't light up the badge.
+  function isRowChanged(row) {
+    return (
+      row.industry !== row.savedIndustry ||
+      parseKeywords(row.keywords).join(', ') !== row.savedKeywords
     )
+  }
+
+  // One industry, one rule, checked on both the value the classifier reads
+  // (industry) and the name the row would take, the same way the Social rows
+  // are. CRM Industry names are compared case-insensitively because the
+  // database's unique index on them is.
+  function industryTakenBy(industry, others) {
+    const folded = industry.toLowerCase()
+    const ruleName = industryRuleName(industry).toLowerCase()
+
+    return others.find((other) => {
+      const otherIndustry = (other.industry || '').toLowerCase()
+      if (otherIndustry === folded) return true
+
+      return (
+        Boolean(other.ruleName) &&
+        other.industry === other.savedIndustry &&
+        other.ruleName.toLowerCase() === ruleName
+      )
+    })
+  }
+
+  function validateRow(row, others) {
+    if (!row.industry) {
+      row.industryError = __('Industry is required')
+    } else if (industryTakenBy(row.industry, others)) {
+      row.industryError = __('A rule for {0} already exists', [row.industry])
+    }
+
+    if (!parseKeywords(row.keywords).length) {
+      row.keywordsError = __('At least one keyword is required')
+    }
+
+    return !row.industryError && !row.keywordsError
+  }
+
+  // Also run when the keywords box is left or an industry is picked, so a
+  // problem is flagged straight away instead of on Save. The box snaps to what
+  // will actually be stored, so the admin sees the trimming and de-duplication
+  // rather than guessing at it.
+  function checkRow(row) {
+    row.keywords = parseKeywords(row.keywords).join(', ')
+    if (!row.name || isRowChanged(row)) {
+      clearErrors(row)
+      validateRow(
+        row,
+        rules.rows.value.filter((other) => other !== row),
+      )
+    }
   }
 
   function onIndustryChange(row, value) {
     row.industry = value || ''
-    commitRow(row)
+    row.newIndustry = false
+    row.industryError = ''
+    row.serverError = ''
+    checkRow(row)
   }
 
-  // Keystrokes stay on the row, not in the doc: a half-typed list is never saved,
-  // and the red border clears the moment the admin starts fixing it.
+  // The Link's "Create New": the typed text becomes the row's industry now, and
+  // the CRM Industry itself is only inserted on Save, so abandoning the row
+  // leaves no stray industry behind.
+  function onIndustryCreate(row, value, close) {
+    const industry = (value || '').trim()
+    close?.()
+    if (!industry) return
+
+    row.industry = industry
+    row.newIndustry = true
+    row.industryError = ''
+    row.serverError = ''
+    checkRow(row)
+  }
+
   function onKeywordsInput(row, value) {
     row.keywords = value
-    row.error = ''
+    row.keywordsError = ''
+    row.serverError = ''
   }
 
-  function onWeightInput(row, value) {
-    row.weight = value
-    row.weightError = ''
+  // CRM Industry is named by its industry field, so a DuplicateEntryError means
+  // it already exists -- created by another row in this same Save, or by
+  // someone else meanwhile -- which is all the rule needs.
+  async function ensureIndustry(row) {
+    if (!row.newIndustry) return
+    try {
+      await call('frappe.client.insert', {
+        doc: { doctype: 'CRM Industry', industry: row.industry },
+      })
+    } catch (err) {
+      if (err?.exc_type !== 'DuplicateEntryError') throw err
+    }
+    row.newIndustry = false
   }
 
-  // The one place a row decides whether it has something worth sending. Called by
-  // the industry picker, by the keywords and weight boxes on blur/Enter, and by
-  // the header Save button.
-  function commitRow(row) {
-    if (row.saving) return
+  async function toInsert(row) {
+    await ensureIndustry(row)
 
-    const keywords = parseKeywords(row.keywords)
-    // The box snaps to what will actually be stored when it is left, so the
-    // admin sees the trimming and de-duplication rather than guessing at it.
-    row.keywords = keywords.join(', ')
-
-    const weight = parseWeight(row.weight)
-    if (weight === null) {
-      row.weightError = __('Weight must be greater than 0')
-      return
-    }
-    // Same as the keywords box above: what is on screen becomes exactly what a
-    // save would store, so "1.0" settles to "1" instead of reading as an edit
-    // forever after.
-    row.weight = String(weight)
-
-    // A rule with no industry classifies nothing, and the Link's Clear button can
-    // empty a stored one. Put it back rather than save a rule that does nothing.
-    if (!row.industry && row.name) {
-      toast.error(__('Industry is required'))
-      row.industry = row.savedIndustry
-      return
-    }
-
-    // Only worth asking when the industry is new to this row: re-saving keywords
-    // on an untouched industry must not trip over the row's own rule.
-    if (row.industry && (!row.name || row.industry !== row.savedIndustry)) {
-      if (industryTakenBy(row, row.industry)) {
-        toast.error(__('A rule for {0} already exists', [row.industry]))
-        // Back to what is stored -- blank on a row that was never inserted.
-        row.industry = row.savedIndustry
-        return
-      }
-    }
-
-    if (!row.name) return insertRow(row, keywords, weight)
-
-    if (!keywords.length) {
-      row.error = __('At least one keyword is required')
-      return
-    }
-
-    if (
-      row.industry === row.savedIndustry &&
-      row.keywords === row.savedKeywords &&
-      weight === row.savedWeight
-    ) {
-      return
-    }
-
-    return updateRow(row, keywords, weight)
-  }
-
-  // A new row waits on screen until it has an industry and at least one keyword
-  // -- half of one is not a rule, and the doctype would reject it anyway
-  // (rule_name is required, and a rule with no patterns never matches). Rule and
-  // keywords go in as one document, so a failed insert leaves nothing
-  // half-created behind.
-  //
-  // commitRow has already refused an industry another rule holds; the server's
-  // own unique-rule_name error still lands in the insert's catch for anything
-  // this list hasn't loaded (a rule added in another tab, a Social rule).
-  function insertRow(row, keywords, weight) {
-    if (!row.industry || !keywords.length) return
-
-    return rules.insertRow(row, {
+    return {
+      rule_name: industryRuleName(row.industry),
       industry: row.industry,
-      weight,
+      // The doctype's default and what every seeded rule has. weight multiplies
+      // the rule's hits in extractors.py, so it is set explicitly rather than
+      // left to a default that might not apply to an API insert.
+      weight: 1,
       // What the seeded Industry rules score against: the company name,
-      // description, title and headings, never body copy (see
-      // extractors.classify_industry).
+      // description, title and headings, never body copy.
       match_scope: 'Headline',
       enabled: 1,
-      rule_name: industryRuleName(row.industry),
-      patterns: keywords.map((keyword) => ({ pattern: keyword, is_regex: 0 })),
-    })
+      patterns: parseKeywords(row.keywords).map((keyword) => ({
+        pattern: keyword,
+        is_regex: 0,
+      })),
+    }
   }
 
-  function updateRow(row, keywords, weight) {
-    const previousIndustry = row.savedIndustry
-    const previousKeywords = row.savedKeywords
-    const previousWeight = row.savedWeight
+  // Only what the row owns is sent: industry, patterns and, when the industry
+  // changed, rule_name. weight is never sent, so an existing rule keeps the
+  // weight it already has. `doc` is the rule as stored right now.
+  async function toUpdate(row, doc) {
+    await ensureIndustry(row)
 
-    return rules.updateRow(row, {
-      mutate: (doc) => {
-        doc.industry = row.industry
-        doc.weight = weight
+    const values = { industry: row.industry }
 
-        // rule_name carries the industry, so it moves with it -- a rule switched
-        // from Finance to Manufacturing would otherwise still read the old name
-        // in Desk. Only rewritten when the industry actually changed, so a rule
-        // hand-named in Desk survives an edit to its keywords.
-        if (row.industry !== previousIndustry) {
-          doc.rule_name = industryRuleName(row.industry)
-        }
+    // rule_name carries the industry, so it moves with it. Only rewritten when
+    // the industry actually changed, so a rule hand-named in Desk survives an
+    // edit to its keywords.
+    if (row.industry !== row.savedIndustry) {
+      values.rule_name = industryRuleName(row.industry)
+    }
 
-        const patternRows = doc.patterns || []
-        // A keyword that is still in the box keeps its existing child row, so an
-        // untouched keyword isn't dropped and re-created on every save.
-        const existing = new Map(
-          patternRows
-            .filter(isKeywordRow)
-            .map((entry) => [entry.pattern, entry]),
-        )
-
-        doc.patterns = [
-          ...keywords.map(
-            (keyword) =>
-              existing.get(keyword) || { pattern: keyword, is_regex: 0 },
-          ),
-          // The rows the box never owned, carried across as the very objects that
-          // were read, and last so the box's own rows keep the order they were
-          // typed in.
-          ...patternRows.filter((entry) => !isKeywordRow(entry)),
-        ]
-      },
-      onSaved: (saved) => {
-        // Read back from the server rather than from the box, so what is on
-        // screen is exactly what was stored.
-        const split = splitPatterns(saved.patterns)
-        row.keywords = split.keywords
-        row.savedKeywords = split.keywords
-        row.hidden = split.hidden
-        row.savedIndustry = row.industry
-        row.savedWeight = weight
-        row.weight = String(weight)
-      },
-      rollback: () => {
-        row.industry = previousIndustry
-        row.keywords = previousKeywords
-        row.weight = String(previousWeight)
-        row.error = ''
-        row.weightError = ''
-      },
-    })
-  }
-
-  // A row the autosave hasn't caught up with: an edit typed but never committed,
-  // or a new row with both an industry and a keyword, waiting on an insert.
-  function isRowPending(row) {
-    if (row.saving) return false
-
-    // Compared the way commitRow will send it, so space or a trailing comma typed
-    // into an otherwise untouched box doesn't light up the Save button.
-    const keywords = parseKeywords(row.keywords).join(', ')
-
-    if (!row.name) return Boolean(row.industry && keywords)
-
-    // The weight is compared as text, because a stored value the box would refuse
-    // (a 0 written in Desk) still has to read as untouched until it is edited.
-    // Once it is edited the row is pending, Save flushes it, and commitRow is
-    // what puts the error under the box.
-    return (
-      row.industry !== row.savedIndustry ||
-      keywords !== row.savedKeywords ||
-      String(row.weight).trim() !== String(row.savedWeight)
+    const patternRows = doc.patterns || []
+    // A keyword that is still in the box keeps its existing child row, so an
+    // untouched keyword isn't dropped and re-created on every save.
+    const existing = new Map(
+      patternRows.filter(isKeywordRow).map((entry) => [entry.pattern, entry]),
     )
+    const pick = ({ name, pattern, is_regex }) => ({ name, pattern, is_regex })
+
+    values.patterns = [
+      ...parseKeywords(row.keywords).map((keyword) =>
+        existing.has(keyword)
+          ? pick(existing.get(keyword))
+          : { pattern: keyword, is_regex: 0 },
+      ),
+      // The rows the box never owned, carried across as they were read, and
+      // last so the box's own rows keep the order they were typed in.
+      ...patternRows.filter((entry) => !isKeywordRow(entry)).map(pick),
+    ]
+
+    return values
   }
 
   return {
     ...rules,
-    commitRow,
+    checkRow,
     onIndustryChange,
+    onIndustryCreate,
     onKeywordsInput,
-    onWeightInput,
   }
 }
