@@ -96,6 +96,7 @@
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
 import { useTelemetry } from 'frappe-ui/frappe'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,
@@ -123,6 +124,7 @@ const state = reactive({
   create_lead_from_incoming_email: false,
 })
 const { capture } = useTelemetry()
+const { completeStep } = useCrmOnboarding()
 
 const selectedService = ref(null)
 const fields = computed(() =>
@@ -143,6 +145,7 @@ const addEmailRes = createResource({
   },
   onSuccess: () => {
     toast.success(__('Email account created successfully'))
+    completeStep('connect_your_email')
     emit('update:step', 'email-list')
   },
   onError: () => {
