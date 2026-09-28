@@ -131,8 +131,7 @@ function templateCommand(context) {
 async function openEmailTemplates(context) {
   context.openEmailBox()
   await nextTick()
-  const editor = context.activities()?.emailBox?.editor
-  if (editor) editor.showEmailTemplateSelectorModal = true
+  context.activities()?.emailBox?.editor?.openTemplateSelector?.()
 }
 
 function createCommands(context) {
