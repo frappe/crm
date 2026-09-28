@@ -1,8 +1,11 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
+from frappe import _
 from frappe.model.document import Document
+
+from crm.domain_enrichment.config import MAX_PAGES_LIMIT
 
 
 class CRMEnrichmentSettings(Document):
@@ -38,4 +41,21 @@ class CRMEnrichmentSettings(Document):
 		user_agent: DF.Data | None
 	# end: auto-generated types
 
-	pass
+	def validate(self):
+		self.validate_max_pages()
+
+	def validate_max_pages(self):
+		"""Keep the page budget inside 1..MAX_PAGES_LIMIT.
+
+		An empty value is left alone: config._setting falls back to
+		DEFAULT_SETTINGS["max_pages"] for an unsaved Single, and rejecting a blank
+		here would block saving any other field on a fresh site.
+		"""
+		if self.max_pages in (None, ""):
+			return
+
+		if int(self.max_pages) < 1 or int(self.max_pages) > MAX_PAGES_LIMIT:
+			frappe.throw(
+				_("Max Pages must be a whole number between 1 and {0}").format(MAX_PAGES_LIMIT),
+				title=_("Invalid Max Pages"),
+			)
