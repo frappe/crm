@@ -222,6 +222,7 @@ import {
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -416,6 +417,7 @@ function toggleHelpModal() {
 const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
+const { flushPendingSteps } = useCrmOnboarding()
 
 // The onboarding composable persists the checklist as a positional
 // [{name, completed}] list, seeds it from the current steps ONLY when empty,
@@ -620,6 +622,7 @@ onMounted(async () => {
   // newly introduced steps, preserves completion). No-op when already aligned.
   await reconcileOnboarding(filteredSteps)
   setUp(filteredSteps)
+  flushPendingSteps()
 })
 
 // help center
