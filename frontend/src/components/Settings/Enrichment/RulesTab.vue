@@ -67,9 +67,8 @@
             </Tooltip>
           </div>
           <!-- Shown only when the rule is off, the way HierarchyRow.vue marks a
-               disabled user. Outside the dimmed columns so it stays readable,
-               and outside the menu because turning a rule back on isn't wired
-               up yet. -->
+               disabled user. Outside the dimmed columns so it stays readable;
+               the switch that turns it back on is in the ⋯ menu. -->
           <Badge
             v-if="!row.enabled"
             :label="__('Disabled')"
@@ -78,7 +77,13 @@
             size="sm"
             class="mt-1 shrink-0"
           />
-          <EnrichmentRuleMenu @delete="social.deleteRow(row)" />
+          <EnrichmentRuleMenu
+            :enabled="row.enabled"
+            :blank="social.isRowBlank(row)"
+            :disabled="social.saving"
+            @toggle="social.toggleEnabled(row)"
+            @delete="social.deleteRow(row)"
+          />
         </div>
         <ErrorMessage
           v-if="row.serverError"
@@ -172,7 +177,13 @@
             size="sm"
             class="mt-1 shrink-0"
           />
-          <EnrichmentRuleMenu @delete="industry.deleteRow(row)" />
+          <EnrichmentRuleMenu
+            :enabled="row.enabled"
+            :blank="industry.isRowBlank(row)"
+            :disabled="industry.saving"
+            @toggle="industry.toggleEnabled(row)"
+            @delete="industry.deleteRow(row)"
+          />
         </div>
         <ErrorMessage
           v-if="row.serverError"

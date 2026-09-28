@@ -185,7 +185,6 @@ export function useSocialRules() {
       rule_name: socialRuleName(platform),
       target_value: platform,
       match_scope: 'HTML',
-      enabled: 1,
       patterns: [{ pattern: row.pattern.trim(), is_regex: 1 }],
     }
   }
@@ -226,8 +225,14 @@ export function useSocialRules() {
     return values
   }
 
+  // A row just added with nothing typed into it yet.
+  function isRowBlank(row) {
+    return !row.name && !row.platform.trim() && !row.pattern.trim()
+  }
+
   return {
     ...rules,
+    isRowBlank,
     checkRow,
     onPlatformInput,
     onPatternInput,

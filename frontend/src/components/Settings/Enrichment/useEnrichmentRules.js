@@ -72,9 +72,15 @@ export function useEnrichmentRules({
     ...localRows.value,
   ])
 
+  // The status switch in the row's menu is the one edit every rule_type shares,
+  // so it is tracked here rather than in each caller's isRowChanged.
+  function isEnabledChanged(row) {
+    return row.enabled !== row.savedEnabled
+  }
+
   function isRowDirty(row) {
     if (!row.name || row.removed) return true
-    return isRowChanged(row)
+    return isRowChanged(row) || isEnabledChanged(row)
   }
 
   const dirtyRows = computed(() => [
@@ -145,7 +151,8 @@ export function useEnrichmentRules({
         key: rule.name,
         name: rule.name,
         ruleName: rule.rule_name,
-        enabled: Boolean(rule.enabled),
+        enabled: held ? held.enabled : Boolean(rule.enabled),
+        savedEnabled: Boolean(rule.enabled),
         removed: held ? held.removed : false,
         serverError: held ? held.serverError : '',
         ...buildRow(rule, patterns[rule.name] || [], held),
@@ -159,8 +166,10 @@ export function useEnrichmentRules({
         key: `new-${(localRowSeq += 1)}`,
         name: null,
         ruleName: '',
-        // Inserted as enabled, so the row shouldn't read as disabled while local.
+        // Starts enabled; the menu's status switch can turn it off before the
+        // first Save.
         enabled: true,
+        savedEnabled: true,
         removed: false,
         serverError: '',
         ...newRow(),
@@ -178,13 +187,20 @@ export function useEnrichmentRules({
     row.removed = true
   }
 
+  function toggleEnabled(row) {
+    row.enabled = !row.enabled
+    row.serverError = ''
+  }
+
   // Every changed row is checked before anything is sent, so a Save either
   // starts with every row valid or doesn't start at all. `others` is every other
   // row still on screen, for the duplicate checks.
   function validate() {
     let valid = true
     rows.value.forEach((row) => {
-      if (!isRowDirty(row)) return
+      // A stored rule whose only edit is its status sends nothing but
+      // `enabled`, so the fields it already had aren't held to the form's checks.
+      if (row.name && !isRowChanged(row)) return
       clearErrors(row)
       row.serverError = ''
       const others = rows.value.filter((other) => other !== row)
@@ -226,15 +242,19 @@ export function useEnrichmentRules({
   // fields over it and saves -- so a field the form doesn't send (an Industry
   // rule's weight, match_scope) keeps whatever it already had. The rule is
   // re-read first so the patterns the form doesn't show are the ones stored now,
-  // not the ones stored when the page loaded.
+  // not the ones stored when the page loaded. A status-only change skips all of
+  // that and sends just `enabled`.
   async function runUpdate(row) {
-    let values
+    let values = {}
     try {
-      const doc = await call('frappe.client.get', {
-        doctype: 'CRM Enrichment Rule',
-        name: row.name,
-      })
-      values = await toUpdate(row, doc)
+      if (isRowChanged(row)) {
+        const doc = await call('frappe.client.get', {
+          doctype: 'CRM Enrichment Rule',
+          name: row.name,
+        })
+        values = await toUpdate(row, doc)
+      }
+      if (isEnabledChanged(row)) values.enabled = row.enabled ? 1 : 0
       await call('frappe.client.set_value', {
         doctype: 'CRM Enrichment Rule',
         name: row.name,
@@ -258,7 +278,12 @@ export function useEnrichmentRules({
     try {
       doc = await toInsert(row)
       await call('frappe.client.insert', {
-        doc: { doctype: 'CRM Enrichment Rule', rule_type: ruleType, ...doc },
+        doc: {
+          doctype: 'CRM Enrichment Rule',
+          rule_type: ruleType,
+          ...doc,
+          enabled: row.enabled ? 1 : 0,
+        },
       })
       localRows.value = localRows.value.filter((other) => other !== row)
       return true
@@ -279,7 +304,7 @@ export function useEnrichmentRules({
   async function save() {
     const removed = savedRows.value.filter((row) => row.removed)
     const updated = savedRows.value.filter(
-      (row) => !row.removed && isRowChanged(row),
+      (row) => !row.removed && (isRowChanged(row) || isEnabledChanged(row)),
     )
     const inserted = [...localRows.value]
 
@@ -316,6 +341,7 @@ export function useEnrichmentRules({
     load,
     addRow,
     deleteRow,
+    toggleEnabled,
     validate,
     save,
   }
