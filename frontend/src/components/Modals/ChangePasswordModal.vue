@@ -78,8 +78,6 @@ import { ref, watch } from 'vue'
 
 const show = defineModel({ type: Boolean })
 
-const { updateOnboardingStep } = useOnboarding('frappecrm')
-
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
@@ -94,7 +92,6 @@ const updatePassword = createResource({
     }
   },
   onSuccess: () => {
-    updateOnboardingStep('setup_your_password')
     toast.success(__('Password updated successfully'))
     show.value = false
     currentPassword.value = ''
