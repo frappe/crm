@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-09-20 13:39+0000\n"
-"PO-Revision-Date: 2026-09-21 23:42\n"
+"POT-Creation-Date: 2026-09-27 14:48+0000\n"
+"PO-Revision-Date: 2026-09-28 01:14\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Chinese Traditional\n"
 "MIME-Version: 1.0\n"
@@ -18,13 +18,18 @@ msgstr ""
 "X-Crowdin-File-ID: 97\n"
 "Language: zh_TW\n"
 
-#: frontend/src/components/ViewControls.vue:1273
+#: frontend/src/components/ViewControls.vue:1395
 msgid " (New)"
 msgstr " (新增)"
 
 #: frontend/src/components/Filter.vue:629
 msgid "%John%"
 msgstr "%John%"
+
+#: frontend/src/components/Controls/Link.vue:12
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:38
+msgid "(required)"
+msgstr "(必填)"
 
 #: frontend/src/components/Filter.vue:619
 msgid "01/01/2022 to 01/31/2022"
@@ -134,11 +139,15 @@ msgstr "<p>親愛的 {{ lead_name }}，</p>\\\\n\\\\n<p>這是一封關於 {{ gr
 msgid "<span class=\"h5\"><b>PORTAL</b></span>"
 msgstr "<span class=\"h5\"><b>入口網站</b></span>"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:298
+msgid "<step key>"
+msgstr "<step key>"
+
 #: frontend/src/components/CommunicationArea.vue:84
 msgid "@John, can you please check this?"
 msgstr "@John，可以請您確認一下這個嗎？"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:138
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:141
 msgid "A Lead requires either a person's name or an organization's name"
 msgstr "潛在客戶必須填寫個人姓名或組織名稱其中之一"
 
@@ -149,6 +158,10 @@ msgstr "此 Facebook 潛在客戶表單已啟用一個潛在客戶同步來源�
 #: crm/templates/emails/helpdesk_invitation.html:5
 msgid "A new account has been created for you at {0}"
 msgstr "已在 {0} 為您建立新帳號"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:95
+msgid "A related record exists"
+msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1089
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1231
@@ -161,7 +174,11 @@ msgstr "一個區段最多可有 {0} 欄"
 msgid "A substring (default) or a regular expression matched against the rule's match scope."
 msgstr "與規則比對範圍相符的子字串（預設）或正規表示式。"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:265
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:36
+msgid "A trigger runs only when these filters match."
+msgstr ""
+
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:273
 msgid "A valid call log is required."
 msgstr "需要有效的通話紀錄。"
 
@@ -280,16 +297,28 @@ msgstr "帳號 SID"
 msgid "Account name is required"
 msgstr "帳號名稱為必填"
 
-#: frontend/src/components/Settings/Settings.vue:176
+#: frontend/src/components/Settings/Settings.vue:180
 msgid "Accounts"
 msgstr "會計"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:103
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:219
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:78
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:98
+msgid "Action"
+msgstr "動作"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:97
+msgid "Action on {0}"
+msgstr ""
+
 #: frontend/src/components/CustomActions.vue:76
-#: frontend/src/components/ViewControls.vue:777
-#: frontend/src/components/ViewControls.vue:1165
+#: frontend/src/components/ViewControls.vue:815
+#: frontend/src/components/ViewControls.vue:1287
 msgid "Actions"
 msgstr "動作"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:145
 #: frontend/src/pages/Deal.vue:579 frontend/src/pages/Lead.vue:442
 #: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:306
 msgid "Activity"
@@ -334,18 +363,22 @@ msgstr "新增圖表"
 msgid "Add Column"
 msgstr "新增欄"
 
-#: frontend/src/components/ConditionsFilter/CFConditions.vue:26
-#: frontend/src/components/ConditionsFilter/CFConditions.vue:72
+#: frontend/src/components/ConditionsFilter/CFConditions.vue:27
+#: frontend/src/components/ConditionsFilter/CFConditions.vue:74
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:65
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:26
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:63
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:20
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:27
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:78
 msgid "Add Condition"
 msgstr "新增條件"
 
-#: frontend/src/components/ConditionsFilter/CFConditions.vue:81
+#: frontend/src/components/ConditionsFilter/CFConditions.vue:83
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:71
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:69
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:79
 msgid "Add Condition Group"
 msgstr "新增條件群組"
 
@@ -450,6 +483,14 @@ msgstr "新增描述，協助填寫者了解此表單"
 msgid "Add a name for your source"
 msgstr "為你的來源命名"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:220
+msgid "Add block"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:20
+msgid "Add condition"
+msgstr "新增條件"
+
 #: frontend/src/components/Telephony/TaskPanel.vue:13
 msgid "Add description..."
 msgstr "新增描述…"
@@ -462,6 +503,10 @@ msgstr "新增直屬部屬"
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr "將現有系統使用者加入此 CRM。為他們指派角色，即可用其現有憑證授予存取權限。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:62
+msgid "Add field"
+msgstr "新增欄位"
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:634
 msgid "Add fields to see them here."
 msgstr "新增欄位後即會顯示於此。"
@@ -470,6 +515,7 @@ msgstr "新增欄位後即會顯示於此。"
 #: frontend/src/components/Settings/EmailAccountList.vue:51
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:113
 #: frontend/src/components/Settings/Users.vue:53
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:43
 msgid "Add one to get started."
 msgstr "新增一個以開始使用。"
 
@@ -487,7 +533,7 @@ msgstr "為首次回應等支援里程碑設定時間目標"
 msgid "Add to Holidays"
 msgstr "添加至假期"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:558
+#: frontend/src/components/Layouts/AppSidebar.vue:640
 msgid "Add your first comment"
 msgstr "新增你的第一則留言"
 
@@ -515,6 +561,14 @@ msgstr "地址"
 msgid "Admin"
 msgstr "管理員"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:144
+msgid "Advanced"
+msgstr "進階"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:287
+msgid "After branches"
+msgstr ""
+
 #: crm/integrations/twilio/twilio_handler.py:144
 msgid "Agent is unavailable to take the call, please call after some time."
 msgstr "客服人員目前無法接聽來電，請稍後再撥。"
@@ -534,6 +588,10 @@ msgstr "全天活動通知"
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:205
 msgid "All available priorities have already been added"
 msgstr "所有可用的優先順序皆已加入"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:25
+msgid "All filters must match."
+msgstr ""
 
 #. Label of the allowed_domains_section (Section Break) field in DocType 'CRM
 #. Enrichment Settings'
@@ -571,6 +629,10 @@ msgstr "金額"
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Amount after discount"
 msgstr "折扣後金額"
+
+#: crm/automation/actions.py:78
+msgid "Amount is required"
+msgstr ""
 
 #: frontend/src/pages/Deal.vue:461
 msgid "An Error Occurred"
@@ -623,6 +685,10 @@ msgstr "年營收必須為數字"
 msgid "Another CRM"
 msgstr "其他 CRM"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:73
+msgid "Any document"
+msgstr ""
+
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
 msgid "Any failed lead syncs will show up here"
 msgstr "任何失敗的潛在客戶同步都會顯示於此"
@@ -666,6 +732,10 @@ msgstr "套用至"
 msgid "Are you sure you want to clear demo data? This action cannot be undone."
 msgstr "確定要清除示範資料嗎？此動作無法復原。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:474
+msgid "Are you sure you want to delete the trigger and all workflow steps?"
+msgstr ""
+
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
 msgstr "確定要刪除此附件嗎？"
@@ -677,6 +747,10 @@ msgstr "確定要刪除此聯絡人嗎？"
 #: frontend/src/pages/MobileOrganization.vue:276
 msgid "Are you sure you want to delete this organization?"
 msgstr "確定要刪除此組織嗎？"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:475
+msgid "Are you sure you want to delete this step?"
+msgstr ""
 
 #: frontend/src/components/Activities/TaskArea.vue:60
 msgid "Are you sure you want to delete this task?"
@@ -773,13 +847,13 @@ msgstr "必須提供指派日"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:706
+#: frontend/src/components/Layouts/AppSidebar.vue:791
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr "分派規則"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:192
+#: frontend/src/components/Settings/Settings.vue:201
 msgid "Assignment Rules"
 msgstr "分派規則"
 
@@ -822,6 +896,10 @@ msgstr "至少須填寫一個欄位"
 #: frontend/src/components/Settings/Sla/utils.js:116
 msgid "At least one priority is required"
 msgstr "至少須有一個優先順序"
+
+#: crm/automation/actions.py:299
+msgid "At least one recipient is required"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
@@ -918,13 +996,44 @@ msgstr "根據商機中相關產品的總價值，自動更新「預期商機價
 
 #. Label of the automation_section (Section Break) field in DocType 'CRM
 #. Enrichment Settings'
+#. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
 msgid "Automation"
 msgstr "自動化"
 
-#: frontend/src/components/Settings/Settings.vue:189
+#: frontend/src/components/Settings/Settings.vue:193
 msgid "Automation & Rules"
 msgstr "自動化與規則"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:77
+msgid "Automation User"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:392
+msgid "Automation deleted"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:343
+msgid "Automation duplicated"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:525
+msgid "Automation saved"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:29
+msgid "Automation title"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:301
+msgid "Automation updated"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:169
+msgid "Available to later steps"
+msgstr ""
 
 #: crm/api/dashboard.py:371
 msgid "Average deal value of non won/lost deals"
@@ -1010,6 +1119,10 @@ msgstr "返回所有記錄"
 msgid "Back to File Upload"
 msgstr "返回檔案上傳"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:9
+msgid "Back to automations"
+msgstr ""
+
 #: frontend/src/components/Questionnaire.vue:94
 msgid "Back to previous question"
 msgstr "返回上一題"
@@ -1034,6 +1147,15 @@ msgstr "此表單的基本設定。"
 msgid "Be the first to add one."
 msgstr "第一個添加評論的人。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:235
+msgid "Before the first step"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:65
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:73
+msgid "Belonging to"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:386
 msgid "Between"
 msgstr "介於"
@@ -1052,7 +1174,7 @@ msgstr "雙向產品同步"
 msgid "Blocked Domains"
 msgstr "封鎖的網域"
 
-#: frontend/src/components/Settings/Settings.vue:141
+#: frontend/src/components/Settings/Settings.vue:145
 msgid "Brand"
 msgstr "品牌"
 
@@ -1122,6 +1244,10 @@ msgstr "CRM 商機"
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "CRM Deal Status"
 msgstr "CRM 商機狀態"
+
+#: crm/automation/actions.py:166
+msgid "CRM Deal has no field {0}"
+msgstr ""
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -1335,7 +1461,7 @@ msgstr "日曆"
 msgid "Call Details"
 msgstr "通話詳情"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:680
+#: frontend/src/components/Layouts/AppSidebar.vue:765
 msgid "Call Log"
 msgstr "通話記錄"
 
@@ -1417,7 +1543,7 @@ msgstr "無法指派此角色"
 msgid "Cannot change role of user with Admin access"
 msgstr "無法變更具有管理員存取權使用者的角色"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:538
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:547
 msgid "Cannot convert a lead with status {0}"
 msgstr "無法轉換狀態為 {0} 的潛在客戶"
 
@@ -1457,11 +1583,15 @@ msgstr "擷取"
 msgid "Capture leads and deals from public forms you embed on your website."
 msgstr "從你嵌入網站的公開表單擷取潛在客戶與商機。"
 
+#: frontend/src/components/Layouts/AppSidebar.vue:544
+msgid "Capture leads with a form"
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:122
 msgid "Capture my first lead"
 msgstr "擷取我的第一個潛在客戶"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:685
+#: frontend/src/components/Layouts/AppSidebar.vue:770
 msgid "Capturing Leads"
 msgstr "擷取潛在客戶"
 
@@ -1475,7 +1605,7 @@ msgid "Category"
 msgstr "類別"
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:612
+#: frontend/src/components/Layouts/AppSidebar.vue:694
 msgid "Change"
 msgstr "變更"
 
@@ -1503,8 +1633,8 @@ msgstr "變更相片"
 msgid "Change Status"
 msgstr "變更狀態"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:602
-#: frontend/src/components/Layouts/AppSidebar.vue:611
+#: frontend/src/components/Layouts/AppSidebar.vue:684
+#: frontend/src/components/Layouts/AppSidebar.vue:693
 msgid "Change deal status"
 msgstr "變更商機狀態"
 
@@ -1532,6 +1662,10 @@ msgstr "圖表"
 msgid "Chart Type"
 msgstr "圖表類型"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:28
+msgid "Check"
+msgstr "勾選"
+
 #: frontend/src/components/Modals/ConvertToDealModal.vue:29
 #: frontend/src/components/Modals/ConvertToDealModal.vue:55
 msgid "Choose Existing"
@@ -1544,6 +1678,22 @@ msgstr "選擇現有聯絡人"
 #: frontend/src/components/Modals/DealModal.vue:37
 msgid "Choose Existing Organization"
 msgstr "選擇現有組織"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:43
+msgid "Choose a field to set"
+msgstr ""
+
+#: crm/automation/actions.py:113
+msgid "Choose a lead temperature"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:57
+msgid "Choose an event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:16
+msgid "Choose field"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:172
 msgid "Choose how long this SLA policy will be active."
@@ -1565,6 +1715,14 @@ msgstr "選擇此規則應於一週中哪幾天生效。"
 msgid "Choose the email service provider you want to configure."
 msgstr "選擇您要設定的電子郵件服務供應商。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:41
+msgid "Choose value"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:105
+msgid "Choose what this step does"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:108
 msgid "Choose which leads/deals are affected by this policy."
 msgstr "選擇哪些潛在客戶／商機受此政策影響。"
@@ -1573,9 +1731,13 @@ msgstr "選擇哪些潛在客戶／商機受此政策影響。"
 msgid "Choose which {0} are affected by this un-assignment rule."
 msgstr "選擇哪些 {0} 受此取消指派規則影響。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:33
+msgid "Choose {0}"
+msgstr ""
+
 #: frontend/src/components/Controls/AttachControl.vue:58
 #: frontend/src/components/Controls/GeolocationControl.vue:40
-#: frontend/src/components/Controls/Link.vue:59
+#: frontend/src/components/Controls/Link.vue:69
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:59
 msgid "Clear"
 msgstr "清除"
@@ -1604,6 +1766,14 @@ msgstr "清除排序"
 msgid "Clear Table"
 msgstr "清除表格"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:12
+msgid "Clear condition"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:112
+msgid "Clear to pick a record instead"
+msgstr ""
+
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
 msgstr "點選下方連結以完成註冊並設定新密碼"
@@ -1615,8 +1785,13 @@ msgstr "點擊以重新命名"
 #: frontend/src/components/Controls/GeolocationControl.vue:60
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:128
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:63
 msgid "Close"
 msgstr "關閉"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
+msgid "Close inspector"
+msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:126
 msgid "Close my first deal"
@@ -1626,6 +1801,11 @@ msgstr "完成我的第一個商機"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
 msgstr "結案日期"
+
+#. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Cold"
+msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:100
 msgid "Collaborating with my team"
@@ -1669,7 +1849,7 @@ msgstr "欄"
 #: frontend/src/components/Activities/ActivityHeader.vue:115
 #: frontend/src/components/CommentBox.vue:75
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:703
+#: frontend/src/components/Layouts/AppSidebar.vue:788
 msgid "Comment"
 msgstr "留言"
 
@@ -1765,8 +1945,13 @@ msgstr "電腦"
 #. Label of the condition_json (Code) field in DocType 'CRM Service Level
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:66
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:73
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:233
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:61
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:51
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:23
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:67
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:93
 msgid "Condition"
 msgstr "條件"
 
@@ -1784,6 +1969,10 @@ msgstr "此規則的條件建立自"
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Configure"
 msgstr "設定"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:131
+msgid "Configure action"
+msgstr ""
 
 #: frontend/src/components/Settings/HomeActions.vue:10
 msgid "Configure actions that appear on the home dropdown"
@@ -1856,7 +2045,7 @@ msgstr "連接你的電子郵件"
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:676
+#: frontend/src/components/Layouts/AppSidebar.vue:761
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr "聯絡人"
@@ -1869,7 +2058,7 @@ msgstr "已新增聯絡人"
 msgid "Contact Already Added"
 msgstr "聯絡人已新增"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:333
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:336
 msgid "Contact Already Exists"
 msgstr "聯絡人已存在"
 
@@ -1889,7 +2078,7 @@ msgstr "聯絡支援"
 msgid "Contact Us"
 msgstr "聯絡我們"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:332
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:335
 msgid "Contact already exists with Email: {0}"
 msgstr "已有使用此電子郵件的聯絡人：{0}"
 
@@ -1936,15 +2125,15 @@ msgstr "必須提供內容"
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr "控制數字的顯示方式（例如千分位、小數點分隔符號）"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:497
+#: frontend/src/components/Layouts/AppSidebar.vue:579
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
 #: frontend/src/pages/MobileLead.vue:59
 msgid "Convert"
 msgstr "轉換"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:488
-#: frontend/src/components/Layouts/AppSidebar.vue:496
+#: frontend/src/components/Layouts/AppSidebar.vue:570
+#: frontend/src/components/Layouts/AppSidebar.vue:578
 msgid "Convert lead to deal"
 msgstr "將潛在客戶轉換為商機"
 
@@ -1973,21 +2162,29 @@ msgid "Copy"
 msgstr "複製"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:394
-#: frontend/src/components/Settings/Forms/FormsList.vue:271
+#: frontend/src/components/Settings/Forms/FormsList.vue:273
 msgid "Copy link"
 msgstr "複製連結"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:61
+msgid "Core"
+msgstr "核心"
 
 #: frontend/src/components/Modals/DoctypeModal.vue:125
 msgid "Could not create document"
 msgstr "無法建立文件"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:228
+#: frontend/src/components/Settings/Forms/FormsList.vue:230
 msgid "Could not create form"
 msgstr "無法建立表單"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:157
 msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
 msgstr "無法自動在 {0} 上建立 Frappe CRM 自訂欄位。若其執行的是最新版 ERPNext，請於其 CRM 設定中啟用 <b>Frappe CRM 資料同步</b>；否則請檢查錯誤記錄。"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:346
+msgid "Could not duplicate automation"
+msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
 msgid "Could not grant guest access."
@@ -1996,6 +2193,10 @@ msgstr "無法授予訪客存取權限。"
 #: frontend/src/composables/dashboard.js:23
 msgid "Could not load chart options"
 msgstr "無法載入圖表選項"
+
+#: frontend/src/components/ViewControls.vue:1112
+msgid "Could not move the card. Reverting."
+msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
@@ -2006,6 +2207,10 @@ msgstr "無法移除。"
 msgid "Could not save"
 msgstr "無法儲存"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:617
+msgid "Could not save automation"
+msgstr ""
+
 #: frontend/src/components/PrimaryDropdownItem.vue:181
 #: frontend/src/components/PrimaryDropdownItem.vue:188
 msgid "Could not save, try again"
@@ -2015,11 +2220,15 @@ msgstr "無法儲存，請重試"
 msgid "Could not start enrichment."
 msgstr "無法開始資料補全。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:304
+msgid "Could not update automation"
+msgstr ""
+
 #: frontend/src/components/Modals/DoctypeModal.vue:147
 msgid "Could not update document"
 msgstr "無法更新文件"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:245
+#: frontend/src/components/Settings/Forms/FormsList.vue:247
 msgid "Could not update form"
 msgstr "無法更新表單"
 
@@ -2029,8 +2238,13 @@ msgstr "無法將報表更新為"
 
 #: crm/api/dashboard.py:766 crm/api/dashboard.py:914 crm/api/dashboard.py:971
 #: crm/api/dashboard.py:1064
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:63
 msgid "Count"
 msgstr "計數"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:97
+msgid "Count of related records"
+msgstr ""
 
 #. Label of the crawl_tab (Tab Break) field in DocType 'CRM Enrichment
 #. Settings'
@@ -2086,7 +2300,7 @@ msgstr "從收到的電子郵件建立潛在客戶"
 msgid "Create Missing Link"
 msgstr "建立缺少的連結"
 
-#: frontend/src/components/Controls/Link.vue:50
+#: frontend/src/components/Controls/Link.vue:60
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:57
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:61
 #: frontend/src/components/PrimaryDropdown.vue:49
@@ -2102,7 +2316,7 @@ msgid "Create New Template"
 msgstr "建立新範本"
 
 #: frontend/src/components/Modals/ViewModal.vue:9
-#: frontend/src/components/ViewControls.vue:781
+#: frontend/src/components/ViewControls.vue:819
 msgid "Create View"
 msgstr "建立檢視"
 
@@ -2134,17 +2348,33 @@ msgstr "在 ERPNext 中將產品建立為品項"
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr "商機頁面上的建立報價單按鈕，以及商機狀態變更時自動建立客戶的功能將被停用。你確定嗎？"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:463
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:5
+msgid "Create workflow automations for CRM documents"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:532
 msgid "Create your first lead"
 msgstr "建立你的第一個潛在客戶"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:537
+#: frontend/src/components/Layouts/AppSidebar.vue:619
 msgid "Create your first note"
 msgstr "建立你的第一則筆記"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:516
+#: frontend/src/components/Layouts/AppSidebar.vue:598
 msgid "Create your first task"
 msgstr "建立你的第一個任務"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:58
+msgid "Created By"
+msgstr "建立者"
+
+#: crm/automation/actions.py:190
+msgid "Created Deal {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:30
+msgid "Cron Expression"
+msgstr ""
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -2177,19 +2407,23 @@ msgstr "當前圖示"
 msgid "Current pipeline distribution"
 msgstr "目前的管道分布"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:715
+#: frontend/src/components/Layouts/AppSidebar.vue:800
 msgid "Custom Actions"
 msgstr "自訂動作"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:665
+#: frontend/src/components/Layouts/AppSidebar.vue:750
 msgid "Custom Branding"
 msgstr "自訂品牌識別"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:714
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:68
+msgid "Custom Event"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:799
 msgid "Custom Fields"
 msgstr "自訂欄位"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:717
+#: frontend/src/components/Layouts/AppSidebar.vue:802
 msgid "Custom List Actions"
 msgstr "自訂清單動作"
 
@@ -2197,16 +2431,20 @@ msgstr "自訂清單動作"
 msgid "Custom Range"
 msgstr "自訂範圍"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:716
+#: frontend/src/components/Layouts/AppSidebar.vue:801
 msgid "Custom Statuses"
 msgstr "自訂狀態"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:93
+msgid "Custom event"
+msgstr ""
 
 #: frontend/src/pages/Deal.vue:512
 msgid "Customer Created Successfully"
 msgstr "已成功建立客戶"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:711
-#: frontend/src/components/Settings/Settings.vue:215
+#: frontend/src/components/Layouts/AppSidebar.vue:796
+#: frontend/src/components/Settings/Settings.vue:224
 msgid "Customization"
 msgstr "自訂"
 
@@ -2232,7 +2470,7 @@ msgid "Dark"
 msgstr "深色"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:6
-#: frontend/src/components/Settings/Settings.vue:131
+#: frontend/src/components/Settings/Settings.vue:135
 msgid "Dashboard"
 msgstr "儀表板"
 
@@ -2249,7 +2487,7 @@ msgid "Dashboard settings updated successfully"
 msgstr "已成功更新儀表板設定"
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:704
+#: frontend/src/components/Layouts/AppSidebar.vue:789
 #: frontend/src/pages/Deal.vue:594 frontend/src/pages/Lead.vue:457
 #: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:321
 msgid "Data"
@@ -2269,15 +2507,27 @@ msgstr "資料匯入"
 msgid "Date"
 msgstr "日期"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:57
+msgid "Date Direction"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:41
+msgid "Date Field"
+msgstr ""
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:111
 msgid "Date Format"
 msgstr "日期格式"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:50
+msgid "Date Offset"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
 msgid "Day"
 msgstr "日"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:675
+#: frontend/src/components/Layouts/AppSidebar.vue:760
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:50
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:58
@@ -2312,6 +2562,10 @@ msgstr "商機狀態"
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Deal Value"
 msgstr "商機價值"
+
+#: crm/automation/actions.py:54
+msgid "Deal field overrides must be a JSON object"
+msgstr ""
 
 #: crm/api/dashboard.py:1142
 msgid "Deal generation channel analysis"
@@ -2461,7 +2715,7 @@ msgstr "已成功還原預設狀態、自訂欄位與版面配置。"
 msgid "Default value"
 msgstr "預設值"
 
-#: frontend/src/components/Settings/Settings.vue:136
+#: frontend/src/components/Settings/Settings.vue:140
 msgid "Defaults"
 msgstr "預設值"
 
@@ -2488,8 +2742,9 @@ msgstr "定義所有記錄的預設貨幣，可於欄位層級覆寫"
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:166
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
-#: frontend/src/components/ViewControls.vue:1217
-#: frontend/src/components/ViewControls.vue:1228
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:480
+#: frontend/src/components/ViewControls.vue:1339
+#: frontend/src/components/ViewControls.vue:1350
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:127
 #: frontend/src/pages/Lead.vue:182 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:284
@@ -2538,8 +2793,8 @@ msgstr "刪除組織"
 msgid "Delete Task"
 msgstr "刪除任務"
 
-#: frontend/src/components/ViewControls.vue:1213
-#: frontend/src/components/ViewControls.vue:1221
+#: frontend/src/components/ViewControls.vue:1335
+#: frontend/src/components/ViewControls.vue:1343
 msgid "Delete View"
 msgstr "刪除檢視"
 
@@ -2550,6 +2805,14 @@ msgstr "刪除或取消連結關聯文件"
 #: frontend/src/components/DeleteLinkedDocModal.vue:26
 msgid "Delete or unlink these linked documents before deleting this document"
 msgstr "刪除此文件前，請先刪除或取消連結這些關聯文件"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:465
+msgid "Delete step"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:465
+msgid "Delete trigger"
+msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:70
 msgid "Delete {0} Item(s)"
@@ -2659,6 +2922,10 @@ msgstr "捨棄"
 msgid "Discard Changes"
 msgstr "捨棄變更"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:263
+msgid "Discard and exit"
+msgstr ""
+
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
@@ -2687,7 +2954,11 @@ msgstr "全系統日期的顯示格式"
 msgid "DocType"
 msgstr "DocType"
 
-#: crm/api/doc.py:820
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:43
+msgid "DocType resolved at runtime"
+msgstr ""
+
+#: crm/api/doc.py:821
 msgid "Doctype is required"
 msgstr "必須提供 Doctype"
 
@@ -2701,6 +2972,7 @@ msgstr "找不到文件"
 
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:55
 msgid "Document Type"
 msgstr "文件類型"
 
@@ -2751,6 +3023,8 @@ msgid "Download"
 msgstr "下載"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:74
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:19
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:79
 msgid "Draft"
 msgstr "草稿"
 
@@ -2794,7 +3068,8 @@ msgstr "到期日"
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:133
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
-#: frontend/src/components/ViewControls.vue:1169
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:322
+#: frontend/src/components/ViewControls.vue:1291
 msgid "Duplicate"
 msgstr "複製"
 
@@ -2825,8 +3100,8 @@ msgstr "發現重複的工作日：{0}。每個工作日皆應唯一。"
 msgid "Duration"
 msgstr "時間長度"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:728
-#: frontend/src/components/Settings/Settings.vue:240
+#: frontend/src/components/Layouts/AppSidebar.vue:813
+#: frontend/src/components/Settings/Settings.vue:249
 msgid "ERPNext"
 msgstr "ERPNext"
 
@@ -2889,10 +3164,11 @@ msgstr "ERPNext 尚未與 CRM 整合"
 #: frontend/src/components/ListBulkActions.vue:170
 #: frontend/src/components/PrimaryDropdownItem.vue:53
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:31
-#: frontend/src/components/Settings/Forms/FormsList.vue:262
+#: frontend/src/components/Settings/Forms/FormsList.vue:264
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
-#: frontend/src/components/ViewControls.vue:1187
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:35
+#: frontend/src/components/ViewControls.vue:1309
 #: frontend/src/pages/Dashboard.vue:16 frontend/src/pages/Notes.vue:44
 #: frontend/src/pages/Tasks.vue:379
 msgid "Edit"
@@ -2922,6 +3198,7 @@ msgstr "編輯欄位版面配置"
 #: frontend/src/components/Modals/DoctypeModal.vue:25
 #: frontend/src/components/Modals/LeadModal.vue:16
 #: frontend/src/components/Modals/OrganizationModal.vue:16
+#: frontend/src/components/SidePanelLayout.vue:21
 msgid "Edit Fields Layout"
 msgstr "編輯欄位版面配置"
 
@@ -2974,6 +3251,7 @@ msgid "Editing Row {0}"
 msgstr "正在編輯第 {0} 列"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:714
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:209
 msgid "Editor"
 msgstr "編輯器"
 
@@ -2986,7 +3264,7 @@ msgstr "編輯器"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: frontend/src/components/Activities/ActivityHeader.vue:110
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
-#: frontend/src/components/Settings/Settings.vue:173
+#: frontend/src/components/Settings/Settings.vue:177
 #: frontend/src/pages/Contact.vue:400 frontend/src/pages/MobileContact.vue:392
 #: frontend/src/pages/MobileOrganization.vue:474
 #: frontend/src/pages/MobileOrganization.vue:502
@@ -3004,7 +3282,7 @@ msgstr "電子郵件帳號"
 msgid "Email Accounts"
 msgstr "電子郵件帳戶"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:702
+#: frontend/src/components/Layouts/AppSidebar.vue:787
 msgid "Email Communication"
 msgstr "電子郵件通訊"
 
@@ -3029,7 +3307,7 @@ msgstr "電子郵件寄送時間"
 msgid "Email Settings"
 msgstr "電子郵件設定"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:681
+#: frontend/src/components/Layouts/AppSidebar.vue:766
 msgid "Email Template"
 msgstr "電子郵件範本"
 
@@ -3057,6 +3335,10 @@ msgstr "已寄出電子郵件"
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:180
 msgid "Email settings updated successfully"
 msgstr "已成功更新電子郵件設定"
+
+#: crm/automation/actions.py:250
+msgid "Emailed {0}: {1}"
+msgstr ""
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
 #: frontend/src/pages/Deal.vue:584 frontend/src/pages/Lead.vue:447
@@ -3166,6 +3448,11 @@ msgstr "啟用此整合功能，即可在 ERPNext 中建立報價單及其他功
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:57
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:65
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:73
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:19
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:57
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:79
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:90
 msgid "Enabled"
 msgstr "已啟用"
 
@@ -3235,7 +3522,7 @@ msgid "Enriching…"
 msgstr "補全中…"
 
 #: frontend/src/components/Settings/EnrichmentSettings.vue:5
-#: frontend/src/components/Settings/Settings.vue:207
+#: frontend/src/components/Settings/Settings.vue:216
 msgid "Enrichment"
 msgstr "完善"
 
@@ -3334,8 +3621,8 @@ msgstr "等於"
 msgid "Error Occurred"
 msgstr "發生錯誤"
 
-#: frontend/src/components/FilesUploader/FilesUploader.vue:193
-#: frontend/src/components/FilesUploader/FilesUploader.vue:214
+#: frontend/src/components/FilesUploader/FilesUploader.vue:192
+#: frontend/src/components/FilesUploader/FilesUploader.vue:215
 msgid "Error Uploading File"
 msgstr "上傳檔案時發生錯誤"
 
@@ -3371,6 +3658,10 @@ msgstr "更新潛在客戶同步來源時發生錯誤"
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Event Notifications"
 msgstr "事件通知"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
+msgid "Event happened"
+msgstr ""
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -3421,7 +3712,7 @@ msgstr "匯率供應商"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:726
+#: frontend/src/components/Layouts/AppSidebar.vue:811
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
@@ -3492,6 +3783,10 @@ msgstr "匯出類型"
 #: frontend/src/components/ViewControls.vue:309
 msgid "Export all {0} record(s)"
 msgstr "匯出全部 {0} 筆記錄(s)"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:59
+msgid "Expression"
+msgstr "運算式"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
@@ -3700,16 +3995,28 @@ msgstr "失敗"
 msgid "Failure Logs"
 msgstr "失敗記錄"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
+msgid "False"
+msgstr ""
+
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/BrandSettings.vue:97
 msgid "Favicon"
 msgstr "網站圖示"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:39
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:43
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
 msgstr "欄位"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:72
+msgid "Field Values"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:41
+msgid "Field value changes"
+msgstr ""
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
 #: frontend/src/components/Kanban/KanbanSettings.vue:47
@@ -3748,9 +4055,16 @@ msgstr "從記錄的網站填寫公司資料"
 msgid "Filter"
 msgstr "篩選條件"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:92
+msgid "Filter values may use Jinja, e.g."
+msgstr ""
+
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:58
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:65
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:70
 msgid "Filters"
 msgstr "篩選條件"
 
@@ -3811,9 +4125,17 @@ msgstr "首次響應時間"
 msgid "First name"
 msgstr "名字"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:67
+msgid "Fit entire flow"
+msgstr ""
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
 msgstr "浮點數精確度"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:43
+msgid "Flow"
+msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:91
 msgid "Following up consistently"
@@ -3824,6 +4146,10 @@ msgstr "持續跟進"
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
 msgid "For"
 msgstr "目標"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:142
+msgid "Forced"
+msgstr ""
 
 #: crm/api/dashboard.py:96
 msgid "Forecasted Revenue"
@@ -3848,11 +4174,11 @@ msgstr "表單名稱"
 msgid "Form Script updated successfully"
 msgstr "已成功更新表單指令碼"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:225
+#: frontend/src/components/Settings/Forms/FormsList.vue:227
 msgid "Form created"
 msgstr "已建立表單"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:256
+#: frontend/src/components/Settings/Forms/FormsList.vue:258
 msgid "Form deleted"
 msgstr "已刪除表單"
 
@@ -3860,7 +4186,7 @@ msgstr "已刪除表單"
 msgid "Form details"
 msgstr "表單詳情"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:242
+#: frontend/src/components/Settings/Forms/FormsList.vue:244
 msgid "Form published"
 msgstr "已發布表單"
 
@@ -3869,7 +4195,7 @@ msgstr "已發布表單"
 msgid "Form title"
 msgstr "表單標題"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:242
+#: frontend/src/components/Settings/Forms/FormsList.vue:244
 msgid "Form unpublished"
 msgstr "已取消發布表單"
 
@@ -3878,7 +4204,7 @@ msgid "Form updated"
 msgstr "已更新表單"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
-#: frontend/src/components/Settings/Settings.vue:202
+#: frontend/src/components/Settings/Settings.vue:211
 msgid "Forms"
 msgstr "表單"
 
@@ -3891,7 +4217,7 @@ msgstr "表單僅能對應至：{0}"
 msgid "Frappe CRM"
 msgstr "Frappe CRM"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:732
+#: frontend/src/components/Layouts/AppSidebar.vue:817
 msgid "Frappe CRM mobile"
 msgstr "Frappe CRM 行動版"
 
@@ -3932,6 +4258,10 @@ msgstr "來源類型"
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "From User"
 msgstr "來自使用者"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:16
+msgid "From Value"
+msgstr "起始值"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -3977,7 +4307,7 @@ msgstr "性別"
 #. Label of the general_tab (Tab Break) field in DocType 'CRM Enrichment
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-#: frontend/src/components/Settings/Settings.vue:126
+#: frontend/src/components/Settings/Settings.vue:130
 msgid "General"
 msgstr "一般"
 
@@ -4033,8 +4363,8 @@ msgstr "表格列"
 
 #. Label of the group_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:409
-#: frontend/src/components/ViewControls.vue:694 frontend/src/utils/view.js:16
+#: frontend/src/components/ViewControls.vue:422
+#: frontend/src/components/ViewControls.vue:732 frontend/src/utils/view.js:16
 msgid "Group By"
 msgstr "分組依據"
 
@@ -4126,6 +4456,10 @@ msgstr "隱藏預覽"
 msgid "Hide Recording"
 msgstr "隱藏錄音"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:59
+msgid "Hide details"
+msgstr "隱藏詳細資訊"
+
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "High"
@@ -4149,11 +4483,16 @@ msgstr "假期表名稱"
 msgid "Holidays"
 msgstr "假期"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:666
+#: frontend/src/components/Layouts/AppSidebar.vue:751
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:218
+#: frontend/src/components/Settings/Settings.vue:227
 msgid "Home Actions"
 msgstr "首頁動作"
+
+#. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Hot"
+msgstr ""
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -4209,6 +4548,11 @@ msgstr "ID"
 #: frontend/src/components/Modals/ViewModal.vue:27
 msgid "Icon"
 msgstr "圖示"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:222
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:12
+msgid "If / Else"
+msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:61
 msgid "If enabled, a lead will be automatically created when an incoming email is received from an unknown contact."
@@ -4337,11 +4681,15 @@ msgstr "插入電子郵件範本"
 msgid "Insert Emoji"
 msgstr "插入表情符號"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:14
+msgid "Insert field"
+msgstr ""
+
 #: crm/domain_enrichment/mapper.py:45
 msgid "Instagram"
 msgstr "Instagram"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:722
+#: frontend/src/components/Layouts/AppSidebar.vue:807
 msgid "Integration"
 msgstr "整合"
 
@@ -4353,13 +4701,13 @@ msgstr "未啟用整合"
 msgid "Integrations"
 msgstr "整合"
 
-#: frontend/src/components/Settings/Settings.vue:226
+#: frontend/src/components/Settings/Settings.vue:235
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr "整合"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:653
-#: frontend/src/components/Layouts/AppSidebar.vue:656
+#: frontend/src/components/Layouts/AppSidebar.vue:738
+#: frontend/src/components/Layouts/AppSidebar.vue:741
 msgid "Introduction"
 msgstr "介紹"
 
@@ -4436,12 +4784,12 @@ msgstr "格式無效。請試試：1 hour 30 minutes、2 hours、45 seconds、1:
 msgid "Invalid format. Try: 1h 30m 45s, 1:30:45, 90s"
 msgstr "格式無效。請試試：1h 30m 45s、1:30:45、90s"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:277
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:285
 msgid "Invalid lead details supplied."
 msgstr "提供的潛在客戶資料無效。"
 
 #: crm/api/__init__.py:83 crm/api/__init__.py:87
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:63
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:66
 msgid "Invalid or expired key"
 msgstr "金鑰無效或已過期"
 
@@ -4479,11 +4827,11 @@ msgstr "以電子郵件邀請"
 msgid "Invite New User"
 msgstr "邀請新使用者"
 
-#: frontend/src/components/Settings/Settings.vue:158
+#: frontend/src/components/Settings/Settings.vue:162
 msgid "Invite User"
 msgstr "邀請使用者"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:667
+#: frontend/src/components/Layouts/AppSidebar.vue:752
 msgid "Invite Users"
 msgstr "邀請使用者"
 
@@ -4495,7 +4843,7 @@ msgstr "邀請我的團隊"
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr "邀請使用者存取 CRM。指定其角色以控管存取與權限"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:475
+#: frontend/src/components/Layouts/AppSidebar.vue:557
 msgid "Invite your team"
 msgstr "邀請你的團隊"
 
@@ -4512,6 +4860,7 @@ msgstr "邀請者"
 #: frontend/src/components/Filter.vue:372
 #: frontend/src/components/Filter.vue:381
 #: frontend/src/components/Filter.vue:400
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:54
 msgid "Is"
 msgstr "為"
 
@@ -4568,11 +4917,11 @@ msgstr "此設定會使商機的「預期結案日期」與「預期商機價值
 msgid "Item Group"
 msgstr "Item 組"
 
-#: crm/api/doc.py:823
+#: crm/api/doc.py:824
 msgid "Items are required"
 msgstr "必須提供品項"
 
-#: crm/api/doc.py:827
+#: crm/api/doc.py:828
 msgid "Items must be a list"
 msgstr "品項必須為清單"
 
@@ -4609,8 +4958,8 @@ msgstr "只有我"
 
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:414
-#: frontend/src/components/ViewControls.vue:683 frontend/src/utils/view.js:20
+#: frontend/src/components/ViewControls.vue:427
+#: frontend/src/components/ViewControls.vue:721 frontend/src/utils/view.js:20
 msgid "Kanban"
 msgstr "看板"
 
@@ -4631,6 +4980,10 @@ msgstr "看板設定"
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
 msgstr "看板設定"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:261
+msgid "Keep editing"
+msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:93
 msgid "Keeping my pipeline organized"
@@ -4760,6 +5113,10 @@ msgstr "姓氏"
 msgid "Last user assigned by this rule"
 msgstr "此規則上次指派的使用者"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:72
+msgid "Launch manually"
+msgstr ""
+
 #. Label of the layout (Code) field in DocType 'CRM Dashboard'
 #. Label of the layout (Code) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
@@ -4769,7 +5126,7 @@ msgstr "版面配置"
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:674
+#: frontend/src/components/Layouts/AppSidebar.vue:759
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:54
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
@@ -4800,9 +5157,14 @@ msgstr "線索姓名"
 msgid "Lead Owner"
 msgstr "線索負責人"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:155
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:158
 msgid "Lead Owner cannot be same as the Lead Email Address"
 msgstr "線索負責人不能與線索郵箱地址相同"
+
+#. Label of the lead_score (Int) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Lead Score"
+msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -4820,21 +5182,34 @@ msgstr "潛在客戶狀態"
 msgid "Lead Sync Source"
 msgstr "潛在客戶同步來源"
 
-#: frontend/src/components/Settings/Settings.vue:246
+#: frontend/src/components/Settings/Settings.vue:255
 msgid "Lead Syncing"
 msgstr "潛在客戶同步"
+
+#. Label of the lead_temperature (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Lead Temperature"
+msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
 msgstr "潛在客戶與商機的可見度將不再受回報階層限制。你確定嗎？"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:295
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:303
 msgid "Lead from call {0}"
 msgstr "來自通話 {0} 的潛在客戶"
 
 #: crm/api/dashboard.py:1104
 msgid "Lead generation channel analysis"
 msgstr "潛在客戶產生管道分析"
+
+#: crm/automation/scoring.py:47
+msgid "Lead is now {0}"
+msgstr ""
+
+#: crm/automation/scoring.py:29
+msgid "Lead score {0} → {1}{2}"
+msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
@@ -4848,9 +5223,17 @@ msgstr "已成功建立潛在客戶同步來源"
 msgid "Lead sync source deleted successfully"
 msgstr "已成功刪除潛在客戶同步來源"
 
+#: crm/automation/scoring.py:42
+msgid "Lead temperature must be one of {0}"
+msgstr ""
+
 #: crm/api/dashboard.py:907
 msgid "Lead to deal conversion pipeline"
 msgstr "潛在客戶到商機的轉換管道"
+
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:577
+msgid "Lead {0} is already converted to Deal {1}"
+msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -4886,6 +5269,10 @@ msgstr "小於"
 #: frontend/src/components/Filter.vue:399
 msgid "Less than or equal to"
 msgstr "小於或等於"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:162
+msgid "Lets a later step act on what this one produced."
+msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Library"
@@ -4936,8 +5323,8 @@ msgstr "連結"
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:404
-#: frontend/src/components/ViewControls.vue:672 frontend/src/utils/view.js:12
+#: frontend/src/components/ViewControls.vue:417
+#: frontend/src/components/ViewControls.vue:710 frontend/src/utils/view.js:12
 msgid "List"
 msgstr "清單"
 
@@ -5023,7 +5410,7 @@ msgid "Lost Notes"
 msgstr "流失備註"
 
 #: frontend/src/components/Modals/EditValueModal.vue:177
-#: frontend/src/components/Modals/LostReasonModal.vue:84
+#: frontend/src/components/Modals/LostReasonModal.vue:89
 msgid "Lost Notes are required when Lost Reason is \"Other\""
 msgstr "當流失原因為「其他」時，流失備註為必填"
 
@@ -5040,7 +5427,7 @@ msgid "Lost Reason"
 msgstr "未成交原因"
 
 #: frontend/src/components/Modals/EditValueModal.vue:173
-#: frontend/src/components/Modals/LostReasonModal.vue:80
+#: frontend/src/components/Modals/LostReasonModal.vue:85
 msgid "Lost Reason is required"
 msgstr "必須提供流失原因"
 
@@ -5059,12 +5446,12 @@ msgid "Make Call"
 msgstr "撥打電話"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1202
+#: frontend/src/components/ViewControls.vue:1324
 msgid "Make Private"
 msgstr "設為私人"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1202
+#: frontend/src/components/ViewControls.vue:1324
 msgid "Make Public"
 msgstr "設為公開"
 
@@ -5192,7 +5579,7 @@ msgstr "回應時將潛在客戶／商機標示為已回覆"
 msgid "Master switch for the Domain Enrichment feature."
 msgstr "網域資料補全功能的總開關。"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:671
+#: frontend/src/components/Layouts/AppSidebar.vue:756
 msgid "Masters"
 msgstr "主数据"
 
@@ -5265,6 +5652,10 @@ msgstr "中間名"
 msgid "Minimize"
 msgstr "縮到最小"
 
+#: crm/automation/actions.py:81
+msgid "Minimum score is above the maximum"
+msgstr ""
+
 #: frontend/src/utils/callLog.js:79
 msgid "Missed Call"
 msgstr "未接來電"
@@ -5273,7 +5664,7 @@ msgstr "未接來電"
 msgid "Missing mandatory fields: {0}"
 msgstr "缺少必填欄位：{0}"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:735
+#: frontend/src/components/Layouts/AppSidebar.vue:820
 msgid "Mobile App Installation"
 msgstr "行動應用程式安裝"
 
@@ -5348,6 +5739,10 @@ msgstr "將最後一欄移至上一區段"
 msgid "Move Last Column to Previous Tab"
 msgstr "將最後一欄移至上一分頁"
 
+#: frontend/src/components/ViewControls.vue:1127
+msgid "Move cancelled: a lost reason is required for this status."
+msgstr ""
+
 #: frontend/src/components/FieldLayoutEditor.vue:543
 msgid "Move to Next Tab"
 msgstr "移至下一分頁"
@@ -5384,7 +5779,8 @@ msgstr "我的進行中商機"
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
-#: frontend/src/components/ViewControls.vue:861
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:54
+#: frontend/src/components/ViewControls.vue:899
 #: frontend/src/pages/MobileOrganization.vue:497
 #: frontend/src/pages/Organization.vue:539
 msgid "Name"
@@ -5396,6 +5792,14 @@ msgstr "名稱"
 msgid "Name is required"
 msgstr "必須提供名稱"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:160
+msgid "Name the result"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:153
+msgid "Names this step in run logs and in its result path."
+msgstr ""
+
 #. Label of the naming_series (Select) field in DocType 'CRM Deal'
 #. Label of the naming_series (Select) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -5403,7 +5807,7 @@ msgstr "必須提供名稱"
 msgid "Naming Series"
 msgstr "命名序列"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:99
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:107
 msgid "Nested Conditions"
 msgstr "巢狀條件"
 
@@ -5426,6 +5830,7 @@ msgstr "淨總計"
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:20
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:8
 #: frontend/src/components/Settings/Users.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:9
 msgid "New"
 msgstr "新增"
 
@@ -5562,6 +5967,10 @@ msgstr "明年"
 msgid "Next question"
 msgstr "下一題"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:295
+msgid "No"
+msgstr "否"
+
 #: frontend/src/components/Activities/Activities.vue:734
 msgid "No Activities Found"
 msgstr "未找到任何活動"
@@ -5613,7 +6022,7 @@ msgstr "找不到失敗記錄"
 msgid "No Label"
 msgstr "無標籤"
 
-#: frontend/src/pages/Deal.vue:747
+#: frontend/src/pages/Deal.vue:748
 msgid "No Mobile Number Set"
 msgstr "未設定行動電話號碼"
 
@@ -5625,7 +6034,7 @@ msgstr "沒有新通知"
 msgid "No Notes Found"
 msgstr "未找到筆記"
 
-#: frontend/src/pages/Deal.vue:742
+#: frontend/src/pages/Deal.vue:741
 msgid "No Primary Contact Set"
 msgstr "未設定主要聯絡人"
 
@@ -5710,12 +6119,25 @@ msgstr "沒有相符的使用者"
 msgid "No recent calls to display. Log a call or call someone now!"
 msgstr "暫無通話記錄。立即記錄通話或撥打電話！"
 
+#: crm/automation/actions.py:307
+msgid "No recipients to notify"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:96
+msgid "No related record exists"
+msgstr ""
+
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
-#: frontend/src/components/frappe-ui/Autocomplete.vue:119
+#: frontend/src/components/frappe-ui/Autocomplete.vue:120
 msgid "No results found"
 msgstr "找不到結果"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationRuns.vue:10
+msgid "No runs yet"
+msgstr ""
+
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:64
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:9
 msgid "No users found"
 msgstr "找不到使用者"
 
@@ -5730,6 +6152,10 @@ msgstr "沒有符合目前篩選條件的使用者。"
 #: frontend/src/components/Settings/Forms/FormsList.vue:37
 msgid "No web forms yet"
 msgstr "尚無網頁表單"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:42
+msgid "No workflow automations yet"
+msgstr ""
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
 #: frontend/src/pages/MobileOrganization.vue:145
@@ -5795,7 +6221,7 @@ msgstr "並非 CRM 表單"
 msgid "Not allowed to add contact to Deal"
 msgstr "不允許將聯絡人加入商機"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:534
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:561
 msgid "Not allowed to convert Lead to Deal"
 msgstr "不允許將潛在客戶轉換為商機"
 
@@ -5838,7 +6264,7 @@ msgstr "不類似"
 
 #: crm/api/activities.py:26 crm/api/activities.py:180 crm/api/contact.py:34
 #: crm/api/contact.py:70 crm/api/contact.py:91 crm/api/form.py:239
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:192
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:200
 #: crm/fcrm/doctype/crm_deal/api.py:8
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
@@ -5858,10 +6284,14 @@ msgstr "無權存取所參照的 WhatsApp 訊息。"
 msgid "Not permitted to modify fields layout"
 msgstr "無權修改欄位版面配置"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:31
+msgid "Not something filters can express. Edit it below."
+msgstr ""
+
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/components/Activities/ActivityHeader.vue:131
-#: frontend/src/components/Layouts/AppSidebar.vue:678
+#: frontend/src/components/Layouts/AppSidebar.vue:763
 msgid "Note"
 msgstr "備註"
 
@@ -5880,6 +6310,10 @@ msgstr "備註"
 msgid "Notes View"
 msgstr "筆記檢視"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:22
+msgid "Nothing here"
+msgstr "這裡沒有任何項目"
+
 #: frontend/src/components/Activities/Activities.vue:772
 msgid "Nothing here for now. Add a note to keep track of things."
 msgstr "目前暫無內容。新增備註以便記錄。"
@@ -5889,7 +6323,7 @@ msgid "Nothing to do at the moment. Start organizing by adding one here."
 msgstr "目前無需安排。請在此處新增一項，開始整理。"
 
 #: frontend/src/components/Activities/EmailArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:707
+#: frontend/src/components/Layouts/AppSidebar.vue:792
 msgid "Notification"
 msgstr "通知"
 
@@ -5915,6 +6349,10 @@ msgstr "通知類型 Doctype"
 #: frontend/src/pages/MobileNotification.vue:7
 msgid "Notifications"
 msgstr "通知"
+
+#: crm/automation/actions.py:312
+msgid "Notified {0}"
+msgstr ""
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
@@ -5952,6 +6390,10 @@ msgstr "所有貨幣值使用的小數位數"
 msgid "Number of retries on a failed request."
 msgstr "請求失敗時的重試次數。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:36
+msgid "Of record"
+msgstr ""
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
 msgid "Old Condition"
@@ -5983,6 +6425,18 @@ msgstr "最舊在前"
 msgid "On Hold"
 msgstr "保留中"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:86
+msgid "On a date"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:79
+msgid "On a schedule"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:42
+msgid "One {0} record"
+msgstr ""
+
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -5998,15 +6452,15 @@ msgstr "進行中商機"
 msgid "Ongoing deals"
 msgstr "進行中商機"
 
-#: crm/api/user.py:127 crm/api/user.py:160
+#: crm/api/user.py:127 crm/api/user.py:161
 msgid "Only System Managers can assign the Sales Manager role"
 msgstr "只有系統管理員可指派業務經理角色"
 
-#: crm/api/user.py:124 crm/api/user.py:154
+#: crm/api/user.py:124 crm/api/user.py:155
 msgid "Only System Managers can assign the System Manager role"
 msgstr "只有系統管理員可指派系統管理員角色"
 
-#: crm/api/user.py:157 crm/api/user.py:202
+#: crm/api/user.py:158 crm/api/user.py:203
 msgid "Only System Managers can modify other System Managers"
 msgstr "只有系統管理員可修改其他系統管理員"
 
@@ -6018,6 +6472,10 @@ msgstr "僅允許圖片檔"
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.py:68
 msgid "Only one {0} can be set as primary."
 msgstr "僅能將一個 {0} 設為主要。"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:133
+msgid "Only run when"
+msgstr ""
 
 #: crm/api/whatsapp.py:16
 msgid "Only sales users can access WhatsApp features."
@@ -6031,7 +6489,7 @@ msgstr "只有業務使用者可使用 WhatsApp 功能。"
 msgid "Open"
 msgstr "開啟"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:89
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:97
 msgid "Open Nested Conditions"
 msgstr "開啟巢狀條件"
 
@@ -6049,12 +6507,16 @@ msgstr "在入口網站中開啟"
 msgid "Open in new window"
 msgstr "在新視窗中開啟"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
+msgid "Open inspector"
+msgstr ""
+
 #: frontend/src/doctypes/crm_task/form.js:9
 #: frontend/src/doctypes/fcrm_note/form.js:9
 msgid "Open {0}"
 msgstr "開啟 {0}"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:48
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:53
 msgid "Operator"
 msgstr "操作員"
 
@@ -6093,7 +6555,7 @@ msgstr "所有使用者的時間軸中動態、電子郵件、留言與通話的
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:677
+#: frontend/src/components/Layouts/AppSidebar.vue:762
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
 #: frontend/src/pages/Contact.vue:348 frontend/src/pages/Contact.vue:384
 #: frontend/src/pages/MobileContact.vue:376
@@ -6143,17 +6605,19 @@ msgstr "組織"
 msgid "Organize my contacts"
 msgstr "整理我的聯絡人"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:62
 #: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
 #: frontend/src/pages/PersonaForm.vue:103
 msgid "Other"
 msgstr "其他"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:699
+#: frontend/src/components/Layouts/AppSidebar.vue:784
 msgid "Other Features"
 msgstr "其他功能"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:146
 msgid "Others"
 msgstr "其他"
 
@@ -6165,6 +6629,10 @@ msgstr "去電"
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Outgoing"
 msgstr "寄件"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:130
+msgid "Output of {0}"
+msgstr ""
 
 #. Option for the 'Write Policy' (Select) field in DocType 'CRM Enrichment
 #. Field Mapping'
@@ -6248,6 +6716,18 @@ msgstr "模式"
 msgid "Patterns"
 msgstr "模式"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:116
+msgid "Pause the run"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:21
+msgid "Pause the run for a fixed amount of time."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:31
+msgid "Pause until an event is raised for this record."
+msgstr ""
+
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:10
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:37
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:38
@@ -6323,7 +6803,32 @@ msgstr "電話通話"
 msgid "Phones Found"
 msgstr "找到的電話"
 
-#: frontend/src/components/ViewControls.vue:1194
+#: crm/automation/actions.py:225
+msgid "Pick a template or write a subject"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:12
+msgid "Pick a {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:34
+msgid "Pick an action"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:121
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:29
+msgid "Pick an event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:56
+msgid "Pick initial trigger"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:19
+msgid "Pick {0}"
+msgstr ""
+
+#: frontend/src/components/ViewControls.vue:1316
 msgid "Pin View"
 msgstr "釘選檢視"
 
@@ -6332,11 +6837,11 @@ msgstr "釘選檢視"
 msgid "Pinned"
 msgstr "已釘選"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:695
+#: frontend/src/components/Layouts/AppSidebar.vue:780
 msgid "Pinned View"
 msgstr "已釘選檢視"
 
-#: frontend/src/components/ViewControls.vue:770
+#: frontend/src/components/ViewControls.vue:808
 msgid "Pinned Views"
 msgstr "已釘選檢視"
 
@@ -6412,7 +6917,7 @@ msgstr "請設定 Exotel 集成"
 msgid "Please specify a reason for losing the deal."
 msgstr "請指明商機流失的原因。"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:163
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:166
 msgid "Please specify a reason for losing the lead."
 msgstr "請指明潛在客戶流失的原因。"
 
@@ -6420,7 +6925,7 @@ msgstr "請指明潛在客戶流失的原因。"
 msgid "Please specify the reason for losing the deal."
 msgstr "請指明商機流失的原因。"
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:165
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:168
 msgid "Please specify the reason for losing the lead."
 msgstr "請指明潛在客戶流失的原因。"
 
@@ -6436,7 +6941,7 @@ msgid "Position"
 msgstr "位置"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:116
+#: frontend/src/components/Settings/Settings.vue:120
 msgid "Preferences"
 msgstr "偏好設定"
 
@@ -6555,9 +7060,9 @@ msgstr "已開始同步產品。"
 msgid "Products"
 msgstr "產品"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:664
+#: frontend/src/components/Layouts/AppSidebar.vue:749
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:106
+#: frontend/src/components/Settings/Settings.vue:110
 msgid "Profile"
 msgstr "個人檔案"
 
@@ -6574,22 +7079,26 @@ msgstr "根據商機機率的預測營收與實際營收對比"
 msgid "Public"
 msgstr "公開"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:694
+#: frontend/src/components/Layouts/AppSidebar.vue:779
 msgid "Public View"
 msgstr "公開檢視"
 
-#: frontend/src/components/ViewControls.vue:764
+#: frontend/src/components/ViewControls.vue:802
 msgid "Public Views"
 msgstr "公開檢視"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:28
-#: frontend/src/components/Settings/Forms/FormsList.vue:267
+#: frontend/src/components/Settings/Forms/FormsList.vue:269
 msgid "Publish"
 msgstr "發佈"
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:74
 msgid "Published"
 msgstr "已發佈"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:28
+msgid "Python, evaluated against doc, target and context."
+msgstr ""
 
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -6619,7 +7128,7 @@ msgstr "排入佇列中…"
 msgid "Quick Entry"
 msgstr "快速輸入"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:718
+#: frontend/src/components/Layouts/AppSidebar.vue:803
 msgid "Quick Entry Layout"
 msgstr "快速輸入版面配置"
 
@@ -6628,7 +7137,7 @@ msgstr "快速輸入版面配置"
 msgid "Quick Filters"
 msgstr "快速篩選"
 
-#: frontend/src/components/ViewControls.vue:825
+#: frontend/src/components/ViewControls.vue:863
 msgid "Quick filters updated successfully"
 msgstr "已成功更新快速篩選"
 
@@ -6662,6 +7171,10 @@ msgstr "若為唯讀，則"
 msgid "Reason"
 msgstr "原因"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:118
+msgid "Record"
+msgstr ""
+
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:86
@@ -6673,6 +7186,26 @@ msgstr "記錄通話"
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Record Outgoing Calls"
 msgstr "記錄去電"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:62
+msgid "Record is cancelled"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:27
+msgid "Record is created"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:48
+msgid "Record is deleted"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:55
+msgid "Record is submitted"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:34
+msgid "Record is updated"
+msgstr ""
 
 #. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -6691,9 +7224,17 @@ msgstr "找不到錄音網址"
 msgid "Recording not available"
 msgstr "無法播放錄音"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:144
+msgid "Records"
+msgstr "記錄"
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:348
 msgid "Redirect URL"
 msgstr "重新導向網址"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:35
+msgid "Redo"
+msgstr "重做"
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM
 #. Notification'
@@ -6764,6 +7305,14 @@ msgstr "駁回"
 msgid "Reject Call"
 msgstr "拒接來電"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:44
+msgid "Related"
+msgstr "關聯單據"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:5
+msgid "Related Record Condition"
+msgstr ""
+
 #. Option for the 'Timeline Timestamp Format' (Select) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -6776,7 +7325,7 @@ msgstr "相對"
 msgid "Reload Columns"
 msgstr "重新載入欄"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:176
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:186
 #: frontend/src/components/Controls/ImageUploader.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:434
 #: frontend/src/components/FieldLayoutEditor.vue:492
@@ -6792,7 +7341,7 @@ msgstr "移除"
 msgid "Remove All"
 msgstr "全部移除"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:184
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:194
 msgid "Remove Group"
 msgstr "移除群組"
 
@@ -6828,9 +7377,21 @@ msgstr "移除區段"
 msgid "Remove Tab"
 msgstr "移除分頁"
 
-#: crm/api/user.py:176
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:24
+msgid "Remove field"
+msgstr "移除欄位"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
+msgid "Remove step"
+msgstr ""
+
+#: crm/api/user.py:177
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
 msgstr "在將此使用者的角色變更為業務使用者之前，請先將其從業務階層中移除"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
+msgid "Remove trigger"
+msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:195
 msgid "Remove {0} from the hierarchy. What should happen to their direct reports?"
@@ -7016,6 +7577,10 @@ msgstr "重試資料補全"
 msgid "Retry Sync"
 msgstr "重試同步"
 
+#: crm/automation/actions.py:190
+msgid "Reused Deal {0}"
+msgstr ""
+
 #: crm/api/dashboard.py:846
 msgid "Revenue"
 msgstr "收入"
@@ -7048,6 +7613,14 @@ msgstr "響鈴中……"
 #: frontend/src/components/Modals/AddExistingUserModal.vue:46
 msgid "Role"
 msgstr "角色"
+
+#: crm/api/user.py:235
+msgid "Role Profile Assigned"
+msgstr ""
+
+#: crm/api/user.py:232
+msgid "Roles of user {0} are managed by a Role Profile. Update the Role Profile instead."
+msgstr ""
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -7095,6 +7668,10 @@ msgstr "規則名稱"
 msgid "Rule Type"
 msgstr "規則類型"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:70
+msgid "Run As"
+msgstr ""
+
 #: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
 msgstr "在 ERPNext 品項與 CRM 產品之間執行手動雙向同步。"
@@ -7102,6 +7679,26 @@ msgstr "在 ERPNext 品項與 CRM 產品之間執行手動雙向同步。"
 #: frontend/src/components/Settings/ERPNextSettings.vue:251
 msgid "Run a manual synchronization to pull the latest Items from ERPNext."
 msgstr "執行手動同步，從 ERPNext 拉取最新品項。"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:87
+msgid "Run before or after a date stored on the record."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:80
+msgid "Run on a repeating schedule you define with cron."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:73
+msgid "Run only when someone starts it from a record."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:94
+msgid "Run when the app raises a named event you pick."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:238
+msgid "Run {0}"
+msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -7131,7 +7728,7 @@ msgstr "建立 SLA"
 msgid "SLA Name"
 msgstr "SLA 名稱"
 
-#: frontend/src/components/Settings/Settings.vue:197
+#: frontend/src/components/Settings/Settings.vue:206
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr "SLA 政策"
@@ -7178,7 +7775,7 @@ msgid "SUBJECT"
 msgstr "主旨"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
-#: frontend/src/components/Settings/Settings.vue:164
+#: frontend/src/components/Settings/Settings.vue:168
 msgid "Sales Hierarchy"
 msgstr "業務階層"
 
@@ -7326,6 +7923,7 @@ msgstr "星期六"
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:51
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:78
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:54
 #: frontend/src/components/Telephony/ExotelCallUI.vue:218
 #: frontend/src/components/ViewControls.vue:138
 #: frontend/src/pages/Dashboard.vue:36
@@ -7338,11 +7936,15 @@ msgstr "儲存"
 msgid "Save Changes"
 msgstr "儲存變更"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:693
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:89
+msgid "Save the flow before testing it."
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:778
 msgid "Saved View"
 msgstr "已儲存檢視"
 
-#: frontend/src/components/ViewControls.vue:758
+#: frontend/src/components/ViewControls.vue:796
 msgid "Saved Views"
 msgstr "已儲存檢視"
 
@@ -7362,7 +7964,8 @@ msgstr "指令碼"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
-#: frontend/src/components/frappe-ui/Autocomplete.vue:57
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:19
+#: frontend/src/components/frappe-ui/Autocomplete.vue:58
 msgid "Search"
 msgstr "搜尋"
 
@@ -7374,9 +7977,23 @@ msgstr "搜尋範本"
 msgid "Search User"
 msgstr "搜尋使用者"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:207
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:252
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:276
+msgid "Search blocks"
+msgstr "搜尋區塊"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:6
+msgid "Search fields"
+msgstr "搜尋欄位"
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:194
 msgid "Search fields…"
 msgstr "搜尋欄位…"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:97
+msgid "Search triggers"
+msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
@@ -7404,7 +8021,7 @@ msgstr "請參閱錯誤記錄。"
 msgid "Seed the crawl queue from the site's sitemap (declared in robots.txt, or the conventional /sitemap.xml) so pages not reachable within Max Depth still get a chance to be crawled. This is an addition on top of ordinary link-following, not a replacement -- a site with no sitemap falls straight through to link-following with no error."
 msgstr "從網站的網站地圖（宣告於 robots.txt，或慣用的 /sitemap.xml）為爬取佇列建立種子，讓超出最大深度而無法觸及的頁面仍有機會被爬取。此為一般連結追蹤之外的額外機制，而非取代 - 沒有網站地圖的網站會直接改用連結追蹤，不會發生錯誤。"
 
-#: frontend/src/components/SidePanelLayout.vue:156
+#: frontend/src/components/SidePanelLayout.vue:157
 msgid "Select"
 msgstr "選取"
 
@@ -7456,6 +8073,10 @@ msgstr "為您的 CRM 選擇一個 Twilio 應用程式"
 msgid "Select a Value"
 msgstr "選擇一個值"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:11
+msgid "Select a record"
+msgstr ""
+
 #: frontend/src/components/Questionnaire.vue:93
 msgid "Select all that apply"
 msgstr "勾選所有適用項目"
@@ -7482,6 +8103,10 @@ msgstr "為 {0} 選擇受指派人。"
 #: frontend/src/components/Settings/ERPNextSettings.vue:304
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
 msgstr "選擇要在 ERPNext 中觸發自動建立客戶的商機狀態"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:8
+msgid "Select users"
+msgstr ""
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
 msgid "Select whether to display time with or without seconds"
@@ -7515,7 +8140,7 @@ msgstr "傳送範本"
 msgid "Send an Email"
 msgstr "傳送電子郵件"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:580
+#: frontend/src/components/Layouts/AppSidebar.vue:662
 msgid "Send email"
 msgstr "傳送電子郵件"
 
@@ -7545,7 +8170,7 @@ msgstr "分隔符號"
 msgid "Series"
 msgstr "數列"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:705
+#: frontend/src/components/Layouts/AppSidebar.vue:790
 msgid "Service Level Agreement"
 msgstr "服務水平協議"
 
@@ -7559,7 +8184,7 @@ msgstr "服務商"
 msgid "Set"
 msgstr "設定"
 
-#: frontend/src/components/ViewControls.vue:1179
+#: frontend/src/components/ViewControls.vue:1301
 msgid "Set As Default"
 msgstr "設為預設"
 
@@ -7583,6 +8208,11 @@ msgstr "設定地點"
 #: frontend/src/components/EnrichFromWebsite.vue:77
 msgid "Set a Website on this record before enriching."
 msgstr "補全前請先為此記錄設定網站。"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:106
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:25
+msgid "Set a condition"
+msgstr ""
 
 #: crm/api/form.py:394
 msgid "Set a default value before publishing for: {0}"
@@ -7616,9 +8246,17 @@ msgstr "設為主要聯絡人"
 msgid "Set as default SLA"
 msgstr "設為預設服務水準協議"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:27
+msgid "Set how long to wait"
+msgstr ""
+
 #: frontend/src/components/Controls/GeolocationControl.vue:14
 msgid "Set location…"
 msgstr "設定地點…"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:232
+msgid "Set more fields at once as JSON. These are applied together with the Field and Value above, in the same save."
+msgstr ""
 
 #. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
 #. Settings'
@@ -7646,7 +8284,7 @@ msgstr "設定我的銷售管道"
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr "透過選擇預先定義的排程或建立新排程，設定工作日、工作時間與假日"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:657
+#: frontend/src/components/Layouts/AppSidebar.vue:742
 msgid "Setting Up"
 msgstr "設定中"
 
@@ -7694,7 +8332,7 @@ msgstr "已成功更新設定"
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:661
+#: frontend/src/components/Layouts/AppSidebar.vue:746
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
 msgid "Settings"
 msgstr "設定"
@@ -7715,7 +8353,7 @@ msgstr "設定電子郵件"
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr "由於預設供應商不支援 {0} 至 {1} 的貨幣換算，請在設定中設定「Frankfurter」以外的匯率供應商。"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:452
+#: frontend/src/components/Layouts/AppSidebar.vue:521
 msgid "Setup your password"
 msgstr "設定你的密碼"
 
@@ -7745,6 +8383,10 @@ msgstr "顯示密碼"
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
 msgstr "顯示預覽"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:59
+msgid "Show details"
+msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:86
 msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
@@ -7797,6 +8439,10 @@ msgstr "已驗證網站連線"
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:474
 msgid "Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here."
 msgstr "此表單可嵌入的網站，每行一個。瀏覽器會封鎖未列於此處的任何網站上的 iframe。"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:18
+msgid "Skip"
+msgstr "略過"
 
 #. Label of the skip_patterns (Table) field in DocType 'CRM Enrichment
 #. Settings'
@@ -7903,6 +8549,10 @@ msgstr "已成功啟用來源"
 msgid "Spacer"
 msgstr "間隔元素"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:13
+msgid "Split the run into two arms on a condition."
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:59
 msgid "Spreadsheets"
 msgstr "試算表"
@@ -7920,7 +8570,7 @@ msgstr "標準表單指令碼無法修改，請改為複製該表單指令碼。
 msgid "Standard Selling Rate"
 msgstr "標準售價"
 
-#: frontend/src/components/ViewControls.vue:722
+#: frontend/src/components/ViewControls.vue:760
 msgid "Standard Views"
 msgstr "標準檢視"
 
@@ -7947,9 +8597,37 @@ msgstr "開始時間"
 msgid "Start a conversation now!"
 msgstr "現在就開始對話吧！"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:49
+msgid "Start a run just after a record is deleted."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:56
+msgid "Start a run when a submittable record is submitted."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:63
+msgid "Start a run when a submitted record is cancelled."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:28
+msgid "Start a run whenever a new record is created."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:35
+msgid "Start a run whenever an existing record is saved."
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
 msgstr "開始日期不得晚於結束日期"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:53
+msgid "Start from scratch"
+msgstr "從頭開始"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:23
+msgid "Start test run"
+msgstr ""
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start time is required"
@@ -7985,6 +8663,7 @@ msgstr "開始於"
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/components/Settings/Forms/FormsList.vue:45
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:56
 #: frontend/src/pages/Contact.vue:395 frontend/src/pages/MobileContact.vue:387
 #: frontend/src/pages/MobileOrganization.vue:469
 #: frontend/src/pages/Organization.vue:511
@@ -8002,6 +8681,18 @@ msgstr "狀態變更記錄"
 #: frontend/src/components/Modals/LeadModal.vue:152
 msgid "Status is required"
 msgstr "必須提供狀態"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:5
+msgid "Step"
+msgstr "步驟"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:7
+msgid "Step Type"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
+msgid "Step name"
+msgstr ""
 
 #: frontend/src/components/Questionnaire.vue:91
 msgid "Step {0} of {1}"
@@ -8127,7 +8818,7 @@ msgstr "已在背景開始同步"
 msgid "System"
 msgstr "系統"
 
-#: frontend/src/components/Settings/Settings.vue:123
+#: frontend/src/components/Settings/Settings.vue:127
 msgid "System Configuration"
 msgstr "系統設定"
 
@@ -8213,7 +8904,7 @@ msgstr "目標值"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Activities/ActivityHeader.vue:136
-#: frontend/src/components/Layouts/AppSidebar.vue:679
+#: frontend/src/components/Layouts/AppSidebar.vue:764
 msgid "Task"
 msgstr "任務"
 
@@ -8222,7 +8913,7 @@ msgstr "任務"
 msgid "Tasks"
 msgstr "任務"
 
-#: frontend/src/components/Settings/Settings.vue:229
+#: frontend/src/components/Settings/Settings.vue:238
 msgid "Telephony"
 msgstr "電話系統"
 
@@ -8263,7 +8954,7 @@ msgstr "已成功重新命名範本"
 msgid "Template updated successfully"
 msgstr "已成功更新範本"
 
-#: frontend/src/components/Settings/Settings.vue:182
+#: frontend/src/components/Settings/Settings.vue:186
 msgid "Templates"
 msgstr "範本"
 
@@ -8290,6 +8981,10 @@ msgstr "區域經理"
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Territory Name"
 msgstr "區域名稱"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
+msgid "Test Run"
+msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:528
 msgid "Thank you!"
@@ -8368,6 +9063,10 @@ msgstr "本週"
 msgid "This Year"
 msgstr "今年"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:40
+msgid "This alias is not available at this step"
+msgstr ""
+
 #: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
 msgstr "此欄包含欄位。你確定要移除嗎？"
@@ -8433,6 +9132,10 @@ msgstr "時間格式"
 msgid "Time before the event when a reminder notification will be sent by default. This will be applied to all events unless a custom notification is set for a specific event."
 msgstr "預設在活動開始前傳送提醒通知的時間。除非為特定活動設定自訂通知，否則將套用至所有活動。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
+msgid "Timed out"
+msgstr ""
+
 #. Label of the crm_timeline_sort_order (Select) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -8452,6 +9155,10 @@ msgstr "時間軸排序"
 #: frontend/src/components/Settings/GeneralSettings.vue:82
 msgid "Timeline timestamp format"
 msgstr "時間軸時間戳記格式"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:83
+msgid "Timeout"
+msgstr "逾時"
 
 #: frontend/src/components/Filter.vue:387
 msgid "Timespan"
@@ -8481,7 +9188,7 @@ msgstr "標題"
 msgid "Title Field"
 msgstr "標題欄位"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:212
+#: frontend/src/components/Settings/Forms/FormsList.vue:213
 msgid "Title and route are required"
 msgstr "必須提供標題與路由"
 
@@ -8516,6 +9223,10 @@ msgstr "目標類型"
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "To User"
 msgstr "至使用者"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
+msgid "To Value"
+msgstr "截止值"
 
 #: frontend/src/components/Settings/EmailEdit.vue:121
 msgid "To know more about setting up email accounts, click"
@@ -8597,6 +9308,23 @@ msgstr "Traceback"
 msgid "Treat the pattern as a regular expression instead of a plain substring."
 msgstr "將此模式視為正規表示式，而非純子字串。"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:5
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:52
+msgid "Trigger"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:8
+msgid "Trigger Field"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
+msgid "Trigger record"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
+msgid "True"
+msgstr ""
+
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -8604,7 +9332,7 @@ msgstr "將此模式視為正規表示式，而非純子字串。"
 msgid "Tuesday"
 msgstr "星期二"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:157
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:167
 msgid "Turn into a Group"
 msgstr "轉換為群組"
 
@@ -8622,7 +9350,7 @@ msgstr "TwiML SID"
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:725
+#: frontend/src/components/Layouts/AppSidebar.vue:810
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
@@ -8716,14 +9444,31 @@ msgstr "未經授權的請求"
 msgid "Uncollapsible"
 msgstr "不可收合"
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:167
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:28
+msgid "Undo"
+msgstr "復原"
+
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:177
 msgid "Ungroup Conditions"
 msgstr "取消群組條件"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:43
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:91
+msgid "Unit"
+msgstr "單位"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
 msgstr "未知"
+
+#: crm/automation/relationships.py:40
+msgid "Unknown CRM relationship: {0}"
+msgstr ""
+
+#: crm/automation/actions.py:227
+msgid "Unknown Email Template"
+msgstr ""
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:124
 msgid "Unlink"
@@ -8757,19 +9502,31 @@ msgstr "取消連結 {0} 個項目(s)"
 msgid "Unnamed field"
 msgstr "未命名欄位"
 
-#: frontend/src/components/ViewControls.vue:1194
+#: frontend/src/components/ViewControls.vue:1316
 msgid "Unpin View"
 msgstr "取消釘選檢視"
 
-#: frontend/src/components/Settings/Forms/FormsList.vue:267
+#: frontend/src/components/Settings/Forms/FormsList.vue:269
 msgid "Unpublish"
 msgstr "取消發佈"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:44
+msgid "Unsaved"
+msgstr "未儲存"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:570
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1021
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:359
 msgid "Unsaved Changes"
 msgstr "未儲存的變更"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:257
+msgid "Unsaved changes"
+msgstr "未儲存的變更"
+
+#: crm/automation/actions.py:158
+msgid "Unsupported conversion policy"
+msgstr ""
 
 #: frontend/src/components/CollapsibleSection.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:32
@@ -8778,6 +9535,12 @@ msgstr "未儲存的變更"
 #: frontend/src/components/SidePanelLayoutEditor.vue:19
 msgid "Untitled"
 msgstr "未命名"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:24
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:546
+msgid "Untitled automation"
+msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:84
@@ -8899,11 +9662,11 @@ msgstr "使用者"
 msgid "User Agent"
 msgstr "使用者代理程式"
 
-#: frontend/src/components/Settings/Settings.vue:103
+#: frontend/src/components/Settings/Settings.vue:107
 msgid "User Configuration"
 msgstr "使用者設定"
 
-#: frontend/src/components/Settings/Settings.vue:149
+#: frontend/src/components/Settings/Settings.vue:153
 msgid "User Management"
 msgstr "使用者管理"
 
@@ -8916,15 +9679,11 @@ msgstr "使用者名稱"
 msgid "User added to hierarchy"
 msgstr "已將使用者加入階層"
 
-#: crm/api/user.py:206
-msgid "User {0} cannot be removed as it has a Role Profile assigned to it."
-msgstr "使用者 {0} 因已指派角色設定檔而無法移除。"
-
 #: frontend/src/components/Settings/Users.vue:291
 msgid "User {0} has been removed"
 msgstr "已移除使用者 {0}"
 
-#: crm/api/user.py:223
+#: crm/api/user.py:221
 msgid "User {0} has been removed from CRM roles."
 msgstr "已將使用者 {0} 從 CRM 角色中移除。"
 
@@ -8934,7 +9693,7 @@ msgstr "使用者 {0} 已對應至階層節點 {1}。"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:603
-#: frontend/src/components/Settings/Settings.vue:152
+#: frontend/src/components/Settings/Settings.vue:156
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr "使用者"
@@ -8962,6 +9721,7 @@ msgid "Validity"
 msgstr "有效期"
 
 #: frontend/src/components/Modals/EditValueModal.vue:16
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:48
 msgid "Value"
 msgstr "值"
 
@@ -8989,7 +9749,7 @@ msgstr "檢視名稱"
 msgid "View documentation"
 msgstr "查看說明文件"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:690
+#: frontend/src/components/Layouts/AppSidebar.vue:775
 msgid "Views"
 msgstr "檢視"
 
@@ -8997,15 +9757,50 @@ msgstr "檢視"
 msgid "Visible if"
 msgstr "若滿足以下條件則顯示"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:35
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:220
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:20
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:95
+msgid "Wait"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:55
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:94
+msgid "Wait for"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:221
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:30
+msgid "Wait for event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:72
+msgid "Wait for {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:69
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:115
+msgid "Wait {0} {1}"
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
 msgstr "臨櫃客戶"
+
+#. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Warm"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:42
+msgid "Watch one field and run when it moves to a new value."
+msgstr ""
 
 #: crm/integrations/twilio/api.py:108
 msgid "We're unable to connect your call right now. Please try again later."
 msgstr "我們目前無法為您接通電話。請稍後再試。"
 
-#: frontend/src/components/Layouts/AppSidebar.vue:687
+#: frontend/src/components/Layouts/AppSidebar.vue:772
 msgid "Web Form"
 msgstr "網頁表單"
 
@@ -9079,8 +9874,8 @@ msgstr "你想先完成什麼？"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:727
-#: frontend/src/components/Settings/Settings.vue:234
+#: frontend/src/components/Layouts/AppSidebar.vue:812
+#: frontend/src/components/Settings/Settings.vue:243
 #: frontend/src/pages/Deal.vue:619 frontend/src/pages/Lead.vue:482
 #: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:346
 #: frontend/src/pages/PersonaForm.vue:76
@@ -9140,6 +9935,15 @@ msgstr "工作排程與假日"
 msgid "Workday"
 msgstr "工作日"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:215
+msgid "Workflow Automation"
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:196
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:4
+msgid "Workflow Automations"
+msgstr ""
+
 #. Label of the section_break_rmgo (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
 #. Label of the working_hours (Table) field in DocType 'CRM Service Level
@@ -9156,6 +9960,10 @@ msgstr "工作時間"
 msgid "Write Policy"
 msgstr "寫入政策"
 
+#: crm/automation/actions.py:301
+msgid "Write the notification text"
+msgstr ""
+
 #. Label of the twitter (Data) field in DocType 'CRM Deal'
 #. Label of the twitter (Data) field in DocType 'CRM Lead'
 #. Label of the twitter (Data) field in DocType 'CRM Organization'
@@ -9166,6 +9974,7 @@ msgid "X (Twitter)"
 msgstr "X (Twitter)"
 
 #: frontend/src/components/Filter.vue:639
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:294
 msgid "Yes"
 msgstr "是"
 
@@ -9195,11 +10004,11 @@ msgstr "你無權存取 CRM 資源。"
 msgid "You are not permitted to access this resource."
 msgstr "你無權存取此資源。"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:273
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:281
 msgid "You are not permitted to create leads."
 msgstr "你無權建立潛在客戶。"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:270
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:278
 msgid "You are not permitted to update this call log."
 msgstr "你無權更新此通話紀錄。"
 
@@ -9219,7 +10028,7 @@ msgstr "您可以從以下位置取得您的存取金鑰： "
 msgid "You can invite multiple users by comma separating their email addresses"
 msgstr "你可以用逗號分隔電子郵件地址來邀請多位使用者"
 
-#: crm/api/user.py:194
+#: crm/api/user.py:195
 msgid "You cannot remove yourself."
 msgstr "你無法移除自己。"
 
@@ -9246,6 +10055,10 @@ msgstr "你無權存取此文件"
 #: crm/api/__init__.py:154
 msgid "You don't have permission to delete this attachment"
 msgstr "你沒有刪除此附件的權限"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:258
+msgid "You have unsaved changes. Do you wish to exit?"
+msgstr ""
 
 #: crm/api/user.py:17
 msgid "You must be logged in to change your password"
@@ -9295,6 +10108,26 @@ msgstr "您的舊條件將被覆寫。確定要儲存嗎？"
 msgid "Zoho CRM"
 msgstr "Zoho CRM"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:57
+msgid "Zoom in"
+msgstr "放大"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:46
+msgid "Zoom out"
+msgstr "縮小"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:10
+msgid "a date field"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:7
+msgid "a field to watch"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:9
+msgid "a schedule"
+msgstr ""
+
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
 msgstr "新增了一個"
@@ -9305,6 +10138,14 @@ msgstr "新增了一個"
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
 msgstr "琥珀色"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:11
+msgid "an event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
+msgid "and"
+msgstr "與"
 
 #: crm/api/todo.py:132
 msgid "assigned a new task {0} to you"
@@ -9365,6 +10206,10 @@ msgstr "建立了此潛在客戶"
 msgid "cyan"
 msgstr "青色"
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:161
+msgid "deal"
+msgstr "商機"
+
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:135
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:375
 msgid "deals"
@@ -9384,6 +10229,14 @@ msgstr "desk"
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:47
 msgid "disabled"
 msgstr "disabled"
+
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:231
+msgid "e.g. @gmail.com"
+msgstr ""
+
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:232
+msgid "e.g. Open, Replied"
+msgstr ""
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -9560,7 +10413,7 @@ msgstr "剛剛"
 msgid "kanban"
 msgstr "kanban"
 
-#: crm/api/doc.py:47 crm/api/doc.py:157 crm/api/doc.py:493
+#: crm/api/doc.py:47 crm/api/doc.py:157 crm/api/doc.py:494
 msgid "label"
 msgstr "標籤"
 
@@ -9602,6 +10455,14 @@ msgstr "現在"
 #: crm/api/activities.py:110 crm/api/activities.py:248
 msgid "old_value"
 msgstr "old_value"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:55
+msgid "on {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
+msgid "or"
+msgstr "或"
 
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
@@ -9757,6 +10618,10 @@ msgstr "{0} 無法設定為隱藏欄位"
 msgid "{0} can't be used as a layout break"
 msgstr "{0} 不能用作版面分隔符"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:159
+msgid "{0} contains {1}"
+msgstr "{0} 包含 {1}"
+
 #: frontend/src/utils/index.js:158
 msgid "{0} d"
 msgstr "{0} 天"
@@ -9769,9 +10634,17 @@ msgstr "{0} 天前"
 msgid "{0} deleted successfully"
 msgstr "{0} 已成功刪除"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:160
+msgid "{0} does not contain {1}"
+msgstr "{0} 不包含 {1}"
+
 #: frontend/src/utils/index.js:153
 msgid "{0} h"
 msgstr "{0} 小時"
+
+#: crm/automation/actions.py:235
+msgid "{0} has no email address"
+msgstr ""
 
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.py:48
 msgid "{0} has no field {1}"
@@ -9792,10 +10665,35 @@ msgstr "{0} 是無效的值"
 msgid "{0} is an invalid email address"
 msgstr "{0} 是無效的電子郵件地址"
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:168
+msgid "{0} is empty"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:158
+msgid "{0} is none of {1}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:156
+msgid "{0} is not {1}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:157
+msgid "{0} is one of {1}"
+msgstr "{0} 是 {1} 其中之一"
+
 #: crm/api/form.py:555 frontend/src/components/Modals/ContactModal.vue:106
 #: frontend/src/components/Modals/ConvertToDealModal.vue:171
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:51
 msgid "{0} is required"
 msgstr "{0} 為必填"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:167
+msgid "{0} is set"
+msgstr "{0} 已設定"
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:155
+msgid "{0} is {1}"
+msgstr "{0} 為 {1}"
 
 #: crm/api/form.py:276
 msgid "{0} isn't a linkable field on a CRM form."
@@ -9813,9 +10711,17 @@ msgstr "{0} 分鐘前"
 msgid "{0} months ago"
 msgstr "{0} 個月前"
 
+#: crm/automation/actions.py:31
+msgid "{0} must act on {1}, not {2}"
+msgstr ""
+
 #: frontend/src/components/Settings/ERPNextSettings.vue:569
 msgid "{0} not yet synced"
 msgstr "{0} 尚未同步"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:46
+msgid "{0} of {1} steps ran"
+msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:507
 msgid "{0} users added to hierarchy"
