@@ -99,6 +99,7 @@
                 :model-value="pending.max_pages ?? settings.doc.max_pages"
                 type="number"
                 min="1"
+                :max="MAX_PAGES_LIMIT"
                 class="w-24"
                 :disabled="enrichmentOff"
                 @update:model-value="(value) => (pending.max_pages = value)"
@@ -408,6 +409,10 @@ const {
   onWeightInput,
 } = useIndustryRules()
 
+// Mirrors MAX_PAGES_LIMIT in crm/domain_enrichment/config.py -- the Settings
+// controller rejects anything outside 1..20 on save.
+const MAX_PAGES_LIMIT = 20
+
 // Keystrokes in a typed box land here instead of in the doc, so a half-typed
 // number is never autosaved and never counts as a change. The value is folded
 // into the doc when the box is committed (blur or Enter) or when Save is
@@ -486,19 +491,24 @@ function update(fieldname, value) {
 
 // Folds the typed number into the doc, returning false if it was refused. The
 // number input reports a string, and an emptied box reports '', so anything that
-// isn't a positive whole number is rejected: saving 0 would leave the crawler
+// isn't a whole number in range is rejected: saving 0 would leave the crawler
 // fetching no pages at all. Dropping the pending value snaps the box back to the
 // stored one, which is now what the input is bound to.
 //
-// No upper bound: nothing in crm/domain_enrichment clamps max_pages, so the UI
-// doesn't invent a ceiling the backend doesn't have.
+// The ceiling mirrors MAX_PAGES_LIMIT in crm/domain_enrichment/config.py, which
+// the Settings controller enforces on save. Catching it here turns a server
+// throw into an inline message; the backend stays the real guard.
 function applyMaxPages() {
   if (pending.max_pages === undefined) return true
 
   const pages = Number(pending.max_pages)
 
-  if (!Number.isInteger(pages) || pages < 1) {
-    toast.error(__('Max pages must be a whole number of 1 or more'))
+  if (!Number.isInteger(pages) || pages < 1 || pages > MAX_PAGES_LIMIT) {
+    toast.error(
+      __('Max pages must be a whole number between 1 and {0}', [
+        MAX_PAGES_LIMIT,
+      ]),
+    )
     delete pending.max_pages
     return false
   }
