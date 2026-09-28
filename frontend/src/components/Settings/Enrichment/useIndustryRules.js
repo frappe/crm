@@ -236,7 +236,6 @@ export function useIndustryRules() {
       // What the seeded Industry rules score against: the company name,
       // description, title and headings, never body copy.
       match_scope: 'Headline',
-      enabled: 1,
       patterns: parseKeywords(row.keywords).map((keyword) => ({
         pattern: keyword,
         is_regex: 0,
@@ -281,8 +280,14 @@ export function useIndustryRules() {
     return values
   }
 
+  // A row just added with nothing picked or typed into it yet.
+  function isRowBlank(row) {
+    return !row.name && !row.industry && !row.keywords.trim()
+  }
+
   return {
     ...rules,
+    isRowBlank,
     checkRow,
     onIndustryChange,
     onIndustryCreate,
