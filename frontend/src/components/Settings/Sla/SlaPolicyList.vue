@@ -50,8 +50,8 @@
             !slaPolicyListResource.list.loading &&
             !slaPolicyListResource.list.data?.length
           "
-          title="No SLA Policies Found"
-          description="Add one to get started."
+          :title="__('No SLA Policies Found')"
+          :description="__('Add one to get started.')"
           :icon="ShieldCheck"
         />
         <div v-else class="-ml-2">
