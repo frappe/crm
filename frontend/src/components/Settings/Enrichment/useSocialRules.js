@@ -1,8 +1,19 @@
 import { useEnrichmentRules } from './useEnrichmentRules'
 
-// mapper.py looks a social profile up by its exact lowercase key, so whatever
-// the admin types is stored trimmed and lowercased -- "LinkedIn " and
-// "linkedin" are the same platform.
+// The networks mapper.py can write to a CRM field (_SOCIAL_KEYS there). A rule
+// for any other network would match on the page and then never populate
+// anything, so the Platform box only offers these.
+export const SOCIAL_PLATFORMS = [
+  { label: 'LinkedIn', value: 'linkedin' },
+  { label: 'X (Twitter)', value: 'twitter' },
+  { label: 'GitHub', value: 'github' },
+  { label: 'Facebook', value: 'facebook' },
+  { label: 'Instagram', value: 'instagram' },
+  { label: 'YouTube', value: 'youtube' },
+]
+
+// mapper.py looks a social profile up by its exact lowercase key, so a value
+// stored in Desk as "LinkedIn " still reads as the same platform.
 function normalizePlatform(value) {
   return (value || '').trim().toLowerCase()
 }
@@ -16,9 +27,6 @@ function splitPatterns(patternRows) {
 
   return {
     pattern: first?.pattern || '',
-    // A first pattern written in Desk as a plain substring is still one; only a
-    // regex row (or a new one) is held to the regex check.
-    patternIsRegex: first ? Number(first.is_regex) === 1 : true,
     hidden: rest.map((row) => row.pattern),
   }
 }
@@ -31,20 +39,6 @@ function splitPatterns(patternRows) {
 // Python wrote, so a translated UI must not change it.
 function socialRuleName(platform) {
   return `Social: ${platform}`
-}
-
-// new RegExp is the same engine the box is typed against, so an expression that
-// compiles here is one the admin can reason about. It is not the engine the
-// crawler runs (that is Python's `re`), so this catches typos, not every
-// dialect difference.
-function regexError(pattern) {
-  try {
-    new RegExp(pattern)
-  } catch (err) {
-    return __('Not a valid regular expression: {0}', [err.message])
-  }
-
-  return ''
 }
 
 export function useSocialRules() {
@@ -66,7 +60,7 @@ export function useSocialRules() {
   })
 
   function buildRow(rule, patternRows, held) {
-    const { pattern, patternIsRegex, hidden } = splitPatterns(patternRows)
+    const { pattern, hidden } = splitPatterns(patternRows)
 
     return {
       // The stored values below always come from the reload; only what was being
@@ -77,7 +71,6 @@ export function useSocialRules() {
       // from the inputs.
       savedPlatform: rule.target_value || '',
       savedPattern: pattern,
-      patternIsRegex,
       hidden,
       platformError: held ? held.platformError : '',
       patternError: held ? held.patternError : '',
@@ -90,7 +83,6 @@ export function useSocialRules() {
       pattern: '',
       savedPlatform: '',
       savedPattern: '',
-      patternIsRegex: true,
       hidden: [],
       platformError: '',
       patternError: '',
@@ -139,20 +131,25 @@ export function useSocialRules() {
 
     if (!platform) {
       row.platformError = __('Platform is required')
+    } else if (!SOCIAL_PLATFORMS.some((option) => option.value === platform)) {
+      row.platformError = __('Enrichment cannot fill a field from {0}', [
+        platform,
+      ])
     } else if (platformTakenBy(platform, others)) {
       row.platformError = __('A rule for {0} already exists', [platform])
     }
 
+    // Whether the regex compiles is left to the server: the crawler runs
+    // Python's `re`, so that is the engine CRM Enrichment Rule validates
+    // against, and its message comes back under the row.
     if (!pattern) {
       row.patternError = __('Pattern is required')
-    } else if (row.patternIsRegex) {
-      row.patternError = regexError(pattern)
     }
 
     return !row.platformError && !row.patternError
   }
 
-  // Also run when a box is left, so a bad regex or a taken platform is flagged
+  // Also run when a box is left, so a taken platform is flagged
   // straight away instead of on Save. Only a changed row is checked: a stored
   // rule nobody touched is not the admin's problem to fix here.
   function checkRow(row) {
