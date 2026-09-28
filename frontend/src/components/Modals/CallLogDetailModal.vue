@@ -194,9 +194,9 @@ import { sanitizeHTML } from '@/utils'
 import { isMobileView } from '@/composables/settings'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { Dialog, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
+import { Dialog, Dropdown, Avatar, Tooltip, call, toast, FeatherIcon } from 'frappe-ui'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -206,7 +206,7 @@ const show = defineModel({ type: Boolean })
 
 const callLog = defineModel('callLog', { type: Object })
 
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 
@@ -260,7 +260,6 @@ async function addNoteToCallLog(_note, isInsert = false) {
       call_sid: callLog.value?.data?.id,
       note: _note,
     })
-    updateOnboardingStep('create_first_note')
     capture('note_created')
   } else {
     capture('note_updated')
@@ -274,7 +273,7 @@ async function addTaskToCallLog(_task, isInsert = false) {
       call_sid: callLog.value?.data?.id,
       task: _task,
     })
-    updateOnboardingStep('create_first_task')
+    completeStep('create_first_task')
     capture('task_created')
   } else {
     capture('task_updated')
