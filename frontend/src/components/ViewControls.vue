@@ -559,7 +559,25 @@ listResource = createResource({
 })
 
 list.value = listResource
-listResource.params = getParams()
+// Keep an unsaved view change on cached re-entry; don't reset to the saved view (frappe/crm#2833).
+// kanban_columns is excluded: pagination (load more) mutates it without being a user edit.
+const dirtySignature = (p) =>
+  JSON.stringify([
+    p.filters || {},
+    p.order_by,
+    p.view?.group_by_field,
+    p.column_field,
+    p.title_field,
+    p.kanban_fields,
+  ])
+const initialParams = getParams()
+if (!listResource.params) {
+  listResource.params = initialParams
+} else if (
+  dirtySignature(listResource.params) !== dirtySignature(initialParams)
+) {
+  viewUpdated.value = true
+}
 
 const isLoading = computed(() => list.value?.loading)
 
@@ -1061,6 +1079,22 @@ function loadMoreKanban(columnName) {
   list.value.reload()
 }
 
+// Saving the standard view re-reads the views store so it matches the server,
+// which trips the `getView` watcher below into rebuilding the list params from
+// the store. For our own save that only replays state already applied locally,
+// and when two saves overlap (quick filter typing) the earlier re-read can land
+// last and rewind the filters — and the quick filter input — to the older
+// value (#2113). Count these re-reads so the watcher leaves the params alone.
+let pendingSelfViewReloads = 0
+
+function reloadViewAfterSave() {
+  pendingSelfViewReloads++
+  return reloadView().catch((e) => {
+    pendingSelfViewReloads--
+    throw e
+  })
+}
+
 function createOrUpdateStandardView() {
   if (route.query.view) return
   view.value.doctype = props.doctype
@@ -1070,7 +1104,7 @@ function createOrUpdateStandardView() {
       view: view.value,
     },
   ).then(() => {
-    reloadView()
+    reloadViewAfterSave()
     view.value = {
       label: view.value.label,
       type: view.value.type || 'list',
@@ -1395,6 +1429,10 @@ defineExpose({
 watch(
   () => getView(route.query.view, route.params.viewType, props.doctype),
   (value, old_value) => {
+    if (pendingSelfViewReloads > 0) {
+      pendingSelfViewReloads--
+      return
+    }
     if (_.isEqual(value, old_value)) return
     reload()
   },
