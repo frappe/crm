@@ -182,7 +182,6 @@ import { Avatar, call, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const { capture } = useTelemetry()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 let device = ''
 let log = ref('Connecting...')
@@ -249,7 +248,6 @@ async function updateNote(_note, isInsert = false) {
       call_sid: _call.parameters.CallSid,
       note: _note,
     })
-    updateOnboardingStep('create_first_note')
     capture('note_created')
   } else {
     capture('note_updated')
