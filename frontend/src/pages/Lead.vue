@@ -660,7 +660,7 @@ function openEmailBox() {
   if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
     activities.value.changeTabTo('emails')
   }
-  nextTick(() => (activities.value.emailBox.show = true))
+  nextTick(() => activities.value.emailBox?.openEmailBox())
 }
 
 function statusLabel(status) {
