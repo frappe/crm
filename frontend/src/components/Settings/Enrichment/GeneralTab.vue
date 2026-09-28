@@ -32,7 +32,7 @@
           class="text-p-base-medium truncate"
           :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-7'"
         >
-          {{ __('Max pages') }}
+          {{ __('Maximum pages') }}
         </div>
         <div
           class="text-p-sm"
