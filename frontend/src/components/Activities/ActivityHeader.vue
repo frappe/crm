@@ -108,12 +108,12 @@ const defaultActions = computed(() => {
     {
       icon: h(Email2Icon, { class: 'h-4 w-4' }),
       label: __('Email'),
-      onClick: () => (emailBox.value.show = true),
+      onClick: () => emailBox.value.openEmailBox(),
     },
     {
       icon: h(CommentIcon, { class: 'h-4 w-4' }),
       label: __('Comment'),
-      onClick: () => (emailBox.value.showComment = true),
+      onClick: () => emailBox.value.openCommentBox(),
     },
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),
