@@ -22,8 +22,9 @@
           <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
             <FormControl
               :model-value="row.platform"
-              type="text"
+              type="select"
               variant="outline"
+              :options="platformOptions(row)"
               :placeholder="__('Platform')"
               :disabled="social.saving"
               :class="row.platformError ? invalidInputClass : ''"
@@ -200,6 +201,7 @@ import { Badge, ErrorMessage, FormControl, Tooltip } from 'frappe-ui'
 import Link from '@/components/Controls/Link.vue'
 import EnrichmentRuleMenu from './EnrichmentRuleMenu.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
+import { SOCIAL_PLATFORMS } from './useSocialRules'
 
 // The rule lists themselves live in EnrichmentSettings.vue: the Tabs panel is
 // unmounted while the General tab is open (reka-ui's TabsContent defaults to
@@ -215,5 +217,15 @@ defineProps({
 // because every rule row wears it and the arbitrary-variant selector is a
 // mouthful to repeat.
 const invalidInputClass =
-  '[&_input]:!border-outline-red-2 [&_input]:focus:!border-outline-red-2'
+  '[&_input]:!border-outline-red-2 [&_input]:focus:!border-outline-red-2 ' +
+  '[&_select]:!border-outline-red-2 [&_select]:focus:!border-outline-red-2'
+
+// A rule saved in Desk can carry a platform outside the list; it stays
+// selectable so the row still shows what is stored, and validation asks for a
+// supported one only once the row is edited.
+function platformOptions(row) {
+  const known = SOCIAL_PLATFORMS.some((option) => option.value === row.platform)
+  if (!row.platform || known) return SOCIAL_PLATFORMS
+  return [{ label: row.platform, value: row.platform }, ...SOCIAL_PLATFORMS]
+}
 </script>

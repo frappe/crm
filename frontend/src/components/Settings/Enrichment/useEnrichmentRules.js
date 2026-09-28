@@ -27,13 +27,15 @@ export function useEnrichmentRules({
   messages,
 }) {
   // order_by matches the doctype's own sort (modified desc), so the list reads
-  // the same here as it does in Desk.
+  // the same here as it does in Desk. There is no pager on the section, so every
+  // rule of the type is loaded -- a rule left off the page could not be edited
+  // or deleted here at all.
   const resource = createListResource({
     doctype: 'CRM Enrichment Rule',
     filters: { rule_type: ruleType },
     fields: ['name', 'rule_name', 'enabled', ...fields],
     orderBy: 'modified desc',
-    pageLength: 99,
+    pageLength: 99999,
   })
 
   // rule name -> the rule's pattern child rows, as stored
@@ -102,32 +104,39 @@ export function useEnrichmentRules({
     return loadPatterns(resource.data || [])
   }
 
-  // get_list never returns child tables, so the patterns have to be fetched
-  // separately: one frappe.client.get per rule, which is what the rest of
-  // Settings already does for a single doc (see WorkflowAutomationDetail.vue). A
-  // handful of rules means a handful of parallel requests -- cheaper than adding
-  // a backend endpoint for a read-only list.
+  // get_list never returns child tables, so every rule's patterns come from one
+  // get_list on the child doctype itself (`parent` is what frappe checks the
+  // read permission against), grouped back onto their rules here.
   async function loadPatterns(rules) {
     patternsLoading.value = true
     try {
-      const docs = await Promise.all(
-        rules.map((rule) =>
-          call('frappe.client.get', {
-            doctype: 'CRM Enrichment Rule',
-            name: rule.name,
-          }),
-        ),
-      )
-      docs.forEach((doc) => {
-        patterns[doc.name] = doc.patterns || []
+      const patternRows = rules.length
+        ? await call('frappe.client.get_list', {
+            doctype: 'CRM Enrichment Rule Pattern',
+            parent: 'CRM Enrichment Rule',
+            filters: {
+              parenttype: 'CRM Enrichment Rule',
+              parentfield: 'patterns',
+              parent: ['in', rules.map((rule) => rule.name)],
+            },
+            fields: ['name', 'parent', 'pattern', 'is_regex', 'idx'],
+            order_by: 'idx asc',
+            limit_page_length: 0,
+          })
+        : []
+      const byRule = {}
+      patternRows.forEach((row) => {
+        ;(byRule[row.parent] ||= []).push(row)
+      })
+      rules.forEach((rule) => {
+        patterns[rule.name] = byRule[rule.name] || []
       })
       buildRows(rules)
       return true
     } catch (err) {
       // A row with no patterns loaded would read as an empty pattern box, and
-      // saving that box would wipe the stored patterns -- so drop the rows rather
-      // than offer edits built on a half-loaded rule.
-      savedRows.value = []
+      // saving that box would wipe the stored patterns -- so no rows are built
+      // from this load. Rows from an earlier, complete load stay on screen.
       patternsError.value = err
       return false
     } finally {
@@ -139,9 +148,12 @@ export function useEnrichmentRules({
   function buildRows(rules) {
     // Every row is rebuilt from the reload, so whatever the admin still had in
     // flight on a row that survived is carried across: an edit that failed to
-    // save, the error under it, a delete that didn't go through.
+    // save, the error under it, a delete that didn't go through. A row Save just
+    // wrote is not carried -- the server's copy is the truth now, even where it
+    // differs from what was typed (a platform stored lowercased).
     const carried = new Map()
     savedRows.value.forEach((row) => {
+      if (row.committed) return
       if (isRowDirty(row) || row.serverError) carried.set(row.name, row)
     })
 
@@ -260,6 +272,7 @@ export function useEnrichmentRules({
         name: row.name,
         fieldname: values,
       })
+      row.committed = true
       return true
     } catch (err) {
       row.serverError = serverMessage(
@@ -297,6 +310,24 @@ export function useEnrichmentRules({
     }
   }
 
+  // Updates can hand rule_names along a chain (A takes B's name while B moves to
+  // C), and rule_name is unique -- so they go one at a time, and any that failed
+  // are tried again after the rest, until a pass frees nothing more. A true
+  // swap (A <-> B) still fails, with the collision message under the row.
+  async function runUpdates(rows) {
+    let pending = rows
+    while (pending.length) {
+      const failed = []
+      for (const row of pending) {
+        if (!(await runUpdate(row))) failed.push(row)
+      }
+      if (failed.length === pending.length) return false
+      failed.forEach((row) => (row.serverError = ''))
+      pending = failed
+    }
+    return true
+  }
+
   // Deletes go first, so a rule removed and re-added under the same name in one
   // Save frees its rule_name before the insert asks for it; then updates, then
   // inserts. Resolves true only when every request succeeded -- a row that
@@ -314,7 +345,7 @@ export function useEnrichmentRules({
     try {
       const results = [
         ...(await Promise.all(removed.map(runDelete))),
-        ...(await Promise.all(updated.map(runUpdate))),
+        await runUpdates(updated),
         ...(await Promise.all(inserted.map(runInsert))),
       ]
 
