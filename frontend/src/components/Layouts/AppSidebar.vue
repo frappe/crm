@@ -114,6 +114,45 @@
               v-if="!isOnboardingStepsCompleted"
               :isSidebarCollapsed="isCollapsed"
             />
+            <!-- Setup guide: card when expanded, icon item when collapsed (mirrors LMS). -->
+            <SidebarItem
+              v-if="isCollapsed"
+              :label="__('Setup Guide')"
+              icon="lucide-book-open"
+              @click="openSetupGuide"
+            />
+            <div
+              v-else
+              class="rounded-lg border border-outline-gray-1 bg-surface-base p-3"
+            >
+              <div class="flex items-center gap-1.5">
+                <span
+                  class="lucide-book-open size-4 shrink-0 text-ink-gray-8"
+                  aria-hidden="true"
+                />
+                <div class="min-w-0 text-p-sm font-medium text-ink-gray-8">
+                  {{ __('Setup Guide') }}
+                </div>
+              </div>
+              <div class="mt-1 flex flex-col gap-3">
+                <p class="text-p-xs text-ink-gray-6">
+                  {{ __('Your first steps with Frappe CRM') }}
+                </p>
+                <Button
+                  class="w-full"
+                  variant="subtle"
+                  :label="__('Open guide')"
+                  @click="openSetupGuide"
+                >
+                  <template #prefix>
+                    <span
+                      class="lucide-external-link size-4"
+                      aria-hidden="true"
+                    />
+                  </template>
+                </Button>
+              </div>
+            </div>
           </div>
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
@@ -212,7 +251,14 @@ import {
 } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
-import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+import {
+  Button,
+  call,
+  Sidebar,
+  SidebarItem,
+  SidebarLabel,
+  Tooltip,
+} from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -366,6 +412,13 @@ function onNotificationsClick(event) {
 function toggleHelpModal() {
   showHelpModal.value = minimize.value ? true : !showHelpModal.value
   minimize.value = !showHelpModal.value
+}
+
+const setupGuideUrl =
+  'https://docs.frappe.io/crm/setup-guide/your-first-steps-with-frappe-crm'
+
+function openSetupGuide() {
+  window.open(setupGuideUrl, '_blank', 'noopener,noreferrer')
 }
 
 // onboarding
