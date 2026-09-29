@@ -399,6 +399,8 @@ QUOTATION_LIST_FIELDS = ["name", "status", "grand_total", "currency", "transacti
 @frappe.whitelist()
 def get_deal_quotations(crm_deal: str):
 	"""ERPNext Quotations linked to a deal, for the deal's Quotations tab."""
+	if not isinstance(crm_deal, str):
+		frappe.throw(_("Invalid deal"), frappe.ValidationError)
 	settings = frappe.get_single("ERPNext CRM Settings")
 	if not settings.enabled:
 		return []
@@ -415,6 +417,7 @@ def get_deal_quotations(crm_deal: str):
 			filters={"crm_deal": crm_deal},
 			fields=QUOTATION_LIST_FIELDS,
 			order_by="modified desc",
+			limit_page_length=0,
 		)
 		for row in rows:
 			row["url"] = get_url_to_form("Quotation", row["name"])
