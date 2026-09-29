@@ -75,8 +75,8 @@
         </div>
         <EmptyState
           v-else
-          title="No New Notifications"
-          description="You have no new notifications"
+          :title="__('No New Notifications')"
+          :description="__('You have no new notifications')"
           :icon="NotificationsIcon"
           width="lg"
         />
