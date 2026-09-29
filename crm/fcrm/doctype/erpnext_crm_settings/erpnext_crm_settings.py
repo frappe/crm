@@ -409,7 +409,8 @@ def get_deal_quotations(crm_deal: str):
 		return []
 
 	if not settings.is_erpnext_in_different_site:
-		rows = frappe.get_all(
+		# get_list (not get_all) so per-document Quotation permissions are enforced.
+		rows = frappe.get_list(
 			"Quotation",
 			filters={"crm_deal": crm_deal},
 			fields=QUOTATION_LIST_FIELDS,
