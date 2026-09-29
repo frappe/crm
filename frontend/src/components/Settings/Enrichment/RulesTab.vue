@@ -9,7 +9,6 @@
       :error-message="__('Could not load social rules')"
       :count="social.rows.length"
       empty-name="Social Rules"
-      :empty-title="__('No social rules found')"
       :empty-description="
         __('Add one to tell enrichment which profile links to look for.')
       "
@@ -23,7 +22,6 @@
             <FormControl
               :model-value="row.platform"
               type="select"
-              variant="outline"
               :options="platformOptions(row)"
               :placeholder="__('Platform')"
               :disabled="social.saving"
@@ -43,7 +41,6 @@
             <FormControl
               :model-value="row.pattern"
               type="text"
-              variant="outline"
               :placeholder="__('Regex pattern')"
               :disabled="social.saving"
               class="[&_input]:font-mono"
@@ -104,7 +101,6 @@
       :error-message="__('Could not load industry rules')"
       :count="industry.rows.length"
       empty-name="Industry Rules"
-      :empty-title="__('No industry rules found')"
       :empty-description="
         __('Add one to tell enrichment which keywords point at which industry.')
       "
@@ -117,7 +113,6 @@
           <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
             <Link
               doctype="CRM Industry"
-              variant="outline"
               :value="row.industry"
               :placeholder="__('Industry')"
               :disabled="industry.saving"
@@ -142,7 +137,6 @@
             <FormControl
               :model-value="row.keywords"
               type="text"
-              variant="outline"
               :placeholder="__('Keywords, comma separated')"
               :disabled="industry.saving"
               :class="row.keywordsError ? invalidInputClass : ''"
