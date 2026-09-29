@@ -13,7 +13,7 @@
         class="grid-header flex items-center rounded-t-[7px] bg-surface-gray-2 text-ink-gray-5 truncate"
       >
         <div
-          class="inline-flex items-center justify-center border-r border-outline-gray-2 h-8 p-2 w-12"
+          class="inline-flex items-center justify-center border-r border-outline-gray-2 h-8 p-2 w-12 shrink-0"
         >
           <Checkbox
             class="cursor-pointer duration-300"
@@ -22,12 +22,12 @@
           />
         </div>
         <div
-          class="inline-flex items-center justify-center border-r border-outline-gray-2 py-2 px-1 w-12"
+          class="inline-flex items-center justify-center border-r border-outline-gray-2 py-2 px-1 w-12 shrink-0"
         >
-          {{ __('Number') }}
+          {{ __('No.') }}
         </div>
         <div
-          class="grid w-full truncate"
+          class="grid w-full min-w-0 truncate"
           :style="{ gridTemplateColumns: gridTemplateColumns }"
         >
           <div
@@ -52,7 +52,7 @@
             >
           </div>
         </div>
-        <div class="flex items-center justify-center w-12">
+        <div class="flex items-center justify-center w-12 shrink-0">
           <Button
             :tooltip="__('Edit Grid Fields')"
             class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
@@ -84,7 +84,7 @@
               "
             >
               <div
-                class="grid-row-checkbox inline-flex h-9.5 items-center bg-surface-base justify-center border-r border-outline-elevation-2 p-2 w-12"
+                class="grid-row-checkbox inline-flex h-9.5 items-center bg-surface-base justify-center border-r border-outline-elevation-2 p-2 w-12 shrink-0"
               >
                 <Checkbox
                   class="cursor-pointer duration-300"
@@ -93,12 +93,12 @@
                 />
               </div>
               <div
-                class="flex h-9.5 items-center justify-center bg-surface-base border-r border-outline-elevation-2 py-2 px-1 text-sm text-ink-gray-8 w-12"
+                class="flex h-9.5 items-center justify-center bg-surface-base border-r border-outline-elevation-2 py-2 px-1 text-sm text-ink-gray-8 w-12 shrink-0"
               >
                 {{ index + 1 }}
               </div>
               <div
-                class="grid w-full h-9.5"
+                class="grid w-full min-w-0 h-9.5"
                 :style="{ gridTemplateColumns: gridTemplateColumns }"
               >
                 <template
@@ -415,7 +415,9 @@
                   </div>
                 </template>
               </div>
-              <div class="edit-row flex items-center justify-center w-12">
+              <div
+                class="edit-row flex items-center justify-center w-12 shrink-0"
+              >
                 <Button
                   :tooltip="__('Edit Row')"
                   class="rounded border-0 !text-ink-gray-7"
