@@ -231,26 +231,22 @@ class TestWhatsAppHooks(FrappeTestCase):
 
 
 class TestIsWhatsAppEnabled(FrappeTestCase):
-	def test_disabled_when_twilio_integration_installed(self):
-		"""twilio_integration's own "WhatsApp Message" DocType collides, so the tab must not render."""
+	def test_enabled_alongside_twilio_integration(self):
 		with (
-			patch("frappe.get_installed_apps", return_value=["frappe", "crm", "twilio_integration"]),
-			patch("frappe.db.exists", return_value=True) as mock_exists,
+			patch(
+				"frappe.get_installed_apps", return_value=["frappe", "crm", "whatsapp", "twilio_integration"]
+			),
+			patch("frappe.db.exists", return_value=True),
+			patch("frappe.get_cached_value", side_effect=["_Test Account", "Active"]),
 		):
-			self.assertFalse(is_whatsapp_enabled())
-
-		mock_exists.assert_not_called()
+			self.assertTrue(is_whatsapp_enabled())
 
 	def test_disabled_when_settings_doctype_missing(self):
-		with (
-			patch("frappe.get_installed_apps", return_value=["frappe", "crm"]),
-			patch("frappe.db.exists", return_value=False),
-		):
+		with patch("frappe.db.exists", return_value=False):
 			self.assertFalse(is_whatsapp_enabled())
 
 	def test_disabled_when_no_default_account(self):
 		with (
-			patch("frappe.get_installed_apps", return_value=["frappe", "crm", "whatsapp"]),
 			patch("frappe.db.exists", return_value=True),
 			patch("frappe.get_cached_value", return_value=None),
 		):
@@ -258,7 +254,6 @@ class TestIsWhatsAppEnabled(FrappeTestCase):
 
 	def test_enabled_when_default_account_is_active(self):
 		with (
-			patch("frappe.get_installed_apps", return_value=["frappe", "crm", "whatsapp"]),
 			patch("frappe.db.exists", return_value=True),
 			patch("frappe.get_cached_value", side_effect=["_Test Account", "Active"]),
 		):

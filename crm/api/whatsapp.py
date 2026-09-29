@@ -218,11 +218,6 @@ def _is_unattended() -> bool:
 
 @frappe.whitelist()
 def is_whatsapp_enabled():
-	# twilio_integration declares its own DocType named "WhatsApp Message", with an unrelated
-	# schema (sent_received/from_/media_link). Only one can own the name, so with it installed
-	# the whatsapp app's fields may not exist on the table this tab would query.
-	if "twilio_integration" in frappe.get_installed_apps():
-		return False
 	if not frappe.db.exists("DocType", "WA Settings"):
 		return False
 	default_account = frappe.get_cached_value("WA Settings", "WA Settings", "default_account")
