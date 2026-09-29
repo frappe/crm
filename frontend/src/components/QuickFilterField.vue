@@ -13,6 +13,7 @@
     type="select"
     :options="filter.options"
     :placeholder="filter.label"
+    side="bottom"
     @update:modelValue="updateFilter(filter, $event)"
   />
   <Link

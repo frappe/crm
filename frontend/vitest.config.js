@@ -10,6 +10,11 @@ export default defineConfig({
     root: import.meta.dirname,
     setupFiles: ['./tests/setup.js'],
     include: ['tests/**/*.test.js', 'src/**/*.test.js'],
+    server: {
+      deps: {
+        inline: ['frappe-ui'],
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],

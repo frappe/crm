@@ -156,7 +156,6 @@ function uploadViaWebLink() {
     return
   }
   fileUrl = decodeURI(fileUrl)
-  show.value = false
   return attachFile({
     fileUrl,
   })
@@ -200,7 +199,9 @@ function attachFile(file, i) {
     .upload(file, args || {})
     .then((response) => {
       uploadedFiles.value.push(response)
-      if (i === files.value.length - 1) {
+      // web link uploads have no index & no entry in files, so they are always the last upload
+      const isLastUpload = file.fileUrl || i === files.value.length - 1
+      if (isLastUpload) {
         const uploaded = uploadedFiles.value.slice()
         uploadedFiles.value = []
         files.value = []
@@ -220,6 +221,11 @@ function attachFile(file, i) {
         errorMessage = error
       }
       file.errorMessage = errorMessage
+      // web link has no file entry in the list to display the error, so show a toast instead
+      if (file.fileUrl) {
+        fileUploadStarted.value = false
+        toast.error(errorMessage)
+      }
     })
 }
 </script>

@@ -311,6 +311,13 @@
       </div>
     </template>
   </Dialog>
+  <LostReasonModal
+    v-if="showKanbanLostReasonModal"
+    v-model="showKanbanLostReasonModal"
+    :doctype="props.doctype"
+    @save="confirmKanbanLostReason"
+    @cancel="cancelKanbanLostReason"
+  />
 </template>
 <script setup>
 import Icon from '@/components/Icon.vue'
@@ -332,11 +339,13 @@ import GroupBy from '@/components/GroupBy.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import ColumnSettings from '@/components/ColumnSettings.vue'
 import KanbanSettings from '@/components/Kanban/KanbanSettings.vue'
+import LostReasonModal from '@/components/Modals/LostReasonModal.vue'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations'
+import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
 import {
@@ -360,6 +369,14 @@ import {
 } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { isMobileView } from '@/composables/settings'
+import {
+  commandPaletteOpen,
+  useCommandPaletteContext,
+} from '@/composables/useCommandPalette'
+import {
+  FILTERABLE_FIELDTYPES,
+  commandFilterOptions,
+} from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
 import ImportIcon from '~icons/lucide/import'
@@ -382,6 +399,10 @@ const { $dialog, $socket } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 const { isManager, getUser } = usersStore()
 const { organizations } = organizationsStore()
+const { getLeadStatus, getDealStatus } = statusesStore()
+
+const showKanbanLostReasonModal = ref(false)
+const pendingKanbanMove = ref(null)
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
@@ -575,7 +596,25 @@ listResource = createResource({
 })
 
 list.value = listResource
-listResource.params = getParams()
+// Keep an unsaved view change on cached re-entry; don't reset to the saved view (frappe/crm#2833).
+// kanban_columns is excluded: pagination (load more) mutates it without being a user edit.
+const dirtySignature = (p) =>
+  JSON.stringify([
+    p.filters || {},
+    p.order_by,
+    p.view?.group_by_field,
+    p.column_field,
+    p.title_field,
+    p.kanban_fields,
+  ])
+const initialParams = getParams()
+if (!listResource.params) {
+  listResource.params = initialParams
+} else if (
+  dirtySignature(listResource.params) !== dirtySignature(initialParams)
+) {
+  viewUpdated.value = true
+}
 
 // Refresh the list when a Domain Enrichment enrichment finishes for this
 // doctype, so newly-filled fields (logo, etc.) show without a manual reload.
@@ -914,6 +953,160 @@ const quickFilters = createResource({
 
 if (!quickFilters.data) quickFilters.fetch()
 
+const filterableFields = createResource({
+  url: 'crm.api.doc.get_filterable_fields',
+  params: { doctype: props.doctype },
+  cache: ['filterableFields', props.doctype],
+})
+
+const flatFilterOptions = ref({})
+
+useCommandPaletteContext(() => listCommands())
+
+watch(commandPaletteOpen, (open) => {
+  if (open && !Object.keys(flatFilterOptions.value).length) {
+    loadFlatFilterOptions()
+  }
+})
+
+function listCommands() {
+  return [
+    {
+      id: `list-views-${props.doctype}`,
+      title: 'Switch view',
+      group: 'List',
+      icon: 'panels-top-left',
+      children: async () => viewCommands(),
+    },
+    {
+      id: `list-filters-${props.doctype}`,
+      title: 'Filter list',
+      group: 'List',
+      icon: 'list-filter',
+      children: async () => filterCommands(),
+    },
+    {
+      id: `list-refresh-${props.doctype}`,
+      title: 'Refresh list',
+      group: 'List',
+      icon: 'refresh-cw',
+      perform: reload,
+    },
+    ...flatFilterCommands(),
+  ]
+}
+
+// One row per quick filter value, so typing "qualified" applies it in one Enter.
+function flatFilterCommands() {
+  return quickFilterList.value
+    .filter(isFilterableField)
+    .flatMap((filter) =>
+      (flatFilterOptions.value[filter.fieldname] || []).map((option) =>
+        flatFilterCommand(filter, option),
+      ),
+    )
+}
+
+function flatFilterCommand(filter, option) {
+  return {
+    id: `list-filter-flat-${filter.fieldname}-${option.value}`,
+    title: `${filter.label}: ${option.label}`,
+    translate: false,
+    group: 'List',
+    icon: 'list-filter',
+    hideWhenEmpty: true,
+    keywords: option.label,
+    checked: currentFilterValue(filter) === option.value,
+    perform: () => applyQuickFilter(filter, option.value),
+  }
+}
+
+async function loadFlatFilterOptions() {
+  const filters = quickFilterList.value.filter(isFilterableField)
+  const entries = await Promise.all(
+    filters.map(async (filter) => [
+      filter.fieldname,
+      await commandFilterOptions(filter),
+    ]),
+  )
+  flatFilterOptions.value = Object.fromEntries(entries)
+}
+
+function viewCommands() {
+  return viewsDropdownOptions.value
+    .flatMap((group) => group.items || [])
+    .filter((item) => item.onClick && (!item.condition || item.condition()))
+    .map((item, index) => ({
+      id: `list-view-${index}-${item.name || item.label}`,
+      title: item.label,
+      icon: item.icon,
+      checked: item.selected,
+      perform: item.onClick,
+    }))
+}
+
+async function filterCommands() {
+  const quick = quickFilterList.value.filter(isFilterableField)
+  const configured = new Set(quick.map((filter) => filter.fieldname))
+  const commands = [
+    ...quick.map((filter) => filterFieldCommand(filter, 'Quick filters')),
+    ...(await otherFilterFields(configured)).map((field) =>
+      filterFieldCommand(field, 'All fields'),
+    ),
+  ]
+  if (Object.keys(list.value.params?.filters || {}).length) {
+    commands.unshift({
+      id: `list-filter-clear-${props.doctype}`,
+      title: 'Clear all filters',
+      icon: 'filter-x',
+      perform: () => updateFilter({}),
+    })
+  }
+  return commands
+}
+
+function isFilterableField(field) {
+  return (
+    FILTERABLE_FIELDTYPES.includes(field.fieldtype) &&
+    field.fieldname !== 'name'
+  )
+}
+
+async function otherFilterFields(configured) {
+  if (!filterableFields.data) await filterableFields.fetch()
+  return (filterableFields.data || []).filter(
+    (field) => isFilterableField(field) && !configured.has(field.fieldname),
+  )
+}
+
+function filterFieldCommand(filter, group) {
+  return {
+    id: `list-filter-${filter.fieldname}`,
+    title: filter.label,
+    group,
+    icon: 'list-filter',
+    children: async () => quickFilterOptionCommands(filter),
+  }
+}
+
+async function quickFilterOptionCommands(filter) {
+  const options = await commandFilterOptions(filter)
+  const current = currentFilterValue(filter)
+  return options.map((option) => ({
+    id: `list-filter-${filter.fieldname}-${option.value}`,
+    title: option.label,
+    translate: false,
+    checked: current === option.value,
+    perform: () => applyQuickFilter(filter, option.value),
+  }))
+}
+
+function currentFilterValue(filter) {
+  const value = list.value.params?.filters?.[filter.fieldname]
+  if (Array.isArray(value)) return String(value[1] ?? '').replace(/%/g, '')
+  return value ?? filter.value
+}
+
 function setupNewQuickFilters(filters) {
   newQuickFilters.value = filters.map((f) => ({
     label: f.label,
@@ -1032,14 +1225,82 @@ function persistCustomView() {
   })
 }
 
+function getKanbanStatusType(status) {
+  if (props.doctype === 'CRM Lead') return getLeadStatus(status)?.type
+  if (props.doctype === 'CRM Deal') return getDealStatus(status)?.type
+  return null
+}
+
+function revertKanbanCardMove(data) {
+  let columns = list.value?.data?.data
+  if (!data?.from || !columns) return
+
+  let toColumn = columns.find((col) => col.column.name === data.to)
+  let fromColumn = columns.find((col) => col.column.name === data.from)
+  if (!toColumn || !fromColumn) return
+
+  let index = toColumn.data.findIndex((row) => row.name === data.item)
+  if (index === -1) return
+
+  let [row] = toColumn.data.splice(index, 1)
+  let restoreAt = Math.min(data.fromIndex ?? 0, fromColumn.data.length)
+  fromColumn.data.splice(restoreAt, 0, row)
+}
+
+function persistKanbanColumnOrder(kanbanColumns) {
+  if (!kanbanColumns) return
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  list.value.params = defaultParams.value
+  list.value.params.kanban_columns = kanbanColumns
+  view.value.kanban_columns = kanbanColumns
+  if (!route.query.view) {
+    createOrUpdateStandardView()
+  }
+}
+
+function moveKanbanCard(data, fields) {
+  call('frappe.client.set_value', {
+    doctype: props.doctype,
+    name: data.item,
+    fieldname: fields,
+  })
+    .then(() => {
+      persistKanbanColumnOrder(data.kanban_columns)
+    })
+    .catch(() => {
+      toast.error(__('Could not move the card. Reverting.'))
+      revertKanbanCardMove(data)
+    })
+}
+
+function confirmKanbanLostReason(payload) {
+  let data = pendingKanbanMove.value
+  pendingKanbanMove.value = null
+  if (!data) return
+  moveKanbanCard(data, { [view.value.column_field]: data.to, ...payload })
+}
+
+function cancelKanbanLostReason() {
+  let data = pendingKanbanMove.value
+  pendingKanbanMove.value = null
+  toast.info(__('Move cancelled: a lost reason is required for this status.'))
+  revertKanbanCardMove(data)
+}
+
 function updateKanbanSettings(data) {
   if (data.item && data.to) {
-    call('frappe.client.set_value', {
-      doctype: props.doctype,
-      name: data.item,
-      fieldname: view.value.column_field,
-      value: data.to,
-    })
+    if (
+      view.value.column_field === 'status' &&
+      getKanbanStatusType(data.to) === 'Lost'
+    ) {
+      pendingKanbanMove.value = data
+      showKanbanLostReasonModal.value = true
+      return
+    }
+    moveKanbanCard(data, { [view.value.column_field]: data.to })
     return
   }
 
@@ -1099,6 +1360,22 @@ function loadMoreKanban(columnName) {
   list.value.reload()
 }
 
+// Saving the standard view re-reads the views store so it matches the server,
+// which trips the `getView` watcher below into rebuilding the list params from
+// the store. For our own save that only replays state already applied locally,
+// and when two saves overlap (quick filter typing) the earlier re-read can land
+// last and rewind the filters — and the quick filter input — to the older
+// value (#2113). Count these re-reads so the watcher leaves the params alone.
+let pendingSelfViewReloads = 0
+
+function reloadViewAfterSave() {
+  pendingSelfViewReloads++
+  return reloadView().catch((e) => {
+    pendingSelfViewReloads--
+    throw e
+  })
+}
+
 function createOrUpdateStandardView() {
   if (route.query.view) return
   view.value.doctype = props.doctype
@@ -1108,7 +1385,7 @@ function createOrUpdateStandardView() {
       view: view.value,
     },
   ).then(() => {
-    reloadView()
+    reloadViewAfterSave()
     view.value = {
       label: view.value.label,
       type: view.value.type || 'list',
@@ -1433,6 +1710,10 @@ defineExpose({
 watch(
   () => getView(route.query.view, route.params.viewType, props.doctype),
   (value, old_value) => {
+    if (pendingSelfViewReloads > 0) {
+      pendingSelfViewReloads--
+      return
+    }
     if (_.isEqual(value, old_value)) return
     reload()
   },
