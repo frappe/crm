@@ -89,7 +89,7 @@ const props = defineProps({
 const emailBox = reactive(props.emailBox)
 
 function reply(email, reply_all = false) {
-  emailBox.show = true
+  emailBox.openEmailBox()
   let editor = emailBox.editor
   let message = email.content
   let recipients = email.recipients.split(',').map((r) => r.trim())

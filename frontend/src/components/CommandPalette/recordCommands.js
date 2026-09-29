@@ -105,7 +105,13 @@ function openCommentBox(context) {
   const activities = context.activities()
   if (!activities) return
   activities.changeTabTo('comments')
-  nextTick(() => (activities.emailBox.showComment = true))
+  // The box may still be mounting after the tab switch; retry until it's there.
+  const open = (attempt = 0) => {
+    const box = activities.emailBox
+    if (box?.openCommentBox) return box.openCommentBox()
+    if (attempt < 5) nextTick(() => open(attempt + 1))
+  }
+  nextTick(() => open())
 }
 
 function templateCommand(context) {
@@ -125,8 +131,7 @@ function templateCommand(context) {
 async function openEmailTemplates(context) {
   context.openEmailBox()
   await nextTick()
-  const editor = context.activities()?.emailBox?.editor
-  if (editor) editor.showEmailTemplateSelectorModal = true
+  context.activities()?.emailBox?.editor?.openTemplateSelector?.()
 }
 
 function createCommands(context) {
