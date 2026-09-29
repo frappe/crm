@@ -22,22 +22,16 @@
 
     <div
       class="flex items-center justify-between text-lg-semibold mt-4 py-3 px-2"
-      :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-8'"
+      :class="headingClass"
     >
       {{ __('Crawl settings') }}
     </div>
     <div class="flex gap-4 items-start justify-between py-3 px-2">
       <div class="flex flex-col">
-        <div
-          class="text-p-base-medium truncate"
-          :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-7'"
-        >
+        <div class="text-p-base-medium truncate" :class="labelClass">
           {{ __('Maximum pages') }}
         </div>
-        <div
-          class="text-p-sm"
-          :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-5'"
-        >
+        <div class="text-p-sm" :class="descriptionClass">
           {{
             __(
               'Maximum number of pages that can be crawled during a single enrichment run.',
@@ -67,22 +61,16 @@
 
     <div
       class="flex items-center justify-between text-lg-semibold mt-4 py-3 px-2"
-      :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-8'"
+      :class="headingClass"
     >
       {{ __('Automation') }}
     </div>
     <div class="flex gap-4 items-center justify-between py-3 px-2">
       <div class="flex flex-col">
-        <div
-          class="text-p-base-medium truncate"
-          :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-7'"
-        >
+        <div class="text-p-base-medium truncate" :class="labelClass">
           {{ __('Auto-enrich new Organizations') }}
         </div>
-        <div
-          class="text-p-sm"
-          :class="enrichmentOff ? 'text-ink-gray-4' : 'text-ink-gray-5'"
-        >
+        <div class="text-p-sm" :class="descriptionClass">
           {{
             __(
               'Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button.',
@@ -121,6 +109,16 @@ const emit = defineEmits(['toggle', 'update:maxPages'])
 
 // The master switch gates everything under it, so those rows read as disabled
 // until enrichment is on: still visible, so you can see what turning it on would
-// give you, but greyed and non-interactive.
+// give you, but greyed and non-interactive. The three classes below are the
+// greyed-or-normal text colours for those rows' headings, titles and descriptions.
 const enrichmentOff = computed(() => !props.doc.enabled)
+const headingClass = computed(() =>
+  enrichmentOff.value ? 'text-ink-gray-4' : 'text-ink-gray-8',
+)
+const labelClass = computed(() =>
+  enrichmentOff.value ? 'text-ink-gray-4' : 'text-ink-gray-7',
+)
+const descriptionClass = computed(() =>
+  enrichmentOff.value ? 'text-ink-gray-4' : 'text-ink-gray-5',
+)
 </script>
