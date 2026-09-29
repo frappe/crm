@@ -21,19 +21,22 @@
           <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
             <div :class="row.platformError ? invalidInputClass : ''">
               <Autocomplete
+                :ref="(el) => (platformBoxes[row.key] = el)"
                 :model-value="row.platform"
                 :options="platformOptions()"
                 :placeholder="__('Platform')"
                 :disabled="social.saving"
                 @update:model-value="(option) => onPlatformSelect(row, option)"
+                @update:query="(query) => (platformQuery[row.key] = query)"
               >
-                <template #footer="{ value, close }">
+                <template #footer="{ close }">
                   <Button
                     variant="ghost"
                     class="w-full !justify-start"
-                    :label="__('Add new')"
+                    :label="platformAddLabel(row)"
+                    :disabled="!platformQuery[row.key]?.trim()"
                     iconLeft="plus"
-                    @click="social.onPlatformCreate(row, value, close)"
+                    @click="onPlatformAdd(row, close)"
                   />
                 </template>
               </Autocomplete>
@@ -215,6 +218,7 @@
 <script setup>
 import { Badge, Button, ErrorMessage, FormControl, Tooltip } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { reactive } from 'vue'
 import Link from '@/components/Controls/Link.vue'
 import EnrichmentRuleMenu from './EnrichmentRuleMenu.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
@@ -255,6 +259,25 @@ function platformOptions() {
     }
   }
   return options
+}
+
+// What is typed in each row's Platform search, keyed by row.key, so "Add"
+// can name it and stays disabled until there is something to add.
+const platformQuery = reactive({})
+const platformBoxes = {}
+
+function platformAddLabel(row) {
+  const query = platformQuery[row.key]?.trim()
+  return query ? __('Add "{0}"', [query]) : __('Add new')
+}
+
+// The Autocomplete keeps its search text when it closes, so it is cleared
+// through the box too; otherwise reopening would show the old text under a
+// disabled "Add new".
+function onPlatformAdd(row, close) {
+  props.social.onPlatformCreate(row, platformQuery[row.key], close)
+  if (platformBoxes[row.key]) platformBoxes[row.key].query = ''
+  platformQuery[row.key] = ''
 }
 
 // The Autocomplete hands back the whole option. A platform can't be blank, so
