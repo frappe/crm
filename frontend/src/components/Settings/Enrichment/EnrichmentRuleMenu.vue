@@ -11,6 +11,7 @@
 
 <script setup>
 import { Button, Dropdown } from 'frappe-ui'
+import { ConfirmDelete, TemplateOption } from '@/utils'
 import { computed, h, ref } from 'vue'
 import StatusToggleItem from './StatusToggleItem.vue'
 
@@ -28,17 +29,22 @@ const props = defineProps({
 const emit = defineEmits(['toggle', 'delete'])
 
 // The same two-step delete AssignmentRuleListItem.vue uses (reset each time
-// the menu opens), with the menu's own red theme on both steps.
+// the menu opens): a grey Delete, then a red Confirm Delete.
 const isConfirmingDelete = ref(false)
 
 const options = computed(() => {
   if (props.blank) {
+    // Drawn like ConfirmDelete's first step, so it reads the same grey.
     return [
       {
         label: __('Delete'),
-        icon: 'trash-2',
-        theme: 'red',
-        onClick: () => emit('delete'),
+        component: (itemProps) =>
+          TemplateOption({
+            option: __('Delete'),
+            icon: 'trash-2',
+            active: itemProps.active,
+            onClick: () => emit('delete'),
+          }),
       },
     ]
   }
@@ -54,26 +60,10 @@ const options = computed(() => {
         emit('toggle')
       },
     },
-    {
-      label: __('Delete'),
-      icon: 'trash-2',
-      theme: 'red',
-      condition: () => !isConfirmingDelete.value,
-      onClick: (event) => {
-        event.preventDefault()
-        isConfirmingDelete.value = true
-      },
-    },
-    {
-      label: __('Confirm Delete'),
-      icon: 'trash-2',
-      theme: 'red',
-      condition: () => isConfirmingDelete.value,
-      onClick: () => {
-        isConfirmingDelete.value = false
-        emit('delete')
-      },
-    },
+    ...ConfirmDelete({
+      isConfirmingDelete,
+      onConfirmDelete: () => emit('delete'),
+    }),
   ]
 })
 </script>

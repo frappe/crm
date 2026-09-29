@@ -2,8 +2,10 @@
   <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
     <div class="flex justify-between px-2">
       <div class="flex flex-col gap-1">
-        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 items-center">
-          {{ __('Enrichment') }}
+        <div class="flex items-center gap-2">
+          <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
+            {{ __('Enrichment') }}
+          </h2>
           <Badge
             v-if="hasUnsavedChanges && !saving"
             :label="__('Not Saved')"
@@ -11,7 +13,7 @@
             theme="orange"
             size="sm"
           />
-        </h2>
+        </div>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
