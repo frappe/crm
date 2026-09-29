@@ -114,6 +114,26 @@
               v-if="!isOnboardingStepsCompleted"
               :isSidebarCollapsed="isCollapsed"
             />
+            <a
+              v-if="!isCollapsed"
+              :href="setupGuideUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex items-center gap-2.5 rounded-lg bg-surface-elevation-2 px-3 py-2.5 shadow-sm transition hover:bg-surface-gray-3"
+            >
+              <DocumentIcon class="size-4 shrink-0 text-ink-gray-7" />
+              <div class="flex min-w-0 flex-1 flex-col">
+                <span class="text-p-sm font-medium text-ink-gray-9">
+                  {{ __('Setup Guide') }}
+                </span>
+                <span class="truncate text-xs text-ink-gray-6">
+                  {{ __('Your first steps with CRM') }}
+                </span>
+              </div>
+              <ArrowUpRightIcon
+                class="size-4 shrink-0 text-ink-gray-5 transition group-hover:text-ink-gray-8"
+              />
+            </a>
           </div>
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
@@ -125,7 +145,11 @@
               <BrushCleaningIcon class="size-4" />
             </template>
           </SidebarItem>
-          <SidebarItem :label="__('Setup Guide')" @click="openSetupGuide">
+          <SidebarItem
+            v-if="isCollapsed"
+            :label="__('Setup Guide')"
+            @click="openSetupGuide"
+          >
             <template #prefix>
               <DocumentIcon class="size-4 text-ink-gray-7" />
             </template>
@@ -202,6 +226,7 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
+import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
@@ -374,12 +399,11 @@ function toggleHelpModal() {
   minimize.value = !showHelpModal.value
 }
 
+const setupGuideUrl =
+  'https://docs.frappe.io/crm/setup-guide/your-first-steps-with-frappe-crm'
+
 function openSetupGuide() {
-  window.open(
-    'https://docs.frappe.io/crm/setup-guide/your-first-steps-with-frappe-crm',
-    '_blank',
-    'noopener,noreferrer',
-  )
+  window.open(setupGuideUrl, '_blank', 'noopener,noreferrer')
 }
 
 // onboarding
