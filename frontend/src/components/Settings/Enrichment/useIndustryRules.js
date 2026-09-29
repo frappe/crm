@@ -192,8 +192,9 @@ export function useIndustryRules() {
   // leaves no stray industry behind.
   function onIndustryCreate(row, value, close) {
     const industry = (value || '').trim()
-    close?.()
+    // Nothing typed: leave the menu open so the admin can type one.
     if (!industry) return
+    close?.()
 
     row.industry = industry
     row.newIndustry = true
