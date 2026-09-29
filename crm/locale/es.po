@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-09-28 01:13\n"
+"PO-Revision-Date: 2026-09-29 01:57\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -825,7 +825,7 @@ msgstr "Gestores asignados"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "Assignment"
-msgstr ""
+msgstr "Tarea"
 
 #: frontend/src/components/ListBulkActions.vue:152
 msgid "Assignment Cleared Successfully"
@@ -6484,7 +6484,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:405
 msgid "Open"
-msgstr "Abierto"
+msgstr "Abrir"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:97
 msgid "Open Nested Conditions"
@@ -7700,7 +7700,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Running"
-msgstr "Ejecutando"
+msgstr "En ejecución"
 
 #. Label of the sla_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the sla (Link) field in DocType 'CRM Deal'
@@ -8709,7 +8709,7 @@ msgstr "Asunto"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:144
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:157
 msgid "Subject is required"
-msgstr "El Asunto es obligatorio"
+msgstr "El asunto es obligatorio"
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:35
 msgid "Subject: {0}"
@@ -9163,7 +9163,7 @@ msgstr "Espacio de tiempo"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:68
 msgid "Timezone"
-msgstr "Zona Horaria"
+msgstr "Zona horaria"
 
 #. Label of the timing_section (Section Break) field in DocType 'CRM Enrichment
 #. Run'
@@ -9624,7 +9624,7 @@ msgstr ""
 
 #: frontend/src/components/Controls/ImageUploader.vue:12
 msgid "Uploading {0}%"
-msgstr "Subiendo {0}%"
+msgstr "Subiendo {0} %"
 
 #: frontend/src/components/FieldLayout/Field.vue:636
 msgid "Use \"{0}\""
