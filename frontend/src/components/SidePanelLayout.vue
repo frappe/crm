@@ -197,6 +197,12 @@
                           :onCreate="field.create"
                           @change="(v) => fieldChange(v, field)"
                         />
+                        <TableMultiselectInput
+                          v-else-if="field.fieldtype === 'Table MultiSelect'"
+                          v-model="doc[field.fieldname]"
+                          :doctype="field.options"
+                          @change="(v) => fieldChange(v, field)"
+                        />
                         <div
                           v-else-if="field.fieldtype === 'Time'"
                           class="form-control"
@@ -422,6 +428,7 @@ import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
+import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
