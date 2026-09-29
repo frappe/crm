@@ -114,45 +114,6 @@
               v-if="!isOnboardingStepsCompleted"
               :isSidebarCollapsed="isCollapsed"
             />
-            <!-- Setup guide: card when expanded, icon item when collapsed (mirrors LMS). -->
-            <SidebarItem
-              v-if="isCollapsed"
-              :label="__('Setup Guide')"
-              icon="lucide-book-open"
-              @click="openSetupGuide"
-            />
-            <div
-              v-else
-              class="rounded-lg border border-outline-gray-1 bg-surface-base p-3"
-            >
-              <div class="flex items-center gap-1.5">
-                <span
-                  class="lucide-book-open size-4 shrink-0 text-ink-gray-8"
-                  aria-hidden="true"
-                />
-                <div class="min-w-0 text-p-sm font-medium text-ink-gray-8">
-                  {{ __('Setup Guide') }}
-                </div>
-              </div>
-              <div class="mt-1 flex flex-col gap-3">
-                <p class="text-p-xs text-ink-gray-6">
-                  {{ __('Your first steps with Frappe CRM') }}
-                </p>
-                <Button
-                  class="w-full"
-                  variant="subtle"
-                  :label="__('Open guide')"
-                  @click="openSetupGuide"
-                >
-                  <template #prefix>
-                    <span
-                      class="lucide-external-link size-4"
-                      aria-hidden="true"
-                    />
-                  </template>
-                </Button>
-              </div>
-            </div>
           </div>
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
@@ -164,15 +125,38 @@
               <BrushCleaningIcon class="size-4" />
             </template>
           </SidebarItem>
-          <SidebarItem
-            v-if="isOnboardingStepsCompleted"
-            :label="__('Help')"
-            @click="toggleHelpModal"
+          <!-- Support links as a compact icon row (mirrors LMS), stacking when collapsed. -->
+          <div
+            class="mt-1 flex gap-3 px-2"
+            :class="
+              isCollapsed ? 'flex-col items-start' : 'flex-row items-center'
+            "
           >
-            <template #prefix>
-              <HelpIcon class="size-4 text-ink-gray-7" />
-            </template>
-          </SidebarItem>
+            <Tooltip v-if="isOnboardingStepsCompleted" :text="__('Help')">
+              <span
+                class="lucide-circle-help size-4 cursor-pointer text-ink-gray-7 hover:text-ink-gray-9"
+                @click="toggleHelpModal"
+              />
+            </Tooltip>
+            <Tooltip :text="__('Setup Guide')">
+              <span
+                class="lucide-book-open size-4 cursor-pointer text-ink-gray-7 hover:text-ink-gray-9"
+                @click="openSetupGuide"
+              />
+            </Tooltip>
+            <Tooltip :text="__('Feedback')">
+              <span
+                class="lucide-message-circle size-4 cursor-pointer text-ink-gray-7 hover:text-ink-gray-9"
+                @click="showFeedbackModal = true"
+              />
+            </Tooltip>
+            <Tooltip :text="__('Contact Us')">
+              <span
+                class="lucide-mail size-4 cursor-pointer text-ink-gray-7 hover:text-ink-gray-9"
+                @click="openContactUs"
+              />
+            </Tooltip>
+          </div>
           <SidebarItem
             :label="isCollapsed ? __('Expand') : __('Collapse')"
             @click="isSidebarCollapsed = !isSidebarCollapsed"
@@ -207,6 +191,7 @@
       v-model="showIntermediateModal"
       :currentStep="currentStep"
     />
+    <FeedbackModal v-model="showFeedbackModal" />
   </template>
 </template>
 
@@ -234,9 +219,9 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
-import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
+import FeedbackModal from '@/components/Modals/FeedbackModal.vue'
 import { viewsStore } from '@/stores/views'
 import {
   unreadNotificationsCount,
@@ -251,14 +236,7 @@ import {
 } from '@/composables/settings'
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
-import {
-  Button,
-  call,
-  Sidebar,
-  SidebarItem,
-  SidebarLabel,
-  Tooltip,
-} from 'frappe-ui'
+import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
 import {
   SignupBanner,
   TrialBanner,
@@ -414,11 +392,17 @@ function toggleHelpModal() {
   minimize.value = !showHelpModal.value
 }
 
+const showFeedbackModal = ref(false)
+
 const setupGuideUrl =
   'https://docs.frappe.io/crm/setup-guide/your-first-steps-with-frappe-crm'
 
 function openSetupGuide() {
   window.open(setupGuideUrl, '_blank', 'noopener,noreferrer')
+}
+
+function openContactUs() {
+  window.open('https://frappe.io/contact-us', '_blank', 'noopener,noreferrer')
 }
 
 // onboarding
