@@ -125,6 +125,11 @@
               <BrushCleaningIcon class="size-4" />
             </template>
           </SidebarItem>
+          <SidebarItem :label="__('Setup Guide')" @click="openSetupGuide">
+            <template #prefix>
+              <DocumentIcon class="size-4 text-ink-gray-7" />
+            </template>
+          </SidebarItem>
           <SidebarItem
             v-if="isOnboardingStepsCompleted"
             :label="__('Help')"
@@ -196,6 +201,7 @@ import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
+import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import Notifications from '@/components/Notifications.vue'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
@@ -366,6 +372,14 @@ function onNotificationsClick(event) {
 function toggleHelpModal() {
   showHelpModal.value = minimize.value ? true : !showHelpModal.value
   minimize.value = !showHelpModal.value
+}
+
+function openSetupGuide() {
+  window.open(
+    'https://docs.frappe.io/crm/setup-guide/your-first-steps-with-frappe-crm',
+    '_blank',
+    'noopener,noreferrer',
+  )
 }
 
 // onboarding
