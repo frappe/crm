@@ -56,6 +56,6 @@ class CRMEnrichmentSettings(Document):
 
 		if int(self.max_pages) < 1 or int(self.max_pages) > MAX_PAGES_LIMIT:
 			frappe.throw(
-				_("Max Pages must be a whole number between 1 and {0}").format(MAX_PAGES_LIMIT),
-				title=_("Invalid Max Pages"),
+				_("Maximum pages must be a whole number between 1 and {0}").format(MAX_PAGES_LIMIT),
+				title=_("Invalid maximum pages"),
 			)

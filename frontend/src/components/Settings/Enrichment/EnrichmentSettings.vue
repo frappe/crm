@@ -102,7 +102,7 @@ const industry = reactive(useIndustryRules())
 // controller rejects anything outside 1..20 on save.
 const MAX_PAGES_LIMIT = 20
 
-// Keystrokes in the Max pages box land here instead of in the doc, so a
+// Keystrokes in the Maximum pages box land here instead of in the doc, so a
 // half-typed number never counts as the stored one. It is folded into the doc
 // on Save.
 const maxPages = ref(undefined)
@@ -110,7 +110,7 @@ const maxPagesError = ref('')
 
 watch(maxPages, () => (maxPagesError.value = ''))
 
-// Turning enrichment off puts Max pages out of reach, so a half-typed value in
+// Turning enrichment off puts Maximum pages out of reach, so a half-typed value in
 // it is dropped rather than saved by a Save the admin can no longer see it in.
 watch(
   () => settings.doc?.enabled,
@@ -162,7 +162,7 @@ function validateMaxPages() {
     pages > MAX_PAGES_LIMIT
   ) {
     maxPagesError.value = __(
-      'Max pages must be a whole number between 1 and {0}',
+      'Maximum pages must be a whole number between 1 and {0}',
       [MAX_PAGES_LIMIT],
     )
     return false
