@@ -19,18 +19,25 @@
       <div v-for="row in social.rows" :key="row.key" class="flex flex-col">
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
-            <FormControl
-              :model-value="row.platform"
-              type="select"
-              :options="platformOptions(row)"
-              :placeholder="__('Platform')"
-              :disabled="social.saving"
-              :class="row.platformError ? invalidInputClass : ''"
-              @update:model-value="
-                (value) => social.onPlatformInput(row, value)
-              "
-              @blur="social.checkRow(row)"
-            />
+            <div :class="row.platformError ? invalidInputClass : ''">
+              <Autocomplete
+                :model-value="row.platform"
+                :options="platformOptions()"
+                :placeholder="__('Platform')"
+                :disabled="social.saving"
+                @update:model-value="(option) => onPlatformSelect(row, option)"
+              >
+                <template #footer="{ value, close }">
+                  <Button
+                    variant="ghost"
+                    class="w-full !justify-start"
+                    :label="__('Add new')"
+                    iconLeft="plus"
+                    @click="social.onPlatformCreate(row, value, close)"
+                  />
+                </template>
+              </Autocomplete>
+            </div>
             <ErrorMessage
               v-if="row.platformError"
               class="mt-1"
@@ -88,6 +95,21 @@
           class="mt-1"
           :message="row.serverError"
         />
+        <div
+          v-else-if="
+            row.platform.trim() &&
+            !isKnownPlatform(row.platform) &&
+            !row.platformError &&
+            !row.patternError
+          "
+          class="mt-1 text-p-sm text-ink-gray-5"
+        >
+          {{
+            __(
+              'Links will be recorded on the enrichment run but not written to a field.',
+            )
+          }}
+        </div>
       </div>
     </EnrichmentRuleSection>
 
@@ -191,35 +213,57 @@
 </template>
 
 <script setup>
-import { Badge, ErrorMessage, FormControl, Tooltip } from 'frappe-ui'
+import { Badge, Button, ErrorMessage, FormControl, Tooltip } from 'frappe-ui'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import Link from '@/components/Controls/Link.vue'
 import EnrichmentRuleMenu from './EnrichmentRuleMenu.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
-import { SOCIAL_PLATFORMS } from './useSocialRules'
+import {
+  SOCIAL_PLATFORMS,
+  isKnownPlatform,
+  normalizePlatform,
+} from './useSocialRules'
 
 // The rule lists themselves live in EnrichmentSettings.vue: the Tabs panel is
 // unmounted while the General tab is open (reka-ui's TabsContent defaults to
 // unmountOnHide), so edits held in this component would be thrown away on a
 // tab switch. This only renders them and hands every change back to the
 // composable that owns the row.
-defineProps({
+const props = defineProps({
   social: { type: Object, required: true },
   industry: { type: Object, required: true },
 })
 
-// The red border a FormControl gets while its value is refused. Named here
-// because every rule row wears it and the arbitrary-variant selector is a
-// mouthful to repeat.
+// The red border a FormControl (or the Platform box's button) gets while its
+// value is refused. Named here because every rule row wears it and the
+// arbitrary-variant selector is a mouthful to repeat.
 const invalidInputClass =
   '[&_input]:!border-outline-red-2 [&_input]:focus:!border-outline-red-2 ' +
-  '[&_select]:!border-outline-red-2 [&_select]:focus:!border-outline-red-2'
+  '[&_button]:!border-outline-red-2 [&_button]:focus:!border-outline-red-2'
 
-// A rule saved in Desk can carry a platform outside the list; it stays
-// selectable so the row still shows what is stored, and validation asks for a
-// supported one only once the row is edited.
-function platformOptions(row) {
-  const known = SOCIAL_PLATFORMS.some((option) => option.value === row.platform)
-  if (!row.platform || known) return SOCIAL_PLATFORMS
-  return [{ label: row.platform, value: row.platform }, ...SOCIAL_PLATFORMS]
+// Suggestions, not a whitelist: the seeded platforms plus any other platform a
+// rule is already saved with, so one added earlier can be picked again. Anything
+// else comes in through "Add new". Platforms outside SOCIAL_PLATFORMS are
+// matched and recorded on the enrichment run, but mapper.py has no CRM field
+// for them, so the row says so under it.
+function platformOptions() {
+  const options = [...SOCIAL_PLATFORMS]
+  for (const row of props.social.rows) {
+    const value = normalizePlatform(row.savedPlatform)
+    if (value && !options.some((option) => option.value === value)) {
+      options.push({ label: value, value })
+    }
+  }
+  return options
+}
+
+// The Autocomplete hands back the whole option. A platform can't be blank, so
+// an empty selection is ignored.
+function onPlatformSelect(row, option) {
+  if (!option?.value) return
+  props.social.onPlatformInput(row, option.value)
+  props.social.checkRow(row)
+  // The pattern is still checked on Save.
+  if (!row.pattern) row.patternError = ''
 }
 </script>
