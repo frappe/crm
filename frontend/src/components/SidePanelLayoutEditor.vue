@@ -158,7 +158,6 @@ const restrictedFieldTypes = [
   'Column Break',
   'Tab Break',
   'Table',
-  'Table MultiSelect',
   'Signature',
   'Image',
 ]
