@@ -68,12 +68,12 @@
     <div class="flex gap-4 items-center justify-between py-3 px-2">
       <div class="flex flex-col">
         <div class="text-p-base-medium truncate" :class="labelClass">
-          {{ __('Auto-enrich new Organizations') }}
+          {{ __('Auto-enrich new records') }}
         </div>
         <div class="text-p-sm" :class="descriptionClass">
           {{
             __(
-              'Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button.',
+              'Automatically enrich new Leads, Deals and Organizations in the background when they have a website. When off, use the Enrich button on the record.',
             )
           }}
         </div>
