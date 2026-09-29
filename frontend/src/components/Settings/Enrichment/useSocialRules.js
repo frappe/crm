@@ -3,19 +3,51 @@ import { useEnrichmentRules } from './useEnrichmentRules'
 // The networks mapper.py can write to a CRM field (_SOCIAL_KEYS there). A rule
 // for any other network would match on the page and then never populate
 // anything, so the Platform box only offers these.
+//
+// `pattern` is each platform's default regex. These mirror SOCIAL_PATTERNS in
+// crm/domain_enrichment/install.py and must stay in sync with it.
 export const SOCIAL_PLATFORMS = [
-  { label: 'LinkedIn', value: 'linkedin' },
-  { label: 'X (Twitter)', value: 'twitter' },
-  { label: 'GitHub', value: 'github' },
-  { label: 'Facebook', value: 'facebook' },
-  { label: 'Instagram', value: 'instagram' },
-  { label: 'YouTube', value: 'youtube' },
+  {
+    label: 'LinkedIn',
+    value: 'linkedin',
+    pattern: 'linkedin\\.com/(company|in|school)/',
+  },
+  {
+    label: 'X (Twitter)',
+    value: 'twitter',
+    pattern: '(twitter\\.com|x\\.com)/[A-Za-z0-9_]+',
+  },
+  {
+    label: 'GitHub',
+    value: 'github',
+    pattern: 'github\\.com/[A-Za-z0-9_.-]+',
+  },
+  {
+    label: 'Facebook',
+    value: 'facebook',
+    pattern: 'facebook\\.com/[A-Za-z0-9_.\\-/]+',
+  },
+  {
+    label: 'Instagram',
+    value: 'instagram',
+    pattern: 'instagram\\.com/[A-Za-z0-9_.]+',
+  },
+  {
+    label: 'YouTube',
+    value: 'youtube',
+    pattern: 'youtube\\.com/(channel/|c/|user/|@)[A-Za-z0-9_.\\-]+',
+  },
 ]
 
 // mapper.py looks a social profile up by its exact lowercase key, so a value
 // stored in Desk as "LinkedIn " still reads as the same platform.
 function normalizePlatform(value) {
   return (value || '').trim().toLowerCase()
+}
+
+function defaultPattern(platform) {
+  const value = normalizePlatform(platform)
+  return SOCIAL_PLATFORMS.find((option) => option.value === value)?.pattern
 }
 
 // The row edits the rule's first pattern, which is the only one every seeded
@@ -163,7 +195,18 @@ export function useSocialRules() {
     }
   }
 
+  // The pattern follows the platform only while it is still the old platform's
+  // default (or empty, as on a new row). A regex the admin wrote is kept.
   function onPlatformInput(row, value) {
+    const pattern = row.pattern.trim()
+    if (!pattern || pattern === defaultPattern(row.platform)) {
+      const next = defaultPattern(value)
+      if (next) {
+        row.pattern = next
+        row.patternError = ''
+      }
+    }
+
     row.platform = value
     row.platformError = ''
     row.serverError = ''
