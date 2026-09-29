@@ -752,6 +752,9 @@ def remove_doc_link(doctype, docname):
 
 
 def remove_contact_link(doctype, docname):
+	# crm.api.whatsapp imports this module at load time
+	from crm.api.whatsapp import WhatsAppRecipientChangeError
+
 	if not doctype or not docname:
 		return
 
@@ -764,12 +767,17 @@ def remove_contact_link(doctype, docname):
 			}
 		)
 		linked_doc_data.save(ignore_permissions=True)
+	except WhatsAppRecipientChangeError:
+		raise
 	except (frappe.DoesNotExistError, frappe.ValidationError):
 		pass
 
 
 @frappe.whitelist()
 def remove_linked_doc_reference(items: str | list, remove_contact: bool = False, delete: bool = False):
+	# crm.api.whatsapp imports this module at load time
+	from crm.api.whatsapp import WhatsAppRecipientChangeError
+
 	if isinstance(items, str):
 		items = frappe.parse_json(items)
 
@@ -788,6 +796,8 @@ def remove_linked_doc_reference(items: str | list, remove_contact: bool = False,
 
 			if delete:
 				frappe.delete_doc(item["doctype"], item["docname"])
+		except WhatsAppRecipientChangeError:
+			raise
 		except (frappe.DoesNotExistError, frappe.ValidationError):
 			# Skip if document doesn't exist or has validation errors
 			continue

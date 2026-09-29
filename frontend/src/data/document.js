@@ -5,7 +5,12 @@ import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees, sanitizeText } from '@/utils'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
-import { createDocumentResource, createResource, toast } from 'frappe-ui'
+import {
+  CONFIRM_RECIPIENT_CHANGE,
+  confirmRecipientChange,
+  isRecipientChangeRefusal,
+} from '@/utils/whatsappRecipient'
+import { call, createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive, getCurrentInstance } from 'vue'
 
 const documentsCache = {}
@@ -50,12 +55,13 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
             }
           },
           setValue: {
-            onSuccess: () => {
-              triggerOnSave()
-              toast.success(__('Document updated successfully'))
-              processPendingDeletions()
-            },
+            onSuccess: onSaved,
             onError: (err) => {
+              if (isRecipientChangeRefusal(err)) {
+                resaveWithRecipientConfirmation(err)
+                return
+              }
+
               triggerOnError(err)
 
               if (err.exc_type == 'MandatoryError') {
@@ -104,6 +110,9 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
         }
         const mandatory = checkMandatory(documentsCache[doctype][docname].doc)
         if (mandatory) return
+        // kept so a save resent after the WhatsApp recipient prompt still
+        // runs the caller's onSuccess
+        _save.submitOptions = args[1]
         return _originalSubmit.apply(_save, args)
       }
     } else {
@@ -112,6 +121,51 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
         fieldPropertyOverrides: {},
       })
       setupFormScript()
+    }
+  }
+
+  function onSaved() {
+    triggerOnSave()
+    toast.success(__('Document updated successfully'))
+    processPendingDeletions()
+  }
+
+  // Goes straight to set_value because a frappe-ui resource cannot add a param.
+  async function resaveWithRecipientConfirmation(err) {
+    const resource = documentsCache[doctype][docname]
+    const failed = [
+      resource.save,
+      resource.setValue,
+      resource.setValueDebounced,
+    ].find((r) => r.error === err)
+    if (!failed?.params) return
+
+    if (!(await confirmRecipientChange(err))) {
+      restoreSavedValues(resource, Object.keys(failed.params.fieldname))
+      return
+    }
+
+    try {
+      const saved = await call('frappe.client.set_value', {
+        ...failed.params,
+        ...CONFIRM_RECIPIENT_CHANGE,
+      })
+      await resource.reload()
+      onSaved()
+      failed.submitOptions?.onSuccess?.(saved)
+    } catch (error) {
+      toast.error(
+        error.messages?.[0] ||
+          __('An error occurred while updating the document'),
+      )
+    }
+  }
+
+  // frappe-ui's own rollback after a failed `save` keeps the edit, because it
+  // snapshots the doc after the field was already changed.
+  function restoreSavedValues(resource, fields) {
+    for (const field of fields) {
+      resource.doc[field] = resource.originalDoc[field]
     }
   }
 

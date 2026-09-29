@@ -1,12 +1,20 @@
 import frappe
 from frappe import _
 from frappe.permissions import add_permission, update_permission_property
+from frappe.query_builder.functions import Count
+from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 from crm.integrations.api import find_by_phone, get_contact_lead_or_deal_from_number
+from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
+CONFIRM_PARAM = "confirm_whatsapp_recipient_change"
+
+
+class WhatsAppRecipientChangeError(frappe.ValidationError):
+	pass
 
 
 def validate_access() -> None:
@@ -132,6 +140,80 @@ def notify_agent(doc, method=None):
 					"redirect_to_docname": doc.reference_docname,
 				}
 			)
+
+
+def guard_doc_recipient_change(doc) -> None:
+	"""`guard_recipient_change` for a Lead or Deal being saved."""
+	before = doc.get_doc_before_save()
+	if doc.is_new() or not before:
+		return
+	guard_recipient_change(doc.doctype, doc.name, before.mobile_no, doc.mobile_no)
+
+
+def guard_recipient_change(
+	doctype: str, docname: str, old_number: str | None, new_number: str | None
+) -> None:
+	"""Refuse to move a Lead or Deal off a number it has a WhatsApp conversation with,
+	unless the request carries the user's confirmation. Replies from the old number stop
+	showing on the record after the change, so the user has to know before it happens."""
+	if not old_number or normalize_phone(old_number) == normalize_phone(new_number):
+		return
+	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended():
+		return
+
+	count = count_conversation(doctype, docname, old_number)
+	if not count:
+		return
+
+	record = _("deal") if doctype == "CRM Deal" else _("lead")
+	if new_number:
+		outcome = _("New messages will go to {0}.").format(new_number)
+	else:
+		outcome = _("You won't be able to message them from this {0}.").format(record)
+
+	frappe.throw(
+		_(
+			"This {0} has {1} WhatsApp message(s) with {2}. After this change, their replies won't show here. {3}"
+		).format(record, count, old_number, outcome),
+		WhatsAppRecipientChangeError,
+		title=_("Change WhatsApp recipient?"),
+	)
+
+
+def count_conversation(doctype: str, docname: str, phone_number: str) -> int:
+	"""Messages the WhatsApp tab of this record shows for the given number: a Deal also
+	shows the messages of the Lead it was converted from."""
+	target = normalize_phone(phone_number)
+	if not target:
+		return 0
+
+	references = [(doctype, docname)]
+	if doctype == "CRM Deal" and (lead := frappe.db.get_value("CRM Deal", docname, "lead")):
+		references.append(("CRM Lead", lead))
+
+	Message = frappe.qb.DocType("WA Message")
+	Profile = frappe.qb.DocType("WA Profile")
+	rows = (
+		frappe.qb.from_(Message)
+		.join(Profile)
+		.on(Message.to == Profile.name)
+		.select(Profile.phone_number, Count("*"))
+		.where(
+			Criterion.any(
+				(Message.reference_doctype == ref_doctype) & (Message.reference_docname == ref_docname)
+				for ref_doctype, ref_docname in references
+			)
+		)
+		.groupby(Profile.phone_number)
+	).run()
+
+	return sum(count for phone, count in rows if normalize_phone(phone) == target)
+
+
+def _is_unattended() -> bool:
+	"""No one is there to confirm: data import, patches, install and migrate."""
+	flags = frappe.flags
+	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
 
 
 @frappe.whitelist()

@@ -44,4 +44,5 @@ export function createDialog(dialogOptions) {
     dialog.show = true
   }, 0)
   dialogs.value.push(dialog)
+  return dialog
 }

@@ -134,6 +134,7 @@
 import { createResource, call } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 
 const show = defineModel({ type: Boolean })
 const router = useRouter()
@@ -200,11 +201,14 @@ const unlinkLinkedDoc = (doc) => {
     }))
   }
 
-  call('crm.api.doc.remove_linked_doc_reference', {
-    items: selectedDocs,
-    remove_contact: props.doctype == 'Contact',
-    delete: doc.delete,
-  }).then(() => {
+  withRecipientConfirmation((confirm) =>
+    call('crm.api.doc.remove_linked_doc_reference', {
+      items: selectedDocs,
+      remove_contact: props.doctype == 'Contact',
+      delete: doc.delete,
+      ...confirm,
+    }),
+  ).then(() => {
     linkedDocsResource.reload()
     confirmDeleteInfo.value = {
       show: false,
