@@ -2,6 +2,8 @@
 # See license.txt
 
 
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.tests.utils import make_test_records
@@ -15,6 +17,7 @@ from crm.api.dashboard import (
 	get_average_won_deal_value,
 	get_base_currency_symbol,
 	get_chart,
+	get_chart_options,
 	get_dashboard,
 	get_deal_status_change_counts,
 	get_deals_by_salesperson,
@@ -649,3 +652,180 @@ class TestDashboard(IntegrationTestCase):
 			self.assertIn("name", item)
 			# Validate name is not empty
 			self.assertTrue(item["name"])
+
+
+# Captured at module import, before any test patches frappe.get_hooks, so
+# tests can delegate to the real implementation for every hook except the
+# one they're specifically overriding.
+_real_get_hooks = frappe.get_hooks
+
+
+def _hook_side_effect(crm_dashboard_charts):
+	"""Build a frappe.get_hooks side_effect that only overrides the
+	crm_dashboard_charts hook and forwards every other hook lookup (used
+	throughout permission checks, whitelist processing, etc.) to the real
+	implementation -- patching frappe.get_hooks globally would otherwise
+	risk breaking unrelated machinery mid-request."""
+
+	def side_effect(hook=None, default="_KEEP_DEFAULT_LIST", app_name=None):
+		if hook == "crm_dashboard_charts":
+			return crm_dashboard_charts
+		return _real_get_hooks(hook, default, app_name)
+
+	return side_effect
+
+
+class TestDashboardContributedCharts(IntegrationTestCase):
+	"""Test the crm_dashboard_charts hook that lets other apps contribute
+	dashboard chart options and their resolvers."""
+
+	def setUp(self):
+		self.from_date = get_first_day(nowdate())
+		self.to_date = get_last_day(nowdate())
+
+	def test_get_chart_options_has_no_contributions_by_default(self):
+		"""With no app registering the hook, get_hooks returns [] (not {}) --
+		get_chart_options must not choke on that."""
+		options = get_chart_options()
+		self.assertIn("total_leads", [o["value"] for o in options["number_chart"]])
+
+	@patch("frappe.get_hooks")
+	def test_contributed_chart_appears_in_options(self, mock_get_hooks):
+		mock_get_hooks.side_effect = _hook_side_effect(
+			{
+				"number_chart": [
+					{
+						"label": "Total Calls",
+						"value": "total_calls_made",
+						"resolver": "crm.api.dashboard.get_total_leads",
+					},
+				],
+			}
+		)
+
+		options = get_chart_options()
+
+		self.assertIn("total_calls_made", [o["value"] for o in options["number_chart"]])
+		# resolver is internal wiring, not something the frontend needs
+		contributed_option = next(o for o in options["number_chart"] if o["value"] == "total_calls_made")
+		self.assertNotIn("resolver", contributed_option)
+
+	@patch("frappe.get_hooks")
+	def test_contributed_chart_resolves_via_get_chart(self, mock_get_hooks):
+		mock_get_hooks.side_effect = _hook_side_effect(
+			{
+				"number_chart": [
+					{
+						"label": "Aliased Leads",
+						"value": "aliased_leads",
+						# Resolver points at a real, installed-app function so
+						# frappe.get_attr's installed-app check is satisfied --
+						# reusing get_total_leads is enough to prove the dispatch
+						# reaches a resolver outside get_chart's own hasattr check.
+						"resolver": "crm.api.dashboard.get_total_leads",
+					},
+				],
+			}
+		)
+
+		result = get_chart("aliased_leads", "number_chart", self.from_date, self.to_date)
+
+		self.assertNotIn("error", result)
+		self.assertEqual(result["title"], "Total leads")
+
+	@patch("frappe.get_hooks")
+	def test_multiple_apps_can_contribute_simultaneously(self, mock_get_hooks):
+		"""Unlike override_whitelisted_methods (last override wins), the hook
+		must let every contributing app's charts resolve at the same time."""
+		mock_get_hooks.side_effect = _hook_side_effect(
+			{
+				"number_chart": [
+					{
+						"label": "App B Chart",
+						"value": "app_b_chart",
+						"resolver": "crm.api.dashboard.get_total_leads",
+					},
+					{
+						"label": "App C Chart",
+						"value": "app_c_chart",
+						"resolver": "crm.api.dashboard.get_won_deals",
+					},
+				],
+			}
+		)
+
+		result_b = get_chart("app_b_chart", "number_chart", self.from_date, self.to_date)
+		result_c = get_chart("app_c_chart", "number_chart", self.from_date, self.to_date)
+
+		self.assertEqual(result_b["title"], "Total leads")
+		self.assertEqual(result_c["title"], "Won deals")
+
+	@patch("frappe.get_hooks")
+	def test_contributed_chart_cannot_shadow_core_chart(self, mock_get_hooks):
+		"""A contributed value matching a core chart name must never win --
+		core's own resolver keeps handling it."""
+		mock_get_hooks.side_effect = _hook_side_effect(
+			{
+				"number_chart": [
+					{
+						"label": "Hijacked",
+						"value": "total_leads",
+						"resolver": "crm.api.dashboard.get_won_deals",
+					},
+				],
+			}
+		)
+
+		options = get_chart_options()
+		total_leads_options = [o for o in options["number_chart"] if o["value"] == "total_leads"]
+		self.assertEqual(len(total_leads_options), 1)
+		self.assertEqual(total_leads_options[0]["label"], "Total Leads")
+
+		result = get_chart("total_leads", "number_chart", self.from_date, self.to_date)
+		self.assertEqual(result["title"], "Total leads")  # core's own, not "Won deals"
+
+	@patch("frappe.get_hooks")
+	def test_unknown_chart_type_from_hook_is_ignored(self, mock_get_hooks):
+		"""Contributing a new top-level chart type isn't supported (DashboardItem.vue
+		has no renderer for it) -- such contributions must be silently dropped,
+		not raise or leak into an unsupported type."""
+		mock_get_hooks.side_effect = _hook_side_effect(
+			{
+				"pie_chart": [
+					{
+						"label": "Something",
+						"value": "something",
+						"resolver": "crm.api.dashboard.get_total_leads",
+					},
+				],
+			}
+		)
+
+		options = get_chart_options()
+		self.assertNotIn("pie_chart", options)
+
+	@patch("frappe.get_hooks")
+	def test_malformed_contribution_is_ignored(self, mock_get_hooks):
+		"""Missing label/value/resolver must be skipped, not raise."""
+		mock_get_hooks.side_effect = _hook_side_effect(
+			{
+				"number_chart": [
+					{"label": "No value or resolver"},
+					{"value": "no_label", "resolver": "crm.api.dashboard.get_total_leads"},
+					{"label": "No resolver", "value": "no_resolver"},
+				],
+			}
+		)
+
+		options = get_chart_options()
+		contributed_values = {o["value"] for o in options["number_chart"]} - {
+			"total_leads",
+			"ongoing_deals",
+			"average_ongoing_deal_value",
+			"won_deals",
+			"average_won_deal_value",
+			"average_deal_value",
+			"average_time_to_close_a_lead",
+			"average_time_to_close_a_deal",
+		}
+		self.assertEqual(contributed_values, set())

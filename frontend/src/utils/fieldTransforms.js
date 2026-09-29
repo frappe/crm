@@ -54,7 +54,7 @@ export function processField(rawField, options = {}) {
   // 4. Select options: string → array
   if (field.fieldtype === 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => ({
-      label: option,
+      label: __(option),
       value: option,
     }))
 
@@ -108,7 +108,10 @@ export function applyStateFieldOptions(
     const hasRegionalStateData =
       stateOptionsByCountry && Object.keys(stateOptionsByCountry).length > 0
     if (hasRegionalStateData && !doc?.country) {
-      return { ...field, placeholder: 'Select Country to see state options' }
+      return {
+        ...field,
+        placeholder: __('Select Country to see state options'),
+      }
     }
     return field
   }

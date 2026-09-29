@@ -18,6 +18,7 @@
               <slot name="actions" v-bind="{ section }">
                 <Button
                   v-if="section.showEditButton"
+                  :tooltip="__('Edit Fields Layout')"
                   variant="ghost"
                   class="w-7 mr-2"
                   :icon="EditIcon"
@@ -437,6 +438,7 @@ import { getMeta } from '@/stores/meta'
 import { parseLinkFilters } from '@/utils/fieldTransforms'
 import { usersStore } from '@/stores/users'
 import { isMobileView } from '@/composables/settings'
+import { createDocument } from '@/composables/document'
 import {
   getFormat,
   evaluateDependsOnValue,
@@ -534,6 +536,17 @@ function parsedField(field) {
       ignore_user_type: 1,
       ...(parseLinkFilters(field.link_filters) || {}),
     })
+  }
+
+  if (field.fieldtype === 'Link' && field.options !== 'User') {
+    if (!field.create) {
+      field.create = (value, close) => {
+        const callback = (d) => {
+          if (d) fieldChange(d.name, field)
+        }
+        createDocument(field.options, value, close, callback)
+      }
+    }
   }
 
   const read_only_via_depends_on = evaluateDependsOnValue(

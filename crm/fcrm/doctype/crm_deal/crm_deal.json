@@ -570,5 +570,6 @@
  "sort_order": "DESC",
  "states": [],
  "title_field": "organization",
- "track_changes": 1
+ "track_changes": 1,
+ "track_seen": 1
 }

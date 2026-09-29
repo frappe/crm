@@ -7,10 +7,6 @@
  "field_order": [
   "general_tab",
   "enabled",
-  "enabled_doctypes_section",
-  "enable_lead",
-  "enable_deal",
-  "enable_organization",
   "automation_section",
   "auto_enrich",
   "crawl_tab",
@@ -22,9 +18,6 @@
   "max_download_bytes",
   "retry_count",
   "user_agent",
-  "preview_section",
-  "preview_max_pages",
-  "preview_timeout",
   "tuning_section",
   "link_priority_order",
   "column_break_tuning",
@@ -49,40 +42,16 @@
    "label": "Enabled"
   },
   {
-   "fieldname": "enabled_doctypes_section",
-   "fieldtype": "Section Break",
-   "label": "Enabled Doctypes"
-  },
-  {
-   "default": "1",
-   "fieldname": "enable_lead",
-   "fieldtype": "Check",
-   "label": "Enable for CRM Lead"
-  },
-  {
-   "default": "1",
-   "fieldname": "enable_deal",
-   "fieldtype": "Check",
-   "label": "Enable for CRM Deal"
-  },
-  {
-   "default": "1",
-   "fieldname": "enable_organization",
-   "fieldtype": "Check",
-   "label": "Enable for CRM Organization"
-  },
-  {
    "fieldname": "automation_section",
    "fieldtype": "Section Break",
    "label": "Automation"
   },
   {
    "default": "0",
-   "description": "Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button.",
-   "depends_on": "eval:doc.enable_organization",
+   "description": "Automatically enrich a new CRM Lead, Deal or Organization in the background as soon as it is created (requires a website on the record). Only applies to the doctypes enabled above. When off, enrichment is triggered manually with the Enrich button.",
    "fieldname": "auto_enrich",
    "fieldtype": "Check",
-   "label": "Auto-enrich new Organizations"
+   "label": "Auto-enrich new records"
   },
   {
    "fieldname": "crawl_tab",
@@ -140,25 +109,6 @@
    "fieldname": "user_agent",
    "fieldtype": "Data",
    "label": "User Agent"
-  },
-  {
-   "fieldname": "preview_section",
-   "fieldtype": "Section Break",
-   "label": "Quick Prefill (Preview)"
-  },
-  {
-   "default": "1",
-   "description": "Pages crawled for the fast, synchronous create-time prefill.",
-   "fieldname": "preview_max_pages",
-   "fieldtype": "Int",
-   "label": "Preview Max Pages"
-  },
-  {
-   "default": "8",
-   "description": "Per-request timeout in seconds for the preview prefill.",
-   "fieldname": "preview_timeout",
-   "fieldtype": "Int",
-   "label": "Preview Timeout (s)"
   },
   {
    "fieldname": "tuning_section",

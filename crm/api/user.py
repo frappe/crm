@@ -46,6 +46,71 @@ def change_password(old_password: str, new_password: str):
 	return _("Password Updated Successfully")
 
 
+def needs_password_setup() -> bool:
+	"""Whether the session user has no password of their own and must set one.
+
+	True for users provisioned without a password — the Frappe Cloud site owner,
+	users created by a script — who are logged into a session they never
+	authenticated for and so have no way back in once it expires.
+
+	Users who sign in through SSO are excluded: having no password is the
+	correct state for them, not something to fix.
+	"""
+	user = frappe.session.user
+
+	# Checked first: it is the discriminating one, and it short-circuits the
+	# other queries for everyone who already has a password — which is almost
+	# everyone, on every CRM page load.
+	if has_password(user):
+		return False
+
+	if frappe.get_system_settings("disable_user_pass_login"):
+		return False
+
+	if frappe.db.get_single_value("LDAP Settings", "enabled"):
+		return False
+
+	# Every user carries a `frappe` provider row (Frappe issues one on insert
+	# so the site can act as an identity provider), so only other providers
+	# mean the user actually signs in through SSO.
+	if frappe.db.exists(
+		"User Social Login",
+		{
+			"parenttype": "User",
+			"parent": user,
+			"provider": ["!=", "frappe"],
+			"userid": ["is", "set"],
+		},
+	):
+		return False
+
+	return True
+
+
+def has_password(user: str) -> bool:
+	"""Whether a password is stored for the user.
+
+	User passwords are hashed rows in `__Auth` with `encrypted = 0`, so
+	`get_decrypted_password` (which only looks at encrypted rows) cannot answer
+	this — hence the direct query.
+	"""
+	Auth = frappe.qb.Table("__Auth")
+
+	return bool(
+		(
+			frappe.qb.from_(Auth)
+			.select(Auth.name)
+			.where(
+				(Auth.doctype == "User")
+				& (Auth.name == user)
+				& (Auth.fieldname == "password")
+				& (Auth.encrypted == 0)
+			)
+			.limit(1)
+		).run()
+	)
+
+
 @frappe.whitelist()
 def add_existing_users(users: str | list, role: str = "Sales User"):
 	"""
@@ -82,6 +147,7 @@ def update_user_role(user: str, new_role: str):
 		frappe.throw(_("Cannot assign this role"))
 
 	user_doc = frappe.get_doc("User", user)
+	validate_no_role_profile(user_doc)
 	target_roles = [d.role for d in user_doc.roles]
 	target_is_system_manager = "System Manager" in target_roles
 
@@ -136,10 +202,7 @@ def remove_crm_roles_from_user(user: str):
 	if "System Manager" in roles and not current_user_is_system_manager:
 		frappe.throw(_("Only System Managers can modify other System Managers"), frappe.PermissionError)
 
-	if user_doc.get("role_profiles") or user_doc.get("role_profile_name"):
-		return frappe.throw(
-			_("User {0} cannot be removed as it has a Role Profile assigned to it.").format(user)
-		)
+	validate_no_role_profile(user_doc)
 
 	if "Sales User" in roles:
 		remove_roles(user_doc, "Sales User")
@@ -156,6 +219,21 @@ def remove_crm_roles_from_user(user: str):
 		frappe.delete_doc("CRM Sales Hierarchy", node_name, ignore_permissions=True)
 
 	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
+
+
+def validate_no_role_profile(user_doc):
+	"""
+	Throw if the user's roles are governed by a Role Profile.
+	User.validate() re-derives `roles` from the assigned Role Profile on every save,
+	so any role appended or removed here would be silently reverted.
+	"""
+	if user_doc.get("role_profiles") or user_doc.get("role_profile_name"):
+		frappe.throw(
+			_("Roles of user {0} are managed by a Role Profile. Update the Role Profile instead.").format(
+				frappe.bold(user_doc.name)
+			),
+			title=_("Role Profile Assigned"),
+		)
 
 
 def remove_roles(self, *roles):

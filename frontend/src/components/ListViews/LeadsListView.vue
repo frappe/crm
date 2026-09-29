@@ -40,7 +40,7 @@
       </ListHeaderItem>
     </ListHeader>
     <ListRows
-      v-slot="{ idx, column, item, row }"
+      v-slot="{ idx, column, item, row, isVisited }"
       :rows="rows"
       doctype="CRM Lead"
     >
@@ -53,6 +53,9 @@
             <MultipleAvatar
               :avatars="item"
               size="sm"
+              :label-class="
+                isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+              "
               @click="
                 (event) =>
                   emit('applyFilter', {
@@ -102,6 +105,9 @@
               ].includes(column.key)
             "
             class="truncate text-base"
+            :class="
+              isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+            "
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -130,7 +136,15 @@
             >
               <HeartIcon
                 class="h-4 w-4"
-                :class="isLiked(item) ? 'fill-red-500 text-red-500' : ''"
+                :class="
+                  isLiked(item)
+                    ? isVisited
+                      ? 'fill-red-400 text-red-400'
+                      : 'fill-red-500 text-red-500'
+                    : isVisited
+                      ? 'text-ink-gray-6'
+                      : 'text-ink-gray-9'
+                "
               />
             </Button>
           </div>
@@ -181,9 +195,18 @@
                 })
             "
           />
+          <WebsiteLink
+            v-else-if="column.key === 'website' && item?.url"
+            variant="label"
+            :url="item.url"
+            :label="getLabel(label, column)"
+          />
           <div
             v-else-if="label"
             class="truncate text-base"
+            :class="
+              isVisited ? 'text-ink-gray-6' : 'font-medium text-ink-gray-9'
+            "
             @click="
               (event) =>
                 emit('applyFilter', {
@@ -197,6 +220,13 @@
           >
             {{ getLabel(label, column) }}
           </div>
+        </template>
+        <template #suffix>
+          <WebsiteLink
+            v-if="column.key === 'website' && item?.url"
+            variant="icon"
+            :url="item.url"
+          />
         </template>
       </ListRowItem>
     </ListRows>
@@ -231,6 +261,7 @@ import RatingInput from '@/components/Controls/RatingInput.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import WebsiteLink from '@/components/ListViews/WebsiteLink.vue'
 import { isTranslatable, formatDuration } from '@/utils'
 import {
   Avatar,

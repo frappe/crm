@@ -173,7 +173,6 @@
 
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
-import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -185,14 +184,15 @@ import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
 import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
+import { getNavigationItems } from '@/utils/navigation'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
-import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
+import DealsIcon from '@/components/Icons/DealsIcon.vue'
+import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
@@ -251,55 +251,7 @@ const isCollapsed = computed(() => isSidebarCollapsed.value && !props.mobile)
 const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
-const links = [
-  {
-    label: 'Dashboard',
-    icon: LucideLayoutDashboard,
-    to: 'Dashboard',
-    condition: () => !props.mobile,
-  },
-  {
-    label: 'Leads',
-    icon: LeadsIcon,
-    to: 'Leads',
-  },
-  {
-    label: 'Deals',
-    icon: DealsIcon,
-    to: 'Deals',
-  },
-  {
-    label: 'Contacts',
-    icon: ContactsIcon,
-    to: 'Contacts',
-  },
-  {
-    label: 'Organizations',
-    icon: OrganizationsIcon,
-    to: 'Organizations',
-  },
-  {
-    label: 'Notes',
-    icon: NoteIcon,
-    to: 'Notes',
-  },
-  {
-    label: 'Tasks',
-    icon: TaskIcon,
-    to: 'Tasks',
-  },
-  {
-    label: 'Calendar',
-    icon: CalendarIcon,
-    to: 'Calendar',
-    condition: () => !props.mobile,
-  },
-  {
-    label: 'Call Logs',
-    icon: PhoneIcon,
-    to: 'Call Logs',
-  },
-]
+const links = getNavigationItems({ mobile: props.mobile })
 
 const allViews = computed(() => {
   let _views = [
@@ -307,19 +259,12 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links
-        .filter((link) => {
-          if (link.condition) {
-            return link.condition()
-          }
-          return true
-        })
-        .map((link) => ({
-          label: link.label,
-          icon: link.icon,
-          key: link.to,
-          to: { name: link.to },
-        })),
+      views: links.map((link) => ({
+        label: link.label,
+        icon: link.icon,
+        key: link.route,
+        to: { name: link.route },
+      })),
     },
   ]
   if (getPublicViews().length) {
@@ -428,16 +373,94 @@ const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 
+// The onboarding composable persists the checklist as a positional
+// [{name, completed}] list, seeds it from the current steps ONLY when empty,
+// and never adds newly introduced steps to an existing list. So once a step is
+// added (e.g. create_first_web_form), a saved list is missing it — skip / reset
+// / complete become no-ops (findIndex returns -1) and the total is wrong.
+//
+// Reconcile the saved list to the current steps while never losing progress:
+//   - operate on localStorage, the copy the composable actually reads on load
+//     (checking the server instead would let a reconciled browser and a stale
+//     browser keep overwriting each other);
+//   - order the currently-visible steps to match the UI and preserve their
+//     completion by name; new steps start incomplete;
+//   - keep steps that are saved but not currently visible (e.g. role-only steps
+//     when the role is temporarily absent) so a role change can't erase them;
+//   - skip entirely once onboarding is finished, so a completed checklist is
+//     never rewritten or reopened.
+// It is idempotent: an already-reconciled list produces no change.
+const ONBOARDING_KEY = 'frappecrm_onboarding_status'
+
+async function reconcileOnboarding(currentSteps) {
+  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
+  // destructure) — the same key the composable uses. Not user.value.
+  let store
+  try {
+    store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
+  } catch {
+    return
+  }
+  const persisted = store?.[user]?.[ONBOARDING_KEY]
+  if (!persisted?.length) return // composable seeds an empty list itself
+  if (persisted.every((s) => s.completed)) return // finished: leave untouched
+
+  const doneByName = new Map(persisted.map((s) => [s.name, s.completed]))
+  const currentNames = new Set(currentSteps.map((s) => s.name))
+  const visible = currentSteps.map((s) => ({
+    name: s.name,
+    completed: doneByName.get(s.name) ?? false,
+  }))
+  // Preserve saved-but-not-visible steps (e.g. manager-only steps for a user
+  // whose role was removed) so their completion survives role changes.
+  const hidden = persisted.filter((s) => !currentNames.has(s.name))
+  const merged = [...visible, ...hidden]
+
+  const unchanged =
+    merged.length === persisted.length &&
+    merged.every(
+      (m, i) =>
+        persisted[i]?.name === m.name &&
+        persisted[i]?.completed === m.completed,
+    )
+  if (unchanged) return
+
+  store[user][ONBOARDING_KEY] = merged
+  try {
+    localStorage.setItem('onboardingStatus', JSON.stringify(store))
+    await call('frappe.onboarding.update_user_onboarding_status', {
+      steps: JSON.stringify(merged),
+      appName: 'frappecrm',
+    })
+  } catch {
+    return
+  }
+  // Reload once so the composable re-reads the reconciled list. Only reached
+  // while onboarding is unfinished (completed users returned above), so a
+  // finished checklist is never reopened.
+  window.location.reload()
+}
+
 async function getFirstLead() {
-  let firstLead = localStorage.getItem('firstLead' + user)
-  if (firstLead) return firstLead
-  return await call('crm.api.onboarding.get_first_lead')
+  return await getFirstRecord('firstLead', 'crm.api.onboarding.get_first_lead')
 }
 
 async function getFirstDeal() {
-  let firstDeal = localStorage.getItem('firstDeal' + user)
-  if (firstDeal) return firstDeal
-  return await call('crm.api.onboarding.get_first_deal')
+  return await getFirstRecord('firstDeal', 'crm.api.onboarding.get_first_deal')
+}
+
+// the cached id may point to a record that was deleted (or a lead that was
+// converted) since it was stored, so let the server validate it and fall back
+async function getFirstRecord(key, method) {
+  let storageKey = key + user
+  let cached = localStorage.getItem(storageKey)
+  let name = await call(method, { name: cached })
+  if (name) {
+    localStorage.setItem(storageKey, name)
+  } else {
+    localStorage.removeItem(storageKey)
+  }
+  return name
 }
 
 const showIntermediateModal = ref(false)
@@ -466,6 +489,19 @@ const steps = reactive([
       send('trigger_lead_create', true)
       capture('onboarding_step_clicked_create_first_lead')
     },
+  },
+  {
+    name: 'create_first_web_form',
+    title: __('Capture leads with a form'),
+    icon: markRaw(WebsiteIcon),
+    completed: false,
+    onClick: () => {
+      minimize.value = true
+      showSettings.value = true
+      activeSettingsPage.value = 'Forms'
+      capture('onboarding_step_clicked_create_first_web_form')
+    },
+    condition: () => isManager(),
   },
   {
     name: 'invite_your_team',
@@ -641,6 +677,9 @@ onMounted(async () => {
     return true
   })
 
+  // Bring an existing saved checklist in line with the current steps (adds
+  // newly introduced steps, preserves completion). No-op when already aligned.
+  await reconcileOnboarding(filteredSteps)
   setUp(filteredSteps)
 })
 

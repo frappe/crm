@@ -268,6 +268,7 @@ import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useBroadcast } from '@/composables/useBroadcast'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
@@ -281,11 +282,16 @@ const { getDealStatus } = statusesStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
+const { on } = useBroadcast()
 
 const route = useRoute()
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
+
+on('trigger_deal_create', (data) => {
+  showDealModal.value = Boolean(data)
+})
 
 const defaults = reactive({})
 
@@ -420,7 +426,7 @@ function parseRows(rows, columns = []) {
           logo: getOrganization(deal.organization)?.organization_logo,
         }
       } else if (row === 'website') {
-        _rows[row] = website(deal.website)
+        _rows[row] = { label: website(deal.website), url: deal.website }
       } else if (row == 'status') {
         _rows[row] = {
           label: deal.status,

@@ -454,7 +454,7 @@ function parseRows(rows, columns = []) {
       } else if (row == 'organization') {
         _rows[row] = lead.organization
       } else if (row === 'website') {
-        _rows[row] = website(lead.website)
+        _rows[row] = { label: website(lead.website), url: lead.website }
       } else if (row == 'status') {
         _rows[row] = {
           label: lead.status,

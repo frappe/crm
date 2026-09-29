@@ -40,11 +40,19 @@
           </Button>
         </template>
       </Dropdown>
-      <Button
-        :label="__('Convert to Deal')"
-        variant="solid"
-        @click="showConvertToDealModal = true"
-      />
+      <Tooltip
+        :disabled="!isLeadConversionDisabled"
+        :text="__('Cannot convert a lost lead to deal')"
+      >
+        <div class="inline-flex">
+          <Button
+            :label="__('Convert to Deal')"
+            variant="solid"
+            :disabled="isLeadConversionDisabled"
+            @click="showConvertToDealModal = true"
+          />
+        </div>
+      </Tooltip>
     </template>
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
@@ -229,6 +237,7 @@
     v-model="showDeleteLinkedDocModal"
     :doctype="'CRM Lead'"
     :docname="leadId"
+    :title="doc.lead_name"
     name="Leads"
   />
   <LostReasonModal
@@ -248,7 +257,6 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -282,6 +290,9 @@ import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
+import { useCommandPaletteContext } from '@/composables/useCommandPalette'
+import { flattenCommandActions } from '@/utils/commandPalette'
+import { recordCommands } from '@/components/CommandPalette/recordCommands'
 import {
   createResource,
   FileUploader,
@@ -298,6 +309,7 @@ import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
+import { useVisitedRecords } from '@/composables/useVisitedRecords'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -332,21 +344,27 @@ const {
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 
 const doc = computed(() => document.doc || {})
+const isLeadConversionDisabled = computed(
+  () => doc.value.status && getLeadStatus(doc.value.status)?.type === 'Lost',
+)
 
 useUnsavedChangesWarning(() => document.isDirty)
 
+const { markVisited } = useVisitedRecords('CRM Lead')
+
 onMounted(async () => {
   if (document.doc) await triggerOnRender()
+  markVisited(props.leadId)
 })
 
 watch(error, (err) => {
   if (err) {
     errorTitle.value = __(
       err.exc_type == 'DoesNotExistError'
-        ? 'Document not found'
-        : 'Error occurred',
+        ? __('Document not found')
+        : __('Error occurred'),
     )
-    errorMessage.value = __(err.messages?.[0] || 'An error occurred')
+    errorMessage.value = __(err.messages?.[0] || __('An error occurred'))
   } else {
     errorTitle.value = ''
     errorMessage.value = ''
@@ -416,6 +434,131 @@ const statuses = computed(() => {
   return statusOptions('lead', customStatuses, triggerStatusChange)
 })
 
+useCommandPaletteContext(() => leadCommands())
+
+function leadCommands() {
+  const commands = [
+    statusCommand(),
+    ...flatStatusCommands(),
+    ...recordCommands(paletteContext()),
+    ...communicationCommands(),
+  ]
+  commands.push(...scriptCommands())
+  commands.push({
+    id: 'lead-convert',
+    title: 'Convert to deal',
+    group: 'Lead',
+    icon: 'repeat-2',
+    perform: () => (showConvertToDealModal.value = true),
+  })
+  if (canDelete.value) commands.push(deleteLeadCommand())
+  return commands
+}
+
+function paletteContext() {
+  return {
+    doctype: 'CRM Lead',
+    docname: props.leadId,
+    group: 'Lead',
+    assignees,
+    tabs,
+    changeTabTo,
+    activities: () => activities.value,
+    hasEmail: () => Boolean(doc.value?.email),
+    openEmailBox,
+    openFileUploader: () => (showFilesUploader.value = true),
+  }
+}
+
+function statusCommand() {
+  return {
+    id: 'lead-status',
+    title: 'Change status',
+    group: 'Lead',
+    icon: 'circle-dot',
+    children: async () => statusChildren(statuses.value),
+  }
+}
+
+function statusChildren(options) {
+  return options.map((option) => ({
+    id: `lead-status-${option.label}`,
+    title: option.label,
+    translate: false,
+    icon: option.icon,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+// Typing a status name sets it in one Enter, without drilling in.
+function flatStatusCommands() {
+  return statuses.value.map((option) => ({
+    id: `lead-status-flat-${option.label}`,
+    title: __('Set status: {0}', [option.label]),
+    translate: false,
+    group: 'Lead',
+    icon: option.icon,
+    hideWhenEmpty: true,
+    keywords: option.label,
+    checked: option.value === doc.value.status,
+    perform: option.onClick,
+  }))
+}
+
+function communicationCommands() {
+  const commands = []
+  if (doc.value.email) {
+    commands.push({
+      id: 'lead-email',
+      title: 'Send email',
+      group: 'Lead',
+      icon: 'mail',
+      perform: openEmailBox,
+    })
+  }
+  if (doc.value.mobile_no && callEnabled.value) {
+    commands.push({
+      id: 'lead-call',
+      title: 'Make a call',
+      group: 'Lead',
+      icon: 'phone',
+      perform: () => makeCall(doc.value.mobile_no),
+    })
+  }
+  return commands
+}
+
+function scriptCommands() {
+  return flattenCommandActions([
+    ...(document._actions || []),
+    ...(document.actions || []),
+  ])
+    .filter(
+      (action) =>
+        action.label &&
+        action.onClick &&
+        (!action.condition || action.condition()),
+    )
+    .map((action, index) => ({
+      id: `lead-script-${index}-${action.label}`,
+      title: action.label,
+      group: 'Lead',
+      icon: action.icon || 'zap',
+      perform: () => action.onClick(() => {}),
+    }))
+}
+
+function deleteLeadCommand() {
+  return {
+    id: 'lead-delete',
+    title: 'Delete lead',
+    group: 'Lead',
+    icon: 'trash-2',
+    perform: deleteLead,
+  }
+}
+
 usePageMeta(() => {
   return { title: title.value, icon: brand.favicon }
 })
@@ -441,11 +584,6 @@ const tabs = computed(() => {
       name: 'Data',
       label: __('Data'),
       icon: DetailsIcon,
-    },
-    {
-      name: 'Events',
-      label: __('Events'),
-      icon: EventIcon,
     },
     {
       name: 'Calls',
@@ -503,13 +641,12 @@ function updateField(name, value) {
 
   document.save.submit(null, {
     onSuccess: () => (reload.value = true),
-    onError: (err) => {
+    onError: () => {
       if (Array.isArray(name)) {
         name.forEach((field) => (doc.value[field] = oldValues[field]))
       } else {
         doc.value[name] = oldValues
       }
-      toast.error(err.messages?.[0] || __('Error updating field'))
     },
   })
 }
@@ -523,7 +660,7 @@ function openEmailBox() {
   if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
     activities.value.changeTabTo('emails')
   }
-  nextTick(() => (activities.value.emailBox.show = true))
+  nextTick(() => activities.value.emailBox?.openEmailBox())
 }
 
 function statusLabel(status) {

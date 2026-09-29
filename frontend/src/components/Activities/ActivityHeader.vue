@@ -11,30 +11,20 @@
       variant="solid"
       :label="__('New Email')"
       iconLeft="plus"
-      @click="emailBox.show = true"
+      @click="emailBox.openEmailBox()"
     />
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
       :label="__('New Comment')"
       iconLeft="plus"
-      @click="emailBox.showComment = true"
+      @click="emailBox.openCommentBox()"
     />
     <MultiActionButton
       v-else-if="title == 'Calls'"
       variant="solid"
       :options="callActions"
     />
-    <Button
-      v-else-if="title == 'Events'"
-      variant="solid"
-      @click="modalRef.showEvent()"
-    >
-      <template #prefix>
-        <EventIcon class="h-4 w-4" />
-      </template>
-      <span>{{ __('Schedule an Event') }}</span>
-    </Button>
     <Button
       v-else-if="title == 'Notes'"
       variant="solid"
@@ -78,7 +68,6 @@
 import MultiActionButton from '@/components/MultiActionButton.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -108,17 +97,12 @@ const defaultActions = computed(() => {
     {
       icon: h(Email2Icon, { class: 'h-4 w-4' }),
       label: __('Email'),
-      onClick: () => (emailBox.value.show = true),
+      onClick: () => emailBox.value.openEmailBox(),
     },
     {
       icon: h(CommentIcon, { class: 'h-4 w-4' }),
       label: __('Comment'),
-      onClick: () => (emailBox.value.showComment = true),
-    },
-    {
-      icon: h(EventIcon, { class: 'h-4 w-4' }),
-      label: __('Schedule an Event'),
-      onClick: () => props.modalRef.showEvent(),
+      onClick: () => emailBox.value.openCommentBox(),
     },
     {
       icon: h(PhoneIcon, { class: 'h-4 w-4' }),

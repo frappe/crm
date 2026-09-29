@@ -14,7 +14,7 @@
           :label="avatars[0].label"
           :size="size"
         />
-        <div class="truncate">{{ avatars[0].label }}</div>
+        <div class="truncate" :class="labelClass">{{ avatars[0].label }}</div>
       </div>
     </Tooltip>
     <Tooltip
@@ -41,6 +41,7 @@ import { computed } from 'vue'
 const props = defineProps({
   avatars: { type: Array, default: () => [] },
   size: { type: String, default: 'md' },
+  labelClass: { type: String, default: '' },
 })
 const reverseAvatars = computed(() => [...props.avatars].reverse())
 </script>
