@@ -214,7 +214,8 @@ const unlinkLinkedDoc = (doc) => {
       delete: doc.delete,
       ...confirm,
     }),
-  ).then(() => {
+  ).then((removed) => {
+    if (!removed) return
     linkedDocsResource.reload()
     confirmDeleteInfo.value = {
       show: false,
