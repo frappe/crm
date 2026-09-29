@@ -1,6 +1,6 @@
 <template>
   <div
-    class="my-3 flex items-center justify-between text-lg-medium sm:mb-4 sm:mt-8"
+    class="sticky top-0 z-10 flex items-center justify-between bg-surface-base py-3 text-lg-medium sm:pb-4 sm:pt-8"
   >
     <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __('Data') }}
