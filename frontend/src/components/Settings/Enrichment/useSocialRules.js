@@ -1,8 +1,10 @@
 import { useEnrichmentRules } from './useEnrichmentRules'
 
-// The networks mapper.py can write to a CRM field (_SOCIAL_KEYS there). A rule
-// for any other network would match on the page and then never populate
-// anything, so the Platform box only offers these.
+// The platforms seeded with a rule, offered as suggestions in the Platform box.
+// It is not a whitelist: an admin can add any other platform, the way they can
+// add an Industry. Only these six are among the keys mapper.py writes to a CRM
+// field (_SOCIAL_KEYS there), so a link found for any other platform is kept on
+// the enrichment run but not written to a field.
 //
 // `pattern` is each platform's default regex. These mirror SOCIAL_PATTERNS in
 // crm/domain_enrichment/install.py and must stay in sync with it.
@@ -41,10 +43,17 @@ export const SOCIAL_PLATFORMS = [
 
 // mapper.py looks a social profile up by its exact lowercase key, so a value
 // stored in Desk as "LinkedIn " still reads as the same platform.
-function normalizePlatform(value) {
+export function normalizePlatform(value) {
   return (value || '').trim().toLowerCase()
 }
 
+export function isKnownPlatform(platform) {
+  const value = normalizePlatform(platform)
+  return SOCIAL_PLATFORMS.some((option) => option.value === value)
+}
+
+// Only a known platform has a default; a new one leaves the pattern for the
+// admin to write.
 function defaultPattern(platform) {
   const value = normalizePlatform(platform)
   return SOCIAL_PLATFORMS.find((option) => option.value === value)?.pattern
@@ -163,10 +172,6 @@ export function useSocialRules() {
 
     if (!platform) {
       row.platformError = __('Platform is required')
-    } else if (!SOCIAL_PLATFORMS.some((option) => option.value === platform)) {
-      row.platformError = __('Enrichment cannot fill a field from {0}', [
-        platform,
-      ])
     } else if (platformTakenBy(platform, others)) {
       row.platformError = __('A rule for {0} already exists', [platform])
     }
@@ -196,20 +201,32 @@ export function useSocialRules() {
   }
 
   // The pattern follows the platform only while it is still the old platform's
-  // default (or empty, as on a new row). A regex the admin wrote is kept.
+  // default (or empty, as on a new row). A regex the admin wrote is kept. A
+  // platform with no default empties the box, so the old platform's regex isn't
+  // saved against it.
   function onPlatformInput(row, value) {
     const pattern = row.pattern.trim()
     if (!pattern || pattern === defaultPattern(row.platform)) {
-      const next = defaultPattern(value)
-      if (next) {
-        row.pattern = next
-        row.patternError = ''
-      }
+      row.pattern = defaultPattern(value) || ''
+      row.patternError = ''
     }
 
     row.platform = value
     row.platformError = ''
     row.serverError = ''
+  }
+
+  // "Add new" in the Platform box: the search text becomes the platform, stored
+  // the way toInsert would send it.
+  function onPlatformCreate(row, value, close) {
+    const platform = normalizePlatform(value)
+    if (!platform) return
+
+    onPlatformInput(row, platform)
+    checkRow(row)
+    // The pattern is still checked on Save.
+    if (!row.pattern) row.patternError = ''
+    close()
   }
 
   function onPatternInput(row, value) {
@@ -275,6 +292,7 @@ export function useSocialRules() {
     isRowBlank,
     checkRow,
     onPlatformInput,
+    onPlatformCreate,
     onPatternInput,
   }
 }
