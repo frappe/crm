@@ -1,6 +1,6 @@
 <template>
   <div
-    class="sticky top-0 z-10 flex items-center justify-between bg-surface-base py-3 text-lg-medium sm:pb-4 sm:pt-8"
+    class="sticky top-0 z-10 flex items-center justify-between bg-surface-base py-3 text-lg-medium after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-4 after:bg-[linear-gradient(to_bottom,var(--surface-base),transparent)] after:content-[''] sm:pb-4 sm:pt-8"
   >
     <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __('Data') }}
