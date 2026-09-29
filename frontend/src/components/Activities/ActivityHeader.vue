@@ -46,6 +46,7 @@
       iconLeft="plus"
       @click="showFilesUploader = true"
     />
+<<<<<<< HEAD
     <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
       <Button
         :label="__('Send Template')"
@@ -59,6 +60,14 @@
       />
     </div>
     <Dropdown v-else :options="defaultActions" @click.stop>
+=======
+    <!-- WhatsApp composes from the input; Quotations is read-only — no header action -->
+    <Dropdown
+      v-else-if="title != 'WhatsApp' && title != 'Quotations'"
+      :options="defaultActions"
+      @click.stop
+    >
+>>>>>>> ecd0d82 (feat(erpnext): show linked ERPNext quotations in a deal tab)
       <template #default="{ open }">
         <Button
           variant="solid"
