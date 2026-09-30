@@ -305,7 +305,9 @@ function getValueControl() {
 function updateValue(value) {
   value = value.target ? value.target.value : value
   if (condition[1] === 'between') {
-    condition[2] = [value.split(',')[0], value.split(',')[1]]
+    condition[2] = Array.isArray(value)
+      ? value
+      : [value.split(',')[0], value.split(',')[1]]
   } else {
     condition[2] = isNaN(value) ? value : Number(value)
   }
