@@ -1,11 +1,11 @@
 <template>
-  <Popover transition="default">
-    <template #target="{ togglePopover, isOpen }">
-      <slot v-bind="{ isOpen, togglePopover }">
+  <Popover bare>
+    <template #trigger="slotProps">
+      <slot v-bind="slotProps">
         <span class="text-base"> {{ modelValue || '' }} </span>
       </slot>
     </template>
-    <template #body="{ togglePopover }">
+    <template #default="{ close }">
       <div
         v-if="reaction"
         class="px-2 py-1 flex items-center justify-center gap-2 rounded-full bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
@@ -14,7 +14,7 @@
           v-for="r in reactionEmojis"
           :key="r"
           class="size-5 cursor-pointer rounded-full bg-surface-transparent text-2xl"
-          @click="() => (emoji = r) && togglePopover()"
+          @click="() => (emoji = r) && close()"
         >
           <button>
             {{ r }}
@@ -54,7 +54,7 @@
                 :key="_emoji.description"
                 class="h-8 w-8 rounded-md p-1 text-3xl hover:bg-surface-gray-2 focus:outline-none focus:ring focus:ring-blue-200"
                 :title="_emoji.description"
-                @click="() => (emoji = _emoji.emoji) && togglePopover()"
+                @click="() => (emoji = _emoji.emoji) && close()"
               >
                 {{ _emoji.emoji }}
               </button>

@@ -15,18 +15,17 @@
         >
           <div class="flex gap-2 items-center group justify-between">
             <div class="flex items-center text-base">
-              <Popover>
-                <template #target="{ togglePopover }">
+              <Popover bare>
+                <template #trigger>
                   <Button
                     variant="ghost"
                     size="sm"
                     class="hover:!bg-surface-gray-2"
-                    @click="togglePopover"
                   >
                     <IndicatorIcon :class="parseColor(column.column.color)" />
                   </Button>
                 </template>
-                <template #body>
+                <template #default>
                   <div
                     class="flex flex-col gap-3 px-3 py-2.5 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >

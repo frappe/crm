@@ -30,11 +30,10 @@
         </div>
       </div>
       <div>
-        <Popover placement="bottom-end">
-          <template #target="{ togglePopover }">
+        <Popover side="bottom" align="end" bare>
+          <template #trigger>
             <div
               class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
-              @click="togglePopover()"
             >
               <div>
                 {{
@@ -46,7 +45,7 @@
               <span class="lucide-chevron-down size-4" aria-hidden="true" />
             </div>
           </template>
-          <template #body="{ togglePopover }">
+          <template #default="{ close }">
             <div
               class="p-1 text-ink-gray-7 mt-1 w-48 bg-white shadow-xl rounded"
             >
@@ -57,7 +56,7 @@
                 @click="
                   () => {
                     assignmentRuleData.rule = option.value
-                    togglePopover()
+                    close()
                   }
                 "
               >

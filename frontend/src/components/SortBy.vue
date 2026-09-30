@@ -17,14 +17,13 @@
       </Button>
     </template>
   </Combobox>
-  <Popover v-else placement="bottom-end">
-    <template #target="{ isOpen, togglePopover }">
+  <Popover v-else side="bottom" align="end" bare>
+    <template #trigger="{ open }">
       <Button
         v-if="sortValues.size > 1"
         :label="__('Sort')"
         :icon="hideLabel && SortIcon"
         :iconLeft="!hideLabel && SortIcon"
-        @click="togglePopover"
       >
         <template v-if="sortValues?.size" #suffix>
           <div
@@ -56,14 +55,13 @@
           class="shrink-0 [&_svg]:text-ink-gray-5"
           :iconLeft="!hideLabel && !sortValues?.size && SortIcon"
           :iconRight="
-            sortValues?.size && (isOpen ? 'chevron-up' : 'chevron-down')
+            sortValues?.size && (open ? 'chevron-up' : 'chevron-down')
           "
           :class="sortValues.size ? 'rounded-l-none' : ''"
-          @click.stop="togglePopover"
         />
       </div>
     </template>
-    <template #body="{ close }">
+    <template #default="{ close }">
       <div
         class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >

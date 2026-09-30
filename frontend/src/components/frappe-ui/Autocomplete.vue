@@ -1,7 +1,13 @@
 <template>
   <Combobox v-model="selectedValue" nullable>
-    <Popover v-model:show="showOptions" class="w-full" :placement="placement">
-      <template #target="{ open: openPopover, togglePopover }">
+    <Popover
+      v-model:open="showOptions"
+      trigger="manual"
+      :side="side"
+      :align="align"
+      bare
+    >
+      <template #trigger>
         <slot
           name="target"
           v-bind="{
@@ -43,8 +49,8 @@
           </div>
         </slot>
       </template>
-      <template #body="{ isOpen }">
-        <div v-show="isOpen">
+      <template #default>
+        <div>
           <div
             class="relative mt-1 rounded-lg bg-surface-elevation-2 text-base shadow-2xl max-w-[350px]"
           >
@@ -212,9 +218,20 @@ const selectedValue = computed({
   },
 })
 
+function openPopover() {
+  showOptions.value = true
+}
+
+function togglePopover() {
+  showOptions.value = !showOptions.value
+}
+
 function close() {
   showOptions.value = false
 }
+
+const side = computed(() => props.placement.split('-')[0])
+const align = computed(() => props.placement.split('-')[1] || 'center')
 
 const groups = computed(() => {
   if (!props.options || props.options.length == 0) return []

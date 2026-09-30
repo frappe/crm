@@ -1,15 +1,14 @@
 <template>
   <Combobox :multiple="true">
-    <Popover placement="bottom-end">
-      <template #target="{ togglePopover }">
+    <Popover side="bottom" align="end" bare>
+      <template #trigger>
         <Button
           variant="subtle"
           icon-left="lucide-plus"
           :label="__('Add Assignee')"
-          @click="togglePopover()"
         />
       </template>
-      <template #body="{ togglePopover }">
+      <template #default="{ close }">
         <div
           class="mt-1 rounded-lg bg-surface-base py-1 text-base shadow-2xl w-60"
         >
@@ -81,7 +80,7 @@
               @click="
                 () => {
                   inviteAgent()
-                  togglePopover()
+                  close()
                 }
               "
             />

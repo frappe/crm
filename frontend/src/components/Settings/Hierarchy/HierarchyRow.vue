@@ -59,18 +59,21 @@
         "
         @click.stop
       >
-        <Popover placement="bottom-end" @update:show="popoverOpen = $event">
-          <template #target="{ togglePopover }">
-            <Tooltip :text="__('Add direct reports')">
-              <Button
-                variant="ghost"
-                size="sm"
-                icon="lucide-plus"
-                @click="togglePopover()"
-              />
-            </Tooltip>
+        <Popover
+          side="bottom"
+          align="end"
+          bare
+          @update:open="popoverOpen = $event"
+        >
+          <template #trigger>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon="lucide-plus"
+              :tooltip="__('Add direct reports')"
+            />
           </template>
-          <template #body="{ togglePopover }">
+          <template #default="{ close }">
             <div
               class="mt-1 rounded-lg bg-surface-base shadow-2xl w-72 border border-outline-gray-2"
             >
@@ -84,7 +87,7 @@
                   variant="solid"
                   :disabled="!selected.length"
                   :label="__('Add ({0})', [selected.length])"
-                  @click="commit(togglePopover)"
+                  @click="commit(close)"
                 />
               </div>
             </div>
@@ -107,7 +110,7 @@
 
 <script setup>
 import UserMultiSelect from './UserMultiSelect.vue'
-import { Avatar, Badge, Button, Dropdown, Popover, Tooltip } from 'frappe-ui'
+import { Avatar, Badge, Button, Dropdown, Popover } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -139,11 +142,11 @@ watch(popoverOpen, (open) => {
   if (!open) selected.value = []
 })
 
-function commit(togglePopover) {
+function commit(close) {
   if (!selected.value.length) return
   emit('bulk-add', { parent: props.node, userIds: selected.value })
   selected.value = []
-  togglePopover()
+  close()
 }
 
 const moreOptions = computed(() => {
