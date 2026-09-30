@@ -89,6 +89,8 @@ export default defineConfig(() => {
         'vue-router',
         'frappe-ui',
         'reka-ui',
+        // frappe's own node_modules has an old @vueuse/core without the exports frappe-ui needs
+        '@vueuse/core',
         'dompurify',
         'cropperjs',
         'leaflet',
