@@ -4,6 +4,21 @@
     :title="__('Workflow Automations')"
     :description="__('Create workflow automations for CRM documents')"
   >
+    <template #title>
+      <div class="flex items-center gap-2">
+        <h2 class="flex text-2xl-semibold leading-none h-5">
+          {{ __('Workflow Automations') }}
+        </h2>
+        <Tooltip :text="__('View documentation')">
+          <a
+            href="https://docs.frappe.io/wiki-app/spaces/22qcan55rk/page/36r50jmgu2"
+            target="_blank"
+          >
+            <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+          </a>
+        </Tooltip>
+      </div>
+    </template>
     <template #header-actions>
       <Button
         :label="__('New')"
@@ -146,6 +161,7 @@
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import WorkflowAutomationBuilder from './WorkflowAutomationBuilder.vue'
 import WorkflowAutomationDetail from './WorkflowAutomationDetail.vue'

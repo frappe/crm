@@ -46,9 +46,9 @@
       iconLeft="lucide-plus"
       @click="showFilesUploader = true"
     />
-    <!-- WhatsApp composes from the input itself, so the header offers no action here -->
+    <!-- WhatsApp composes from the input; Quotations is read-only — no header action -->
     <Dropdown
-      v-else-if="title != 'WhatsApp'"
+      v-else-if="title != 'WhatsApp' && title != 'Quotations'"
       :options="defaultActions"
       @click.stop
     >

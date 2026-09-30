@@ -102,7 +102,7 @@
       v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-suffix="{ tab, active }">
         <Badge

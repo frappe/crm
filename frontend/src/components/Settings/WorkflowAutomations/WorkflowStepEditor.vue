@@ -8,7 +8,7 @@
       :options="stepTypeOptions"
     >
       <template #item-prefix="{ item }">
-        <WorkflowComboboxIcon :item="item" />
+        <WorkflowComboboxIcon :item="item" plain />
       </template>
       <template #item-label="{ item }">
         <WorkflowComboboxOption :item="item" />
@@ -105,7 +105,7 @@
         :placeholder="__('Choose what this step does')"
       >
         <template #item-prefix="{ item }">
-          <WorkflowComboboxIcon :item="item" />
+          <WorkflowComboboxIcon :item="item" plain />
         </template>
         <template #item-label="{ item }">
           <WorkflowComboboxOption :item="item" />
@@ -184,7 +184,6 @@
           :fields="fields"
           advanced
         />
-        <RelatedCondition v-model="step.related_condition" :targets="targets" />
       </div>
     </div>
   </div>
@@ -193,7 +192,6 @@
 <script setup>
 import ConditionEditor from './WorkflowConditionEditor.vue'
 import ParamEditor from './WorkflowParamEditor.vue'
-import RelatedCondition from './WorkflowRelatedCondition.vue'
 import TargetPicker from './WorkflowTargetPicker.vue'
 import WorkflowComboboxIcon from './WorkflowComboboxIcon.vue'
 import WorkflowComboboxOption from './WorkflowComboboxOption.vue'

@@ -175,6 +175,7 @@ function onVisibility(open, context) {
 
 function scheduleSearch(query, context) {
   clearTimeout(context.state.timer)
+  context.state.requestId++
   commandPaletteSearching.value = query.trim().length >= 2
   if (!query.trim()) return fetchRecords('', context)
   if (query.trim().length < 2) return (context.state.records.value = [])

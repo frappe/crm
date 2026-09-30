@@ -55,7 +55,7 @@
     <Tabs
       v-model="activeTab"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel>
         <Activities
@@ -438,13 +438,14 @@ function leadCommands() {
     ...communicationCommands(),
   ]
   commands.push(...scriptCommands())
-  commands.push({
-    id: 'lead-convert',
-    title: 'Convert to deal',
-    group: 'Lead',
-    icon: 'repeat-2',
-    perform: () => (showConvertToDealModal.value = true),
-  })
+  if (!isLeadConversionDisabled.value)
+    commands.push({
+      id: 'lead-convert',
+      title: 'Convert to deal',
+      group: 'Lead',
+      icon: 'repeat-2',
+      perform: () => (showConvertToDealModal.value = true),
+    })
   if (canDelete.value) commands.push(deleteLeadCommand())
   return commands
 }

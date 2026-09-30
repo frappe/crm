@@ -40,10 +40,11 @@
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
+      ref="dealTabsRef"
       v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel>
         <Activities
@@ -357,6 +358,7 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -384,6 +386,7 @@ import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
 import { whatsappEnabled } from '@/composables/whatsapp'
+import { canViewQuotations } from '@/composables/erpnext'
 import { callEnabled } from '@/composables/telephony'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
 import { flattenCommandActions } from '@/utils/commandPalette'
@@ -798,11 +801,31 @@ const tabs = computed(() => {
       iconLeft: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
+    {
+      name: 'Quotations',
+      value: 'quotations',
+      label: __('Quotations'),
+      iconLeft: FileTextIcon,
+      condition: () => canViewQuotations.value,
+    },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
 const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
+
+// keep the active tab visible — later tabs (e.g. Quotations) otherwise stay
+// scrolled out of view behind the right panel
+const dealTabsRef = ref(null)
+function scrollActiveTabIntoView() {
+  nextTick(() => {
+    dealTabsRef.value?.$el
+      ?.querySelector('[role="tab"][aria-selected="true"]')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  })
+}
+watch(activeTab, scrollActiveTabIntoView)
+onMounted(scrollActiveTabIntoView)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
