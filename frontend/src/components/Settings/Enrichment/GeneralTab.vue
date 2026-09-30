@@ -3,10 +3,14 @@
     <div class="flex gap-4 items-center justify-between py-3 px-2">
       <div class="flex flex-col">
         <div class="text-p-base-medium text-ink-gray-7 truncate">
-          {{ __('Enrich') }}
+          {{ __('Enable enrichment') }}
         </div>
         <div class="text-p-sm text-ink-gray-5">
-          {{ __('Master switch for the Domain Enrichment feature.') }}
+          {{
+            __(
+              'Fill in company details on Leads, Deals and Organizations from their website.',
+            )
+          }}
         </div>
       </div>
       <div>
@@ -40,6 +44,8 @@
         </div>
       </div>
       <div class="flex flex-col items-end">
+        <!-- Not :error: it would render inside the w-24 box and squeeze the
+             message into a narrow column, so it sits below with its own width. -->
         <FormControl
           :model-value="maxPages ?? doc.max_pages"
           type="number"

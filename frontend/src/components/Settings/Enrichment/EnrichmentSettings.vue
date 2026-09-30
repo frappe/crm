@@ -1,19 +1,16 @@
 <template>
   <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
     <div class="flex justify-between px-2">
-      <div class="flex flex-col gap-1">
-        <div class="flex items-center gap-2">
-          <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-            {{ __('Enrichment') }}
-          </h2>
+      <div class="flex flex-col gap-1 w-9/12">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
+          {{ __('Enrichment Settings') }}
           <Badge
-            v-if="hasUnsavedChanges && !saving"
+            v-if="hasUnsavedChanges"
             :label="__('Not Saved')"
             variant="subtle"
             theme="orange"
-            size="sm"
           />
-        </div>
+        </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
@@ -218,7 +215,7 @@ async function save() {
     ])
 
     if (results.every(Boolean)) {
-      toast.success(__('Enrichment settings saved'))
+      toast.success(__('Settings updated successfully'))
     } else {
       toast.error(__('Some changes could not be saved'))
     }

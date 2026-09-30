@@ -2,7 +2,11 @@
   <div class="flex-1 flex flex-col overflow-y-auto">
     <EnrichmentRuleSection
       :title="__('Social profile rules')"
-      :subtitle="__('Allow users to enrich leads when a website is available.')"
+      :subtitle="
+        __(
+          'Find social profile links on the company website by matching them against each platform pattern.',
+        )
+      "
       :add-label="__('Add Social')"
       :loading="social.loading"
       :error="social.error"
@@ -19,28 +23,27 @@
       <div v-for="row in social.rows" :key="row.key" class="flex flex-col">
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
-            <div :class="row.platformError ? invalidInputClass : ''">
-              <Autocomplete
-                :ref="(el) => (platformBoxes[row.key] = el)"
-                :model-value="row.platform"
-                :options="platformOptions()"
-                :placeholder="__('Platform')"
-                :disabled="social.saving || row.removed"
-                @update:model-value="(option) => onPlatformSelect(row, option)"
-                @update:query="(query) => (platformQuery[row.key] = query)"
-              >
-                <template #footer="{ close }">
-                  <Button
-                    variant="ghost"
-                    class="w-full !justify-start"
-                    :label="platformAddLabel(row)"
-                    :disabled="!platformQuery[row.key]?.trim()"
-                    iconLeft="plus"
-                    @click="onPlatformAdd(row, close)"
-                  />
-                </template>
-              </Autocomplete>
-            </div>
+            <Autocomplete
+              :ref="(el) => (platformBoxes[row.key] = el)"
+              :model-value="row.platform"
+              :options="platformOptions()"
+              :placeholder="__('Platform')"
+              :disabled="social.saving || row.removed"
+              @update:model-value="(option) => onPlatformSelect(row, option)"
+              @update:query="(query) => (platformQuery[row.key] = query)"
+            >
+              <template #footer="{ close }">
+                <Button
+                  variant="ghost"
+                  class="w-full !justify-start"
+                  :label="platformAddLabel(row)"
+                  :disabled="!platformQuery[row.key]?.trim()"
+                  icon-left="lucide-plus"
+                  @click="onPlatformAdd(row, close)"
+                />
+              </template>
+            </Autocomplete>
+            <!-- Autocomplete has no error prop, so its message is shown below it. -->
             <ErrorMessage
               v-if="row.platformError"
               class="mt-1"
@@ -54,17 +57,12 @@
               :placeholder="__('Regex pattern')"
               :disabled="social.saving || row.removed"
               class="[&_input]:font-mono"
-              :class="row.patternError ? invalidInputClass : ''"
+              :error="row.patternError || undefined"
               @update:model-value="(value) => social.onPatternInput(row, value)"
               @blur="social.checkRow(row)"
             />
-            <ErrorMessage
-              v-if="row.patternError"
-              class="mt-1"
-              :message="row.patternError"
-            />
             <Tooltip
-              v-else-if="row.hidden.length"
+              v-if="!row.patternError && row.hidden.length"
               :text="row.hidden.join('  |  ')"
             >
               <div class="mt-1 w-fit text-p-sm text-ink-gray-5">
@@ -116,10 +114,16 @@
       </div>
     </EnrichmentRuleSection>
 
+    <div class="h-px border-t mx-2 border-outline-elevation-2" />
+
     <EnrichmentRuleSection
-      class="mt-8"
+      class="mt-4"
       :title="__('Industry rules')"
-      :subtitle="__('Allow users to enrich leads when a website is available.')"
+      :subtitle="
+        __(
+          'Pick an industry by scoring the company website against the keywords on each rule. Weak or unclear matches are skipped.',
+        )
+      "
       :add-label="__('Add Industry')"
       :loading="industry.loading"
       :error="industry.error"
@@ -146,6 +150,7 @@
               "
               @change="(value) => industry.onIndustryChange(row, value)"
             />
+            <!-- Link has no error prop, so its message is shown below it. -->
             <ErrorMessage
               v-if="row.industryError"
               class="mt-1"
@@ -164,27 +169,22 @@
               type="text"
               :placeholder="__('Keywords, comma separated')"
               :disabled="industry.saving || row.removed"
-              :class="row.keywordsError ? invalidInputClass : ''"
+              :error="row.keywordsError || undefined"
               @update:model-value="
                 (value) => industry.onKeywordsInput(row, value)
               "
               @blur="industry.checkRow(row)"
             />
-            <ErrorMessage
-              v-if="row.keywordsError"
-              class="mt-1"
-              :message="row.keywordsError"
-            />
             <!-- Same affordance the Social rows use for the patterns they
                  don't show: here it is the rows the comma-separated box can't
                  safely round-trip (regexes, keywords with a comma). -->
             <Tooltip
-              v-else-if="row.hidden.length"
+              v-if="!row.keywordsError && row.hidden.length"
               :text="row.hidden.join('  |  ')"
             >
               <div class="mt-1 w-fit text-p-sm text-ink-gray-5">
                 {{
-                  __('+{0} more pattern(s) on this rule', [row.hidden.length])
+                  __('+{0} more keyword(s) on this rule', [row.hidden.length])
                 }}
               </div>
             </Tooltip>
@@ -237,13 +237,6 @@ const props = defineProps({
   social: { type: Object, required: true },
   industry: { type: Object, required: true },
 })
-
-// The red border a FormControl (or the Platform box's button) gets while its
-// value is refused. Named here because every rule row wears it and the
-// arbitrary-variant selector is a mouthful to repeat.
-const invalidInputClass =
-  '[&_input]:!border-outline-red-2 [&_input]:focus:!border-outline-red-2 ' +
-  '[&_button]:!border-outline-red-2 [&_button]:focus:!border-outline-red-2'
 
 // Suggestions, not a whitelist: the seeded platforms plus any other platform a
 // rule is already saved with, so one added earlier can be picked again. Anything
