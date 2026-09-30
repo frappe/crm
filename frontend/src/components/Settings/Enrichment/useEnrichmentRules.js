@@ -221,14 +221,18 @@ export function useEnrichmentRules({
     return valid
   }
 
+  function isNameCollision(err) {
+    return ['DuplicateEntryError', 'UniqueValidationError'].includes(
+      err?.exc_type,
+    )
+  }
+
   // What the server said, in words an admin can act on. A unique rule_name
   // collision comes back as a DuplicateEntryError (insert) or a
   // UniqueValidationError (update) whose raw text names the column, not the
   // rule; anything else is passed through as the server wrote it.
   function serverMessage(err, ruleName, fallback) {
-    if (
-      ['DuplicateEntryError', 'UniqueValidationError'].includes(err?.exc_type)
-    ) {
+    if (isNameCollision(err)) {
       return __('A rule named "{0}" already exists', [ruleName])
     }
     return err?.messages?.[0] || fallback
@@ -255,7 +259,9 @@ export function useEnrichmentRules({
   // rule's weight, match_scope) keeps whatever it already had. The rule is
   // re-read first so the patterns the form doesn't show are the ones stored now,
   // not the ones stored when the page loaded. A status-only change skips all of
-  // that and sends just `enabled`.
+  // that and sends just `enabled`. Resolves to what runUpdates needs to untangle
+  // renames: whether it went through, the rule_name it asked for (null when the
+  // name isn't moving) and whether another rule holding that name turned it away.
   async function runUpdate(row) {
     let values = {}
     try {
@@ -273,14 +279,18 @@ export function useEnrichmentRules({
         fieldname: values,
       })
       row.committed = true
-      return true
+      return { ok: true }
     } catch (err) {
       row.serverError = serverMessage(
         err,
         values?.rule_name || row.ruleName,
         messages.updateError,
       )
-      return false
+      return {
+        ok: false,
+        target: values?.rule_name || null,
+        collided: isNameCollision(err),
+      }
     }
   }
 
@@ -310,22 +320,99 @@ export function useEnrichmentRules({
     }
   }
 
+  // A pass where every update failed is stuck unless the rows are waiting on
+  // each other in a ring: X waits on Y when X was refused the name Y holds.
+  // Names are unique, so each row waits on at most one other, and following the
+  // waits from any row either runs out -- the name belongs to a rule outside
+  // this Save, or to a row failing for another reason, a real duplicate -- or
+  // comes back round. Returns a row on the ring, or null when there is none.
+  // Compared lowercased, as the unique index does.
+  function findRenameCycle(failed, held) {
+    const holder = new Map()
+    failed.forEach(({ row }) => holder.set(held.get(row).toLowerCase(), row))
+
+    const waitsOn = new Map()
+    failed.forEach(({ row, target, collided }) => {
+      if (!collided || !target) return
+      const other = holder.get(target.toLowerCase())
+      if (other && other !== row) waitsOn.set(row, other)
+    })
+
+    for (const { row: start } of failed) {
+      const seen = new Set()
+      let row = start
+      while (row && !seen.has(row)) {
+        seen.add(row)
+        row = waitsOn.get(row)
+      }
+      // The first row reached twice is on the ring, not just leading into it.
+      if (row) return row
+    }
+    return null
+  }
+
+  function setRuleName(row, ruleName) {
+    return call('frappe.client.set_value', {
+      doctype: 'CRM Enrichment Rule',
+      name: row.name,
+      fieldname: { rule_name: ruleName },
+    })
+  }
+
   // Updates can hand rule_names along a chain (A takes B's name while B moves to
   // C), and rule_name is unique -- so they go one at a time, and any that failed
-  // are tried again after the rest, until a pass frees nothing more. A true
-  // swap (A <-> B) still fails, with the collision message under the row.
+  // are tried again after the rest. When a pass frees nothing, a ring of renames
+  // (A <-> B, A -> B -> C -> A) is broken by parking one row on it under a
+  // placeholder no one else can want, which frees its name for the row waiting
+  // on it; the ring then unwinds like a chain. No ring means a real collision,
+  // and it stops there with the message under the row. Each row is parked at
+  // most once, so this always ends.
   async function runUpdates(rows) {
+    // rule_name each row holds on the server right now.
+    const held = new Map(rows.map((row) => [row, row.ruleName]))
+    const parked = new Set()
     let pending = rows
     while (pending.length) {
       const failed = []
       for (const row of pending) {
-        if (!(await runUpdate(row))) failed.push(row)
+        const result = await runUpdate(row)
+        if (!result.ok) failed.push({ row, ...result })
       }
-      if (failed.length === pending.length) return false
-      failed.forEach((row) => (row.serverError = ''))
-      pending = failed
+      if (failed.length === pending.length) {
+        const row = findRenameCycle(failed, held)
+        if (!row || parked.has(row)) break
+        // Not run through __(): rule_name is stored data.
+        const placeholder = `${row.ruleName} (renaming ${row.name})`
+        try {
+          await setRuleName(row, placeholder)
+        } catch (err) {
+          row.serverError = serverMessage(
+            err,
+            row.ruleName,
+            messages.updateError,
+          )
+          break
+        }
+        held.set(row, placeholder)
+        parked.add(row)
+      }
+      failed.forEach(({ row }) => (row.serverError = ''))
+      pending = failed.map(({ row }) => row)
     }
-    return true
+
+    // A parked row whose own update never went through gets its name back, so
+    // no placeholder is left behind. Best effort: if the row that was waiting on
+    // it has already taken that name, the placeholder stays, the row keeps its
+    // edit and error through the reload, and the next Save moves it on.
+    for (const row of pending) {
+      if (!parked.has(row)) continue
+      try {
+        await setRuleName(row, row.ruleName)
+      } catch {
+        // Left under the placeholder; see above.
+      }
+    }
+    return !pending.length
   }
 
   // Deletes go first, so a rule removed and re-added under the same name in one
