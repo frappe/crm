@@ -36,7 +36,7 @@
             class="flex flex-1 flex-col pr-2"
             :doctype="_doctype"
           />
-          <div v-if="preview" class="flex flex-1 flex-col border rounded">
+          <div v-if="preview" class="flex flex-1 flex-col border rounded-4">
             <SidePanelLayout
               v-slot="{ section }"
               :sections="tabs.data[0].sections"
@@ -54,7 +54,7 @@
           </div>
           <div
             v-else
-            class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded"
+            class="flex flex-1 justify-center items-center text-ink-gray-5 bg-surface-gray-2 rounded-4"
           >
             {{ __('Toggle on for Preview') }}
           </div>

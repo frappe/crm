@@ -96,7 +96,7 @@
                 >
                   <template #item="{ element: sec }">
                     <div
-                      class="flex flex-col gap-1.5 rounded bg-surface-gray-2 p-2.5"
+                      class="flex flex-col gap-1.5 rounded-4 bg-surface-gray-2 p-2.5"
                     >
                       <div class="flex h-7 items-center justify-between">
                         <div
@@ -129,7 +129,7 @@
                         <div class="flex items-center gap-1.5">
                           <span
                             v-if="sectionFieldCount(sec)"
-                            class="rounded bg-surface-gray-3 px-1.5 py-0.5 text-xs leading-none text-ink-gray-4"
+                            class="rounded-4 bg-surface-gray-3 px-1.5 py-0.5 text-xs leading-none text-ink-gray-4"
                           >
                             {{ sectionFieldCount(sec) }}
                             {{
@@ -154,7 +154,7 @@
                         <div
                           v-for="col in sec.columns"
                           :key="columnKey(col)"
-                          class="flex min-w-0 flex-1 flex-col gap-1.5 rounded border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
+                          class="flex min-w-0 flex-1 flex-col gap-1.5 rounded-4 border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
                         >
                           <Draggable
                             :list="col.items"
@@ -230,7 +230,7 @@
                   <LucideEyeOff class="h-3.5 w-3.5 text-ink-gray-5" />
                   {{ __('Hidden required fields') }}
                 </div>
-                <div class="rounded bg-surface-gray-2 p-2.5">
+                <div class="rounded-4 bg-surface-gray-2 p-2.5">
                   <p class="mb-2.5 text-p-sm text-ink-gray-5">
                     {{
                       __(
@@ -242,7 +242,7 @@
                     <div
                       v-for="h in hiddenFields"
                       :key="h.fieldname"
-                      class="flex items-center gap-2.5 rounded border border-outline-gray-2 bg-surface-elevation-2 px-2.5 py-2"
+                      class="flex items-center gap-2.5 rounded-4 border border-outline-gray-2 bg-surface-elevation-2 px-2.5 py-2"
                     >
                       <component
                         :is="fieldTypeIcon(h)"
@@ -312,7 +312,7 @@
                         {{ __('Route') }}
                       </div>
                       <div
-                        class="flex h-7 cursor-text items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base"
+                        class="flex h-7 cursor-text items-center rounded-4 border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base"
                         @click="focusRouteEnd"
                       >
                         <span class="shrink-0 text-ink-gray-4">/crm-form/</span>
@@ -444,7 +444,7 @@
                       <textarea
                         readonly
                         rows="3"
-                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                        class="w-full resize-none rounded-5 border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                         :value="iframeSnippet"
                       />
                       <button
@@ -485,7 +485,7 @@
                   rows="3"
                   spellcheck="false"
                   placeholder="https://www.example.com"
-                  class="mt-3.5 w-full resize-none rounded-md border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                  class="mt-3.5 w-full resize-none rounded-5 border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                   @input="markDirty"
                 />
                 <p
@@ -516,7 +516,7 @@
 
       <!-- PREVIEW MODE -->
       <div v-else class="max-w-2xl pt-6">
-        <div class="rounded-xl border bg-surface-white p-7">
+        <div class="rounded-7 border bg-surface-white p-7">
           <!-- simulated success screen -->
           <div
             v-if="previewSubmitted"

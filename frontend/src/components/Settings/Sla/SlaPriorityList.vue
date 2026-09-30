@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
+  <div class="rounded-5 border px-2 border-outline-gray-2 text-sm">
     <div
       v-if="slaData.priorities?.length !== 0"
       class="grid p-3 px-4 items-center"
@@ -51,7 +51,7 @@
           <div v-else class="ml-2">
             <select
               v-model="row[column.key]"
-              class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
+              class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-5 p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
             >
               <option
                 v-for="option in priorityOptions"

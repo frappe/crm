@@ -33,7 +33,7 @@
         <Popover side="bottom" align="end" bare>
           <template #trigger>
             <div
-              class="flex items-center justify-between text-base rounded h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
+              class="flex items-center justify-between text-base rounded-4 h-7 py-1.5 pl-2 pr-2 border border-outline-gray-2 bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3 text-ink-gray-8 transition-colors w-full dark:[color-scheme:dark] select-none min-w-40"
             >
               <div>
                 {{
@@ -47,12 +47,12 @@
           </template>
           <template #default="{ close }">
             <div
-              class="p-1 text-ink-gray-7 mt-1 w-48 bg-white shadow-xl rounded"
+              class="p-1 text-ink-gray-7 mt-1 w-48 bg-white shadow-xl rounded-4"
             >
               <div
                 v-for="option in documentRoutingOptions"
                 :key="option.value"
-                class="p-2 cursor-pointer hover:bg-surface-gray-1 text-sm flex items-center justify-between rounded"
+                class="p-2 cursor-pointer hover:bg-surface-gray-1 text-sm flex items-center justify-between rounded-4"
                 @click="
                   () => {
                     assignmentRuleData.rule = option.value
@@ -89,7 +89,7 @@
       <div
         v-for="user in users"
         :key="user.name"
-        class="flex items-center gap-2 text-sm bg-surface-gray-2 rounded-md p-1 w-max px-2 select-none"
+        class="flex items-center gap-2 text-sm bg-surface-gray-2 rounded-5 p-1 w-max px-2 select-none"
       >
         <Avatar :image="user.user_image" :label="user.full_name" size="sm" />
         <div class="text-ink-gray-7">

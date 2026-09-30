@@ -60,7 +60,7 @@
       <ul class="overflow-y-auto px-2">
         <template v-for="(source, i) in sourcesList" :key="source.name">
           <li
-            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded-4"
             @click="() => emit('updateStep', 'edit-source', { ...source })"
           >
             <div class="flex flex-col w-4/6 pr-5">

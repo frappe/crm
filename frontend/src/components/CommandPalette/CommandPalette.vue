@@ -87,7 +87,7 @@
           <kbd
             v-for="key in hint.keys"
             :key="key"
-            class="rounded-sm bg-surface-gray-2 px-1 py-0.5 font-sans text-ink-gray-5"
+            class="rounded-1 bg-surface-gray-2 px-1 py-0.5 font-sans text-ink-gray-5"
           >
             {{ key }}
           </kbd>

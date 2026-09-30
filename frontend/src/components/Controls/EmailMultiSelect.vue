@@ -9,7 +9,7 @@
         theme="gray"
         variant="subtle"
         :class="{
-          'rounded bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
+          'rounded-4 bg-surface-base hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
             variant === 'subtle',
         }"
         @keydown.delete.capture.stop="removeLastValue"
@@ -31,7 +31,7 @@
           @update:modelValue="onSelect"
         >
           <ComboboxAnchor
-            class="flex h-7 max-w-full w-auto items-center gap-2 rounded px-2 py-1 border border-transparent"
+            class="flex h-7 max-w-full w-auto items-center gap-2 rounded-4 px-2 py-1 border border-transparent"
             :class="[
               variant == 'ghost'
                 ? 'bg-surface-base hover:bg-surface-base'
@@ -53,7 +53,7 @@
           </ComboboxAnchor>
           <ComboboxPortal>
             <ComboboxContent
-              class="z-10 mt-1 min-w-48 w-auto max-w-96 bg-surface-elevation-2 overflow-hidden rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5"
+              class="z-10 mt-1 min-w-48 w-auto max-w-96 bg-surface-elevation-2 overflow-hidden rounded-6 shadow-2xl ring-1 ring-black ring-opacity-5"
               position="popper"
               :align="'start'"
               @openAutoFocus.prevent
@@ -61,7 +61,7 @@
             >
               <ComboboxViewport class="max-h-60 overflow-auto p-1.5">
                 <ComboboxEmpty
-                  class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
+                  class="flex gap-2 rounded-4 px-2 py-1 text-base text-ink-gray-5"
                 >
                   <span
                     v-if="showSearchIcon"
@@ -74,7 +74,7 @@
                   v-for="option in options"
                   :key="option.value"
                   :value="option.value"
-                  class="text-base leading-none text-ink-gray-7 rounded flex items-center px-2 py-1 relative select-none data-[highlighted]:outline-none data-[highlighted]:bg-surface-gray-3 cursor-pointer"
+                  class="text-base leading-none text-ink-gray-7 rounded-4 flex items-center px-2 py-1 relative select-none data-[highlighted]:outline-none data-[highlighted]:bg-surface-gray-3 cursor-pointer"
                   @mousedown.prevent="onSelect(option.value)"
                 >
                   <UserAvatar class="mr-2" :user="option.value" size="lg" />

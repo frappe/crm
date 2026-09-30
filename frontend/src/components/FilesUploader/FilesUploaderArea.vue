@@ -3,18 +3,18 @@
     <TextInput v-model="webLink" placeholder="https://example.com" />
   </div>
   <div v-else-if="showCamera">
-    <video v-show="!cameraImage" ref="video" class="rounded" autoplay></video>
+    <video v-show="!cameraImage" ref="video" class="rounded-4" autoplay></video>
     <canvas
       v-show="cameraImage"
       ref="canvas"
-      class="rounded"
+      class="rounded-4"
       style="width: -webkit-fill-available"
     />
   </div>
   <div v-else>
     <div
       v-show="files.length === 0"
-      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-outline-elevation-2 min-h-64 text-ink-gray-5"
+      class="flex flex-col items-center justify-center gap-4 rounded-6 border border-dashed border-outline-elevation-2 min-h-64 text-ink-gray-5"
       @dragover.prevent="dragover"
       @dragleave.prevent="dragleave"
       @drop.prevent="dropfiles"
@@ -68,7 +68,7 @@
       >
         <div class="flex items-center gap-4 truncate">
           <div
-            class="size-11 rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            class="size-11 rounded-4 overflow-hidden flex-shrink-0 flex justify-center items-center"
             :class="{ border: !file.type?.startsWith('image') }"
           >
             <img

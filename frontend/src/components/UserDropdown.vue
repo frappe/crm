@@ -2,7 +2,7 @@
   <Dropdown :options="dropdownItems" v-bind="$attrs">
     <template #default="{ open }">
       <button
-        class="flex h-12 items-center rounded-md py-2 duration-300 ease-in-out"
+        class="flex h-12 items-center rounded-5 py-2 duration-300 ease-in-out"
         :class="
           isCollapsed
             ? 'w-auto px-0'
@@ -169,7 +169,7 @@ function appMenuItems() {
     label: app.title,
     onClick: () => (window.location.href = app.route),
     slots: {
-      prefix: () => h('img', { class: 'size-5 rounded', src: app.logo }),
+      prefix: () => h('img', { class: 'size-5 rounded-4', src: app.logo }),
     },
   }))
 }

@@ -17,7 +17,7 @@
     <span v-else class="size-5 shrink-0"></span>
 
     <div
-      class="group relative flex-1 flex items-center gap-2 px-2 py-1.5 text-base rounded-md select-none after:content-[''] after:absolute after:bottom-0 after:left-1 after:right-3 after:border-outline-elevation-2"
+      class="group relative flex-1 flex items-center gap-2 px-2 py-1.5 text-base rounded-5 select-none after:content-[''] after:absolute after:bottom-0 after:left-1 after:right-3 after:border-outline-elevation-2"
       :class="[
         rowClass,
         canEdit ? 'cursor-grab' : 'cursor-pointer',
@@ -75,7 +75,7 @@
           </template>
           <template #default="{ close }">
             <div
-              class="mt-1 rounded-lg bg-surface-base shadow-2xl w-72 border border-outline-gray-2"
+              class="mt-1 rounded-6 bg-surface-base shadow-2xl w-72 border border-outline-gray-2"
             >
               <UserMultiSelect
                 v-model="selected"

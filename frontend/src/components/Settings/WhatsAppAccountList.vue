@@ -16,7 +16,7 @@
     <div v-else class="w-full">
       <template v-for="(account, i) in accounts.data" :key="account.name">
         <div
-          class="flex w-full items-center justify-between rounded px-2 py-3 hover:bg-surface-gray-2"
+          class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"
         >
           <div
             class="min-w-0 cursor-pointer"
@@ -255,7 +255,7 @@ function blockedDeleteOption(reason) {
             'div',
             {
               class:
-                'flex w-full gap-2 items-center rounded-md px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
+                'flex w-full gap-2 items-center rounded-5 px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
             },
             [
               h('span', {

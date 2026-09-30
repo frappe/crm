@@ -25,7 +25,7 @@
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
+          class="flex h-56 cursor-pointer flex-col gap-2 rounded-6 border p-3 hover:bg-surface-gray-2"
           @click="emit('apply', template)"
         >
           <div class="border-b pb-2 text-base-semibold">

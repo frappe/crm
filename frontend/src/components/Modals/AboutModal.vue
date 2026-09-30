@@ -15,7 +15,7 @@
           <a
             v-for="link in links"
             :key="link.label"
-            class="flex py-2 px-2 hover:bg-surface-gray-1 rounded cursor-pointer"
+            class="flex py-2 px-2 hover:bg-surface-gray-1 rounded-4 cursor-pointer"
             target="_blank"
             :href="link.url"
           >

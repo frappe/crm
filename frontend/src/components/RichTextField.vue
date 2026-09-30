@@ -11,7 +11,7 @@
       <EditorFixedMenu
         v-if="fixedMenu"
         :items="fullToolbar"
-        class="w-full overflow-x-auto rounded-t-lg border border-b-0 border-outline-gray-2 p-1"
+        class="w-full overflow-x-auto rounded-t-6 border border-b-0 border-outline-gray-2 p-1"
       />
       <EditorBubbleMenu v-if="bubbleMenu" :items="bubbleToolbar" />
       <EditorContent :class="editorClass" />

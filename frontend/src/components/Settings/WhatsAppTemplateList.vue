@@ -47,7 +47,7 @@
           :key="template.name"
         >
           <div
-            class="flex w-full items-center justify-between rounded px-2 py-3 hover:bg-surface-gray-2"
+            class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"
           >
             <div
               class="min-w-0 cursor-pointer"

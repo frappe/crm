@@ -2,12 +2,12 @@
   <div v-if="attachments.length">
     <div v-for="(attachment, i) in attachments" :key="attachment.name">
       <div
-        class="activity flex justify-between gap-2 hover:bg-surface-sidebar rounded text-base p-2.5 cursor-pointer"
+        class="activity flex justify-between gap-2 hover:bg-surface-sidebar rounded-4 text-base p-2.5 cursor-pointer"
         @click="openFile(attachment)"
       >
         <div class="flex gap-2 truncate">
           <div
-            class="size-11 bg-surface-base rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            class="size-11 bg-surface-base rounded-4 overflow-hidden flex-shrink-0 flex justify-center items-center"
             :class="{ border: !isImage(attachment.file_type) }"
           >
             <img

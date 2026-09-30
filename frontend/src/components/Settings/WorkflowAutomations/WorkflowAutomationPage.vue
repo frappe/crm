@@ -18,7 +18,7 @@
           v-model="search"
           :placeholder="__('Search')"
           :debounce="300"
-          class="rounded border-outline-gray-2 bg-surface-gray-2"
+          class="rounded-4 border-outline-gray-2 bg-surface-gray-2"
         >
           <template #prefix>
             <span class="lucide-search size-4" aria-hidden="true" />

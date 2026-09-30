@@ -22,13 +22,13 @@
       </template>
       <template #default>
         <div
-          class="min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="min-w-40 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div class="max-h-52 overflow-y-auto p-1">
             <div
               v-for="holiday in holidayListData.data"
               :key="holiday.name"
-              class="flex items-center justify-between gap-4 rounded px-2 py-1.5 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
+              class="flex items-center justify-between gap-4 rounded-4 px-2 py-1.5 text-base text-ink-gray-8 cursor-pointer hover:bg-surface-gray-3"
               @click="
                 slaData.holiday_list =
                   slaData.holiday_list === holiday.name ? '' : holiday.name
@@ -73,7 +73,7 @@
     </Popover>
   </div>
   <div class="mt-5">
-    <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
+    <div class="rounded-5 border px-2 border-outline-gray-2 text-sm">
       <div
         v-if="slaData.working_hours?.length !== 0"
         class="grid p-3 px-4 items-center"
@@ -121,7 +121,7 @@
             <div v-else class="ml-2">
               <select
                 v-model="row[column.key]"
-                class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
+                class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-5 p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
               >
                 <option
                   v-for="option in workDayOptions"

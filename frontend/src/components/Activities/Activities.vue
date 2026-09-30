@@ -434,7 +434,7 @@
     />
     <div
       v-if="title == 'WhatsApp' && !hasMobileNumber"
-      class="mx-3 mb-2.5 flex items-center gap-2 rounded-lg bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
+      class="mx-3 mb-2.5 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
     >
       <span
         class="lucide-info size-4 shrink-0 text-ink-amber-6"

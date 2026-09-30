@@ -54,7 +54,7 @@ const emit = defineEmits(['change'])
 const nStars = computed(() => Number(props.max) || 5)
 const hoveredStarValue = ref(null)
 
-// Saved value in star-units, rounded to nearest 0.5
+// Saved value in star-units, to the nearest 0.5
 const savedStarValue = computed(() => {
   const raw = (props.value || 0) * nStars.value
   return Math.round(raw * 2) / 2

@@ -42,7 +42,7 @@
             class="flex h-full w-full items-center justify-center"
             :class="
               editing
-                ? 'pointer-events-none  [&>div:first-child]:rounded [&>div:first-child]:group-hover:ring-2 [&>div:first-child]:group-hover:ring-outline-gray-2'
+                ? 'pointer-events-none  [&>div:first-child]:rounded-4 [&>div:first-child]:group-hover:ring-2 [&>div:first-child]:group-hover:ring-outline-gray-2'
                 : ''
             "
           >
@@ -54,10 +54,10 @@
           </div>
           <div
             v-if="editing"
-            class="flex absolute right-0 top-0 bg-surface-gray-9 rounded cursor-pointer opacity-0 group-hover:opacity-100"
+            class="flex absolute right-0 top-0 bg-surface-gray-9 rounded-4 cursor-pointer opacity-0 group-hover:opacity-100"
           >
             <div
-              class="rounded p-1 hover:bg-surface-gray-8"
+              class="rounded-4 p-1 hover:bg-surface-gray-8"
               @click="items.splice(index, 1)"
             >
               <span

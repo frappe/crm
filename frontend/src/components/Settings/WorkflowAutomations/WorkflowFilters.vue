@@ -14,7 +14,7 @@
     />
     <!-- The builder's empty state is a box of its own; this is the card every other
          condition builder in the app shows while it holds nothing. -->
-    <div v-else class="flex w-full rounded-lg border border-outline-gray-2 p-3">
+    <div v-else class="flex w-full rounded-6 border border-outline-gray-2 p-3">
       <Dropdown v-if="!flat" v-slot="{ open }" :options="addOptions">
         <Button
           :label="__('Add Condition')"

@@ -2,7 +2,7 @@
   <div v-if="tasks.length">
     <div v-for="(task, i) in tasks" :key="task.name">
       <div
-        class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-surface-gray-1"
+        class="activity flex cursor-pointer gap-6 rounded-4 p-2.5 duration-300 ease-in-out hover:bg-surface-gray-1"
         @click="modalRef.showTask(task)"
       >
         <div class="flex flex-1 flex-col gap-1.5 text-base truncate">

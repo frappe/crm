@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-sidebar rounded"
+    class="flex p-3 items-center justify-between cursor-pointer hover:bg-surface-sidebar rounded-4"
   >
     <div class="w-7/12" @click="updateStep('view', data)">
       <div class="text-base-medium text-ink-gray-7">{{ data.name }}</div>
@@ -14,7 +14,7 @@
     <div class="w-3/12">
       <select
         v-model="localData.priority"
-        class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-md p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
+        class="w-full h-7 text-base hover:bg-surface-gray-3 rounded-5 p-0 pl-2 pr-5 bg-transparent -ml-2 border-0 text-ink-gray-8 focus-visible:!ring-0 bg-none truncate"
         @update:modelValue="onPriorityChange"
         @change="onPriorityChange"
       >

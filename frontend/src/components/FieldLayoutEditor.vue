@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-5.5">
     <div
-      class="flex items-center justify-between gap-2 text-base bg-surface-gray-2 rounded py-2 px-2.5 overflow-x-auto max-w-full"
+      class="flex items-center justify-between gap-2 text-base bg-surface-gray-2 rounded-4 py-2 px-2.5 overflow-x-auto max-w-full"
     >
       <Draggable
         v-if="tabs.length && tabs[tabIndex].label"
@@ -17,7 +17,7 @@
                 if (el) tabItemRefs[i] = el
               }
             "
-            class="flex items-center gap-2 cursor-pointer rounded shrink-0"
+            class="flex items-center gap-2 cursor-pointer rounded-4 shrink-0"
             :class="[
               tabIndex == i
                 ? 'text-ink-gray-9 bg-surface-base shadow-sm'
@@ -89,7 +89,7 @@
         handle=".section-drag-handle"
         :class="
           tab.sections.length === 0
-            ? 'rounded border-2 border-dashed border-outline-gray-2 mb-5.5 p-3'
+            ? 'rounded-4 border-2 border-dashed border-outline-gray-2 mb-5.5 p-3'
             : 'flex flex-col gap-5.5'
         "
         @start="isDragging = true"
@@ -99,7 +99,7 @@
         <template #item="{ element: section }">
           <div
             v-if="Array.isArray(section.columns)"
-            class="section flex flex-col gap-1.5 p-2.5 bg-surface-gray-2 rounded"
+            class="section flex flex-col gap-1.5 p-2.5 bg-surface-gray-2 rounded-4"
           >
             <div class="flex items-center justify-between">
               <div
@@ -148,7 +148,7 @@
                   v-if="
                     section.columns.reduce((n, c) => n + c.fields.length, 0) > 0
                   "
-                  class="text-xs text-ink-gray-4 bg-surface-gray-3 rounded px-1.5 py-0.5 leading-none"
+                  class="text-xs text-ink-gray-4 bg-surface-gray-3 rounded-4 px-1.5 py-0.5 leading-none"
                 >
                   {{ section.columns.reduce((n, c) => n + c.fields.length, 0) }}
                   {{
@@ -180,7 +180,7 @@
             >
               <template #item="{ element: column }">
                 <div
-                  class="flex flex-col gap-1.5 flex-1 p-2 border border-dashed border-outline-gray-2 rounded bg-surface-elevation-2 cursor-grab"
+                  class="flex flex-col gap-1.5 flex-1 p-2 border border-dashed border-outline-gray-2 rounded-4 bg-surface-elevation-2 cursor-grab"
                 >
                   <Draggable
                     :list="column.fields"
@@ -193,7 +193,7 @@
                   >
                     <template #item="{ element: field }">
                       <div
-                        class="field px-2.5 py-2 border border-outline-gray-2 rounded text-base bg-surface-elevation-2 text-ink-gray-8 flex items-center leading-4 justify-between gap-2 cursor-auto"
+                        class="field px-2.5 py-2 border border-outline-gray-2 rounded-4 text-base bg-surface-elevation-2 text-ink-gray-8 flex items-center leading-4 justify-between gap-2 cursor-auto"
                       >
                         <div class="flex items-center gap-2 truncate">
                           <DragVerticalIcon
@@ -203,7 +203,7 @@
                         </div>
                         <Button
                           variant="ghost"
-                          class="!size-4 rounded-sm"
+                          class="!size-4 rounded-1"
                           icon="lucide-x"
                           @click="
                             column.fields.splice(

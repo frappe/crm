@@ -13,7 +13,7 @@
       <div
         v-for="run in runs.data"
         :key="run.name"
-        class="rounded border border-outline-gray-2 p-3"
+        class="rounded-4 border border-outline-gray-2 p-3"
       >
         <div class="flex items-center justify-between">
           <div class="text-base-medium text-ink-gray-8">

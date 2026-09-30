@@ -4,7 +4,7 @@
       <template #item="{ element: section }">
         <div class="flex flex-col gap-3">
           <div
-            class="flex items-center justify-between rounded px-2.5 py-2 bg-surface-gray-2"
+            class="flex items-center justify-between rounded-4 px-2.5 py-2 bg-surface-gray-2"
           >
             <div
               class="flex max-w-fit cursor-pointer items-center gap-2 text-base leading-4 text-ink-gray-9"
@@ -28,7 +28,7 @@
                 <Button
                   v-if="section.editingLabel"
                   icon="lucide-check"
-                  class="!size-4 rounded-sm"
+                  class="!size-4 rounded-1"
                   variant="ghost"
                   @click.stop="section.editingLabel = false"
                 />
@@ -37,7 +37,7 @@
             <div class="flex gap-1 items-center">
               <Button
                 v-if="!section.editingLabel"
-                class="!size-4 rounded-sm"
+                class="!size-4 rounded-1"
                 variant="ghost"
                 @click="section.editingLabel = true"
               >
@@ -47,7 +47,7 @@
               </Button>
               <Button
                 v-if="section.editable !== false"
-                class="!size-4 rounded-sm"
+                class="!size-4 rounded-1"
                 icon="lucide-x"
                 variant="ghost"
                 @click="sections.splice(sections.indexOf(section), 1)"
@@ -64,7 +64,7 @@
             >
               <template #item="{ element: field }">
                 <div
-                  class="px-2.5 py-2 border border-outline-elevation-2 rounded text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
+                  class="px-2.5 py-2 border border-outline-elevation-2 rounded-4 text-base leading-4 text-ink-gray-8 flex items-center justify-between gap-2"
                 >
                   <div class="flex items-center gap-2">
                     <DragVerticalIcon class="h-3.5 cursor-grab" />
@@ -73,7 +73,7 @@
                   <Button
                     variant="ghost"
                     icon="lucide-x"
-                    class="!size-4 rounded-sm"
+                    class="!size-4 rounded-1"
                     @click="
                       section.columns[0].fields.splice(
                         section.columns[0].fields.indexOf(field),
@@ -110,7 +110,7 @@
             </Combobox>
             <div
               v-else
-              class="flex justify-center items-center border rounded border-dashed border-outline-elevation-2 p-3"
+              class="flex justify-center items-center border rounded-4 border-dashed border-outline-elevation-2 p-3"
             >
               <div class="text-sm text-ink-gray-4">
                 {{ __('This section is not editable') }}

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-3 rounded border border-outline-gray-2 p-3">
+  <div class="space-y-3 rounded-4 border border-outline-gray-2 p-3">
     <div class="flex items-center justify-between">
       <div class="text-sm text-ink-gray-5">
         {{ __('Related Record Condition') }}

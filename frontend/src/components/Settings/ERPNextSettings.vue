@@ -351,7 +351,7 @@
                   >
                     <span>{{ __(section.label) }}</span>
                     <span
-                      class="rounded bg-surface-gray-2 px-1.5 text-xs text-ink-gray-6"
+                      class="rounded-4 bg-surface-gray-2 px-1.5 text-xs text-ink-gray-6"
                     >
                       {{ section.count }}
                     </span>
@@ -359,13 +359,13 @@
                 </div>
                 <div
                   v-if="activeProductSyncLogTab === 'failed' && unsyncedSummary"
-                  class="rounded bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
+                  class="rounded-4 bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
                 >
                   {{ unsyncedSummary }}
                 </div>
                 <div
                   v-if="!currentProductSyncRows.length"
-                  class="rounded border border-outline-elevation-2 px-3 py-2 text-p-sm text-ink-gray-5"
+                  class="rounded-4 border border-outline-elevation-2 px-3 py-2 text-p-sm text-ink-gray-5"
                 >
                   {{ __(currentProductSyncSection.emptyLabel) }}
                 </div>
