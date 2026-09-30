@@ -82,7 +82,8 @@ export default defineConfig(() => {
       // versions of prosemirror-model were loaded" on mention insert. Unlike
       // optimizeDeps (dev-only) this also applies to the production build.
       // @framework/ui is aliased to frappe's ui/src, so its own direct deps
-      // (leaflet, cropperjs, vuedraggable) must also come from here: a bench
+      // (leaflet, cropperjs, vuedraggable, marked, @codemirror/view) must also
+      // come from here: a bench
       // build never installs apps/frappe/ui/node_modules.
       dedupe: [
         'vue',
@@ -105,6 +106,8 @@ export default defineConfig(() => {
         'prosemirror-state',
         'prosemirror-view',
         'prosemirror-transform',
+        '@codemirror/view',
+        'marked',
       ],
     },
     optimizeDeps: {
