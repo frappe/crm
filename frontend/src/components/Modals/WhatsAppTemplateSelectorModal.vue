@@ -31,7 +31,7 @@
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2.5 rounded-lg border border-outline-gray-2 bg-surface-gray-1 p-3 transition-colors hover:bg-surface-gray-2"
+          class="flex h-56 cursor-pointer flex-col gap-2.5 rounded-6 border border-outline-gray-2 bg-surface-gray-1 p-3 transition-colors hover:bg-surface-gray-2"
           :class="{
             'ring-2 ring-outline-gray-4': selected?.name === template.name,
           }"
@@ -185,7 +185,7 @@ watch(selected, () => (sendError.value = ''))
 
 watch(show, (value) => {
   if (value) {
-    nextTick(() => searchInput.value?.el?.focus())
+    nextTick(() => searchInput.value?.focus())
     return
   }
   selected.value = null

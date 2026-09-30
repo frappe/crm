@@ -1,13 +1,15 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <Dialog v-model:open="show">
-    <template #body>
+  <Dialog v-model:open="show" bare>
+    <template #default>
       <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Call Details') }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ __('Call Details') }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
             <Dropdown
@@ -15,7 +17,7 @@
                 {
                   group: __('Options'),
                   hideLabel: true,
-                  items: [
+                  options: [
                     {
                       label: note ? __('Edit Note') : __('Add Note'),
                       icon: NoteIcon,
@@ -42,12 +44,14 @@
               class="w-7"
               @click="openCallLogModal"
             />
-            <Button
-              icon="lucide-x"
-              variant="ghost"
-              class="w-7"
-              @click="show = false"
-            />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                icon="lucide-x"
+                variant="ghost"
+                class="w-7"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div class="flex flex-col gap-3.5">
@@ -108,7 +112,7 @@
               </div>
               <div
                 v-else-if="field.name == 'note'"
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
+                class="w-full cursor-pointer rounded-4 border px-2 pt-1.5 text-base text-ink-gray-7"
                 @click="() => showNote(field.value?.name)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
@@ -125,7 +129,7 @@
               </div>
               <div
                 v-else-if="field.name == 'task'"
-                class="w-full cursor-pointer rounded border px-2 pt-1.5 text-base text-ink-gray-7"
+                class="w-full cursor-pointer rounded-4 border px-2 pt-1.5 text-base text-ink-gray-7"
                 @click="() => showTask(field.value?.name)"
               >
                 <FadedScrollableDiv class="max-h-24 min-h-16 overflow-y-auto">
@@ -180,13 +184,15 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
+import Icon from '@/components/Icon.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { sanitizeHTML } from '@/utils'
 import { isMobileView } from '@/composables/settings'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { FeatherIcon, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { Dialog, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -270,8 +276,8 @@ const detailFields = computed(() => {
   }
   let details = [
     {
-      icon: h(FeatherIcon, {
-        name: data.type.icon,
+      icon: h(Icon, {
+        icon: data.type.icon,
         class: 'h-3.5 w-3.5',
       }),
       name: 'type',
@@ -322,9 +328,9 @@ const detailFields = computed(() => {
       color: data.status.color,
     },
     {
-      icon: h(FeatherIcon, {
-        name: 'play-circle',
-        class: 'h-4 w-4 mt-2',
+      icon: h('span', {
+        class: 'lucide-play-circle h-4 w-4 mt-2',
+        'aria-hidden': true,
       }),
       name: 'recording_url_path',
       value: data.recording_url_path,

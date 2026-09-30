@@ -25,7 +25,7 @@ createResource({
 // Meta's review outcome for a template, as a Badge theme.
 const TEMPLATE_STATUS_THEMES = {
   Approved: 'green',
-  Pending: 'orange',
+  Pending: 'amber',
   Rejected: 'red',
   Deleted: 'gray',
 }

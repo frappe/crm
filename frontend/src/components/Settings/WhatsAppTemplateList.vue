@@ -47,7 +47,7 @@
           :key="template.name"
         >
           <div
-            class="flex w-full items-center justify-between rounded px-2 py-3 hover:bg-surface-gray-2"
+            class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"
           >
             <div
               class="min-w-0 cursor-pointer"
@@ -66,12 +66,12 @@
                 :theme="templateStatusTheme(template.status)"
                 :label="__(template.status)"
               />
-              <Dropdown placement="right" :options="rowOptions(template)">
-                <Button
-                  icon="lucide-more-horizontal"
-                  variant="ghost"
-                  @click="confirmDelete = false"
-                />
+              <Dropdown
+                align="end"
+                :options="rowOptions(template)"
+                @update:open="(open) => open && (confirmDelete = false)"
+              >
+                <Button icon="lucide-more-horizontal" variant="ghost" />
               </Dropdown>
             </div>
           </div>
@@ -187,7 +187,7 @@ function rowOptions(template) {
   return [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => emit('edit', template.name),
     },
     ...ConfirmDelete({

@@ -125,6 +125,7 @@ describe('checkedFirst', () => {
 describe('command capability helpers', () => {
   it('flattens grouped script actions', () => {
     const action = { label: 'Qualify' }
+    expect(flattenCommandActions([{ options: [action] }])).toEqual([action])
     expect(flattenCommandActions([{ items: [action] }])).toEqual([action])
   })
 

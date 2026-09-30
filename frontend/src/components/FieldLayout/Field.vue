@@ -14,7 +14,7 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-5"
+        class="text-ink-red-4"
         >*</span
       >
     </div>
@@ -87,7 +87,7 @@
         "
       >
         {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
+        <span v-if="field.mandatory" class="text-ink-red-5">*</span>
       </label>
     </div>
     <div
@@ -161,29 +161,29 @@
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl

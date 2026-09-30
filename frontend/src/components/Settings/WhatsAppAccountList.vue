@@ -16,7 +16,7 @@
     <div v-else class="w-full">
       <template v-for="(account, i) in accounts.data" :key="account.name">
         <div
-          class="flex w-full items-center justify-between rounded px-2 py-3 hover:bg-surface-gray-2"
+          class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"
         >
           <div
             class="min-w-0 cursor-pointer"
@@ -38,12 +38,12 @@
               theme="blue"
               :label="__('Default')"
             />
-            <Dropdown placement="right" :options="rowOptions(account)">
-              <Button
-                icon="lucide-more-horizontal"
-                variant="ghost"
-                @click="confirmDelete = false"
-              />
+            <Dropdown
+              align="end"
+              :options="rowOptions(account)"
+              @update:open="(open) => open && (confirmDelete = false)"
+            >
+              <Button icon="lucide-more-horizontal" variant="ghost" />
             </Dropdown>
           </div>
         </div>
@@ -54,10 +54,11 @@
     <!-- Frappe refuses to delete an account other records still link to. Say so,
          with the counts, instead of surfacing the raw link-exists error. -->
     <Dialog
-      v-model="showBlockedDialog"
-      :options="{ title: blockedTitle, actions: blockedActions }"
+      v-model:open="showBlockedDialog"
+      :title="blockedTitle"
+      :actions="blockedActions"
     >
-      <template #body-content>
+      <template #default>
         <p class="text-p-base text-ink-gray-7">
           {{
             __(
@@ -91,7 +92,6 @@ import {
   createResource,
   call,
   Dropdown,
-  FeatherIcon,
   LoadingIndicator,
   Tooltip,
   toast,
@@ -248,20 +248,25 @@ function setInactive() {
 function blockedDeleteOption(reason) {
   return {
     label: __('Delete'),
-    component: () =>
-      h(Tooltip, { text: reason, placement: 'left' }, () =>
-        h(
-          'div',
-          {
-            class:
-              'flex w-full gap-2 items-center rounded-md px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
-          },
-          [
-            h(FeatherIcon, { name: 'trash-2', class: 'h-4 w-4 shrink-0' }),
-            h('span', { class: 'whitespace-nowrap' }, __('Delete')),
-          ],
+    slots: {
+      item: () =>
+        h(Tooltip, { text: reason, side: 'left' }, () =>
+          h(
+            'div',
+            {
+              class:
+                'flex w-full gap-2 items-center rounded-5 px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
+            },
+            [
+              h('span', {
+                class: 'lucide-trash-2 h-4 w-4 shrink-0',
+                'aria-hidden': true,
+              }),
+              h('span', { class: 'whitespace-nowrap' }, __('Delete')),
+            ],
+          ),
         ),
-      ),
+    },
   }
 }
 
@@ -269,7 +274,7 @@ function rowOptions(account) {
   const options = [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => emit('edit', account.name),
     },
   ]
@@ -277,7 +282,7 @@ function rowOptions(account) {
   if (hasMultipleAccounts.value && !isDefault(account)) {
     options.push({
       label: __('Set as default'),
-      icon: 'check-circle',
+      icon: 'lucide-check-circle',
       onClick: () => setDefault(account),
     })
   }

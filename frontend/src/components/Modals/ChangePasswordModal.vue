@@ -45,8 +45,8 @@
             class="text-sm text-ink-gray-5"
             :class="
               confirmPasswordMessage === __('Passwords match')
-                ? 'text-ink-green-6'
-                : 'text-ink-red-6'
+                ? 'text-ink-green-5'
+                : 'text-ink-red-5'
             "
           >
             {{ confirmPasswordMessage }}
@@ -73,7 +73,7 @@
 <script setup>
 import LockKeyhole from '~icons/lucide/lock-keyhole'
 import { Dialog, toast, createResource, Password } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { ref, watch } from 'vue'
 
 const show = defineModel({ type: Boolean })
