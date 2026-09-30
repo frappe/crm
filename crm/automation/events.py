@@ -12,8 +12,14 @@ more than once is safe for flows: the outbox deduplicates a pending row per docu
 """
 
 import frappe
-from frappe.automation_engine import emit, is_enabled
 from frappe.utils import add_to_date, get_datetime, now
+
+try:
+	from frappe.automation_engine import emit, is_enabled
+
+	HAS_AUTOMATION_ENGINE = True
+except ImportError:  # automation engine ships with frappe v16+
+	HAS_AUTOMATION_ENGINE = False
 
 CRM_REFERENCE_DOCTYPES = ("CRM Lead", "CRM Deal")
 QUALIFIED_STATUS = "Qualified"
@@ -187,4 +193,6 @@ def _record_key(doc) -> str | None:
 
 
 def _enabled() -> bool:
-	return is_enabled() and not frappe.flags.in_install and not frappe.flags.in_migrate
+	return (
+		HAS_AUTOMATION_ENGINE and is_enabled() and not frappe.flags.in_install and not frappe.flags.in_migrate
+	)
