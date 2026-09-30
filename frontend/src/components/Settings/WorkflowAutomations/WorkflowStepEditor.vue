@@ -8,7 +8,7 @@
       :options="stepTypeOptions"
     >
       <template #item-prefix="{ item }">
-        <WorkflowComboboxIcon :item="item" />
+        <WorkflowComboboxIcon :item="item" plain />
       </template>
       <template #item-label="{ item }">
         <WorkflowComboboxOption :item="item" />
@@ -105,7 +105,7 @@
         :placeholder="__('Choose what this step does')"
       >
         <template #item-prefix="{ item }">
-          <WorkflowComboboxIcon :item="item" />
+          <WorkflowComboboxIcon :item="item" plain />
         </template>
         <template #item-label="{ item }">
           <WorkflowComboboxOption :item="item" />
