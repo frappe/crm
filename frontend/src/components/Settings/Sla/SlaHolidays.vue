@@ -12,17 +12,17 @@
         }}
       </div>
     </div>
-    <NestedPopover>
-      <template #target="{ open }">
+    <Popover bare :offset="8">
+      <template #trigger="{ open }">
         <Button
           class="text-sm"
           :icon-right="open ? 'chevron-up' : 'chevron-down'"
           :label="slaData.holiday_list || __('Select Holiday List')"
         />
       </template>
-      <template #body>
+      <template #default>
         <div
-          class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+          class="min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
         >
           <div class="max-h-52 overflow-y-auto p-1">
             <div
@@ -70,7 +70,7 @@
           </div>
         </div>
       </template>
-    </NestedPopover>
+    </Popover>
   </div>
   <div class="mt-5">
     <div class="rounded-md border px-2 border-outline-gray-2 text-sm">
@@ -176,7 +176,7 @@ import {
   createListResource,
   Dropdown,
   ErrorMessage,
-  NestedPopover,
+  Popover,
 } from 'frappe-ui'
 import { ConfirmDelete, getGridTemplateColumnsForTable } from '../../../utils'
 import { slaData, slaDataErrors } from './utils'

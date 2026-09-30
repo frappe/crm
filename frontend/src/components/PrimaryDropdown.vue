@@ -11,9 +11,10 @@
           {{ placeholder }}
         </div>
         <template #suffix>
-          <FeatherIcon
-            :name="isOpen ? 'chevron-up' : 'chevron-down'"
+          <span
+            :class="isOpen ? 'lucide-chevron-up' : 'lucide-chevron-down'"
             class="h-4 text-ink-gray-5"
+            aria-hidden="true"
           />
         </template>
       </Button>

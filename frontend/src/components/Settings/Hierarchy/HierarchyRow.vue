@@ -8,9 +8,10 @@
       class="z-10 size-5 shrink-0 flex items-center justify-center rounded-full border border-outline-elevation-2 bg-white text-ink-gray-1 cursor-pointer hover:bg-surface-gray-2"
       @click.stop="emit('toggle', $event)"
     >
-      <FeatherIcon
-        :name="isCollapsed ? 'chevron-right' : 'chevron-down'"
-        class="size-3 stroke-2 stroke-ink-gray-5"
+      <span
+        :class="isCollapsed ? 'lucide-chevron-right' : 'lucide-chevron-down'"
+        class="size-3 text-ink-gray-5"
+        aria-hidden="true"
       />
     </div>
     <span v-else class="size-5 shrink-0"></span>
@@ -106,15 +107,7 @@
 
 <script setup>
 import UserMultiSelect from './UserMultiSelect.vue'
-import {
-  Avatar,
-  Badge,
-  Button,
-  Dropdown,
-  FeatherIcon,
-  Popover,
-  Tooltip,
-} from 'frappe-ui'
+import { Avatar, Badge, Button, Dropdown, Popover, Tooltip } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({

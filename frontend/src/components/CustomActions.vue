@@ -7,7 +7,7 @@
       @click="action.onClick(close)"
     >
       <template v-if="action.icon" #prefix>
-        <FeatherIcon :name="action.icon" class="h-4 w-4" />
+        <Icon :icon="action.icon" class="h-4 w-4" />
       </template>
     </Button>
   </template>
@@ -29,6 +29,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Dropdown } from 'frappe-ui'
+import Icon from '@/components/Icon.vue'
 import { isMobileView } from '@/composables/settings'
 
 const props = defineProps({

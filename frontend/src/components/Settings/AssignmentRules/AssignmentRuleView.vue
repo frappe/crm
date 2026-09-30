@@ -318,13 +318,6 @@
   <div v-else class="flex items-center h-full justify-center">
     <LoadingIndicator class="w-4" />
   </div>
-  <ConfirmDialog
-    v-model="showConfirmDialog.show"
-    :title="showConfirmDialog.title"
-    :message="showConfirmDialog.message"
-    :onConfirm="showConfirmDialog.onConfirm"
-    :onCancel="() => (showConfirmDialog.show = false)"
-  />
 </template>
 
 <script setup>
@@ -341,7 +334,7 @@ import {
   Select,
   Switch,
   toast,
-  ConfirmDialog,
+  dialog,
 } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { onUnmounted, ref, inject, watch, provide, computed } from 'vue'
@@ -361,12 +354,6 @@ const { capture } = useTelemetry()
 const step = inject('step')
 const { $dialog } = globalStore()
 
-const showConfirmDialog = ref({
-  show: false,
-  title: '',
-  message: '',
-  onConfirm: () => {},
-})
 const useNewUI = ref(true)
 const isOldSla = ref(false)
 const documentType = computed(() =>
@@ -565,7 +552,7 @@ if (!step.value.data) {
 }
 
 const goBack = () => {
-  if (isDirty.value && !showConfirmDialog.value.show) {
+  if (isDirty.value) {
     $dialog({
       title: __('Unsaved Changes'),
       message: __(
@@ -586,7 +573,6 @@ const goBack = () => {
     return
   }
   updateStep('list', null)
-  showConfirmDialog.value.show = false
 }
 
 const saveAssignmentRule = () => {
@@ -630,17 +616,13 @@ const saveAssignmentRule = () => {
   }
   if (step.value.data) {
     if (isOldSla.value && useNewUI.value) {
-      showConfirmDialog.value = {
-        show: true,
+      dialog.confirm({
         title: __('Confirm Overwrite'),
         message: __(
           'Your old condition will be overwritten. Are you sure you want to save?',
         ),
-        onConfirm: () => {
-          updateAssignmentRule()
-          showConfirmDialog.value.show = false
-        },
-      }
+        onConfirm: () => updateAssignmentRule(),
+      })
       return
     }
     updateAssignmentRule()

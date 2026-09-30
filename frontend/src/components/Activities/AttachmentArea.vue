@@ -44,9 +44,12 @@
               "
             >
               <template #icon>
-                <FeatherIcon
-                  :name="attachment.is_private ? 'lock' : 'unlock'"
+                <span
+                  :class="
+                    attachment.is_private ? 'lucide-lock' : 'lucide-unlock'
+                  "
                   class="size-3 text-ink-gray-7"
+                  aria-hidden="true"
                 />
               </template>
             </Button>

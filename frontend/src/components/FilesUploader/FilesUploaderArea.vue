@@ -100,20 +100,12 @@
           </div>
         </div>
         <div>
-          <CircularProgressBar
+          <Progress
             v-if="file.uploading || file.uploaded == file.total"
-            :class="{
-              'text-ink-green-5': file.uploaded == file.total,
-            }"
-            :theme="{
-              primary: '#22C55E',
-              secondary: 'lightgray',
-            }"
-            :step="file.uploaded || 1"
-            :totalSteps="file.total || 100"
-            size="xs"
-            variant="outline"
-            :showPercentage="file.uploading"
+            class="w-24"
+            size="sm"
+            :value="uploadPercent(file)"
+            :hint="file.uploading"
           />
           <Button
             v-else
@@ -131,7 +123,7 @@ import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { formatDate, convertSize } from '@/utils'
-import { FormControl, CircularProgressBar, toast, useCall } from 'frappe-ui'
+import { FormControl, Progress, toast, useCall } from 'frappe-ui'
 import { ref, computed, watch, onUnmounted } from 'vue'
 
 const props = defineProps({
@@ -367,6 +359,11 @@ function showMaxFilesNumberWarning(file, maxNumberOfFiles) {
 
 function removeFile(name) {
   files.value = files.value.filter((file) => file.name !== name)
+}
+
+function uploadPercent(file) {
+  if (!file.total) return 0
+  return Math.round((file.uploaded / file.total) * 100)
 }
 
 function fileIcon(type) {

@@ -14,14 +14,16 @@
     </template>
     <template v-if="showSearch" #header-bottom>
       <div class="relative">
-        <Input
-          :model-value="search"
+        <TextInput
+          v-model="search"
           :placeholder="__('Search')"
-          icon-left="search"
-          debounce="300"
+          :debounce="300"
           class="rounded border-outline-gray-2 bg-surface-gray-2"
-          @input="search = $event"
-        />
+        >
+          <template #prefix>
+            <span class="lucide-search size-4" aria-hidden="true" />
+          </template>
+        </TextInput>
         <Button
           v-if="search"
           icon="lucide-x"

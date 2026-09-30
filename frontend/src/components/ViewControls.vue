@@ -355,7 +355,6 @@ import {
   Dropdown,
   toast,
   call,
-  FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
 import {
@@ -755,8 +754,8 @@ function getIcon(icon, type) {
     return markRaw(KanbanIcon)
   } else if (icon && typeof icon === 'string') {
     // a lucide icon name (from the IconPicker) — render it through Icon so it
-    // resolves from the injected lucide sprite. The Dropdown renders a bare
-    // string via FeatherIcon, which lacks the newer lucide names and shows blank.
+    // resolves from the injected lucide sprite. The Dropdown shows nothing for
+    // a bare icon name.
     return () => h(Icon, { icon, class: 'h-4 w-4' })
   }
   return icon || markRaw(ListIcon)
@@ -1485,9 +1484,9 @@ const viewActions = (view, close) => {
       actions[0].items.push({
         label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
-          h(FeatherIcon, {
-            name: _view.public ? 'lock' : 'unlock',
-            class: 'h-4 w-4',
+          h('span', {
+            class: [_view.public ? 'lucide-lock' : 'lucide-unlock', 'h-4 w-4'],
+            'aria-hidden': true,
           }),
         onClick: () => publicView(_view),
       })

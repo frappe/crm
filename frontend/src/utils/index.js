@@ -5,7 +5,7 @@ import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { gemoji } from 'gemoji'
 import DOMPurify from 'dompurify'
-import { toast, dayjsLocal, dayjs, getConfig, FeatherIcon } from 'frappe-ui'
+import { toast, dayjsLocal, dayjs, getConfig } from 'frappe-ui'
 import { h } from 'vue'
 
 export function formatTime(seconds) {
@@ -547,9 +547,8 @@ export function DropdownOption({ option, icon, selected, onClick }) {
     [
       h('div', { class: 'flex gap-2' }, [
         icon
-          ? h(FeatherIcon, {
-              name: icon,
-              class: ['h-4 w-4 shrink-0'],
+          ? h('span', {
+              class: [icon, 'h-4 w-4 shrink-0'],
               'aria-hidden': true,
             })
           : null,
@@ -800,9 +799,8 @@ export function TemplateOption({ active, option, variant, icon, onClick }) {
     },
     [
       icon
-        ? h(FeatherIcon, {
-            name: icon,
-            class: ['h-4 w-4 shrink-0'],
+        ? h('span', {
+            class: [icon, 'h-4 w-4 shrink-0'],
             'aria-hidden': true,
           })
         : null,
@@ -828,7 +826,7 @@ export function ConfirmDelete({
       component: (props) =>
         TemplateOption({
           option: label,
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           active: props.active,
           variant: 'grey',
           onClick: (event) => {
@@ -844,7 +842,7 @@ export function ConfirmDelete({
       component: (props) =>
         TemplateOption({
           option: __('Confirm {0}', [label]),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           active: props.active,
           variant: 'danger',
           onClick: () => {

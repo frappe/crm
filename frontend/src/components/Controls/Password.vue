@@ -28,10 +28,11 @@
           </div>
         </template>
         <div>
-          <FeatherIcon
+          <span
             v-show="showEye"
-            :name="show ? 'eye-off' : 'eye'"
+            :class="show ? 'lucide-eye-off' : 'lucide-eye'"
             class="h-3 cursor-pointer mr-1"
+            aria-hidden="true"
             @click="show = !show"
           />
         </div>

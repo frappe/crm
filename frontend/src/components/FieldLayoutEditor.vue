@@ -32,7 +32,7 @@
                 {{ __(tab.label) || __('Untitled') }}
               </div>
               <div v-else class="flex gap-1 items-center">
-                <Input
+                <TextInput
                   v-model="tab.label"
                   @keydown.enter="tab.editingLabel = false"
                   @blur="tab.editingLabel = false"
@@ -128,7 +128,7 @@
                     />
                   </div>
                   <div v-else class="flex gap-2 items-center">
-                    <Input
+                    <TextInput
                       v-model="section.label"
                       @keydown.enter="section.editingLabel = false"
                       @blur="section.editingLabel = false"

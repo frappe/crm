@@ -16,16 +16,17 @@
       #header-bottom
     >
       <div class="relative">
-        <Input
-          :model-value="slaSearchQuery"
+        <TextInput
+          v-model="slaSearchQuery"
           :placeholder="__('Search')"
           type="text"
           class="bg-surface-gray-2 hover:bg-surface-gray-2 focus:ring-0 border-outline-gray-2 rounded"
-          icon-left="search"
-          debounce="300"
-          inputClass="p-4 pr-12"
-          @input="slaSearchQuery = $event"
-        />
+          :debounce="300"
+        >
+          <template #prefix>
+            <span class="lucide-search size-4" aria-hidden="true" />
+          </template>
+        </TextInput>
         <Button
           v-if="slaSearchQuery"
           icon="lucide-x"

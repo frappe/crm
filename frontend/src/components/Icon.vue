@@ -4,7 +4,7 @@
   </div>
   <!-- lucide icon from the sprite the IconPicker reads (lucide is a superset of
        feather, so legacy names still resolve). No width/height attrs so size
-       classes like `h-4` control it, matching the old FeatherIcon behaviour. -->
+       classes like `h-4` control it. -->
   <svg
     v-else-if="typeof icon == 'string'"
     viewBox="0 0 24 24"

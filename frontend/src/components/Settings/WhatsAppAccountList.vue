@@ -91,7 +91,6 @@ import {
   createResource,
   call,
   Dropdown,
-  FeatherIcon,
   LoadingIndicator,
   Tooltip,
   toast,
@@ -257,7 +256,10 @@ function blockedDeleteOption(reason) {
               'flex w-full gap-2 items-center rounded-md px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
           },
           [
-            h(FeatherIcon, { name: 'trash-2', class: 'h-4 w-4 shrink-0' }),
+            h('span', {
+              class: 'lucide-trash-2 h-4 w-4 shrink-0',
+              'aria-hidden': true,
+            }),
             h('span', { class: 'whitespace-nowrap' }, __('Delete')),
           ],
         ),
