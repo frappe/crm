@@ -8,7 +8,7 @@
     >
       {{ __(attrs.label) }}
       <template v-if="required">
-        <span class="select-none text-ink-red-6" aria-hidden="true">*</span>
+        <span class="select-none text-ink-red-5" aria-hidden="true">*</span>
         <span class="sr-only">{{ __('(required)') }}</span>
       </template>
     </label>

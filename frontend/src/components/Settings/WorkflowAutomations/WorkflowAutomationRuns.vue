@@ -24,7 +24,7 @@
         <div v-if="run.ref_docname" class="mt-1 text-xs text-ink-gray-5">
           {{ run.ref_doctype }} {{ run.ref_docname }}
         </div>
-        <div v-if="errorOf(run)" class="mt-1 text-sm text-ink-red-4">
+        <div v-if="errorOf(run)" class="mt-1 text-sm text-ink-red-3">
           {{ errorOf(run) }}
         </div>
       </div>

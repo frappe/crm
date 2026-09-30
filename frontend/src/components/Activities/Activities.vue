@@ -116,7 +116,7 @@
               >
                 <MissedCallIcon
                   v-if="call.status == 'No Answer'"
-                  class="text-ink-red-8"
+                  class="text-ink-red-7"
                 />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
@@ -184,7 +184,7 @@
                     activity.activity_type,
                   ) && activity.status == 'No Answer'
                 "
-                class="text-ink-red-8"
+                class="text-ink-red-7"
               />
               <DeclinedCallIcon
                 v-else-if="
@@ -437,7 +437,7 @@
       class="mx-3 mb-2.5 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
     >
       <span
-        class="lucide-info size-4 shrink-0 text-ink-amber-6"
+        class="lucide-info size-4 shrink-0 text-ink-amber-5"
         aria-hidden="true"
       />
       {{ __('Add a mobile number to send WhatsApp messages.') }}

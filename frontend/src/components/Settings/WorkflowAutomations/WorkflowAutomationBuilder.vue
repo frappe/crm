@@ -32,7 +32,7 @@
               />
             </div>
           </div>
-          <span class="-ml-1.5 select-none text-ink-red-6" aria-hidden="true"
+          <span class="-ml-1.5 select-none text-ink-red-5" aria-hidden="true"
             >*</span
           >
           <span class="sr-only">{{ __('(required)') }}</span>

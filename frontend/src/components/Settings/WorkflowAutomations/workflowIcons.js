@@ -18,39 +18,39 @@ import WebhookIcon from '~icons/lucide/webhook'
 /** `tone` colours a bare glyph in a list; `chip` is the tile it sits in on a node card. */
 export const ICON_TONES = {
   blue: {
-    tone: 'text-ink-blue-7',
+    tone: 'text-ink-blue-6',
     chip: 'bg-surface-blue-3 border-outline-blue-7',
   },
   green: {
-    tone: 'text-ink-green-7',
+    tone: 'text-ink-green-6',
     chip: 'bg-surface-green-3 border-outline-green-7',
   },
   teal: {
-    tone: 'text-ink-teal-7',
+    tone: 'text-ink-teal-6',
     chip: 'bg-surface-teal-3 border-outline-teal-7',
   },
   amber: {
-    tone: 'text-ink-amber-7',
+    tone: 'text-ink-amber-6',
     chip: 'bg-surface-amber-3 border-outline-amber-7',
   },
   violet: {
-    tone: 'text-ink-violet-7',
+    tone: 'text-ink-violet-6',
     chip: 'bg-surface-violet-3 border-outline-violet-7',
   },
   cyan: {
-    tone: 'text-ink-cyan-7',
+    tone: 'text-ink-cyan-6',
     chip: 'bg-surface-cyan-3 border-outline-cyan-7',
   },
   orange: {
-    tone: 'text-ink-orange-7',
+    tone: 'text-ink-orange-6',
     chip: 'bg-surface-orange-3 border-outline-orange-7',
   },
   pink: {
-    tone: 'text-ink-pink-7',
+    tone: 'text-ink-pink-6',
     chip: 'bg-surface-pink-3 border-outline-pink-7',
   },
   red: {
-    tone: 'text-ink-red-6',
+    tone: 'text-ink-red-5',
     chip: 'bg-surface-red-3 border-outline-red-6',
   },
   gray: {
@@ -58,7 +58,7 @@ export const ICON_TONES = {
     chip: 'bg-surface-gray-3 border-outline-gray-4',
   },
   purple: {
-    tone: 'text-ink-purple-7',
+    tone: 'text-ink-purple-6',
     chip: 'bg-surface-purple-3 border-outline-purple-7',
   },
 }

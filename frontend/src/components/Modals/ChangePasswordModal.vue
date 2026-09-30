@@ -45,8 +45,8 @@
             class="text-sm text-ink-gray-5"
             :class="
               confirmPasswordMessage === __('Passwords match')
-                ? 'text-ink-green-6'
-                : 'text-ink-red-6'
+                ? 'text-ink-green-5'
+                : 'text-ink-red-5'
             "
           >
             {{ confirmPasswordMessage }}

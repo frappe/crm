@@ -37,7 +37,7 @@
           >
             {{ field.label || field.fieldname }}
           </span>
-          <span v-if="field.reqd" class="shrink-0 text-ink-red-5">*</span>
+          <span v-if="field.reqd" class="shrink-0 text-ink-red-4">*</span>
           <LucideLock
             v-if="locked"
             class="h-3 w-3 shrink-0 text-ink-gray-4"
@@ -56,7 +56,7 @@
           ])
         "
       >
-        <LucideTriangleAlert class="h-3.5 w-3.5 shrink-0 text-ink-amber-6" />
+        <LucideTriangleAlert class="h-3.5 w-3.5 shrink-0 text-ink-amber-5" />
       </Tooltip>
       <Button
         variant="ghost"
@@ -156,7 +156,7 @@
         class="flex items-start gap-2 rounded-4 border border-outline-amber-2 bg-surface-amber-2 p-2.5"
       >
         <LucideTriangleAlert
-          class="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-amber-6"
+          class="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-amber-5"
         />
         <div class="flex min-w-0 flex-col items-start gap-2">
           <p class="text-p-sm text-ink-gray-7">

@@ -94,7 +94,7 @@
     <ErrorMessage v-if="error" class="mt-2 pl-2" :message="error" />
     <div
       v-if="info"
-      class="whitespace-pre-line text-sm text-ink-blue-6 mt-2 pl-2"
+      class="whitespace-pre-line text-sm text-ink-blue-5 mt-2 pl-2"
     >
       {{ info }}
     </div>

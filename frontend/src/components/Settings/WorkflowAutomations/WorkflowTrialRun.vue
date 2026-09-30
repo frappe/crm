@@ -29,7 +29,7 @@
       />
     </div>
 
-    <div v-if="error" class="text-sm text-ink-red-5" role="alert">
+    <div v-if="error" class="text-sm text-ink-red-4" role="alert">
       {{ error }}
     </div>
 
@@ -47,7 +47,7 @@
       </span>
       <span
         v-if="summary.error_summary"
-        class="truncate text-sm text-ink-red-5"
+        class="truncate text-sm text-ink-red-4"
       >
         {{ summary.error_summary }}
       </span>
@@ -67,7 +67,7 @@
     >
       <div v-for="step in failures" :key="step.step_key" class="space-y-1">
         <div class="text-sm-medium text-ink-gray-8">{{ stepLabel(step) }}</div>
-        <div v-if="step.message" class="text-xs text-ink-red-5">
+        <div v-if="step.message" class="text-xs text-ink-red-4">
           {{ step.message }}
         </div>
         <pre

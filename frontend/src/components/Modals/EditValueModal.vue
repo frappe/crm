@@ -26,7 +26,7 @@
         <div class="mt-4">
           <div class="mb-1.5 text-sm text-ink-gray-5">
             {{ __('Lost Reason') }}
-            <span class="text-ink-red-5">*</span>
+            <span class="text-ink-red-4">*</span>
           </div>
           <Link
             ref="lostReasonLinkRef"
@@ -40,7 +40,7 @@
         <div class="mt-4">
           <div class="mb-1.5 text-sm text-ink-gray-5">
             {{ __('Lost Notes') }}
-            <span v-if="lostReason == 'Other'" class="text-ink-red-5">*</span>
+            <span v-if="lostReason == 'Other'" class="text-ink-red-4">*</span>
           </div>
           <FormControl
             class="form-control flex-1 truncate"

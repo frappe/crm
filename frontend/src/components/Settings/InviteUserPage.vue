@@ -42,7 +42,7 @@
         />
         <div
           v-if="userExistMessage || inviteeExistMessage"
-          class="text-xs text-ink-red-6 mt-1.5"
+          class="text-xs text-ink-red-5 mt-1.5"
         >
           {{ userExistMessage || inviteeExistMessage }}
         </div>

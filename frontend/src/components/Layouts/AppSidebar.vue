@@ -118,7 +118,7 @@
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
             :label="__('Clear Demo Data')"
-            class="!text-ink-red-6 hover:!bg-surface-red-2"
+            class="!text-ink-red-5 hover:!bg-surface-red-2"
             @click="() => clearDemoData()"
           >
             <template #prefix>
