@@ -63,8 +63,9 @@ vi.mock('@/components/FieldLayout/Section.vue', () => ({
 
 describe('FieldLayout tab state', () => {
   it('keeps the selected data field tab when the layout remounts', async () => {
-    const { default: FieldLayout } =
-      await import('@/components/FieldLayout/FieldLayout.vue')
+    const { default: FieldLayout } = await import(
+      '@/components/FieldLayout/FieldLayout.vue'
+    )
 
     const root = document.createElement('div')
     document.body.appendChild(root)
@@ -137,8 +138,9 @@ describe('FieldLayout tab state', () => {
   })
 
   it('keeps the selected data field tab when DataFields remounts', async () => {
-    const { default: FieldLayout } =
-      await import('@/components/FieldLayout/FieldLayout.vue')
+    const { default: FieldLayout } = await import(
+      '@/components/FieldLayout/FieldLayout.vue'
+    )
 
     const root = document.createElement('div')
     document.body.appendChild(root)
@@ -228,8 +230,9 @@ describe('FieldLayout tab state', () => {
   })
 
   it('keeps the selected tab by name when labels are duplicated and tabs reload', async () => {
-    const { default: FieldLayout } =
-      await import('@/components/FieldLayout/FieldLayout.vue')
+    const { default: FieldLayout } = await import(
+      '@/components/FieldLayout/FieldLayout.vue'
+    )
 
     const root = document.createElement('div')
     document.body.appendChild(root)
@@ -309,8 +312,9 @@ describe('FieldLayout tab state', () => {
   })
 
   it('restores the selected tab name from session storage after page remount', async () => {
-    const { default: FieldLayout } =
-      await import('@/components/FieldLayout/FieldLayout.vue')
+    const { default: FieldLayout } = await import(
+      '@/components/FieldLayout/FieldLayout.vue'
+    )
 
     const root = document.createElement('div')
     document.body.appendChild(root)
