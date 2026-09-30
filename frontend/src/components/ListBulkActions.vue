@@ -85,7 +85,7 @@ function convertToDeal(selections, unselectAll) {
       {
         label: __('Convert'),
         variant: 'solid',
-        onClick: (close) => {
+        onClick: ({ close }) => {
           capture('bulk_convert_to_deal')
           Array.from(selections).forEach((name) => {
             call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
@@ -142,7 +142,7 @@ function clearAssignments(selections, unselectAll) {
         label: __('Clear Assignment'),
         variant: 'solid',
         theme: 'red',
-        onClick: (close) => {
+        onClick: ({ close }) => {
           capture('bulk_clear_assignment')
           call('frappe.desk.form.assign_to.remove_multiple', {
             doctype: props.doctype,

@@ -63,7 +63,7 @@
                         label: __('Delete'),
                         theme: 'red',
                         variant: 'solid',
-                        onClick(close) {
+                        onClick({ close }) {
                           modalRef.deleteTask(task.name)
                           close()
                         },

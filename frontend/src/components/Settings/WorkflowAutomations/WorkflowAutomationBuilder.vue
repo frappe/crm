@@ -480,7 +480,7 @@ function deleteAction(deletingTrigger) {
     label: __('Delete'),
     variant: 'solid',
     theme: 'red',
-    onClick: (close) => {
+    onClick: ({ close }) => {
       if (deletingTrigger) resetTrigger()
       else removeSelectedStep()
       close()

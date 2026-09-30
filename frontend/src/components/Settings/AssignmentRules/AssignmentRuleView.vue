@@ -563,7 +563,7 @@ const goBack = () => {
         {
           label: __('Go Back'),
           variant: 'solid',
-          onClick: (close) => {
+          onClick: ({ close }) => {
             updateStep('list', null)
             close()
           },

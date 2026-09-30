@@ -109,7 +109,7 @@ function togglePrivate(fileName, isPrivate) {
       {
         label: __('Make {0}', [changeTo]),
         variant: 'solid',
-        onClick: async (close) => {
+        onClick: async ({ close }) => {
           await call('frappe.client.set_value', {
             doctype: 'File',
             name: fileName,
@@ -134,7 +134,7 @@ function deleteAttachment(fileName) {
         label: __('Delete'),
         variant: 'solid',
         theme: 'red',
-        onClick: async (close) => {
+        onClick: async ({ close }) => {
           await call('frappe.client.delete', {
             doctype: 'File',
             name: fileName,
