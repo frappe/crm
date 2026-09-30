@@ -1,7 +1,12 @@
 <template>
   <div class="space-y-2">
     <div class="flex items-center justify-between gap-2">
-      <label class="block text-base text-ink-gray-5">{{ label }}</label>
+      <div class="flex items-center gap-1">
+        <label class="block text-base text-ink-gray-5">{{ label }}</label>
+        <Tooltip v-if="info" :text="info">
+          <InfoIcon class="size-3.5 text-ink-gray-5" />
+        </Tooltip>
+      </div>
       <TabButtons v-model="mode" :options="modes" />
     </div>
 
@@ -12,12 +17,13 @@
       :label="''"
       @update:model-value="setFilters"
     />
-    <FormControl
+    <CodeEditor
       v-else
-      type="textarea"
+      language="python"
       :variant="variant"
-      :model-value="modelValue"
+      :model-value="modelValue || ''"
       :placeholder="placeholder"
+      style="--cm-max-height: 13.5rem"
       @update:model-value="$emit('update:modelValue', $event)"
     />
 
@@ -41,7 +47,9 @@ import {
   toExpression,
   toFilters,
 } from './workflowConditions'
-import { FormControl, TabButtons } from 'frappe-ui'
+import InfoIcon from '~icons/lucide/info'
+import { TabButtons, Tooltip } from 'frappe-ui'
+import { CodeEditor } from 'frappe-ui/code-editor'
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -50,6 +58,7 @@ const props = defineProps({
   variant: { type: String, default: 'subtle' },
   label: { type: String, default: () => __('Condition') },
   placeholder: { type: String, default: '' },
+  info: { type: String, default: '' },
 })
 
 const emit = defineEmits(['update:modelValue'])
