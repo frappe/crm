@@ -14,7 +14,7 @@
     </div>
 
     <div v-if="loading" class="flex items-center justify-center py-10">
-      <LoadingIndicator class="size-4" />
+      <LoadingIndicator class="size-6" />
     </div>
     <!-- Only stands in for the rows when there are none: a reload that fails
          after the first load keeps the rows up and toasts instead. -->
