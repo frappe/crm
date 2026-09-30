@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-09-28 01:13\n"
+"PO-Revision-Date: 2026-09-30 02:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -161,7 +161,7 @@ msgstr "Ny konto har skapats för dig på {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:95
 msgid "A related record exists"
-msgstr ""
+msgstr "Relaterad post finns"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1089
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1231
@@ -176,7 +176,7 @@ msgstr "En delsträng (standard) eller ett reguljärt uttryck jämförs mot rege
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:36
 msgid "A trigger runs only when these filters match."
-msgstr ""
+msgstr "Utlösare körs endast när dessa filter stämmer överens."
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:273
 msgid "A valid call log is required."
@@ -310,7 +310,7 @@ msgstr "Åtgärd"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:97
 msgid "Action on {0}"
-msgstr ""
+msgstr "Åtgärd på {0}"
 
 #: frontend/src/components/CustomActions.vue:76
 #: frontend/src/components/ViewControls.vue:815
@@ -485,7 +485,7 @@ msgstr "Lägg till namn för källa"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:220
 msgid "Add block"
-msgstr ""
+msgstr "Lägg till block"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:20
 msgid "Add condition"
@@ -567,7 +567,7 @@ msgstr "Avancerad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:287
 msgid "After branches"
-msgstr ""
+msgstr "Efter grenar"
 
 #: crm/integrations/twilio/twilio_handler.py:144
 msgid "Agent is unavailable to take the call, please call after some time."
@@ -591,7 +591,7 @@ msgstr "Alla tillgängliga prioriteringar har redan lagts till"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:25
 msgid "All filters must match."
-msgstr ""
+msgstr "Alla filter måste stämma överens."
 
 #. Label of the allowed_domains_section (Section Break) field in DocType 'CRM
 #. Enrichment Settings'
@@ -632,7 +632,7 @@ msgstr "Belopp efter rabatt"
 
 #: crm/automation/actions.py:78
 msgid "Amount is required"
-msgstr ""
+msgstr "Belopp erfordras"
 
 #: frontend/src/pages/Deal.vue:461
 msgid "An Error Occurred"
@@ -687,7 +687,7 @@ msgstr "Annat Säljstöd System"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:73
 msgid "Any document"
-msgstr ""
+msgstr "Alla dokument"
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
 msgid "Any failed lead syncs will show up here"
@@ -734,7 +734,7 @@ msgstr "Är du säker på att du vill rensa demo data? Denna åtgärd kan inte �
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:474
 msgid "Are you sure you want to delete the trigger and all workflow steps?"
-msgstr ""
+msgstr "Är du säker på att du vill ta bort utlösare och alla arbetsflöde steg?"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
@@ -750,7 +750,7 @@ msgstr "Är du säker på att du vill ta bort denna organisation?"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:475
 msgid "Are you sure you want to delete this step?"
-msgstr ""
+msgstr "Är du säker på att du vill ta bort detta steg?"
 
 #: frontend/src/components/Activities/TaskArea.vue:60
 msgid "Are you sure you want to delete this task?"
@@ -1013,27 +1013,27 @@ msgstr "Automatisering Användare"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:392
 msgid "Automation deleted"
-msgstr ""
+msgstr "Automatisering borttagen"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:343
 msgid "Automation duplicated"
-msgstr ""
+msgstr "Automatisering duplicerad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:525
 msgid "Automation saved"
-msgstr ""
+msgstr "Automatisering sparad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:29
 msgid "Automation title"
-msgstr ""
+msgstr "Automatisering titel"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:301
 msgid "Automation updated"
-msgstr ""
+msgstr "Automatisering uppdaterad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:169
 msgid "Available to later steps"
-msgstr ""
+msgstr "Tillgänglig för senare steg"
 
 #: crm/api/dashboard.py:371
 msgid "Average deal value of non won/lost deals"
@@ -1121,7 +1121,7 @@ msgstr "Tillbaka till Filuppladdning"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:9
 msgid "Back to automations"
-msgstr ""
+msgstr "Tillbaka till automatiseringar"
 
 #: frontend/src/components/Questionnaire.vue:94
 msgid "Back to previous question"
@@ -1149,12 +1149,12 @@ msgstr "Var den första att lägga till en."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:235
 msgid "Before the first step"
-msgstr ""
+msgstr "Före första steg"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:65
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:73
 msgid "Belonging to"
-msgstr ""
+msgstr "Tillhör"
 
 #: frontend/src/components/Filter.vue:386
 msgid "Between"
@@ -1247,7 +1247,7 @@ msgstr "Affär Status"
 
 #: crm/automation/actions.py:166
 msgid "CRM Deal has no field {0}"
-msgstr ""
+msgstr "Affär har inget fält {0}"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -1585,7 +1585,7 @@ msgstr "Samla in potentiella kunder och affärsmöjligheter från webbplats form
 
 #: frontend/src/components/Layouts/AppSidebar.vue:544
 msgid "Capture leads with a form"
-msgstr ""
+msgstr "Samla in potentiella kunder med formulär"
 
 #: frontend/src/pages/PersonaForm.vue:122
 msgid "Capture my first lead"
@@ -1681,19 +1681,19 @@ msgstr "Välj Befintlig Organisation"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:43
 msgid "Choose a field to set"
-msgstr ""
+msgstr "Välj fält att ange"
 
 #: crm/automation/actions.py:113
 msgid "Choose a lead temperature"
-msgstr ""
+msgstr "Välj potentiell kund temp"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:57
 msgid "Choose an event"
-msgstr ""
+msgstr "Välj händelse"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:16
 msgid "Choose field"
-msgstr ""
+msgstr "Välj fält"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:172
 msgid "Choose how long this SLA policy will be active."
@@ -1717,11 +1717,11 @@ msgstr "Välj e-post tjänst leverantör som ska konfigureras."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:41
 msgid "Choose value"
-msgstr ""
+msgstr "Välj värde"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:105
 msgid "Choose what this step does"
-msgstr ""
+msgstr "Välj vad detta steg gör"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:108
 msgid "Choose which leads/deals are affected by this policy."
@@ -1733,7 +1733,7 @@ msgstr "Välj vilka {0} som påverkas av denna regel för borttagning av tilldel
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:33
 msgid "Choose {0}"
-msgstr ""
+msgstr "Välj {0}"
 
 #: frontend/src/components/Controls/AttachControl.vue:58
 #: frontend/src/components/Controls/GeolocationControl.vue:40
@@ -1768,11 +1768,11 @@ msgstr "Rensa Tabell"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:12
 msgid "Clear condition"
-msgstr ""
+msgstr "Rensa villkor"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:112
 msgid "Clear to pick a record instead"
-msgstr ""
+msgstr "Rensa för att välja post istället"
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
@@ -1791,7 +1791,7 @@ msgstr "Stäng"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
 msgid "Close inspector"
-msgstr ""
+msgstr "Stäng inspektör"
 
 #: frontend/src/pages/PersonaForm.vue:126
 msgid "Close my first deal"
@@ -1805,7 +1805,7 @@ msgstr "Avslutad Datum"
 #. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Cold"
-msgstr ""
+msgstr "Kall"
 
 #: frontend/src/pages/PersonaForm.vue:100
 msgid "Collaborating with my team"
@@ -1972,7 +1972,7 @@ msgstr "Konfigurera"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:131
 msgid "Configure action"
-msgstr ""
+msgstr "Konfigurera åtgärd"
 
 #: frontend/src/components/Settings/HomeActions.vue:10
 msgid "Configure actions that appear on the home dropdown"
@@ -2184,7 +2184,7 @@ msgstr "Kunde inte skapa Säljstöd anpassade fält {0} automatiskt. Om det kör
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:346
 msgid "Could not duplicate automation"
-msgstr ""
+msgstr "Kunde inte duplicera automatisering"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
 msgid "Could not grant guest access."
@@ -2196,7 +2196,7 @@ msgstr "Kunde inte ladda diagram alternativ"
 
 #: frontend/src/components/ViewControls.vue:1112
 msgid "Could not move the card. Reverting."
-msgstr ""
+msgstr "Kunde inte flytta kort. Återställer."
 
 #: frontend/src/components/Settings/Hierarchy/useRemoveNode.js:16
 msgid "Could not remove."
@@ -2209,7 +2209,7 @@ msgstr "Kunde inte spara"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:617
 msgid "Could not save automation"
-msgstr ""
+msgstr "Kunde inte spara automatisering"
 
 #: frontend/src/components/PrimaryDropdownItem.vue:181
 #: frontend/src/components/PrimaryDropdownItem.vue:188
@@ -2222,7 +2222,7 @@ msgstr "Kunde inte starta komplettering."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:304
 msgid "Could not update automation"
-msgstr ""
+msgstr "Kunde inte uppdatera automatisering"
 
 #: frontend/src/components/Modals/DoctypeModal.vue:147
 msgid "Could not update document"
@@ -2244,7 +2244,7 @@ msgstr "Antal"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:97
 msgid "Count of related records"
-msgstr ""
+msgstr "Antal relaterade poster"
 
 #. Label of the crawl_tab (Tab Break) field in DocType 'CRM Enrichment
 #. Settings'
@@ -2350,7 +2350,7 @@ msgstr "Knapp skapa offert på affärssida och Skapa Kund Automatiskt vid affär
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:5
 msgid "Create workflow automations for CRM documents"
-msgstr ""
+msgstr "Skapa arbetsflöde automatiseringar för dokument"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:532
 msgid "Create your first lead"
@@ -2370,7 +2370,7 @@ msgstr "Skapad Av"
 
 #: crm/automation/actions.py:190
 msgid "Created Deal {0}"
-msgstr ""
+msgstr "Skapad affär {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:30
 msgid "Cron Expression"
@@ -2437,7 +2437,7 @@ msgstr "Anpassade Statusar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:93
 msgid "Custom event"
-msgstr ""
+msgstr "Anpassad händelse"
 
 #: frontend/src/pages/Deal.vue:512
 msgid "Customer Created Successfully"
@@ -2521,7 +2521,7 @@ msgstr "Datum Format"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:50
 msgid "Date Offset"
-msgstr ""
+msgstr "Datum Förskjutning"
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
 msgid "Day"
@@ -2565,7 +2565,7 @@ msgstr "Affärsvärde"
 
 #: crm/automation/actions.py:54
 msgid "Deal field overrides must be a JSON object"
-msgstr ""
+msgstr "Åsidosättningar av affärer måste vara JSON objekt"
 
 #: crm/api/dashboard.py:1142
 msgid "Deal generation channel analysis"
@@ -2805,11 +2805,11 @@ msgstr "Ta bort eller ta bort länk till länkade dokument innan dokument tas bo
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:465
 msgid "Delete step"
-msgstr ""
+msgstr "Ta bort steg"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:465
 msgid "Delete trigger"
-msgstr ""
+msgstr "Ta bort utlösare"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:70
 msgid "Delete {0} Item(s)"
@@ -2921,7 +2921,7 @@ msgstr "Ignorera Ändringar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:263
 msgid "Discard and exit"
-msgstr ""
+msgstr "Ignorera och avsluta"
 
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -2953,7 +2953,7 @@ msgstr "DocType"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:43
 msgid "DocType resolved at runtime"
-msgstr ""
+msgstr "DocType löstes vid körning"
 
 #: crm/api/doc.py:821
 msgid "Doctype is required"
@@ -3335,7 +3335,7 @@ msgstr "E-post inställningar uppdaterade"
 
 #: crm/automation/actions.py:250
 msgid "Emailed {0}: {1}"
-msgstr ""
+msgstr "E-postad {0}: {1}"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
 #: frontend/src/pages/Deal.vue:584 frontend/src/pages/Lead.vue:447
@@ -3658,7 +3658,7 @@ msgstr "Händelse Aviseringar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
-msgstr ""
+msgstr "Händelse inträffade"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -3994,7 +3994,7 @@ msgstr "Felloggar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
 msgid "False"
-msgstr ""
+msgstr "Falsk"
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -4009,11 +4009,11 @@ msgstr "Fält"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:72
 msgid "Field Values"
-msgstr ""
+msgstr "Fält Värden"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:41
 msgid "Field value changes"
-msgstr ""
+msgstr "Fält värde ändringar"
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
 #: frontend/src/components/Kanban/KanbanSettings.vue:47
@@ -4054,7 +4054,7 @@ msgstr "Filter"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:92
 msgid "Filter values may use Jinja, e.g."
-msgstr ""
+msgstr "Filtervärden kan använda Jinja, t.ex."
 
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
@@ -4124,7 +4124,7 @@ msgstr "Förnamn"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:67
 msgid "Fit entire flow"
-msgstr ""
+msgstr "Anpassa hela flöde"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
@@ -4146,7 +4146,7 @@ msgstr "För"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:142
 msgid "Forced"
-msgstr ""
+msgstr "Tvingad"
 
 #: crm/api/dashboard.py:96
 msgid "Forecasted Revenue"
@@ -4489,7 +4489,7 @@ msgstr "Hem Åtgärder"
 #. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Hot"
-msgstr ""
+msgstr "Hett"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -4549,7 +4549,7 @@ msgstr "Ikon"
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:222
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:12
 msgid "If / Else"
-msgstr ""
+msgstr "Om / Annars"
 
 #: frontend/src/components/Settings/emailConfig.js:61
 msgid "If enabled, a lead will be automatically created when an incoming email is received from an unknown contact."
@@ -4680,7 +4680,7 @@ msgstr "Infoga emoji"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:14
 msgid "Insert field"
-msgstr ""
+msgstr "Infoga fält"
 
 #: crm/domain_enrichment/mapper.py:45
 msgid "Instagram"
@@ -5112,7 +5112,7 @@ msgstr "Senaste användare tilldelad av denna regel"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:72
 msgid "Launch manually"
-msgstr ""
+msgstr "Starta manuellt"
 
 #. Label of the layout (Code) field in DocType 'CRM Dashboard'
 #. Label of the layout (Code) field in DocType 'CRM Fields Layout'
@@ -5161,7 +5161,7 @@ msgstr "Potentiell Kund Ansvarig kan inte vara samma som Potentiell Kund E-post 
 #. Label of the lead_score (Int) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Lead Score"
-msgstr ""
+msgstr "Potentiell Kund Resultat"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -5186,7 +5186,7 @@ msgstr "Potentiell Kund Synkronisering"
 #. Label of the lead_temperature (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Lead Temperature"
-msgstr ""
+msgstr "Potentiell Kund Temp"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
@@ -5202,11 +5202,11 @@ msgstr "Potentiell Kund Generering Kanal Statistik"
 
 #: crm/automation/scoring.py:47
 msgid "Lead is now {0}"
-msgstr ""
+msgstr "Potentiell Kund är nu {0}"
 
 #: crm/automation/scoring.py:29
 msgid "Lead score {0} → {1}{2}"
-msgstr ""
+msgstr "Potentiell Kund Resultat {0} → {1}{2}"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
@@ -5222,7 +5222,7 @@ msgstr "Potentiell Kund synkronisering källa togs bort"
 
 #: crm/automation/scoring.py:42
 msgid "Lead temperature must be one of {0}"
-msgstr ""
+msgstr "Potentiell Kund Temp måste vara en av {0}"
 
 #: crm/api/dashboard.py:907
 msgid "Lead to deal conversion pipeline"
@@ -5230,7 +5230,7 @@ msgstr "Konvertering Process Potentiell Kund till Affär"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:577
 msgid "Lead {0} is already converted to Deal {1}"
-msgstr ""
+msgstr "Potentiell Kund {0} har redan konverterats till Affär {1}"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -5269,7 +5269,7 @@ msgstr "Mindre än eller lika med"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:162
 msgid "Lets a later step act on what this one produced."
-msgstr ""
+msgstr "Låter en senare steg agera på vad denna producerade."
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
 msgid "Library"
@@ -5651,7 +5651,7 @@ msgstr "Minimera"
 
 #: crm/automation/actions.py:81
 msgid "Minimum score is above the maximum"
-msgstr ""
+msgstr "Lägsta resultat är över högsta"
 
 #: frontend/src/utils/callLog.js:79
 msgid "Missed Call"
@@ -5738,7 +5738,7 @@ msgstr "Flytta Sista Kolumn till Föregående Flik"
 
 #: frontend/src/components/ViewControls.vue:1127
 msgid "Move cancelled: a lost reason is required for this status."
-msgstr ""
+msgstr "Flytt avbruten: förlorad orsak erfordras för denna status."
 
 #: frontend/src/components/FieldLayoutEditor.vue:543
 msgid "Move to Next Tab"
@@ -5791,11 +5791,11 @@ msgstr "Namn erfordras"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:160
 msgid "Name the result"
-msgstr ""
+msgstr "Namnge resultat"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:153
 msgid "Names this step in run logs and in its result path."
-msgstr ""
+msgstr "Namnger detta steg i körloggarna och i dess resultatväg."
 
 #. Label of the naming_series (Select) field in DocType 'CRM Deal'
 #. Label of the naming_series (Select) field in DocType 'CRM Product'
@@ -6122,7 +6122,7 @@ msgstr "Inga mottagare att notifiera"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:96
 msgid "No related record exists"
-msgstr ""
+msgstr "Ingen relaterad post finns"
 
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/frappe-ui/Autocomplete.vue:120
@@ -6131,7 +6131,7 @@ msgstr "Inga resultat hittades"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationRuns.vue:10
 msgid "No runs yet"
-msgstr ""
+msgstr "Inga körningar än"
 
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:64
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:9
@@ -6152,7 +6152,7 @@ msgstr "Inga webbformulär ännu"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:42
 msgid "No workflow automations yet"
-msgstr ""
+msgstr "Inga automatisering arbetsflöden ännu"
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
 #: frontend/src/pages/MobileOrganization.vue:145
@@ -6283,7 +6283,7 @@ msgstr "Det är inte tillåtet att ändra fält uppsättning"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:31
 msgid "Not something filters can express. Edit it below."
-msgstr ""
+msgstr "Inte något som filter kan uttrycka. Redigera det nedan."
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -6389,7 +6389,7 @@ msgstr "Antal återförsök på misslyckad begäran."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:36
 msgid "Of record"
-msgstr ""
+msgstr "Av post"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
@@ -6424,15 +6424,15 @@ msgstr "Spärrad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:86
 msgid "On a date"
-msgstr ""
+msgstr "På datum"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:79
 msgid "On a schedule"
-msgstr ""
+msgstr "Enligt schema"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:42
 msgid "One {0} record"
-msgstr ""
+msgstr "En {0} post"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -6472,7 +6472,7 @@ msgstr "Endast en {0} kan anges som primär."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:133
 msgid "Only run when"
-msgstr ""
+msgstr "Kör endast när"
 
 #: crm/api/whatsapp.py:16
 msgid "Only sales users can access WhatsApp features."
@@ -6506,7 +6506,7 @@ msgstr "Öppna i nytt fönster"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
 msgid "Open inspector"
-msgstr ""
+msgstr "Öppna inspektör"
 
 #: frontend/src/doctypes/crm_task/form.js:9
 #: frontend/src/doctypes/fcrm_note/form.js:9
@@ -6629,7 +6629,7 @@ msgstr "Utgående"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:130
 msgid "Output of {0}"
-msgstr ""
+msgstr "Utdata från {0}"
 
 #. Option for the 'Write Policy' (Select) field in DocType 'CRM Enrichment
 #. Field Mapping'
@@ -6715,15 +6715,15 @@ msgstr "Mönster"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:116
 msgid "Pause the run"
-msgstr ""
+msgstr "Pausa körning"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:21
 msgid "Pause the run for a fixed amount of time."
-msgstr ""
+msgstr "Pausa körning under bestämd tid."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:31
 msgid "Pause until an event is raised for this record."
-msgstr ""
+msgstr "Vänta tills en händelse utlöses för denna post."
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:10
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:37
@@ -6802,28 +6802,28 @@ msgstr "Telefonnumer hittades"
 
 #: crm/automation/actions.py:225
 msgid "Pick a template or write a subject"
-msgstr ""
+msgstr "Väl  mall eller skriv ämne"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:12
 msgid "Pick a {0}"
-msgstr ""
+msgstr "Välj {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:34
 msgid "Pick an action"
-msgstr ""
+msgstr "Välj åtgärd"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:121
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:29
 msgid "Pick an event"
-msgstr ""
+msgstr "Välj händelse"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:56
 msgid "Pick initial trigger"
-msgstr ""
+msgstr "Välj initial utlösare"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:19
 msgid "Pick {0}"
-msgstr ""
+msgstr "Välj {0}"
 
 #: frontend/src/components/ViewControls.vue:1316
 msgid "Pin View"
@@ -7095,7 +7095,7 @@ msgstr "Publicerad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:28
 msgid "Python, evaluated against doc, target and context."
-msgstr ""
+msgstr "Python, utvärderat utifrån dokumentation, mål och sammanhang."
 
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -7170,7 +7170,7 @@ msgstr "Anledning"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:118
 msgid "Record"
-msgstr ""
+msgstr "Post"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -7186,23 +7186,23 @@ msgstr "Spela in Utgående Samtal"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:62
 msgid "Record is cancelled"
-msgstr ""
+msgstr "Post är avbruten"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:27
 msgid "Record is created"
-msgstr ""
+msgstr "Post skapad"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:48
 msgid "Record is deleted"
-msgstr ""
+msgstr "Post borttagen"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:55
 msgid "Record is submitted"
-msgstr ""
+msgstr "Post godkänd"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:34
 msgid "Record is updated"
-msgstr ""
+msgstr "Post uppdaterad"
 
 #. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -7380,7 +7380,7 @@ msgstr "Ta bort fält"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
 msgid "Remove step"
-msgstr ""
+msgstr "Ta bort steg"
 
 #: crm/api/user.py:177
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
@@ -7388,7 +7388,7 @@ msgstr "Ta bort denna användare från försäljning hierarkin innan du ändrar 
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
 msgid "Remove trigger"
-msgstr ""
+msgstr "Ta bort utlösare"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:195
 msgid "Remove {0} from the hierarchy. What should happen to their direct reports?"
@@ -7576,7 +7576,7 @@ msgstr "Försök synkronisera igen"
 
 #: crm/automation/actions.py:190
 msgid "Reused Deal {0}"
-msgstr ""
+msgstr "Återanvänd affär {0}"
 
 #: crm/api/dashboard.py:846
 msgid "Revenue"
@@ -7613,11 +7613,11 @@ msgstr "Roll"
 
 #: crm/api/user.py:235
 msgid "Role Profile Assigned"
-msgstr ""
+msgstr "Rollprofil Tilldelad"
 
 #: crm/api/user.py:232
 msgid "Roles of user {0} are managed by a Role Profile. Update the Role Profile instead."
-msgstr ""
+msgstr "Rollerna för användare {0} hanteras av rollprofil. Uppdatera rollprofil istället."
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -7679,23 +7679,23 @@ msgstr "Kör manuell synkronisering för att hämta senaste artiklar från Affä
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:87
 msgid "Run before or after a date stored on the record."
-msgstr ""
+msgstr "Kör före eller efter datum som finns lagrat i posten."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:80
 msgid "Run on a repeating schedule you define with cron."
-msgstr ""
+msgstr "Körs enligt återkommande schema som definieras med cron."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:73
 msgid "Run only when someone starts it from a record."
-msgstr ""
+msgstr "Kör endast när någon startar den från post."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:94
 msgid "Run when the app raises a named event you pick."
-msgstr ""
+msgstr "Kör när appen utlöser namngiven händelse som du väljer."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:238
 msgid "Run {0}"
-msgstr ""
+msgstr "Kör {0}"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -7935,7 +7935,7 @@ msgstr "Spara Ändringar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:89
 msgid "Save the flow before testing it."
-msgstr ""
+msgstr "Spara flöde innan du testar det."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:778
 msgid "Saved View"
@@ -7990,7 +7990,7 @@ msgstr "Sökfält…"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:97
 msgid "Search triggers"
-msgstr ""
+msgstr "Sök utlösare"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
@@ -8072,7 +8072,7 @@ msgstr "Välj Värde"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:11
 msgid "Select a record"
-msgstr ""
+msgstr "Välj  post"
 
 #: frontend/src/components/Questionnaire.vue:93
 msgid "Select all that apply"
@@ -8103,7 +8103,7 @@ msgstr "Välj affärsstatus för att utlösa automatisk kundskapande i Affärssy
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:8
 msgid "Select users"
-msgstr ""
+msgstr "Välj användare"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
 msgid "Select whether to display time with or without seconds"
@@ -8209,7 +8209,7 @@ msgstr "Ange webbplats för denna post innan den kompletteras."
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:106
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:25
 msgid "Set a condition"
-msgstr ""
+msgstr "Ange villkor"
 
 #: crm/api/form.py:394
 msgid "Set a default value before publishing for: {0}"
@@ -8245,7 +8245,7 @@ msgstr "Ange som standard Service Nivå Avtal"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:27
 msgid "Set how long to wait"
-msgstr ""
+msgstr "Ange hur länge man ska vänta"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:14
 msgid "Set location…"
@@ -8253,7 +8253,7 @@ msgstr "Ange Plats…"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:232
 msgid "Set more fields at once as JSON. These are applied together with the Field and Value above, in the same save."
-msgstr ""
+msgstr "Ange flera fält samtidigt som JSON. Dessa tillämpas tillsammans med fält och värde ovan, i samma spara händelse."
 
 #. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
 #. Settings'
@@ -8383,7 +8383,7 @@ msgstr "Förhandsvisa"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:59
 msgid "Show details"
-msgstr ""
+msgstr "Visa detaljer"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:86
 msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
@@ -8548,7 +8548,7 @@ msgstr "Mellanrum"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:13
 msgid "Split the run into two arms on a condition."
-msgstr ""
+msgstr "Dela upp körning i två grenar beroende på villkor."
 
 #: frontend/src/pages/PersonaForm.vue:59
 msgid "Spreadsheets"
@@ -8596,23 +8596,23 @@ msgstr "Starta konversation nu!"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:49
 msgid "Start a run just after a record is deleted."
-msgstr ""
+msgstr "Starta en körning precis efter att post har tagits bort."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:56
 msgid "Start a run when a submittable record is submitted."
-msgstr ""
+msgstr "Starta körning när godkänbar post godkäns."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:63
 msgid "Start a run when a submitted record is cancelled."
-msgstr ""
+msgstr "Starta körning när en godkänd post avbryts."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:28
 msgid "Start a run whenever a new record is created."
-msgstr ""
+msgstr "Starta körning när ny post skapas."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:35
 msgid "Start a run whenever an existing record is saved."
-msgstr ""
+msgstr "Starta körning när befintlig post sparas."
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
@@ -8624,7 +8624,7 @@ msgstr "Börja från grunden"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:23
 msgid "Start test run"
-msgstr ""
+msgstr "Starta testkörning"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start time is required"
@@ -8689,7 +8689,7 @@ msgstr "Steg Typ"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
 msgid "Step name"
-msgstr ""
+msgstr "Steg namn"
 
 #: frontend/src/components/Questionnaire.vue:91
 msgid "Step {0} of {1}"
@@ -9062,7 +9062,7 @@ msgstr "I År"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:40
 msgid "This alias is not available at this step"
-msgstr ""
+msgstr "Detta alias är inte tillgängligt i detta steg"
 
 #: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
@@ -9131,7 +9131,7 @@ msgstr "Tid före händelsen då påminnelse skickas som standard. Detta tilläm
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Timed out"
-msgstr ""
+msgstr "Tidsgräns ute"
 
 #. Label of the crm_timeline_sort_order (Select) field in DocType 'FCRM
 #. Settings'
@@ -9316,11 +9316,11 @@ msgstr "Utlösare Fält"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
 msgid "Trigger record"
-msgstr ""
+msgstr "Utlösning post"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
 msgid "True"
-msgstr ""
+msgstr "Sant"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -9461,7 +9461,7 @@ msgstr "Okänd"
 
 #: crm/automation/relationships.py:40
 msgid "Unknown CRM relationship: {0}"
-msgstr ""
+msgstr "Okänd relation: {0}"
 
 #: crm/automation/actions.py:227
 msgid "Unknown Email Template"
@@ -9523,7 +9523,7 @@ msgstr "Ej sparade ändringar"
 
 #: crm/automation/actions.py:158
 msgid "Unsupported conversion policy"
-msgstr ""
+msgstr "Ej Stödd Konvertering Princip"
 
 #: frontend/src/components/CollapsibleSection.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:32
@@ -9537,7 +9537,7 @@ msgstr "Namnlös"
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:30
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:546
 msgid "Untitled automation"
-msgstr ""
+msgstr "Namnlös automatisering"
 
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:84
@@ -9759,26 +9759,26 @@ msgstr "Visas om"
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:20
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:95
 msgid "Wait"
-msgstr ""
+msgstr "Vänta"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:55
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:94
 msgid "Wait for"
-msgstr ""
+msgstr "Vänta på"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:221
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:30
 msgid "Wait for event"
-msgstr ""
+msgstr "Vänta på händelse"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:72
 msgid "Wait for {0}"
-msgstr ""
+msgstr "Vänta på {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:69
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:115
 msgid "Wait {0} {1}"
-msgstr ""
+msgstr "Vänta {0} {1}"
 
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
@@ -9787,11 +9787,11 @@ msgstr "Drop-in"
 #. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Warm"
-msgstr ""
+msgstr "Varm"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:42
 msgid "Watch one field and run when it moves to a new value."
-msgstr ""
+msgstr "Övervaka fält och kör värde ändras."
 
 #: crm/integrations/twilio/api.py:108
 msgid "We're unable to connect your call right now. Please try again later."
@@ -9934,12 +9934,12 @@ msgstr "Arbetsdag"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:215
 msgid "Workflow Automation"
-msgstr ""
+msgstr "Arbetsflöde Automatisering"
 
 #: frontend/src/components/Settings/Settings.vue:196
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:4
 msgid "Workflow Automations"
-msgstr ""
+msgstr "Arbetsflöde Automatiseringar"
 
 #. Label of the section_break_rmgo (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
@@ -9959,7 +9959,7 @@ msgstr "Skriv Princip"
 
 #: crm/automation/actions.py:301
 msgid "Write the notification text"
-msgstr ""
+msgstr "Skriv avisering text"
 
 #. Label of the twitter (Data) field in DocType 'CRM Deal'
 #. Label of the twitter (Data) field in DocType 'CRM Lead'
@@ -10055,7 +10055,7 @@ msgstr "Du har inte behörighet att ta bort denna bilaga"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:258
 msgid "You have unsaved changes. Do you wish to exit?"
-msgstr ""
+msgstr "Du har ej sparade ändringar. Vill du avsluta?"
 
 #: crm/api/user.py:17
 msgid "You must be logged in to change your password"
@@ -10115,15 +10115,15 @@ msgstr "Zooma ut"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:10
 msgid "a date field"
-msgstr ""
+msgstr "datum fält"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:7
 msgid "a field to watch"
-msgstr ""
+msgstr "fält att övervaka"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:9
 msgid "a schedule"
-msgstr ""
+msgstr "schema"
 
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
@@ -10138,7 +10138,7 @@ msgstr "bärnsten"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:11
 msgid "an event"
-msgstr ""
+msgstr "händelse"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
 msgid "and"
@@ -10229,11 +10229,11 @@ msgstr "inaktiverad"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:231
 msgid "e.g. @gmail.com"
-msgstr ""
+msgstr "t.ex. @gmail.com"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:232
 msgid "e.g. Open, Replied"
-msgstr ""
+msgstr "t.ex. Öppen, Besvarad"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -10455,7 +10455,7 @@ msgstr "gammalt_värde"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:55
 msgid "on {0}"
-msgstr ""
+msgstr "{0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
 msgid "or"
@@ -10641,7 +10641,7 @@ msgstr "{0} h"
 
 #: crm/automation/actions.py:235
 msgid "{0} has no email address"
-msgstr ""
+msgstr "{0} saknar e-postadress"
 
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.py:48
 msgid "{0} has no field {1}"
@@ -10664,15 +10664,15 @@ msgstr "{0} är ogiltig e-post adress"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:168
 msgid "{0} is empty"
-msgstr ""
+msgstr "{0} är tom"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:158
 msgid "{0} is none of {1}"
-msgstr ""
+msgstr "{0} är ingen av {1}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:156
 msgid "{0} is not {1}"
-msgstr ""
+msgstr "{0} är inte {1}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:157
 msgid "{0} is one of {1}"
@@ -10710,7 +10710,7 @@ msgstr "{0} månader sedan"
 
 #: crm/automation/actions.py:31
 msgid "{0} must act on {1}, not {2}"
-msgstr ""
+msgstr "{0} måste agera på {1}, inte {2}"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:569
 msgid "{0} not yet synced"
@@ -10718,7 +10718,7 @@ msgstr "{0} är inte synkroniserad än"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:46
 msgid "{0} of {1} steps ran"
-msgstr ""
+msgstr "{0} av {1} steg kördes"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:507
 msgid "{0} users added to hierarchy"
