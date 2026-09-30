@@ -14,12 +14,8 @@
         >
           <div class="w-full">
             <button
-<<<<<<< HEAD
-              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors"
-=======
               :id="buttonId"
-              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors pr-7"
->>>>>>> 9a41afe (fix: let autocomplete take an id for its trigger button)
+              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors"
               :class="inputClasses"
               @click="() => !disabled && togglePopover()"
             >
