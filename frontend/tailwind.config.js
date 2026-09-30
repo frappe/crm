@@ -9,8 +9,10 @@ export default {
     '../node_modules/frappe-ui/src/**/*.{vue,js,ts,jsx,tsx}',
     './node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
     '../node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
-    // linked @framework/ui source (apps/frappe/ui/src) — scan so its utility and
-    // arbitrary-variant classes (e.g. Notifications TabButtons overrides) are generated
+    // linked @whatsapp/ui source — its icons are `lucide-*` utility classes, and an
+    // unscanned linked package fails silently: no error, every icon renders as blank space
+    '../../whatsapp/ui/src/**/*.{vue,js,ts,jsx,tsx}',
+    // linked @framework/ui source, for the Grid and Link the account form uses
     '../../frappe/ui/src/**/*.{vue,js,ts,jsx,tsx}',
   ],
   safelist: [

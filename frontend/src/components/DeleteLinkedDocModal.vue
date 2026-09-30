@@ -134,6 +134,7 @@
 import { createResource, call, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 import {
   markDocumentAsDeleted,
   unmarkDocumentAsDeleted,
@@ -206,11 +207,15 @@ const unlinkLinkedDoc = (doc) => {
     }))
   }
 
-  call('crm.api.doc.remove_linked_doc_reference', {
-    items: selectedDocs,
-    remove_contact: props.doctype == 'Contact',
-    delete: doc.delete,
-  }).then(() => {
+  withRecipientConfirmation((confirm) =>
+    call('crm.api.doc.remove_linked_doc_reference', {
+      items: selectedDocs,
+      remove_contact: props.doctype == 'Contact',
+      delete: doc.delete,
+      ...confirm,
+    }),
+  ).then((removed) => {
+    if (!removed) return
     linkedDocsResource.reload()
     confirmDeleteInfo.value = {
       show: false,

@@ -11,7 +11,7 @@ app_icon_route = "/crm"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["whatsapp"]
 add_to_apps_screen = [
 	{
 		"name": "crm",
@@ -260,10 +260,10 @@ doc_events = {
 		"after_insert": ["crm.utils.on_comment_insert"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
-	"WhatsApp Message": {
+	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_update": [
-			"crm.api.whatsapp.on_update",
+			"crm.api.whatsapp.notify_agent",
 			"crm.automation.events.on_whatsapp_message",
 		],
 	},
@@ -305,6 +305,10 @@ doc_events = {
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
 }
+
+# The whatsapp app has no role model of its own; this gates its whitelisted
+# endpoints on CRM's sales roles.
+whatsapp_access_guard = ["crm.api.whatsapp.validate_access"]
 
 # Scheduled Tasks
 # ---------------

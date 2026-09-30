@@ -381,6 +381,7 @@ import {
   isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
@@ -871,10 +872,13 @@ async function addContact(contact) {
 }
 
 async function removeContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
-    deal: props.dealId,
-    contact,
-  })
+  let d = await withRecipientConfirmation((confirm) =>
+    call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
+      deal: props.dealId,
+      contact,
+      ...confirm,
+    }),
+  )
   if (d) {
     dealContacts.reload()
     toast.success(__('Contact Removed'))
@@ -882,10 +886,13 @@ async function removeContact(contact) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
-    deal: props.dealId,
-    contact,
-  })
+  let d = await withRecipientConfirmation((confirm) =>
+    call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
+      deal: props.dealId,
+      contact,
+      ...confirm,
+    }),
+  )
   if (d) {
     dealContacts.reload()
     toast.success(__('Primary Contact Set'))

@@ -6,7 +6,7 @@ import router from '@/router'
 import { activeSettingsPage, showSettings } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { isWhatsappInstalled } from '@/composables/whatsapp'
+import { isWhatsAppInstalled } from '@/composables/whatsapp'
 import {
   commandPaletteOpen,
   commandPaletteQuery,
@@ -101,7 +101,7 @@ export function useCRMCommands() {
     showModal,
     user,
     isManager,
-    whatsappInstalled: isWhatsappInstalled,
+    whatsappInstalled: isWhatsAppInstalled,
     state,
   }
   setCommandPaletteProvider(() => buildCommands(context))

@@ -59,28 +59,41 @@ export default defineConfig(async ({ mode }) => {
       alias: {
         '@': path.resolve(import.meta.dirname, 'src'),
         // point at the package src dir (not index.ts) so subpath imports like
-        // `@framework/ui/components/Notifications` resolve. Importing subpaths avoids the
-        // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
-        // frappe-ui (`frappe-ui/internals`) than this app pins.
+        // `@whatsapp/ui/components/Messages` resolve to a real file
+        '@whatsapp/ui': path.resolve(
+          import.meta.dirname,
+          '../../whatsapp/ui/src',
+        ),
+        // same shape for @framework/ui: its account form pieces (Grid, Link) are
+        // what @whatsapp/ui's AccountForm is built on
         '@framework/ui': path.resolve(
           import.meta.dirname,
           '../../frappe/ui/src',
         ),
       },
-      // ensure the linked framework package reuses the host app's single copy of each peer.
-      // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
-      // package.json); dedupe resolves it to the host's copy since the symlinked source has
-      // no node_modules of its own.
+      // ensure the linked @whatsapp/ui package reuses the host app's single copy of each peer:
+      // the symlinked source has no node_modules of its own, so dedupe resolves its imports
+      // (`dompurify`, and the peers below) to the host's copy.
+      // `reka-ui` is what frappe-ui builds on and it passes state through provide/inject,
+      // so a second copy silently breaks context across a linked package's components.
       // the editor packages must resolve to one copy each: tiptap imports
       // `@tiptap/pm/model` while prosemirror-state/transform/tables import bare
       // `prosemirror-model`, so a nested install of either throws "multiple
       // versions of prosemirror-model were loaded" on mention insert. Unlike
       // optimizeDeps (dev-only) this also applies to the production build.
+      // @framework/ui is aliased to frappe's ui/src, so its own direct deps
+      // (leaflet, cropperjs, vuedraggable) must also come from here: a bench
+      // build never installs apps/frappe/ui/node_modules.
       dedupe: [
         'vue',
         'vue-router',
         'frappe-ui',
+        'reka-ui',
         'dompurify',
+        'cropperjs',
+        'leaflet',
+        'leaflet-draw',
+        'leaflet.locatecontrol',
         // ConditionBuilder's drag handles; resolved from the host for the same reason
         'vuedraggable',
         '@tiptap/core',
@@ -105,7 +118,7 @@ export default defineConfig(async ({ mode }) => {
     server: {
       fs: {
         // allow the bench `apps/` dir so Vite can serve linked local packages
-        // (frappe-ui, @framework/ui) that live in sibling app repos
+        // (frappe-ui, @whatsapp/ui, @framework/ui) that live in sibling app repos
         allow: [path.resolve(import.meta.dirname, '../..')],
       },
     },
@@ -198,6 +211,16 @@ function getAliases(config) {
     'frappe-ui/internals': path.resolve(
       import.meta.dirname,
       '../frappe-ui/internals.ts',
+    ),
+    // `experimental` and `code-editor` are pulled in by @framework/ui's Grid
+    // and FormLayout
+    'frappe-ui/experimental': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/experimental.ts',
+    ),
+    'frappe-ui/code-editor': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/src/components/CodeEditor/index.ts',
     ),
     'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
   }

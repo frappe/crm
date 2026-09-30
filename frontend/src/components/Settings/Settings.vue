@@ -89,7 +89,7 @@ import {
   activeSettingsPage,
   disableSettingModalOutsideClick,
 } from '@/composables/settings'
-import { isWhatsappInstalled } from '@/composables/whatsapp'
+import { isWhatsAppInstalled } from '@/composables/whatsapp'
 import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h, nextTick } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
@@ -243,7 +243,7 @@ const tabs = computed(() => {
           label: __('WhatsApp'),
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),
-          condition: () => isWhatsappInstalled.value && isManager(),
+          condition: () => isWhatsAppInstalled.value && isManager(),
         },
         {
           label: __('ERPNext'),

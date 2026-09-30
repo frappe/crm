@@ -1,13 +1,11 @@
 <template>
   <ActivityHeader
     v-model="tabIndex"
-    v-model:showWhatsappTemplates="showWhatsappTemplates"
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
     :tabs="tabs"
     :title="title"
     :doc="doc"
-    :whatsappBox="whatsappBox"
     :modalRef="modalRef"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
@@ -20,18 +18,44 @@
     </div>
     <div
       v-else-if="
-        activities?.length ||
-        (whatsappMessages.data?.length && title == 'WhatsApp')
+        activities?.length || (messages.messages.length && title == 'WhatsApp')
       "
       class="activities"
     >
-      <div v-if="title == 'WhatsApp' && whatsappMessages.data?.length">
-        <WhatsAppArea
-          v-model="whatsappMessages"
-          v-model:reply="replyMessage"
-          class="px-3 sm:px-10"
-          :messages="whatsappMessages.data"
-        />
+      <div v-if="title == 'WhatsApp' && messages.messages.length">
+        <MessageList
+          class="px-3 pb-4 sm:px-10"
+          :messages="messages.messages"
+          :loading="messages.loading"
+          :sender-name="senderName"
+          row-class="activity"
+          :you-label="__('You')"
+          :reacted-by-label="__('Reacted by')"
+          :reply-label="__('Reply')"
+          :replying-to-label="__('Replying to')"
+          :react-label="__('React')"
+          :failed-message-label="__('Failed to send message')"
+          :today-label="__('Today')"
+          :yesterday-label="__('Yesterday')"
+          @reply="messages.setReplyTo"
+          @react="
+            ({ messageName, emoji }) => messages.react(messageName, emoji)
+          "
+        >
+          <!--
+            Incoming only. WhatsApp sends from one shared business number and the message
+            carries no owner, so an outgoing avatar could only be a guess at which agent
+            sent it.
+          -->
+          <template #avatar="{ message }">
+            <Avatar
+              v-if="message.direction === 'Incoming'"
+              size="lg"
+              :label="senderName"
+              :image="doc.image"
+            />
+          </template>
+        </MessageList>
       </div>
       <div
         v-else-if="title == 'Notes'"
@@ -409,21 +433,50 @@
       :doctype="doctype"
       @scroll="scroll"
     />
-    <WhatsAppBox
-      v-if="title == 'WhatsApp'"
-      ref="whatsappBox"
-      v-model="doc"
-      v-model:reply="replyMessage"
-      v-model:whatsapp="whatsappMessages"
-      :doctype="doctype"
-      @scroll="scroll"
-    />
+    <div
+      v-if="title == 'WhatsApp' && !hasMobileNumber"
+      class="mx-3 mb-2.5 flex items-center gap-2 rounded-lg bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
+    >
+      <span
+        class="lucide-info size-4 shrink-0 text-ink-amber-6"
+        aria-hidden="true"
+      />
+      {{ __('Add a mobile number to send WhatsApp messages.') }}
+    </div>
+    <MessageInput
+      v-else-if="title == 'WhatsApp'"
+      v-bind="messages"
+      class="mx-3 mb-2.5 sm:mx-10"
+      :sender-name="senderName"
+      :placeholder="__('Type your message here...')"
+      :you-label="__('You')"
+      :upload-document-label="__('Upload Document')"
+      :upload-image-label="__('Upload Image')"
+      :upload-video-label="__('Upload Video')"
+      :caption-placeholder="__('Add a caption...')"
+      :send-label="__('Send')"
+      :replying-to-label="__('Replying to')"
+      :dismiss-reply-label="__('Dismiss reply')"
+      @send="onWhatsAppSent"
+    >
+      <template #leading-actions>
+        <Button
+          variant="ghost"
+          :tooltip="__('Send Template')"
+          :icon="EmailTemplateIcon"
+          @click="showWhatsAppTemplates = true"
+        />
+      </template>
+    </MessageInput>
   </div>
-  <WhatsappTemplateSelectorModal
+  <WhatsAppTemplateSelectorModal
     v-if="whatsappEnabled"
-    v-model="showWhatsappTemplates"
+    v-model="showWhatsAppTemplates"
     :doctype="doctype"
-    @send="(t) => sendTemplate(t)"
+    :docname="docname"
+    :doc="doc"
+    :to="doc.mobile_no"
+    @sent="onTemplateSent"
   />
   <AllModals
     ref="modalRef"
@@ -461,8 +514,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import WhatsAppArea from '@/components/Activities/WhatsAppArea.vue'
-import WhatsAppBox from '@/components/Activities/WhatsAppBox.vue'
+import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -476,7 +528,7 @@ import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
-import WhatsappTemplateSelectorModal from '@/components/Modals/WhatsappTemplateSelectorModal.vue'
+import WhatsAppTemplateSelectorModal from '@/components/Modals/WhatsAppTemplateSelectorModal.vue'
 import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
@@ -486,8 +538,9 @@ import { usersStore } from '@/stores/users'
 import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
+import { MessageInput, MessageList, useMessages } from '@whatsapp/ui'
 import { useTelemetry } from 'frappe-ui/frappe'
-import { Button, createResource, toast } from 'frappe-ui'
+import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
@@ -552,30 +605,43 @@ const all_activities = createResource({
   },
 })
 
-const showWhatsappTemplates = ref(false)
+const showWhatsAppTemplates = ref(false)
+const hasMobileNumber = computed(() => Boolean(doc.value?.mobile_no))
 
-const whatsappMessages = createResource({
-  url: 'crm.api.whatsapp.get_whatsapp_messages',
-  cache: ['whatsapp_messages', props.docname],
-  params: {
-    reference_doctype: props.doctype,
-    reference_name: props.docname,
-  },
-  auto: false,
-  transform: (data) => sortByCreation(data),
-  onSuccess: () => nextTick(() => scroll()),
+const references = computed(() => {
+  const list = [[props.doctype, props.docname]]
+  // a Deal also shows the messages logged against the Lead it was converted from
+  if (props.doctype === 'CRM Deal' && doc.value?.lead)
+    list.push(['CRM Lead', doc.value.lead])
+  return list
+})
+
+const senderName = computed(
+  () =>
+    [doc.value?.first_name, doc.value?.last_name].filter(Boolean).join(' ') ||
+    doc.value?.lead_name ||
+    doc.value?.mobile_no ||
+    __('Contact'),
+)
+
+const messages = useMessages({
+  references,
+  to: () => doc.value?.mobile_no,
 })
 
 watch(
-  whatsappEnabled,
-  (enabled) => {
-    if (enabled) whatsappMessages.fetch()
+  () => messages.error,
+  (error) => {
+    if (error) toast.error(error.messages?.[0] || error.message || __('Error'))
   },
-  { immediate: true },
+)
+
+watch(
+  () => messages.messages.length,
+  () => nextTick(() => scroll()),
 )
 
 onBeforeUnmount(() => {
-  $socket.off('whatsapp_message')
   $socket.off('docinfo_update', handleDocinfoUpdate)
   $socket.emit('doc_unsubscribe', props.doctype, props.docname)
 })
@@ -583,14 +649,6 @@ onBeforeUnmount(() => {
 onMounted(() => {
   $socket.emit('doc_subscribe', props.doctype, props.docname)
   $socket.on('docinfo_update', handleDocinfoUpdate)
-  $socket.on('whatsapp_message', (data) => {
-    if (
-      data.reference_doctype === props.doctype &&
-      data.reference_name === props.docname
-    ) {
-      whatsappMessages.reload()
-    }
-  })
 
   nextTick(() => {
     const hash = route.hash.slice(1) || null
@@ -613,26 +671,15 @@ function handleDocinfoUpdate({ doc, key }) {
   _document.reload()
 }
 
-function sendTemplate(template) {
-  showWhatsappTemplates.value = false
+function onTemplateSent() {
   capture('send_whatsapp_template', { doctype: props.doctype })
-  createResource({
-    url: 'crm.api.whatsapp.send_whatsapp_template',
-    params: {
-      reference_doctype: props.doctype,
-      reference_name: props.docname,
-      to: doc.value.mobile_no,
-      template,
-    },
-    auto: true,
-    onError: (error) => {
-      toast.error(error.messages?.[0] || __('Failed to send WhatsApp template'))
-    },
-    onSuccess: () => whatsappMessages.reload(),
-  })
+  messages.reload()
 }
 
-const replyMessage = ref({})
+function onWhatsAppSent(payload) {
+  capture(payload.attach ? 'whatsapp_upload_file' : 'whatsapp_send_message')
+  scroll()
+}
 
 function get_activities() {
   if (!all_activities.data?.versions) return []
@@ -750,7 +797,9 @@ const emptyText = computed(() => {
   } else if (title.value == 'Attachments') {
     text = __('No Attachments Found')
   } else if (title.value == 'WhatsApp') {
-    text = __('No WhatsApp Messages Found')
+    text = hasMobileNumber.value
+      ? __('No WhatsApp Messages Found')
+      : __('No Mobile Number')
   }
   return text
 })
@@ -784,7 +833,9 @@ const emptyTextDescription = computed(() => {
       'No files have been attached yet. Upload files to see them here.',
     )
   } else if (title.value == 'WhatsApp') {
-    description = __('Start a conversation now!')
+    description = hasMobileNumber.value
+      ? __('Start a conversation now!')
+      : __('Add a mobile number to start a WhatsApp conversation.')
   }
   return description
 })
@@ -840,7 +891,6 @@ function timelineIcon(activity_type, is_lead) {
 }
 
 const emailBox = ref(null)
-const whatsappBox = ref(null)
 
 watch([reload, reload_email], ([reload_value, reload_email_value]) => {
   if (reload_value || reload_email_value) {

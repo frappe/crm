@@ -1,79 +1,131 @@
-import json
-
 import frappe
 from frappe import _
 from frappe.permissions import add_permission, update_permission_property
+from frappe.query_builder.functions import Count
+from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
-from crm.integrations.api import get_contact_lead_or_deal_from_number
+from crm.integrations.api import find_by_phone, get_contact_lead_or_deal_from_number
+from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
+CONFIRM_PARAM = "confirm_whatsapp_recipient_change"
 
 
-def validate_access(reference_doctype=None, reference_name=None, permtype="read"):
+class WhatsAppRecipientChangeError(frappe.ValidationError):
+	pass
+
+
+def validate_access() -> None:
+	"""Registered as the WhatsApp app's `whatsapp_access_guard` hook, which calls it before
+	every client-facing endpoint. The app permission-checks the reference document itself;
+	this is CRM's orthogonal role policy on top."""
 	if not any(role in ALLOWED_WHATSAPP_ROLES for role in frappe.get_roles()):
 		frappe.throw(_("Only sales users can access WhatsApp features."), frappe.PermissionError)
 
-	if reference_doctype and reference_name:
-		if not frappe.db.exists(reference_doctype, reference_name):
-			frappe.throw(
-				_("Reference document {0} {1} does not exist.").format(reference_doctype, reference_name),
-				frappe.DoesNotExistError,
-			)
-		reference_doc = frappe.get_doc(reference_doctype, reference_name)
-		if not reference_doc.has_permission(permtype):
-			frappe.throw(
-				_("Not permitted to access reference document {0} {1}.").format(
-					reference_doctype, reference_name
-				),
-				frappe.PermissionError,
-			)
-		return reference_doc
-
-	return None
-
 
 def validate(doc, method):
-	phone_number = doc.get("from") if doc.type == "Incoming" else doc.get("to")
-	if phone_number:
-		try:
-			name, doctype = get_contact_lead_or_deal_from_number(phone_number)
-			if doctype and name is not None:
-				doc.reference_doctype = doctype
-				doc.reference_name = name
-		except Exception:
-			frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
+	# preserve the user's chosen reference for outgoing messages
+	if doc.direction == "Outgoing" and doc.reference_doctype and doc.reference_docname:
+		pass
+	else:
+		phone_number = _get_phone_number_from_profile(doc)
+		if phone_number:
+			try:
+				name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+				if doctype and name is not None:
+					doc.reference_doctype = doctype
+					doc.reference_docname = name
+			except Exception:
+				frappe.log_error(
+					frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number"
+				)
+
+	_link_profile_to_crm_entities(doc)
 
 
-def on_update(doc, method):
-	frappe.publish_realtime(
-		"whatsapp_message",
-		{
-			"reference_doctype": doc.reference_doctype,
-			"reference_name": doc.reference_name,
-		},
-	)
+def _get_phone_number_from_profile(doc) -> str | None:
+	"""Get phone number from the WhatsApp Profile linked via doc.to (Link field)."""
+	profile_name = doc.get("to")
+	if not profile_name:
+		return None
 
-	notify_agent(doc)
+	try:
+		if not frappe.db.exists("WA Profile", profile_name):
+			return None
+		return frappe.db.get_value("WA Profile", profile_name, "phone_number")
+	except Exception:
+		return None
 
 
-def notify_agent(doc):
-	if doc.type == "Incoming":
-		if not doc.reference_doctype or not doc.reference_name:
+def _link_profile_to_crm_entities(doc) -> None:
+	"""Link WhatsApp Profile to ALL matching CRM entities (Deal, Lead, Contact).
+
+	Uses Dynamic Link table (WA Profile.links) to link to matching CRM entities.
+	Idempotent: skips if already linked.
+	"""
+	profile_name = doc.get("to")
+	if not profile_name:
+		return
+
+	try:
+		if not frappe.db.exists("WA Profile", profile_name):
+			return
+
+		phone_number = frappe.db.get_value("WA Profile", profile_name, "phone_number")
+		if not phone_number:
+			return
+
+		matches = find_by_phone(phone_number)
+		if not matches:
+			return
+
+		profile = frappe.get_doc("WA Profile", profile_name)
+
+		existing_links = {(link.link_doctype, link.link_name) for link in (profile.links or [])}
+
+		needs_save = False
+		for match in matches:
+			doctype = match["doctype"]
+			docname = match["docname"]
+			key = (doctype, docname)
+
+			if key not in existing_links:
+				profile.append(
+					"links",
+					{
+						"link_doctype": doctype,
+						"link_name": docname,
+						"link_title": docname,
+					},
+				)
+				needs_save = True
+
+		if needs_save:
+			profile.flags.ignore_permissions = True
+			profile.save(ignore_permissions=True)
+
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to link profile to CRM entities")
+
+
+def notify_agent(doc, method=None):
+	if doc.direction == "Incoming":
+		if not doc.reference_doctype or not doc.reference_docname:
 			return
 		doctype = doc.reference_doctype
 		if doctype and doctype.startswith("CRM "):
 			doctype = doctype[4:].lower()
-		safe_reference_name = frappe.utils.escape_html(doc.reference_name)
+		safe_reference_docname = frappe.utils.escape_html(doc.reference_docname)
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">{_("You")}</span>
                 <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
-                <span class="font-medium text-ink-gray-9">{safe_reference_name}</span>
+                <span class="font-medium text-ink-gray-9">{safe_reference_docname}</span>
             </div>
         """
-		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
+		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_docname)
 		for user in assigned_users:
 			notify_user(
 				{
@@ -82,297 +134,142 @@ def notify_agent(doc):
 					"notification_type": "WhatsApp",
 					"message": doc.message,
 					"notification_text": notification_text,
-					"reference_doctype": "WhatsApp Message",
+					"reference_doctype": "WA Message",
 					"reference_docname": doc.name,
 					"redirect_to_doctype": doc.reference_doctype,
-					"redirect_to_docname": doc.reference_name,
+					"redirect_to_docname": doc.reference_docname,
 				}
 			)
 
 
+def guard_doc_recipient_change(doc) -> None:
+	"""`guard_recipient_change` for a Lead or Deal being saved."""
+	before = doc.get_doc_before_save()
+	if doc.is_new() or not before:
+		return
+	guard_recipient_change(doc.doctype, doc.name, before.mobile_no, doc.mobile_no)
+
+
+def guard_recipient_change(
+	doctype: str, docname: str, old_number: str | None, new_number: str | None
+) -> None:
+	"""Refuse to move a Lead or Deal off a number it has a WhatsApp conversation with,
+	unless the request carries the user's confirmation. Replies from the old number stop
+	showing on the record after the change, so the user has to know before it happens."""
+	if not old_number or normalize_phone(old_number) == normalize_phone(new_number):
+		return
+	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended():
+		return
+
+	count = count_conversation(doctype, docname, old_number)
+	if not count:
+		return
+
+	record = _("deal") if doctype == "CRM Deal" else _("lead")
+	if new_number:
+		outcome = _("New messages will go to {0}.").format(new_number)
+	else:
+		outcome = _("You won't be able to message them from this {0}.").format(record)
+
+	frappe.throw(
+		_(
+			"This {0} has {1} WhatsApp message(s) with {2}. After this change, their replies won't show here. {3}"
+		).format(record, count, old_number, outcome),
+		WhatsAppRecipientChangeError,
+		title=_("Change WhatsApp recipient?"),
+	)
+
+
+def count_conversation(doctype: str, docname: str, phone_number: str) -> int:
+	"""Messages the WhatsApp tab of this record shows for the given number: a Deal also
+	shows the messages of the Lead it was converted from."""
+	target = normalize_phone(phone_number)
+	if not target:
+		return 0
+
+	references = [(doctype, docname)]
+	if doctype == "CRM Deal" and (lead := frappe.db.get_value("CRM Deal", docname, "lead")):
+		references.append(("CRM Lead", lead))
+
+	Message = frappe.qb.DocType("WA Message")
+	Profile = frappe.qb.DocType("WA Profile")
+	rows = (
+		frappe.qb.from_(Message)
+		.join(Profile)
+		.on(Message.to == Profile.name)
+		.select(Profile.phone_number, Count("*"))
+		.where(
+			Criterion.any(
+				(Message.reference_doctype == ref_doctype) & (Message.reference_docname == ref_docname)
+				for ref_doctype, ref_docname in references
+			)
+		)
+		.groupby(Profile.phone_number)
+	).run()
+
+	return sum(count for phone, count in rows if normalize_phone(phone) == target)
+
+
+def _is_unattended() -> bool:
+	"""No one is there to confirm: data import, patches, install and migrate."""
+	flags = frappe.flags
+	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
+
+
 @frappe.whitelist()
 def is_whatsapp_enabled():
-	if not frappe.db.exists("DocType", "WhatsApp Settings"):
+	if not frappe.db.exists("DocType", "WA Settings"):
 		return False
-	default_outgoing = frappe.get_cached_value(
-		"WhatsApp Settings", "WhatsApp Settings", "default_outgoing_account"
-	)
-	if not default_outgoing:
+	default_account = frappe.get_cached_value("WA Settings", "WA Settings", "default_account")
+	if not default_account:
 		return False
-	status = frappe.get_cached_value("WhatsApp Account", default_outgoing, "status")
+	status = frappe.get_cached_value("WA Account", default_account, "status")
 	return status == "Active"
+
+
+# Link fields pointing at WA Account. Frappe refuses to delete a document that
+# any of these still reference, so these counts are what makes a delete impossible.
+ACCOUNT_LINK_FIELDS = {
+	"WA Message": "whatsapp_account",
+	"WA Profile": "whatsapp_account",
+	"WA Template": "whatsapp_account",
+	"WA Log": "account",
+}
+
+
+@frappe.whitelist()
+def get_account_usage(account: str) -> dict[str, int]:
+	"""Count what an account is still referenced by, so the UI can explain a refused
+	delete up front instead of surfacing Frappe's link-exists error."""
+	validate_access()
+
+	usage = {}
+	for doctype, fieldname in ACCOUNT_LINK_FIELDS.items():
+		if not frappe.db.exists("DocType", doctype):
+			continue
+		usage[doctype] = frappe.db.count(doctype, {fieldname: account})
+
+	return usage
 
 
 @frappe.whitelist()
 def is_whatsapp_installed():
-	if not frappe.db.exists("DocType", "WhatsApp Settings"):
+	if not frappe.db.exists("DocType", "WA Settings"):
 		return False
 	return True
 
 
-@frappe.whitelist()
-def get_whatsapp_messages(reference_doctype: str, reference_name: str):
-	reference_doc = validate_access(reference_doctype, reference_name)
-	# twilio integration app is not compatible with crm app
-	# crm has its own twilio integration in built
-	if "twilio_integration" in frappe.get_installed_apps():
-		return []
-	if not frappe.db.exists("DocType", "WhatsApp Message"):
-		return []
-	messages = []
-
-	if reference_doctype == "CRM Deal":
-		lead = reference_doc.get("lead")
-		if lead:
-			validate_access("CRM Lead", lead)
-			messages = frappe.get_all(
-				"WhatsApp Message",
-				filters={
-					"reference_doctype": "CRM Lead",
-					"reference_name": lead,
-				},
-				fields=[
-					"name",
-					"type",
-					"to",
-					"from",
-					"content_type",
-					"message_type",
-					"attach",
-					"template",
-					"use_template",
-					"message_id",
-					"is_reply",
-					"reply_to_message_id",
-					"creation",
-					"message",
-					"status",
-					"reference_doctype",
-					"reference_name",
-					"template_parameters",
-					"template_header_parameters",
-				],
-			)
-
-	messages += frappe.get_all(
-		"WhatsApp Message",
-		filters={
-			"reference_doctype": reference_doctype,
-			"reference_name": reference_name,
-		},
-		fields=[
-			"name",
-			"type",
-			"to",
-			"from",
-			"content_type",
-			"message_type",
-			"attach",
-			"template",
-			"use_template",
-			"message_id",
-			"is_reply",
-			"reply_to_message_id",
-			"creation",
-			"message",
-			"status",
-			"reference_doctype",
-			"reference_name",
-			"template_parameters",
-			"template_header_parameters",
-		],
-	)
-
-	# Filter messages to get only Template messages
-	template_messages = [message for message in messages if message["message_type"] == "Template"]
-
-	# Iterate through template messages
-	for template_message in template_messages:
-		# Find the template that this message is using
-		if not frappe.db.exists("WhatsApp Templates", template_message["template"]):
-			continue
-		template = frappe.get_doc("WhatsApp Templates", template_message["template"])
-
-		if template:
-			template_message["template_name"] = template.template_name
-			if template_message["template_parameters"]:
-				parameters = json.loads(template_message["template_parameters"])
-				template.template = parse_template_parameters(template.template, parameters)
-
-			template_message["template"] = template.template
-			if template_message["template_header_parameters"]:
-				header_parameters = json.loads(template_message["template_header_parameters"])
-				template.header = parse_template_parameters(template.header, header_parameters)
-			template_message["header"] = template.header
-			template_message["footer"] = template.footer
-
-	# Filter messages to get only reaction messages
-	reaction_messages = [message for message in messages if message["content_type"] == "reaction"]
-	reaction_messages.reverse()
-
-	# Iterate through reaction messages
-	for reaction_message in reaction_messages:
-		# Find the message that this reaction is reacting to
-		reacted_message = next(
-			(m for m in messages if m["message_id"] == reaction_message["reply_to_message_id"]),
-			None,
-		)
-
-		# If the reacted message is found, add the reaction to it
-		if reacted_message:
-			reacted_message["reaction"] = reaction_message["message"]
-
-	for message in messages:
-		from_name = get_from_name(message) if message["from"] else _("You")
-		message["from_name"] = from_name
-	# Filter messages to get only replies
-	reply_messages = [message for message in messages if message["is_reply"]]
-
-	# Iterate through reply messages
-	for reply_message in reply_messages:
-		# Find the message that this message is replying to
-		replied_message = next(
-			(m for m in messages if m["message_id"] == reply_message["reply_to_message_id"]),
-			None,
-		)
-
-		# If the replied message is found, add the reply details to the reply message
-		if replied_message:
-			from_name = get_from_name(reply_message) if replied_message["from"] else _("You")
-			message = replied_message["message"]
-			if replied_message["message_type"] == "Template":
-				message = replied_message["template"]
-			reply_message["reply_message"] = message
-			reply_message["header"] = replied_message.get("header") or ""
-			reply_message["footer"] = replied_message.get("footer") or ""
-			reply_message["reply_to"] = replied_message["name"]
-			reply_message["reply_to_type"] = replied_message["type"]
-			reply_message["reply_to_from"] = from_name
-
-	return [message for message in messages if message["content_type"] != "reaction"]
-
-
-@frappe.whitelist()
-def create_whatsapp_message(
-	reference_doctype: str,
-	reference_name: str,
-	message: str,
-	to: str,
-	attach: str,
-	reply_to: str,
-	content_type: str = "text",
-):
-	validate_access(reference_doctype, reference_name)
-	doc = frappe.new_doc("WhatsApp Message")
-
-	if reply_to:
-		if not frappe.db.exists("WhatsApp Message", reply_to):
-			frappe.throw(_("Referenced WhatsApp message does not exist."), frappe.DoesNotExistError)
-		reply_doc = frappe.get_doc("WhatsApp Message", reply_to)
-		if not reply_doc.has_permission("read"):
-			frappe.throw(
-				_("Not permitted to access the referenced WhatsApp message."), frappe.PermissionError
-			)
-		validate_access(reply_doc.reference_doctype, reply_doc.reference_name)
-		doc.update(
-			{
-				"is_reply": True,
-				"reply_to_message_id": reply_doc.message_id,
-			}
-		)
-
-	doc.update(
-		{
-			"reference_doctype": reference_doctype,
-			"reference_name": reference_name,
-			"message": message or attach,
-			"to": to,
-			"attach": attach,
-			"content_type": content_type,
-		}
-	)
-	doc.insert(ignore_permissions=True)
-	return doc.name
-
-
-@frappe.whitelist()
-def send_whatsapp_template(reference_doctype: str, reference_name: str, template: str, to: str):
-	validate_access(reference_doctype, reference_name)
-	doc = frappe.new_doc("WhatsApp Message")
-	doc.update(
-		{
-			"reference_doctype": reference_doctype,
-			"reference_name": reference_name,
-			"message_type": "Template",
-			"message": "Template message",
-			"content_type": "text",
-			"use_template": True,
-			"template": template,
-			"to": to,
-		}
-	)
-	doc.insert(ignore_permissions=True)
-	return doc.name
-
-
-@frappe.whitelist()
-def react_on_whatsapp_message(emoji: str, reply_to_name: str):
-	validate_access()
-	if not frappe.db.exists("WhatsApp Message", reply_to_name):
-		frappe.throw(_("Referenced WhatsApp message does not exist."), frappe.DoesNotExistError)
-	reply_to_doc = frappe.get_doc("WhatsApp Message", reply_to_name)
-
-	if not reply_to_doc.has_permission("read"):
-		frappe.throw(_("Not permitted to access the referenced WhatsApp message."), frappe.PermissionError)
-
-	validate_access(reply_to_doc.reference_doctype, reply_to_doc.reference_name)
-
-	to = (reply_to_doc.type == "Incoming" and reply_to_doc.get("from")) or reply_to_doc.to
-	doc = frappe.new_doc("WhatsApp Message")
-	doc.update(
-		{
-			"reference_doctype": reply_to_doc.reference_doctype,
-			"reference_name": reply_to_doc.reference_name,
-			"message": emoji,
-			"to": to,
-			"reply_to_message_id": reply_to_doc.message_id,
-			"content_type": "reaction",
-		}
-	)
-	doc.insert(ignore_permissions=True)
-	return doc.name
-
-
-def parse_template_parameters(string, parameters):
-	for i, parameter in enumerate(parameters, start=1):
-		placeholder = "{{" + str(i) + "}}"
-		string = string.replace(placeholder, str(parameter))
-
-	return string
-
-
-def get_from_name(message):
-	doc = frappe.get_doc(message["reference_doctype"], message["reference_name"])
-	from_name = ""
-	if message["reference_doctype"] == "CRM Deal":
-		if doc.get("contacts"):
-			for c in doc.get("contacts"):
-				if c.is_primary:
-					from_name = c.full_name or c.mobile_no
-					break
-		else:
-			from_name = doc.get("lead_name")
-	else:
-		from_name = " ".join(name for name in [doc.get("first_name"), doc.get("last_name")] if name)
-	return from_name
-
-
 def add_roles():
-	if "frappe_whatsapp" not in frappe.get_installed_apps():
+	if "whatsapp" not in frappe.get_installed_apps():
 		return
 
 	role_list = ["Sales Manager", "Sales User"]
-	doctypes = ["WhatsApp Message", "WhatsApp Templates", "WhatsApp Settings"]
+	doctypes = [
+		"WA Message",
+		"WA Template",
+		"WA Settings",
+		"WA Profile",
+	]
 	for doctype in doctypes:
 		for role in role_list:
 			if frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role}):

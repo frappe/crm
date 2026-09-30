@@ -9,7 +9,7 @@ from frappe.query_builder import Order
 from pypika.functions import Replace
 from werkzeug.wrappers import Response
 
-from crm.utils import are_same_phone_number, parse_phone_number
+from crm.utils import normalize_phone, phone_search_digits
 
 
 def _get_recording_credentials(telephony_medium: str) -> tuple | None:
@@ -139,30 +139,130 @@ def add_task_to_call_log(call_sid: str, task: dict):
 
 @frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number: str):
-	"""Get contact, lead or deal from the given number."""
-	contact = get_contact_by_phone_number(number)
-	if contact.get("name"):
-		doctype = "Contact"
-		docname = contact.get("name")
-		if contact.get("lead"):
-			doctype = "CRM Lead"
-			docname = contact.get("lead")
-		elif contact.get("deal"):
-			doctype = "CRM Deal"
-			docname = contact.get("deal")
-		return docname, doctype
-	return None, None
+	"""Name and doctype of the best match for a number, or (None, None)."""
+	match = _first_match(number)
+	if not match:
+		return None, None
+	return match["docname"], match["doctype"]
 
 
 @frappe.whitelist()
 def get_contact_by_phone_number(phone_number: str):
-	"""Get contact by phone number."""
-	number = parse_phone_number(phone_number)
+	"""Contact-shaped dict for the best match for a number, carrying `lead` or `deal`
+	when the match is one, so telephony callers can pick the record to link."""
+	match = _first_match(phone_number)
+	if not match:
+		return {"mobile_no": phone_number}
 
-	if number.get("is_valid"):
-		return get_contact(number.get("national_number"), number.get("country"))
-	else:
-		return get_contact(phone_number, number.get("country"), exact_match=True)
+	result = {
+		"name": match["contact"] or match["docname"],
+		"full_name": match["title"],
+		"image": match["image"],
+		"mobile_no": match["matching_phone"],
+	}
+	if match["doctype"] == "CRM Lead":
+		result["lead"] = match["docname"]
+	elif match["doctype"] == "CRM Deal":
+		result["deal"] = match["docname"]
+	return result
+
+
+def _first_match(phone_number: str) -> dict | None:
+	matches = find_by_phone(phone_number)
+	return matches[0] if matches else None
+
+
+def find_by_phone(phone_number: str) -> list[dict]:
+	"""Every Deal, open Lead and Contact whose phone is the given number in any format:
+	deals first, then leads, then contacts, most recently modified first within each.
+
+	Each match carries doctype, docname, title, image and matching_phone. A deal is
+	found through its primary contact, and the match names that contact too.
+
+	Not permission-filtered: a caller exposing this over HTTP must check access itself.
+	"""
+	target = normalize_phone(phone_number)
+	digits = phone_search_digits(phone_number)
+	if not target or not digits:
+		return []
+
+	deals, leads, contacts = [], [], []
+	seen = set()
+
+	def add(bucket: list, doctype: str, docname: str, **fields):
+		if (doctype, docname) in seen:
+			return
+		seen.add((doctype, docname))
+		bucket.append({"doctype": doctype, "docname": docname, "contact": None, "image": None, **fields})
+
+	for contact in _contacts_with_digits(digits):
+		if normalize_phone(contact.matched_phone) != target:
+			continue
+		fields = dict(title=contact.full_name, image=contact.image, matching_phone=contact.matched_phone)
+		deal = frappe.db.get_value("CRM Contacts", {"contact": contact.name, "is_primary": 1}, "parent")
+		if deal:
+			add(deals, "CRM Deal", deal, contact=contact.name, **fields)
+		add(contacts, "Contact", contact.name, **fields)
+
+	for lead in _leads_with_digits(digits):
+		matching_phone = next(
+			(number for number in (lead.mobile_no, lead.phone) if normalize_phone(number) == target),
+			None,
+		)
+		if matching_phone:
+			add(
+				leads,
+				"CRM Lead",
+				lead.name,
+				title=lead.lead_name,
+				image=lead.image,
+				matching_phone=matching_phone,
+			)
+
+	return deals + leads + contacts
+
+
+def _digits_only(column):
+	return Replace(Replace(Replace(Replace(Replace(column, " ", ""), "-", ""), "(", ""), ")", ""), "+", "")
+
+
+def _contacts_with_digits(digits: str) -> list:
+	"""Contacts whose primary mobile or any listed phone contains the digits. A contact's
+	extra numbers live in the Contact Phone rows, so a secondary number still resolves."""
+	Contact = frappe.qb.DocType("Contact")
+	ContactPhone = frappe.qb.DocType("Contact Phone")
+	pattern = f"%{digits}%"
+
+	by_row = (
+		frappe.qb.from_(ContactPhone)
+		.join(Contact)
+		.on(ContactPhone.parent == Contact.name)
+		.select(Contact.name, Contact.full_name, Contact.image, ContactPhone.phone.as_("matched_phone"))
+		.where(ContactPhone.parenttype == "Contact")
+		.where(_digits_only(ContactPhone.phone).like(pattern))
+		.orderby(Contact.modified, order=Order.desc)
+	).run(as_dict=True)
+
+	by_mobile = (
+		frappe.qb.from_(Contact)
+		.select(Contact.name, Contact.full_name, Contact.image, Contact.mobile_no.as_("matched_phone"))
+		.where(_digits_only(Contact.mobile_no).like(pattern))
+		.orderby(Contact.modified, order=Order.desc)
+	).run(as_dict=True)
+
+	return by_row + by_mobile
+
+
+def _leads_with_digits(digits: str) -> list:
+	Lead = frappe.qb.DocType("CRM Lead")
+	pattern = f"%{digits}%"
+	return (
+		frappe.qb.from_(Lead)
+		.select(Lead.name, Lead.lead_name, Lead.image, Lead.mobile_no, Lead.phone)
+		.where(Lead.converted == 0)
+		.where(_digits_only(Lead.mobile_no).like(pattern) | _digits_only(Lead.phone).like(pattern))
+		.orderby(Lead.modified, order=Order.desc)
+	).run(as_dict=True)
 
 
 def _resolve_validated_ip(hostname: str, port: int) -> str:
@@ -297,85 +397,3 @@ def get_recording_url(call_log_name: str):
 		if upstream.headers.get(header):
 			response.headers[header] = upstream.headers[header]
 	return response
-
-
-def get_contact(phone_number: str, country: str = "IN", exact_match: bool = False):
-	if not phone_number:
-		return {"mobile_no": phone_number}
-
-	cleaned_number = (
-		phone_number.strip()
-		.replace(" ", "")
-		.replace("-", "")
-		.replace("(", "")
-		.replace(")", "")
-		.replace("+", "")
-	)
-
-	# Check if the number is associated with a contact.
-	# Search all of a contact's numbers (phone_nos child table) and not just the
-	# primary mobile_no, so calls from a secondary number still resolve.
-	Contact = frappe.qb.DocType("Contact")
-	ContactPhone = frappe.qb.DocType("Contact Phone")
-	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(ContactPhone.phone, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
-	)
-
-	query = (
-		frappe.qb.from_(ContactPhone)
-		.join(Contact)
-		.on(ContactPhone.parent == Contact.name)
-		.select(
-			Contact.name,
-			Contact.full_name,
-			Contact.image,
-			Contact.mobile_no,
-			ContactPhone.phone.as_("matched_phone"),
-		)
-		.where(ContactPhone.parenttype == "Contact")
-		.where(normalized_phone.like(f"%{cleaned_number}%"))
-		.orderby(Contact.modified, order=Order.desc)
-	)
-	contacts = query.run(as_dict=True)
-
-	if len(contacts):
-		# Check if the contact is associated with a deal
-		for contact in contacts:
-			if frappe.db.exists("CRM Contacts", {"contact": contact.name, "is_primary": 1}):
-				deal = frappe.db.get_value(
-					"CRM Contacts", {"contact": contact.name, "is_primary": 1}, "parent"
-				)
-				if are_same_phone_number(
-					contact.matched_phone, phone_number, country, validate=not exact_match
-				):
-					contact["deal"] = deal
-					return contact
-
-	# Else, Check if the number is associated with a lead
-	Lead = frappe.qb.DocType("CRM Lead")
-	normalized_phone = Replace(
-		Replace(Replace(Replace(Replace(Lead.mobile_no, " ", ""), "-", ""), "(", ""), ")", ""), "+", ""
-	)
-
-	query = (
-		frappe.qb.from_(Lead)
-		.select(Lead.name, Lead.lead_name, Lead.image, Lead.mobile_no)
-		.where(Lead.converted == 0)
-		.where(normalized_phone.like(f"%{cleaned_number}%"))
-		.orderby("modified", order=Order.desc)
-	)
-	leads = query.run(as_dict=True)
-
-	if len(leads):
-		for lead in leads:
-			if are_same_phone_number(lead.mobile_no, phone_number, country, validate=not exact_match):
-				lead["lead"] = lead.name
-				lead["full_name"] = lead.lead_name
-				return lead
-
-	if len(contacts) and are_same_phone_number(
-		contacts[0].matched_phone, phone_number, country, validate=not exact_match
-	):
-		return contacts[0]
-
-	return {"mobile_no": phone_number}
