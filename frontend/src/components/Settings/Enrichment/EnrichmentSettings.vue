@@ -25,12 +25,14 @@
       />
     </template>
     <template #content>
+      <!-- frappe-ui's tab list has px-5 and no prop to change it; pl-0 removes
+           only its left padding so "General" starts at the title's edge. -->
       <Tabs
         v-if="settings.doc"
         v-model="tabIndex"
         as="div"
         :tabs="tabOptions"
-        class="h-full"
+        class="h-full [&_[role='tablist']]:pl-0"
       >
         <template #tab-panel="{ tab }">
           <GeneralTab
