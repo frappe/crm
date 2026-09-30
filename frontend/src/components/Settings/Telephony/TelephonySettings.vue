@@ -11,7 +11,7 @@
             v-if="isDirty"
             :label="__('Not Saved')"
             variant="subtle"
-            theme="orange"
+            theme="amber"
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">

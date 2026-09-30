@@ -14,7 +14,7 @@
         <Badge
           v-if="dirty"
           variant="subtle"
-          theme="orange"
+          theme="amber"
           size="sm"
           :label="__('Not Saved')"
         />

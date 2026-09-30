@@ -17,7 +17,7 @@
             </h2>
             <Badge
               :label="doc.enabled ? __('Enabled') : __('Draft')"
-              :theme="doc.enabled ? 'green' : 'orange'"
+              :theme="doc.enabled ? 'green' : 'amber'"
               variant="subtle"
             />
             <Badge

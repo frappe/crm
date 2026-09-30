@@ -140,7 +140,7 @@
                     <Badge
                       v-if="data.forced"
                       :label="__('Forced')"
-                      theme="orange"
+                      theme="amber"
                       variant="subtle"
                     />
                     <Spinner

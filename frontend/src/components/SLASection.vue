@@ -56,7 +56,7 @@ let slaSection = computed(() => {
       ? 'red'
       : data.value.sla_status == 'Fulfilled'
         ? 'green'
-        : 'orange'
+        : 'amber'
   let respondedOn =
     data.value.last_responded_on || data.value.first_responded_on
   let responseTime =

@@ -9,7 +9,7 @@
           v-if="dirty"
           :label="__('Not Saved')"
           variant="subtle"
-          theme="orange"
+          theme="amber"
         />
       </h3>
     </template>

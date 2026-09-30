@@ -14,7 +14,7 @@
           v-if="isDirty"
           :label="__('Not Saved')"
           variant="subtle"
-          theme="orange"
+          theme="amber"
         />
       </div>
     </template>

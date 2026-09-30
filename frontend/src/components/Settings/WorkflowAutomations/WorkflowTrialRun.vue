@@ -109,7 +109,7 @@ const STATUS_THEMES = {
   Skipped: 'gray',
   Waiting: 'blue',
   Failed: 'red',
-  'Partially Failed': 'orange',
+  'Partially Failed': 'amber',
 }
 
 // A wait is reported instantly by the server; the pause is here so the run reads as a sequence.

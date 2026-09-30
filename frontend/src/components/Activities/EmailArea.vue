@@ -149,7 +149,7 @@ const status = computed(() => {
   if (['Sent', 'Clicked'].includes(_status)) {
     indicator_color = 'green'
   } else if (['Sending', 'Scheduled'].includes(_status)) {
-    indicator_color = 'orange'
+    indicator_color = 'amber'
   } else if (['Opened', 'Read'].includes(_status)) {
     indicator_color = 'blue'
   } else if (_status == 'Error') {
