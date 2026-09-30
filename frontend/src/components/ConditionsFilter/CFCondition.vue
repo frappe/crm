@@ -295,6 +295,7 @@ function getValueControl() {
     return h(Rating, {
       modelValue: condition[2] || 0,
       class: 'truncate',
+      size: 'md',
       'update:modelValue': (v) => updateValue(v),
     })
   } else {

@@ -285,7 +285,7 @@ function removeUser(user) {
 
 onMounted(() => {
   if (searchRef.value) {
-    searchRef.value.el.focus()
+    searchRef.value.focus()
   }
 })
 </script>

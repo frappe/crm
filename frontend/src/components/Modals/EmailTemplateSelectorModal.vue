@@ -130,5 +130,5 @@ const filteredTemplates = computed(() => {
   )
 })
 
-watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))
+watch(show, (value) => value && nextTick(() => searchInput.value?.focus()))
 </script>

@@ -52,7 +52,7 @@ function handleFocus() {
   editValue.value = formatDuration(props.value, props.longForm) || ''
   errorMessage.value = ''
   nextTick(() => {
-    inputRef.value?.el?.select()
+    inputRef.value?.inputElement?.select()
   })
 }
 
@@ -71,11 +71,11 @@ function handleKeydown(e) {
     e.preventDefault()
     isCommitting.value = true
     commit()
-    inputRef.value?.el?.blur()
+    inputRef.value?.inputElement?.blur()
     isCommitting.value = false
   } else if (e.key === 'Escape') {
     revert()
-    inputRef.value?.el?.blur()
+    inputRef.value?.inputElement?.blur()
   }
 }
 

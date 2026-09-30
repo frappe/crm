@@ -185,7 +185,7 @@ watch(selected, () => (sendError.value = ''))
 
 watch(show, (value) => {
   if (value) {
-    nextTick(() => searchInput.value?.el?.focus())
+    nextTick(() => searchInput.value?.focus())
     return
   }
   selected.value = null

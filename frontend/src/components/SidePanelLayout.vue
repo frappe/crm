@@ -304,6 +304,7 @@
                         <Rating
                           v-else-if="field.fieldtype === 'Rating'"
                           class="pl-[10px]"
+                          size="md"
                           :step="0.5"
                           :modelValue="
                             (doc[field.fieldname] || 0) * ratingMax(field)
@@ -720,7 +721,7 @@ function checkChange(value, df) {
   background-color: var(--surface-gray-1);
 }
 
-:deep(input.checkbox-control) {
+:deep(.checkbox-control [data-slot='control']) {
   margin-left: 9px;
   cursor: pointer;
 }
