@@ -1,61 +1,62 @@
 <template>
-  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
-    <div class="flex justify-between px-2">
-      <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-          {{ __('Enrichment Settings') }}
-          <Badge
-            v-if="hasUnsavedChanges"
-            :label="__('Not Saved')"
-            variant="subtle"
-            theme="orange"
+  <SettingsLayoutBase
+    :description="
+      __('Set up enrichment availability and match website data to CRM fields.')
+    "
+  >
+    <template #title>
+      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
+        {{ __('Enrichment Settings') }}
+        <Badge
+          v-if="hasUnsavedChanges"
+          :label="__('Not Saved')"
+          variant="subtle"
+          theme="orange"
+        />
+      </h2>
+    </template>
+    <template #header-actions>
+      <Button
+        :label="__('Save')"
+        variant="solid"
+        :loading="saving"
+        :disabled="!hasUnsavedChanges"
+        @click="save"
+      />
+    </template>
+    <template #content>
+      <Tabs
+        v-if="settings.doc"
+        v-model="tabIndex"
+        as="div"
+        :tabs="tabOptions"
+        class="h-full"
+      >
+        <template #tab-panel="{ tab }">
+          <GeneralTab
+            v-if="tab.value === 'general'"
+            v-model:max-pages="maxPages"
+            :doc="settings.doc"
+            :max-pages-error="maxPagesError"
+            :max-pages-limit="MAX_PAGES_LIMIT"
+            @toggle="toggle"
           />
-        </h2>
-        <p class="text-p-base text-ink-gray-6">
-          {{
-            __(
-              'Set up enrichment availability and match website data to CRM fields.',
-            )
-          }}
-        </p>
+          <RulesTab
+            v-else
+            :enabled="Boolean(settings.doc.enabled)"
+            :social="social"
+            :industry="industry"
+          />
+        </template>
+      </Tabs>
+      <div
+        v-else-if="settings.get.loading"
+        class="flex items-center justify-center mt-[35%]"
+      >
+        <LoadingIndicator class="size-6" />
       </div>
-      <div class="flex items-center space-x-2 w-3/12 justify-end">
-        <Button
-          :label="__('Save')"
-          variant="solid"
-          :loading="saving"
-          :disabled="!hasUnsavedChanges"
-          @click="save"
-        />
-      </div>
-    </div>
-
-    <div
-      v-if="settings.get.loading && !settings.doc"
-      class="flex flex-1 items-center justify-center"
-    >
-      <LoadingIndicator class="size-8" />
-    </div>
-    <Tabs
-      v-else-if="settings.doc"
-      v-model="tabIndex"
-      as="div"
-      :tabs="tabOptions"
-      class="[&_[role='tablist']]:px-2 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
-    >
-      <template #tab-panel="{ tab }">
-        <GeneralTab
-          v-if="tab.value === 'general'"
-          v-model:max-pages="maxPages"
-          :doc="settings.doc"
-          :max-pages-error="maxPagesError"
-          :max-pages-limit="MAX_PAGES_LIMIT"
-          @toggle="toggle"
-        />
-        <RulesTab v-else :social="social" :industry="industry" />
-      </template>
-    </Tabs>
-  </div>
+    </template>
+  </SettingsLayoutBase>
 </template>
 
 <script setup>
@@ -67,6 +68,7 @@ import {
   Tabs,
   toast,
 } from 'frappe-ui'
+import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import GeneralTab from './GeneralTab.vue'
 import RulesTab from './RulesTab.vue'
 import { useIndustryRules } from './useIndustryRules'
@@ -107,13 +109,12 @@ const maxPagesError = ref('')
 
 watch(maxPages, () => (maxPagesError.value = ''))
 
-// Turning enrichment off puts Maximum pages out of reach, so a half-typed value in
-// it is dropped rather than saved by a Save the admin can no longer see it in.
-watch(
-  () => settings.doc?.enabled,
-  (enabled) => {
-    if (!enabled) maxPages.value = undefined
-  },
+// Turning enrichment off hides Maximum pages, but a half-typed value in it is
+// kept in maxPages so it is back when enrichment is turned on again. While
+// hidden it is left out of the dirty check, validation and Save, so a Save
+// can't write -- or refuse over -- a value the admin can no longer see.
+const pendingMaxPages = computed(() =>
+  settings.doc?.enabled ? maxPages.value : undefined,
 )
 
 const saving = ref(false)
@@ -123,8 +124,8 @@ const settingsDirty = computed(() => {
   if (settings.isDirty) return true
 
   return (
-    maxPages.value !== undefined &&
-    Number(maxPages.value) !== settings.doc.max_pages
+    pendingMaxPages.value !== undefined &&
+    Number(pendingMaxPages.value) !== settings.doc.max_pages
   )
 })
 
@@ -149,11 +150,11 @@ function toggle(fieldname, value) {
 // crawler fetching no pages at all. The ceiling mirrors the Settings controller;
 // catching it here turns a server throw into an inline message.
 function validateMaxPages() {
-  if (maxPages.value === undefined) return true
+  if (pendingMaxPages.value === undefined) return true
 
-  const pages = Number(maxPages.value)
+  const pages = Number(pendingMaxPages.value)
   if (
-    maxPages.value === '' ||
+    pendingMaxPages.value === '' ||
     !Number.isInteger(pages) ||
     pages < 1 ||
     pages > MAX_PAGES_LIMIT
@@ -170,8 +171,8 @@ function validateMaxPages() {
 // frappe-ui's save rolls `doc` back to its pre-submit snapshot if the request
 // fails, so a failure leaves the last saved values on screen.
 async function saveSettings() {
-  if (maxPages.value !== undefined) {
-    settings.doc.max_pages = Number(maxPages.value)
+  if (pendingMaxPages.value !== undefined) {
+    settings.doc.max_pages = Number(pendingMaxPages.value)
     maxPages.value = undefined
   }
 
