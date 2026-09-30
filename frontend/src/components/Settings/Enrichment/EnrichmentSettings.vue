@@ -177,7 +177,6 @@ async function saveSettings() {
     settings.doc.max_pages = Number(maxPages.value)
     maxPages.value = undefined
   }
-  if (!settings.isDirty) return true
 
   // The onError keeps frappe-ui's fallback handler from toasting a second time;
   // submit() still rethrows on top of it, which is what the catch is for.
