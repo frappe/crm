@@ -278,6 +278,17 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
 		],
 	},
+	"Quotation": {
+		"after_insert": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+		"on_update": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+		"on_trash": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+	},
 	"Item": {
 		"after_insert": ["crm.integrations.erpnext.item.after_insert"],
 		"on_update": ["crm.integrations.erpnext.item.on_update"],
