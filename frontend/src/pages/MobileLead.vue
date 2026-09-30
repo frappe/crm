@@ -8,7 +8,7 @@
           <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
         </template>
       </Breadcrumbs>
-      <div class="absolute right-0">
+      <div class="shrink-0">
         <Dropdown
           v-if="doc"
           :options="
