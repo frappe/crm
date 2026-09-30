@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-2 my-2 w-[470px] rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
+    class="flex flex-col gap-2 my-2 w-[min(470px,calc(100vw-1rem))] rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
   >
     <div class="text-base text-ink-gray-5">{{ __('Assign To') }}</div>
     <Link
@@ -17,7 +17,7 @@
     >
       <template #target="{ togglePopover }">
         <div
-          class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
+          class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-6 bg-surface-gray-2 cursor-text"
           @click.stop="togglePopover"
         >
           <Tooltip
@@ -76,7 +76,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { Tooltip, Switch, createResource } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, watch } from 'vue'
 
 const props = defineProps({

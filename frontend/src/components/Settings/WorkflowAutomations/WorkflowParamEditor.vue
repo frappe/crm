@@ -5,7 +5,7 @@
         <div
           v-for="(row, index) in rows"
           :key="index"
-          class="space-y-1.5 rounded border border-outline-gray-2 p-2"
+          class="space-y-1.5 rounded-4 border border-outline-gray-2 p-2"
         >
           <div class="flex items-center gap-2">
             <Combobox

@@ -1,7 +1,7 @@
 <template>
   <Dialog v-model:open="show" :size="size" bare>
     <template #default>
-      <div class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6">
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
             <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
@@ -52,6 +52,7 @@
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
+import { spriteIcon } from '@/utils/spriteIcon'
 import { getMeta } from '@/stores/meta'
 import { Dialog, ErrorMessage, createResource } from 'frappe-ui'
 import { ref, reactive, computed, watch } from 'vue'
@@ -233,7 +234,7 @@ const resolvedActions = computed(() => {
       label: action.label || '',
       variant: action.variant,
       theme: action.theme,
-      icon: action.icon,
+      icon: spriteIcon(action.icon),
       loading: actionLoadingMap[idx] || false,
       onClick: async () => {
         if (action.onClick) {

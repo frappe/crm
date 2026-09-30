@@ -99,7 +99,7 @@
       />
     </div>
     <div class="condition-actions w-max">
-      <Dropdown placement="right" :options="dropdownOptions">
+      <Dropdown align="end" :options="dropdownOptions">
         <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
     </div>
@@ -184,7 +184,7 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove'),
-    icon: 'trash-2',
+    icon: 'lucide-trash-2',
     variant: 'red',
     onClick: () => emit('remove'),
     condition: () => !props.isGroup,
@@ -192,7 +192,7 @@ const dropdownOptions = computed(() => {
 
   options.push({
     label: __('Remove Group'),
-    icon: 'trash-2',
+    icon: 'lucide-trash-2',
     variant: 'red',
     onClick: () => emit('remove'),
     condition: () => props.isGroup,
@@ -295,6 +295,7 @@ function getValueControl() {
     return h(Rating, {
       modelValue: condition[2] || 0,
       class: 'truncate',
+      size: 'md',
       'update:modelValue': (v) => updateValue(v),
     })
   } else {
@@ -305,7 +306,9 @@ function getValueControl() {
 function updateValue(value) {
   value = value.target ? value.target.value : value
   if (condition[1] === 'between') {
-    condition[2] = [value.split(',')[0], value.split(',')[1]]
+    condition[2] = Array.isArray(value)
+      ? value
+      : [value.split(',')[0], value.split(',')[1]]
   } else {
     condition[2] = isNaN(value) ? value : Number(value)
   }

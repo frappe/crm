@@ -1,26 +1,25 @@
 <template>
-  <Autocomplete
+  <Combobox
     v-if="options.length"
-    :model-value="null"
+    v-model="picked"
     :options="options"
     :placeholder="__('Search fields')"
     @update:model-value="insert"
   >
-    <template #target="{ togglePopover }">
+    <template #trigger>
       <Button
         variant="ghost"
         size="sm"
         icon-left="lucide-braces"
         :label="__('Insert field')"
-        @click="togglePopover"
       />
     </template>
-  </Autocomplete>
+  </Combobox>
 </template>
 
 <script setup>
-import { Autocomplete, Button } from 'frappe-ui'
-import { computed } from 'vue'
+import { Button, Combobox } from 'frappe-ui'
+import { computed, nextTick, ref } from 'vue'
 
 const props = defineProps({
   fields: { type: Array, default: () => [] },
@@ -43,7 +42,11 @@ const options = computed(() =>
     })),
 )
 
-function insert(option) {
-  if (option?.value) emit('insert', `{{ doc.${option.value} }}`)
+// cleared after each pick, or picking the same field twice in a row would not fire
+const picked = ref(null)
+
+function insert(fieldname) {
+  if (fieldname) emit('insert', `{{ doc.${fieldname} }}`)
+  nextTick(() => (picked.value = null))
 }
 </script>

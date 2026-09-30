@@ -8,7 +8,7 @@ const flowBlocks = [
   {
     value: 'If',
     icon: BranchIcon,
-    tone: 'text-ink-green-7',
+    tone: 'text-ink-green-6',
     label: __('If / Else'),
     description: __('Split the run into two arms on a condition.'),
     values: { step_type: 'If' },
@@ -16,7 +16,7 @@ const flowBlocks = [
   {
     value: 'Wait',
     icon: WaitIcon,
-    tone: 'text-ink-amber-7',
+    tone: 'text-ink-amber-6',
     label: __('Wait'),
     description: __('Pause the run for a fixed amount of time.'),
     // Seeded, not just shown as a placeholder: the editor's fallback is display-only, so a
@@ -26,7 +26,7 @@ const flowBlocks = [
   {
     value: 'WaitForEvent',
     icon: EventIcon,
-    tone: 'text-ink-amber-7',
+    tone: 'text-ink-amber-6',
     label: __('Wait for event'),
     description: __('Pause until an event is raised for this record.'),
     values: {

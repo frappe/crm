@@ -26,7 +26,7 @@
           />
           <Button
             :tooltip="__('Close')"
-            icon="x"
+            icon="lucide-x"
             variant="ghost"
             @click="() => toggle()"
           />
@@ -97,7 +97,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()

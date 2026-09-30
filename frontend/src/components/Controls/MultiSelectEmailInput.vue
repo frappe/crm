@@ -9,17 +9,13 @@
         theme="gray"
         variant="subtle"
         :class="{
-          'rounded bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
+          'rounded-4 bg-surface-white hover:!bg-surface-gray-1 focus-visible:ring-outline-gray-4':
             variant === 'subtle',
         }"
         @keydown.delete.capture.stop="removeLastValue"
       >
         <template #suffix>
-          <FeatherIcon
-            class="h-3.5"
-            name="x"
-            @click.stop="removeValue(value)"
-          />
+          <span class="lucide-x size-3.5" @click.stop="removeValue(value)" />
         </template>
       </Button>
       <div class="flex-1">
@@ -52,7 +48,7 @@
             <template #body="{ isOpen }">
               <div v-show="isOpen">
                 <div
-                  class="mt-1 rounded-lg bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  class="mt-1 rounded-6 bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                   <ComboboxOptions
                     class="p-1.5 max-h-[12rem] overflow-y-auto"
@@ -60,13 +56,9 @@
                   >
                     <div
                       v-if="!options.length"
-                      class="flex gap-2 rounded px-2 py-1 text-base text-ink-gray-5"
+                      class="flex gap-2 rounded-4 px-2 py-1 text-base text-ink-gray-5"
                     >
-                      <FeatherIcon
-                        v-if="fetchContacts"
-                        name="search"
-                        class="h-4"
-                      />
+                      <span v-if="fetchContacts" class="lucide-search size-4" />
                       {{
                         fetchContacts
                           ? __('No results found')
@@ -81,7 +73,7 @@
                     >
                       <li
                         :class="[
-                          'flex cursor-pointer items-center rounded px-2 py-1 text-base',
+                          'flex cursor-pointer items-center rounded-4 px-2 py-1 text-base',
                           { 'bg-surface-gray-3': active },
                         ]"
                       >

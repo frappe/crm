@@ -20,7 +20,7 @@
       >
         <template #target="{ togglePopover }">
           <div
-            class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
+            class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-6 bg-surface-gray-2 cursor-text"
             @click.stop="togglePopover"
           >
             <Tooltip
@@ -94,7 +94,7 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { Tooltip, call } from 'frappe-ui'
 import { ref, onMounted } from 'vue'
 

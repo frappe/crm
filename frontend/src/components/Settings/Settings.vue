@@ -2,14 +2,16 @@
   <Dialog
     v-model:open="showSettings"
     :size="'5xl'"
-    :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    :dismissible="!disableSettingModalOutsideClick"
+    bare
     @close="activeSettingsPage = ''"
   >
-    <template #body>
+    <template #default>
+      <Dialog.Title class="sr-only">{{ __('Settings') }}</Dialog.Title>
       <div class="flex h-[calc(100vh_-_8rem)] bg-surface-gray-1">
         <div
           ref="sidebarContainer"
-          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-6 w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
             <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />

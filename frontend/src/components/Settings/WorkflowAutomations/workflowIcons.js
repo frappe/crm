@@ -17,17 +17,17 @@ import WebhookIcon from '~icons/lucide/webhook'
 
 /** `tone` colours a bare glyph on a node card. */
 export const ICON_TONES = {
-  blue: { tone: 'text-ink-blue-6' },
-  green: { tone: 'text-ink-green-6' },
-  teal: { tone: 'text-ink-teal-6' },
-  amber: { tone: 'text-ink-amber-6' },
-  violet: { tone: 'text-ink-violet-6' },
-  cyan: { tone: 'text-ink-cyan-6' },
-  orange: { tone: 'text-ink-orange-6' },
-  pink: { tone: 'text-ink-pink-6' },
-  red: { tone: 'text-ink-red-6' },
+  blue: { tone: 'text-ink-blue-5' },
+  green: { tone: 'text-ink-green-5' },
+  teal: { tone: 'text-ink-teal-5' },
+  amber: { tone: 'text-ink-amber-5' },
+  violet: { tone: 'text-ink-violet-5' },
+  cyan: { tone: 'text-ink-cyan-5' },
+  orange: { tone: 'text-ink-orange-5' },
+  pink: { tone: 'text-ink-pink-5' },
+  red: { tone: 'text-ink-red-5' },
   gray: { tone: 'text-ink-gray-6' },
-  purple: { tone: 'text-ink-purple-6' },
+  purple: { tone: 'text-ink-purple-5' },
 }
 
 /** One icon and tone per action, so a list of them is scannable rather than eleven zaps. */

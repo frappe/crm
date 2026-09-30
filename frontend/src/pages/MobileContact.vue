@@ -32,14 +32,14 @@
                     ? {
                         options: [
                           {
-                            icon: 'upload',
+                            icon: 'lucide-upload',
                             label: contact.doc.image
                               ? __('Change Image')
                               : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
-                            icon: 'trash-2',
+                            icon: 'lucide-trash-2',
                             label: __('Remove Image'),
                             onClick: () => changeContactImage(''),
                           },
@@ -50,7 +50,7 @@
                 class="!absolute bottom-0 left-0 right-0"
               >
                 <div
-                  class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 opacity-0 duration-300 ease-in-out group-hover:opacity-100"
+                  class="z-1 absolute bottom-0 left-0 right-0 flex h-14 cursor-pointer items-center justify-center rounded-b-full bg-black bg-opacity-40 pt-5 duration-300 ease-in-out [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
                   style="
                     -webkit-clip-path: inset(22px 0 0 0);
                     clip-path: inset(22px 0 0 0);
@@ -99,29 +99,21 @@
       </template>
     </FileUploader>
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
-      <template #tab-item="{ tab, selected }">
-        <button
-          v-if="tab.name == 'Deals'"
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9 !px-4"
-          :class="{ 'text-ink-gray-9': selected }"
+      <template #tab-suffix="{ tab, active }">
+        <Badge
+          v-if="tab.value === 'deals'"
+          :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
+          variant="solid"
+          theme="gray"
+          size="sm"
         >
-          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
-          {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-surface-gray-10"
-            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
-            {{ tab.count }}
-          </Badge>
-        </button>
+          {{ tab.count }}
+        </Badge>
       </template>
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -149,7 +141,7 @@
           class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
-            <component :is="tab.icon" class="!h-10 !w-10" />
+            <component :is="tab.iconLeft" class="!h-10 !w-10" />
             <div>{{ __('No {0} found', [__(tab.label.toLowerCase())]) }}</div>
           </div>
         </div>
@@ -191,7 +183,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, computed, h, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -284,7 +276,7 @@ async function deleteContact() {
         label: __('Delete'),
         theme: 'red',
         variant: 'solid',
-        async onClick(close) {
+        async onClick({ close }) {
           await call('frappe.client.delete', {
             doctype: 'Contact',
             name: props.contactId,
@@ -297,17 +289,19 @@ async function deleteContact() {
   })
 }
 
-const tabIndex = ref(0)
+const activeTab = ref('details')
 const tabs = [
   {
     name: 'Details',
+    value: 'details',
     label: __('Details'),
-    icon: DetailsIcon,
+    iconLeft: DetailsIcon,
   },
   {
     name: 'Deals',
+    value: 'deals',
     label: __('Deals'),
-    icon: h(DealsIcon, { class: 'h-4 w-4' }),
+    iconLeft: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
   },
 ]

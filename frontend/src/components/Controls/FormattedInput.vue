@@ -26,7 +26,7 @@ function handleFocus() {
 
   nextTick(() => {
     if (inputRef.value) {
-      inputRef.value.el?.select()
+      inputRef.value.inputElement?.select()
     }
   })
 }

@@ -9,7 +9,7 @@
           v-if="document.isDirty"
           class="ml-3"
           :label="__('Not Saved')"
-          theme="orange"
+          theme="amber"
         />
       </div>
       <div class="flex gap-1">

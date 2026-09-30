@@ -42,14 +42,14 @@
                         ? {
                             options: [
                               {
-                                icon: 'upload',
+                                icon: 'lucide-upload',
                                 label: organization.doc.organization_logo
                                   ? __('Change Image')
                                   : __('Upload Image'),
                                 onClick: openFileSelector,
                               },
                               {
-                                icon: 'trash-2',
+                                icon: 'lucide-trash-2',
                                 label: __('Remove Image'),
                                 onClick: () => changeOrganizationImage(''),
                               },
@@ -90,7 +90,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  iconLeft="trash-2"
+                  iconLeft="lucide-trash-2"
                   @click="deleteOrganization()"
                 />
                 <Button
@@ -117,28 +117,21 @@
       </div>
     </Resizer>
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tablist']]:gap-7.5 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
-      <template #tab-item="{ tab, selected }">
-        <button
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
-          :class="{ 'text-ink-gray-9': selected }"
+      <template #tab-label="{ tab }">{{ __(tab.label) }}</template>
+      <template #tab-suffix="{ tab, active }">
+        <Badge
+          :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
+          variant="solid"
+          theme="gray"
+          size="sm"
         >
-          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
-          {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-surface-gray-10"
-            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
-            {{ tab.count }}
-          </Badge>
-        </button>
+          {{ tab.count }}
+        </Badge>
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
@@ -157,7 +150,7 @@
         />
         <EmptyState
           v-if="!rows.length"
-          :icon="tab.icon"
+          :icon="tab.iconLeft"
           :name="__(tab.label)"
         />
       </template>
@@ -217,7 +210,7 @@ import {
   call,
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -369,16 +362,18 @@ function getParsedSections(_sections) {
   })
 }
 
-const tabIndex = ref(0)
+const activeTab = ref('deals')
 const tabs = [
   {
+    value: 'deals',
     label: 'Deals',
-    icon: DealsIcon,
+    iconLeft: DealsIcon,
     count: computed(() => deals.data?.length),
   },
   {
+    value: 'contacts',
     label: 'Contacts',
-    icon: ContactsIcon,
+    iconLeft: ContactsIcon,
     count: computed(() => contacts.data?.length),
   },
 ]
@@ -428,19 +423,21 @@ const contacts = createListResource({
 })
 
 const rows = computed(() => {
-  let list = !tabIndex.value ? deals : contacts
+  let list = activeTab.value === 'deals' ? deals : contacts
 
   if (!list.data) return []
 
   return list.data.map((row) => {
-    return !tabIndex.value ? getDealRowObject(row) : getContactRowObject(row)
+    return activeTab.value === 'deals'
+      ? getDealRowObject(row)
+      : getContactRowObject(row)
   })
 })
 
 const { getFormattedCurrency } = getMeta('CRM Deal')
 
 const columns = computed(() => {
-  return tabIndex.value === 0 ? dealColumns : contactColumns
+  return activeTab.value === 'deals' ? dealColumns : contactColumns
 })
 
 function getDealRowObject(deal) {
@@ -576,9 +573,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField: organization.setValue.submit,
-        createToast: toast.create,
         deleteDoc: deleteOrganization,
         call,
       })

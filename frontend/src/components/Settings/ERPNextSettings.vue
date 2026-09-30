@@ -351,7 +351,7 @@
                   >
                     <span>{{ __(section.label) }}</span>
                     <span
-                      class="rounded bg-surface-gray-2 px-1.5 text-xs text-ink-gray-6"
+                      class="rounded-4 bg-surface-gray-2 px-1.5 text-xs text-ink-gray-6"
                     >
                       {{ section.count }}
                     </span>
@@ -359,13 +359,13 @@
                 </div>
                 <div
                   v-if="activeProductSyncLogTab === 'failed' && unsyncedSummary"
-                  class="rounded bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
+                  class="rounded-4 bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
                 >
                   {{ unsyncedSummary }}
                 </div>
                 <div
                   v-if="!currentProductSyncRows.length"
-                  class="rounded border border-outline-elevation-2 px-3 py-2 text-p-sm text-ink-gray-5"
+                  class="rounded-4 border border-outline-elevation-2 px-3 py-2 text-p-sm text-ink-gray-5"
                 >
                   {{ __(currentProductSyncSection.emptyLabel) }}
                 </div>
@@ -473,7 +473,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
 import { formatDate } from '@/utils'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 
 const { $dialog, $socket } = globalStore()
 const { capture } = useTelemetry()
@@ -666,7 +666,7 @@ const toggleEnable = (value) => {
           label: __('Disable'),
           variant: 'solid',
           theme: 'red',
-          onClick: (close) => {
+          onClick: ({ close }) => {
             updateFields('enabled', false)
             close()
           },

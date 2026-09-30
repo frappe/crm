@@ -13,7 +13,7 @@
         <Badge
           v-if="isDirty"
           variant="subtle"
-          theme="orange"
+          theme="amber"
           size="sm"
           :label="__('Not Saved')"
         />
@@ -116,8 +116,8 @@
                 @update:model-value="toggleDefaultSla"
               />
               <div v-if="isOldSla && step.data && !slaData.default">
-                <Popover trigger="hover" :hoverDelay="0.25" placement="top-end">
-                  <template #target>
+                <HoverCard :hover-delay="250" side="top" align="end">
+                  <template #trigger>
                     <div
                       class="text-sm text-ink-gray-6 flex gap-1 cursor-default"
                     >
@@ -125,20 +125,20 @@
                       <span class="lucide-info size-4" aria-hidden="true" />
                     </div>
                   </template>
-                  <template #body-main>
+                  <template #default>
                     <div
-                      class="text-sm text-ink-gray-6 p-2 bg-white rounded-md max-w-96 text-wrap whitespace-pre-wrap leading-5"
+                      class="text-sm text-ink-gray-6 p-2 bg-white rounded-5 max-w-96 text-wrap whitespace-pre-wrap leading-5"
                     >
                       <code>{{ slaData.condition }}</code>
                     </div>
                   </template>
-                </Popover>
+                </HoverCard>
               </div>
             </div>
             <div class="mt-5">
               <div
                 v-if="!useNewUI"
-                class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-3 rounded-md p-3 py-4"
+                class="flex flex-col gap-3 items-center text-center text-ink-gray-7 text-sm mb-2 border border-outline-gray-3 rounded-5 p-3 py-4"
               >
                 <span class="text-p-sm">
                   Conditions for this SLA were created from
@@ -233,13 +233,6 @@
       </div>
     </template>
   </SettingsLayoutBase>
-  <ConfirmDialog
-    v-model="showConfirmDialog.show"
-    :title="showConfirmDialog.title"
-    :message="showConfirmDialog.message"
-    :onConfirm="showConfirmDialog.onConfirm"
-    :onCancel="() => (showConfirmDialog.show = false)"
-  />
 </template>
 
 <script setup>
@@ -247,14 +240,14 @@ import {
   Badge,
   Button,
   Checkbox,
-  ConfirmDialog,
   createResource,
   DatePicker,
+  dialog,
   ErrorMessage,
   FormControl,
   FormLabel,
+  HoverCard,
   LoadingIndicator,
-  Popover,
   Select,
   Switch,
   toast,
@@ -278,12 +271,6 @@ const isDirty = ref(false)
 const initialData = ref(null)
 const useNewUI = ref(true)
 const isOldSla = ref(false)
-const showConfirmDialog = ref({
-  show: false,
-  title: '',
-  message: '',
-  onConfirm: () => {},
-})
 
 const slaPolicyListResource = inject('slaPolicyListResource')
 const step = inject('step')
@@ -353,22 +340,20 @@ if (step.value.data && step.value.fetchData) {
 }
 
 const goBack = () => {
-  const confirmDialogInfo = {
-    show: true,
-    title: __('Unsaved Changes'),
-    message: __(
-      'Are you sure you want to go back? Unsaved changes will be lost.',
-    ),
-    onConfirm: goBack,
-  }
-  if (isDirty.value && !showConfirmDialog.value.show) {
-    showConfirmDialog.value = confirmDialogInfo
+  if (isDirty.value || !step.value.data) {
+    dialog.confirm({
+      title: __('Unsaved Changes'),
+      message: __(
+        'Are you sure you want to go back? Unsaved changes will be lost.',
+      ),
+      onConfirm: goToList,
+    })
     return
   }
-  if (!step.value.data && !showConfirmDialog.value.show) {
-    showConfirmDialog.value = confirmDialogInfo
-    return
-  }
+  goToList()
+}
+
+const goToList = () => {
   // Workaround fix for settings modal not closing after going back
   setTimeout(() => {
     step.value = {
@@ -377,7 +362,6 @@ const goBack = () => {
       fetchData: true,
     }
   }, 250)
-  showConfirmDialog.value.show = false
 }
 
 const toggleEnabled = () => {
@@ -407,17 +391,13 @@ const saveSla = () => {
 
   if (step.value.data) {
     if (isOldSla.value && useNewUI.value) {
-      showConfirmDialog.value = {
-        show: true,
+      dialog.confirm({
         title: __('Confirm Overwrite'),
         message: __(
           'Your old conditions will be overwritten. Are you sure you want to save?',
         ),
-        onConfirm: () => {
-          updateSla()
-          showConfirmDialog.value.show = false
-        },
-      }
+        onConfirm: () => updateSla(),
+      })
       return
     }
     updateSla()

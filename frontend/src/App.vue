@@ -15,15 +15,15 @@ import NotPermitted from '@/pages/NotPermitted.vue'
 import DoctypeModals from '@/components/Modals/DoctypeModals.vue'
 import { Dialogs } from '@/utils/dialogs'
 import { sessionStore } from '@/stores/session'
-import { FrappeUIProvider, setConfig, useTheme } from 'frappe-ui'
+import { FrappeUIProvider, setConfig, useColorScheme } from 'frappe-ui'
 import { computed, defineAsyncComponent, provide } from 'vue'
 
 const session = sessionStore()
 provide('session', session)
 
-const { setTheme } = useTheme()
+const { setColorScheme } = useColorScheme()
 if (!localStorage.getItem('theme')) {
-  setTheme('light')
+  setColorScheme('light')
 }
 
 const MobileLayout = defineAsyncComponent(

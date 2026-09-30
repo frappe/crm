@@ -36,7 +36,7 @@
     </span>
     <button
       v-if="!disabled"
-      class="flex h-5 w-5 shrink-0 items-center justify-center rounded text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
+      class="flex h-5 w-5 shrink-0 items-center justify-center rounded-4 text-ink-gray-4 hover:bg-surface-gray-2 hover:text-ink-gray-7 dark:hover:bg-surface-gray-4"
       :title="__('Clear')"
       @click.prevent="clearLocation"
     >
@@ -51,7 +51,7 @@
     :size="'4xl'"
   >
     <template #default>
-      <div :id="mapId" class="h-[500px] w-full rounded" />
+      <div :id="mapId" class="h-[500px] w-full rounded-4" />
     </template>
     <template #actions>
       <div class="flex items-center justify-end gap-2">
@@ -128,10 +128,10 @@ const coordinateSummary = computed(() => {
 const sizeClasses = computed(
   () =>
     ({
-      sm: 'h-7 text-base rounded',
-      md: 'h-8 text-base rounded',
-      lg: 'h-10 text-lg rounded-md',
-      xl: 'h-10 text-2xl rounded-md',
+      sm: 'h-7 text-base rounded-4',
+      md: 'h-8 text-base rounded-4',
+      lg: 'h-10 text-lg rounded-5',
+      xl: 'h-10 text-2xl rounded-5',
     })[attrs.size || 'sm'],
 )
 

@@ -11,7 +11,7 @@
   <div class="relative flex h-full bg-surface-gray-1">
     <Sidebar
       v-model:collapsed="isSidebarCollapsed"
-      :disable-collapse="mobile"
+      :collapsible="!mobile"
       :width="mobile ? '260px' : undefined"
       class="border-r border-outline-gray-1"
     >
@@ -25,7 +25,7 @@
           <SidebarItem
             id="notifications-btn"
             :label="__('Notifications')"
-            :to="mobile ? { name: 'Notifications' } : undefined"
+            :route="mobile ? { name: 'Notifications' } : undefined"
             :active="mobile && activeItem === 'Notifications'"
             @click="onNotificationsClick"
           >
@@ -38,14 +38,17 @@
                 />
               </span>
             </template>
-            <template #suffix>
-              <Badge
-                v-if="unreadNotificationsCount"
-                class="mr-2"
-                :label="unreadNotificationsCount"
-                variant="subtle"
-              />
-            </template>
+            <!-- Not in #suffix: that slot sits outside the button, so a click on
+                 the count would not toggle the panel. -->
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Notifications') }}
+            </span>
+            <Badge
+              v-if="unreadNotificationsCount"
+              class="mr-2"
+              :label="unreadNotificationsCount"
+              variant="subtle"
+            />
           </SidebarItem>
 
           <CollapsibleSection
@@ -77,7 +80,7 @@
               <SidebarItem
                 v-for="link in section.views"
                 :key="link.key"
-                :to="link.to"
+                :route="link.to"
                 :label="__(link.label)"
                 :active="activeItem === link.key"
                 @click="selectItem($event, link.key)"
@@ -87,8 +90,8 @@
                 </template>
                 <Tooltip
                   :text="__(link.label)"
-                  placement="right"
-                  :hoverDelay="1.5"
+                  side="right"
+                  :hoverDelay="1500"
                   :disabled="isCollapsed"
                 >
                   <span class="truncate text-sm">{{ __(link.label) }}</span>
@@ -118,7 +121,7 @@
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
             :label="__('Clear Demo Data')"
-            class="!text-ink-red-6 hover:!bg-surface-red-2"
+            class="!text-ink-red-5 hover:!bg-surface-red-2"
             @click="() => clearDemoData()"
           >
             <template #prefix>
@@ -213,17 +216,17 @@ import {
 import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+import { SignupBanner } from '@framework/ui/components/SignupBanner'
+import { TrialBanner } from '@framework/ui/components/TrialBanner'
 import {
-  SignupBanner,
-  TrialBanner,
   HelpModal,
   GettingStartedBanner,
   useOnboarding,
   showHelpModal,
   minimize,
   IntermediateStepModal,
-  useTelemetry,
-} from 'frappe-ui/frappe'
+} from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'

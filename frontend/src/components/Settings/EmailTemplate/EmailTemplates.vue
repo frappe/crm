@@ -87,7 +87,7 @@
       <ul class="overflow-y-auto px-2">
         <template v-for="(template, i) in templatesList" :key="template.name">
           <li
-            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded-4"
             @click="() => emit('updateStep', 'edit-template', { ...template })"
           >
             <div class="flex flex-col w-4/6 pr-5">
@@ -113,9 +113,9 @@
               <Dropdown
                 class=""
                 :options="getDropdownOptions(template)"
-                placement="right"
+                align="end"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   variant: 'ghost',
                   onblur: (e) => {
                     e.stopPropagation()
@@ -223,7 +223,7 @@ function getDropdownOptions(template) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => emit('updateStep', 'new-template', { ...template }),
     },
     ...ConfirmDelete({

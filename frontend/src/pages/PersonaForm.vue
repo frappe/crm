@@ -16,7 +16,7 @@
 <script setup>
 import Questionnaire from '@/components/Questionnaire.vue'
 import { call, usePageMeta } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { PERSONA_DONE_KEY } from '@/router'

@@ -24,7 +24,7 @@
       <li
         v-for="user in filtered"
         :key="user.value"
-        class="flex items-center gap-2 rounded p-1.5 mb-1 px-2 cursor-pointer hover:bg-surface-gray-1"
+        class="flex items-center gap-2 rounded-4 p-1.5 mb-1 px-2 cursor-pointer hover:bg-surface-gray-1"
         :class="{ 'bg-surface-gray-3': isSelected(user) }"
         @click="toggle(user)"
       >
