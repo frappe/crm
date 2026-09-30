@@ -187,7 +187,7 @@ const dropdownOptions = (priority) => [
   {
     label: __('Edit'),
     onClick: () => editItem(priority),
-    icon: 'edit',
+    icon: 'lucide-edit',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteItem(priority),

@@ -22,7 +22,7 @@
       <Button
         :label="__('Start test run')"
         variant="solid"
-        icon-left="play"
+        icon-left="lucide-play"
         :loading="running"
         :disabled="doc.document_type && !docname"
         @click="run()"

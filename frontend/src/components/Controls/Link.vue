@@ -58,7 +58,7 @@
             variant="ghost"
             class="w-full !justify-start"
             :label="__('Create New')"
-            iconLeft="plus"
+            iconLeft="lucide-plus"
             @click="() => attrs.onCreate(v, close)"
           />
         </div>
@@ -67,7 +67,7 @@
             variant="ghost"
             class="w-full !justify-start"
             :label="__('Clear')"
-            iconLeft="x"
+            iconLeft="lucide-x"
             @click="() => clearValue(close)"
           />
         </div>

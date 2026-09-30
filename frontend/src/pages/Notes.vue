@@ -7,7 +7,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createNote"
       />
     </template>
@@ -42,12 +42,12 @@
             :options="[
               {
                 label: __('Edit'),
-                icon: 'edit-2',
+                icon: 'lucide-edit-2',
                 onClick: () => editNote(note.name),
               },
               {
                 label: __('Delete'),
-                icon: 'trash-2',
+                icon: 'lucide-trash-2',
                 onClick: () => deleteNote(note.name),
               },
             ]"

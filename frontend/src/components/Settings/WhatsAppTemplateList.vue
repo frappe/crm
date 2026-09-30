@@ -187,7 +187,7 @@ function rowOptions(template) {
   return [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => emit('edit', template.name),
     },
     ...ConfirmDelete({

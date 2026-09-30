@@ -28,7 +28,7 @@
           <Button
             v-if="doc.status"
             :label="statusLabel(doc.status)"
-            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           >
             <template #prefix>
               <IndicatorIcon :class="getDealStatus(doc.status).color" />
@@ -842,7 +842,7 @@ function contactOptions(contact) {
   let options = [
     {
       label: __('Remove'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeContact(contact.name),
     },
   ]

@@ -138,7 +138,7 @@
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                   @click="setOpen(!open)"
                 />
               </template>

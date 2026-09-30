@@ -28,7 +28,7 @@
           <Button
             v-if="doc.status"
             :label="statusLabel(doc.status)"
-            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           >
             <template #prefix>
               <IndicatorIcon :class="getLeadStatus(doc.status).color" />
@@ -97,14 +97,14 @@
                     ? {
                         options: [
                           {
-                            icon: 'upload',
+                            icon: 'lucide-upload',
                             label: doc.image
                               ? __('Change Image')
                               : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
-                            icon: 'trash-2',
+                            icon: 'lucide-trash-2',
                             label: __('Remove Image'),
                             onClick: () => updateField('image', ''),
                           },

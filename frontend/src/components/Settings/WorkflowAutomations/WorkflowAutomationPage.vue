@@ -325,7 +325,7 @@ function rowOptions(automation) {
   return [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => duplicateAutomation(automation),
     },
     ...ConfirmDelete({

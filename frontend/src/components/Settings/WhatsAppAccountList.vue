@@ -274,7 +274,7 @@ function rowOptions(account) {
   const options = [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => emit('edit', account.name),
     },
   ]
@@ -282,7 +282,7 @@ function rowOptions(account) {
   if (hasMultipleAccounts.value && !isDefault(account)) {
     options.push({
       label: __('Set as default'),
-      icon: 'check-circle',
+      icon: 'lucide-check-circle',
       onClick: () => setDefault(account),
     })
   }

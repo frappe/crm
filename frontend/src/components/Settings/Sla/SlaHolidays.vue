@@ -16,7 +16,7 @@
       <template #trigger="{ open }">
         <Button
           class="text-sm"
-          :icon-right="open ? 'chevron-up' : 'chevron-down'"
+          :icon-right="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           :label="slaData.holiday_list || __('Select Holiday List')"
         />
       </template>
@@ -201,7 +201,7 @@ const dropdownOptions = (workDay) => [
   {
     label: __('Edit'),
     onClick: () => editWorkDay(workDay),
-    icon: 'edit',
+    icon: 'lucide-edit',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteWorkDay(workDay),

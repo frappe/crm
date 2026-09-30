@@ -32,14 +32,14 @@
                     ? {
                         options: [
                           {
-                            icon: 'upload',
+                            icon: 'lucide-upload',
                             label: organization.doc.organization_logo
                               ? __('Change Image')
                               : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
-                            icon: 'trash-2',
+                            icon: 'lucide-trash-2',
                             label: __('Remove Image'),
                             onClick: () => changeOrganizationImage(''),
                           },
@@ -73,7 +73,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  iconLeft="trash-2"
+                  iconLeft="lucide-trash-2"
                   @click="deleteOrganization"
                 />
               </div>

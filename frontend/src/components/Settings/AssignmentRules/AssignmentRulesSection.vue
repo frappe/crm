@@ -24,7 +24,7 @@
       <Dropdown v-slot="{ open }" :options="dropdownOptions">
         <Button
           :disabled="props.errors !== ''"
-          :icon-right="open ? 'chevron-up' : 'chevron-down'"
+          :icon-right="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           :label="__('Add Condition')"
         />
       </Dropdown>

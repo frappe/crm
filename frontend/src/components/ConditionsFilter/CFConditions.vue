@@ -26,7 +26,7 @@
           :disabled="props.disableAddCondition"
           :label="__('Add Condition')"
           icon-left="lucide-plus"
-          :icon-right="open ? 'chevron-up' : 'chevron-down'"
+          :icon-right="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         />
       </Dropdown>
     </div>

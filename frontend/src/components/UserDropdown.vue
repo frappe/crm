@@ -55,6 +55,7 @@ import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
+import { spriteIcon } from '@/utils/spriteIcon'
 import { createResource, Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
@@ -112,7 +113,7 @@ function dropdownItemObj(item) {
   if (typeof icon === 'string' && icon.startsWith('<svg')) {
     icon = markRaw(h('div', { innerHTML: icon }))
   }
-  _item.icon = icon
+  _item.icon = spriteIcon(icon)
 
   if (_item.is_standard) {
     return getStandardItem(_item)

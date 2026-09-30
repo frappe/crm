@@ -87,7 +87,9 @@
             :label="
               confirmDeleteInfo.delete ? __('Delete') : __('Unlink & Delete')
             "
-            :icon-left="confirmDeleteInfo.delete ? 'trash-2' : 'unlock'"
+            :icon-left="
+              confirmDeleteInfo.delete ? 'lucide-trash-2' : 'lucide-unlock'
+            "
             variant="solid"
             theme="red"
             @click="deleteDocs()"

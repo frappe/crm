@@ -5,7 +5,7 @@
     :loading="running"
     :loadingText="__('Enriching')"
     :tooltip="running ? __('Enriching…') : __('Enrich from website')"
-    iconLeft="zap"
+    iconLeft="lucide-zap"
     @click="enrich"
   />
 </template>

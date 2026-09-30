@@ -53,7 +53,7 @@
             :options="[
               {
                 label: __('Delete'),
-                icon: 'trash-2',
+                icon: 'lucide-trash-2',
                 onClick: () => {
                   $dialog({
                     title: __('Delete Task'),

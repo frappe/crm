@@ -190,7 +190,7 @@ const dropdownOptions = (sla) => [
         name: sla.name + ' (Copy)',
       }
     },
-    icon: 'copy',
+    icon: 'lucide-copy',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteSla(sla),

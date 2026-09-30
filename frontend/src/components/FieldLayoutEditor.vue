@@ -225,7 +225,7 @@
                         class="w-full !h-8 !bg-surface-elevation-2"
                         variant="outline"
                         :label="__('Add Field')"
-                        iconLeft="plus"
+                        iconLeft="lucide-plus"
                         @click="setOpen(!open)"
                       />
                     </template>
@@ -257,7 +257,7 @@
           class="w-full h-8"
           variant="subtle"
           :label="__('Add Section')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="
             tabs[tabIndex].sections.push({
               label: '',
@@ -412,12 +412,12 @@ function getTabOptions(tab) {
   return [
     {
       label: __('Edit'),
-      icon: 'edit',
+      icon: 'lucide-edit',
       onClick: () => (tab.editingLabel = true),
     },
     {
       label: __('Remove Tab'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => {
         if (tabs.value.length == 1) {
           tabs.value[0].label = ''
@@ -455,27 +455,29 @@ function getSectionOptions(i, section, tab) {
       options: [
         {
           label: __('Edit'),
-          icon: 'edit',
+          icon: 'lucide-edit',
           onClick: () => (section.editingLabel = true),
         },
         {
           label: section.collapsible ? __('Uncollapsible') : __('Collapsible'),
-          icon: section.collapsible ? 'chevron-up' : 'chevron-down',
+          icon: section.collapsible
+            ? 'lucide-chevron-up'
+            : 'lucide-chevron-down',
           onClick: () => (section.collapsible = !section.collapsible),
         },
         {
           label: section.hideLabel ? __('Show Label') : __('Hide Label'),
-          icon: section.hideLabel ? 'eye' : 'eye-off',
+          icon: section.hideLabel ? 'lucide-eye' : 'lucide-eye-off',
           onClick: () => (section.hideLabel = !section.hideLabel),
         },
         {
           label: section.hideBorder ? __('Show Border') : __('Hide Border'),
-          icon: 'minus',
+          icon: 'lucide-minus',
           onClick: () => (section.hideBorder = !section.hideBorder),
         },
         {
           label: __('Remove Section'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             const hasFields = section.columns.some((c) => c.fields.length)
             const doRemove = () =>
@@ -509,7 +511,7 @@ function getSectionOptions(i, section, tab) {
           label: __('Remove and move columns to {0} section', [
             i == 0 ? __('next') : __('previous'),
           ]),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             let targetSection = tab.sections[i == 0 ? i + 1 : i - 1]
             if (i == 0) {
@@ -527,7 +529,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Move to Previous Tab'),
-          icon: 'corner-up-left',
+          icon: 'lucide-corner-up-left',
           onClick: () => {
             let previousTab = tabs.value[tabIndex.value - 1]
             previousTab.sections.push(section)
@@ -541,7 +543,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Move to Next Tab'),
-          icon: 'corner-up-right',
+          icon: 'lucide-corner-up-right',
           onClick: () => {
             let nextTab = tabs.value[tabIndex.value + 1]
             nextTab.sections.push(section)
@@ -560,7 +562,7 @@ function getSectionOptions(i, section, tab) {
       options: [
         {
           label: __('Add Column'),
-          icon: 'columns',
+          icon: 'lucide-columns',
           onClick: () => {
             section.columns.push({
               label: '',
@@ -572,7 +574,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Remove Last Column'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             const doRemove = () => section.columns.pop()
             if (column.fields.length) {
@@ -602,7 +604,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Remove Last Column (move fields to previous)'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             let previousColumn = section.columns[section.columns.length - 2]
             previousColumn.fields = previousColumn.fields.concat(column.fields)
@@ -612,7 +614,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Move Last Column to Next Section'),
-          icon: 'corner-up-right',
+          icon: 'lucide-corner-up-right',
           onClick: () => {
             let nextSection = tab.sections[i + 1]
             nextSection.columns.push(column)
@@ -622,7 +624,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Move Last Column to Previous Section'),
-          icon: 'corner-up-left',
+          icon: 'lucide-corner-up-left',
           onClick: () => {
             let previousSection = tab.sections[i - 1]
             previousSection.columns.push(column)
@@ -632,7 +634,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Move Last Column to Previous Tab'),
-          icon: 'corner-up-left',
+          icon: 'lucide-corner-up-left',
           onClick: () => {
             let targetTab = tabs.value[tabIndex.value - 1]
             if (!targetTab.sections.length) {
@@ -652,7 +654,7 @@ function getSectionOptions(i, section, tab) {
         },
         {
           label: __('Move Last Column to Next Tab'),
-          icon: 'corner-up-right',
+          icon: 'lucide-corner-up-right',
           onClick: () => {
             let targetTab = tabs.value[tabIndex.value + 1]
             if (!targetTab.sections.length) {

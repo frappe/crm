@@ -95,7 +95,7 @@
                   class="w-full h-8 mt-1.5 !bg-surface-gray-1"
                   variant="outline"
                   :label="__('Add Field')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                   @click="setOpen(!open)"
                 />
               </template>
@@ -125,7 +125,7 @@
         class="w-full h-8"
         variant="subtle"
         :label="__('Add Section')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="
           sections.push({
             label: __('New Section'),

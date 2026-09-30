@@ -22,7 +22,7 @@
     >
       <Button
         :disabled="slaDataErrors.condition != ''"
-        :icon-right="open ? 'chevron-up' : 'chevron-down'"
+        :icon-right="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         :label="__('Add Condition')"
       />
     </Dropdown>

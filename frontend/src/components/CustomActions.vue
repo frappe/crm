@@ -19,7 +19,7 @@
       <Dropdown v-slot="{ open }" :options="g.action">
         <Button
           :label="g.label"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         />
       </Dropdown>
     </div>
@@ -31,6 +31,7 @@ import { computed } from 'vue'
 import { Dropdown } from 'frappe-ui'
 import Icon from '@/components/Icon.vue'
 import { isMobileView } from '@/composables/settings'
+import { spriteIcon } from '@/utils/spriteIcon'
 
 const props = defineProps({
   actions: { type: [Object, Array, undefined], default: () => [] },
@@ -52,6 +53,7 @@ const groupedWithLabelActions = computed(() => {
       action.options = (action.options || action.items).map((item) => {
         return {
           ...item,
+          icon: spriteIcon(item.icon),
           onClick: () => item.onClick(props.close),
         }
       })
@@ -79,7 +81,7 @@ const groupedActions = computed(() => {
       options: _normalActions.map((action) => ({
         label: action.label,
         onClick: () => action.onClick(props.close),
-        icon: action.icon,
+        icon: spriteIcon(action.icon),
       })),
     })
   }
@@ -95,6 +97,7 @@ const groupedActions = computed(() => {
       action.options = (action.options || action.items).map((item) => {
         return {
           ...item,
+          icon: spriteIcon(item.icon),
           onClick: () => item.onClick(props.close),
         }
       })

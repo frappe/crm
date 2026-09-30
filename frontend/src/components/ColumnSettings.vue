@@ -66,7 +66,7 @@
                   class="w-full !justify-start !text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Column')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                   @click="setOpen(!open)"
                 />
               </template>

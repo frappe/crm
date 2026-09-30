@@ -1,4 +1,5 @@
 import { Dialog, ErrorMessage } from 'frappe-ui'
+import { spriteIcon } from '@/utils/spriteIcon'
 import { reactive, ref } from 'vue'
 
 let dialogs = ref([])
@@ -77,7 +78,7 @@ function withLegacyIcon({ icon, theme }) {
   const legacy = isLegacyIconObject(icon) ? icon : {}
   const tone = theme ?? legacy.theme ?? APPEARANCE_THEMES[legacy.appearance]
   return {
-    icon: toLucideName(legacy.name ?? icon),
+    icon: spriteIcon(legacy.name ?? icon),
     theme: tone === 'yellow' ? 'amber' : tone,
   }
 }
@@ -85,9 +86,4 @@ function withLegacyIcon({ icon, theme }) {
 // Icon components such as `~icons/lucide/*` also carry a `name`.
 function isLegacyIconObject(icon) {
   return typeof icon?.name === 'string' && !icon.render && !icon.setup
-}
-
-function toLucideName(icon) {
-  if (typeof icon !== 'string' || icon.startsWith('lucide-')) return icon
-  return `lucide-${icon}`
 }

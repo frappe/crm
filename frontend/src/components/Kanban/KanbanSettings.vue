@@ -80,7 +80,7 @@
             <Button
               class="w-full mt-2"
               :label="__('Add Field')"
-              iconLeft="plus"
+              iconLeft="lucide-plus"
               @click="setOpen(!open)"
             />
           </template>

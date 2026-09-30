@@ -118,7 +118,7 @@
               class="whitespace-nowrap mr-2"
               variant="ghost"
               :label="__('Add Filter')"
-              iconLeft="plus"
+              iconLeft="lucide-plus"
               @click="setOpen(!open)"
             />
           </template>
@@ -824,7 +824,7 @@ const viewsDropdownOptions = computed(() => {
     options: [
       {
         label: __('Create View'),
-        icon: 'plus',
+        icon: 'lucide-plus',
         onClick: () => createView(),
       },
     ],
@@ -1498,7 +1498,7 @@ const viewActions = (view, close) => {
       options: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () =>
             $dialog({
               title: __('Delete View'),

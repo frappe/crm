@@ -28,7 +28,7 @@
           ]"
           :button="{
             label: __('New'),
-            iconLeft: 'plus',
+            iconLeft: 'lucide-plus',
             variant: 'solid',
           }"
           align="end"
@@ -110,7 +110,7 @@
               <Dropdown
                 :options="getMoreOptions(user)"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   onblur: (e) => {
                     e.stopPropagation()
                     confirmRemove = false
@@ -129,13 +129,13 @@
                 :options="getDropdownOptions(user)"
                 :button="{
                   label: roleMap[user.role],
-                  iconRight: 'chevron-down',
+                  iconRight: 'lucide-chevron-down',
                   iconLeft:
                     user.role === 'System Manager'
-                      ? 'shield'
+                      ? 'lucide-shield'
                       : user.role === 'Sales Manager'
-                        ? 'briefcase'
-                        : 'user-check',
+                        ? 'lucide-briefcase'
+                        : 'lucide-user-check',
                 }"
                 align="end"
               />
@@ -226,21 +226,21 @@ function getDropdownOptions(user) {
   let options = [
     {
       label: __('Admin'),
-      icon: 'shield',
+      icon: 'lucide-shield',
       selected: user.role === 'System Manager',
       onClick: () => updateRole(user, 'System Manager'),
       condition: () => isAdmin(),
     },
     {
       label: __('Manager'),
-      icon: 'briefcase',
+      icon: 'lucide-briefcase',
       selected: user.role === 'Sales Manager',
       onClick: () => updateRole(user, 'Sales Manager'),
       condition: () => isAdmin(),
     },
     {
       label: __('Sales User'),
-      icon: 'user-check',
+      icon: 'lucide-user-check',
       selected: user.role === 'Sales User',
       onClick: () => updateRole(user, 'Sales User'),
     },

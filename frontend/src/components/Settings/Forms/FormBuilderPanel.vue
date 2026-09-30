@@ -201,7 +201,7 @@
                                 class="!h-8 w-full !bg-surface-elevation-2"
                                 variant="outline"
                                 :label="__('Add Field')"
-                                icon-left="plus"
+                                icon-left="lucide-plus"
                                 @click="openFieldPicker(open, setOpen)"
                               />
                             </template>
@@ -216,7 +216,7 @@
                   class="!h-8 w-full"
                   variant="subtle"
                   :label="__('Add Section')"
-                  icon-left="plus"
+                  icon-left="lucide-plus"
                   @click="addBreak('Section Break')"
                 />
               </div>
@@ -1110,13 +1110,13 @@ function columnOps(cols) {
   return [
     {
       label: __('Add Column'),
-      icon: 'columns',
+      icon: 'lucide-columns',
       onClick: () => addColumn(cols),
       condition: () => cols.length < MAX_COLUMNS,
     },
     {
       label: __('Remove Last Column'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeLastColumn(cols),
       condition: () => cols.length > 1,
     },
@@ -1131,12 +1131,12 @@ function sectionMenu(sec) {
       options: [
         {
           label: __('Rename'),
-          icon: 'edit',
+          icon: 'lucide-edit',
           onClick: () => (sec.editingLabel = true),
         },
         {
           label: __('Remove Section'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => removeBreak(sec.secField),
         },
       ],

@@ -25,7 +25,7 @@
             <Button
               v-if="doc.status"
               :label="statusLabel(doc.status)"
-              :iconRight="open ? 'chevron-up' : 'chevron-down'"
+              :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
             >
               <template #prefix>
                 <IndicatorIcon :class="getLeadStatus(doc.status).color" />

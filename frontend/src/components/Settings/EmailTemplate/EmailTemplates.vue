@@ -115,7 +115,7 @@
                 :options="getDropdownOptions(template)"
                 align="end"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   variant: 'ghost',
                   onblur: (e) => {
                     e.stopPropagation()
@@ -223,7 +223,7 @@ function getDropdownOptions(template) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => emit('updateStep', 'new-template', { ...template }),
     },
     ...ConfirmDelete({

@@ -158,7 +158,7 @@
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
             :label="__('Add Column')"
-            iconLeft="plus"
+            iconLeft="lucide-plus"
             @click="setOpen(!open)"
           />
         </template>
@@ -232,7 +232,7 @@ function actions(column) {
       options: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             column.column['delete'] = true
             updateColumn()

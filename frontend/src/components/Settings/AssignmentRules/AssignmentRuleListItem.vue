@@ -138,7 +138,7 @@ const dropdownOptions = [
         name: props.data.name + ' (Copy)',
       }
     },
-    icon: 'copy',
+    icon: 'lucide-copy',
   },
   ...ConfirmDelete({
     onConfirmDelete: () => deleteAssignmentRule(),

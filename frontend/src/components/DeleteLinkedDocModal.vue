@@ -79,7 +79,7 @@
             "
             theme="red"
             variant="solid"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             @click="confirmDelete()"
           />
           <Button
@@ -91,7 +91,7 @@
             "
             variant="subtle"
             theme="gray"
-            icon-left="unlock"
+            icon-left="lucide-unlock"
             @click="confirmUnlink()"
           />
           <Button

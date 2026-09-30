@@ -263,15 +263,19 @@ function rowOptions(form) {
   return [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => emit('open', form.name),
     },
     {
       label: form.published ? __('Unpublish') : __('Publish'),
-      icon: form.published ? 'eye-off' : 'eye',
+      icon: form.published ? 'lucide-eye-off' : 'lucide-eye',
       onClick: () => togglePublished(form, !form.published),
     },
-    { label: __('Copy link'), icon: 'link', onClick: () => copyLink(form) },
+    {
+      label: __('Copy link'),
+      icon: 'lucide-link',
+      onClick: () => copyLink(form),
+    },
     ...ConfirmDelete({
       isConfirmingDelete,
       onConfirmDelete: () => deleteForm(form),

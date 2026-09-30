@@ -10,14 +10,14 @@
       v-if="title == 'Emails'"
       variant="solid"
       :label="__('New Email')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="emailBox.openEmailBox()"
     />
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
       :label="__('New Comment')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="emailBox.openCommentBox()"
     />
     <MultiActionButton
@@ -29,21 +29,21 @@
       v-else-if="title == 'Notes'"
       variant="solid"
       :label="__('New Note')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="modalRef.showNote()"
     />
     <Button
       v-else-if="title == 'Tasks'"
       variant="solid"
       :label="__('New Task')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="modalRef.showTask()"
     />
     <Button
       v-else-if="title == 'Attachments'"
       variant="solid"
       :label="__('Upload Attachment')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="showFilesUploader = true"
     />
     <!-- WhatsApp composes from the input itself, so the header offers no action here -->
@@ -57,8 +57,8 @@
           variant="solid"
           class="flex items-center gap-1"
           :label="__('New')"
-          iconLeft="plus"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          iconLeft="lucide-plus"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         />
       </template>
     </Dropdown>
@@ -145,7 +145,7 @@ const callActions = computed(() => {
   let actions = [
     {
       label: __('Log a Call'),
-      icon: 'plus',
+      icon: 'lucide-plus',
       onClick: () => props.modalRef.createCallLog(),
     },
     {
