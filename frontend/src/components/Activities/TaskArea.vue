@@ -2,7 +2,7 @@
   <div v-if="tasks.length">
     <div v-for="(task, i) in tasks" :key="task.name">
       <div
-        class="activity flex cursor-pointer gap-6 rounded p-2.5 duration-300 ease-in-out hover:bg-surface-gray-1"
+        class="activity -mx-2.5 flex cursor-pointer gap-6 rounded px-2.5 py-2.5 duration-300 ease-in-out hover:bg-surface-gray-1"
         @click="modalRef.showTask(task)"
       >
         <div class="flex flex-1 flex-col gap-1.5 text-base truncate">
@@ -85,7 +85,7 @@
       </div>
       <div
         v-if="i < tasks.length - 1"
-        class="mx-2 h-px border-t border-outline-elevation-2"
+        class="h-px border-t border-outline-elevation-2"
       />
     </div>
   </div>
