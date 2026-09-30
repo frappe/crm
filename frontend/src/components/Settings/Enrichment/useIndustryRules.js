@@ -174,7 +174,7 @@ export function useIndustryRules() {
       clearErrors(row)
       validateRow(
         row,
-        rules.rows.value.filter((other) => other !== row),
+        rules.rows.value.filter((other) => other !== row && !other.removed),
       )
     }
   }
