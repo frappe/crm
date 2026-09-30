@@ -19,6 +19,7 @@ import WebhookIcon from '~icons/lucide/webhook'
 export const ICON_TONES = {
   blue: { tone: 'text-ink-blue-6' },
   green: { tone: 'text-ink-green-6' },
+  teal: { tone: 'text-ink-teal-6' },
   amber: { tone: 'text-ink-amber-6' },
   violet: { tone: 'text-ink-violet-6' },
   cyan: { tone: 'text-ink-cyan-6' },
