@@ -194,6 +194,7 @@ const tabs = computed(() => {
           label: __('Workflow Automations'),
           icon: LucideWorkflow,
           component: markRaw(WorkflowAutomationPage),
+          condition: () => window.has_automation_engine,
         },
         {
           label: __('Assignment Rules'),
