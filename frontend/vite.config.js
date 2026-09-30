@@ -110,11 +110,18 @@ export default defineConfig(() => {
     optimizeDeps: {
       include: [
         'tailwind.config.js',
+        // pre-bundled together so prosemirror-state/view share the model and
+        // transform the editor loads, instead of carrying their own copies
+        'prosemirror-model',
         'prosemirror-state',
+        'prosemirror-transform',
         'prosemirror-view',
         'lowlight',
         'interactjs',
       ],
+      // frappe-ui ships source: pre-bundling it bundles the editor's scripts but
+      // leaves its .vue files outside, so the editor code loads twice
+      exclude: ['frappe-ui'],
     },
     server: {
       fs: {
