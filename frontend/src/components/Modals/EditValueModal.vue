@@ -262,7 +262,7 @@ function getValueComponent(f) {
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype)) {
-    return h(DatePicker)
+    return h(DatePicker, { modelValue: newValue.value })
   } else if (typeEditor.includes(fieldtype)) {
     return h(TextEditorControl, {
       variant: 'outline',

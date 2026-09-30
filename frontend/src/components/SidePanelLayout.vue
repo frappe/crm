@@ -202,7 +202,7 @@
                           class="form-control"
                         >
                           <TimePicker
-                            :value="doc[field.fieldname]"
+                            :model-value="doc[field.fieldname]"
                             :format="getFormat('', '', false, true, false)"
                             :placeholder="field.placeholder"
                             @change="(v) => fieldChange(v, field)"
@@ -213,10 +213,11 @@
                           class="form-control"
                         >
                           <DateTimePicker
-                            :value="doc[field.fieldname]"
+                            :model-value="doc[field.fieldname]"
                             :format="getFormat('', '', true, true, false)"
                             :placeholder="field.placeholder"
-                            placement="left-start"
+                            side="left"
+                            align="start"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>
@@ -225,10 +226,11 @@
                           class="form-control"
                         >
                           <DatePicker
-                            :value="doc[field.fieldname]"
+                            :model-value="doc[field.fieldname]"
                             :format="getFormat('', '', true, false, false)"
                             :placeholder="field.placeholder"
-                            placement="left-start"
+                            side="left"
+                            align="start"
                             @change="(v) => fieldChange(v, field)"
                           />
                         </div>

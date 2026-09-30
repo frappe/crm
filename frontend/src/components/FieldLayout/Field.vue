@@ -161,29 +161,29 @@
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl

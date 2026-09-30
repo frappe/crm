@@ -61,7 +61,7 @@
         v-else
         ref="datePickerRef"
         class="!w-48"
-        :value="filters.period"
+        :model-value="filters.period ? parseDateRange(filters.period) : []"
         variant="outline"
         :placeholder="__('Period')"
         :formatter="formatRange"
