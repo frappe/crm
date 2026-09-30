@@ -72,7 +72,9 @@ const SETTINGS_SECTIONS = [
       ['Users', 'users'],
       ['Invite User', 'user-plus'],
       ['Sales Hierarchy', 'network'],
-      ['Workflow Automations', 'workflow'],
+      ...(window.has_automation_engine
+        ? [['Workflow Automations', 'workflow']]
+        : []),
       ['Assignment Rules', 'git-branch'],
     ],
   },
