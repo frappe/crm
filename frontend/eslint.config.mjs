@@ -42,7 +42,7 @@ export default [
       ],
     },
     rules: {
-      'import-x/no-unresolved': ['error', { ignore: ['^~icons/'] }],
+      'import-x/no-unresolved': ['error', { ignore: ['^~icons/', '^@framework/ui'] }],
       'vue/multi-word-component-names': 'off',
       'vue/prop-name-casing': 'off',
       'vue/attribute-hyphenation': 'off',

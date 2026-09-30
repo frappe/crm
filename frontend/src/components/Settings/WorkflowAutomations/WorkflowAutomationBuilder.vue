@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full min-h-0 bg-surface-base p-2">
     <div
-      class="automation-card flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-surface-gray-1 shadow-sm ring-1 ring-outline-gray-1"
+      class="automation-card flex min-w-0 flex-1 flex-col overflow-hidden rounded-6 bg-surface-gray-1 shadow-sm ring-1 ring-outline-gray-1"
     >
       <div
         class="flex h-14 shrink-0 items-center justify-between border-b border-outline-gray-2 px-4"
@@ -16,7 +16,7 @@
             >/</span
           >
           <div
-            class="flex min-w-0 cursor-text items-center gap-1 rounded pr-1.5 transition-colors hover:bg-surface-gray-2"
+            class="flex min-w-0 cursor-text items-center gap-1 rounded-4 pr-1.5 transition-colors hover:bg-surface-gray-2"
             @focus="selectTitle"
           >
             <div
@@ -32,7 +32,7 @@
               />
             </div>
           </div>
-          <span class="-ml-1.5 select-none text-ink-red-6" aria-hidden="true"
+          <span class="-ml-1.5 select-none text-ink-red-5" aria-hidden="true"
             >*</span
           >
           <span class="sr-only">{{ __('(required)') }}</span>
@@ -138,7 +138,7 @@
       :inert="!showInspector"
     >
       <div
-        class="automation-card h-full w-[340px] overflow-hidden rounded-lg bg-surface-base"
+        class="automation-card h-full w-[340px] overflow-hidden rounded-6 bg-surface-base"
       >
         <AutomationInspector
           :doc="doc"
@@ -480,7 +480,7 @@ function deleteAction(deletingTrigger) {
     label: __('Delete'),
     variant: 'solid',
     theme: 'red',
-    onClick: (close) => {
+    onClick: ({ close }) => {
       if (deletingTrigger) resetTrigger()
       else removeSelectedStep()
       close()

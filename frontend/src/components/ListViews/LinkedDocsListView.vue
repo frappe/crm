@@ -57,7 +57,12 @@
 
 <script setup>
 import ListRows from '@/components/ListViews/ListRows.vue'
-import { ListView, ListHeader, ListHeaderItem, ListRowItem } from 'frappe-ui'
+import {
+  ListView,
+  ListHeader,
+  ListHeaderItem,
+  ListRowItem,
+} from 'frappe-ui/experimental'
 import { ref } from 'vue'
 
 defineProps({

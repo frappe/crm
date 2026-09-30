@@ -1,7 +1,7 @@
 import { call, dayjs, dayjsLocal } from 'frappe-ui'
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import router from '@/router'
 import { activeSettingsPage, showSettings } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
@@ -227,7 +227,7 @@ function upcomingCommands(items, tracked) {
         icon: item.kind === 'task' ? TaskIcon : 'timer',
         subtitle: __(item.label),
         badge: dueBadge(item.due),
-        badgeClass: isOverdue(item.due) ? 'text-ink-red-5' : 'text-ink-gray-5',
+        badgeClass: isOverdue(item.due) ? 'text-ink-red-4' : 'text-ink-gray-5',
         perform: () => router.push(upcomingRoute(item)),
       },
       'upcoming',

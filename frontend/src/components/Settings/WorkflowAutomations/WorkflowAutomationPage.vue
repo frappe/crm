@@ -29,14 +29,16 @@
     </template>
     <template v-if="showSearch" #header-bottom>
       <div class="relative">
-        <Input
-          :model-value="search"
+        <TextInput
+          v-model="search"
           :placeholder="__('Search')"
-          icon-left="search"
-          debounce="300"
-          class="rounded border-outline-gray-2 bg-surface-gray-2"
-          @input="search = $event"
-        />
+          :debounce="300"
+          class="rounded-4 border-outline-gray-2 bg-surface-gray-2"
+        >
+          <template #prefix>
+            <span class="lucide-search size-4" aria-hidden="true" />
+          </template>
+        </TextInput>
         <Button
           v-if="search"
           icon="lucide-x"
@@ -92,7 +94,7 @@
             <ListCell>
               <Badge
                 :label="row.enabled ? __('Enabled') : __('Draft')"
-                :theme="row.enabled ? 'green' : 'orange'"
+                :theme="row.enabled ? 'green' : 'amber'"
                 variant="outline"
               />
             </ListCell>
@@ -115,12 +117,15 @@
                 <Tooltip :text="getUser(row.owner).full_name">
                   <UserAvatar :user="row.owner" size="sm" />
                 </Tooltip>
-                <Dropdown placement="right" :options="rowOptions(row)">
+                <Dropdown
+                  align="end"
+                  :options="rowOptions(row)"
+                  @update:open="(open) => open && (confirmingDelete = '')"
+                >
                   <Button
                     icon="lucide-more-horizontal"
                     variant="ghost"
                     class="ml-auto"
-                    @click="confirmingDelete = ''"
                   />
                 </Dropdown>
               </div>
@@ -336,7 +341,7 @@ function rowOptions(automation) {
   return [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => duplicateAutomation(automation),
     },
     ...ConfirmDelete({

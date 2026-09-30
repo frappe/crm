@@ -2,7 +2,7 @@
   <Dropdown :options="dropdownItems" v-bind="$attrs">
     <template #default="{ open }">
       <button
-        class="flex h-12 items-center rounded-md py-2 duration-300 ease-in-out"
+        class="flex h-12 items-center rounded-5 py-2 duration-300 ease-in-out"
         :class="
           isCollapsed
             ? 'w-auto px-0'
@@ -55,6 +55,7 @@ import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
+import { spriteIcon } from '@/utils/spriteIcon'
 import { createResource, Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
@@ -84,21 +85,21 @@ const dropdownItems = computed(() => {
     {
       group: 'Dropdown Items',
       hideLabel: true,
-      items: [],
+      options: [],
     },
   ]
 
   items.forEach((item) => {
     if (item.hidden) return
     if (item.type !== 'Separator') {
-      _dropdownItems[_dropdownItems.length - 1].items.push(
+      _dropdownItems[_dropdownItems.length - 1].options.push(
         dropdownItemObj(item),
       )
     } else {
       _dropdownItems.push({
         group: '',
         hideLabel: true,
-        items: [],
+        options: [],
       })
     }
   })
@@ -112,7 +113,7 @@ function dropdownItemObj(item) {
   if (typeof icon === 'string' && icon.startsWith('<svg')) {
     icon = markRaw(h('div', { innerHTML: icon }))
   }
-  _item.icon = icon
+  _item.icon = spriteIcon(icon)
 
   if (_item.is_standard) {
     return getStandardItem(_item)
@@ -168,7 +169,7 @@ function appMenuItems() {
     label: app.title,
     onClick: () => (window.location.href = app.route),
     slots: {
-      prefix: () => h('img', { class: 'size-5 rounded', src: app.logo }),
+      prefix: () => h('img', { class: 'size-5 rounded-4', src: app.logo }),
     },
   }))
 }

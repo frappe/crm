@@ -1,9 +1,8 @@
 <template>
   <ActivityHeader
-    v-model="tabIndex"
+    v-model="activeTab"
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
-    :tabs="tabs"
     :title="title"
     :doc="doc"
     :modalRef="modalRef"
@@ -118,7 +117,7 @@
               >
                 <MissedCallIcon
                   v-if="call.status == 'No Answer'"
-                  class="text-ink-red-8"
+                  class="text-ink-red-7"
                 />
                 <DeclinedCallIcon v-else-if="call.status == 'Busy'" />
                 <component
@@ -186,7 +185,7 @@
                     activity.activity_type,
                   ) && activity.status == 'No Answer'
                 "
-                class="text-ink-red-8"
+                class="text-ink-red-7"
               />
               <DeclinedCallIcon
                 v-else-if="
@@ -436,10 +435,10 @@
     />
     <div
       v-if="title == 'WhatsApp' && !hasMobileNumber"
-      class="mx-3 mb-2.5 flex items-center gap-2 rounded-lg bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
+      class="mx-3 mb-2.5 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
     >
       <span
-        class="lucide-info size-4 shrink-0 text-ink-amber-6"
+        class="lucide-info size-4 shrink-0 text-ink-amber-5"
         aria-hidden="true"
       />
       {{ __('Add a mobile number to send WhatsApp messages.') }}
@@ -541,7 +540,7 @@ import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { MessageInput, MessageList, useMessages } from '@whatsapp/ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
@@ -572,7 +571,10 @@ const emit = defineEmits(['beforeSave', 'afterSave'])
 const route = useRoute()
 
 const reload = defineModel('reload', { type: Boolean, default: false })
-const tabIndex = defineModel('tabIndex', { type: Number, default: 0 })
+const activeTab = defineModel('activeTab', {
+  type: String,
+  default: 'activity',
+})
 
 const { document: _document } = useDocument(props.doctype, props.docname)
 
@@ -584,13 +586,15 @@ const showFilesUploader = ref(false)
 const fieldLayoutTabIndex = ref(0)
 const fieldLayoutTabName = ref('')
 
-const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+const title = computed(
+  () =>
+    props.tabs?.find((tab) => tab.value === activeTab.value)?.name ||
+    'Activity',
+)
 
 const changeTabTo = (tabName) => {
-  const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
-  const index = tabNames?.indexOf(tabName)
-  if (index == -1) return
-  tabIndex.value = index
+  if (!props.tabs?.some((tab) => tab.value === tabName)) return
+  activeTab.value = tabName
 }
 
 const all_activities = createResource({

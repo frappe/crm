@@ -3,10 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
+import frappeui from 'frappe-ui/vite'
 
 // https://vitejs.dev/config/
-export default defineConfig(async ({ mode }) => {
-  const isDev = mode === 'development'
+export default defineConfig(() => {
   const config = {
     plugins: [
       vue(),
@@ -82,13 +82,16 @@ export default defineConfig(async ({ mode }) => {
       // versions of prosemirror-model were loaded" on mention insert. Unlike
       // optimizeDeps (dev-only) this also applies to the production build.
       // @framework/ui is aliased to frappe's ui/src, so its own direct deps
-      // (leaflet, cropperjs, vuedraggable) must also come from here: a bench
+      // (leaflet, cropperjs, vuedraggable, marked, @codemirror/view) must also
+      // come from here: a bench
       // build never installs apps/frappe/ui/node_modules.
       dedupe: [
         'vue',
         'vue-router',
         'frappe-ui',
         'reka-ui',
+        // frappe's own node_modules has an old @vueuse/core without the exports frappe-ui needs
+        '@vueuse/core',
         'dompurify',
         'cropperjs',
         'leaflet',
@@ -103,33 +106,42 @@ export default defineConfig(async ({ mode }) => {
         'prosemirror-state',
         'prosemirror-view',
         'prosemirror-transform',
+        '@codemirror/view',
+        'marked',
       ],
     },
     optimizeDeps: {
       include: [
-        'feather-icons',
         'tailwind.config.js',
+        // pre-bundled together so prosemirror-state/view share the model and
+        // transform the editor loads, instead of carrying their own copies
+        'prosemirror-model',
         'prosemirror-state',
+        'prosemirror-transform',
         'prosemirror-view',
         'lowlight',
         'interactjs',
       ],
+      // frappe-ui ships source: pre-bundling it bundles the editor's scripts but
+      // leaves its .vue files outside, so the editor code loads twice
+      exclude: ['frappe-ui'],
     },
     server: {
       fs: {
         // allow the bench `apps/` dir so Vite can serve linked local packages
-        // (frappe-ui, @whatsapp/ui, @framework/ui) that live in sibling app repos
+        // (@whatsapp/ui, @framework/ui) that live in sibling app repos
         allow: [path.resolve(import.meta.dirname, '../..')],
       },
     },
   }
 
-  const frappeui = await importFrappeUIPlugin(isDev, config)
   config.plugins.unshift(
     frappeui({
       frappeProxy: true,
       lucideIcons: true,
       jinjaBootData: true,
+      // its esbuild helper breaks Vite 8's dependency scan
+      codeLanguages: false,
       buildConfig: {
         indexHtmlPath: '../crm/www/crm.html',
         emptyOutDir: true,
@@ -140,92 +152,3 @@ export default defineConfig(async ({ mode }) => {
 
   return config
 })
-
-async function importFrappeUIPlugin(isDev, config) {
-  if (isDev) {
-    try {
-      // Check if local frappe-ui has the vite plugin file
-      const fs = await import('node:fs')
-      const localVitePluginPath = path.resolve(
-        import.meta.dirname,
-        '../frappe-ui/vite/index.js',
-      )
-
-      if (fs.existsSync(localVitePluginPath)) {
-        const module = await import('../frappe-ui/vite/index.js')
-        console.info('Local frappe-ui vite plugin found, using local plugin')
-        config.resolve.alias = getAliases(config)
-        return module.default
-      } else {
-        console.warn('Local frappe-ui vite plugin not found, using npm package')
-      }
-    } catch (error) {
-      console.warn(
-        'Local frappe-ui not found, falling back to npm package:',
-        error.message,
-      )
-    }
-  }
-  // Fall back to npm package if local import fails
-  const module = await import('frappe-ui/vite')
-  return module.default
-}
-
-function getAliases(config) {
-  return {
-    ...config.resolve.alias,
-    'frappe-ui/tailwind': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/tailwind/preset.js',
-    ),
-    'frappe-ui/style.css': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/style.css',
-    ),
-    'frappe-ui/frappe': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/frappe/index.js',
-    ),
-    // Subpath entries must precede the bare `frappe-ui` key because a plain
-    // string alias matches by prefix. `internals` is pulled in by @framework/ui.
-    'frappe-ui/icons': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/icons/index.ts',
-    ),
-    'frappe-ui/editor': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/molecules/editor/index.ts',
-    ),
-    'frappe-ui/list': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/molecules/list/index.ts',
-    ),
-    'frappe-ui/code-editor': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/components/CodeEditor/index.ts',
-    ),
-    'frappe-ui/editor-style.css': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/molecules/editor/style.css',
-    ),
-    'frappe-ui/list-style.css': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/molecules/list/style.css',
-    ),
-    'frappe-ui/internals': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/internals.ts',
-    ),
-    // `experimental` and `code-editor` are pulled in by @framework/ui's Grid
-    // and FormLayout
-    'frappe-ui/experimental': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/experimental.ts',
-    ),
-    'frappe-ui/code-editor': path.resolve(
-      import.meta.dirname,
-      '../frappe-ui/src/components/CodeEditor/index.ts',
-    ),
-    'frappe-ui': path.resolve(import.meta.dirname, '../frappe-ui/src/index.ts'),
-  }
-}

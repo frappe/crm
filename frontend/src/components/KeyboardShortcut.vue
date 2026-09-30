@@ -2,7 +2,7 @@
   <div
     class="inline-flex items-center gap-0.5 text-sm"
     :class="{
-      'bg-surface-gray-2 rounded-sm text-ink-gray-5 py-0.5 px-1': bg,
+      'bg-surface-gray-2 rounded-1 text-ink-gray-5 py-0.5 px-1': bg,
       'text-ink-gray-4': !bg,
     }"
   >

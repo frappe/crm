@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showDealModal = true"
       />
     </template>
@@ -267,7 +267,8 @@ import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
@@ -440,7 +441,7 @@ function parseRows(rows, columns = []) {
             ? 'red'
             : deal.sla_status == 'Fulfilled'
               ? 'green'
-              : 'orange'
+              : 'amber'
         if (value == 'First Response Due' || value == 'Rolling Response Due') {
           value = __(timeAgo(deal.response_by))
           tooltipText = formatDate(deal.response_by)

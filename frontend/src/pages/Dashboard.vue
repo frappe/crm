@@ -20,7 +20,7 @@
         <Button
           v-if="editing"
           :label="__('Chart')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="showAddChartModal = true"
         />
         <Button
@@ -53,15 +53,15 @@
           class:
             '!w-full justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5',
           variant: 'outline',
-          iconRight: 'chevron-down',
-          iconLeft: 'calendar',
+          iconRight: 'lucide-chevron-down',
+          iconLeft: 'lucide-calendar',
         }"
       />
       <DateRangePicker
         v-else
         ref="datePickerRef"
         class="!w-48"
-        :value="filters.period"
+        :model-value="filters.period ? parseDateRange(filters.period) : []"
         variant="outline"
         :placeholder="__('Period')"
         :formatter="formatRange"
@@ -192,7 +192,7 @@ const options = computed(() => [
   {
     group: 'Presets',
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Last 7 Days'),
         onClick: () => {

@@ -23,16 +23,12 @@
         @done="onEnriched"
       />
       <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
-      <Dropdown
-        v-if="doc && document.statuses"
-        :options="statuses"
-        placement="right"
-      >
+      <Dropdown v-if="doc && document.statuses" :options="statuses" align="end">
         <template #default="{ open }">
           <Button
             v-if="doc.status"
             :label="statusLabel(doc.status)"
-            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           >
             <template #prefix>
               <IndicatorIcon :class="getDealStatus(doc.status).color" />
@@ -45,16 +41,16 @@
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
       ref="dealTabsRef"
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel>
         <Activities
           ref="activities"
           v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
+          v-model:activeTab="activeTab"
           doctype="CRM Deal"
           :docname="dealId"
           :tabs="tabs"
@@ -407,7 +403,7 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
 import {
   ref,
   computed,
@@ -481,9 +477,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField,
-        createToast: toast.create,
         deleteDoc: deleteDeal,
         call,
       })
@@ -754,61 +748,71 @@ const tabs = computed(() => {
   let tabOptions = [
     {
       name: 'Activity',
+      value: 'activity',
       label: __('Activity'),
-      icon: ActivityIcon,
+      iconLeft: ActivityIcon,
     },
     {
       name: 'Emails',
+      value: 'emails',
       label: __('Emails'),
-      icon: EmailIcon,
+      iconLeft: EmailIcon,
     },
     {
       name: 'Comments',
+      value: 'comments',
       label: __('Comments'),
-      icon: CommentIcon,
+      iconLeft: CommentIcon,
     },
     {
       name: 'Data',
+      value: 'data',
       label: __('Data'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
     },
     {
       name: 'Calls',
+      value: 'calls',
       label: __('Calls'),
-      icon: PhoneIcon,
+      iconLeft: PhoneIcon,
     },
     {
       name: 'Tasks',
+      value: 'tasks',
       label: __('Tasks'),
-      icon: TaskIcon,
+      iconLeft: TaskIcon,
     },
     {
       name: 'Notes',
+      value: 'notes',
       label: __('Notes'),
-      icon: NoteIcon,
+      iconLeft: NoteIcon,
     },
     {
       name: 'Attachments',
+      value: 'attachments',
       label: __('Attachments'),
-      icon: AttachmentIcon,
+      iconLeft: AttachmentIcon,
     },
     {
       name: 'WhatsApp',
+      value: 'whatsapp',
       label: __('WhatsApp'),
-      icon: WhatsAppIcon,
+      iconLeft: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
     {
       name: 'Quotations',
+      value: 'quotations',
       label: __('Quotations'),
-      icon: FileTextIcon,
+      iconLeft: FileTextIcon,
       condition: () => canViewQuotations.value,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
+const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
 
 // keep the active tab visible — later tabs (e.g. Quotations) otherwise stay
 // scrolled out of view behind the right panel
@@ -820,7 +824,7 @@ function scrollActiveTabIntoView() {
       ?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   })
 }
-watch(tabIndex, scrollActiveTabIntoView)
+watch(activeTab, scrollActiveTabIntoView)
 onMounted(scrollActiveTabIntoView)
 
 const sections = createResource({
@@ -861,7 +865,7 @@ function contactOptions(contact) {
   let options = [
     {
       label: __('Remove'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeContact(contact.name),
     },
   ]
@@ -992,8 +996,7 @@ function deleteDeal() {
 const activities = ref(null)
 
 function openEmailBox() {
-  let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
+  if (!['emails', 'comments', 'activities'].includes(activeTab.value)) {
     activities.value.changeTabTo('emails')
   }
   nextTick(() => activities.value.emailBox?.openEmailBox())
