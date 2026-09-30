@@ -56,15 +56,17 @@ import { ref } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
-  document: { type: Object, required: true },
+  document: { type: Object, default: null },
 })
+
+const emit = defineEmits(['save', 'cancel'])
 
 const show = defineModel({ type: Boolean })
 
 const linkRef = ref(null)
-const doc = props.document.doc
-const lostReason = ref(doc.lost_reason || '')
-const lostNotes = ref(doc.lost_notes || '')
+const doc = props.document?.doc
+const lostReason = ref(doc?.lost_reason || '')
+const lostNotes = ref(doc?.lost_notes || '')
 const error = ref('')
 
 function cancel() {
@@ -72,7 +74,10 @@ function cancel() {
   error.value = ''
   lostReason.value = ''
   lostNotes.value = ''
-  doc.status = props.document.originalDoc.status
+  if (doc) {
+    doc.status = props.document.originalDoc.status
+  }
+  emit('cancel')
 }
 
 function save() {
@@ -88,9 +93,14 @@ function save() {
   error.value = ''
   show.value = false
 
-  doc.lost_reason = lostReason.value
-  doc.lost_notes = lostNotes.value
-  props.document.save.submit()
+  if (doc) {
+    doc.lost_reason = lostReason.value
+    doc.lost_notes = lostNotes.value
+    props.document.save.submit()
+  }
+  emit('save', { lost_reason: lostReason.value, lost_notes: lostNotes.value })
+  lostReason.value = ''
+  lostNotes.value = ''
 }
 
 function onCreate(value, close) {
