@@ -34,6 +34,9 @@
                 variant="subtle"
                 size="sm"
               />
+              <ArrowUpRightIcon
+                class="h-4 w-4 shrink-0 text-ink-gray-4 opacity-0 duration-200 group-hover:opacity-100"
+              />
             </div>
             <div class="flex items-center gap-2 text-ink-gray-6">
               <span class="tabular-nums text-ink-gray-8">
@@ -45,9 +48,6 @@
               <span>{{ dateLabel(quotation) }}</span>
             </div>
           </div>
-          <ArrowUpRightIcon
-            class="h-4 w-4 shrink-0 text-ink-gray-4 opacity-0 duration-200 group-hover:opacity-100"
-          />
         </a>
         <div
           v-if="i < rows.length - 1"
