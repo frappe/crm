@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <div class="flex items-start justify-between gap-4 py-3 px-2">
+    <div class="flex items-start justify-between gap-4 py-3">
       <div class="flex flex-col gap-1">
         <div class="text-lg-semibold text-ink-gray-8">{{ title }}</div>
         <div class="text-p-sm text-ink-gray-6 max-w-lg">{{ subtitle }}</div>
@@ -36,7 +36,7 @@
         top="10%"
       />
     </div>
-    <div v-else class="flex flex-col gap-3 py-2 px-2">
+    <div v-else class="flex flex-col gap-3 py-2">
       <slot />
     </div>
   </div>
