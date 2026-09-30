@@ -4,6 +4,7 @@ import { usersStore } from '@/stores/users'
 import { getMeta } from '@/stores/meta'
 import { gemoji } from 'gemoji'
 import DOMPurify from 'dompurify'
+import { createToast, scriptToast } from '@/utils/scriptToast'
 import { toast, dayjsLocal, dayjs, getConfig } from 'frappe-ui'
 import { h } from 'vue'
 
@@ -361,8 +362,12 @@ export function parseAssignees(assignees) {
 async function getFormScript(script, obj) {
   if (!script.includes('setupForm(')) return {}
   let scriptFn = new Function(script + '\nreturn setupForm')()
-  let formScript = await scriptFn(obj)
+  let formScript = await scriptFn(withScriptToast(obj))
   return formScript || {}
+}
+
+function withScriptToast(obj) {
+  return { ...obj, toast: scriptToast, createToast }
 }
 
 export async function setupCustomizations(scripts, obj) {
@@ -382,7 +387,7 @@ export async function setupCustomizations(scripts, obj) {
 
 async function getListScript(script, obj) {
   let scriptFn = new Function(script + '\nreturn setupList')()
-  let listScript = await scriptFn(obj)
+  let listScript = await scriptFn(withScriptToast(obj))
   return listScript || {}
 }
 

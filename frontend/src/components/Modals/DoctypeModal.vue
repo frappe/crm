@@ -73,7 +73,7 @@ import { usersStore } from '@/stores/users'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { setupCustomizations } from '@/utils'
-import { Dialog, call, createResource, toast } from 'frappe-ui'
+import { Dialog, call, createResource } from 'frappe-ui'
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -168,7 +168,6 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         call,
       })
     }

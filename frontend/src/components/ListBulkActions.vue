@@ -37,6 +37,7 @@ import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, toast } from 'frappe-ui'
+import { createToast, scriptToast } from '@/utils/scriptToast'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -206,8 +207,8 @@ function bulkActions(selections, unselectAll) {
           selections,
           unselectAll,
           call,
-          createToast: toast.create,
-          toast,
+          createToast,
+          toast: scriptToast,
           $dialog,
           router,
         }),
@@ -233,8 +234,6 @@ onMounted(async () => {
   let customization = await setupListCustomizations(list.value.data, {
     list: list.value,
     call,
-    createToast: toast.create,
-    toast,
     $dialog,
     $socket,
     router,

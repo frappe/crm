@@ -171,7 +171,6 @@ import {
   Breadcrumbs,
   call,
   usePageMeta,
-  toast,
 } from 'frappe-ui'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -237,9 +236,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField,
-        createToast: toast.create,
         deleteDoc: deleteLead,
         call,
       })

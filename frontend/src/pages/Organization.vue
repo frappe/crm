@@ -588,9 +588,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField: organization.setValue.submit,
-        createToast: toast.create,
         deleteDoc: deleteOrganization,
         call,
       })

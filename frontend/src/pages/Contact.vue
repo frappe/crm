@@ -444,9 +444,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField: contact.setValue.submit,
-        createToast: toast.create,
         deleteDoc: deleteContact,
         call,
       })
