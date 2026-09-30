@@ -281,6 +281,7 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
+import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
@@ -304,6 +305,7 @@ import { useDocument } from '@/data/document'
 import { isMobileView } from '@/composables/settings'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
+import { canViewQuotations } from '@/composables/erpnext'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useVisitedRecords } from '@/composables/useVisitedRecords'
 import {
@@ -488,6 +490,12 @@ const tabs = computed(() => {
       label: __('WhatsApp'),
       icon: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
+    },
+    {
+      name: 'Quotations',
+      label: __('Quotations'),
+      icon: FileTextIcon,
+      condition: () => canViewQuotations.value,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
