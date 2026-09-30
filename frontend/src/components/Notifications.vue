@@ -18,7 +18,7 @@
         </div>
         <div class="flex gap-1 mr-3">
           <Button
-            v-if="activeTab == 'all' && notifications.data?.length"
+            v-if="notifications.data?.length"
             :tooltip="__('Mark all as read')"
             :icon="MarkAsDoneIcon"
             variant="ghost"
@@ -26,13 +26,7 @@
           />
         </div>
       </div>
-      <TabButtons
-        v-model="activeTab"
-        :options="tabs"
-        fluid
-        class="px-4 py-0.5"
-      />
-      <div v-if="activeTab == 'all'" class="flex h-full">
+      <div class="flex h-full">
         <div
           v-if="notifications.data?.length"
           class="divide-y divide-outline-elevation-2 overflow-auto text-base"
@@ -82,7 +76,6 @@
           width="lg"
         />
       </div>
-      <div v-else class="flex h-full"></div>
     </div>
   </div>
 </template>
@@ -101,18 +94,11 @@ import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { TabButtons } from 'frappe-ui'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { capture } = useTelemetry()
-
-const activeTab = ref('all')
-const tabs = [
-  { label: __('All'), value: 'all' },
-  // { label: __('Mentions'), value: 'mentions' },
-]
 
 const target = ref(null)
 onClickOutside(
