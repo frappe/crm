@@ -192,7 +192,7 @@ const options = computed(() => [
   {
     group: 'Presets',
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Last 7 Days'),
         onClick: () => {

@@ -49,7 +49,7 @@ const groupedWithLabelActions = computed(() => {
     .forEach((action) => {
       let groupIndex = _actions.findIndex((a) => a.label === action.buttonLabel)
 
-      action.items = action.items.map((item) => {
+      action.options = (action.options || action.items).map((item) => {
         return {
           ...item,
           onClick: () => item.onClick(props.close),
@@ -76,7 +76,7 @@ const groupedActions = computed(() => {
     _actions.push({
       group: __('Actions'),
       hideLabel: true,
-      items: _normalActions.map((action) => ({
+      options: _normalActions.map((action) => ({
         label: action.label,
         onClick: () => action.onClick(props.close),
         icon: action.icon,
@@ -92,7 +92,7 @@ const groupedActions = computed(() => {
   props.actions
     .filter((action) => action.group && !action.buttonLabel)
     .forEach((action) => {
-      action.items = action.items.map((item) => {
+      action.options = (action.options || action.items).map((item) => {
         return {
           ...item,
           onClick: () => item.onClick(props.close),

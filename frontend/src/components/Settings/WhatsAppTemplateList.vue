@@ -66,12 +66,12 @@
                 :theme="templateStatusTheme(template.status)"
                 :label="__(template.status)"
               />
-              <Dropdown placement="right" :options="rowOptions(template)">
-                <Button
-                  icon="lucide-more-horizontal"
-                  variant="ghost"
-                  @click="confirmDelete = false"
-                />
+              <Dropdown
+                align="end"
+                :options="rowOptions(template)"
+                @update:open="(open) => open && (confirmDelete = false)"
+              >
+                <Button icon="lucide-more-horizontal" variant="ghost" />
               </Dropdown>
             </div>
           </div>

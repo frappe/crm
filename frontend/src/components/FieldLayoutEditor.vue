@@ -452,7 +452,7 @@ function getSectionOptions(i, section, tab) {
   return [
     {
       group: __('Section'),
-      items: [
+      options: [
         {
           label: __('Edit'),
           icon: 'edit',
@@ -557,7 +557,7 @@ function getSectionOptions(i, section, tab) {
     },
     {
       group: __('Column'),
-      items: [
+      options: [
         {
           label: __('Add Column'),
           icon: 'columns',

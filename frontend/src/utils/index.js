@@ -1,4 +1,3 @@
-import LucideCheck from '~icons/lucide/check'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import { usersStore } from '@/stores/users'
@@ -536,34 +535,6 @@ export function runSequentially(functions) {
   }, Promise.resolve())
 }
 
-export function DropdownOption({ option, icon, selected, onClick }) {
-  return h(
-    'button',
-    {
-      class:
-        'group flex w-full text-ink-gray-8 justify-between items-center rounded-md px-2 py-2 text-sm hover:bg-surface-gray-2',
-      onClick,
-    },
-    [
-      h('div', { class: 'flex gap-2' }, [
-        icon
-          ? h('span', {
-              class: [icon, 'h-4 w-4 shrink-0'],
-              'aria-hidden': true,
-            })
-          : null,
-        h('span', { class: 'whitespace-nowrap' }, option),
-      ]),
-      selected
-        ? h(LucideCheck, {
-            class: ['h-4 w-4 shrink-0 text-ink-gray-7'],
-            'aria-hidden': true,
-          })
-        : null,
-    ],
-  )
-}
-
 export function deepClone(obj) {
   if (obj === null || typeof obj !== 'object') {
     return obj
@@ -786,29 +757,6 @@ export function orderSensitiveEqual(a, b) {
   return true
 }
 
-export function TemplateOption({ active, option, variant, icon, onClick }) {
-  return h(
-    'button',
-    {
-      class: [
-        active ? 'bg-surface-gray-2' : 'text-ink-gray-7',
-        'group flex w-full gap-2 items-center rounded-md px-2 py-2 text-base hover:bg-surface-gray-3',
-        variant == 'danger' ? 'text-ink-red-6 hover:bg-ink-red-1' : '',
-      ],
-      onClick: onClick,
-    },
-    [
-      icon
-        ? h('span', {
-            class: [icon, 'h-4 w-4 shrink-0'],
-            'aria-hidden': true,
-          })
-        : null,
-      h('span', { class: 'whitespace-nowrap' }, option),
-    ],
-  )
-}
-
 /**
  * @param {Ref<boolean>} isConfirmingDelete - Ref to track confirmation state
  * @param {Function} onConfirmDelete - Callback when delete is confirmed
@@ -823,34 +771,22 @@ export function ConfirmDelete({
   return [
     {
       label,
-      component: (props) =>
-        TemplateOption({
-          option: label,
-          icon: 'lucide-trash-2',
-          active: props.active,
-          variant: 'grey',
-          onClick: (event) => {
-            event.preventDefault()
-            event.stopImmediatePropagation()
-            isConfirmingDelete.value = true
-          },
-        }),
+      icon: 'lucide-trash-2',
+      // preventDefault keeps the menu open so the confirm row can replace this one
+      onClick: (event) => {
+        event.preventDefault()
+        isConfirmingDelete.value = true
+      },
       condition: () => !isConfirmingDelete.value,
     },
     {
       label: __('Confirm {0}', [label]),
-      component: (props) =>
-        TemplateOption({
-          option: __('Confirm {0}', [label]),
-          icon: 'lucide-trash-2',
-          active: props.active,
-          variant: 'danger',
-          onClick: () => {
-            onConfirmDelete()
-            // Reset state after confirming
-            isConfirmingDelete.value = false
-          },
-        }),
+      icon: 'lucide-trash-2',
+      theme: 'red',
+      onClick: () => {
+        onConfirmDelete()
+        isConfirmingDelete.value = false
+      },
       condition: () => isConfirmingDelete.value,
     },
   ]

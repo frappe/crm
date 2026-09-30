@@ -113,7 +113,7 @@
               <Dropdown
                 class=""
                 :options="getDropdownOptions(template)"
-                placement="right"
+                align="end"
                 :button="{
                   icon: 'more-horizontal',
                   variant: 'ghost',

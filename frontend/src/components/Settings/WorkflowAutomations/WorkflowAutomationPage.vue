@@ -102,12 +102,15 @@
                 <Tooltip :text="getUser(row.owner).full_name">
                   <UserAvatar :user="row.owner" size="sm" />
                 </Tooltip>
-                <Dropdown placement="right" :options="rowOptions(row)">
+                <Dropdown
+                  align="end"
+                  :options="rowOptions(row)"
+                  @update:open="(open) => open && (confirmingDelete = '')"
+                >
                   <Button
                     icon="lucide-more-horizontal"
                     variant="ghost"
                     class="ml-auto"
-                    @click="confirmingDelete = ''"
                   />
                 </Dropdown>
               </div>

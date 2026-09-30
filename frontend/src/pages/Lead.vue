@@ -23,11 +23,7 @@
         @done="onEnriched"
       />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
-      <Dropdown
-        v-if="doc && document.statuses"
-        :options="statuses"
-        placement="right"
-      >
+      <Dropdown v-if="doc && document.statuses" :options="statuses" align="end">
         <template #default="{ open }">
           <Button
             v-if="doc.status"

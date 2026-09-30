@@ -17,7 +17,7 @@
                 {
                   group: __('Options'),
                   hideLabel: true,
-                  items: [
+                  options: [
                     {
                       label: note ? __('Edit Note') : __('Add Note'),
                       icon: NoteIcon,

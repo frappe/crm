@@ -93,7 +93,7 @@
             </div>
           </template>
         </Popover>
-        <Dropdown :options="moreOptions" placement="right">
+        <Dropdown :options="moreOptions" align="end">
           <template #default="{ open }">
             <Button
               variant="ghost"

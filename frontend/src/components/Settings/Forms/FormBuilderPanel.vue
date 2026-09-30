@@ -1125,7 +1125,7 @@ function sectionMenu(sec) {
   return [
     {
       group: __('Section'),
-      items: [
+      options: [
         {
           label: __('Rename'),
           icon: 'edit',
@@ -1138,7 +1138,7 @@ function sectionMenu(sec) {
         },
       ],
     },
-    { group: __('Column'), items: columnOps(sec.columns) },
+    { group: __('Column'), options: columnOps(sec.columns) },
   ]
 }
 function optionList(f) {

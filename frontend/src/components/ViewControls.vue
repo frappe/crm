@@ -206,12 +206,12 @@
         />
         <Dropdown
           v-if="route.params.viewType !== 'kanban' || isManager()"
-          placement="right"
+          align="end"
           :options="[
             {
               group: __('Options'),
               hideLabel: true,
-              items: [
+              options: [
                 {
                   label: __('Import'),
                   icon: () => h(ImportIcon, { class: 'h-4 w-4' }),
@@ -766,7 +766,7 @@ const viewsDropdownOptions = computed(() => {
     {
       group: __('Standard Views'),
       hideLabel: true,
-      items: standardViews.map((item) => ({
+      options: standardViews.map((item) => ({
         ...item,
         selected: item.name === currentView.value.name,
       })),
@@ -801,19 +801,19 @@ const viewsDropdownOptions = computed(() => {
     if (savedViews.length) {
       _views.push({
         group: __('Saved Views'),
-        items: savedViews,
+        options: savedViews,
       })
     }
     if (publicViews.length) {
       _views.push({
         group: __('Public Views'),
-        items: publicViews,
+        options: publicViews,
       })
     }
     if (pinnedViews.length) {
       _views.push({
         group: __('Pinned Views'),
-        items: pinnedViews,
+        options: pinnedViews,
       })
     }
   }
@@ -821,7 +821,7 @@ const viewsDropdownOptions = computed(() => {
   _views.push({
     group: __('Actions'),
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Create View'),
         icon: 'plus',
@@ -1033,7 +1033,7 @@ async function loadFlatFilterOptions() {
 
 function viewCommands() {
   return viewsDropdownOptions.value
-    .flatMap((group) => group.items || [])
+    .flatMap((group) => group.options || [])
     .filter((item) => item.onClick && (!item.condition || item.condition()))
     .map((item, index) => ({
       id: `list-view-${index}-${item.name || item.label}`,
@@ -1447,7 +1447,7 @@ const viewActions = (view, close) => {
     {
       group: __('Actions'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
@@ -1458,7 +1458,7 @@ const viewActions = (view, close) => {
   ]
 
   if (isStandard && !isDefaultView(_view)) {
-    actions[0].items.unshift({
+    actions[0].options.unshift({
       label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
       onClick: () => setAsDefault(_view),
@@ -1466,14 +1466,14 @@ const viewActions = (view, close) => {
   }
 
   if (!isStandard && (!_view.public || isManager())) {
-    actions[0].items.push({
+    actions[0].options.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
       onClick: () => editView(_view, close),
     })
 
     if (!_view.public) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.pinned ? __('Unpin View') : __('Pin View'),
         icon: () => h(_view.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(_view),
@@ -1481,7 +1481,7 @@ const viewActions = (view, close) => {
     }
 
     if (isManager()) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
           h('span', {
@@ -1495,7 +1495,7 @@ const viewActions = (view, close) => {
     actions.push({
       group: __('Delete View'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Delete'),
           icon: 'trash-2',

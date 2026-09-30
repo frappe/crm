@@ -16,8 +16,8 @@
         <Dropdown
           v-if="isOwner && !editing"
           :options="menuOptions"
-          placement="right"
-          @click="confirmingDelete = false"
+          align="end"
+          @update:open="(open) => open && (confirmingDelete = false)"
         >
           <Button
             icon="lucide-more-horizontal"

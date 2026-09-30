@@ -99,7 +99,7 @@
       />
     </div>
     <div class="condition-actions w-max">
-      <Dropdown placement="right" :options="dropdownOptions">
+      <Dropdown align="end" :options="dropdownOptions">
         <Button variant="ghost" icon="lucide-more-horizontal" />
       </Dropdown>
     </div>

@@ -38,12 +38,12 @@
               theme="blue"
               :label="__('Default')"
             />
-            <Dropdown placement="right" :options="rowOptions(account)">
-              <Button
-                icon="lucide-more-horizontal"
-                variant="ghost"
-                @click="confirmDelete = false"
-              />
+            <Dropdown
+              align="end"
+              :options="rowOptions(account)"
+              @update:open="(open) => open && (confirmDelete = false)"
+            >
+              <Button icon="lucide-more-horizontal" variant="ghost" />
             </Dropdown>
           </div>
         </div>
@@ -248,23 +248,25 @@ function setInactive() {
 function blockedDeleteOption(reason) {
   return {
     label: __('Delete'),
-    component: () =>
-      h(Tooltip, { text: reason, placement: 'left' }, () =>
-        h(
-          'div',
-          {
-            class:
-              'flex w-full gap-2 items-center rounded-md px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
-          },
-          [
-            h('span', {
-              class: 'lucide-trash-2 h-4 w-4 shrink-0',
-              'aria-hidden': true,
-            }),
-            h('span', { class: 'whitespace-nowrap' }, __('Delete')),
-          ],
+    slots: {
+      item: () =>
+        h(Tooltip, { text: reason, side: 'left' }, () =>
+          h(
+            'div',
+            {
+              class:
+                'flex w-full gap-2 items-center rounded-md px-2 py-2 text-base text-ink-gray-4 cursor-not-allowed',
+            },
+            [
+              h('span', {
+                class: 'lucide-trash-2 h-4 w-4 shrink-0',
+                'aria-hidden': true,
+              }),
+              h('span', { class: 'whitespace-nowrap' }, __('Delete')),
+            ],
+          ),
         ),
-      ),
+    },
   }
 }
 

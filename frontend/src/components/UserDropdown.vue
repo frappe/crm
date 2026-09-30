@@ -84,21 +84,21 @@ const dropdownItems = computed(() => {
     {
       group: 'Dropdown Items',
       hideLabel: true,
-      items: [],
+      options: [],
     },
   ]
 
   items.forEach((item) => {
     if (item.hidden) return
     if (item.type !== 'Separator') {
-      _dropdownItems[_dropdownItems.length - 1].items.push(
+      _dropdownItems[_dropdownItems.length - 1].options.push(
         dropdownItemObj(item),
       )
     } else {
       _dropdownItems.push({
         group: '',
         hideLabel: true,
-        items: [],
+        options: [],
       })
     }
   })

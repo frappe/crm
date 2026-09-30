@@ -73,12 +73,12 @@
                 size="md"
                 :label="form.published ? __('Published') : __('Draft')"
               />
-              <Dropdown placement="right" :options="rowOptions(form)">
-                <Button
-                  icon="lucide-more-horizontal"
-                  variant="ghost"
-                  @click="isConfirmingDelete = false"
-                />
+              <Dropdown
+                align="end"
+                :options="rowOptions(form)"
+                @update:open="(open) => open && (isConfirmingDelete = false)"
+              >
+                <Button icon="lucide-more-horizontal" variant="ghost" />
               </Dropdown>
             </div>
           </div>

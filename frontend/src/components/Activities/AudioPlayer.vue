@@ -60,12 +60,11 @@
             </template>
           </Button>
         </div>
-        <Dropdown :options="options">
-          <Button
-            icon="lucide-more-horizontal"
-            variant="ghost"
-            @click="showPlaybackSpeed = false"
-          />
+        <Dropdown
+          :options="options"
+          @update:open="(open) => open && (showPlaybackSpeed = false)"
+        >
+          <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
       </div>
     </div>
@@ -88,7 +87,6 @@ import VolumnLowIcon from '@/components/Icons/VolumnLowIcon.vue'
 import VolumnHighIcon from '@/components/Icons/VolumnHighIcon.vue'
 import MuteIcon from '@/components/Icons/MuteIcon.vue'
 import PlaybackSpeedIcon from '@/components/Icons/PlaybackSpeedIcon.vue'
-import PlaybackSpeedOption from '@/components/Activities/PlaybackSpeedOption.vue'
 import { Dropdown } from 'frappe-ui'
 import { computed, h, ref } from 'vue'
 
@@ -148,16 +146,13 @@ const options = computed(() => {
       label = __('Normal')
     }
     return {
-      component: () =>
-        h(PlaybackSpeedOption, {
-          label,
-          active: speed === currentPlaybackSpeed.value,
-          onClick: () => {
-            audio.value.playbackRate = speed
-            showPlaybackSpeed.value = false
-            currentPlaybackSpeed.value = speed
-          },
-        }),
+      label,
+      selected: speed === currentPlaybackSpeed.value,
+      onClick: () => {
+        audio.value.playbackRate = speed
+        showPlaybackSpeed.value = false
+        currentPlaybackSpeed.value = speed
+      },
     }
   })
   let _options = [

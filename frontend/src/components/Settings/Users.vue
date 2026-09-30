@@ -31,7 +31,7 @@
             iconLeft: 'plus',
             variant: 'solid',
           }"
-          placement="right"
+          align="end"
         />
       </div>
     </div>
@@ -116,7 +116,7 @@
                     confirmRemove = false
                   },
                 }"
-                placement="right"
+                align="end"
               />
               <Tooltip
                 v-if="isManager() && user.role == 'System Manager'"
@@ -137,7 +137,7 @@
                         ? 'briefcase'
                         : 'user-check',
                 }"
-                placement="right"
+                align="end"
               />
             </div>
           </li>
@@ -169,7 +169,6 @@ import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import { DropdownOption } from '@/utils'
 import {
   Dropdown,
   Avatar,
@@ -227,34 +226,22 @@ function getDropdownOptions(user) {
   let options = [
     {
       label: __('Admin'),
-      component: () =>
-        DropdownOption({
-          option: __('Admin'),
-          icon: 'shield',
-          selected: user.role === 'System Manager',
-        }),
+      icon: 'shield',
+      selected: user.role === 'System Manager',
       onClick: () => updateRole(user, 'System Manager'),
       condition: () => isAdmin(),
     },
     {
       label: __('Manager'),
-      component: () =>
-        DropdownOption({
-          option: __('Manager'),
-          icon: 'briefcase',
-          selected: user.role === 'Sales Manager',
-        }),
+      icon: 'briefcase',
+      selected: user.role === 'Sales Manager',
       onClick: () => updateRole(user, 'Sales Manager'),
       condition: () => isAdmin(),
     },
     {
       label: __('Sales User'),
-      component: () =>
-        DropdownOption({
-          option: __('Sales User'),
-          icon: 'user-check',
-          selected: user.role === 'Sales User',
-        }),
+      icon: 'user-check',
+      selected: user.role === 'Sales User',
       onClick: () => updateRole(user, 'Sales User'),
     },
   ]
