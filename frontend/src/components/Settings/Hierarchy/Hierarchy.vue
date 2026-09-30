@@ -176,18 +176,22 @@
         />
       </template>
     </Dialog>
-    <Dialog v-model:open="showRemoveDialog" :size="'md'">
-      <template #body>
+    <Dialog v-model:open="showRemoveDialog" :size="'md'" bare>
+      <template #default>
         <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
           <div class="mb-4 flex items-center justify-between">
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Delete') }}
-            </h3>
-            <Button
-              variant="ghost"
-              icon="lucide-x"
-              @click="showRemoveDialog = false"
-            />
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ __('Delete') }}
+              </h3>
+            </Dialog.Title>
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                variant="ghost"
+                icon="lucide-x"
+              />
+            </Dialog.Close>
           </div>
           <div class="text-ink-gray-5 text-base">
             <template v-if="checkTargetChild">

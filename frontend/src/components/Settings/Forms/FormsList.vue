@@ -89,8 +89,8 @@
   </div>
 
   <!-- create dialog -->
-  <Dialog v-model="showCreate" :options="{ title: __('New form') }">
-    <template #body-content>
+  <Dialog v-model:open="showCreate" :title="__('New form')">
+    <template #default>
       <div class="flex flex-col gap-4">
         <FormControl
           v-model="draft.title"

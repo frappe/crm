@@ -1,8 +1,10 @@
 <template>
   <Dialog
-    v-model="commandPaletteOpen"
+    v-model:open="commandPaletteOpen"
     bare
-    :options="{ size: '2xl', position: 'top', paddingTop: '10vh' }"
+    size="2xl"
+    position="top"
+    padding-top="10vh"
   >
     <Combobox
       as="div"

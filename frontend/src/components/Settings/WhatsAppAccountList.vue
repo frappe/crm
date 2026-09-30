@@ -54,10 +54,11 @@
     <!-- Frappe refuses to delete an account other records still link to. Say so,
          with the counts, instead of surfacing the raw link-exists error. -->
     <Dialog
-      v-model="showBlockedDialog"
-      :options="{ title: blockedTitle, actions: blockedActions }"
+      v-model:open="showBlockedDialog"
+      :title="blockedTitle"
+      :actions="blockedActions"
     >
-      <template #body-content>
+      <template #default>
         <p class="text-p-base text-ink-gray-7">
           {{
             __(

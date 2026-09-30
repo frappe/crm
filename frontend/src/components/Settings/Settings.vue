@@ -2,10 +2,12 @@
   <Dialog
     v-model:open="showSettings"
     :size="'5xl'"
-    :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    :dismissible="!disableSettingModalOutsideClick"
+    bare
     @close="activeSettingsPage = ''"
   >
-    <template #body>
+    <template #default>
+      <Dialog.Title class="sr-only">{{ __('Settings') }}</Dialog.Title>
       <div class="flex h-[calc(100vh_-_8rem)] bg-surface-gray-1">
         <div
           ref="sidebarContainer"

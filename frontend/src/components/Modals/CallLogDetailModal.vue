@@ -1,13 +1,15 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <Dialog v-model:open="show">
-    <template #body>
+  <Dialog v-model:open="show" bare>
+    <template #default>
       <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Call Details') }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ __('Call Details') }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
             <Dropdown
@@ -42,12 +44,14 @@
               class="w-7"
               @click="openCallLogModal"
             />
-            <Button
-              icon="lucide-x"
-              variant="ghost"
-              class="w-7"
-              @click="show = false"
-            />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                icon="lucide-x"
+                variant="ghost"
+                class="w-7"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div class="flex flex-col gap-3.5">
@@ -188,7 +192,7 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useDocument } from '@/data/document'
 import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
+import { Dialog, Dropdown, Avatar, Tooltip, call, toast } from 'frappe-ui'
 import { ref, computed, h, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
