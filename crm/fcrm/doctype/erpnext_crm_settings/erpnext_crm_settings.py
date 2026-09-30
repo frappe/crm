@@ -446,7 +446,13 @@ def notify_deal_quotation_change(doc, method=None):
 	"""Push a realtime event so an open deal's Quotations tab refreshes live (same-site)."""
 	crm_deal = doc.get("crm_deal")
 	if crm_deal:
-		frappe.publish_realtime("crm_quotation_update", {"crm_deal": crm_deal}, after_commit=True)
+		frappe.publish_realtime(
+			"crm_quotation_update",
+			{"crm_deal": crm_deal},
+			doctype="CRM Deal",
+			docname=crm_deal,
+			after_commit=True,
+		)
 
 
 @frappe.whitelist()
