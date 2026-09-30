@@ -650,21 +650,22 @@ function cleanMessage(message) {
 .title-sizer::after,
 .title-sizer > * {
   grid-area: 1 / 1;
+  min-width: 0;
 }
 
-/* Matches TextInput's sm padding so the mirror and the field measure the same. */
+/* Same font and padding as TextInput's sm field so the mirror measures exactly the text. */
 .title-sizer::after {
+  @apply text-base;
   content: attr(data-value);
   visibility: hidden;
   white-space: pre;
-  min-width: 6rem;
-  padding: 0 0.5px;
-  font: inherit;
-  font-weight: semibold;
-  letter-spacing: inherit;
+  padding: 0 0.5rem;
 }
 
+/* Zero intrinsic width so only the mirror sizes the track; the input then fills it. */
 .title-sizer :deep(input) {
+  width: 0;
+  min-width: 100%;
   cursor: text;
   background: transparent;
   text-overflow: ellipsis;
