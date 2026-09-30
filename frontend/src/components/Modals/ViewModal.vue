@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { IconPicker } from 'frappe-ui/icons'
+import { IconPicker } from 'frappe-ui/experimental'
 import { isEmoji } from '@/utils'
 import { call } from 'frappe-ui'
 import { ref, computed, watch, nextTick } from 'vue'

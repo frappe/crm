@@ -77,7 +77,6 @@ import {
   call,
   createResource,
   toast,
-  TextEditor,
   DatePicker,
 } from 'frappe-ui'
 import { ref, computed, onMounted, h } from 'vue'

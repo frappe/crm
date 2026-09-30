@@ -175,7 +175,7 @@
 </template>
 
 <script setup>
-import { useTheme } from 'frappe-ui'
+import { useColorScheme } from 'frappe-ui'
 import { computed } from 'vue'
 
 defineProps({
@@ -183,16 +183,16 @@ defineProps({
   name: { type: String, default: '' },
 })
 
-const { currentTheme, setTheme } = useTheme()
+const { colorScheme, setColorScheme } = useColorScheme()
 
 const theme = computed({
   get() {
-    if (currentTheme.value === 'light') return 'light'
-    if (currentTheme.value === 'dark') return 'dark'
+    if (colorScheme.value === 'light') return 'light'
+    if (colorScheme.value === 'dark') return 'dark'
     return 'system'
   },
   set(value) {
-    setTheme(value)
+    setColorScheme(value)
   },
 })
 </script>

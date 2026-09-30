@@ -35,7 +35,8 @@
   </div>
 </template>
 <script setup>
-import { AxisChart, DonutChart, NumberChart, Tooltip } from 'frappe-ui'
+import { Tooltip } from 'frappe-ui'
+import { AxisChart, DonutChart, NumberChart } from 'frappe-ui/experimental'
 
 defineProps({
   index: { type: Number, required: true },
