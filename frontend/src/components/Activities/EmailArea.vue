@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cursor-pointer flex flex-col rounded-md shadow-sm bg-surface-elevation-1 px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
+    class="cursor-pointer flex flex-col rounded-5 shadow-sm bg-surface-elevation-1 px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
   >
     <div
       class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9"
@@ -149,7 +149,7 @@ const status = computed(() => {
   if (['Sent', 'Clicked'].includes(_status)) {
     indicator_color = 'green'
   } else if (['Sending', 'Scheduled'].includes(_status)) {
-    indicator_color = 'orange'
+    indicator_color = 'amber'
   } else if (['Opened', 'Read'].includes(_status)) {
     indicator_color = 'blue'
   } else if (_status == 'Error') {

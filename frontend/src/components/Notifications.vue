@@ -28,8 +28,9 @@
       </div>
       <TabButtons
         v-model="activeTab"
-        :buttons="tabs"
-        class="flex px-4 py-0.5 [&_button]:w-full [&_div]:w-full [&_button>span]:w-full"
+        :options="tabs"
+        fluid
+        class="px-4 py-0.5"
       />
       <div v-if="activeTab == 'all'" class="flex h-full">
         <div
@@ -99,7 +100,7 @@ import {
 import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'
 import { onClickOutside } from '@vueuse/core'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { TabButtons } from 'frappe-ui'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 

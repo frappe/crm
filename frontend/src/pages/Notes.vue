@@ -7,7 +7,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createNote"
       />
     </template>
@@ -31,7 +31,7 @@
       <div
         v-for="note in notes.data.data"
         :key="note.name"
-        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
+        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-6 border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
         @click="editNote(note.name)"
       >
         <div class="flex items-center justify-between">
@@ -42,12 +42,12 @@
             :options="[
               {
                 label: __('Edit'),
-                icon: 'edit-2',
+                icon: 'lucide-edit-2',
                 onClick: () => editNote(note.name),
               },
               {
                 label: __('Delete'),
-                icon: 'trash-2',
+                icon: 'lucide-trash-2',
                 onClick: () => deleteNote(note.name),
               },
             ]"
@@ -107,8 +107,10 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate, sanitizeHTML } from '@/utils'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { call, Dropdown, Tooltip } from 'frappe-ui'
+import { ListFooter } from 'frappe-ui/experimental'
 import { ref, watch } from 'vue'
 
 const { getUser } = usersStore()

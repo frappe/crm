@@ -8,7 +8,7 @@
 
 <script setup>
 import { usePageMeta } from 'frappe-ui'
-import { DataImport } from 'frappe-ui/frappe'
+import { DataImport } from '@framework/ui/components/DataImport'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

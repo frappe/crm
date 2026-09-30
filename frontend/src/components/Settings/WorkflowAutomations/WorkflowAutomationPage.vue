@@ -4,6 +4,21 @@
     :title="__('Workflow Automations')"
     :description="__('Create workflow automations for CRM documents')"
   >
+    <template #title>
+      <div class="flex items-center gap-2">
+        <h2 class="flex text-2xl-semibold leading-none h-5">
+          {{ __('Workflow Automations') }}
+        </h2>
+        <Tooltip :text="__('View documentation')">
+          <a
+            href="https://docs.frappe.io/wiki-app/spaces/22qcan55rk/page/36r50jmgu2"
+            target="_blank"
+          >
+            <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+          </a>
+        </Tooltip>
+      </div>
+    </template>
     <template #header-actions>
       <Button
         :label="__('New')"
@@ -14,14 +29,16 @@
     </template>
     <template v-if="showSearch" #header-bottom>
       <div class="relative">
-        <Input
-          :model-value="search"
+        <TextInput
+          v-model="search"
           :placeholder="__('Search')"
-          icon-left="search"
-          debounce="300"
-          class="rounded border-outline-gray-2 bg-surface-gray-2"
-          @input="search = $event"
-        />
+          :debounce="300"
+          class="rounded-4 border-outline-gray-2 bg-surface-gray-2"
+        >
+          <template #prefix>
+            <span class="lucide-search size-4" aria-hidden="true" />
+          </template>
+        </TextInput>
         <Button
           v-if="search"
           icon="lucide-x"
@@ -77,7 +94,7 @@
             <ListCell>
               <Badge
                 :label="row.enabled ? __('Enabled') : __('Draft')"
-                :theme="row.enabled ? 'green' : 'orange'"
+                :theme="row.enabled ? 'green' : 'amber'"
                 variant="outline"
               />
             </ListCell>
@@ -100,12 +117,15 @@
                 <Tooltip :text="getUser(row.owner).full_name">
                   <UserAvatar :user="row.owner" size="sm" />
                 </Tooltip>
-                <Dropdown placement="right" :options="rowOptions(row)">
+                <Dropdown
+                  align="end"
+                  :options="rowOptions(row)"
+                  @update:open="(open) => open && (confirmingDelete = '')"
+                >
                   <Button
                     icon="lucide-more-horizontal"
                     variant="ghost"
                     class="ml-auto"
-                    @click="confirmingDelete = ''"
                   />
                 </Dropdown>
               </div>
@@ -141,6 +161,7 @@
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import WorkflowAutomationBuilder from './WorkflowAutomationBuilder.vue'
 import WorkflowAutomationDetail from './WorkflowAutomationDetail.vue'
@@ -320,7 +341,7 @@ function rowOptions(automation) {
   return [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => duplicateAutomation(automation),
     },
     ...ConfirmDelete({

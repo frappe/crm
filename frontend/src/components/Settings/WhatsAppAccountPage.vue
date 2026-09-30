@@ -14,7 +14,7 @@
           v-if="account.isDirty"
           :label="__('Not Saved')"
           variant="subtle"
-          theme="orange"
+          theme="amber"
         />
       </div>
       <div class="flex w-3/12 justify-end">

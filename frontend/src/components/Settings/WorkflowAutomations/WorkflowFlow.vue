@@ -71,7 +71,7 @@
           v-if="canDelete"
           icon="lucide-trash-2"
           variant="ghost"
-          class="text-ink-red-6"
+          class="text-ink-red-5"
           :aria-label="
             selectedId === 'trigger' ? __('Remove trigger') : __('Remove step')
           "
@@ -120,19 +120,14 @@
                   <div
                     class="flex h-[47px] shrink-0 items-center gap-1.5 border-b border-outline-gray-3 px-2"
                   >
-                    <div
+                    <component
+                      :is="data.icon"
                       v-if="!data.empty"
-                      class="flex size-[30px] shrink-0 items-center justify-center rounded-[6px] border"
-                      :class="data.chip"
-                    >
-                      <component
-                        :is="data.icon"
-                        class="workflow-node-icon size-5"
-                        :class="data.tone"
-                      />
-                    </div>
+                      class="workflow-node-icon size-4 shrink-0"
+                      :class="data.tone"
+                    />
                     <div
-                      class="min-w-0 flex-1 truncate text-[11px] font-medium leading-[13px] text-ink-gray-9"
+                      class="min-w-0 flex-1 truncate text-base font-medium text-ink-gray-9"
                       :class="{ 'text-center': data.empty }"
                     >
                       {{ data.label }}
@@ -140,7 +135,7 @@
                     <Badge
                       v-if="data.forced"
                       :label="__('Forced')"
-                      theme="orange"
+                      theme="amber"
                       variant="subtle"
                     />
                     <Spinner
@@ -156,14 +151,14 @@
                     />
                     <ErrorIcon
                       v-else-if="data.error"
-                      class="size-4 shrink-0 text-ink-red-4"
+                      class="size-4 shrink-0 text-ink-red-3"
                     />
                     <Tooltip
                       v-else-if="data.incomplete"
                       :text="data.incomplete"
                     >
                       <IncompleteIcon
-                        class="size-4 shrink-0 text-ink-amber-6"
+                        class="size-4 shrink-0 text-ink-amber-5"
                       />
                     </Tooltip>
                   </div>
@@ -343,10 +338,10 @@ const RUN_ICONS = {
 }
 
 const RUN_COLORS = {
-  Success: 'text-ink-green-5',
+  Success: 'text-ink-green-4',
   Skipped: 'text-ink-gray-4',
-  Failed: 'text-ink-red-5',
-  Waiting: 'text-ink-amber-6',
+  Failed: 'text-ink-red-4',
+  Waiting: 'text-ink-amber-5',
 }
 const flowId = useId()
 const flowRoot = ref(null)

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-surface-gray-1 px-4 py-3 hover:bg-surface-gray-2"
+    class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-5 bg-surface-gray-1 px-4 py-3 hover:bg-surface-gray-2"
   >
     <div class="flex items-center justify-between">
       <div class="truncate text-lg-medium text-ink-gray-8">
@@ -10,12 +10,12 @@
         :options="[
           {
             label: __('Edit'),
-            icon: 'edit-2',
+            icon: 'lucide-edit-2',
             onClick: () => modalRef.showNote(note),
           },
           {
             label: __('Delete'),
-            icon: 'trash-2',
+            icon: 'lucide-trash-2',
             onClick: () => deleteNote(note.name),
           },
         ]"

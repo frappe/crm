@@ -24,7 +24,7 @@
             v-if="activeTab === 'advanced' && settingsPage?.isDirty"
             :label="__('Not Saved')"
             variant="subtle"
-            theme="orange"
+            theme="amber"
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">
@@ -54,15 +54,20 @@
       />
     </div>
 
-    <Tabs v-model="tabIndex" as="div" :tabs="tabs">
+    <Tabs
+      v-model="activeTab"
+      as="div"
+      :tabs="tabs"
+      class="flex-1 overflow-hidden [&>[data-slot=tab-panel]]:flex [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
+    >
       <template #tab-panel="{ tab }">
         <div class="flex h-full flex-col px-6 py-5">
           <WhatsAppTemplateList
-            v-if="tab.name === 'templates'"
+            v-if="tab.value === 'templates'"
             @edit="editTemplate"
           />
           <WhatsAppAccountList
-            v-else-if="tab.name === 'accounts'"
+            v-else-if="tab.value === 'accounts'"
             @edit="editAccount"
           />
           <SettingsPage
@@ -87,17 +92,16 @@ import WhatsAppTemplateList from '@/components/Settings/WhatsAppTemplateList.vue
 import WhatsAppTemplatePage from '@/components/Settings/WhatsAppTemplatePage.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { Tabs } from 'frappe-ui'
-import { computed, ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 
 // Templates first: they change far more often than the account or the connection.
 const tabs = [
-  { name: 'templates', label: __('Templates') },
-  { name: 'accounts', label: __('Accounts') },
-  { name: 'advanced', label: __('Advanced') },
+  { value: 'templates', label: __('Templates') },
+  { value: 'accounts', label: __('Accounts') },
+  { value: 'advanced', label: __('Advanced') },
 ]
 
 const step = ref('home')
-const tabIndex = ref(0)
 const accountName = ref('')
 const templateName = ref('')
 const templateReferenceDoctype = ref('')
@@ -105,7 +109,7 @@ const templateReferenceDoctype = ref('')
 const settingsPage = useTemplateRef('settingsPage')
 const { on } = useBroadcast()
 
-const activeTab = computed(() => tabs[tabIndex.value]?.name)
+const activeTab = ref('templates')
 
 function editAccount(name) {
   accountName.value = name
@@ -138,7 +142,7 @@ function showHome() {
 
 // The template picker on a document opens this page straight onto a new template.
 on('whatsapp_template_page', (data) => {
-  tabIndex.value = 0
+  activeTab.value = 'templates'
   newTemplate(data?.reference_doctype || '')
 })
 </script>

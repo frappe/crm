@@ -1,4 +1,5 @@
 import { Dialog, ErrorMessage } from 'frappe-ui'
+import { spriteIcon } from '@/utils/spriteIcon'
 import { reactive, ref } from 'vue'
 
 let dialogs = ref([])
@@ -15,6 +16,7 @@ export let Dialogs = {
         title={dialog.title}
         size={dialog.size}
         icon={dialog.icon}
+        theme={dialog.theme}
         position={dialog.position}
         actions={dialog.actions}
         open={dialog.show}
@@ -38,6 +40,8 @@ export let Dialogs = {
 
 export function createDialog(dialogOptions) {
   let dialog = reactive(dialogOptions)
+  dialog.actions = withLegacyCloseContext(dialog.actions)
+  Object.assign(dialog, withLegacyIcon(dialog))
   dialog.key = 'dialog-' + dialogs.value.length
   dialog.show = false
   setTimeout(() => {
@@ -45,4 +49,41 @@ export function createDialog(dialogOptions) {
   }, 0)
   dialogs.value.push(dialog)
   return dialog
+}
+
+const APPEARANCE_THEMES = {
+  warning: 'amber',
+  info: 'blue',
+  danger: 'red',
+  success: 'green',
+}
+
+// Saved Form Scripts may still use `onClick(close)`; frappe-ui now passes `{ close }`.
+function withLegacyCloseContext(actions) {
+  return actions?.map((action) => {
+    if (!action.onClick) return action
+    return {
+      ...action,
+      onClick: ({ close }) => {
+        const context = () => close()
+        context.close = close
+        return action.onClick(context)
+      },
+    }
+  })
+}
+
+// Saved Form Scripts may still pass the old icon object ({ name, appearance }) or a feather name.
+function withLegacyIcon({ icon, theme }) {
+  const legacy = isLegacyIconObject(icon) ? icon : {}
+  const tone = theme ?? legacy.theme ?? APPEARANCE_THEMES[legacy.appearance]
+  return {
+    icon: spriteIcon(legacy.name ?? icon),
+    theme: tone === 'yellow' ? 'amber' : tone,
+  }
+}
+
+// Icon components such as `~icons/lucide/*` also carry a `name`.
+function isLegacyIconObject(icon) {
+  return typeof icon?.name === 'string' && !icon.render && !icon.setup
 }
