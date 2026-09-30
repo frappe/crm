@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-09-29 01:57\n"
+"PO-Revision-Date: 2026-09-30 02:05\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -9582,7 +9582,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:16
 msgid "Update timestamp on new communication"
-msgstr ""
+msgstr "Actualizar marca de tiempo en comunicación nueva"
 
 #: frontend/src/components/Modals/EditValueModal.vue:60
 msgid "Update {0} Records"
