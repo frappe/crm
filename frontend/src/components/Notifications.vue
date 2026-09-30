@@ -69,8 +69,20 @@
             <div class="text-sm text-ink-gray-5">
               {{ __(timeAgo(n.creation)) }}
             </div>
+<<<<<<< HEAD
           </div>
         </RouterLink>
+=======
+          </RouterLink>
+        </div>
+        <EmptyState
+          v-else
+          :title="__('No New Notifications')"
+          :description="__('You have no new notifications')"
+          :icon="NotificationsIcon"
+          width="lg"
+        />
+>>>>>>> 292a065 (fix: translate untranslated CRM user-facing messages)
       </div>
       <EmptyState
         v-else

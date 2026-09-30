@@ -117,7 +117,9 @@ const coordinateSummary = computed(() => {
       return `${latStr}, ${lngStr}`
     }
     const count = features.length
-    return __(`{0} ${count === 1 ? 'feature' : 'features'}`, [count])
+    return count === 1
+      ? __('{0} feature', [count])
+      : __('{0} features', [count])
   } catch {
     return __('Invalid GeoJSON')
   }
