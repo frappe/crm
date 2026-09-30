@@ -120,19 +120,14 @@
                   <div
                     class="flex h-[47px] shrink-0 items-center gap-1.5 border-b border-outline-gray-3 px-2"
                   >
-                    <div
+                    <component
+                      :is="data.icon"
                       v-if="!data.empty"
-                      class="flex size-[30px] shrink-0 items-center justify-center rounded-[6px] border"
-                      :class="data.chip"
-                    >
-                      <component
-                        :is="data.icon"
-                        class="workflow-node-icon size-5"
-                        :class="data.tone"
-                      />
-                    </div>
+                      class="workflow-node-icon size-4 shrink-0"
+                      :class="data.tone"
+                    />
                     <div
-                      class="min-w-0 flex-1 truncate text-[11px] font-medium leading-[13px] text-ink-gray-9"
+                      class="min-w-0 flex-1 truncate text-base font-medium text-ink-gray-9"
                       :class="{ 'text-center': data.empty }"
                     >
                       {{ data.label }}
