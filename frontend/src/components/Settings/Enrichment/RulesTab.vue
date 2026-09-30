@@ -1,12 +1,15 @@
 <template>
   <div class="flex-1 flex flex-col overflow-y-auto">
+    <!-- Styled like ERPNextSettings.vue's unsynced-items note. -->
+    <div
+      v-if="!enabled"
+      class="mt-3 rounded bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
+    >
+      {{ __('Enrichment is off. These rules apply once it is turned on.') }}
+    </div>
     <EnrichmentRuleSection
       :title="__('Social profile rules')"
-      :subtitle="
-        __(
-          'Find social profile links on the company website by matching them against each platform pattern.',
-        )
-      "
+      :subtitle="__('Allow users to enrich leads when a website is available.')"
       :add-label="__('Add Social')"
       :loading="social.loading"
       :error="social.error"
@@ -114,16 +117,12 @@
       </div>
     </EnrichmentRuleSection>
 
-    <div class="h-px border-t mx-2 border-outline-elevation-2" />
+    <div class="h-px border-t border-outline-elevation-2" />
 
     <EnrichmentRuleSection
       class="mt-4"
       :title="__('Industry rules')"
-      :subtitle="
-        __(
-          'Pick an industry by scoring the company website against the keywords on each rule. Weak or unclear matches are skipped.',
-        )
-      "
+      :subtitle="__('Allow users to enrich leads when a website is available.')"
       :add-label="__('Add Industry')"
       :loading="industry.loading"
       :error="industry.error"
@@ -234,6 +233,8 @@ import {
 // tab switch. This only renders them and hands every change back to the
 // composable that owns the row.
 const props = defineProps({
+  // The rules stay editable while enrichment is off; this only shows the note.
+  enabled: { type: Boolean, default: true },
   social: { type: Object, required: true },
   industry: { type: Object, required: true },
 })
