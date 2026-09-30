@@ -11,7 +11,7 @@
   <div class="relative flex h-full bg-surface-gray-1">
     <Sidebar
       v-model:collapsed="isSidebarCollapsed"
-      :disable-collapse="mobile"
+      :collapsible="!mobile"
       :width="mobile ? '260px' : undefined"
       class="border-r border-outline-gray-1"
     >
@@ -25,7 +25,7 @@
           <SidebarItem
             id="notifications-btn"
             :label="__('Notifications')"
-            :to="mobile ? { name: 'Notifications' } : undefined"
+            :route="mobile ? { name: 'Notifications' } : undefined"
             :active="mobile && activeItem === 'Notifications'"
             @click="onNotificationsClick"
           >
@@ -77,7 +77,7 @@
               <SidebarItem
                 v-for="link in section.views"
                 :key="link.key"
-                :to="link.to"
+                :route="link.to"
                 :label="__(link.label)"
                 :active="activeItem === link.key"
                 @click="selectItem($event, link.key)"
