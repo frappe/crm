@@ -539,7 +539,6 @@ def get_average_deal_value(from_date: str | None = None, to_date: str | None = N
 		"value": current_month_avg,
 		"prefix": get_base_currency_symbol(),
 		"delta": delta,
-		"deltaSuffix": "%",
 	}
 
 
