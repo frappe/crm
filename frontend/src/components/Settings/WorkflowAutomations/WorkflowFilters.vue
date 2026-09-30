@@ -1,8 +1,11 @@
 <template>
   <div class="space-y-2">
-    <label v-if="label" class="block text-sm text-ink-gray-5">{{
-      label
-    }}</label>
+    <div v-if="label" class="flex items-center gap-1">
+      <label class="block text-sm text-ink-gray-5">{{ label }}</label>
+      <Tooltip v-if="info" :text="info">
+        <InfoIcon class="size-3.5 text-ink-gray-5" />
+      </Tooltip>
+    </div>
     <ConditionBuilder
       v-if="tree.conditions.length"
       :key="doctype"
@@ -45,7 +48,8 @@ import {
   fromFrappeConditions,
   toFrappeConditions,
 } from '@framework/ui/components/ConditionBuilder'
-import { Button, Dropdown } from 'frappe-ui'
+import InfoIcon from '~icons/lucide/info'
+import { Button, Dropdown, Tooltip } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 /** The builder names its operators; frappe's filter grammar wants its own tokens. */
@@ -65,6 +69,7 @@ const props = defineProps({
   label: { type: String, default: () => __('Filters') },
   // Hides the grouping controls. Conjunctions are still stored and honoured.
   flat: { type: Boolean, default: false },
+  info: { type: String, default: '' },
 })
 
 const emit = defineEmits(['update:modelValue'])

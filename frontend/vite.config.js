@@ -200,6 +200,10 @@ function getAliases(config) {
       import.meta.dirname,
       '../frappe-ui/src/molecules/list/index.ts',
     ),
+    'frappe-ui/code-editor': path.resolve(
+      import.meta.dirname,
+      '../frappe-ui/src/components/CodeEditor/index.ts',
+    ),
     'frappe-ui/editor-style.css': path.resolve(
       import.meta.dirname,
       '../frappe-ui/src/molecules/editor/style.css',
