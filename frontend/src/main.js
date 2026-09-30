@@ -23,7 +23,7 @@ import {
   FeatherIcon,
 } from 'frappe-ui'
 
-import { telemetryPlugin } from 'frappe-ui/frappe'
+import { telemetryPlugin } from '@framework/ui/telemetry'
 // injects the lucide SVG sprite into the DOM so the IconPicker and lucide Icons
 // (used for view icons) can render from it
 import { spritePlugin } from 'frappe-ui/icons'

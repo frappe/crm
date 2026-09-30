@@ -149,7 +149,8 @@ import {
   call,
   toast,
 } from 'frappe-ui'
-import { useTelemetry, useOnboarding } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import { ref, reactive, h } from 'vue'
 import { ConfirmDelete, copyToClipboard } from '../../../utils'

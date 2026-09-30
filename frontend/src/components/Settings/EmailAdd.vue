@@ -95,7 +95,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,

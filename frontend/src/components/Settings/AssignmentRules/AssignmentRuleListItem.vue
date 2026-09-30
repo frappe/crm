@@ -78,7 +78,7 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { inject, ref, reactive, watch } from 'vue'
 import { ConfirmDelete } from '../../../utils'
 

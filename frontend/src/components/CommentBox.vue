@@ -92,7 +92,7 @@ import {
 } from '@/components/editor/config'
 import { submitShortcutLabel } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { FileUploader } from 'frappe-ui'
 import {
   Editor,

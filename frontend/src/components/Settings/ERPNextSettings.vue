@@ -473,7 +473,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
 import { formatDate } from '@/utils'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 
 const { $dialog, $socket } = globalStore()
 const { capture } = useTelemetry()
