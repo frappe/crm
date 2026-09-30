@@ -67,10 +67,10 @@
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -96,7 +96,7 @@
         <Activities
           v-else
           v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
+          v-model:activeTab="activeTab"
           doctype="CRM Lead"
           :docname="leadId"
           :tabs="tabs"
@@ -294,61 +294,71 @@ const tabs = computed(() => {
   let tabOptions = [
     {
       name: 'Details',
+      value: 'details',
       label: __('Details'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
       condition: () => isMobileView.value,
     },
     {
       name: 'Activity',
+      value: 'activity',
       label: __('Activity'),
-      icon: ActivityIcon,
+      iconLeft: ActivityIcon,
     },
     {
       name: 'Emails',
+      value: 'emails',
       label: __('Emails'),
-      icon: EmailIcon,
+      iconLeft: EmailIcon,
     },
     {
       name: 'Comments',
+      value: 'comments',
       label: __('Comments'),
-      icon: CommentIcon,
+      iconLeft: CommentIcon,
     },
     {
       name: 'Data',
+      value: 'data',
       label: __('Data'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
     },
     {
       name: 'Calls',
+      value: 'calls',
       label: __('Calls'),
-      icon: PhoneIcon,
+      iconLeft: PhoneIcon,
     },
     {
       name: 'Tasks',
+      value: 'tasks',
       label: __('Tasks'),
-      icon: TaskIcon,
+      iconLeft: TaskIcon,
     },
     {
       name: 'Notes',
+      value: 'notes',
       label: __('Notes'),
-      icon: NoteIcon,
+      iconLeft: NoteIcon,
     },
     {
       name: 'Attachments',
+      value: 'attachments',
       label: __('Attachments'),
-      icon: AttachmentIcon,
+      iconLeft: AttachmentIcon,
     },
     {
       name: 'WhatsApp',
+      value: 'whatsapp',
       label: __('WhatsApp'),
-      icon: WhatsAppIcon,
+      iconLeft: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
   ]
   return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
 })
 
-const { tabIndex } = useActiveTabManager(tabs, 'lastLeadTab')
+const { activeTab } = useActiveTabManager(tabs, 'lastLeadTab')
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',

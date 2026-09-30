@@ -50,10 +50,10 @@
     <div v-if="loaded" class="flex-1 overflow-y-auto px-6 pb-6">
       <!-- EDIT MODE -->
       <div v-if="mode === 'edit'" class="wf-tabs">
-        <Tabs v-model="tabIndex" as="div" :tabs="tabs">
+        <Tabs v-model="activeTab" as="div" :tabs="tabs">
           <template #tab-panel="{ tab }">
             <!-- EDITOR TAB -->
-            <div v-if="tab.name === 'editor'" class="pt-5">
+            <div v-if="tab.value === 'editor'" class="pt-5">
               <!-- form masthead (title + description) — typed right on the canvas -->
               <div class="mb-5 px-1">
                 <input
@@ -291,7 +291,10 @@
             </div>
 
             <!-- SETTINGS TAB -->
-            <div v-else-if="tab.name === 'settings'" class="flex flex-col pt-5">
+            <div
+              v-else-if="tab.value === 'settings'"
+              class="flex flex-col pt-5"
+            >
               <!-- form details -->
               <div>
                 <div class="flex flex-col gap-1">
@@ -709,11 +712,11 @@ const dirty = ref(false)
 
 const savedPublished = ref(false)
 const mode = ref('edit') // edit | preview
-const tabIndex = ref(0)
+const activeTab = ref('editor')
 const tabs = [
-  { name: 'editor', label: __('Editor'), icon: LucideLayoutList },
-  { name: 'settings', label: __('Settings'), icon: LucideSettings },
-  { name: 'share', label: __('Share'), icon: LucideShare2 },
+  { value: 'editor', label: __('Editor'), iconLeft: LucideLayoutList },
+  { value: 'settings', label: __('Settings'), iconLeft: LucideSettings },
+  { value: 'share', label: __('Share'), iconLeft: LucideShare2 },
 ]
 const expanded = ref(null) // fieldname of the expanded field editor
 const descInput = ref(null)

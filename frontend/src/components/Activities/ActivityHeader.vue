@@ -80,7 +80,6 @@ import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
 
 const props = defineProps({
-  tabs: { type: Array, default: () => [] },
   title: { type: String, default: '' },
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
@@ -88,7 +87,7 @@ const props = defineProps({
 
 const { makeCall } = globalStore()
 
-const tabIndex = defineModel({ type: Number })
+const activeTab = defineModel({ type: String })
 const showFilesUploader = defineModel('showFilesUploader', { type: Boolean })
 const emailBox = defineModel('emailBox', { type: Object, default: () => ({}) })
 
@@ -133,7 +132,7 @@ const defaultActions = computed(() => {
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('WhatsApp Message'),
-      onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
+      onClick: () => (activeTab.value = 'whatsapp'),
       condition: () => whatsappEnabled.value,
     },
   ]
@@ -141,10 +140,6 @@ const defaultActions = computed(() => {
     action.condition ? action.condition() : true,
   )
 })
-
-function getTabIndex(name) {
-  return props.tabs.findIndex((tab) => tab.name === name)
-}
 
 const callActions = computed(() => {
   let actions = [

@@ -99,29 +99,21 @@
       </template>
     </FileUploader>
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tablist']]:gap-3 [&_[role='tablist']]:px-4 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
-      <template #tab-item="{ tab, selected }">
-        <button
-          v-if="tab.name == 'Deals'"
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9 !px-4"
-          :class="{ 'text-ink-gray-9': selected }"
+      <template #tab-suffix="{ tab, active }">
+        <Badge
+          v-if="tab.value === 'deals'"
+          :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
+          variant="solid"
+          theme="gray"
+          size="sm"
         >
-          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
-          {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-surface-gray-10"
-            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
-            {{ tab.count }}
-          </Badge>
-        </button>
+          {{ tab.count }}
+        </Badge>
       </template>
       <template #tab-panel="{ tab }">
         <div v-if="tab.name == 'Details'">
@@ -149,7 +141,7 @@
           class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
-            <component :is="tab.icon" class="!h-10 !w-10" />
+            <component :is="tab.iconLeft" class="!h-10 !w-10" />
             <div>{{ __('No {0} found', [__(tab.label.toLowerCase())]) }}</div>
           </div>
         </div>
@@ -297,17 +289,19 @@ async function deleteContact() {
   })
 }
 
-const tabIndex = ref(0)
+const activeTab = ref('details')
 const tabs = [
   {
     name: 'Details',
+    value: 'details',
     label: __('Details'),
-    icon: DetailsIcon,
+    iconLeft: DetailsIcon,
   },
   {
     name: 'Deals',
+    value: 'deals',
     label: __('Deals'),
-    icon: h(DealsIcon, { class: 'h-4 w-4' }),
+    iconLeft: h(DealsIcon, { class: 'h-4 w-4' }),
     count: computed(() => deals.data?.length),
   },
 ]

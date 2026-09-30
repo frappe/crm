@@ -1,9 +1,8 @@
 <template>
   <ActivityHeader
-    v-model="tabIndex"
+    v-model="activeTab"
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
-    :tabs="tabs"
     :title="title"
     :doc="doc"
     :modalRef="modalRef"
@@ -570,7 +569,10 @@ const emit = defineEmits(['beforeSave', 'afterSave'])
 const route = useRoute()
 
 const reload = defineModel('reload', { type: Boolean, default: false })
-const tabIndex = defineModel('tabIndex', { type: Number, default: 0 })
+const activeTab = defineModel('activeTab', {
+  type: String,
+  default: 'activity',
+})
 
 const { document: _document } = useDocument(props.doctype, props.docname)
 
@@ -582,13 +584,15 @@ const showFilesUploader = ref(false)
 const fieldLayoutTabIndex = ref(0)
 const fieldLayoutTabName = ref('')
 
-const title = computed(() => props.tabs?.[tabIndex.value]?.name || 'Activity')
+const title = computed(
+  () =>
+    props.tabs?.find((tab) => tab.value === activeTab.value)?.name ||
+    'Activity',
+)
 
 const changeTabTo = (tabName) => {
-  const tabNames = props.tabs?.map((tab) => tab.name?.toLowerCase())
-  const index = tabNames?.indexOf(tabName)
-  if (index == -1) return
-  tabIndex.value = index
+  if (!props.tabs?.some((tab) => tab.value === tabName)) return
+  activeTab.value = tabName
 }
 
 const all_activities = createResource({

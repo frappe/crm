@@ -7,7 +7,7 @@ vi.mock('frappe-ui', async () => {
   return {
     Tabs: defineComponent({
       props: {
-        modelValue: { type: Number, default: 0 },
+        modelValue: { type: [String, Number], default: undefined },
         tabs: { type: Array, default: () => [] },
       },
       emits: ['update:modelValue'],
@@ -17,13 +17,13 @@ vi.mock('frappe-ui', async () => {
             h(
               'div',
               { role: 'tablist' },
-              props.tabs.map((tab, index) =>
+              props.tabs.map((tab) =>
                 h(
                   'button',
                   {
                     role: 'tab',
-                    'aria-selected': props.modelValue === index,
-                    onClick: () => emit('update:modelValue', index),
+                    'aria-selected': props.modelValue === tab.value,
+                    onClick: () => emit('update:modelValue', tab.value),
                   },
                   tab.label,
                 ),
@@ -32,7 +32,9 @@ vi.mock('frappe-ui', async () => {
             h(
               'div',
               { role: 'tabpanel' },
-              slots['tab-panel']?.({ tab: props.tabs[props.modelValue] }),
+              slots['tab-panel']?.({
+                tab: props.tabs.find((tab) => tab.value === props.modelValue),
+              }),
             ),
           ])
       },
@@ -61,9 +63,8 @@ vi.mock('@/components/FieldLayout/Section.vue', () => ({
 
 describe('FieldLayout tab state', () => {
   it('keeps the selected data field tab when the layout remounts', async () => {
-    const { default: FieldLayout } = await import(
-      '@/components/FieldLayout/FieldLayout.vue'
-    )
+    const { default: FieldLayout } =
+      await import('@/components/FieldLayout/FieldLayout.vue')
 
     const root = document.createElement('div')
     document.body.appendChild(root)
@@ -136,9 +137,8 @@ describe('FieldLayout tab state', () => {
   })
 
   it('keeps the selected data field tab when DataFields remounts', async () => {
-    const { default: FieldLayout } = await import(
-      '@/components/FieldLayout/FieldLayout.vue'
-    )
+    const { default: FieldLayout } =
+      await import('@/components/FieldLayout/FieldLayout.vue')
 
     const root = document.createElement('div')
     document.body.appendChild(root)
@@ -228,9 +228,8 @@ describe('FieldLayout tab state', () => {
   })
 
   it('keeps the selected tab by name when labels are duplicated and tabs reload', async () => {
-    const { default: FieldLayout } = await import(
-      '@/components/FieldLayout/FieldLayout.vue'
-    )
+    const { default: FieldLayout } =
+      await import('@/components/FieldLayout/FieldLayout.vue')
 
     const root = document.createElement('div')
     document.body.appendChild(root)
@@ -310,9 +309,8 @@ describe('FieldLayout tab state', () => {
   })
 
   it('restores the selected tab name from session storage after page remount', async () => {
-    const { default: FieldLayout } = await import(
-      '@/components/FieldLayout/FieldLayout.vue'
-    )
+    const { default: FieldLayout } =
+      await import('@/components/FieldLayout/FieldLayout.vue')
 
     const root = document.createElement('div')
     document.body.appendChild(root)
