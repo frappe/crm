@@ -38,14 +38,17 @@
                 />
               </span>
             </template>
-            <template #suffix>
-              <Badge
-                v-if="unreadNotificationsCount"
-                class="mr-2"
-                :label="unreadNotificationsCount"
-                variant="subtle"
-              />
-            </template>
+            <!-- Not in #suffix: that slot sits outside the button, so a click on
+                 the count would not toggle the panel. -->
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Notifications') }}
+            </span>
+            <Badge
+              v-if="unreadNotificationsCount"
+              class="mr-2"
+              :label="unreadNotificationsCount"
+              variant="subtle"
+            />
           </SidebarItem>
 
           <CollapsibleSection
