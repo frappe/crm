@@ -45,7 +45,7 @@
                     <Tooltip
                       v-if="!['Button', 'HTML'].includes(field.fieldtype)"
                       :text="__(field.label)"
-                      :hoverDelay="1"
+                      :hoverDelay="1000"
                     >
                       <div
                         class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"

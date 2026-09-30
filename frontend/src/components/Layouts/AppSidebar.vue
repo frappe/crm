@@ -87,8 +87,8 @@
                 </template>
                 <Tooltip
                   :text="__(link.label)"
-                  placement="right"
-                  :hoverDelay="1.5"
+                  side="right"
+                  :hoverDelay="1500"
                   :disabled="isCollapsed"
                 >
                   <span class="truncate text-sm">{{ __(link.label) }}</span>

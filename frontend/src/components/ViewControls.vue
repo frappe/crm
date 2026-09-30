@@ -123,7 +123,7 @@
             />
           </template>
           <template #item-label="{ item }">
-            <Tooltip :text="item.value" :hover-delay="1">
+            <Tooltip :text="item.value" :hover-delay="1000">
               <div class="flex-1 truncate text-ink-gray-7">
                 {{ item.label }}
               </div>

@@ -1,5 +1,5 @@
 <template>
-  <Tooltip :text="tooltipText" placement="right" :hoverDelay="0">
+  <Tooltip :text="tooltipText" side="right" :hoverDelay="0">
     <div
       class="rating-stars inline-flex flex-wrap items-center gap-0.5 transition-opacity"
       :class="disabled ? 'opacity-50' : ''"

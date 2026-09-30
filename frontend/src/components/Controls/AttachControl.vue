@@ -27,8 +27,8 @@
       :class="[iconClasses, 'text-ink-gray-7']"
       aria-hidden="true"
     />
-    <Tooltip class="min-w-0 flex-1">
-      <template #body>
+    <Tooltip class="min-w-0 flex-1" :bare="isImage">
+      <template #content>
         <div v-if="isImage" class="overflow-hidden rounded shadow-xl">
           <img
             :src="value"
@@ -36,12 +36,7 @@
             :alt="filename"
           />
         </div>
-        <div
-          v-else
-          class="rounded bg-surface-gray-10 px-2 py-1.5 text-xs text-ink-base shadow-xl"
-        >
-          {{ filename }}
-        </div>
+        <template v-else>{{ filename }}</template>
       </template>
       <a
         class="block min-w-0 truncate text-ink-gray-8 hover:underline"

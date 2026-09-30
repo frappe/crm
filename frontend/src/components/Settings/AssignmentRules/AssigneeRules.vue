@@ -98,8 +98,7 @@
         <Tooltip
           v-if="user.email == assignmentRuleData.lastUser"
           :text="__('Last user assigned by this rule')"
-          :hover-delay="0.35"
-          :placement="'top'"
+          :hover-delay="350"
         >
           <div
             class="text-xs rounded-full select-none bg-blue-600 text-white p-0.5 px-2"
