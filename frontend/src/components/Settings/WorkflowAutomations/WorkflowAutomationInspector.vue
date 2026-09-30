@@ -91,11 +91,6 @@
           :placeholder="__('doc.status == \'Open\'')"
           @update:model-value="patch({ condition: $event })"
         />
-        <RelatedRecords
-          :model-value="doc.relationships"
-          :doctype="doc.document_type"
-          @update:model-value="patch({ relationships: $event })"
-        />
         <FormControl
           :model-value="doc.run_as"
           type="select"
@@ -120,7 +115,6 @@
 <script setup>
 import Link from '@/components/Controls/Link.vue'
 import ConditionEditor from './WorkflowConditionEditor.vue'
-import RelatedRecords from './WorkflowRelatedRecords.vue'
 import StepEditor from './WorkflowStepEditor.vue'
 import TriggerDetails from './WorkflowTriggerDetails.vue'
 import TriggerList from './WorkflowTriggerList.vue'
