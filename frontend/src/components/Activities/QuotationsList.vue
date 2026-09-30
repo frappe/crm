@@ -21,7 +21,7 @@
           :href="quotation.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="group flex cursor-pointer items-center gap-4 rounded p-3 duration-300 ease-in-out hover:bg-surface-gray-1"
+          class="group -mx-3 flex cursor-pointer items-center gap-4 rounded px-3 py-3 duration-300 ease-in-out hover:bg-surface-gray-1"
         >
           <div class="flex min-w-0 flex-1 flex-col gap-2 truncate text-base">
             <div class="flex items-center gap-2">
@@ -51,7 +51,7 @@
         </a>
         <div
           v-if="i < rows.length - 1"
-          class="mx-2 h-px border-t border-outline-elevation-2"
+          class="h-px border-t border-outline-elevation-2"
         />
       </div>
     </div>
