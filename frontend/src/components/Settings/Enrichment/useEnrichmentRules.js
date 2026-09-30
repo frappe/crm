@@ -67,10 +67,12 @@ export function useEnrichmentRules({
   let localRowSeq = 0
 
   // A stored rule the admin deleted stays in savedRows, flagged, until Save
-  // actually deletes it -- so the delete can be undone by not saving, and a
-  // failed delete can put the row back where it was.
+  // actually deletes it -- so the delete can be undone by not saving. A delete
+  // that failed stays flagged, so it is still pending and the next Save tries
+  // it again; the row comes back on screen, locked, only so its error has a
+  // row to sit under.
   const rows = computed(() => [
-    ...savedRows.value.filter((row) => !row.removed),
+    ...savedRows.value.filter((row) => !row.removed || row.serverError),
     ...localRows.value,
   ])
 
@@ -200,22 +202,27 @@ export function useEnrichmentRules({
   }
 
   function toggleEnabled(row) {
+    if (row.removed) return
     row.enabled = !row.enabled
     row.serverError = ''
   }
 
   // Every changed row is checked before anything is sent, so a Save either
   // starts with every row valid or doesn't start at all. `others` is every other
-  // row still on screen, for the duplicate checks.
+  // row that will still exist after the Save, for the duplicate checks -- a row
+  // waiting on a retried delete is on screen but neither checked nor counted.
   function validate() {
     let valid = true
     rows.value.forEach((row) => {
+      if (row.removed) return
       // A stored rule whose only edit is its status sends nothing but
       // `enabled`, so the fields it already had aren't held to the form's checks.
       if (row.name && !isRowChanged(row)) return
       clearErrors(row)
       row.serverError = ''
-      const others = rows.value.filter((other) => other !== row)
+      const others = rows.value.filter(
+        (other) => other !== row && !other.removed,
+      )
       if (!validateRow(row, others)) valid = false
     })
     return valid
@@ -239,6 +246,7 @@ export function useEnrichmentRules({
   }
 
   async function runDelete(row) {
+    row.serverError = ''
     try {
       await call('frappe.client.delete', {
         doctype: 'CRM Enrichment Rule',
@@ -247,9 +255,12 @@ export function useEnrichmentRules({
       delete patterns[row.name]
       return true
     } catch (err) {
-      // Back on screen, so the error has a row to sit under.
-      row.removed = false
-      row.serverError = serverMessage(err, row.ruleName, messages.deleteError)
+      // Still flagged, so the row stays dirty and the next Save retries the
+      // delete; the error puts it back on screen to say so.
+      const message = serverMessage(err, row.ruleName, messages.deleteError)
+      row.serverError = __('{0}. Save to try deleting it again.', [
+        message.replace(/\.+$/, ''),
+      ])
       return false
     }
   }

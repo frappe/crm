@@ -25,7 +25,7 @@
                 :model-value="row.platform"
                 :options="platformOptions()"
                 :placeholder="__('Platform')"
-                :disabled="social.saving"
+                :disabled="social.saving || row.removed"
                 @update:model-value="(option) => onPlatformSelect(row, option)"
                 @update:query="(query) => (platformQuery[row.key] = query)"
               >
@@ -52,7 +52,7 @@
               :model-value="row.pattern"
               type="text"
               :placeholder="__('Regex pattern')"
-              :disabled="social.saving"
+              :disabled="social.saving || row.removed"
               class="[&_input]:font-mono"
               :class="row.patternError ? invalidInputClass : ''"
               @update:model-value="(value) => social.onPatternInput(row, value)"
@@ -88,7 +88,7 @@
           <EnrichmentRuleMenu
             :enabled="row.enabled"
             :blank="social.isRowBlank(row)"
-            :disabled="social.saving"
+            :disabled="social.saving || row.removed"
             @toggle="social.toggleEnabled(row)"
             @delete="social.deleteRow(row)"
           />
@@ -140,7 +140,7 @@
               doctype="CRM Industry"
               :value="row.industry"
               :placeholder="__('Industry')"
-              :disabled="industry.saving"
+              :disabled="industry.saving || row.removed"
               @create="
                 (value, close) => industry.onIndustryCreate(row, value, close)
               "
@@ -163,7 +163,7 @@
               :model-value="row.keywords"
               type="text"
               :placeholder="__('Keywords, comma separated')"
-              :disabled="industry.saving"
+              :disabled="industry.saving || row.removed"
               :class="row.keywordsError ? invalidInputClass : ''"
               @update:model-value="
                 (value) => industry.onKeywordsInput(row, value)
@@ -200,7 +200,7 @@
           <EnrichmentRuleMenu
             :enabled="row.enabled"
             :blank="industry.isRowBlank(row)"
-            :disabled="industry.saving"
+            :disabled="industry.saving || row.removed"
             @toggle="industry.toggleEnabled(row)"
             @delete="industry.deleteRow(row)"
           />
