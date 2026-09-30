@@ -330,6 +330,12 @@ function appendEmoji() {
   capture('emoji_inserted_in_email', { emoji: emoji.value })
 }
 
+// Callable from outside (e.g. the command palette); setting the exposed ref
+// from a parent doesn't write through to .value, so open via a method.
+function openTemplateSelector() {
+  showEmailTemplateSelectorModal.value = true
+}
+
 function toggleCC() {
   cc.value = !cc.value
   if (cc.value) nextTick(() => ccInput.value.setFocus())
@@ -342,6 +348,8 @@ function toggleBCC() {
 
 defineExpose({
   editor,
+  showEmailTemplateSelectorModal,
+  openTemplateSelector,
   subject,
   cc,
   bcc,
