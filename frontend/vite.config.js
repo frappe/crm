@@ -128,6 +128,8 @@ export default defineConfig(() => {
       frappeProxy: true,
       lucideIcons: true,
       jinjaBootData: true,
+      // its esbuild helper breaks Vite 8's dependency scan
+      codeLanguages: false,
       buildConfig: {
         indexHtmlPath: '../crm/www/crm.html',
         emptyOutDir: true,
