@@ -34,6 +34,14 @@
     </div>
     <div v-else class="flex flex-col gap-3 py-2">
       <slot />
+      <Button
+        v-if="hasMore"
+        class="self-start"
+        variant="ghost"
+        :label="__('Load more')"
+        :loading="loadingMore"
+        @click="emit('load-more')"
+      />
     </div>
   </div>
 </template>
@@ -53,7 +61,9 @@ defineProps({
   emptyTitle: { type: String, default: '' },
   emptyDescription: { type: String, default: '' },
   emptyIcon: { type: String, default: 'file-text' },
+  hasMore: { type: Boolean, default: false },
+  loadingMore: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['add', 'retry'])
+const emit = defineEmits(['add', 'retry', 'load-more'])
 </script>
