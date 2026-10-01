@@ -13,7 +13,7 @@
       :description="__('Add one to start messaging.')"
       :icon="WhatsAppIcon"
     />
-    <div v-else class="w-full">
+    <div v-else class="-mx-2">
       <template v-for="(account, i) in accounts.data" :key="account.name">
         <div
           class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"

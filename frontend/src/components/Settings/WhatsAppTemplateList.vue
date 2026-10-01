@@ -41,7 +41,7 @@
         "
         :icon="WhatsAppIcon"
       />
-      <div v-else class="overflow-y-auto">
+      <div v-else class="-mx-2 overflow-y-auto">
         <template
           v-for="(template, i) in filteredTemplates"
           :key="template.name"
