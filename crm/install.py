@@ -445,6 +445,7 @@ def add_default_lead_sources():
 		"Facebook",
 		"Website",
 		"Web Form",
+		"WhatsApp",
 	]
 
 	for source in lead_sources:
