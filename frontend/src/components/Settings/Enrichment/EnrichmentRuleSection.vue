@@ -18,8 +18,7 @@
     <div v-if="loading" class="flex items-center justify-center py-10">
       <LoadingIndicator class="size-6" />
     </div>
-    <!-- Only stands in for the rows when there are none: a reload that fails
-         after the first load keeps the rows up and toasts instead. -->
+    <!-- Only with no rows: a failed reload keeps the rows up and toasts. -->
     <div
       v-else-if="error && !count"
       class="flex flex-col items-center justify-center gap-3 py-10"
@@ -48,9 +47,6 @@
 import { Button, LoadingIndicator } from 'frappe-ui'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 
-// The frame every rule_type on the Rules tab shares: heading, "+ Add" button,
-// and the one-of-four body (spinner / failed first load / nothing yet / rows).
-// The rows themselves differ per rule_type and come in through the slot.
 defineProps({
   title: { type: String, required: true },
   subtitle: { type: String, default: '' },
