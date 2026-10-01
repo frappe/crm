@@ -58,6 +58,11 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, 'src'),
+        // ahead of '@framework/ui': the island lives outside ui/src
+        '@framework/ui/island': path.resolve(
+          import.meta.dirname,
+          '../../frappe/ui/island',
+        ),
         // point at the package src dir (not index.ts) so subpath imports like
         // `@framework/ui/components/Notifications` resolve. Importing subpaths avoids the
         // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
