@@ -100,7 +100,7 @@
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
                           <Tooltip :text="__(field.tooltip)">
-                            <div>{{ doc[field.fieldname] }}</div>
+                            <div>{{ readOnlyValue(field) }}</div>
                           </Tooltip>
                         </div>
                         <PrimaryDropdown
@@ -515,6 +515,18 @@ const _sections = computed(() => {
     return _section
   })
 })
+
+function readOnlyValue(field) {
+  const value = doc.value[field.fieldname]
+  if (field.fieldtype !== 'Table MultiSelect') return value
+
+  // rows are child docs: show the value of their Link field, like the input does
+  const linkField = getMeta(field.options)
+    .getFields()
+    ?.find((df) => ['Link', 'User'].includes(df.fieldtype))
+  if (!linkField) return ''
+  return (value || []).map((row) => row[linkField.fieldname]).join(', ')
+}
 
 function parsedField(field) {
   // Clone to avoid mutating the cached layout data
