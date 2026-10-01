@@ -1,13 +1,8 @@
 import { useEnrichmentRules } from './useEnrichmentRules'
 
-// The platforms seeded with a rule, offered as suggestions in the Platform box.
-// It is not a whitelist: an admin can add any other platform, the way they can
-// add an Industry. Only these six are among the keys mapper.py writes to a CRM
-// field (_SOCIAL_KEYS there), so a link found for any other platform is kept on
-// the enrichment run but not written to a field.
-//
-// `pattern` is each platform's default regex. These mirror SOCIAL_PATTERNS in
-// crm/domain_enrichment/install.py and must stay in sync with it.
+// Not a whitelist; only these map to CRM fields (_SOCIAL_KEYS in mapper.py).
+// Patterns mirror SOCIAL_PATTERNS in crm/domain_enrichment/install.py; keep
+// them in sync.
 export const SOCIAL_PLATFORMS = [
   {
     label: 'LinkedIn',
@@ -41,8 +36,8 @@ export const SOCIAL_PLATFORMS = [
   },
 ]
 
-// mapper.py looks a social profile up by its exact lowercase key, so a value
-// stored in Desk as "LinkedIn " still reads as the same platform.
+// mapper.py keys profiles by exact lowercase name, so "LinkedIn " from Desk is
+// the same platform.
 export function normalizePlatform(value) {
   return (value || '').trim().toLowerCase()
 }
@@ -52,17 +47,13 @@ export function isKnownPlatform(platform) {
   return SOCIAL_PLATFORMS.some((option) => option.value === value)
 }
 
-// Only a known platform has a default; a new one leaves the pattern for the
-// admin to write.
 function defaultPattern(platform) {
   const value = normalizePlatform(platform)
   return SOCIAL_PLATFORMS.find((option) => option.value === value)?.pattern
 }
 
-// The row edits the rule's first pattern, which is the only one every seeded
-// Social rule has. Anything after it -- a second regex, a plain substring added
-// in Desk -- is set aside so the row can say it isn't showing everything, and so
-// the save path can put it back untouched.
+// Only the first pattern is editable (every seeded rule has one); the rest are
+// kept aside untouched.
 function splitPatterns(patternRows) {
   const [first, ...rest] = patternRows || []
 
@@ -72,12 +63,9 @@ function splitPatterns(patternRows) {
   }
 }
 
-// Deliberately the same shape install.py seeds ("Social: linkedin", see
-// _seed_social_rules), so a platform that is already seeded collides on the
-// unique rule_name instead of quietly getting a second rule.
-//
-// Not run through __(): rule_name is stored data that has to match a string
-// Python wrote, so a translated UI must not change it.
+// Same shape install.py seeds, so re-adding a seeded platform collides on the
+// unique rule_name.
+// Not run through __(): rule_name is stored data matching what Python wrote.
 function socialRuleName(platform) {
   return `Social: ${platform}`
 }
@@ -104,12 +92,8 @@ export function useSocialRules() {
     const { pattern, hidden } = splitPatterns(patternRows)
 
     return {
-      // The stored values below always come from the reload; only what was being
-      // edited is laid back on top of them.
       platform: held ? held.platform : rule.target_value || '',
       pattern: held ? held.pattern : pattern,
-      // What the server last confirmed. The dirty check reads from here, never
-      // from the inputs.
       savedPlatform: rule.target_value || '',
       savedPattern: pattern,
       hidden,
@@ -135,10 +119,8 @@ export function useSocialRules() {
     row.patternError = ''
   }
 
-  // Compared trimmed, the way Save will send it, so space typed into an
-  // otherwise untouched box doesn't light up the badge. The platform is compared
-  // as typed rather than normalized: a rule stored as "LinkedIn" in Desk isn't
-  // an edit until the admin touches it.
+  // Trimmed like Save sends it; platform isn't normalized so Desk's "LinkedIn"
+  // isn't an edit until touched.
   function isRowChanged(row) {
     return (
       row.platform.trim() !== row.savedPlatform ||
@@ -146,11 +128,10 @@ export function useSocialRules() {
     )
   }
 
-  // One platform, one rule. Every other row on screen is checked on both the
-  // value the enricher reads (target_value) and the name the row would take,
-  // because a rule renamed in Desk can carry one without the other. A row whose
-  // platform is changing in this same Save gives up its rule_name with it, so
-  // only a row keeping its platform still holds the name.
+  // Check target_value and rule_name: a rule renamed in Desk can match on one
+  // but not the other.
+  // A row changing platform in this Save releases its rule_name, so it no
+  // longer holds it.
   function platformTakenBy(platform, others) {
     const ruleName = socialRuleName(platform).toLowerCase()
 
@@ -176,9 +157,8 @@ export function useSocialRules() {
       row.platformError = __('A rule for {0} already exists', [platform])
     }
 
-    // Whether the regex compiles is left to the server: the crawler runs
-    // Python's `re`, so that is the engine CRM Enrichment Rule validates
-    // against, and its message comes back under the row.
+    // Regex validity is left to the server, which compiles with Python's `re`
+    // like the crawler.
     if (!pattern) {
       row.patternError = __('Pattern is required')
     }
@@ -186,9 +166,8 @@ export function useSocialRules() {
     return !row.platformError && !row.patternError
   }
 
-  // Also run when a box is left, so a taken platform is flagged
-  // straight away instead of on Save. Only a changed row is checked: a stored
-  // rule nobody touched is not the admin's problem to fix here.
+  // Untouched stored rows aren't checked: their problems aren't the admin's to
+  // fix here.
   function checkRow(row) {
     row.pattern = row.pattern.trim()
     if (!row.name || isRowChanged(row)) {
@@ -200,10 +179,8 @@ export function useSocialRules() {
     }
   }
 
-  // The pattern follows the platform only while it is still the old platform's
-  // default (or empty, as on a new row). A regex the admin wrote is kept. A
-  // platform with no default empties the box, so the old platform's regex isn't
-  // saved against it.
+  // Swap in the new default only while the pattern is still the old one, so
+  // custom regexes survive.
   function onPlatformInput(row, value) {
     const pattern = row.pattern.trim()
     if (!pattern || pattern === defaultPattern(row.platform)) {
@@ -216,8 +193,6 @@ export function useSocialRules() {
     row.serverError = ''
   }
 
-  // "Add new" in the Platform box: the search text becomes the platform, stored
-  // the way toInsert would send it.
   function onPlatformCreate(row, value, close) {
     const platform = normalizePlatform(value)
     if (!platform) return
@@ -246,23 +221,18 @@ export function useSocialRules() {
     }
   }
 
-  // Only what the row owns is sent: target_value, patterns and, when the
-  // platform changed, rule_name. `doc` is the rule as stored right now.
   function toUpdate(row, doc) {
     const platform = normalizePlatform(row.platform)
     const values = { target_value: platform }
 
-    // rule_name carries the platform, so it moves with it -- a rule switched
-    // from linkedin to youtube would otherwise still read "Social: linkedin" in
-    // Desk. A case-only change ("LinkedIn" -> "linkedin") is the same platform,
-    // so a rule hand-named in Desk keeps its name through a pattern edit.
+    // Renamed with the platform, but not on a case-only change, so Desk
+    // hand-named rules survive.
     if (platform !== normalizePlatform(row.savedPlatform)) {
       values.rule_name = socialRuleName(platform)
     }
 
-    // The first pattern takes the box; every other row goes back exactly as it
-    // was read, name included, so set_value updates them in place instead of
-    // dropping and re-creating them.
+    // Child row names are kept so set_value updates them in place instead of
+    // re-creating them.
     const [first, ...rest] = doc.patterns || []
     values.patterns = [
       first
@@ -282,7 +252,6 @@ export function useSocialRules() {
     return values
   }
 
-  // A row just added with nothing typed into it yet.
   function isRowBlank(row) {
     return !row.name && !row.platform.trim() && !row.pattern.trim()
   }

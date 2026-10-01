@@ -1,23 +1,14 @@
 import { call } from 'frappe-ui'
 import { useEnrichmentRules } from './useEnrichmentRules'
 
-// Which pattern rows the comma-separated box is allowed to own -- the rest are
-// held aside, shown only as a count, and written back exactly as they were read.
-//
-// is_regex=1 rows are excluded because config._compile_pattern escapes a keyword
-// but compiles a regex verbatim, so a regex written in Desk would be mangled the
-// moment it made a round trip through the box. A plain keyword that contains a
-// comma is excluded for the same reason: the box would split it in two on the
-// next save.
+// Regexes (compiled verbatim, not escaped) and keywords with commas can't
+// round-trip the box.
 function isKeywordRow(row) {
   return Number(row.is_regex) !== 1 && !String(row.pattern).includes(',')
 }
 
-// An Industry rule's keywords are one child row each, but a list of plain words
-// reads far better as one comma-separated box than as a stack of inputs -- so the
-// box is the list, joined for display and split again on the way back. It is put
-// through parseKeywords on the way out too, so what is on screen is exactly what
-// a save would store and an untouched rule never reads as edited.
+// Parsed on load too, so the box shows what a save would store and an untouched
+// rule isn't edited.
 function splitPatterns(patternRows) {
   const list = patternRows || []
 
@@ -32,10 +23,8 @@ function splitPatterns(patternRows) {
   }
 }
 
-// The box back into child rows: split on commas, trim, drop the empties a
-// trailing comma or a double comma leaves behind, and drop repeats. Matching is
-// case-insensitive downstream (config._compile_pattern compiles with re.I), so
-// "OEM" and "oem" are the same keyword; the first spelling typed is the one kept.
+// Deduped case-insensitively since config._compile_pattern uses re.I; the first
+// spelling wins.
 function parseKeywords(text) {
   const seen = new Set()
   const keywords = []
@@ -54,12 +43,9 @@ function parseKeywords(text) {
   return keywords
 }
 
-// Deliberately the same shape install.py seeds ("Industry: Manufacturing", see
-// _seed_industry_rules), so an industry that is already seeded collides on the
-// unique rule_name instead of quietly getting a second rule.
-//
-// Not run through __(): rule_name is stored data that has to match a string
-// Python wrote, so a translated UI must not change it.
+// Same shape install.py seeds, so re-adding a seeded industry collides on the
+// unique rule_name.
+// Not run through __(): rule_name is stored data matching what Python wrote.
 function industryRuleName(industry) {
   return `Industry: ${industry}`
 }
@@ -86,15 +72,10 @@ export function useIndustryRules() {
     const { keywords, hidden } = splitPatterns(patternRows)
 
     return {
-      // The stored values below always come from the reload; only what was being
-      // edited is laid back on top of them.
       industry: held ? held.industry : rule.industry || '',
       keywords: held ? held.keywords : keywords,
-      // Set when the admin picked "Create New" for an industry that doesn't
-      // exist yet; Save inserts the CRM Industry before the rule that links it.
+      // The CRM Industry is inserted on Save, before the rule that links it.
       newIndustry: held ? held.newIndustry : false,
-      // What the server last confirmed. The dirty check reads from here, never
-      // from the inputs.
       savedIndustry: rule.industry || '',
       savedKeywords: keywords,
       hidden,
@@ -121,8 +102,8 @@ export function useIndustryRules() {
     row.keywordsError = ''
   }
 
-  // Compared the way Save will send it, so space or a trailing comma typed into
-  // an otherwise untouched box doesn't light up the badge.
+  // Compared as Save would send it, so stray spaces or commas don't mark the
+  // row dirty.
   function isRowChanged(row) {
     return (
       row.industry !== row.savedIndustry ||
@@ -130,10 +111,7 @@ export function useIndustryRules() {
     )
   }
 
-  // One industry, one rule, checked on both the value the classifier reads
-  // (industry) and the name the row would take, the same way the Social rows
-  // are. CRM Industry names are compared case-insensitively because the
-  // database's unique index on them is.
+  // Checked on industry and rule_name; case-insensitive like the unique index.
   function industryTakenBy(industry, others) {
     const folded = industry.toLowerCase()
     const ruleName = industryRuleName(industry).toLowerCase()
@@ -164,10 +142,7 @@ export function useIndustryRules() {
     return !row.industryError && !row.keywordsError
   }
 
-  // Also run when the keywords box is left or an industry is picked, so a
-  // problem is flagged straight away instead of on Save. The box snaps to what
-  // will actually be stored, so the admin sees the trimming and de-duplication
-  // rather than guessing at it.
+  // Snaps the box to the stored form so the admin sees trimming and dedupe.
   function checkRow(row) {
     row.keywords = parseKeywords(row.keywords).join(', ')
     if (!row.name || isRowChanged(row)) {
@@ -187,12 +162,10 @@ export function useIndustryRules() {
     checkRow(row)
   }
 
-  // The Link's "Create New": the typed text becomes the row's industry now, and
-  // the CRM Industry itself is only inserted on Save, so abandoning the row
-  // leaves no stray industry behind.
+  // The CRM Industry is only inserted on Save, so abandoning the row leaves no
+  // stray industry.
   function onIndustryCreate(row, value, close) {
     const industry = (value || '').trim()
-    // Nothing typed: leave the menu open so the admin can type one.
     if (!industry) return
     close?.()
 
@@ -209,9 +182,8 @@ export function useIndustryRules() {
     row.serverError = ''
   }
 
-  // CRM Industry is named by its industry field, so a DuplicateEntryError means
-  // it already exists -- created by another row in this same Save, or by
-  // someone else meanwhile -- which is all the rule needs.
+  // DuplicateEntryError means the industry already exists (another row or
+  // user), which is fine.
   async function ensureIndustry(row) {
     if (!row.newIndustry) return
     try {
@@ -230,12 +202,11 @@ export function useIndustryRules() {
     return {
       rule_name: industryRuleName(row.industry),
       industry: row.industry,
-      // The doctype's default and what every seeded rule has. weight multiplies
-      // the rule's hits in extractors.py, so it is set explicitly rather than
-      // left to a default that might not apply to an API insert.
+      // Set explicitly: weight scales hits in extractors.py and an API insert
+      // may skip the default.
       weight: 1,
-      // What the seeded Industry rules score against: the company name,
-      // description, title and headings, never body copy.
+      // Matches the seeded Industry rules: name, description, title and
+      // headings, not body copy.
       match_scope: 'Headline',
       patterns: parseKeywords(row.keywords).map((keyword) => ({
         pattern: keyword,
@@ -244,24 +215,20 @@ export function useIndustryRules() {
     }
   }
 
-  // Only what the row owns is sent: industry, patterns and, when the industry
-  // changed, rule_name. weight is never sent, so an existing rule keeps the
-  // weight it already has. `doc` is the rule as stored right now.
+  // weight is never sent, so an existing rule keeps its own.
   async function toUpdate(row, doc) {
     await ensureIndustry(row)
 
     const values = { industry: row.industry }
 
-    // rule_name carries the industry, so it moves with it. Only rewritten when
-    // the industry actually changed, so a rule hand-named in Desk survives an
-    // edit to its keywords.
+    // Renamed only when the industry changes, so a rule hand-named in Desk
+    // survives keyword edits.
     if (row.industry !== row.savedIndustry) {
       values.rule_name = industryRuleName(row.industry)
     }
 
     const patternRows = doc.patterns || []
-    // A keyword that is still in the box keeps its existing child row, so an
-    // untouched keyword isn't dropped and re-created on every save.
+    // Reuse child rows so untouched keywords aren't dropped and re-created.
     const existing = new Map(
       patternRows.filter(isKeywordRow).map((entry) => [entry.pattern, entry]),
     )
@@ -273,15 +240,14 @@ export function useIndustryRules() {
           ? pick(existing.get(keyword))
           : { pattern: keyword, is_regex: 0 },
       ),
-      // The rows the box never owned, carried across as they were read, and
-      // last so the box's own rows keep the order they were typed in.
+      // Rows the box never owned go back as read, last, so typed keywords keep
+      // their order.
       ...patternRows.filter((entry) => !isKeywordRow(entry)).map(pick),
     ]
 
     return values
   }
 
-  // A row just added with nothing picked or typed into it yet.
   function isRowBlank(row) {
     return !row.name && !row.industry && !row.keywords.trim()
   }
