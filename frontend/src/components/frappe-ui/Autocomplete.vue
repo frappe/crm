@@ -293,8 +293,11 @@ const inputClasses = computed(() => {
       'border border-[--surface-gray-2] bg-surface-gray-2 placeholder-ink-gray-4 hover:border-outline-elevation-2 hover:bg-surface-gray-3 focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3',
     outline:
       'border border-outline-gray-2 bg-surface-base placeholder-ink-gray-4 hover:border-outline-gray-3 hover:shadow-sm focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3',
+    transparent:
+      'border border-transparent bg-transparent placeholder-ink-gray-4 hover:bg-surface-gray-2 focus:bg-surface-base focus:border-outline-gray-4 focus:ring-0 focus-visible:ring-2 focus-visible:ring-outline-gray-3',
     disabled: [
-      'border bg-surface-sidebar placeholder-ink-gray-3',
+      'border placeholder-ink-gray-3',
+      props.variant === 'transparent' ? 'bg-transparent' : 'bg-surface-sidebar',
       props.variant === 'outline'
         ? 'border-outline-gray-2'
         : 'border-transparent',
