@@ -1,6 +1,8 @@
 import { call, createListResource } from 'frappe-ui'
 import { computed, reactive, ref } from 'vue'
 
+const PAGE_LENGTH = 50
+
 // Shared load / dirty-tracking / save plumbing for one rule_type; callers
 // supply row shape and payloads.
 export function useEnrichmentRules({
@@ -15,14 +17,14 @@ export function useEnrichmentRules({
   clearErrors,
   messages,
 }) {
-  // Every rule is loaded (no pager): a rule left off the page couldn't be
-  // edited or deleted here.
+  // Paged; "Load more" appends the next page (loadMore). frappe-ui's reload()
+  // re-reads every page already loaded, so a post-save reload keeps them.
   const resource = createListResource({
     doctype: 'CRM Enrichment Rule',
     filters: { rule_type: ruleType },
     fields: ['name', 'rule_name', 'enabled', ...fields],
     orderBy: 'modified desc',
-    pageLength: 99999,
+    pageLength: PAGE_LENGTH,
   })
 
   // rule name -> the rule's pattern child rows, as stored
@@ -40,6 +42,10 @@ export function useEnrichmentRules({
   const error = computed(() => resource.list.error || patternsError.value)
 
   const saving = ref(false)
+
+  const loadingMore = ref(false)
+
+  const hasMore = computed(() => resource.hasNextPage)
 
   const savedRows = ref([])
 
@@ -83,9 +89,39 @@ export function useEnrichmentRules({
     return loadPatterns(resource.data || [])
   }
 
+  // Appends the next page; only its rules need patterns fetched. Rows are
+  // rebuilt from the whole list, so unsaved edits carry across.
+  async function loadMore() {
+    if (loadingMore.value || !resource.hasNextPage) return
+    loadingMore.value = true
+    const previousData = resource.originalData
+    const loaded = new Set((resource.data || []).map((rule) => rule.name))
+    try {
+      resource.start += resource.pageLength
+      await resource.list.fetch().catch(() => {})
+      if (resource.list.error) {
+        resource.start -= resource.pageLength
+        return false
+      }
+      const allRules = resource.data || []
+      const added = allRules.filter((rule) => !loaded.has(rule.name))
+      const ok = await loadPatterns(added, allRules)
+      if (!ok) {
+        // A rule without patterns can't get a row, so roll the page back and
+        // let Load more retry.
+        resource.start -= resource.pageLength
+        resource.setData(previousData)
+      }
+      return ok
+    } finally {
+      loadingMore.value = false
+    }
+  }
+
   // get_list skips child tables, so query the child doctype (`parent` is what
-  // frappe permission-checks).
-  async function loadPatterns(rules) {
+  // frappe permission-checks). Patterns are fetched for `rules`; rows are built
+  // from `allRules`.
+  async function loadPatterns(rules, allRules = rules) {
     patternsLoading.value = true
     try {
       const patternRows = rules.length
@@ -109,7 +145,7 @@ export function useEnrichmentRules({
       rules.forEach((rule) => {
         patterns[rule.name] = byRule[rule.name] || []
       })
-      buildRows(rules)
+      buildRows(allRules)
       return true
     } catch (err) {
       // Rows without patterns would show empty boxes that wipe patterns on
@@ -412,6 +448,9 @@ export function useEnrichmentRules({
     error,
     saving,
     load,
+    loadMore,
+    loadingMore,
+    hasMore,
     addRow,
     deleteRow,
     toggleEnabled,
