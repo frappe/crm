@@ -85,6 +85,7 @@ def get_boot():
 				or get_system_timezone(),
 			},
 			"state_options": get_state_options(),
+			"is_insights_installed": "insights" in get_installed_apps(),
 		}
 	)
 
