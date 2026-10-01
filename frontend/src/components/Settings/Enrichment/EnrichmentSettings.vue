@@ -202,8 +202,10 @@ async function save() {
 
   saving.value = true
   try {
+    // Skipped when unchanged, so a rules-only Save can't trip Settings
+    // validation on a stored value the admin didn't touch.
     const results = await Promise.all([
-      saveSettings(),
+      settingsDirty.value ? saveSettings() : true,
       social.save(),
       industry.save(),
     ])
