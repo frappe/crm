@@ -30,6 +30,7 @@
               :model-value="row.platform"
               :options="platformOptions()"
               :placeholder="__('Platform')"
+              variant="transparent"
               :disabled="social.saving || row.removed"
               @update:model-value="(option) => onPlatformSelect(row, option)"
               @update:query="(query) => (platformQuery[row.key] = query)"
@@ -139,6 +140,7 @@
               doctype="CRM Industry"
               :value="row.industry"
               :placeholder="__('Industry')"
+              variant="transparent"
               :disabled="industry.saving || row.removed"
               @create="
                 (value, close) => industry.onIndustryCreate(row, value, close)
