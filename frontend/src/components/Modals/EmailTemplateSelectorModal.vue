@@ -20,7 +20,7 @@
       </div>
       <div
         v-if="filteredTemplates.length"
-        class="mt-4 grid max-h-[560px] sm:grid-cols-3 gris-cols-1 gap-2 overflow-y-auto"
+        class="mt-4 grid max-h-[560px] sm:grid-cols-3 grid-cols-1 gap-2 overflow-y-auto"
       >
         <div
           v-for="template in filteredTemplates"
