@@ -9,8 +9,7 @@
     </div>
     <EnrichmentRuleSection
       :title="__('Social profile rules')"
-      :subtitle="__('Allow users to enrich leads when a website is available.')"
-      :add-label="__('Add Social')"
+      :add-label="__('Add social rule')"
       :loading="social.loading"
       :error="social.error"
       :error-message="__('Could not load social rules')"
@@ -25,7 +24,7 @@
     >
       <div v-for="row in social.rows" :key="row.key" class="flex flex-col">
         <div class="flex items-start gap-2">
-          <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
+          <div class="w-40 shrink-0">
             <Autocomplete
               :ref="(el) => (platformBoxes[row.key] = el)"
               :model-value="row.platform"
@@ -53,7 +52,7 @@
               :message="row.platformError"
             />
           </div>
-          <div class="flex-1 min-w-0" :class="row.enabled ? '' : 'opacity-60'">
+          <div class="flex-1 min-w-0">
             <FormControl
               :model-value="row.pattern"
               type="text"
@@ -75,22 +74,19 @@
               </div>
             </Tooltip>
           </div>
-          <!-- Shown only when the rule is off, the way HierarchyRow.vue marks a
-               disabled user. Outside the dimmed columns so it stays readable;
-               the switch that turns it back on is in the ⋯ menu. -->
-          <Badge
-            v-if="!row.enabled"
-            :label="__('Disabled')"
-            theme="gray"
-            variant="subtle"
+          <!-- Same inline on/off as AssignmentRuleListItem.vue, just left of
+               the ⋯ menu. It only flips the row; the header Update saves it. -->
+          <Switch
+            v-if="!social.isRowBlank(row)"
             size="sm"
-            class="mt-1 shrink-0"
+            class="mt-1.5 shrink-0"
+            :model-value="row.enabled"
+            :disabled="social.saving || row.removed"
+            @update:model-value="social.toggleEnabled(row)"
           />
           <EnrichmentRuleMenu
-            :enabled="row.enabled"
             :blank="social.isRowBlank(row)"
             :disabled="social.saving || row.removed"
-            @toggle="social.toggleEnabled(row)"
             @delete="social.deleteRow(row)"
           />
         </div>
@@ -122,8 +118,7 @@
     <EnrichmentRuleSection
       class="mt-4"
       :title="__('Industry rules')"
-      :subtitle="__('Allow users to enrich leads when a website is available.')"
-      :add-label="__('Add Industry')"
+      :add-label="__('Add industry rule')"
       :loading="industry.loading"
       :error="industry.error"
       :error-message="__('Could not load industry rules')"
@@ -138,7 +133,7 @@
     >
       <div v-for="row in industry.rows" :key="row.key" class="flex flex-col">
         <div class="flex items-start gap-2">
-          <div class="w-40 shrink-0" :class="row.enabled ? '' : 'opacity-60'">
+          <div class="w-40 shrink-0">
             <Link
               doctype="CRM Industry"
               :value="row.industry"
@@ -162,7 +157,7 @@
               {{ __('New industry, created on save') }}
             </div>
           </div>
-          <div class="flex-1 min-w-0" :class="row.enabled ? '' : 'opacity-60'">
+          <div class="flex-1 min-w-0">
             <FormControl
               :model-value="row.keywords"
               type="text"
@@ -188,19 +183,17 @@
               </div>
             </Tooltip>
           </div>
-          <Badge
-            v-if="!row.enabled"
-            :label="__('Disabled')"
-            theme="gray"
-            variant="subtle"
+          <Switch
+            v-if="!industry.isRowBlank(row)"
             size="sm"
-            class="mt-1 shrink-0"
+            class="mt-1.5 shrink-0"
+            :model-value="row.enabled"
+            :disabled="industry.saving || row.removed"
+            @update:model-value="industry.toggleEnabled(row)"
           />
           <EnrichmentRuleMenu
-            :enabled="row.enabled"
             :blank="industry.isRowBlank(row)"
             :disabled="industry.saving || row.removed"
-            @toggle="industry.toggleEnabled(row)"
             @delete="industry.deleteRow(row)"
           />
         </div>
@@ -215,7 +208,7 @@
 </template>
 
 <script setup>
-import { Badge, Button, ErrorMessage, FormControl, Tooltip } from 'frappe-ui'
+import { Button, ErrorMessage, FormControl, Switch, Tooltip } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { reactive } from 'vue'
 import Link from '@/components/Controls/Link.vue'
