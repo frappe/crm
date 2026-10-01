@@ -25,7 +25,11 @@
       @retry="social.load"
       @load-more="social.loadMore"
     >
-      <div v-for="row in social.rows" :key="row.key" class="flex flex-col">
+      <div
+        v-for="row in social.rows"
+        :key="row.key"
+        class="group flex flex-col"
+      >
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0">
             <Autocomplete
@@ -88,11 +92,19 @@
             :disabled="social.saving || row.removed"
             @update:model-value="social.toggleEnabled(row)"
           />
-          <EnrichmentRuleMenu
-            :blank="social.isRowBlank(row)"
-            :disabled="social.saving || row.removed"
-            @delete="social.deleteRow(row)"
-          />
+          <!-- Left visible on touch, which has no hover to reveal it -->
+          <div
+            class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+          >
+            <Button
+              variant="ghost"
+              theme="red"
+              icon="lucide-trash-2"
+              :tooltip="__('Delete')"
+              :disabled="social.saving || row.removed"
+              @click="social.deleteRow(row)"
+            />
+          </div>
         </div>
         <ErrorMessage
           v-if="row.serverError"
@@ -139,7 +151,11 @@
       @retry="industry.load"
       @load-more="industry.loadMore"
     >
-      <div v-for="row in industry.rows" :key="row.key" class="flex flex-col">
+      <div
+        v-for="row in industry.rows"
+        :key="row.key"
+        class="group flex flex-col"
+      >
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0">
             <Link
@@ -199,11 +215,19 @@
             :disabled="industry.saving || row.removed"
             @update:model-value="industry.toggleEnabled(row)"
           />
-          <EnrichmentRuleMenu
-            :blank="industry.isRowBlank(row)"
-            :disabled="industry.saving || row.removed"
-            @delete="industry.deleteRow(row)"
-          />
+          <!-- Left visible on touch, which has no hover to reveal it -->
+          <div
+            class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+          >
+            <Button
+              variant="ghost"
+              theme="red"
+              icon="lucide-trash-2"
+              :tooltip="__('Delete')"
+              :disabled="industry.saving || row.removed"
+              @click="industry.deleteRow(row)"
+            />
+          </div>
         </div>
         <ErrorMessage
           v-if="row.serverError"
@@ -220,7 +244,6 @@ import { Button, ErrorMessage, FormControl, Switch, Tooltip } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { reactive } from 'vue'
 import Link from '@/components/Controls/Link.vue'
-import EnrichmentRuleMenu from './EnrichmentRuleMenu.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
 import {
   SOCIAL_PLATFORMS,
