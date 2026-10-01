@@ -24,7 +24,7 @@ OUTGOING_STATUS = {
 TEMPLATE_STATUS = {"APPROVED": "Approved", "REJECTED": "Rejected", "DELETED": "Deleted"}
 TEMPLATE_TYPE = {**TEMPLATE_TYPES, "TRANSACTIONAL": "Utility", "OTP": "Authentication"}
 
-REFERENCING_ROWS = (
+MESSAGE_LINK_FIELDS = (
 	("File", "attached_to_doctype"),
 	("Comment", "reference_doctype"),
 	("CRM Notification", "notification_type_doctype"),
@@ -32,14 +32,8 @@ REFERENCING_ROWS = (
 
 
 def execute():
-	"""Copy a site's frappe_whatsapp data into the whatsapp app's DocTypes.
-
-	The whatsapp app's rename patches skip DocTypes another app owns, so a CRM site
-	coming from frappe_whatsapp gets empty WA tables. Messages keep their names so the
-	rows that point at them only need the DocType swapped, and inserts bypass the
-	controllers so nothing is re-sent to Meta. Templates are copied thinly; the daily
-	sync fills in buttons and variables from Meta.
-	"""
+	"""The whatsapp app's rename patches leave DocTypes another app owns alone, so a site
+	coming from frappe_whatsapp has its history stranded in the old tables."""
 	if not frappe.db.exists("DocType", OLD_MESSAGE):
 		return
 
@@ -54,7 +48,7 @@ def execute():
 		if not frappe.db.exists("WA Message", message.name):
 			_copy_message(message, templates)
 
-	for doctype, fieldname in REFERENCING_ROWS:
+	for doctype, fieldname in MESSAGE_LINK_FIELDS:
 		frappe.db.set_value(doctype, {fieldname: OLD_MESSAGE}, fieldname, "WA Message", update_modified=False)
 
 	frappe.clear_cache()
@@ -119,6 +113,8 @@ def _copy_template(old) -> str:
 		variable_format="Positional",
 		template_variables=_template_variables(old),
 	)
+	# Without the flag before_save pushes the template to Meta; buttons and variables
+	# are left for the daily sync to fill in from there.
 	doc.flags.from_sync = True
 	doc.insert(ignore_permissions=True)
 	return doc.name
@@ -137,11 +133,9 @@ def _template_variables(old) -> list[dict]:
 
 
 def _copy_message(old, templates: dict) -> None:
-	incoming = old.type == "Incoming"
-	if incoming:
-		profile = get_or_create_profile(
-			f"+{old.get('from')}", old.whatsapp_account, old.profile_name, old.get("from")
-		)
+	if old.type == "Incoming":
+		wa_id = old.get("from")
+		profile = get_or_create_profile(f"+{wa_id}", old.whatsapp_account, old.profile_name, wa_id)
 		sender = None
 		status = "Sent"
 	else:
@@ -183,7 +177,7 @@ def _copy_message(old, templates: dict) -> None:
 			"media_url": old.attach,
 			"mime_type": mimetypes.guess_type(old.attach)[0] if old.attach else None,
 		}
-	).db_insert()
+	).db_insert()  # the controller would send every outgoing row to Meta again
 
 
 def _replied_message(message_id: str | None) -> str | None:
