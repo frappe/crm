@@ -44,8 +44,7 @@
           </div>
         </div>
         <div class="flex flex-col items-end">
-          <!-- Not :error: it would render inside the w-24 box and squeeze the
-               message into a narrow column, so it sits below with its own width. -->
+          <!-- Not :error: it renders inside the w-24 box and gets squeezed. -->
           <FormControl
             :model-value="maxPages ?? doc.max_pages"
             type="number"
@@ -99,14 +98,11 @@
 <script setup>
 import { ErrorMessage, FormControl, Switch } from 'frappe-ui'
 
-// The General tab's fields. Nothing here saves: every change goes up to
-// EnrichmentSettings.vue, which holds it until the header Update. Everything
-// under the master switch is hidden while enrichment is off; the values stay in
-// the parent, so they are still there when it is turned back on.
+// Nothing saves here: the parent holds every change (even hidden ones) until
+// the header Update.
 defineProps({
   doc: { type: Object, required: true },
-  // The typed Max pages value, held apart from the doc until Update so a
-  // half-typed number never counts as the stored one.
+  // Held apart from doc until Update, so half-typed input isn't stored.
   maxPages: { type: [String, Number], default: undefined },
   maxPagesError: { type: String, default: '' },
   maxPagesLimit: { type: Number, required: true },

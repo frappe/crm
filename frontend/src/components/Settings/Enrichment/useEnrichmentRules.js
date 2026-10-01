@@ -1,19 +1,8 @@
 import { call, createListResource } from 'frappe-ui'
 import { computed, reactive, ref } from 'vue'
 
-// One rule_type's worth of the Rules tab: the list, the pattern child rows the
-// list call can't bring back, and the editable rows built from both. Social and
-// Industry rules differ only in the fields on a row and in the document each one
-// sends -- the loading, the dirty tracking, and the insert/update/delete plumbing
-// the header Update runs are the same, so they live here once.
-//
-// Nothing is written while the admin edits. Every row keeps what the server last
-// confirmed next to what is in its boxes; Save validates every changed row, then
-// sends the removed ones as deletes, the edited ones as updates and the new ones
-// as inserts.
-//
-// The caller supplies the shape of a row (buildRow / newRow), what counts as an
-// edit (isRowChanged), the per-row validation, and the documents to send.
+// Shared load / dirty-tracking / save plumbing for one rule_type; callers
+// supply row shape and payloads.
 export function useEnrichmentRules({
   ruleType,
   fields = [],
@@ -26,10 +15,8 @@ export function useEnrichmentRules({
   clearErrors,
   messages,
 }) {
-  // order_by matches the doctype's own sort (modified desc), so the list reads
-  // the same here as it does in Desk. There is no pager on the section, so every
-  // rule of the type is loaded -- a rule left off the page could not be edited
-  // or deleted here at all.
+  // Every rule is loaded (no pager): a rule left off the page couldn't be
+  // edited or deleted here.
   const resource = createListResource({
     doctype: 'CRM Enrichment Rule',
     filters: { rule_type: ruleType },
@@ -43,9 +30,7 @@ export function useEnrichmentRules({
   const patternsLoading = ref(false)
   const patternsError = ref(null)
 
-  // The spinner stands in for the whole section, so it only belongs on the first
-  // load. The reload after a save leaves the rows on screen and swaps them when
-  // the new ones land.
+  // Only the first load shows the spinner; reloads keep the rows on screen.
   const loadedOnce = ref(false)
 
   const loading = computed(
@@ -56,28 +41,21 @@ export function useEnrichmentRules({
 
   const saving = ref(false)
 
-  // One editable row per stored rule, rebuilt whenever the list reloads.
   const savedRows = ref([])
 
-  // Rows added by the section's "+ Add" button that have nothing behind them
-  // yet. They live apart from savedRows so a reload rebuilds the stored rows
-  // without sweeping away a new one.
+  // Kept apart from savedRows so a reload doesn't sweep away unsaved new rows.
   const localRows = ref([])
 
   let localRowSeq = 0
 
-  // A stored rule the admin deleted stays in savedRows, flagged, until Save
-  // actually deletes it -- so the delete can be undone by not saving. A delete
-  // that failed stays flagged, so it is still pending and the next Save tries
-  // it again; the row comes back on screen, locked, only so its error has a
-  // row to sit under.
+  // Deleted rows stay flagged until Save; a failed delete reappears, locked, to
+  // show its error.
   const rows = computed(() => [
     ...savedRows.value.filter((row) => !row.removed || row.serverError),
     ...localRows.value,
   ])
 
-  // The on/off switch on each row is the one edit every rule_type shares,
-  // so it is tracked here rather than in each caller's isRowChanged.
+  // Shared by every rule_type, so tracked here, not in each isRowChanged.
   function isEnabledChanged(row) {
     return row.enabled !== row.savedEnabled
   }
@@ -92,12 +70,11 @@ export function useEnrichmentRules({
     ...localRows.value,
   ])
 
-  // The list and every rule's patterns, awaited as one, so the reload after a
-  // save has finished rebuilding the rows by the time Save reports back.
+  // Awaited together so a post-save reload has rebuilt the rows before Save
+  // reports back.
   async function load() {
     patternsError.value = null
-    // resource.list.error carries the message for the section either way; the
-    // catch only keeps a rethrown failure from becoming console noise.
+    // The error is in resource.list.error; the catch just avoids console noise.
     await resource.reload().catch(() => {})
     if (resource.list.error) {
       loadedOnce.value = true
@@ -106,9 +83,8 @@ export function useEnrichmentRules({
     return loadPatterns(resource.data || [])
   }
 
-  // get_list never returns child tables, so every rule's patterns come from one
-  // get_list on the child doctype itself (`parent` is what frappe checks the
-  // read permission against), grouped back onto their rules here.
+  // get_list skips child tables, so query the child doctype (`parent` is what
+  // frappe permission-checks).
   async function loadPatterns(rules) {
     patternsLoading.value = true
     try {
@@ -136,9 +112,8 @@ export function useEnrichmentRules({
       buildRows(rules)
       return true
     } catch (err) {
-      // A row with no patterns loaded would read as an empty pattern box, and
-      // saving that box would wipe the stored patterns -- so no rows are built
-      // from this load. Rows from an earlier, complete load stay on screen.
+      // Rows without patterns would show empty boxes that wipe patterns on
+      // save, so keep the old rows.
       patternsError.value = err
       return false
     } finally {
@@ -148,11 +123,8 @@ export function useEnrichmentRules({
   }
 
   function buildRows(rules) {
-    // Every row is rebuilt from the reload, so whatever the admin still had in
-    // flight on a row that survived is carried across: an edit that failed to
-    // save, the error under it, a delete that didn't go through. A row Save just
-    // wrote is not carried -- the server's copy is the truth now, even where it
-    // differs from what was typed (a platform stored lowercased).
+    // Carry unsaved edits, errors and deletes across the rebuild; rows Save
+    // just wrote take the server's copy.
     const carried = new Map()
     savedRows.value.forEach((row) => {
       if (row.committed) return
@@ -180,8 +152,6 @@ export function useEnrichmentRules({
         key: `new-${(localRowSeq += 1)}`,
         name: null,
         ruleName: '',
-        // Starts enabled; the row's switch can turn it off before the first
-        // Update.
         enabled: true,
         savedEnabled: true,
         removed: false,
@@ -191,8 +161,6 @@ export function useEnrichmentRules({
     )
   }
 
-  // A row that was never inserted is only on screen, so dropping it is a local
-  // splice. A stored one is only flagged; Save does the delete.
   function deleteRow(row) {
     if (!row.name) {
       localRows.value = localRows.value.filter((other) => other !== row)
@@ -207,16 +175,14 @@ export function useEnrichmentRules({
     row.serverError = ''
   }
 
-  // Every changed row is checked before anything is sent, so a Save either
-  // starts with every row valid or doesn't start at all. `others` is every other
-  // row that will still exist after the Save, for the duplicate checks -- a row
-  // waiting on a retried delete is on screen but neither checked nor counted.
+  // Validate up front so a Save either starts with every row valid or doesn't
+  // start at all.
   function validate() {
     let valid = true
     rows.value.forEach((row) => {
       if (row.removed) return
-      // A stored rule whose only edit is its status sends nothing but
-      // `enabled`, so the fields it already had aren't held to the form's checks.
+      // A status-only edit sends just `enabled`, so stored fields aren't held
+      // to the form's checks.
       if (row.name && !isRowChanged(row)) return
       clearErrors(row)
       row.serverError = ''
@@ -234,10 +200,8 @@ export function useEnrichmentRules({
     )
   }
 
-  // What the server said, in words an admin can act on. A unique rule_name
-  // collision comes back as a DuplicateEntryError (insert) or a
-  // UniqueValidationError (update) whose raw text names the column, not the
-  // rule; anything else is passed through as the server wrote it.
+  // rule_name collisions come back with raw text naming the column, so reword
+  // them for the admin.
   function serverMessage(err, ruleName, fallback) {
     if (isNameCollision(err)) {
       return __('A rule named "{0}" already exists', [ruleName])
@@ -255,8 +219,7 @@ export function useEnrichmentRules({
       delete patterns[row.name]
       return true
     } catch (err) {
-      // Still flagged, so the row stays dirty and the next Save retries the
-      // delete; the error puts it back on screen to say so.
+      // Still flagged, so the next Save retries the delete.
       const message = serverMessage(err, row.ruleName, messages.deleteError)
       row.serverError = __('{0}. Save to try deleting it again.', [
         message.replace(/\.+$/, ''),
@@ -265,14 +228,9 @@ export function useEnrichmentRules({
     }
   }
 
-  // frappe.client.set_value loads the rule on the server, lays only the given
-  // fields over it and saves -- so a field the form doesn't send (an Industry
-  // rule's weight, match_scope) keeps whatever it already had. The rule is
-  // re-read first so the patterns the form doesn't show are the ones stored now,
-  // not the ones stored when the page loaded. A status-only change skips all of
-  // that and sends just `enabled`. Resolves to what runUpdates needs to untangle
-  // renames: whether it went through, the rule_name it asked for (null when the
-  // name isn't moving) and whether another rule holding that name turned it away.
+  // set_value merges only the given fields, so unsent ones (weight,
+  // match_scope) keep their values.
+  // The rule is re-read so hidden patterns are current, not from page load.
   async function runUpdate(row) {
     let values = {}
     try {
@@ -305,8 +263,7 @@ export function useEnrichmentRules({
     }
   }
 
-  // Rule and patterns go in as one document, so a failed insert leaves nothing
-  // half-created behind.
+  // One document, so a failed insert leaves nothing half-created.
   async function runInsert(row) {
     let doc
     try {
@@ -331,13 +288,10 @@ export function useEnrichmentRules({
     }
   }
 
-  // A pass where every update failed is stuck unless the rows are waiting on
-  // each other in a ring: X waits on Y when X was refused the name Y holds.
-  // Names are unique, so each row waits on at most one other, and following the
-  // waits from any row either runs out -- the name belongs to a rule outside
-  // this Save, or to a row failing for another reason, a real duplicate -- or
-  // comes back round. Returns a row on the ring, or null when there is none.
-  // Compared lowercased, as the unique index does.
+  // When every update in a pass failed, look for a ring of rows each refused
+  // the name another holds.
+  // Returns a row on the ring, or null (a real duplicate). Lowercased to match
+  // the unique index.
   function findRenameCycle(failed, held) {
     const holder = new Map()
     failed.forEach(({ row }) => holder.set(held.get(row).toLowerCase(), row))
@@ -370,14 +324,10 @@ export function useEnrichmentRules({
     })
   }
 
-  // Updates can hand rule_names along a chain (A takes B's name while B moves to
-  // C), and rule_name is unique -- so they go one at a time, and any that failed
-  // are tried again after the rest. When a pass frees nothing, a ring of renames
-  // (A <-> B, A -> B -> C -> A) is broken by parking one row on it under a
-  // placeholder no one else can want, which frees its name for the row waiting
-  // on it; the ring then unwinds like a chain. No ring means a real collision,
-  // and it stops there with the message under the row. Each row is parked at
-  // most once, so this always ends.
+  // rule_name is unique and renames can chain, so updates run one at a time and
+  // failures are retried.
+  // A rename ring is broken by parking one row under a placeholder; each row
+  // parks at most once.
   async function runUpdates(rows) {
     // rule_name each row holds on the server right now.
     const held = new Map(rows.map((row) => [row, row.ruleName]))
@@ -411,10 +361,8 @@ export function useEnrichmentRules({
       pending = failed.map(({ row }) => row)
     }
 
-    // A parked row whose own update never went through gets its name back, so
-    // no placeholder is left behind. Best effort: if the row that was waiting on
-    // it has already taken that name, the placeholder stays, the row keeps its
-    // edit and error through the reload, and the next Save moves it on.
+    // Give parked rows that never updated their name back; best effort, the
+    // next Save moves them on.
     for (const row of pending) {
       if (!parked.has(row)) continue
       try {
@@ -426,10 +374,8 @@ export function useEnrichmentRules({
     return !pending.length
   }
 
-  // Deletes go first, so a rule removed and re-added under the same name in one
-  // Save frees its rule_name before the insert asks for it; then updates, then
-  // inserts. Resolves true only when every request succeeded -- a row that
-  // failed stays changed, with its error under it, so it is still pending.
+  // Deletes first, so a removed-and-re-added rule frees its rule_name before
+  // the insert needs it.
   async function save() {
     const removed = savedRows.value.filter((row) => row.removed)
     const updated = savedRows.value.filter(
@@ -447,8 +393,6 @@ export function useEnrichmentRules({
         ...(await Promise.all(inserted.map(runInsert))),
       ]
 
-      // A row that saved cleanly takes the server's values on the rebuild; the
-      // carried ones keep their edits and errors.
       const loaded = await load()
 
       return loaded && results.every(Boolean)

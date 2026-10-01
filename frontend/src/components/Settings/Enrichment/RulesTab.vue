@@ -1,6 +1,5 @@
 <template>
   <div class="flex-1 flex flex-col overflow-y-auto">
-    <!-- Styled like ERPNextSettings.vue's unsynced-items note. -->
     <div
       v-if="!enabled"
       class="mt-3 rounded bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
@@ -46,7 +45,7 @@
                 />
               </template>
             </Autocomplete>
-            <!-- Autocomplete has no error prop, so its message is shown below it. -->
+            <!-- Autocomplete has no error prop, so the message sits below. -->
             <ErrorMessage
               v-if="row.platformError"
               class="mt-1"
@@ -54,7 +53,7 @@
             />
           </div>
           <div class="flex-1 min-w-0">
-            <!-- Monospace so regex patterns are easier to read (same as Grid.vue / SlaPriorityList.vue). -->
+            <!-- Monospace so regex patterns are easier to read. -->
             <FormControl
               :model-value="row.pattern"
               type="text"
@@ -76,8 +75,7 @@
               </div>
             </Tooltip>
           </div>
-          <!-- Same inline on/off as AssignmentRuleListItem.vue, just left of
-               the ⋯ menu. It only flips the row; the header Update saves it. -->
+          <!-- Only flips the row; the header Update saves it. -->
           <Switch
             v-if="!social.isRowBlank(row)"
             size="sm"
@@ -172,9 +170,8 @@
               "
               @blur="industry.checkRow(row)"
             />
-            <!-- Same affordance the Social rows use for the patterns they
-                 don't show: here it is the rows the comma-separated box can't
-                 safely round-trip (regexes, keywords with a comma). -->
+            <!-- Regexes and keywords containing commas can't round-trip the
+                 box, so they're listed here. -->
             <Tooltip
               v-if="!row.keywordsError && row.hidden.length"
               :text="row.hidden.join('  |  ')"
@@ -223,11 +220,8 @@ import {
   normalizePlatform,
 } from './useSocialRules'
 
-// The rule lists themselves live in EnrichmentSettings.vue: the Tabs panel is
-// unmounted while the General tab is open (reka-ui's TabsContent defaults to
-// unmountOnHide), so edits held in this component would be thrown away on a
-// tab switch. This only renders them and hands every change back to the
-// composable that owns the row.
+// Rule state lives in the parent because reka-ui's TabsContent unmounts hidden
+// panels by default.
 const props = defineProps({
   // The rules stay editable while enrichment is off; this only shows the note.
   enabled: { type: Boolean, default: true },
@@ -235,11 +229,7 @@ const props = defineProps({
   industry: { type: Object, required: true },
 })
 
-// Suggestions, not a whitelist: the seeded platforms plus any other platform a
-// rule is already saved with, so one added earlier can be picked again. Anything
-// else comes in through "Add new". Platforms outside SOCIAL_PLATFORMS are
-// matched and recorded on the enrichment run, but mapper.py has no CRM field
-// for them, so the row says so under it.
+// Seeded platforms plus already-saved ones, so a custom one can be re-picked.
 function platformOptions() {
   const options = [...SOCIAL_PLATFORMS]
   for (const row of props.social.rows) {
@@ -251,8 +241,7 @@ function platformOptions() {
   return options
 }
 
-// What is typed in each row's Platform search, keyed by row.key, so "Add"
-// can name it and stays disabled until there is something to add.
+// Per-row search text, so "Add" can name it and stay disabled while empty.
 const platformQuery = reactive({})
 const platformBoxes = {}
 
@@ -261,17 +250,14 @@ function platformAddLabel(row) {
   return query ? __('Add "{0}"', [query]) : __('Add new')
 }
 
-// The Autocomplete keeps its search text when it closes, so it is cleared
-// through the box too; otherwise reopening would show the old text under a
-// disabled "Add new".
+// Autocomplete keeps its search text on close; clear it or reopening shows
+// stale text.
 function onPlatformAdd(row, close) {
   props.social.onPlatformCreate(row, platformQuery[row.key], close)
   if (platformBoxes[row.key]) platformBoxes[row.key].query = ''
   platformQuery[row.key] = ''
 }
 
-// The Autocomplete hands back the whole option. A platform can't be blank, so
-// an empty selection is ignored.
 function onPlatformSelect(row, option) {
   if (!option?.value) return
   props.social.onPlatformInput(row, option.value)

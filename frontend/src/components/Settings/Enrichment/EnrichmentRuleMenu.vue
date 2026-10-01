@@ -14,25 +14,22 @@ import { Button, Dropdown } from 'frappe-ui'
 import { ConfirmDelete, TemplateOption } from '@/utils'
 import { computed, ref } from 'vue'
 
-// The per-row ⋯ menu. Delete writes nothing: it only marks the row on screen,
-// and the header Update sends it along with every other rule edit -- so leaving
-// the page without saving is the undo.
+// Delete only flags the row; the header Update sends it, so leaving without
+// saving undoes it.
 const props = defineProps({
-  // A row that was just added and has nothing typed into it. It has nothing to
-  // lose, so its menu is a bare Delete.
+  // A just-added empty row has nothing to lose, so it gets a one-step Delete.
   blank: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['delete'])
 
-// The same two-step delete AssignmentRuleListItem.vue uses (reset each time
-// the menu opens): a grey Delete, then a red Confirm Delete.
+// Reset on every open so the menu always starts at the grey Delete step.
 const isConfirmingDelete = ref(false)
 
 const options = computed(() => {
   if (props.blank) {
-    // Drawn like ConfirmDelete's first step, so it reads the same grey.
+    // TemplateOption so it matches ConfirmDelete's grey first step.
     return [
       {
         label: __('Delete'),

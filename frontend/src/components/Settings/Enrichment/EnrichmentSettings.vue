@@ -25,8 +25,8 @@
       />
     </template>
     <template #content>
-      <!-- frappe-ui's tab list has px-5 and no prop to change it; pl-0 removes
-           only its left padding so "General" starts at the title's edge. -->
+      <!-- frappe-ui's tab list has px-5 and no prop for it; pl-0 aligns
+           "General" with the title. -->
       <Tabs
         v-if="settings.doc"
         v-model="tabIndex"
@@ -83,8 +83,8 @@ const settings = createDocumentResource({
   auto: true,
 })
 
-// frappe-ui's Tabs is index-based; `value` rides along on each tab so the panels
-// key off a stable id rather than a translated label.
+// frappe-ui's Tabs is index-based; `value` gives panels a stable id instead of
+// a translated label.
 const tabIndex = ref(0)
 
 const tabOptions = [
@@ -92,29 +92,24 @@ const tabOptions = [
   { label: __('Rules'), value: 'rules' },
 ]
 
-// Both rule lists are set up here rather than inside RulesTab: the Tabs panel
-// is unmounted while the other tab is open, so rows held in the panel would be
-// thrown away on a tab switch. reactive() unwraps the composables' refs so the
-// tab can read them as plain values.
+// Owned here because the hidden tab panel is unmounted; reactive() unwraps the
+// refs for the tab.
 const social = reactive(useSocialRules())
 const industry = reactive(useIndustryRules())
 
-// Mirrors MAX_PAGES_LIMIT in crm/domain_enrichment/config.py -- the Settings
-// controller rejects anything outside 1..20 on save.
+// Mirrors MAX_PAGES_LIMIT in crm/domain_enrichment/config.py; the controller
+// rejects values outside 1..20.
 const MAX_PAGES_LIMIT = 20
 
-// Keystrokes in the Maximum pages box land here instead of in the doc, so a
-// half-typed number never counts as the stored one. It is folded into the doc
-// on Update.
+// Held apart from the doc so a half-typed number never counts as stored; folded
+// in on Update.
 const maxPages = ref(undefined)
 const maxPagesError = ref('')
 
 watch(maxPages, () => (maxPagesError.value = ''))
 
-// Turning enrichment off hides Maximum pages, but a half-typed value in it is
-// kept in maxPages so it is back when enrichment is turned on again. While
-// hidden it is left out of the dirty check, validation and Save, so a Save
-// can't write -- or refuse over -- a value the admin can no longer see.
+// Kept while enrichment is off, but not validated or saved, so Save can't
+// write or reject a value the admin can't see.
 const pendingMaxPages = computed(() =>
   settings.doc?.enabled ? maxPages.value : undefined,
 )
@@ -131,8 +126,8 @@ const settingsDirty = computed(() => {
   )
 })
 
-// Drives both the "Not Saved" badge and the Update button. A rule that failed to
-// save is still changed, so the badge only clears once every part went through.
+// A rule that failed to save stays dirty, so the badge only clears once
+// everything went through.
 const hasUnsavedChanges = computed(
   () =>
     settingsDirty.value ||
@@ -140,17 +135,14 @@ const hasUnsavedChanges = computed(
     industry.dirtyRows.length > 0,
 )
 
-// A Switch hands us a Boolean, but Check fields come back from the server as
-// 0/1 -- so write that shape back, or the doc would differ from originalDoc on
-// every load.
+// Check fields come back as 0/1; writing a Boolean would leave the doc
+// permanently dirty.
 function toggle(fieldname, value) {
   settings.doc[fieldname] = value ? 1 : 0
 }
 
-// The number input reports a string, and an emptied box reports '', so anything
-// that isn't a whole number in range is refused: saving 0 would leave the
-// crawler fetching no pages at all. The ceiling mirrors the Settings controller;
-// catching it here turns a server throw into an inline message.
+// The input reports strings ('' when emptied); 0 would crawl nothing, and over
+// the limit the server throws.
 function validateMaxPages() {
   if (pendingMaxPages.value === undefined) return true
 
@@ -170,16 +162,16 @@ function validateMaxPages() {
   return true
 }
 
-// frappe-ui's save rolls `doc` back to its pre-submit snapshot if the request
-// fails, so a failure leaves the last saved values on screen.
+// On failure frappe-ui rolls `doc` back to its pre-submit snapshot, leaving the
+// saved values on screen.
 async function saveSettings() {
   if (pendingMaxPages.value !== undefined) {
     settings.doc.max_pages = Number(pendingMaxPages.value)
     maxPages.value = undefined
   }
 
-  // The onError keeps frappe-ui's fallback handler from toasting a second time;
-  // submit() still rethrows on top of it, which is what the catch is for.
+  // onError stops frappe-ui's fallback toast; submit() still rethrows, hence
+  // the catch.
   let ok = true
   await settings.save
     .submit(null, {
@@ -192,9 +184,8 @@ async function saveSettings() {
   return ok
 }
 
-// One press saves both tabs. Everything is validated first -- a row with a bad
-// regex or a taken platform stops the whole Save before a single request -- then
-// the settings single and both rule lists go out together.
+// Validate everything first so one bad row stops the whole Save before any
+// request goes out.
 async function save() {
   if (saving.value) return
 
