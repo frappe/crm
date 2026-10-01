@@ -5,7 +5,7 @@ import { computed, reactive, ref } from 'vue'
 // list call can't bring back, and the editable rows built from both. Social and
 // Industry rules differ only in the fields on a row and in the document each one
 // sends -- the loading, the dirty tracking, and the insert/update/delete plumbing
-// the header Save runs are the same, so they live here once.
+// the header Update runs are the same, so they live here once.
 //
 // Nothing is written while the admin edits. Every row keeps what the server last
 // confirmed next to what is in its boxes; Save validates every changed row, then
@@ -76,7 +76,7 @@ export function useEnrichmentRules({
     ...localRows.value,
   ])
 
-  // The status switch in the row's menu is the one edit every rule_type shares,
+  // The on/off switch on each row is the one edit every rule_type shares,
   // so it is tracked here rather than in each caller's isRowChanged.
   function isEnabledChanged(row) {
     return row.enabled !== row.savedEnabled
@@ -180,8 +180,8 @@ export function useEnrichmentRules({
         key: `new-${(localRowSeq += 1)}`,
         name: null,
         ruleName: '',
-        // Starts enabled; the menu's status switch can turn it off before the
-        // first Save.
+        // Starts enabled; the row's switch can turn it off before the first
+        // Update.
         enabled: true,
         savedEnabled: true,
         removed: false,

@@ -100,9 +100,9 @@
 import { ErrorMessage, FormControl, Switch } from 'frappe-ui'
 
 // The General tab's fields. Nothing here saves: every change goes up to
-// EnrichmentSettings.vue, which holds it until the header Save. Everything under
-// the master switch is hidden while enrichment is off; the values stay in the
-// parent, so they are still there when it is turned back on.
+// EnrichmentSettings.vue, which holds it until the header Update. Everything
+// under the master switch is hidden while enrichment is off; the values stay in
+// the parent, so they are still there when it is turned back on.
 defineProps({
   doc: { type: Object, required: true },
   // The typed Max pages value, held apart from the doc until Save so a

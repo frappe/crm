@@ -17,7 +17,7 @@
     </template>
     <template #header-actions>
       <Button
-        :label="__('Save')"
+        :label="__('Update')"
         variant="solid"
         :loading="saving"
         :disabled="!hasUnsavedChanges"
@@ -131,7 +131,7 @@ const settingsDirty = computed(() => {
   )
 })
 
-// Drives both the "Not Saved" badge and the Save button. A rule that failed to
+// Drives both the "Not Saved" badge and the Update button. A rule that failed to
 // save is still changed, so the badge only clears once every part went through.
 const hasUnsavedChanges = computed(
   () =>
