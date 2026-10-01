@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-y-auto">
+  <div class="flex-1 flex flex-col">
     <div class="flex gap-4 items-center justify-between py-3">
       <div class="flex flex-col">
         <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -105,7 +105,7 @@ import { ErrorMessage, FormControl, Switch } from 'frappe-ui'
 // the parent, so they are still there when it is turned back on.
 defineProps({
   doc: { type: Object, required: true },
-  // The typed Max pages value, held apart from the doc until Save so a
+  // The typed Max pages value, held apart from the doc until Update so a
   // half-typed number never counts as the stored one.
   maxPages: { type: [String, Number], default: undefined },
   maxPagesError: { type: String, default: '' },

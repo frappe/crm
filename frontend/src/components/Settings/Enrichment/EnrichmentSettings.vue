@@ -105,7 +105,7 @@ const MAX_PAGES_LIMIT = 20
 
 // Keystrokes in the Maximum pages box land here instead of in the doc, so a
 // half-typed number never counts as the stored one. It is folded into the doc
-// on Save.
+// on Update.
 const maxPages = ref(undefined)
 const maxPagesError = ref('')
 
