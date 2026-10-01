@@ -81,7 +81,7 @@
         @click="
           () => {
             if (!Boolean(field.disabled)) {
-              data[field.fieldname] = !data[field.fieldname]
+              fieldChange(!data[field.fieldname], field)
             }
           }
         "
