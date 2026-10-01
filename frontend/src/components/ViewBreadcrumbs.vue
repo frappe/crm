@@ -27,7 +27,7 @@
           variant="ghost"
           class="text-lg-medium text-nowrap"
           :label="__(viewControls.currentView?.label)"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         >
           <template #prefix>
             <Icon :icon="viewControls.currentView?.icon" class="h-4" />

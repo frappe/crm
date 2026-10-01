@@ -1,6 +1,8 @@
 import frappe
 from frappe import _
 
+from crm.api.whatsapp import guard_recipient_change
+
 
 def validate(doc, method):
 	update_deals_email_mobile_no(doc)
@@ -15,15 +17,31 @@ def update_deals_email_mobile_no(doc):
 
 	for linked_deal in linked_deals:
 		deal = frappe.db.get_values("CRM Deal", linked_deal.parent, ["email", "mobile_no"], as_dict=True)[0]
-		if deal.email != doc.email_id or deal.mobile_no != doc.mobile_no:
-			frappe.db.set_value(
-				"CRM Deal",
-				linked_deal.parent,
-				{
-					"email": doc.email_id,
-					"mobile_no": doc.mobile_no,
-				},
-			)
+		changed = [
+			[fieldname, deal[fieldname], value]
+			for fieldname, value in (("email", doc.email_id), ("mobile_no", doc.mobile_no))
+			if (deal[fieldname] or "") != (value or "")
+		]
+		if not changed:
+			continue
+
+		guard_recipient_change("CRM Deal", linked_deal.parent, deal.mobile_no, doc.mobile_no)
+		frappe.db.set_value(
+			"CRM Deal", linked_deal.parent, {fieldname: new for fieldname, _old, new in changed}
+		)
+		add_deal_version(linked_deal.parent, changed)
+
+
+def add_deal_version(deal: str, changed: list) -> None:
+	"""Write the timeline entry that `frappe.db.set_value` skips but a save would have made."""
+	frappe.get_doc(
+		{
+			"doctype": "Version",
+			"ref_doctype": "CRM Deal",
+			"docname": deal,
+			"data": frappe.as_json({"changed": changed}),
+		}
+	).insert(ignore_permissions=True)
 
 
 @frappe.whitelist()

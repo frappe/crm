@@ -5,7 +5,7 @@
     </div>
     <div class="flex gap-3">
       <div
-        class="flex flex-col px-6 pt-13 pb-7 justify-between bg-surface-gray-1 rounded-2xl items-center space-y-2 size-56"
+        class="flex flex-col px-6 pt-13 pb-7 justify-between bg-surface-gray-1 rounded-8 items-center space-y-2 size-56"
       >
         <div class="flex flex-col items-center gap-2.5">
           <div class="flex -space-x-2">
@@ -24,7 +24,7 @@
         <Button variant="outline" :label="__('Add Sample Data')" />
       </div>
       <div
-        class="flex flex-col px-6 pt-13 pb-7 justify-between bg-surface-gray-1 rounded-2xl items-center space-y-2 size-56"
+        class="flex flex-col px-6 pt-13 pb-7 justify-between bg-surface-gray-1 rounded-8 items-center space-y-2 size-56"
       >
         <div class="flex flex-col items-center gap-2.5">
           <GoogleIcon class="" />

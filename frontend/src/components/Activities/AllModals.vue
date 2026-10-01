@@ -1,6 +1,7 @@
 <script setup>
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { call } from 'frappe-ui'
 import { useRoute, useRouter } from 'vue-router'
 

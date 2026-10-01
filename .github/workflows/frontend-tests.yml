@@ -44,6 +44,11 @@ jobs:
                   cache: yarn
                   cache-dependency-path: frontend/yarn.lock
 
+            # @whatsapp/ui is linked from the sibling app dir that bench creates;
+            # this job only checks out crm, so clone it there.
+            - name: Clone WhatsApp app
+              run: git clone --depth 1 https://github.com/frappe/whatsapp.git ../whatsapp
+
             - name: Install dependencies
               run: cd frontend && yarn install --frozen-lockfile
 
@@ -73,6 +78,11 @@ jobs:
                   cache: yarn
                   cache-dependency-path: frontend/yarn.lock
 
+            # @whatsapp/ui is linked from the sibling app dir that bench creates;
+            # this job only checks out crm, so clone it there.
+            - name: Clone WhatsApp app
+              run: git clone --depth 1 https://github.com/frappe/whatsapp.git ../whatsapp
+
             - name: Install dependencies
               run: cd frontend && yarn install --frozen-lockfile
 
@@ -92,6 +102,11 @@ jobs:
                   node-version: "24"
                   cache: yarn
                   cache-dependency-path: frontend/yarn.lock
+
+            # @whatsapp/ui is linked from the sibling app dir that bench creates;
+            # this job only checks out crm, so clone it there.
+            - name: Clone WhatsApp app
+              run: git clone --depth 1 https://github.com/frappe/whatsapp.git ../whatsapp
 
             - name: Run frontend tests
               uses: ./.github/actions/frontend-tests

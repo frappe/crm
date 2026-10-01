@@ -22,20 +22,20 @@
       <Button
         :label="__('Start test run')"
         variant="solid"
-        icon-left="play"
+        icon-left="lucide-play"
         :loading="running"
         :disabled="doc.document_type && !docname"
         @click="run()"
       />
     </div>
 
-    <div v-if="error" class="text-sm text-ink-red-5" role="alert">
+    <div v-if="error" class="text-sm text-ink-red-4" role="alert">
       {{ error }}
     </div>
 
     <div
       v-if="summary"
-      class="flex items-center gap-2 rounded-lg border border-outline-gray-2 bg-surface-gray-1 px-3 py-2"
+      class="flex items-center gap-2 rounded-6 border border-outline-gray-2 bg-surface-gray-1 px-3 py-2"
     >
       <Badge
         :label="__(playing ? 'Running' : summary.status)"
@@ -47,7 +47,7 @@
       </span>
       <span
         v-if="summary.error_summary"
-        class="truncate text-sm text-ink-red-5"
+        class="truncate text-sm text-ink-red-4"
       >
         {{ summary.error_summary }}
       </span>
@@ -63,11 +63,11 @@
 
     <div
       v-if="showFailures && failures.length"
-      class="max-h-40 shrink-0 space-y-2 overflow-y-auto rounded-lg border border-outline-red-2 p-3"
+      class="max-h-40 shrink-0 space-y-2 overflow-y-auto rounded-6 border border-outline-red-2 p-3"
     >
       <div v-for="step in failures" :key="step.step_key" class="space-y-1">
         <div class="text-sm-medium text-ink-gray-8">{{ stepLabel(step) }}</div>
-        <div v-if="step.message" class="text-xs text-ink-red-5">
+        <div v-if="step.message" class="text-xs text-ink-red-4">
           {{ step.message }}
         </div>
         <pre
@@ -79,7 +79,7 @@
     </div>
 
     <div
-      class="min-h-0 flex-1 overflow-hidden rounded-lg border border-outline-gray-2"
+      class="min-h-0 flex-1 overflow-hidden rounded-6 border border-outline-gray-2"
     >
       <WorkflowFlow
         :nodes="nodes"
@@ -109,7 +109,7 @@ const STATUS_THEMES = {
   Skipped: 'gray',
   Waiting: 'blue',
   Failed: 'red',
-  'Partially Failed': 'orange',
+  'Partially Failed': 'amber',
 }
 
 // A wait is reported instantly by the server; the pause is here so the run reads as a sequence.

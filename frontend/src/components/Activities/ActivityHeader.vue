@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="title !== 'Data'"
-    class="flex items-center justify-between text-lg-medium sm:mx-10 sm:mb-4 sm:mt-8"
+    class="mx-3 my-3 flex items-center justify-between text-lg-medium sm:mx-10 sm:mb-4 sm:mt-8"
   >
     <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ __(title) }}
@@ -10,14 +10,14 @@
       v-if="title == 'Emails'"
       variant="solid"
       :label="__('New Email')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="emailBox.openEmailBox()"
     />
     <Button
       v-else-if="title == 'Comments'"
       variant="solid"
       :label="__('New Comment')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="emailBox.openCommentBox()"
     />
     <MultiActionButton
@@ -29,43 +29,36 @@
       v-else-if="title == 'Notes'"
       variant="solid"
       :label="__('New Note')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="modalRef.showNote()"
     />
     <Button
       v-else-if="title == 'Tasks'"
       variant="solid"
       :label="__('New Task')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="modalRef.showTask()"
     />
     <Button
       v-else-if="title == 'Attachments'"
       variant="solid"
       :label="__('Upload Attachment')"
-      iconLeft="plus"
+      iconLeft="lucide-plus"
       @click="showFilesUploader = true"
     />
-    <div v-else-if="title == 'WhatsApp'" class="flex gap-2 shrink-0">
-      <Button
-        :label="__('Send Template')"
-        @click="showWhatsappTemplates = true"
-      />
-      <Button
-        variant="solid"
-        :label="__('New Message')"
-        iconLeft="plus"
-        @click="whatsappBox.show()"
-      />
-    </div>
-    <Dropdown v-else :options="defaultActions" @click.stop>
+    <!-- WhatsApp composes from the input; Quotations is read-only — no header action -->
+    <Dropdown
+      v-else-if="title != 'WhatsApp' && title != 'Quotations'"
+      :options="defaultActions"
+      @click.stop
+    >
       <template #default="{ open }">
         <Button
           variant="solid"
           class="flex items-center gap-1"
           :label="__('New')"
-          iconLeft="plus"
-          :iconRight="open ? 'chevron-up' : 'chevron-down'"
+          iconLeft="lucide-plus"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         />
       </template>
     </Dropdown>
@@ -87,19 +80,14 @@ import { Dropdown } from 'frappe-ui'
 import { computed, h } from 'vue'
 
 const props = defineProps({
-  tabs: { type: Array, default: () => [] },
   title: { type: String, default: '' },
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
-  whatsappBox: { type: Object, default: () => ({}) },
 })
 
 const { makeCall } = globalStore()
 
-const tabIndex = defineModel({ type: Number })
-const showWhatsappTemplates = defineModel('showWhatsappTemplates', {
-  type: Boolean,
-})
+const activeTab = defineModel({ type: String })
 const showFilesUploader = defineModel('showFilesUploader', { type: Boolean })
 const emailBox = defineModel('emailBox', { type: Object, default: () => ({}) })
 
@@ -144,7 +132,7 @@ const defaultActions = computed(() => {
     {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('WhatsApp Message'),
-      onClick: () => (tabIndex.value = getTabIndex('WhatsApp')),
+      onClick: () => (activeTab.value = 'whatsapp'),
       condition: () => whatsappEnabled.value,
     },
   ]
@@ -153,15 +141,11 @@ const defaultActions = computed(() => {
   )
 })
 
-function getTabIndex(name) {
-  return props.tabs.findIndex((tab) => tab.name === name)
-}
-
 const callActions = computed(() => {
   let actions = [
     {
       label: __('Log a Call'),
-      icon: 'plus',
+      icon: 'lucide-plus',
       onClick: () => props.modalRef.createCallLog(),
     },
     {

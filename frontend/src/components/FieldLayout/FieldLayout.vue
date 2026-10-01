@@ -2,12 +2,12 @@
   <div
     class="flex flex-col"
     :class="{
-      'border border-outline-gray-1 rounded-lg': hasTabs,
+      'border border-outline-gray-1 rounded-6': hasTabs,
       'border-outline-elevation-2': hasTabs,
     }"
   >
     <Tabs
-      v-model="selectedTabIndex"
+      v-model="selectedTab"
       as="div"
       :tabs="processedTabs"
       :class="[
@@ -79,6 +79,7 @@ const processedTabs = computed(() => {
       }
     })
     .filter((tab) => !tab.hidden)
+    .map((tab, i) => ({ ...tab, value: tab.name || String(i) }))
 })
 
 const hasTabs = computed(() => {
@@ -88,19 +89,17 @@ const hasTabs = computed(() => {
   )
 })
 
-const selectedTabIndex = computed({
+const selectedTab = computed({
   get() {
-    if (tabName.value) {
-      const namedTabIndex = processedTabs.value.findIndex(
-        (tab) => tab.name === tabName.value,
-      )
-      if (namedTabIndex !== -1) return namedTabIndex
-    }
-    return tabIndex.value
+    const tabs = processedTabs.value
+    const namedTab =
+      tabName.value && tabs.find((tab) => tab.name === tabName.value)
+    return (namedTab || tabs[tabIndex.value])?.value
   },
   set(value) {
-    tabIndex.value = value
-    tabName.value = processedTabs.value[value]?.name || ''
+    const index = processedTabs.value.findIndex((tab) => tab.value === value)
+    tabIndex.value = index
+    tabName.value = processedTabs.value[index]?.name || ''
   },
 })
 
