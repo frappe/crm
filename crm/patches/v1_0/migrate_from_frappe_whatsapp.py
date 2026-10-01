@@ -13,6 +13,7 @@ OLD_ACCOUNT = "WhatsApp Account"
 OLD_SETTINGS = "WhatsApp Settings"
 OLD_TEMPLATE = "WhatsApp Templates"
 OLD_MESSAGE = "WhatsApp Message"
+MESSAGE_BATCH_SIZE = 500
 
 OUTGOING_STATUS = {
 	"success": "Sent",
@@ -37,14 +38,16 @@ def execute():
 	if not frappe.db.exists("DocType", OLD_MESSAGE):
 		return
 
+	# Read before the account copy: the first WA Account inserted makes itself the default.
+	already_configured = frappe.db.get_single_value("WA Settings", "default_account")
 	for account in frappe.get_all(OLD_ACCOUNT, fields=["*"]):
 		_copy_account(account)
-	_copy_settings()
+	if not already_configured:
+		_copy_settings()
 
 	templates = {t.name: _copy_template(t) for t in frappe.get_all(OLD_TEMPLATE, fields=["*"])}
 
-	old_messages = frappe.get_all(OLD_MESSAGE, fields=["*"], order_by="creation asc")
-	for message in old_messages:
+	for message in _old_messages():
 		if not frappe.db.exists("WA Message", message.name):
 			_copy_message(message, templates)
 
@@ -130,6 +133,19 @@ def _template_variables(old) -> list[dict]:
 	for name in get_template_variables(old.header):
 		rows.setdefault(name, name)
 	return [{"variable_name": name, "variable_example": example} for name, example in rows.items()]
+
+
+def _old_messages():
+	start = 0
+	while batch := frappe.get_all(
+		OLD_MESSAGE,
+		fields=["*"],
+		order_by="creation asc, name asc",
+		limit_start=start,
+		limit_page_length=MESSAGE_BATCH_SIZE,
+	):
+		yield from batch
+		start += len(batch)
 
 
 def _copy_message(old, templates: dict) -> None:
