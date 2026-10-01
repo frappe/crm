@@ -175,6 +175,7 @@ const fields = computed(() => {
       value: field.fieldname,
       fieldname: field.fieldname,
       fieldtype: field.fieldtype,
+      options: field.options,
     }
   })
 })
