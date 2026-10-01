@@ -10,6 +10,7 @@ from crm.integrations.api import find_by_phone, get_contact_lead_or_deal_from_nu
 from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
+LEAD_SOURCE = "WhatsApp"
 CONFIRM_PARAM = "confirm_whatsapp_recipient_change"
 
 
@@ -32,17 +33,55 @@ def validate(doc, method):
 	else:
 		phone_number = _get_phone_number_from_profile(doc)
 		if phone_number:
-			try:
-				name, doctype = get_contact_lead_or_deal_from_number(phone_number)
-				if doctype and name is not None:
-					doc.reference_doctype = doctype
-					doc.reference_docname = name
-			except Exception:
-				frappe.log_error(
-					frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number"
-				)
+			_resolve_reference(doc, phone_number)
 
 	_link_profile_to_crm_entities(doc)
+
+
+def _resolve_reference(doc, phone_number: str) -> None:
+	try:
+		name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
+		return
+
+	if not name and doc.direction == "Incoming":
+		action = _lead_append_action(doc.whatsapp_account)
+		if action:
+			name, doctype = _create_lead(doc, action), "CRM Lead"
+
+	if name:
+		doc.reference_doctype = doctype
+		doc.reference_docname = name
+
+
+def _lead_append_action(account: str | None):
+	"""An account that appends incoming messages to CRM Lead has asked for leads from new
+	senders; that configuration is the opt-in, there is no separate switch."""
+	if not account:
+		return None
+	for action in frappe.get_cached_doc("WA Account", account).get("append_actions", []):
+		if action.append_to == "CRM Lead" and action.trigger_on in ("Incoming", "Both"):
+			return action
+	return None
+
+
+def _create_lead(doc, action) -> str:
+	"""Built as the whatsapp app's append action would build it, so the message's reference
+	is set before that action runs and it finds nothing left to do. The source is the one
+	thing the whatsapp app cannot know."""
+	profile = frappe.get_cached_doc("WA Profile", doc.to)
+	lead = frappe.new_doc("CRM Lead")
+	lead.set(action.sender_field, profile.phone_number)
+	lead.set(action.sender_name_field, profile.profile_name)
+	if action.message_field:
+		lead.set(action.message_field, doc.message)
+	if action.timestamp_field:
+		lead.set(action.timestamp_field, doc.timestamp)
+	if frappe.db.exists("CRM Lead Source", LEAD_SOURCE):
+		lead.source = LEAD_SOURCE
+	lead.insert(ignore_permissions=True)
+	return lead.name
 
 
 def _get_phone_number_from_profile(doc) -> str | None:
