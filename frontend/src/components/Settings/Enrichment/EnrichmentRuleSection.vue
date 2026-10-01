@@ -1,12 +1,7 @@
 <template>
   <div class="flex flex-col">
     <div class="flex items-start justify-between gap-4 py-3">
-      <div class="flex flex-col gap-1">
-        <div class="text-lg-semibold text-ink-gray-8">{{ title }}</div>
-        <div v-if="subtitle" class="text-p-sm text-ink-gray-6 max-w-lg">
-          {{ subtitle }}
-        </div>
-      </div>
+      <div class="text-lg-semibold text-ink-gray-8">{{ title }}</div>
       <Button
         :label="addLabel"
         variant="subtle"
@@ -49,7 +44,6 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 
 defineProps({
   title: { type: String, required: true },
-  subtitle: { type: String, default: '' },
   addLabel: { type: String, required: true },
   loading: { type: Boolean, default: false },
   error: { type: Object, default: null },
