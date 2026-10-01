@@ -15,6 +15,7 @@
       :error-message="__('Could not load social rules')"
       :count="social.rows.length"
       empty-name="Social Rules"
+      :empty-title="__('No social rules yet')"
       :empty-description="
         __('Add one to tell enrichment which profile links to look for.')
       "
@@ -53,6 +54,7 @@
             />
           </div>
           <div class="flex-1 min-w-0">
+            <!-- Monospace so regex patterns are easier to read (same as Grid.vue / SlaPriorityList.vue). -->
             <FormControl
               :model-value="row.pattern"
               type="text"
@@ -124,6 +126,7 @@
       :error-message="__('Could not load industry rules')"
       :count="industry.rows.length"
       empty-name="Industry Rules"
+      :empty-title="__('No industry rules yet')"
       :empty-description="
         __('Add one to tell enrichment which keywords point at which industry.')
       "
