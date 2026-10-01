@@ -30,4 +30,11 @@ crm.patches.v1_0.add_forecasting_section_in_quick_entry
 crm.patches.v1_0.set_persona_captured_for_existing_sites
 crm.patches.v1_0.reorder_address_quick_entry_layout
 crm.patches.v1_0.set_seen_for_existing_deals_and_leads
+<<<<<<< HEAD
 crm.patches.v1_0.rebuild_crm_territory_tree
+=======
+crm.patches.v1_0.migrate_from_frappe_whatsapp
+crm.patches.v1_0.add_whatsapp_lead_source
+crm.patches.v1_0.rebuild_crm_territory_tree
+crm.patches.v1_0.clamp_enrichment_max_pages
+>>>>>>> b5d2456 (fix(enrichment): clamp stored max_pages, skip unchanged settings save)
