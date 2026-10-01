@@ -19,8 +19,11 @@
         __('Add one to tell enrichment which profile links to look for.')
       "
       empty-icon="share-2"
+      :has-more="social.hasMore"
+      :loading-more="social.loadingMore"
       @add="social.addRow"
       @retry="social.load"
+      @load-more="social.loadMore"
     >
       <div v-for="row in social.rows" :key="row.key" class="flex flex-col">
         <div class="flex items-start gap-2">
@@ -130,8 +133,11 @@
         __('Add one to tell enrichment which keywords point at which industry.')
       "
       empty-icon="briefcase"
+      :has-more="industry.hasMore"
+      :loading-more="industry.loadingMore"
       @add="industry.addRow"
       @retry="industry.load"
+      @load-more="industry.loadMore"
     >
       <div v-for="row in industry.rows" :key="row.key" class="flex flex-col">
         <div class="flex items-start gap-2">
