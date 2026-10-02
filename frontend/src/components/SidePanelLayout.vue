@@ -537,7 +537,7 @@ function parsedField(field) {
     field.link_filters = JSON.stringify({
       name: ['in', users.data?.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
-      ...(parseLinkFilters(field.link_filters) || {}),
+      ...(parseLinkFilters(field.link_filters, { doc: doc.value }) || {}),
     })
   }
 
@@ -567,7 +567,7 @@ function parsedField(field) {
 
   let _field = {
     ...field,
-    filters: parseLinkFilters(field.link_filters),
+    filters: parseLinkFilters(field.link_filters, { doc: doc.value }),
     placeholder: field.placeholder || field.label,
     display_via_depends_on: evaluateDependsOnValue(field.depends_on, doc.value),
     mandatory_via_depends_on: evaluateDependsOnValue(
