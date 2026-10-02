@@ -16,7 +16,7 @@
       ref="autocomplete"
       :button-id="controlId"
       v-model="value"
-      :options="options.data"
+      :options="autocompleteOptions"
       :size="attrs.size || 'sm'"
       :variant="props.variant"
       :placeholder="attrs.placeholder"
@@ -90,6 +90,13 @@ const props = defineProps({
   hideMe: { type: Boolean, default: false },
   variant: { type: String, default: 'subtle' },
   required: { type: Boolean, default: false },
+  /**
+   * Split the dropdown into two labelled groups instead of filtering options
+   * out: the ones matching `grouping.filters` first, everything else below.
+   * `{ filters: { company_name: 'Frappe' }, label: '...', otherLabel: '...' }`
+   * Only supported alongside object (or empty) `filters`.
+   */
+  grouping: { type: Object, default: null },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
@@ -135,12 +142,40 @@ watchDebounced(
 )
 
 watchDebounced(
-  () => props.filters,
+  () => [props.filters, props.grouping],
   () => {
     reload('', true)
   },
   { debounce: 300, immediate: true },
 )
+
+// `filters` is only mergeable with `grouping.filters` when it is a plain
+// object; an array or a JSON string is left alone and grouping is skipped.
+function objectFilters() {
+  const filters = props.filters
+  if (Array.isArray(filters)) return filters.length ? null : {}
+  if (typeof filters === 'string') return null
+  return filters || {}
+}
+
+const isGrouped = computed(() =>
+  Boolean(
+    props.grouping?.filters &&
+      props.grouping?.label &&
+      props.grouping?.otherLabel &&
+      objectFilters(),
+  ),
+)
+
+function toOptions(data) {
+  return data.map((option) => {
+    return {
+      label: option.label || option.value,
+      value: option.value,
+      description: stripHtml(option.description),
+    }
+  })
+}
 
 const options = createResource({
   url: 'frappe.desk.search.search_link',
@@ -152,13 +187,11 @@ const options = createResource({
     filters: props.filters,
   },
   transform: (data) => {
-    let allData = data.map((option) => {
-      return {
-        label: option.label || option.value,
-        value: option.value,
-        description: stripHtml(option.description),
-      }
-    })
+    let allData = toOptions(data)
+    // When grouped this resource only holds the second group, so retaining the
+    // selection here would file it under the wrong label; see autocompleteOptions.
+    if (isGrouped.value) return allData
+
     retainSelectedOption(allData)
     if (!props.hideMe && props.doctype == 'User') {
       allData.unshift({
@@ -168,6 +201,43 @@ const options = createResource({
     }
     return allData
   },
+})
+
+// Holds the `grouping.filters` matches; `options` then holds everything else.
+const groupedOptions = createResource({
+  url: 'frappe.desk.search.search_link',
+  cache: ['grouped', props.doctype, text.value, props.hideMe, props.filters],
+  method: 'POST',
+  params: {
+    txt: text.value,
+    doctype: props.doctype,
+    filters: props.filters,
+  },
+  transform: toOptions,
+})
+
+const autocompleteOptions = computed(() => {
+  if (!isGrouped.value) return options.data
+
+  let matching = groupedOptions.data || []
+  const others = options.data || []
+
+  // retainSelectedOption's job for the grouped case: a selection that the
+  // current search text filters out stays visible instead of looking cleared.
+  // Neither group claims it, so it goes to the top of the first one.
+  const selected = selectedOption.value
+  if (
+    selected &&
+    !matching.some((option) => option.value === selected.value) &&
+    !others.some((option) => option.value === selected.value)
+  ) {
+    matching = [selected, ...matching]
+  }
+
+  return [
+    { group: props.grouping.label, items: matching },
+    { group: props.grouping.otherLabel, items: others },
+  ].filter((group) => group.items.length)
 })
 
 function stripHtml(html) {
@@ -196,14 +266,49 @@ function reload(val, force = false) {
   )
     return
 
+  if (!isGrouped.value) {
+    options.update({
+      params: {
+        txt: val,
+        doctype: props.doctype,
+        filters: props.filters,
+      },
+    })
+    options.reload()
+    return
+  }
+
+  const baseFilters = objectFilters()
+  const groupFilters = props.grouping.filters
+
   options.update({
     params: {
       txt: val,
       doctype: props.doctype,
-      filters: props.filters,
+      // `!=` is null-safe in frappe (it wraps the column in ifnull), so
+      // records with the field unset land in this group rather than nowhere.
+      filters: { ...baseFilters, ...negateFilters(groupFilters) },
     },
   })
   options.reload()
+
+  groupedOptions.update({
+    params: {
+      txt: val,
+      doctype: props.doctype,
+      filters: { ...baseFilters, ...groupFilters },
+    },
+  })
+  groupedOptions.reload()
+}
+
+function negateFilters(filters) {
+  return Object.fromEntries(
+    Object.entries(filters).map(([fieldname, value]) => [
+      fieldname,
+      ['!=', value],
+    ]),
+  )
 }
 
 function clearValue(close) {
