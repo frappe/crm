@@ -144,7 +144,7 @@
       <template v-else>
         <div
           v-for="(activity, i) in activities"
-          :key="activity.name"
+          :key="activityKey(activity)"
           class="activity px-3 sm:px-10"
           :class="
             ['Activity', 'Emails'].includes(title)
@@ -267,24 +267,6 @@
           <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
             <div class="flex items-center justify-stretch gap-2 text-base">
               <div
-                v-if="activity.other_versions"
-                class="inline-flex flex-wrap gap-1.5 text-ink-gray-8 font-medium"
-              >
-                <span>{{
-                  activity.show_others ? __('Hide') : __('Show')
-                }}</span>
-                <span> +{{ activity.other_versions.length + 1 }} </span>
-                <span>{{ __('changes from') }}</span>
-                <span>{{ activity.owner_name }}</span>
-                <Button
-                  class="!size-4"
-                  variant="ghost"
-                  :icon="SelectIcon"
-                  @click="activity.show_others = !activity.show_others"
-                />
-              </div>
-              <div
-                v-else
                 class="inline-flex items-center flex-wrap gap-1 text-ink-gray-5"
               >
                 <span class="font-medium text-ink-gray-8">
@@ -299,7 +281,7 @@
                 </span>
                 <span v-if="activity.value">{{ __(activity.value) }}</span>
                 <span
-                  v-if="activity.data?.old_value"
+                  v-if="hasValue(activity.data?.old_value)"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
@@ -315,7 +297,7 @@
                 </span>
                 <span v-if="activity.to">{{ __('to') }}</span>
                 <span
-                  v-if="activity.data?.value"
+                  v-if="hasValue(activity.data?.value)"
                   class="max-w-xs font-medium text-ink-gray-8"
                 >
                   <div
@@ -329,6 +311,17 @@
                     {{ activity.data.value }}
                   </div>
                 </span>
+                <Button
+                  v-if="activity.other_versions?.length"
+                  variant="ghost"
+                  size="sm"
+                  :label="
+                    activity.show_others
+                      ? __('Hide')
+                      : __('+{0} more', [activity.other_versions.length])
+                  "
+                  @click="activity.show_others = !activity.show_others"
+                />
               </div>
 
               <div class="ml-auto whitespace-nowrap">
@@ -336,15 +329,12 @@
               </div>
             </div>
             <div
-              v-if="activity.other_versions && activity.show_others"
+              v-if="activity.other_versions?.length && activity.show_others"
               class="flex flex-col gap-0.5"
             >
               <div
-                v-for="a in sortByCreation([
-                  activity,
-                  ...activity.other_versions,
-                ])"
-                :key="a.creation"
+                v-for="a in activity.other_versions"
+                :key="activityKey(a)"
                 class="flex items-start justify-stretch gap-2 py-1.5 text-base"
               >
                 <div class="inline-flex flex-wrap gap-1 text-ink-gray-5">
@@ -362,7 +352,7 @@
                     {{ startCase(__(a.type)) }}
                   </span>
                   <span
-                    v-if="a.data?.old_value"
+                    v-if="hasValue(a.data?.old_value)"
                     class="max-w-xs font-medium text-ink-gray-8"
                   >
                     <div
@@ -378,7 +368,7 @@
                   </span>
                   <span v-if="a.to">{{ __('to') }}</span>
                   <span
-                    v-if="a.data?.value"
+                    v-if="hasValue(a.data?.value)"
                     class="max-w-xs font-medium text-ink-gray-8"
                   >
                     <div
@@ -522,7 +512,6 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DotIcon from '@/components/Icons/DotIcon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import SelectIcon from '@/components/Icons/SelectIcon.vue'
 import MissedCallIcon from '@/components/Icons/MissedCallIcon.vue'
 import DeclinedCallIcon from '@/components/Icons/DeclinedCallIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
@@ -743,6 +732,18 @@ const activities = computed(() => {
   })
   return sortByCreation(_activities, isNewestFirst.value)
 })
+
+// Field changes have no docname; one save's entries share owner and
+// creation, so the fieldname tells them apart.
+function activityKey(activity) {
+  if (activity.name) return activity.name
+  const field = activity.data?.field || ''
+  return `${activity.activity_type}-${activity.creation}-${activity.owner || ''}-${field}`
+}
+
+function hasValue(value) {
+  return value !== undefined && value !== null && value !== ''
+}
 
 function sortByCreation(list, newestFirst = false) {
   // Direction comes from the comparator operand order (like sortByModified),
