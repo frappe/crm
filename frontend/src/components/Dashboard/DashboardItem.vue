@@ -32,7 +32,7 @@
     </ChartCard>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { Tooltip } from 'frappe-ui'
 import {
   AreaChart,
@@ -43,27 +43,44 @@ import {
   NumberCard,
 } from 'frappe-ui/charts'
 import {
+  type AxisChartConfig,
+  type AxisChartKind,
+  type DashboardChartConfig,
+  type DonutChartConfig,
+  type NumberChartConfig,
   getAxisChartKind,
   toAxisChartProps,
   toDonutChartProps,
   toNumberCardProps,
 } from '@/utils/dashboardCharts'
-import { computed } from 'vue'
+import { computed, type Component } from 'vue'
 
-const props = defineProps({
-  index: { type: Number, required: true },
-  item: { type: Object, required: true },
-  editing: { type: Boolean, default: false },
-})
+const props = withDefaults(
+  defineProps<{
+    index: number
+    item: { name?: string; type: string; data?: DashboardChartConfig | null }
+    editing?: boolean
+  }>(),
+  { editing: false },
+)
 
-const axisChartComponents = { line: LineChart, area: AreaChart, bar: BarChart }
+const axisChartComponents: Record<AxisChartKind, Component> = {
+  line: LineChart,
+  area: AreaChart,
+  bar: BarChart,
+}
 
-const config = computed(() => props.item.data || {})
+const config = computed<DashboardChartConfig>(() => props.item.data || {})
 
-const numberCardProps = computed(() => toNumberCardProps(config.value))
-const donutChartProps = computed(() => toDonutChartProps(config.value))
+const numberCardProps = computed(() =>
+  toNumberCardProps(config.value as NumberChartConfig),
+)
+const donutChartProps = computed(() =>
+  toDonutChartProps(config.value as DonutChartConfig),
+)
 const axisChart = computed(() => ({
-  component: axisChartComponents[getAxisChartKind(config.value)],
-  props: toAxisChartProps(config.value),
+  component:
+    axisChartComponents[getAxisChartKind(config.value as AxisChartConfig)],
+  props: toAxisChartProps(config.value as AxisChartConfig),
 }))
 </script>
