@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col h-full overflow-hidden">
+  <InsightsDashboard v-if="isInsightsInstalled" dashboard="crm" />
+  <div v-else class="flex flex-col h-full overflow-hidden">
     <LayoutHeader>
       <template #left-header>
         <ViewBreadcrumbs routeName="Dashboard" />
@@ -139,6 +140,7 @@ import LucideRefreshCcw from '~icons/lucide/refresh-ccw'
 import LucideUndo2 from '~icons/lucide/undo-2'
 import LucidePenLine from '~icons/lucide/pen-line'
 import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
+import InsightsDashboard from '@/components/Dashboard/InsightsDashboard.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
@@ -159,6 +161,8 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { ref, reactive, computed, provide } from 'vue'
+
+const isInsightsInstalled = Boolean(window.is_insights_installed)
 
 const { users, getUser, isManager, isAdmin } = usersStore()
 
@@ -247,7 +251,7 @@ const dashboardItems = createResource({
       user: filters.user,
     }
   },
-  auto: true,
+  auto: !isInsightsInstalled,
 })
 
 const dirty = computed(() => {
