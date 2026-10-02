@@ -42,6 +42,12 @@ import {
   LineChart,
   NumberCard,
 } from 'frappe-ui/charts'
+import {
+  getAxisChartKind,
+  toAxisChartProps,
+  toDonutChartProps,
+  toNumberCardProps,
+} from '@/utils/dashboardCharts'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -50,83 +56,14 @@ const props = defineProps({
   editing: { type: Boolean, default: false },
 })
 
-// Chart resolvers (CRM's and contributed apps') return the experimental config shape; map it to frappe-ui/charts props.
-const numberCardProps = computed(() => {
-  const { tooltip, ...config } = props.item.data || {}
-  return config
-})
+const axisChartComponents = { line: LineChart, area: AreaChart, bar: BarChart }
 
-const donutChartProps = computed(() => {
-  const config = props.item.data || {}
-  return {
-    title: config.title,
-    subtitle: config.subtitle,
-    data: config.data || [],
-    category: config.categoryColumn,
-    value: config.valueColumn,
-    maxSlices: config.maxSliceCount,
-    showDataLabels: config.showInlineLabels,
-    palette: config.colors,
-    echartOptions: config.echartOptions,
-  }
-})
+const config = computed(() => props.item.data || {})
 
-const axisChart = computed(() => {
-  const config = props.item.data || {}
-  const series = config.series || []
-  const seriesConfig = {}
-  series.forEach((s, i) => {
-    seriesConfig[s.name] = {
-      type: s.type,
-      color: s.color || config.colors?.[i],
-      showDataLabels: s.showDataLabels,
-      showDataPoints: s.showDataPoints,
-      dashed: s.lineType === 'dashed' || s.lineType === 'dotted' || undefined,
-      stackName: s.stackName,
-      echartOptions: s.echartOptions,
-    }
-  })
-
-  const types = new Set(series.map((s) => s.type))
-  const component =
-    types.size === 1 && types.has('line')
-      ? LineChart
-      : types.size === 1 && types.has('area')
-        ? AreaChart
-        : BarChart
-
-  const y2 = series.filter((s) => s.axis === 'y2').map((s) => s.name)
-
-  const valueAxis = (axis) =>
-    axis && {
-      title: axis.title,
-      min: axis.yMin,
-      max: axis.yMax,
-      echartOptions: axis.echartOptions,
-    }
-
-  return {
-    component,
-    props: {
-      title: config.title,
-      subtitle: config.subtitle,
-      data: config.data || [],
-      x: config.xAxis?.key,
-      y: series.filter((s) => s.axis !== 'y2').map((s) => s.name),
-      y2: y2.length ? y2 : undefined,
-      seriesConfig,
-      stacked: config.stacked,
-      xAxis: {
-        title: config.xAxis?.title,
-        type: config.xAxis?.type,
-        timeGrain: config.xAxis?.timeGrain,
-        echartOptions: config.xAxis?.echartOptions,
-      },
-      yAxis: valueAxis(config.yAxis),
-      y2Axis: valueAxis(config.y2Axis),
-      echartOptions: config.echartOptions,
-      ...(component === BarChart && { horizontal: config.swapXY }),
-    },
-  }
-})
+const numberCardProps = computed(() => toNumberCardProps(config.value))
+const donutChartProps = computed(() => toDonutChartProps(config.value))
+const axisChart = computed(() => ({
+  component: axisChartComponents[getAxisChartKind(config.value)],
+  props: toAxisChartProps(config.value),
+}))
 </script>
