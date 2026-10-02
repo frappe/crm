@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-09-30 02:05\n"
+"PO-Revision-Date: 2026-10-02 02:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -2417,7 +2417,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:68
 msgid "Custom Event"
-msgstr ""
+msgstr "Evento personalizado"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:799
 msgid "Custom Fields"
@@ -2513,7 +2513,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:41
 msgid "Date Field"
-msgstr ""
+msgstr "Campo de fecha"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:111
 msgid "Date Format"
@@ -3654,7 +3654,7 @@ msgstr ""
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Event Notifications"
-msgstr ""
+msgstr "Notificaciones de evento"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -7667,7 +7667,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:70
 msgid "Run As"
-msgstr ""
+msgstr "Ejecutar como"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
@@ -8685,7 +8685,7 @@ msgstr "Paso"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:7
 msgid "Step Type"
-msgstr ""
+msgstr "Tipo de paso"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
 msgid "Step name"
@@ -8981,7 +8981,7 @@ msgstr "Nombre Territorio"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
 msgid "Test Run"
-msgstr ""
+msgstr "Ejecución de prueba"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:528
 msgid "Thank you!"
