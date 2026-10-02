@@ -106,7 +106,7 @@
     >
       <template #tab-suffix="{ tab, active }">
         <Badge
-          v-if="tab.value === 'deals'"
+          v-if="tab.value === 'deals' || tab.extension"
           :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
           variant="solid"
           theme="gray"
@@ -145,6 +145,31 @@
             <div>{{ __('No {0} found', [__(tab.label.toLowerCase())]) }}</div>
           </div>
         </div>
+        <ContactTabListView
+          v-else-if="tab.extension && contactTabs.states[tab.name]?.rows.length"
+          class="mt-4"
+          :rows="contactTabs.states[tab.name].rows"
+          :columns="tab.columns"
+          :total-count="contactTabs.states[tab.name].totalCount"
+          :loading="contactTabs.states[tab.name].loading"
+          :doctype="tab.doctype"
+          @load-more="contactTabs.loadMore(tab.name)"
+        />
+        <div
+          v-else-if="
+            tab.extension && contactTabs.states[tab.name]?.totalCount === 0
+          "
+          class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
+        >
+          <div class="flex flex-col items-center justify-center space-y-3">
+            <Icon
+              v-if="tab.iconLeft"
+              :icon="tab.iconLeft"
+              class="!h-10 !w-10"
+            />
+            <div>{{ __('No {0} found', [__(tab.label.toLowerCase())]) }}</div>
+          </div>
+        </div>
       </template>
     </Tabs>
   </div>
@@ -159,8 +184,10 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import ContactTabListView from '@/components/ListViews/ContactTabListView.vue'
 import { validateIsImageFile } from '@/utils'
 import { useContactFields } from '@/composables/useContactFields'
+import { useContactTabs } from '@/composables/useContactTabs'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -290,7 +317,7 @@ async function deleteContact() {
 }
 
 const activeTab = ref('details')
-const tabs = [
+const defaultTabs = [
   {
     name: 'Details',
     value: 'details',
@@ -305,6 +332,19 @@ const tabs = [
     count: computed(() => deals.data?.length),
   },
 ]
+
+// Tabs from the `crm_contact_tabs` hook of installed apps, after Deals
+const contactTabs = useContactTabs(props.contactId, activeTab)
+const tabs = computed(() => [
+  ...defaultTabs,
+  ...contactTabs.tabs.value.map((tab) => ({
+    ...tab,
+    value: tab.name,
+    // `icon` would make an icon-only trigger
+    icon: undefined,
+    iconLeft: tab.icon,
+  })),
+])
 
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
