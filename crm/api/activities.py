@@ -1,4 +1,5 @@
 import json
+from urllib.parse import unquote
 
 import frappe
 from bs4 import BeautifulSoup
@@ -153,13 +154,16 @@ def get_deal_activities(name: str):
 		}
 		activities.append(activity)
 
+	deal_attachments = get_attachments("CRM Deal", name)
+	file_index = get_file_index(deal_attachments)
+
 	for attachment_log in docinfo.attachment_logs:
 		activity = {
 			"name": attachment_log.name,
 			"activity_type": "attachment_log",
 			"creation": attachment_log.creation,
 			"owner": attachment_log.owner,
-			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type, file_index),
 			"is_lead": False,
 		}
 		activities.append(activity)
@@ -167,7 +171,7 @@ def get_deal_activities(name: str):
 	calls = calls + get_linked_calls(name).get("calls", [])
 	notes = notes + get_linked_notes(name) + get_linked_calls(name).get("notes", [])
 	tasks = tasks + get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
-	attachments = attachments + get_attachments("CRM Deal", name)
+	attachments = attachments + deal_attachments
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
@@ -291,13 +295,16 @@ def get_lead_activities(name: str):
 		}
 		activities.append(activity)
 
+	attachments = get_attachments("CRM Lead", name)
+	file_index = get_file_index(attachments)
+
 	for attachment_log in docinfo.attachment_logs:
 		activity = {
 			"name": attachment_log.name,
 			"activity_type": "attachment_log",
 			"creation": attachment_log.creation,
 			"owner": attachment_log.owner,
-			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type, file_index),
 			"is_lead": True,
 		}
 		activities.append(activity)
@@ -305,7 +312,6 @@ def get_lead_activities(name: str):
 	calls = get_linked_calls(name).get("calls", [])
 	notes = get_linked_notes(name) + get_linked_calls(name).get("notes", [])
 	tasks = get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
-	attachments = get_attachments("CRM Lead", name)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
@@ -508,7 +514,28 @@ def get_linked_tasks(name: str):
 	return tasks or []
 
 
-def parse_attachment_log(html: str, type: str):
+def get_file_index(files: list) -> tuple[dict, dict]:
+	by_url = {f.file_url: f for f in files if f.file_url}
+	by_disk_name = {}
+	for file in by_url.values():
+		by_disk_name.setdefault(get_disk_name(file.file_url), []).append(file)
+	return by_url, by_disk_name
+
+
+def get_disk_name(file_url: str) -> str:
+	return unquote(file_url.rsplit("/", 1)[-1])
+
+
+def resolve_attached_file(file_url: str, file_index: tuple[dict, dict]):
+	by_url, by_disk_name = file_index
+	if file := by_url.get(unquote(file_url)):
+		return file
+
+	matches = by_disk_name.get(get_disk_name(file_url), [])
+	return matches[0] if len(matches) == 1 else None
+
+
+def parse_attachment_log(html: str, type: str, file_index: tuple[dict, dict] | None = None):
 	soup = BeautifulSoup(html, "html.parser")
 	a_tag = soup.find("a")
 	type = "added" if type == "Attachment" else "removed"
@@ -520,14 +547,18 @@ def parse_attachment_log(html: str, type: str):
 			"is_private": False,
 		}
 
-	is_private = False
-	if "private/files" in a_tag["href"]:
-		is_private = True
+	file_url = a_tag["href"]
+	is_private = "private/files" in file_url
+
+	if type == "added" and file_index:
+		if file := resolve_attached_file(file_url, file_index):
+			file_url = file.file_url
+			is_private = bool(file.is_private)
 
 	return {
 		"type": type,
 		"file_name": a_tag.text,
-		"file_url": a_tag["href"],
+		"file_url": file_url,
 		"is_private": is_private,
 	}
 
