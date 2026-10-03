@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-09-28 01:14\n"
+"PO-Revision-Date: 2026-10-03 02:42\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -282,7 +282,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:13
 msgid "Account Name"
-msgstr ""
+msgstr "Ім'я рахунку"
 
 #. Label of the account_sid (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the account_sid (Data) field in DocType 'CRM Twilio Settings'
@@ -299,7 +299,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Settings.vue:180
 msgid "Accounts"
-msgstr ""
+msgstr "Рахунки"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:103
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:219
@@ -4912,7 +4912,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:405
 msgid "Item Group"
-msgstr ""
+msgstr "Група номенклатури"
 
 #: crm/api/doc.py:824
 msgid "Items are required"
@@ -8718,11 +8718,11 @@ msgstr ""
 #: crm/api/form.py:356
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:646
 msgid "Submit"
-msgstr ""
+msgstr "Провести"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:332
 msgid "Submit button label"
-msgstr ""
+msgstr "Напис на кнопці «Провести»"
 
 #. Description of the 'Keyword' (Data) field in DocType 'CRM Enrichment Link
 #. Priority'
