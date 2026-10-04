@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-10-03 02:42\n"
+"PO-Revision-Date: 2026-10-04 02:44\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgstr ""
 #: frontend/src/components/Controls/Link.vue:12
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:38
 msgid "(required)"
-msgstr ""
+msgstr "(обов'язково)"
 
 #: frontend/src/components/Filter.vue:619
 msgid "01/01/2022 to 01/31/2022"
@@ -141,7 +141,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:298
 msgid "<step key>"
-msgstr ""
+msgstr "<ключ кроку>"
 
 #: frontend/src/components/CommunicationArea.vue:84
 msgid "@John, can you please check this?"
@@ -3658,7 +3658,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
-msgstr ""
+msgstr "Подія сталася"
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
 #. Sync Source'
@@ -4212,7 +4212,7 @@ msgstr ""
 #. Name of a Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 msgid "Frappe CRM"
-msgstr ""
+msgstr "Frappe CRM"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:817
 msgid "Frappe CRM mobile"
@@ -6122,7 +6122,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:96
 msgid "No related record exists"
-msgstr ""
+msgstr "Пов'язаного запису немає"
 
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/frappe-ui/Autocomplete.vue:120
@@ -6131,7 +6131,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationRuns.vue:10
 msgid "No runs yet"
-msgstr ""
+msgstr "Запусків ще немає"
 
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:64
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:9
@@ -6152,7 +6152,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:42
 msgid "No workflow automations yet"
-msgstr ""
+msgstr "Автоматизацій процесів ще немає"
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
 #: frontend/src/pages/MobileOrganization.vue:145
@@ -6283,7 +6283,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:31
 msgid "Not something filters can express. Edit it below."
-msgstr ""
+msgstr "Фільтрами цього не виразити. Відредагуйте нижче."
 
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -6389,7 +6389,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowRelatedCondition.vue:36
 msgid "Of record"
-msgstr ""
+msgstr "Запису"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:167
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:251
@@ -6424,15 +6424,15 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:86
 msgid "On a date"
-msgstr ""
+msgstr "У дату"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:79
 msgid "On a schedule"
-msgstr ""
+msgstr "За розкладом"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:42
 msgid "One {0} record"
-msgstr ""
+msgstr "Один запис {0}"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -6472,7 +6472,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:133
 msgid "Only run when"
-msgstr ""
+msgstr "Запускати лише коли"
 
 #: crm/api/whatsapp.py:16
 msgid "Only sales users can access WhatsApp features."
@@ -6506,7 +6506,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
 msgid "Open inspector"
-msgstr ""
+msgstr "Відкрити інспектор"
 
 #: frontend/src/doctypes/crm_task/form.js:9
 #: frontend/src/doctypes/fcrm_note/form.js:9
@@ -6629,7 +6629,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:130
 msgid "Output of {0}"
-msgstr ""
+msgstr "Результат {0}"
 
 #. Option for the 'Write Policy' (Select) field in DocType 'CRM Enrichment
 #. Field Mapping'
@@ -6715,15 +6715,15 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:116
 msgid "Pause the run"
-msgstr ""
+msgstr "Призупинити виконання"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:21
 msgid "Pause the run for a fixed amount of time."
-msgstr ""
+msgstr "Призупинити виконання на визначений час."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:31
 msgid "Pause until an event is raised for this record."
-msgstr ""
+msgstr "Призупинити до настання події для цього запису."
 
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:10
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:37
@@ -6802,28 +6802,28 @@ msgstr ""
 
 #: crm/automation/actions.py:225
 msgid "Pick a template or write a subject"
-msgstr ""
+msgstr "Виберіть шаблон або напишіть тему"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:12
 msgid "Pick a {0}"
-msgstr ""
+msgstr "Виберіть {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:34
 msgid "Pick an action"
-msgstr ""
+msgstr "Виберіть дію"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:121
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:29
 msgid "Pick an event"
-msgstr ""
+msgstr "Виберіть подію"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:56
 msgid "Pick initial trigger"
-msgstr ""
+msgstr "Виберіть початковий тригер"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:19
 msgid "Pick {0}"
-msgstr ""
+msgstr "Виберіть {0}"
 
 #: frontend/src/components/ViewControls.vue:1316
 msgid "Pin View"
@@ -7095,7 +7095,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:28
 msgid "Python, evaluated against doc, target and context."
-msgstr ""
+msgstr "Python, обчислюється щодо doc, target і context."
 
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -7170,7 +7170,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:118
 msgid "Record"
-msgstr ""
+msgstr "Запис"
 
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -7186,23 +7186,23 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:62
 msgid "Record is cancelled"
-msgstr ""
+msgstr "Запис скасовано"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:27
 msgid "Record is created"
-msgstr ""
+msgstr "Запис створено"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:48
 msgid "Record is deleted"
-msgstr ""
+msgstr "Запис видалено"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:55
 msgid "Record is submitted"
-msgstr ""
+msgstr "Запис проведено"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:34
 msgid "Record is updated"
-msgstr ""
+msgstr "Запис оновлено"
 
 #. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -7380,7 +7380,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
 msgid "Remove step"
-msgstr ""
+msgstr "Вилучити крок"
 
 #: crm/api/user.py:177
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
@@ -7388,7 +7388,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
 msgid "Remove trigger"
-msgstr ""
+msgstr "Вилучити тригер"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:195
 msgid "Remove {0} from the hierarchy. What should happen to their direct reports?"
@@ -7576,7 +7576,7 @@ msgstr ""
 
 #: crm/automation/actions.py:190
 msgid "Reused Deal {0}"
-msgstr ""
+msgstr "Повторно використано угоду {0}"
 
 #: crm/api/dashboard.py:846
 msgid "Revenue"
@@ -7613,11 +7613,11 @@ msgstr ""
 
 #: crm/api/user.py:235
 msgid "Role Profile Assigned"
-msgstr ""
+msgstr "Профіль ролей призначено"
 
 #: crm/api/user.py:232
 msgid "Roles of user {0} are managed by a Role Profile. Update the Role Profile instead."
-msgstr ""
+msgstr "Ролями користувача {0} керує профіль ролей. Змінюйте профіль ролей."
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -7679,23 +7679,23 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:87
 msgid "Run before or after a date stored on the record."
-msgstr ""
+msgstr "Запускати до або після дати, збереженої в записі."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:80
 msgid "Run on a repeating schedule you define with cron."
-msgstr ""
+msgstr "Запускати за повторюваним розкладом, заданим через cron."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:73
 msgid "Run only when someone starts it from a record."
-msgstr ""
+msgstr "Запускати лише тоді, коли хтось стартує з запису."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:94
 msgid "Run when the app raises a named event you pick."
-msgstr ""
+msgstr "Запускати, коли застосунок створює вибрану вами іменовану подію."
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:238
 msgid "Run {0}"
-msgstr ""
+msgstr "Запустити {0}"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -7935,7 +7935,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:89
 msgid "Save the flow before testing it."
-msgstr ""
+msgstr "Збережіть процес, перш ніж тестувати його."
 
 #: frontend/src/components/Layouts/AppSidebar.vue:778
 msgid "Saved View"
@@ -7978,7 +7978,7 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:252
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:276
 msgid "Search blocks"
-msgstr ""
+msgstr "Пошук блоків"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:6
 msgid "Search fields"
@@ -7990,7 +7990,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:97
 msgid "Search triggers"
-msgstr ""
+msgstr "Пошук тригерів"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
@@ -8072,7 +8072,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:11
 msgid "Select a record"
-msgstr ""
+msgstr "Виберіть запис"
 
 #: frontend/src/components/Questionnaire.vue:93
 msgid "Select all that apply"
@@ -8103,7 +8103,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:8
 msgid "Select users"
-msgstr ""
+msgstr "Виберіть користувачів"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
 msgid "Select whether to display time with or without seconds"
@@ -8209,7 +8209,7 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:106
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:25
 msgid "Set a condition"
-msgstr ""
+msgstr "Задайте умову"
 
 #: crm/api/form.py:394
 msgid "Set a default value before publishing for: {0}"
@@ -8245,7 +8245,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:27
 msgid "Set how long to wait"
-msgstr ""
+msgstr "Задайте тривалість очікування"
 
 #: frontend/src/components/Controls/GeolocationControl.vue:14
 msgid "Set location…"
@@ -8253,7 +8253,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:232
 msgid "Set more fields at once as JSON. These are applied together with the Field and Value above, in the same save."
-msgstr ""
+msgstr "Задати більше полів одразу у форматі JSON. Вони застосовуються разом із полем і значенням вище, в одному збереженні."
 
 #. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
 #. Settings'
@@ -8383,7 +8383,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:59
 msgid "Show details"
-msgstr ""
+msgstr "Показати деталі"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:86
 msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
@@ -8548,7 +8548,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:13
 msgid "Split the run into two arms on a condition."
-msgstr ""
+msgstr "Розділити виконання на дві гілки за умовою."
 
 #: frontend/src/pages/PersonaForm.vue:59
 msgid "Spreadsheets"
@@ -8596,23 +8596,23 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:49
 msgid "Start a run just after a record is deleted."
-msgstr ""
+msgstr "Запускати одразу після видалення запису."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:56
 msgid "Start a run when a submittable record is submitted."
-msgstr ""
+msgstr "Запускати, коли проводять запис, який можна провести."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:63
 msgid "Start a run when a submitted record is cancelled."
-msgstr ""
+msgstr "Запускати, коли проведений запис скасовують."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:28
 msgid "Start a run whenever a new record is created."
-msgstr ""
+msgstr "Запускати щоразу, коли створюється новий запис."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:35
 msgid "Start a run whenever an existing record is saved."
-msgstr ""
+msgstr "Запускати щоразу, коли зберігають наявний запис."
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
@@ -8624,7 +8624,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:23
 msgid "Start test run"
-msgstr ""
+msgstr "Почати тестовий запуск"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start time is required"
@@ -8689,7 +8689,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
 msgid "Step name"
-msgstr ""
+msgstr "Назва кроку"
 
 #: frontend/src/components/Questionnaire.vue:91
 msgid "Step {0} of {1}"
@@ -9062,7 +9062,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:40
 msgid "This alias is not available at this step"
-msgstr ""
+msgstr "Цей псевдонім недоступний на цьому кроці"
 
 #: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
@@ -9131,7 +9131,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Timed out"
-msgstr ""
+msgstr "Час вичерпано"
 
 #. Label of the crm_timeline_sort_order (Select) field in DocType 'FCRM
 #. Settings'
@@ -9316,11 +9316,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
 msgid "Trigger record"
-msgstr ""
+msgstr "Запис-тригер"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
 msgid "True"
-msgstr ""
+msgstr "Так"
 
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
@@ -9461,7 +9461,7 @@ msgstr ""
 
 #: crm/automation/relationships.py:40
 msgid "Unknown CRM relationship: {0}"
-msgstr ""
+msgstr "Невідомий зв'язок CRM: {0}"
 
 #: crm/automation/actions.py:227
 msgid "Unknown Email Template"
@@ -9523,7 +9523,7 @@ msgstr ""
 
 #: crm/automation/actions.py:158
 msgid "Unsupported conversion policy"
-msgstr ""
+msgstr "Непідтримувана політика конвертації"
 
 #: frontend/src/components/CollapsibleSection.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:32
@@ -9537,7 +9537,7 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:30
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:546
 msgid "Untitled automation"
-msgstr ""
+msgstr "Автоматизація без назви"
 
 #: frontend/src/components/ColumnSettings.vue:129
 #: frontend/src/components/Modals/AssignmentModal.vue:84
@@ -9759,26 +9759,26 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:20
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:95
 msgid "Wait"
-msgstr ""
+msgstr "Очікування"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:55
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:94
 msgid "Wait for"
-msgstr ""
+msgstr "Чекати на"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:221
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:30
 msgid "Wait for event"
-msgstr ""
+msgstr "Чекати на подію"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:72
 msgid "Wait for {0}"
-msgstr ""
+msgstr "Чекати на {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:69
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:115
 msgid "Wait {0} {1}"
-msgstr ""
+msgstr "Чекати {0} {1}"
 
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
@@ -9787,11 +9787,11 @@ msgstr ""
 #. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Warm"
-msgstr ""
+msgstr "Теплий"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:42
 msgid "Watch one field and run when it moves to a new value."
-msgstr ""
+msgstr "Стежити за одним полем і запускати, коли воно набуває нового значення."
 
 #: crm/integrations/twilio/api.py:108
 msgid "We're unable to connect your call right now. Please try again later."
@@ -9934,12 +9934,12 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:215
 msgid "Workflow Automation"
-msgstr ""
+msgstr "Автоматизація процесу"
 
 #: frontend/src/components/Settings/Settings.vue:196
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:4
 msgid "Workflow Automations"
-msgstr ""
+msgstr "Автоматизації процесів"
 
 #. Label of the section_break_rmgo (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
@@ -9959,7 +9959,7 @@ msgstr ""
 
 #: crm/automation/actions.py:301
 msgid "Write the notification text"
-msgstr ""
+msgstr "Напишіть текст сповіщення"
 
 #. Label of the twitter (Data) field in DocType 'CRM Deal'
 #. Label of the twitter (Data) field in DocType 'CRM Lead'
@@ -10055,7 +10055,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:258
 msgid "You have unsaved changes. Do you wish to exit?"
-msgstr ""
+msgstr "Є незбережені зміни. Вийти?"
 
 #: crm/api/user.py:17
 msgid "You must be logged in to change your password"
@@ -10115,15 +10115,15 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:10
 msgid "a date field"
-msgstr ""
+msgstr "поле дати"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:7
 msgid "a field to watch"
-msgstr ""
+msgstr "поле для стеження"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:9
 msgid "a schedule"
-msgstr ""
+msgstr "розклад"
 
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
@@ -10138,7 +10138,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:11
 msgid "an event"
-msgstr ""
+msgstr "подію"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
 msgid "and"
@@ -10205,7 +10205,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:161
 msgid "deal"
-msgstr ""
+msgstr "угода"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:135
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:375
@@ -10229,11 +10229,11 @@ msgstr ""
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:231
 msgid "e.g. @gmail.com"
-msgstr ""
+msgstr "напр., @gmail.com"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:232
 msgid "e.g. Open, Replied"
-msgstr ""
+msgstr "напр., Відкрито, Відповіли"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -10455,7 +10455,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:55
 msgid "on {0}"
-msgstr ""
+msgstr "о {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
 msgid "or"
@@ -10641,7 +10641,7 @@ msgstr ""
 
 #: crm/automation/actions.py:235
 msgid "{0} has no email address"
-msgstr ""
+msgstr "{0} не має адреси електронної пошти"
 
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.py:48
 msgid "{0} has no field {1}"
@@ -10664,15 +10664,15 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:168
 msgid "{0} is empty"
-msgstr ""
+msgstr "{0} порожнє"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:158
 msgid "{0} is none of {1}"
-msgstr ""
+msgstr "{0} не є жодним із {1}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:156
 msgid "{0} is not {1}"
-msgstr ""
+msgstr "{0} не є {1}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:157
 msgid "{0} is one of {1}"
@@ -10710,7 +10710,7 @@ msgstr ""
 
 #: crm/automation/actions.py:31
 msgid "{0} must act on {1}, not {2}"
-msgstr ""
+msgstr "{0} має діяти на {1}, а не на {2}"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:569
 msgid "{0} not yet synced"
@@ -10718,7 +10718,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:46
 msgid "{0} of {1} steps ran"
-msgstr ""
+msgstr "Виконано кроків: {0} з {1}"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:507
 msgid "{0} users added to hierarchy"
