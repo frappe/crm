@@ -11,7 +11,7 @@
           v-if="hasUnsavedChanges"
           :label="__('Not Saved')"
           variant="subtle"
-          theme="orange"
+          theme="amber"
         />
       </h2>
     </template>
