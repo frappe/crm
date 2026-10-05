@@ -30,7 +30,7 @@
       <div
         v-for="row in social.rows"
         :key="row.key"
-        class="group flex flex-col"
+        class="group/row flex flex-col"
       >
         <div class="flex items-start gap-2">
           <!-- Messages are listed under the section; the ring marks the field. -->
@@ -43,7 +43,6 @@
               :model-value="row.platform"
               :options="platformOptions()"
               :placeholder="__('Platform')"
-              variant="transparent"
               :disabled="social.saving || row.removed"
               @update:model-value="(option) => onPlatformSelect(row, option)"
               @update:query="(query) => (platformQuery[row.key] = query)"
@@ -90,6 +89,7 @@
               v-if="!social.isRowBlank(row)"
               size="sm"
               class="mt-1.5"
+              :class="SWITCH_OFF_HOVER"
               :model-value="row.enabled"
               :disabled="social.saving || row.removed"
               @update:model-value="social.toggleEnabled(row)"
@@ -97,7 +97,7 @@
           </div>
           <!-- Left visible on touch, which has no hover to reveal it -->
           <div
-            class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+            class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/row:opacity-100"
           >
             <Button
               variant="ghost"
@@ -154,7 +154,7 @@
       <div
         v-for="row in industry.rows"
         :key="row.key"
-        class="group flex flex-col"
+        class="group/row flex flex-col"
       >
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0">
@@ -163,7 +163,6 @@
                 doctype="CRM Industry"
                 :value="row.industry"
                 :placeholder="__('Industry')"
-                variant="transparent"
                 :disabled="industry.saving || row.removed"
                 @create="
                   (value, close) => industry.onIndustryCreate(row, value, close)
@@ -210,6 +209,7 @@
               v-if="!industry.isRowBlank(row)"
               size="sm"
               class="mt-1.5"
+              :class="SWITCH_OFF_HOVER"
               :model-value="row.enabled"
               :disabled="industry.saving || row.removed"
               @update:model-value="industry.toggleEnabled(row)"
@@ -217,7 +217,7 @@
           </div>
           <!-- Left visible on touch, which has no hover to reveal it -->
           <div
-            class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+            class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/row:opacity-100"
           >
             <Button
               variant="ghost"
@@ -266,6 +266,11 @@ function platformOptions() {
   }
   return options
 }
+
+// frappe-ui's Switch hovers an off track with a fixed gray-400, which goes
+// near-white in dark mode; use the themed equivalents instead.
+const SWITCH_OFF_HOVER =
+  '[&_[role=switch][data-state=unchecked]:enabled:hover]:bg-surface-gray-5 [&_[role=switch][data-state=unchecked]:enabled:active]:bg-surface-gray-6'
 
 // Outlines a field whose message is listed under the section.
 const INVALID = 'ring-1 ring-[var(--outline-red-3)]'
