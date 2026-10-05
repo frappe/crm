@@ -33,6 +33,13 @@
       />
     </div>
     <div v-else class="flex flex-col gap-3 py-2">
+      <!-- Widths match the row's so each label sits over its input. -->
+      <div class="flex items-center gap-2 text-sm text-ink-gray-5">
+        <div class="w-40 shrink-0">{{ columns[0] }}</div>
+        <div class="flex-1 min-w-0">{{ columns[1] }}</div>
+        <div class="w-8 shrink-0 whitespace-nowrap">{{ __('Enabled') }}</div>
+        <div class="w-7 shrink-0" />
+      </div>
       <slot />
       <Button
         v-if="hasMore"
@@ -42,17 +49,26 @@
         :loading="loadingMore"
         @click="emit('load-more')"
       />
+      <ErrorMessage
+        v-for="(message, index) in errors"
+        :key="index"
+        :message="message"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { Button, LoadingIndicator } from 'frappe-ui'
+import { Button, ErrorMessage, LoadingIndicator } from 'frappe-ui'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 
 defineProps({
   title: { type: String, required: true },
   addLabel: { type: String, required: true },
+  // Labels for the two input columns, e.g. ['Platform', 'Pattern'].
+  columns: { type: Array, required: true },
+  // Row errors (field checks and save failures), shown under the rows.
+  errors: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false },
   error: { type: Object, default: null },
   errorMessage: { type: String, default: '' },
