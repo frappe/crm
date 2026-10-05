@@ -270,8 +270,8 @@ const INVALID =
 
 // Errors are listed under the section, so each names its rule; a row with no
 // name yet goes by its position.
-// Field errors collapse to the first one, since the borders mark the rest; save
-// failures mark no field, so each is listed.
+// Every error is listed, since a border alone can't say what's wrong; save
+// failures mark no field, so they follow the field errors.
 function rowErrors(rows, label, fields) {
   const fieldErrors = []
   const serverErrors = []
@@ -284,11 +284,7 @@ function rowErrors(rows, label, fields) {
       serverErrors.push(__('{0}: {1}', [name, row.serverError]))
     }
   })
-  const [first, ...rest] = fieldErrors
-  if (rest.length) {
-    return [__('{0} (+{1} more)', [first, rest.length]), ...serverErrors]
-  }
-  return first ? [first, ...serverErrors] : serverErrors
+  return [...fieldErrors, ...serverErrors]
 }
 
 function socialErrors() {
