@@ -41,4 +41,4 @@ class CRMEnrichmentRule(Document):
 			try:
 				re.compile(row.pattern, re.IGNORECASE)
 			except re.error as e:
-				frappe.throw(_("Row #{0}: Not a valid regular expression: {1}").format(row.idx, e))
+				frappe.throw(_("Row #{0}: Not a valid regular expression: {1}").format(row.idx, str(e)))
