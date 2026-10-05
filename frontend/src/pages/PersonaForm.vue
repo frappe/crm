@@ -9,6 +9,13 @@
         :show-skip="false"
         @submit="submitPersona"
       />
+      <button
+        type="button"
+        class="mx-auto mt-6 block text-sm text-ink-gray-5 transition-colors hover:text-ink-gray-7"
+        @click="skipPersonaForm"
+      >
+        {{ __('Skip for now') }}
+      </button>
     </div>
   </div>
 </template>
@@ -50,14 +57,19 @@ const submitPersona = (answers) => {
   leaveHome()
 }
 
+const skipPersonaForm = () => {
+  capture('onboarding_persona_skipped')
+  leaveHome()
+}
+
 const questions = computed(() => [
   {
     key: 'current_solution',
     title: __('How are you managing your sales today?'),
     options: [
-      { label: __('This is my first CRM'), value: 'first_crm' },
       { label: __('Spreadsheets'), value: 'spreadsheets' },
       { label: __('HubSpot'), value: 'hubspot' },
+      { label: __('This is my first CRM'), value: 'first_crm' },
       { label: __('Salesforce'), value: 'salesforce' },
       { label: __('Zoho CRM'), value: 'zoho' },
       { label: __('Pipedrive'), value: 'pipedrive' },
