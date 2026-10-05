@@ -45,6 +45,7 @@
           />
           <RulesTab
             v-else
+            ref="rulesTab"
             :enabled="Boolean(settings.doc.enabled)"
             :social="social"
             :industry="industry"
@@ -75,7 +76,7 @@ import GeneralTab from './GeneralTab.vue'
 import RulesTab from './RulesTab.vue'
 import { useIndustryRules } from './useIndustryRules'
 import { useSocialRules } from './useSocialRules'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 
 const settings = createDocumentResource({
   doctype: 'CRM Enrichment Settings',
@@ -96,6 +97,8 @@ const tabOptions = [
 // refs for the tab.
 const social = reactive(useSocialRules())
 const industry = reactive(useIndustryRules())
+
+const rulesTab = ref(null)
 
 // Mirrors MAX_PAGES_LIMIT in crm/domain_enrichment/config.py; the controller
 // rejects values outside 1..20.
@@ -197,6 +200,11 @@ async function save() {
     // Onto the tab holding the error, so the message has somewhere to be seen.
     tabIndex.value = generalValid ? 1 : 0
     toast.error(__('Fix the highlighted fields before saving'))
+    if (generalValid) {
+      // The panel may have just mounted, so wait for its fields.
+      await nextTick()
+      rulesTab.value?.focusFirstError()
+    }
     return
   }
 

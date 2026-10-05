@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 flex flex-col overflow-y-auto">
+  <div ref="root" class="flex-1 flex flex-col overflow-y-auto">
     <div
       v-if="!enabled"
       class="mt-3 rounded bg-surface-gray-2 px-3 py-2 text-p-sm text-ink-gray-6"
@@ -33,10 +33,11 @@
         class="group/row flex flex-col"
       >
         <div class="flex items-start gap-2">
-          <!-- Messages are listed under the section; the ring marks the field. -->
+          <!-- Messages are listed under the section; the border marks the field. -->
           <div
-            class="w-40 shrink-0 rounded"
+            class="w-40 shrink-0"
             :class="{ [INVALID]: row.platformError }"
+            :data-invalid="row.platformError ? '' : undefined"
           >
             <Autocomplete
               :ref="(el) => (platformBoxes[row.key] = el)"
@@ -66,15 +67,13 @@
               type="text"
               :placeholder="__('Regex pattern')"
               :disabled="social.saving || row.removed"
-              class="rounded [&_input]:font-mono"
+              class="[&_input]:font-mono"
               :class="{ [INVALID]: row.patternError }"
+              :data-invalid="row.patternError ? '' : undefined"
               @update:model-value="(value) => social.onPatternInput(row, value)"
               @blur="social.checkRow(row)"
             />
-            <Tooltip
-              v-if="!row.patternError && row.hidden.length"
-              :text="row.hidden.join('  |  ')"
-            >
+            <Tooltip v-if="row.hidden.length" :text="row.hidden.join('  |  ')">
               <div class="mt-1 w-fit text-p-sm text-ink-gray-5">
                 {{
                   __('+{0} more pattern(s) on this rule', [row.hidden.length])
@@ -110,12 +109,7 @@
           </div>
         </div>
         <div
-          v-if="
-            row.platform.trim() &&
-            !isKnownPlatform(row.platform) &&
-            !row.platformError &&
-            !row.patternError
-          "
+          v-if="row.platform.trim() && !isKnownPlatform(row.platform)"
           class="mt-1 text-p-sm text-ink-gray-5"
         >
           {{
@@ -158,7 +152,10 @@
       >
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0">
-            <div class="rounded" :class="{ [INVALID]: row.industryError }">
+            <div
+              :class="{ [INVALID]: row.industryError }"
+              :data-invalid="row.industryError ? '' : undefined"
+            >
               <Link
                 doctype="CRM Industry"
                 :value="row.industry"
@@ -170,10 +167,7 @@
                 @change="(value) => industry.onIndustryChange(row, value)"
               />
             </div>
-            <div
-              v-if="!row.industryError && row.newIndustry"
-              class="mt-1 text-p-sm text-ink-gray-5"
-            >
+            <div v-if="row.newIndustry" class="mt-1 text-p-sm text-ink-gray-5">
               {{ __('New industry, created on save') }}
             </div>
           </div>
@@ -183,8 +177,8 @@
               type="text"
               :placeholder="__('Keywords, comma separated')"
               :disabled="industry.saving || row.removed"
-              class="rounded"
               :class="{ [INVALID]: row.keywordsError }"
+              :data-invalid="row.keywordsError ? '' : undefined"
               @update:model-value="
                 (value) => industry.onKeywordsInput(row, value)
               "
@@ -192,10 +186,7 @@
             />
             <!-- Regexes and keywords containing commas can't round-trip the
                  box, so they're listed here. -->
-            <Tooltip
-              v-if="!row.keywordsError && row.hidden.length"
-              :text="row.hidden.join('  |  ')"
-            >
+            <Tooltip v-if="row.hidden.length" :text="row.hidden.join('  |  ')">
               <div class="mt-1 w-fit text-p-sm text-ink-gray-5">
                 {{
                   __('+{0} more keyword(s) on this rule', [row.hidden.length])
@@ -237,7 +228,7 @@
 <script setup>
 import { Button, FormControl, Switch, Tooltip } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import Link from '@/components/Controls/Link.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
 import {
@@ -272,19 +263,32 @@ function platformOptions() {
 const SWITCH_OFF_HOVER =
   '[&_[role=switch][data-state=unchecked]:enabled:hover]:bg-surface-gray-5 [&_[role=switch][data-state=unchecked]:enabled:active]:bg-surface-gray-6'
 
-// Outlines a field whose message is listed under the section.
-const INVALID = 'ring-1 ring-[var(--outline-red-3)]'
+// Recolours the existing 1px border (input, or the picker's trigger button) so
+// the row doesn't move; the message is listed under the section.
+const INVALID =
+  '[&_input]:!border-outline-red-3 [&_button]:!border-outline-red-3'
 
 // Errors are listed under the section, so each names its rule; a row with no
 // name yet goes by its position.
+// Field errors collapse to the first one, since the borders mark the rest; save
+// failures mark no field, so each is listed.
 function rowErrors(rows, label, fields) {
-  return rows.flatMap((row, index) => {
+  const fieldErrors = []
+  const serverErrors = []
+  rows.forEach((row, index) => {
     const name = label(row) || __('Row {0}', [index + 1])
-    return fields
-      .map((field) => row[field])
-      .filter(Boolean)
-      .map((message) => __('{0}: {1}', [name, message]))
+    fields.forEach((field) => {
+      if (row[field]) fieldErrors.push(__('{0}: {1}', [name, row[field]]))
+    })
+    if (row.serverError) {
+      serverErrors.push(__('{0}: {1}', [name, row.serverError]))
+    }
   })
+  const [first, ...rest] = fieldErrors
+  if (rest.length) {
+    return [__('{0} (+{1} more)', [first, rest.length]), ...serverErrors]
+  }
+  return first ? [first, ...serverErrors] : serverErrors
 }
 
 function socialErrors() {
@@ -297,7 +301,7 @@ function socialErrors() {
         row.platform
       )
     },
-    ['platformError', 'patternError', 'serverError'],
+    ['platformError', 'patternError'],
   )
 }
 
@@ -305,9 +309,22 @@ function industryErrors() {
   return rowErrors(props.industry.rows, (row) => row.industry, [
     'industryError',
     'keywordsError',
-    'serverError',
   ])
 }
+
+const root = ref(null)
+
+// Called by the header Update when validation fails. The marker can land on
+// the wrapper or, through FormControl's attrs, on the input itself.
+function focusFirstError() {
+  const marked = root.value?.querySelector('[data-invalid]')
+  if (!marked) return
+  const field = marked.querySelector('input, button') || marked
+  field.scrollIntoView({ block: 'center' })
+  field.focus({ preventScroll: true })
+}
+
+defineExpose({ focusFirstError })
 
 // Per-row search text, so "Add" can name it and stay disabled while empty.
 const platformQuery = reactive({})
