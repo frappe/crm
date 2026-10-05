@@ -6,16 +6,9 @@
     <div class="flex flex-1 flex-col justify-start px-4 pt-24">
       <Questionnaire
         :questions="questions"
-        :show-skip="false"
         @submit="submitPersona"
+        @skip="skipPersonaForm"
       />
-      <button
-        type="button"
-        class="mx-auto mt-6 block text-sm text-ink-gray-5 transition-colors hover:text-ink-gray-7"
-        @click="skipPersonaForm"
-      >
-        {{ __('Skip for now') }}
-      </button>
     </div>
   </div>
 </template>
@@ -69,10 +62,10 @@ const questions = computed(() => [
     options: [
       { label: __('Spreadsheets'), value: 'spreadsheets' },
       { label: __('HubSpot'), value: 'hubspot' },
-      { label: __('This is my first CRM'), value: 'first_crm' },
       { label: __('Salesforce'), value: 'salesforce' },
       { label: __('Zoho CRM'), value: 'zoho' },
       { label: __('Pipedrive'), value: 'pipedrive' },
+      { label: __('This is my first CRM'), value: 'first_crm' },
       { label: __('Another CRM'), value: 'other_crm' },
       { label: __('Other'), value: 'other' },
     ],
