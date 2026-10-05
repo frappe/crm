@@ -1,7 +1,9 @@
-import { call, createListResource } from 'frappe-ui'
+import { call, useList } from 'frappe-ui'
 import { computed, reactive, ref } from 'vue'
 
-const PAGE_LENGTH = 50
+// Sites hold a few dozen rules, so there's no paging; past this the section
+// says only the first ones are shown.
+export const RULE_LIMIT = 500
 
 // Shared load / dirty-tracking / save plumbing for one rule_type; callers
 // supply row shape and payloads.
@@ -17,35 +19,36 @@ export function useEnrichmentRules({
   clearErrors,
   messages,
 }) {
-  // Paged; "Load more" appends the next page (loadMore). frappe-ui's reload()
-  // re-reads every page already loaded, so a post-save reload keeps them.
-  const resource = createListResource({
+  // Patterns come with each rule as a child table. refetch is off so it only
+  // fetches when load asks.
+  const list = useList({
     doctype: 'CRM Enrichment Rule',
     filters: { rule_type: ruleType },
-    fields: ['name', 'rule_name', 'enabled', ...fields],
+    fields: [
+      'name',
+      'enabled',
+      ...fields,
+      { patterns: ['name', 'pattern', 'is_regex', 'idx'] },
+    ],
     orderBy: 'modified desc',
-    pageLength: PAGE_LENGTH,
+    limit: RULE_LIMIT,
+    immediate: false,
+    refetch: false,
+    // Unsaved edits carry across a reload.
+    onSuccess: buildRows,
   })
-
-  // rule name -> the rule's pattern child rows, as stored
-  const patterns = reactive({})
-  const patternsLoading = ref(false)
-  const patternsError = ref(null)
 
   // Only the first load shows the spinner; reloads keep the rows on screen.
   const loadedOnce = ref(false)
 
-  const loading = computed(
-    () => !loadedOnce.value && (resource.list.loading || patternsLoading.value),
-  )
+  const loading = computed(() => !loadedOnce.value && list.loading)
 
-  const error = computed(() => resource.list.error || patternsError.value)
+  const error = computed(() => list.error)
 
   const saving = ref(false)
 
-  const loadingMore = ref(false)
-
-  const hasMore = computed(() => resource.hasNextPage)
+  // hasNextPage starts true, so it only counts once a load has landed.
+  const truncated = computed(() => loadedOnce.value && list.hasNextPage)
 
   const savedRows = ref([])
 
@@ -76,89 +79,19 @@ export function useEnrichmentRules({
     ...localRows.value,
   ])
 
-  // Awaited together so a post-save reload has rebuilt the rows before Save
-  // reports back.
   async function load() {
-    patternsError.value = null
-    // The error is in resource.list.error; the catch just avoids console noise.
-    await resource.reload().catch(() => {})
-    if (resource.list.error) {
-      loadedOnce.value = true
-      return false
-    }
-    return loadPatterns(resource.data || [])
+    await list.reload()
+    return !list.error
   }
 
-  // Appends the next page; only its rules need patterns fetched. Rows are
-  // rebuilt from the whole list, so unsaved edits carry across.
-  async function loadMore() {
-    if (loadingMore.value || !resource.hasNextPage) return
-    loadingMore.value = true
-    const previousData = resource.originalData
-    const loaded = new Set((resource.data || []).map((rule) => rule.name))
-    try {
-      resource.start += resource.pageLength
-      await resource.list.fetch().catch(() => {})
-      if (resource.list.error) {
-        resource.start -= resource.pageLength
-        return false
-      }
-      const allRules = resource.data || []
-      const added = allRules.filter((rule) => !loaded.has(rule.name))
-      const ok = await loadPatterns(added, allRules)
-      if (!ok) {
-        // A rule without patterns can't get a row, so roll the page back and
-        // let Load more retry.
-        resource.start -= resource.pageLength
-        resource.setData(previousData)
-      }
-      return ok
-    } finally {
-      loadingMore.value = false
-    }
-  }
-
-  // get_list skips child tables, so query the child doctype (`parent` is what
-  // frappe permission-checks). Patterns are fetched for `rules`; rows are built
-  // from `allRules`.
-  async function loadPatterns(rules, allRules = rules) {
-    patternsLoading.value = true
-    try {
-      const patternRows = rules.length
-        ? await call('frappe.client.get_list', {
-            doctype: 'CRM Enrichment Rule Pattern',
-            parent: 'CRM Enrichment Rule',
-            filters: {
-              parenttype: 'CRM Enrichment Rule',
-              parentfield: 'patterns',
-              parent: ['in', rules.map((rule) => rule.name)],
-            },
-            fields: ['name', 'parent', 'pattern', 'is_regex', 'idx'],
-            order_by: 'idx asc',
-            limit_page_length: 0,
-          })
-        : []
-      const byRule = {}
-      patternRows.forEach((row) => {
-        ;(byRule[row.parent] ||= []).push(row)
-      })
-      rules.forEach((rule) => {
-        patterns[rule.name] = byRule[rule.name] || []
-      })
-      buildRows(allRules)
-      return true
-    } catch (err) {
-      // Rows without patterns would show empty boxes that wipe patterns on
-      // save, so keep the old rows.
-      patternsError.value = err
-      return false
-    } finally {
-      patternsLoading.value = false
-      loadedOnce.value = true
-    }
+  // Social edits only the first pattern, so the order can't be left to the
+  // server.
+  function sortByIdx(patternRows) {
+    return [...(patternRows || [])].sort((a, b) => a.idx - b.idx)
   }
 
   function buildRows(rules) {
+    loadedOnce.value = true
     // Carry unsaved edits, errors and deletes across the rebuild; rows Save
     // just wrote take the server's copy.
     const carried = new Map()
@@ -172,12 +105,11 @@ export function useEnrichmentRules({
       return reactive({
         key: rule.name,
         name: rule.name,
-        ruleName: rule.rule_name,
         enabled: held ? held.enabled : Boolean(rule.enabled),
         savedEnabled: Boolean(rule.enabled),
         removed: held ? held.removed : false,
         serverError: held ? held.serverError : '',
-        ...buildRow(rule, patterns[rule.name] || [], held),
+        ...buildRow(rule, sortByIdx(rule.patterns), held),
       })
     })
   }
@@ -187,7 +119,6 @@ export function useEnrichmentRules({
       reactive({
         key: `new-${(localRowSeq += 1)}`,
         name: null,
-        ruleName: '',
         enabled: true,
         savedEnabled: true,
         removed: false,
@@ -230,18 +161,8 @@ export function useEnrichmentRules({
     return valid
   }
 
-  function isNameCollision(err) {
-    return ['DuplicateEntryError', 'UniqueValidationError'].includes(
-      err?.exc_type,
-    )
-  }
-
-  // rule_name collisions come back with raw text naming the column, so reword
-  // them for the admin.
-  function serverMessage(err, ruleName, fallback) {
-    if (isNameCollision(err)) {
-      return __('A rule named "{0}" already exists', [ruleName])
-    }
+  // The server's own text (duplicate target, bad regex) is shown as-is.
+  function serverMessage(err, fallback) {
     return err?.messages?.[0] || fallback
   }
 
@@ -252,13 +173,14 @@ export function useEnrichmentRules({
         doctype: 'CRM Enrichment Rule',
         name: row.name,
       })
-      delete patterns[row.name]
+      // Dropped now, not on reload, so it can't come back even if the reload
+      // fails.
+      savedRows.value = savedRows.value.filter((other) => other !== row)
       return true
     } catch (err) {
       // Still flagged, so the next Save retries the delete.
-      const message = serverMessage(err, row.ruleName, messages.deleteError)
       row.serverError = __('{0}. Save to try deleting it again.', [
-        message.replace(/\.+$/, ''),
+        serverMessage(err, messages.deleteError).replace(/\.+$/, ''),
       ])
       return false
     }
@@ -268,8 +190,8 @@ export function useEnrichmentRules({
   // match_scope) keep their values.
   // The rule is re-read so hidden patterns are current, not from page load.
   async function runUpdate(row) {
-    let values = {}
     try {
+      let values = {}
       if (isRowChanged(row)) {
         const doc = await call('frappe.client.get', {
           doctype: 'CRM Enrichment Rule',
@@ -284,26 +206,17 @@ export function useEnrichmentRules({
         fieldname: values,
       })
       row.committed = true
-      return { ok: true }
+      return true
     } catch (err) {
-      row.serverError = serverMessage(
-        err,
-        values?.rule_name || row.ruleName,
-        messages.updateError,
-      )
-      return {
-        ok: false,
-        target: values?.rule_name || null,
-        collided: isNameCollision(err),
-      }
+      row.serverError = serverMessage(err, messages.updateError)
+      return false
     }
   }
 
   // One document, so a failed insert leaves nothing half-created.
   async function runInsert(row) {
-    let doc
     try {
-      doc = await toInsert(row)
+      const doc = await toInsert(row)
       await call('frappe.client.insert', {
         doc: {
           doctype: 'CRM Enrichment Rule',
@@ -315,103 +228,13 @@ export function useEnrichmentRules({
       localRows.value = localRows.value.filter((other) => other !== row)
       return true
     } catch (err) {
-      row.serverError = serverMessage(
-        err,
-        doc?.rule_name || '',
-        messages.insertError,
-      )
+      row.serverError = serverMessage(err, messages.insertError)
       return false
     }
   }
 
-  // When every update in a pass failed, look for a ring of rows each refused
-  // the name another holds.
-  // Returns a row on the ring, or null (a real duplicate). Lowercased to match
-  // the unique index.
-  function findRenameCycle(failed, held) {
-    const holder = new Map()
-    failed.forEach(({ row }) => holder.set(held.get(row).toLowerCase(), row))
-
-    const waitsOn = new Map()
-    failed.forEach(({ row, target, collided }) => {
-      if (!collided || !target) return
-      const other = holder.get(target.toLowerCase())
-      if (other && other !== row) waitsOn.set(row, other)
-    })
-
-    for (const { row: start } of failed) {
-      const seen = new Set()
-      let row = start
-      while (row && !seen.has(row)) {
-        seen.add(row)
-        row = waitsOn.get(row)
-      }
-      // The first row reached twice is on the ring, not just leading into it.
-      if (row) return row
-    }
-    return null
-  }
-
-  function setRuleName(row, ruleName) {
-    return call('frappe.client.set_value', {
-      doctype: 'CRM Enrichment Rule',
-      name: row.name,
-      fieldname: { rule_name: ruleName },
-    })
-  }
-
-  // rule_name is unique and renames can chain, so updates run one at a time and
-  // failures are retried.
-  // A rename ring is broken by parking one row under a placeholder; each row
-  // parks at most once.
-  async function runUpdates(rows) {
-    // rule_name each row holds on the server right now.
-    const held = new Map(rows.map((row) => [row, row.ruleName]))
-    const parked = new Set()
-    let pending = rows
-    while (pending.length) {
-      const failed = []
-      for (const row of pending) {
-        const result = await runUpdate(row)
-        if (!result.ok) failed.push({ row, ...result })
-      }
-      if (failed.length === pending.length) {
-        const row = findRenameCycle(failed, held)
-        if (!row || parked.has(row)) break
-        // Not run through __(): rule_name is stored data.
-        const placeholder = `${row.ruleName} (renaming ${row.name})`
-        try {
-          await setRuleName(row, placeholder)
-        } catch (err) {
-          row.serverError = serverMessage(
-            err,
-            row.ruleName,
-            messages.updateError,
-          )
-          break
-        }
-        held.set(row, placeholder)
-        parked.add(row)
-      }
-      failed.forEach(({ row }) => (row.serverError = ''))
-      pending = failed.map(({ row }) => row)
-    }
-
-    // Give parked rows that never updated their name back; best effort, the
-    // next Save moves them on.
-    for (const row of pending) {
-      if (!parked.has(row)) continue
-      try {
-        await setRuleName(row, row.ruleName)
-      } catch {
-        // Left under the placeholder; see above.
-      }
-    }
-    return !pending.length
-  }
-
-  // Deletes first, so a removed-and-re-added rule frees its rule_name before
-  // the insert needs it.
+  // Deletes first, so a removed-and-re-added rule frees its target before the
+  // insert needs it; updates before inserts for the same reason.
   async function save() {
     const removed = savedRows.value.filter((row) => row.removed)
     const updated = savedRows.value.filter(
@@ -425,7 +248,7 @@ export function useEnrichmentRules({
     try {
       const results = [
         ...(await Promise.all(removed.map(runDelete))),
-        await runUpdates(updated),
+        ...(await Promise.all(updated.map(runUpdate))),
         ...(await Promise.all(inserted.map(runInsert))),
       ]
 
@@ -440,17 +263,13 @@ export function useEnrichmentRules({
   load()
 
   return {
-    resource,
-    patterns,
     rows,
     dirtyRows,
     loading,
     error,
     saving,
     load,
-    loadMore,
-    loadingMore,
-    hasMore,
+    truncated,
     addRow,
     deleteRow,
     toggleEnabled,
