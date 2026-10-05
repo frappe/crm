@@ -18,10 +18,7 @@
         </div>
         <div class="flex gap-1">
           <Button
-<<<<<<< HEAD
-=======
             v-if="notifications.data?.length"
->>>>>>> 085d226 (fix: remove the single All tab from the notifications panel)
             :tooltip="__('Mark all as read')"
             :icon="MarkAsDoneIcon"
             variant="ghost"
@@ -35,7 +32,6 @@
           />
         </div>
       </div>
-<<<<<<< HEAD
       <div
         v-if="notifications.data?.length"
         class="divide-y divide-outline-elevation-2 overflow-auto text-base"
@@ -46,12 +42,6 @@
           :to="getRoute(n)"
           class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-surface-gray-2"
           @click="markAsRead(n.comment || n.notification_type_doc)"
-=======
-      <div class="flex h-full">
-        <div
-          v-if="notifications.data?.length"
-          class="divide-y divide-outline-elevation-2 overflow-auto text-base"
->>>>>>> 085d226 (fix: remove the single All tab from the notifications panel)
         >
           <div class="mt-1 flex items-center gap-2.5">
             <div
@@ -83,7 +73,6 @@
           </div>
         </RouterLink>
       </div>
-<<<<<<< HEAD
       <EmptyState
         v-else
         title="No New Notifications"
@@ -91,8 +80,6 @@
         :icon="NotificationsIcon"
         width="lg"
       />
-=======
->>>>>>> 085d226 (fix: remove the single All tab from the notifications panel)
     </div>
   </div>
 </template>
