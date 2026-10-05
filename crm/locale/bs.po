@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-10-01 02:25\n"
+"PO-Revision-Date: 2026-10-05 02:41\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bosnian\n"
 "MIME-Version: 1.0\n"
@@ -6715,11 +6715,11 @@ msgstr "Paterne"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:116
 msgid "Pause the run"
-msgstr "Pauziraj izvršavanje"
+msgstr "Pauziraj izvršenje"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:21
 msgid "Pause the run for a fixed amount of time."
-msgstr "Pauziraj izvršavanje na određeno vrijeme."
+msgstr "Pauziraj izvršenje na određeno vrijeme."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:31
 msgid "Pause until an event is raised for this record."
@@ -7617,7 +7617,7 @@ msgstr "Profil Uloge Dodijeljen"
 
 #: crm/api/user.py:232
 msgid "Roles of user {0} are managed by a Role Profile. Update the Role Profile instead."
-msgstr "Uloge korisnika {0} upravljaju se profilom uloge. Umjesto toga ažurirajte profil uloge."
+msgstr "Uloge korisnika {0} upravljaju se profilom uloge. Umjesto toga ažuriraj profil uloge."
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -8548,7 +8548,7 @@ msgstr "Razmak"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:13
 msgid "Split the run into two arms on a condition."
-msgstr "Podijeli izvršavanje na dva ogranka pod određenim uslovom."
+msgstr "Podijeli izvršenje na dva ogranka pod određenim uslovom."
 
 #: frontend/src/pages/PersonaForm.vue:59
 msgid "Spreadsheets"
@@ -8596,23 +8596,23 @@ msgstr "Započnite razgovor sada!"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:49
 msgid "Start a run just after a record is deleted."
-msgstr "Pokreni izvršavanje odmah nakon što je zapis izbrisan."
+msgstr "Pokreni izvršenje odmah nakon što je zapis izbrisan."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:56
 msgid "Start a run when a submittable record is submitted."
-msgstr "Pokreni izvršavanje kada se podnese podnosivi zapis."
+msgstr "Pokreni izvršenje kada se podnese podnosivi zapis."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:63
 msgid "Start a run when a submitted record is cancelled."
-msgstr "Pokreni izvršavanje kada je podnešeni zapis otkazan."
+msgstr "Pokreni izvršenje kada je podnešeni zapis otkazan."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:28
 msgid "Start a run whenever a new record is created."
-msgstr "Pokreni izvršavanje svaki put kada se izradi novi zapis."
+msgstr "Pokreni izvršenje svaki put kada se izradi novi zapis."
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:35
 msgid "Start a run whenever an existing record is saved."
-msgstr "Pokreni izvršavanje kad god se spremi postojeći zapis."
+msgstr "Pokreni izvršenje kad god se spremi postojeći zapis."
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
@@ -8624,7 +8624,7 @@ msgstr "Počni od nule"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:23
 msgid "Start test run"
-msgstr "Pokreni test izvršavanje"
+msgstr "Pokreni test izvršenje"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
 msgid "Start time is required"
@@ -8981,7 +8981,7 @@ msgstr "Naziv Distrikta"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
 msgid "Test Run"
-msgstr "Probno Izvršavanje"
+msgstr "Probno Izvršenje"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:528
 msgid "Thank you!"
@@ -10115,7 +10115,7 @@ msgstr "Umanji"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:10
 msgid "a date field"
-msgstr "polje satuma"
+msgstr "polje datuma"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:7
 msgid "a field to watch"
