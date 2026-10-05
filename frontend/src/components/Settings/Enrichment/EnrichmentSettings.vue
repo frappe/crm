@@ -29,7 +29,7 @@
            "General" with the title. -->
       <Tabs
         v-if="settings.doc"
-        v-model="tabIndex"
+        v-model="activeTab"
         as="div"
         :tabs="tabOptions"
         class="h-full [&_[role='tablist']]:pl-0"
@@ -84,9 +84,9 @@ const settings = createDocumentResource({
   auto: true,
 })
 
-// frappe-ui's Tabs is index-based; `value` gives panels a stable id instead of
-// a translated label.
-const tabIndex = ref(0)
+// frappe-ui's Tabs selects by `value`, a stable id instead of a translated
+// label.
+const activeTab = ref('general')
 
 const tabOptions = [
   { label: __('General'), value: 'general' },
@@ -99,6 +99,19 @@ const social = reactive(useSocialRules())
 const industry = reactive(useIndustryRules())
 
 const rulesTab = ref(null)
+
+// reka mounts a panel a few ticks after its tab is selected, so focus once
+// the Rules tab's ref arrives instead of counting ticks.
+let focusRulesError = false
+watch(
+  rulesTab,
+  (tab) => {
+    if (!tab || !focusRulesError) return
+    focusRulesError = false
+    tab.focusFirstError()
+  },
+  { flush: 'post' },
+)
 
 // Mirrors MAX_PAGES_LIMIT in crm/domain_enrichment/config.py; the controller
 // rejects values outside 1..20.
@@ -198,12 +211,16 @@ async function save() {
 
   if (!generalValid || !rulesValid) {
     // Onto the tab holding the error, so the message has somewhere to be seen.
-    tabIndex.value = generalValid ? 1 : 0
+    activeTab.value = generalValid ? 'rules' : 'general'
     toast.error(__('Fix the highlighted fields before saving'))
     if (generalValid) {
-      // The panel may have just mounted, so wait for its fields.
-      await nextTick()
-      rulesTab.value?.focusFirstError()
+      if (rulesTab.value) {
+        // Already on Rules: wait for the new red borders to render.
+        await nextTick()
+        rulesTab.value.focusFirstError()
+      } else {
+        focusRulesError = true
+      }
     }
     return
   }
