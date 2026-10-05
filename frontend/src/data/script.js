@@ -1,6 +1,10 @@
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
-import { getClassNames, createDocProxy } from '@/utils/scriptHelpers'
+import {
+  getClassNames,
+  createDocProxy,
+  resolveRow,
+} from '@/utils/scriptHelpers'
 import { renderFieldLayoutDialog } from '@/utils/renderFieldLayoutDialog'
 import { scriptToast } from '@/utils/scriptToast'
 import { call, createListResource, toast } from 'frappe-ui'
@@ -228,51 +232,7 @@ export function getScript(doctype, view = 'Form') {
   function setupHelperMethods(FormClass) {
     if (typeof FormClass.prototype.getRow !== 'function') {
       FormClass.prototype.getRow = function (parentField, idx) {
-        idx = idx || this.currentRowIdx
-
-        let dt = null
-
-        if (this instanceof Array) {
-          const { getFields } = getMeta(this.doc.doctype)
-          let fields = getFields()
-          let field = fields.find((f) => f.fieldname === parentField)
-          dt = field?.options?.replace(/\s+/g, '')
-
-          if (!idx && dt) {
-            idx = this.find(
-              (r) => (r._className || r.constructor.name) === dt,
-            )?.currentRowIdx
-          }
-        }
-
-        if (!this.doc[parentField]) {
-          console.warn(
-            __('⚠️ No data found for parent field: {0}', [parentField]),
-          )
-          return null
-        }
-        const row = this.doc[parentField].find((r) => r.idx === idx)
-
-        if (!row) {
-          console.warn(
-            __('⚠️ No row found for idx: {0} in parent field: {1}', [
-              idx,
-              parentField,
-            ]),
-          )
-          return null
-        }
-
-        row.parent = row.parent || this.doc.name
-
-        if (this instanceof Array && dt) {
-          return createDocProxy(
-            row,
-            this.find((r) => (r._className || r.constructor.name) === dt),
-          )
-        }
-
-        return createDocProxy(row, this)
+        return resolveRow(this, parentField, idx, getMeta)
       }
     }
 

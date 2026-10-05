@@ -59,9 +59,7 @@ export function createDocProxy(source, instance, childInstance = null) {
         }
 
         if (prop === 'getRow') {
-          return instance.getRow.bind(
-            childInstance || instance._childInstances || instance,
-          )
+          return instance.getRow.bind(childInstance || instance)
         }
 
         return currentDocData[prop]
@@ -90,4 +88,53 @@ export function createDocProxy(source, instance, childInstance = null) {
       },
     },
   )
+}
+
+/**
+ * Resolve a child table row into a doc proxy. `ctx` is the controller `getRow` was called on:
+ * a child instance, or a parent instance that owns `_childInstances`. A parent gets a proxy
+ * that routes `trigger()` to the child class of that table.
+ *
+ * @param {object} ctx - controller instance `getRow` is bound to
+ * @param {string} parentField - child table fieldname on the parent doc
+ * @param {number} [idx] - row idx; falls back to the running row of the child controller
+ * @param {Function} getMeta - meta store getter, `getMeta(doctype).getFields()`
+ * @returns {Proxy|null}
+ */
+export function resolveRow(ctx, parentField, idx, getMeta) {
+  idx = idx || ctx.currentRowIdx
+
+  const children = ctx._childInstances
+  let childController = null
+
+  if (children?.length) {
+    const { getFields } = getMeta(ctx.doc.doctype)
+    const field = getFields().find((f) => f.fieldname === parentField)
+    const dt = field?.options?.replace(/\s+/g, '')
+    childController = children.find(
+      (r) => (r._className || r.constructor.name) === dt,
+    )
+
+    if (!idx) idx = childController?.currentRowIdx
+  }
+
+  if (!ctx.doc[parentField]) {
+    console.warn(__('⚠️ No data found for parent field: {0}', [parentField]))
+    return null
+  }
+  const row = ctx.doc[parentField].find((r) => r.idx === idx)
+
+  if (!row) {
+    console.warn(
+      __('⚠️ No row found for idx: {0} in parent field: {1}', [
+        idx,
+        parentField,
+      ]),
+    )
+    return null
+  }
+
+  row.parent = row.parent || ctx.doc.name
+
+  return createDocProxy(row, childController || ctx)
 }
