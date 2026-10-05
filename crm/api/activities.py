@@ -404,6 +404,8 @@ def get_linked_calls(name: str):
 			"recording_url",
 			"creation",
 			"note",
+			"reference_doctype",
+			"reference_docname",
 		],
 	)
 
@@ -433,6 +435,8 @@ def get_linked_calls(name: str):
 				CallLog.recording_url,
 				CallLog.creation,
 				CallLog.note,
+				CallLog.reference_doctype,
+				CallLog.reference_docname,
 				Link.link_doctype,
 				Link.link_name,
 			)
