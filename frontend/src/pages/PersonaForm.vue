@@ -6,8 +6,8 @@
     <div class="flex flex-1 flex-col justify-start px-4 pt-24">
       <Questionnaire
         :questions="questions"
-        :show-skip="false"
         @submit="submitPersona"
+        @skip="skipPersonaForm"
       />
     </div>
   </div>
@@ -50,17 +50,22 @@ const submitPersona = (answers) => {
   leaveHome()
 }
 
+const skipPersonaForm = () => {
+  capture('onboarding_persona_skipped')
+  leaveHome()
+}
+
 const questions = computed(() => [
   {
     key: 'current_solution',
     title: __('How are you managing your sales today?'),
     options: [
-      { label: __('This is my first CRM'), value: 'first_crm' },
       { label: __('Spreadsheets'), value: 'spreadsheets' },
       { label: __('HubSpot'), value: 'hubspot' },
       { label: __('Salesforce'), value: 'salesforce' },
       { label: __('Zoho CRM'), value: 'zoho' },
       { label: __('Pipedrive'), value: 'pipedrive' },
+      { label: __('This is my first CRM'), value: 'first_crm' },
       { label: __('Another CRM'), value: 'other_crm' },
       { label: __('Other'), value: 'other' },
     ],
