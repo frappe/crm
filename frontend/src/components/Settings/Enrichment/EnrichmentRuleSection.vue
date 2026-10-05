@@ -41,14 +41,9 @@
         <div class="w-7 shrink-0" />
       </div>
       <slot />
-      <Button
-        v-if="hasMore"
-        class="self-start"
-        variant="ghost"
-        :label="__('Load more')"
-        :loading="loadingMore"
-        @click="emit('load-more')"
-      />
+      <div v-if="truncated" class="text-p-sm text-ink-gray-5">
+        {{ __('Showing the first {0} rules', [RULE_LIMIT]) }}
+      </div>
       <ErrorMessage
         v-for="(message, index) in errors"
         :key="index"
@@ -61,6 +56,7 @@
 <script setup>
 import { Button, ErrorMessage, LoadingIndicator } from 'frappe-ui'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
+import { RULE_LIMIT } from './useEnrichmentRules'
 
 defineProps({
   title: { type: String, required: true },
@@ -77,9 +73,8 @@ defineProps({
   emptyTitle: { type: String, default: '' },
   emptyDescription: { type: String, default: '' },
   emptyIcon: { type: String, default: 'file-text' },
-  hasMore: { type: Boolean, default: false },
-  loadingMore: { type: Boolean, default: false },
+  truncated: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['add', 'retry', 'load-more'])
+const emit = defineEmits(['add', 'retry'])
 </script>

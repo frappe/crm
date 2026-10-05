@@ -43,13 +43,6 @@ function parseKeywords(text) {
   return keywords
 }
 
-// Same shape install.py seeds, so re-adding a seeded industry collides on the
-// unique rule_name.
-// Not run through __(): rule_name is stored data matching what Python wrote.
-function industryRuleName(industry) {
-  return `Industry: ${industry}`
-}
-
 export function useIndustryRules() {
   const rules = useEnrichmentRules({
     ruleType: 'Industry',
@@ -111,21 +104,13 @@ export function useIndustryRules() {
     )
   }
 
-  // Checked on industry and rule_name; case-insensitive like the unique index.
+  // Case-insensitive like the server's duplicate check.
   function industryTakenBy(industry, others) {
     const folded = industry.toLowerCase()
-    const ruleName = industryRuleName(industry).toLowerCase()
 
-    return others.find((other) => {
-      const otherIndustry = (other.industry || '').toLowerCase()
-      if (otherIndustry === folded) return true
-
-      return (
-        Boolean(other.ruleName) &&
-        other.industry === other.savedIndustry &&
-        other.ruleName.toLowerCase() === ruleName
-      )
-    })
+    return others.some(
+      (other) => (other.industry || '').toLowerCase() === folded,
+    )
   }
 
   function validateRow(row, others) {
@@ -200,7 +185,6 @@ export function useIndustryRules() {
     await ensureIndustry(row)
 
     return {
-      rule_name: industryRuleName(row.industry),
       industry: row.industry,
       // Set explicitly: weight scales hits in extractors.py and an API insert
       // may skip the default.
@@ -220,12 +204,6 @@ export function useIndustryRules() {
     await ensureIndustry(row)
 
     const values = { industry: row.industry }
-
-    // Renamed only when the industry changes, so a rule hand-named in Desk
-    // survives keyword edits.
-    if (row.industry !== row.savedIndustry) {
-      values.rule_name = industryRuleName(row.industry)
-    }
 
     const patternRows = doc.patterns || []
     // Reuse child rows so untouched keywords aren't dropped and re-created.

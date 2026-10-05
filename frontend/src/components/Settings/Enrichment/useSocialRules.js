@@ -63,13 +63,6 @@ function splitPatterns(patternRows) {
   }
 }
 
-// Same shape install.py seeds, so re-adding a seeded platform collides on the
-// unique rule_name.
-// Not run through __(): rule_name is stored data matching what Python wrote.
-function socialRuleName(platform) {
-  return `Social: ${platform}`
-}
-
 export function useSocialRules() {
   const rules = useEnrichmentRules({
     ruleType: 'Social',
@@ -128,23 +121,11 @@ export function useSocialRules() {
     )
   }
 
-  // Check target_value and rule_name: a rule renamed in Desk can match on one
-  // but not the other.
-  // A row changing platform in this Save releases its rule_name, so it no
-  // longer holds it.
+  // Case-insensitive like the server's duplicate check.
   function platformTakenBy(platform, others) {
-    const ruleName = socialRuleName(platform).toLowerCase()
-
-    return others.find((other) => {
-      const otherPlatform = normalizePlatform(other.platform)
-      if (otherPlatform === platform) return true
-
-      return (
-        Boolean(other.ruleName) &&
-        otherPlatform === normalizePlatform(other.savedPlatform) &&
-        other.ruleName.toLowerCase() === ruleName
-      )
-    })
+    return others.some(
+      (other) => normalizePlatform(other.platform) === platform,
+    )
   }
 
   function validateRow(row, others) {
@@ -214,7 +195,6 @@ export function useSocialRules() {
     const platform = normalizePlatform(row.platform)
 
     return {
-      rule_name: socialRuleName(platform),
       target_value: platform,
       match_scope: 'HTML',
       patterns: [{ pattern: row.pattern.trim(), is_regex: 1 }],
@@ -224,12 +204,6 @@ export function useSocialRules() {
   function toUpdate(row, doc) {
     const platform = normalizePlatform(row.platform)
     const values = { target_value: platform }
-
-    // Renamed with the platform, but not on a case-only change, so Desk
-    // hand-named rules survive.
-    if (platform !== normalizePlatform(row.savedPlatform)) {
-      values.rule_name = socialRuleName(platform)
-    }
 
     // Child row names are kept so set_value updates them in place instead of
     // re-creating them.
