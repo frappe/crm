@@ -1,4 +1,8 @@
-import { getClassNames, createDocProxy } from '@/utils/scriptHelpers'
+import {
+  getClassNames,
+  createDocProxy,
+  resolveRow,
+} from '@/utils/scriptHelpers'
 
 describe('getClassNames', () => {
   it('extracts single class name', () => {
@@ -149,5 +153,70 @@ describe('createDocProxy', () => {
   it('returns own keys from source', () => {
     const proxy = createDocProxy({ a: 1, b: 2 }, {})
     expect(Object.keys(proxy)).toEqual(['a', 'b'])
+  })
+})
+
+describe('resolveRow', () => {
+  class CRMProducts {
+    qty = vi.fn().mockReturnValue('child qty')
+  }
+  const data = {
+    doctype: 'CRM Deal',
+    name: 'DEAL-1',
+    products: [
+      { idx: 1, product_name: 'A' },
+      { idx: 2, product_name: 'B' },
+    ],
+  }
+  const getMeta = () => ({
+    getFields: () => [{ fieldname: 'products', options: 'CRM Products' }],
+  })
+
+  function parentWithChild() {
+    const parent = { getRow() {} }
+    const child = new CRMProducts()
+    parent.doc = createDocProxy(() => data, parent)
+    parent._childInstances = [child]
+    parent.getRow = function (field, idx) {
+      return resolveRow(this, field, idx, getMeta)
+    }
+    return { parent, child }
+  }
+
+  it('does not throw when called through a parent doc proxy', () => {
+    const { parent } = parentWithChild()
+    expect(() => parent.doc.getRow('products', 1)).not.toThrow()
+    expect(parent.doc.getRow('products', 1).product_name).toBe('A')
+  })
+
+  it('routes trigger() on a parent-resolved row to the child class', () => {
+    const { parent, child } = parentWithChild()
+    const row = parent.doc.getRow('products', 2)
+    expect(row.trigger('qty')).toBe('child qty')
+    expect(child.qty).toHaveBeenCalled()
+  })
+
+  it('falls back to the child running row when idx is omitted', () => {
+    const { parent, child } = parentWithChild()
+    child.currentRowIdx = 2
+    expect(parent.doc.getRow('products').product_name).toBe('B')
+  })
+
+  it('resolves rows from a child controller without looking up metadata', () => {
+    const child = new CRMProducts()
+    child.doc = createDocProxy(() => data, {})
+    child.currentRowIdx = 1
+    const spy = vi.fn(getMeta)
+    expect(resolveRow(child, 'products', undefined, spy).product_name).toBe('A')
+    expect(spy).not.toHaveBeenCalled()
+  })
+
+  it('returns null and warns for an unknown field or row', () => {
+    const { parent } = parentWithChild()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    expect(parent.doc.getRow('missing', 1)).toBeNull()
+    expect(parent.doc.getRow('products', 99)).toBeNull()
+    expect(warn).toHaveBeenCalledTimes(2)
+    warn.mockRestore()
   })
 })
