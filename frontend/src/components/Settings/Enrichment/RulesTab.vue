@@ -9,6 +9,8 @@
     <EnrichmentRuleSection
       :title="__('Social profile rules')"
       :add-label="__('Add social rule')"
+      :columns="[__('Platform'), __('Pattern')]"
+      :errors="socialErrors()"
       :loading="social.loading"
       :error="social.error"
       :error-message="__('Could not load social rules')"
@@ -31,7 +33,11 @@
         class="group flex flex-col"
       >
         <div class="flex items-start gap-2">
-          <div class="w-40 shrink-0">
+          <!-- Messages are listed under the section; the ring marks the field. -->
+          <div
+            class="w-40 shrink-0 rounded"
+            :class="{ [INVALID]: row.platformError }"
+          >
             <Autocomplete
               :ref="(el) => (platformBoxes[row.key] = el)"
               :model-value="row.platform"
@@ -53,12 +59,6 @@
                 />
               </template>
             </Autocomplete>
-            <!-- Autocomplete has no error prop, so the message sits below. -->
-            <ErrorMessage
-              v-if="row.platformError"
-              class="mt-1"
-              :message="row.platformError"
-            />
           </div>
           <div class="flex-1 min-w-0">
             <!-- Monospace so regex patterns are easier to read. -->
@@ -67,8 +67,8 @@
               type="text"
               :placeholder="__('Regex pattern')"
               :disabled="social.saving || row.removed"
-              class="[&_input]:font-mono"
-              :error="row.patternError || undefined"
+              class="rounded [&_input]:font-mono"
+              :class="{ [INVALID]: row.patternError }"
               @update:model-value="(value) => social.onPatternInput(row, value)"
               @blur="social.checkRow(row)"
             />
@@ -83,15 +83,18 @@
               </div>
             </Tooltip>
           </div>
-          <!-- Only flips the row; the header Update saves it. -->
-          <Switch
-            v-if="!social.isRowBlank(row)"
-            size="sm"
-            class="mt-1.5 shrink-0"
-            :model-value="row.enabled"
-            :disabled="social.saving || row.removed"
-            @update:model-value="social.toggleEnabled(row)"
-          />
+          <!-- Only flips the row; the header Update saves it. The slot stays
+               on blank rows so the column doesn't shift. -->
+          <div class="w-8 shrink-0">
+            <Switch
+              v-if="!social.isRowBlank(row)"
+              size="sm"
+              class="mt-1.5"
+              :model-value="row.enabled"
+              :disabled="social.saving || row.removed"
+              @update:model-value="social.toggleEnabled(row)"
+            />
+          </div>
           <!-- Left visible on touch, which has no hover to reveal it -->
           <div
             class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -106,13 +109,8 @@
             />
           </div>
         </div>
-        <ErrorMessage
-          v-if="row.serverError"
-          class="mt-1"
-          :message="row.serverError"
-        />
         <div
-          v-else-if="
+          v-if="
             row.platform.trim() &&
             !isKnownPlatform(row.platform) &&
             !row.platformError &&
@@ -135,6 +133,8 @@
       class="mt-4"
       :title="__('Industry rules')"
       :add-label="__('Add industry rule')"
+      :columns="[__('Industry'), __('Keywords')]"
+      :errors="industryErrors()"
       :loading="industry.loading"
       :error="industry.error"
       :error-message="__('Could not load industry rules')"
@@ -158,25 +158,21 @@
       >
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0">
-            <Link
-              doctype="CRM Industry"
-              :value="row.industry"
-              :placeholder="__('Industry')"
-              variant="transparent"
-              :disabled="industry.saving || row.removed"
-              @create="
-                (value, close) => industry.onIndustryCreate(row, value, close)
-              "
-              @change="(value) => industry.onIndustryChange(row, value)"
-            />
-            <!-- Link has no error prop, so its message is shown below it. -->
-            <ErrorMessage
-              v-if="row.industryError"
-              class="mt-1"
-              :message="row.industryError"
-            />
+            <div class="rounded" :class="{ [INVALID]: row.industryError }">
+              <Link
+                doctype="CRM Industry"
+                :value="row.industry"
+                :placeholder="__('Industry')"
+                variant="transparent"
+                :disabled="industry.saving || row.removed"
+                @create="
+                  (value, close) => industry.onIndustryCreate(row, value, close)
+                "
+                @change="(value) => industry.onIndustryChange(row, value)"
+              />
+            </div>
             <div
-              v-else-if="row.newIndustry"
+              v-if="!row.industryError && row.newIndustry"
               class="mt-1 text-p-sm text-ink-gray-5"
             >
               {{ __('New industry, created on save') }}
@@ -188,7 +184,8 @@
               type="text"
               :placeholder="__('Keywords, comma separated')"
               :disabled="industry.saving || row.removed"
-              :error="row.keywordsError || undefined"
+              class="rounded"
+              :class="{ [INVALID]: row.keywordsError }"
               @update:model-value="
                 (value) => industry.onKeywordsInput(row, value)
               "
@@ -207,14 +204,17 @@
               </div>
             </Tooltip>
           </div>
-          <Switch
-            v-if="!industry.isRowBlank(row)"
-            size="sm"
-            class="mt-1.5 shrink-0"
-            :model-value="row.enabled"
-            :disabled="industry.saving || row.removed"
-            @update:model-value="industry.toggleEnabled(row)"
-          />
+          <!-- Slot stays on blank rows so the column doesn't shift. -->
+          <div class="w-8 shrink-0">
+            <Switch
+              v-if="!industry.isRowBlank(row)"
+              size="sm"
+              class="mt-1.5"
+              :model-value="row.enabled"
+              :disabled="industry.saving || row.removed"
+              @update:model-value="industry.toggleEnabled(row)"
+            />
+          </div>
           <!-- Left visible on touch, which has no hover to reveal it -->
           <div
             class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
@@ -229,18 +229,13 @@
             />
           </div>
         </div>
-        <ErrorMessage
-          v-if="row.serverError"
-          class="mt-1"
-          :message="row.serverError"
-        />
       </div>
     </EnrichmentRuleSection>
   </div>
 </template>
 
 <script setup>
-import { Button, ErrorMessage, FormControl, Switch, Tooltip } from 'frappe-ui'
+import { Button, FormControl, Switch, Tooltip } from 'frappe-ui'
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { reactive } from 'vue'
 import Link from '@/components/Controls/Link.vue'
@@ -270,6 +265,43 @@ function platformOptions() {
     }
   }
   return options
+}
+
+// Outlines a field whose message is listed under the section.
+const INVALID = 'ring-1 ring-[var(--outline-red-3)]'
+
+// Errors are listed under the section, so each names its rule; a row with no
+// name yet goes by its position.
+function rowErrors(rows, label, fields) {
+  return rows.flatMap((row, index) => {
+    const name = label(row) || __('Row {0}', [index + 1])
+    return fields
+      .map((field) => row[field])
+      .filter(Boolean)
+      .map((message) => __('{0}: {1}', [name, message]))
+  })
+}
+
+function socialErrors() {
+  return rowErrors(
+    props.social.rows,
+    (row) => {
+      const value = normalizePlatform(row.platform)
+      return (
+        SOCIAL_PLATFORMS.find((option) => option.value === value)?.label ||
+        row.platform
+      )
+    },
+    ['platformError', 'patternError', 'serverError'],
+  )
+}
+
+function industryErrors() {
+  return rowErrors(props.industry.rows, (row) => row.industry, [
+    'industryError',
+    'keywordsError',
+    'serverError',
+  ])
 }
 
 // Per-row search text, so "Add" can name it and stay disabled while empty.
