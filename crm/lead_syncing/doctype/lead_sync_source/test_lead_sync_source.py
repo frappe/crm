@@ -123,6 +123,30 @@ class IntegrationTestLeadSyncSource(IntegrationTestCase):
 
 		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "444"}))
 
+	def test_same_name_with_empty_email_is_not_a_duplicate(self):
+		with_email = meta_lead("555")
+		with_email["field_data"].append({"name": "email", "values": ["first@example.com"]})
+		without_email = meta_lead("666")
+		without_email["field_data"] = [{"name": "full_name", "values": ["Meta Lead 555"]}, {"name": "email"}]
+
+		self.sync([with_email, without_email])
+
+		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "666"}))
+		self.assertFalse(frappe.db.exists("Failed Lead Sync Log", {"source": self.source.name}))
+
+	def test_same_name_and_both_emails_empty_is_a_duplicate(self):
+		first = meta_lead("777")
+		first["field_data"].append({"name": "email"})
+		second = meta_lead("888")
+		second["field_data"] = [{"name": "full_name", "values": ["Meta Lead 777"]}, {"name": "email"}]
+
+		self.sync([first, second])
+
+		self.assertFalse(frappe.db.exists("CRM Lead", {"facebook_lead_id": "888"}))
+		self.assertTrue(
+			frappe.db.exists("Failed Lead Sync Log", {"source": self.source.name, "type": "Duplicate"})
+		)
+
 
 def meta_lead(lead_id):
 	return {
