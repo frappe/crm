@@ -30,7 +30,10 @@ class IntegrationTestLeadSyncSource(IntegrationTestCase):
 				"doctype": "Facebook Lead Form",
 				"id": FORM_ID,
 				"form_name": "Test Meta Form",
-				"questions": [{"key": "full_name", "mapped_to_crm_field": "first_name"}],
+				"questions": [
+					{"key": "full_name", "mapped_to_crm_field": "first_name"},
+					{"key": "email", "mapped_to_crm_field": "email"},
+				],
 			}
 		).insert(ignore_links=True, ignore_mandatory=True)
 
@@ -98,6 +101,14 @@ class IntegrationTestLeadSyncSource(IntegrationTestCase):
 
 		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "222"}))
 		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "333"}))
+
+	def test_mapped_field_without_values_still_imports(self):
+		lead = meta_lead("444")
+		lead["field_data"].append({"name": "email"})
+
+		self.sync([lead])
+
+		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "444"}))
 
 
 def meta_lead(lead_id):

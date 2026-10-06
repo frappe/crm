@@ -145,7 +145,9 @@ class FacebookSyncSource:
 		return frappe.db.get_value("Lead Sync Source", {"facebook_lead_form": self.form_id}, "name")
 
 	def validate_duplicate_lead(self, lead_data: dict, field_mapping: dict):
-		validation_filters = {crm_field: lead_data[crm_field] for crm_field in field_mapping.values()}
+		validation_filters = {
+			crm_field: lead_data[crm_field] for crm_field in field_mapping.values() if crm_field in lead_data
+		}
 		validation_filters["facebook_form_id"] = lead_data["facebook_form_id"]  # only for this campaign
 		if frappe.db.exists("CRM Lead", validation_filters):
 			raise DuplicateLeadError
