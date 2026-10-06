@@ -7,7 +7,7 @@ from unittest.mock import patch
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from crm.lead_syncing.doctype.lead_sync_source.facebook import FacebookSyncSource
+from crm.lead_syncing.doctype.lead_sync_source.facebook import SYNC_OVERLAP_SECONDS, FacebookSyncSource
 
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded
@@ -64,8 +64,11 @@ class IntegrationTestLeadSyncSource(IntegrationTestCase):
 		request = self.sync([], last_synced_at="2026-09-16 14:37:00")
 
 		filtering = frappe.parse_json(request.call_args.kwargs["params"]["filtering"])
-		# 14:37 in Karachi (UTC+5) is 09:37 UTC
-		self.assertEqual(filtering[0]["value"], datetime(2026, 9, 16, 9, 37, tzinfo=timezone.utc).timestamp())
+		# 14:37 in Karachi (UTC+5) is 09:37 UTC, less the overlap
+		self.assertEqual(
+			filtering[0]["value"],
+			datetime(2026, 9, 16, 9, 37, tzinfo=timezone.utc).timestamp() - SYNC_OVERLAP_SECONDS,
+		)
 
 	def test_first_sync_fetches_without_filter(self):
 		request = self.sync([])
