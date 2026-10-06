@@ -1052,7 +1052,7 @@
    ],
    "name": "crm",
    "title": "CRM",
-   "vertical_compact_layout": 1,
+   "vertical_compact_layout": 0,
    "visible_to_roles": [
     {
      "role": "Sales User"
@@ -1069,7 +1069,7 @@
  "folders": [],
  "idx": 0,
  "is_standard": 1,
- "modified": "2026-10-06 14:33:46.916351",
+ "modified": "2026-10-06 14:48:16.035285",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "crm",
