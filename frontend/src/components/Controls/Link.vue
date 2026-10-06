@@ -141,8 +141,10 @@ watchDebounced(
   { debounce: 300, immediate: true },
 )
 
+// Compared by content: callers often pass inline objects, which are new on
+// every parent render and would otherwise force a reload each time.
 watchDebounced(
-  () => [props.filters, props.grouping],
+  () => JSON.stringify([props.filters, props.grouping]),
   () => {
     reload('', true)
   },
@@ -204,9 +206,10 @@ const options = createResource({
 })
 
 // Holds the `grouping.filters` matches; `options` then holds everything else.
+// Not cached: the key can't include the grouping value, so links grouped by
+// different organizations would share one resource and show each other's data.
 const groupedOptions = createResource({
   url: 'frappe.desk.search.search_link',
-  cache: ['grouped', props.doctype, text.value, props.hideMe, props.filters],
   method: 'POST',
   params: {
     txt: text.value,
