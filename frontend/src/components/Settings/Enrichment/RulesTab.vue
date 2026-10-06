@@ -32,38 +32,23 @@
       >
         <div class="flex items-start gap-2">
           <!-- Messages are listed under the section; the border marks the field. -->
-          <div
+          <FormControl
+            :model-value="row.platform"
+            type="text"
+            :placeholder="__('Platform')"
+            :disabled="social.saving || row.removed"
             class="w-40 shrink-0"
             :class="{ [INVALID]: row.platformError }"
             :data-invalid="row.platformError ? '' : undefined"
-          >
-            <Autocomplete
-              :ref="(el) => (platformBoxes[row.key] = el)"
-              :model-value="row.platform"
-              :options="platformOptions()"
-              :placeholder="__('Platform')"
-              :disabled="social.saving || row.removed"
-              @update:model-value="(option) => onPlatformSelect(row, option)"
-              @update:query="(query) => (platformQuery[row.key] = query)"
-            >
-              <template #footer="{ close }">
-                <Button
-                  variant="ghost"
-                  class="w-full !justify-start"
-                  :label="platformAddLabel(row)"
-                  :disabled="!platformQuery[row.key]?.trim()"
-                  icon-left="lucide-plus"
-                  @click="onPlatformAdd(row, close)"
-                />
-              </template>
-            </Autocomplete>
-          </div>
+            @update:model-value="(value) => social.onPlatformInput(row, value)"
+            @blur="social.checkRow(row)"
+          />
           <div class="flex-1 min-w-0">
             <!-- Monospace so regex patterns are easier to read. -->
             <FormControl
               :model-value="row.pattern"
               type="text"
-              :placeholder="__('Regex pattern')"
+              :placeholder="__('e.g. mastodon\\.social/@\\w+')"
               :disabled="social.saving || row.removed"
               class="[&_input]:font-mono"
               :class="{ [INVALID]: row.patternError }"
@@ -105,16 +90,6 @@
               @click="social.deleteRow(row)"
             />
           </div>
-        </div>
-        <div
-          v-if="row.platform.trim() && !isKnownPlatform(row.platform)"
-          class="mt-1 text-p-sm text-ink-gray-5"
-        >
-          {{
-            __(
-              'Links will be recorded on the enrichment run but not written to a field.',
-            )
-          }}
         </div>
       </div>
     </EnrichmentRuleSection>
@@ -223,15 +198,9 @@
 
 <script setup>
 import { Button, FormControl, Switch, Tooltip } from 'frappe-ui'
-import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import Link from '@/components/Controls/Link.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
-import {
-  SOCIAL_PLATFORMS,
-  isKnownPlatform,
-  normalizePlatform,
-} from './useSocialRules'
 
 // Rule state lives in the parent because reka-ui's TabsContent unmounts hidden
 // panels by default.
@@ -241,18 +210,6 @@ const props = defineProps({
   social: { type: Object, required: true },
   industry: { type: Object, required: true },
 })
-
-// Seeded platforms plus already-saved ones, so a custom one can be re-picked.
-function platformOptions() {
-  const options = [...SOCIAL_PLATFORMS]
-  for (const row of props.social.rows) {
-    const value = normalizePlatform(row.savedPlatform)
-    if (value && !options.some((option) => option.value === value)) {
-      options.push({ label: value, value })
-    }
-  }
-  return options
-}
 
 // frappe-ui's Switch hovers an off track with a fixed gray-400, which goes
 // near-white in dark mode; use the themed equivalents instead.
@@ -284,17 +241,10 @@ function rowErrors(rows, label, fields) {
 }
 
 function socialErrors() {
-  return rowErrors(
-    props.social.rows,
-    (row) => {
-      const value = normalizePlatform(row.platform)
-      return (
-        SOCIAL_PLATFORMS.find((option) => option.value === value)?.label ||
-        row.platform
-      )
-    },
-    ['platformError', 'patternError'],
-  )
+  return rowErrors(props.social.rows, (row) => row.platform.trim(), [
+    'platformError',
+    'patternError',
+  ])
 }
 
 function industryErrors() {
@@ -317,29 +267,4 @@ function focusFirstError() {
 }
 
 defineExpose({ focusFirstError })
-
-// Per-row search text, so "Add" can name it and stay disabled while empty.
-const platformQuery = reactive({})
-const platformBoxes = {}
-
-function platformAddLabel(row) {
-  const query = platformQuery[row.key]?.trim()
-  return query ? __('Add "{0}"', [query]) : __('Add new')
-}
-
-// Autocomplete keeps its search text on close; clear it or reopening shows
-// stale text.
-function onPlatformAdd(row, close) {
-  props.social.onPlatformCreate(row, platformQuery[row.key], close)
-  if (platformBoxes[row.key]) platformBoxes[row.key].query = ''
-  platformQuery[row.key] = ''
-}
-
-function onPlatformSelect(row, option) {
-  if (!option?.value) return
-  props.social.onPlatformInput(row, option.value)
-  props.social.checkRow(row)
-  // The pattern is still checked on Save.
-  if (!row.pattern) row.patternError = ''
-}
 </script>

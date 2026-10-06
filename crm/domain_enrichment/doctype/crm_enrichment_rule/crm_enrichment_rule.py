@@ -51,7 +51,12 @@ class CRMEnrichmentRule(Document):
 
 	def before_validate(self):
 		field = get_target_field(self.rule_type)
-		self.set(field, (self.get(field) or "").strip() or None)
+		target = (self.get(field) or "").strip() or None
+		# mapper.py matches social platforms (_SOCIAL_KEYS) by exact lowercase
+		# name; Industry is a Link, so its case is the linked record's.
+		if target and self.rule_type == "Social":
+			target = target.lower()
+		self.set(field, target)
 		self.rule_name = f"{self.rule_type}: {self.get_target()}"
 
 	def get_target(self):
