@@ -219,8 +219,10 @@ def get_reference_contact(doctype, name):
 	if contact:
 		return frappe.db.get_value("Contact", contact, ["full_name", "image"], as_dict=True)
 
-	deal = frappe.db.get_value("CRM Deal", name, ["lead_name", "organization"], as_dict=True)
-	deal_name = deal and (deal.lead_name or deal.organization)
+	deal = frappe.db.get_value(
+		"CRM Deal", name, ["lead_name", "organization", "organization_name"], as_dict=True
+	)
+	deal_name = deal and (deal.lead_name or deal.organization or deal.organization_name)
 	return deal_name and {"full_name": deal_name}
 
 
