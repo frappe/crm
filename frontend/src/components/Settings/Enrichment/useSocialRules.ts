@@ -1,14 +1,21 @@
 import { useEnrichmentRules } from './useEnrichmentRules'
+import type {
+  PatternDoc,
+  RowFields,
+  RuleDoc,
+  RuleValues,
+  SocialRow,
+} from './types'
 
 // The server lowercases platforms on save; this matches its case-insensitive
 // duplicate check.
-function normalizePlatform(value) {
+function normalizePlatform(value: string) {
   return (value || '').trim().toLowerCase()
 }
 
 // Only the first pattern is editable (every seeded rule has one); the rest are
 // kept aside untouched.
-function splitPatterns(patternRows) {
+function splitPatterns(patternRows: PatternDoc[]) {
   const [first, ...rest] = patternRows || []
 
   return {
@@ -18,7 +25,7 @@ function splitPatterns(patternRows) {
 }
 
 export function useSocialRules() {
-  const rules = useEnrichmentRules({
+  const rules = useEnrichmentRules<SocialRow>({
     ruleType: 'Social',
     fields: ['target_value'],
     buildRow,
@@ -35,7 +42,11 @@ export function useSocialRules() {
     },
   })
 
-  function buildRow(rule, patternRows, held) {
+  function buildRow(
+    rule: RuleDoc,
+    patternRows: PatternDoc[],
+    held: SocialRow | undefined,
+  ): RowFields<SocialRow> {
     const { pattern, hidden } = splitPatterns(patternRows)
 
     return {
@@ -49,7 +60,7 @@ export function useSocialRules() {
     }
   }
 
-  function newRow() {
+  function newRow(): RowFields<SocialRow> {
     return {
       platform: '',
       pattern: '',
@@ -61,13 +72,13 @@ export function useSocialRules() {
     }
   }
 
-  function clearErrors(row) {
+  function clearErrors(row: SocialRow) {
     row.platformError = ''
     row.patternError = ''
   }
 
   // Trimmed like Save sends it.
-  function isRowChanged(row) {
+  function isRowChanged(row: SocialRow) {
     return (
       row.platform.trim() !== row.savedPlatform ||
       row.pattern.trim() !== row.savedPattern
@@ -75,13 +86,13 @@ export function useSocialRules() {
   }
 
   // Case-insensitive like the server's duplicate check.
-  function platformTakenBy(platform, others) {
+  function platformTakenBy(platform: string, others: SocialRow[]) {
     return others.some(
       (other) => normalizePlatform(other.platform) === platform,
     )
   }
 
-  function validateRow(row, others) {
+  function validateRow(row: SocialRow, others: SocialRow[]) {
     const platform = normalizePlatform(row.platform)
     const pattern = row.pattern.trim()
 
@@ -102,7 +113,7 @@ export function useSocialRules() {
 
   // Untouched stored rows aren't checked: their problems aren't the admin's to
   // fix here.
-  function checkRow(row) {
+  function checkRow(row: SocialRow) {
     row.pattern = row.pattern.trim()
     if (!row.name || isRowChanged(row)) {
       clearErrors(row)
@@ -113,19 +124,19 @@ export function useSocialRules() {
     }
   }
 
-  function onPlatformInput(row, value) {
+  function onPlatformInput(row: SocialRow, value: string) {
     row.platform = value
     row.platformError = ''
     row.serverError = ''
   }
 
-  function onPatternInput(row, value) {
+  function onPatternInput(row: SocialRow, value: string) {
     row.pattern = value
     row.patternError = ''
     row.serverError = ''
   }
 
-  function toInsert(row) {
+  function toInsert(row: SocialRow): RuleValues {
     return {
       target_value: row.platform.trim(),
       match_scope: 'HTML',
@@ -133,8 +144,8 @@ export function useSocialRules() {
     }
   }
 
-  function toUpdate(row, doc) {
-    const values = { target_value: row.platform.trim() }
+  function toUpdate(row: SocialRow, doc: RuleDoc) {
+    const values: RuleValues = { target_value: row.platform.trim() }
 
     // Child row names are kept so set_value updates them in place instead of
     // re-creating them.
@@ -157,7 +168,7 @@ export function useSocialRules() {
     return values
   }
 
-  function isRowBlank(row) {
+  function isRowBlank(row: SocialRow) {
     return !row.name && !row.platform.trim() && !row.pattern.trim()
   }
 
@@ -169,3 +180,5 @@ export function useSocialRules() {
     onPatternInput,
   }
 }
+
+export type SocialRules = ReturnType<typeof useSocialRules>
