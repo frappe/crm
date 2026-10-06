@@ -7,6 +7,9 @@ from frappe.utils import get_datetime, get_system_timezone, now_datetime
 
 FB_GRAPH_API_BASE = "https://graph.facebook.com"
 FB_GRAPH_API_VERSION = "v23.0"
+# Meta compares whole seconds and its clock is not ours, so each run re-reads a few
+# minutes before the last one. Leads already imported are skipped, so this is safe.
+SYNC_OVERLAP_SECONDS = 5 * 60
 
 
 class DuplicateLeadError(ValidationError):
@@ -84,7 +87,7 @@ class FacebookSyncSource:
 
 		filtering = []
 		if self.last_synced_at:
-			timestamp = site_time_to_unix(self.last_synced_at)
+			timestamp = site_time_to_unix(self.last_synced_at) - SYNC_OVERLAP_SECONDS
 			filtering.append({"field": "time_created", "operator": "GREATER_THAN", "value": timestamp})
 			params["filtering"] = frappe.as_json(filtering)
 
