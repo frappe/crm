@@ -1,5 +1,12 @@
-import { call, useList } from 'frappe-ui'
-import { computed, reactive, ref } from 'vue'
+import { call, useList, type FrappeResourceError } from 'frappe-ui'
+import { computed, reactive, ref, type Ref } from 'vue'
+import type {
+  BaseRow,
+  EnrichmentRulesOptions,
+  PatternDoc,
+  RuleDoc,
+  RuleValues,
+} from './types'
 
 // Sites hold a few dozen rules, so there's no paging; past this the section
 // says only the first ones are shown.
@@ -7,7 +14,7 @@ export const RULE_LIMIT = 500
 
 // Shared load / dirty-tracking / save plumbing for one rule_type; callers
 // supply row shape and payloads.
-export function useEnrichmentRules({
+export function useEnrichmentRules<R extends BaseRow>({
   ruleType,
   fields = [],
   buildRow,
@@ -18,10 +25,10 @@ export function useEnrichmentRules({
   toUpdate,
   clearErrors,
   messages,
-}) {
+}: EnrichmentRulesOptions<R>) {
   // Patterns come with each rule as a child table. refetch is off so it only
   // fetches when load asks.
-  const list = useList({
+  const list = useList<RuleDoc>({
     doctype: 'CRM Enrichment Rule',
     filters: { rule_type: ruleType },
     fields: [
@@ -50,10 +57,12 @@ export function useEnrichmentRules({
   // hasNextPage starts true, so it only counts once a load has landed.
   const truncated = computed(() => loadedOnce.value && list.hasNextPage)
 
-  const savedRows = ref([])
+  // Cast because ref() would unwrap the generic R into a type R can't be
+  // assigned to.
+  const savedRows = ref([]) as Ref<R[]>
 
   // Kept apart from savedRows so a reload doesn't sweep away unsaved new rows.
-  const localRows = ref([])
+  const localRows = ref([]) as Ref<R[]>
 
   let localRowSeq = 0
 
@@ -65,11 +74,11 @@ export function useEnrichmentRules({
   ])
 
   // Shared by every rule_type, so tracked here, not in each isRowChanged.
-  function isEnabledChanged(row) {
+  function isEnabledChanged(row: R) {
     return row.enabled !== row.savedEnabled
   }
 
-  function isRowDirty(row) {
+  function isRowDirty(row: R) {
     if (!row.name || row.removed) return true
     return isRowChanged(row) || isEnabledChanged(row)
   }
@@ -86,15 +95,15 @@ export function useEnrichmentRules({
 
   // Social edits only the first pattern, so the order can't be left to the
   // server.
-  function sortByIdx(patternRows) {
-    return [...(patternRows || [])].sort((a, b) => a.idx - b.idx)
+  function sortByIdx(patternRows: PatternDoc[]) {
+    return [...(patternRows || [])].sort((a, b) => (a.idx ?? 0) - (b.idx ?? 0))
   }
 
-  function buildRows(rules) {
+  function buildRows(rules: RuleDoc[]) {
     loadedOnce.value = true
     // Carry unsaved edits, errors and deletes across the rebuild; rows Save
     // just wrote take the server's copy.
-    const carried = new Map()
+    const carried = new Map<string | null, R>()
     savedRows.value.forEach((row) => {
       if (row.committed) return
       if (isRowDirty(row) || row.serverError) carried.set(row.name, row)
@@ -110,7 +119,7 @@ export function useEnrichmentRules({
         removed: held ? held.removed : false,
         serverError: held ? held.serverError : '',
         ...buildRow(rule, sortByIdx(rule.patterns), held),
-      })
+      }) as R
     })
   }
 
@@ -124,11 +133,11 @@ export function useEnrichmentRules({
         removed: false,
         serverError: '',
         ...newRow(),
-      }),
+      }) as R,
     )
   }
 
-  function deleteRow(row) {
+  function deleteRow(row: R) {
     if (!row.name) {
       localRows.value = localRows.value.filter((other) => other !== row)
       return
@@ -136,7 +145,7 @@ export function useEnrichmentRules({
     row.removed = true
   }
 
-  function toggleEnabled(row) {
+  function toggleEnabled(row: R) {
     if (row.removed) return
     row.enabled = !row.enabled
     row.serverError = ''
@@ -162,11 +171,11 @@ export function useEnrichmentRules({
   }
 
   // The server's own text (duplicate target, bad regex) is shown as-is.
-  function serverMessage(err, fallback) {
-    return err?.messages?.[0] || fallback
+  function serverMessage(err: unknown, fallback: string) {
+    return (err as FrappeResourceError | undefined)?.messages?.[0] || fallback
   }
 
-  async function runDelete(row) {
+  async function runDelete(row: R) {
     row.serverError = ''
     try {
       await call('frappe.client.delete', {
@@ -189,11 +198,11 @@ export function useEnrichmentRules({
   // set_value merges only the given fields, so unsent ones (weight,
   // match_scope) keep their values.
   // The rule is re-read so hidden patterns are current, not from page load.
-  async function runUpdate(row) {
+  async function runUpdate(row: R) {
     try {
-      let values = {}
+      let values: RuleValues = {}
       if (isRowChanged(row)) {
-        const doc = await call('frappe.client.get', {
+        const doc = await call<RuleDoc>('frappe.client.get', {
           doctype: 'CRM Enrichment Rule',
           name: row.name,
         })
@@ -214,7 +223,7 @@ export function useEnrichmentRules({
   }
 
   // One document, so a failed insert leaves nothing half-created.
-  async function runInsert(row) {
+  async function runInsert(row: R) {
     try {
       const doc = await toInsert(row)
       await call('frappe.client.insert', {

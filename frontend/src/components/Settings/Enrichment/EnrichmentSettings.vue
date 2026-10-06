@@ -62,7 +62,7 @@
   </SettingsLayoutBase>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   Badge,
   Button,
@@ -70,6 +70,7 @@ import {
   LoadingIndicator,
   Tabs,
   toast,
+  type FrappeResourceError,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import GeneralTab from './GeneralTab.vue'
@@ -77,8 +78,9 @@ import RulesTab from './RulesTab.vue'
 import { useIndustryRules } from './useIndustryRules'
 import { useSocialRules } from './useSocialRules'
 import { computed, nextTick, reactive, ref, watch } from 'vue'
+import type { EnrichmentSettingsDoc } from './types'
 
-const settings = createDocumentResource({
+const settings = createDocumentResource<EnrichmentSettingsDoc>({
   doctype: 'CRM Enrichment Settings',
   name: 'CRM Enrichment Settings',
   auto: true,
@@ -98,7 +100,7 @@ const tabOptions = [
 const social = reactive(useSocialRules())
 const industry = reactive(useIndustryRules())
 
-const rulesTab = ref(null)
+const rulesTab = ref<InstanceType<typeof RulesTab> | null>(null)
 
 // reka mounts a panel a few ticks after its tab is selected, so focus once
 // the Rules tab's ref arrives instead of counting ticks.
@@ -119,7 +121,7 @@ const MAX_PAGES_LIMIT = 20
 
 // Held apart from the doc so a half-typed number never counts as stored; folded
 // in on Update.
-const maxPages = ref(undefined)
+const maxPages = ref<string | number | undefined>(undefined)
 const maxPagesError = ref('')
 
 watch(maxPages, () => (maxPagesError.value = ''))
@@ -153,8 +155,8 @@ const hasUnsavedChanges = computed(
 
 // Check fields come back as 0/1; writing a Boolean would leave the doc
 // permanently dirty.
-function toggle(fieldname, value) {
-  settings.doc[fieldname] = value ? 1 : 0
+function toggle(fieldname: 'enabled' | 'auto_enrich', value: boolean) {
+  settings.doc![fieldname] = value ? 1 : 0
 }
 
 // The input reports strings ('' when emptied); 0 would crawl nothing, and over
@@ -182,7 +184,7 @@ function validateMaxPages() {
 // saved values on screen.
 async function saveSettings() {
   if (pendingMaxPages.value !== undefined) {
-    settings.doc.max_pages = Number(pendingMaxPages.value)
+    settings.doc!.max_pages = Number(pendingMaxPages.value)
     maxPages.value = undefined
   }
 
@@ -191,7 +193,7 @@ async function saveSettings() {
   let ok = true
   await settings.save
     .submit(null, {
-      onError: (err) => {
+      onError: (err: FrappeResourceError) => {
         ok = false
         toast.error(err?.messages?.[0] || __('Could not save settings'))
       },

@@ -1,15 +1,22 @@
-import { call } from 'frappe-ui'
+import { call, type FrappeResourceError } from 'frappe-ui'
 import { useEnrichmentRules } from './useEnrichmentRules'
+import type {
+  IndustryRow,
+  PatternDoc,
+  RowFields,
+  RuleDoc,
+  RuleValues,
+} from './types'
 
 // Regexes (compiled verbatim, not escaped) and keywords with commas can't
 // round-trip the box.
-function isKeywordRow(row) {
+function isKeywordRow(row: PatternDoc) {
   return Number(row.is_regex) !== 1 && !String(row.pattern).includes(',')
 }
 
 // Parsed on load too, so the box shows what a save would store and an untouched
 // rule isn't edited.
-function splitPatterns(patternRows) {
+function splitPatterns(patternRows: PatternDoc[]) {
   const list = patternRows || []
 
   return {
@@ -25,9 +32,9 @@ function splitPatterns(patternRows) {
 
 // Deduped case-insensitively since config._compile_pattern uses re.I; the first
 // spelling wins.
-function parseKeywords(text) {
-  const seen = new Set()
-  const keywords = []
+function parseKeywords(text: string) {
+  const seen = new Set<string>()
+  const keywords: string[] = []
 
   ;(text || '').split(',').forEach((part) => {
     const keyword = part.trim()
@@ -44,7 +51,7 @@ function parseKeywords(text) {
 }
 
 export function useIndustryRules() {
-  const rules = useEnrichmentRules({
+  const rules = useEnrichmentRules<IndustryRow>({
     ruleType: 'Industry',
     fields: ['industry'],
     buildRow,
@@ -61,7 +68,11 @@ export function useIndustryRules() {
     },
   })
 
-  function buildRow(rule, patternRows, held) {
+  function buildRow(
+    rule: RuleDoc,
+    patternRows: PatternDoc[],
+    held: IndustryRow | undefined,
+  ): RowFields<IndustryRow> {
     const { keywords, hidden } = splitPatterns(patternRows)
 
     return {
@@ -77,7 +88,7 @@ export function useIndustryRules() {
     }
   }
 
-  function newRow() {
+  function newRow(): RowFields<IndustryRow> {
     return {
       industry: '',
       keywords: '',
@@ -90,14 +101,14 @@ export function useIndustryRules() {
     }
   }
 
-  function clearErrors(row) {
+  function clearErrors(row: IndustryRow) {
     row.industryError = ''
     row.keywordsError = ''
   }
 
   // Compared as Save would send it, so stray spaces or commas don't mark the
   // row dirty.
-  function isRowChanged(row) {
+  function isRowChanged(row: IndustryRow) {
     return (
       row.industry !== row.savedIndustry ||
       parseKeywords(row.keywords).join(', ') !== row.savedKeywords
@@ -105,7 +116,7 @@ export function useIndustryRules() {
   }
 
   // Case-insensitive like the server's duplicate check.
-  function industryTakenBy(industry, others) {
+  function industryTakenBy(industry: string, others: IndustryRow[]) {
     const folded = industry.toLowerCase()
 
     return others.some(
@@ -113,7 +124,7 @@ export function useIndustryRules() {
     )
   }
 
-  function validateRow(row, others) {
+  function validateRow(row: IndustryRow, others: IndustryRow[]) {
     if (!row.industry) {
       row.industryError = __('Industry is required')
     } else if (industryTakenBy(row.industry, others)) {
@@ -128,7 +139,7 @@ export function useIndustryRules() {
   }
 
   // Snaps the box to the stored form so the admin sees trimming and dedupe.
-  function checkRow(row) {
+  function checkRow(row: IndustryRow) {
     row.keywords = parseKeywords(row.keywords).join(', ')
     if (!row.name || isRowChanged(row)) {
       clearErrors(row)
@@ -139,7 +150,7 @@ export function useIndustryRules() {
     }
   }
 
-  function onIndustryChange(row, value) {
+  function onIndustryChange(row: IndustryRow, value: string | null) {
     row.industry = value || ''
     row.newIndustry = false
     row.industryError = ''
@@ -149,7 +160,11 @@ export function useIndustryRules() {
 
   // The CRM Industry is only inserted on Save, so abandoning the row leaves no
   // stray industry.
-  function onIndustryCreate(row, value, close) {
+  function onIndustryCreate(
+    row: IndustryRow,
+    value: string,
+    close?: () => void,
+  ) {
     const industry = (value || '').trim()
     if (!industry) return
     close?.()
@@ -161,7 +176,7 @@ export function useIndustryRules() {
     checkRow(row)
   }
 
-  function onKeywordsInput(row, value) {
+  function onKeywordsInput(row: IndustryRow, value: string) {
     row.keywords = value
     row.keywordsError = ''
     row.serverError = ''
@@ -169,19 +184,20 @@ export function useIndustryRules() {
 
   // DuplicateEntryError means the industry already exists (another row or
   // user), which is fine.
-  async function ensureIndustry(row) {
+  async function ensureIndustry(row: IndustryRow) {
     if (!row.newIndustry) return
     try {
       await call('frappe.client.insert', {
         doc: { doctype: 'CRM Industry', industry: row.industry },
       })
     } catch (err) {
-      if (err?.exc_type !== 'DuplicateEntryError') throw err
+      if ((err as FrappeResourceError)?.exc_type !== 'DuplicateEntryError')
+        throw err
     }
     row.newIndustry = false
   }
 
-  async function toInsert(row) {
+  async function toInsert(row: IndustryRow): Promise<RuleValues> {
     await ensureIndustry(row)
 
     return {
@@ -200,23 +216,28 @@ export function useIndustryRules() {
   }
 
   // weight is never sent, so an existing rule keeps its own.
-  async function toUpdate(row, doc) {
+  async function toUpdate(row: IndustryRow, doc: RuleDoc) {
     await ensureIndustry(row)
 
-    const values = { industry: row.industry }
+    const values: RuleValues = { industry: row.industry }
 
     const patternRows = doc.patterns || []
     // Reuse child rows so untouched keywords aren't dropped and re-created.
-    const existing = new Map(
+    const existing = new Map<string, PatternDoc>(
       patternRows.filter(isKeywordRow).map((entry) => [entry.pattern, entry]),
     )
-    const pick = ({ name, pattern, is_regex }) => ({ name, pattern, is_regex })
+    const pick = ({ name, pattern, is_regex }: PatternDoc): PatternDoc => ({
+      name,
+      pattern,
+      is_regex,
+    })
 
     values.patterns = [
-      ...parseKeywords(row.keywords).map((keyword) =>
-        existing.has(keyword)
-          ? pick(existing.get(keyword))
-          : { pattern: keyword, is_regex: 0 },
+      ...parseKeywords(row.keywords).map(
+        (keyword): PatternDoc =>
+          existing.has(keyword)
+            ? pick(existing.get(keyword)!)
+            : { pattern: keyword, is_regex: 0 },
       ),
       // Rows the box never owned go back as read, last, so typed keywords keep
       // their order.
@@ -226,7 +247,7 @@ export function useIndustryRules() {
     return values
   }
 
-  function isRowBlank(row) {
+  function isRowBlank(row: IndustryRow) {
     return !row.name && !row.industry && !row.keywords.trim()
   }
 
@@ -239,3 +260,5 @@ export function useIndustryRules() {
     onKeywordsInput,
   }
 }
+
+export type IndustryRules = ReturnType<typeof useIndustryRules>

@@ -40,7 +40,9 @@
             class="w-40 shrink-0"
             :class="{ [INVALID]: row.platformError }"
             :data-invalid="row.platformError ? '' : undefined"
-            @update:model-value="(value) => social.onPlatformInput(row, value)"
+            @update:model-value="
+              (value: string) => social.onPlatformInput(row, value)
+            "
             @blur="social.checkRow(row)"
           />
           <div class="flex-1 min-w-0">
@@ -53,7 +55,9 @@
               class="[&_input]:font-mono"
               :class="{ [INVALID]: row.patternError }"
               :data-invalid="row.patternError ? '' : undefined"
-              @update:model-value="(value) => social.onPatternInput(row, value)"
+              @update:model-value="
+                (value: string) => social.onPatternInput(row, value)
+              "
               @blur="social.checkRow(row)"
             />
             <Tooltip v-if="row.hidden.length" :text="row.hidden.join('  |  ')">
@@ -133,9 +137,13 @@
                 :placeholder="__('Industry')"
                 :disabled="industry.saving || row.removed"
                 @create="
-                  (value, close) => industry.onIndustryCreate(row, value, close)
+                  (value: string, close: () => void) =>
+                    industry.onIndustryCreate(row, value, close)
                 "
-                @change="(value) => industry.onIndustryChange(row, value)"
+                @change="
+                  (value: string | null) =>
+                    industry.onIndustryChange(row, value)
+                "
               />
             </div>
             <div v-if="row.newIndustry" class="mt-1 text-p-sm text-ink-gray-5">
@@ -151,7 +159,7 @@
               :class="{ [INVALID]: row.keywordsError }"
               :data-invalid="row.keywordsError ? '' : undefined"
               @update:model-value="
-                (value) => industry.onKeywordsInput(row, value)
+                (value: string) => industry.onKeywordsInput(row, value)
               "
               @blur="industry.checkRow(row)"
             />
@@ -196,20 +204,27 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button, FormControl, Switch, Tooltip } from 'frappe-ui'
-import { ref } from 'vue'
+import { ref, type Reactive } from 'vue'
 import Link from '@/components/Controls/Link.vue'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
+import type { BaseRow } from './types'
+import type { IndustryRules } from './useIndustryRules'
+import type { SocialRules } from './useSocialRules'
 
 // Rule state lives in the parent because reka-ui's TabsContent unmounts hidden
 // panels by default.
-const props = defineProps({
-  // The rules stay editable while enrichment is off; this only shows the note.
-  enabled: { type: Boolean, default: true },
-  social: { type: Object, required: true },
-  industry: { type: Object, required: true },
-})
+const props = withDefaults(
+  defineProps<{
+    // The rules stay editable while enrichment is off; this only shows the
+    // note.
+    enabled?: boolean
+    social: Reactive<SocialRules>
+    industry: Reactive<IndustryRules>
+  }>(),
+  { enabled: true },
+)
 
 // frappe-ui's Switch hovers an off track with a fixed gray-400, which goes
 // near-white in dark mode; use the themed equivalents instead.
@@ -225,9 +240,13 @@ const INVALID =
 // name yet goes by its position.
 // Every error is listed, since a border alone can't say what's wrong; save
 // failures mark no field, so they follow the field errors.
-function rowErrors(rows, label, fields) {
-  const fieldErrors = []
-  const serverErrors = []
+function rowErrors<R extends BaseRow>(
+  rows: R[],
+  label: (row: R) => string,
+  fields: Array<keyof R>,
+) {
+  const fieldErrors: string[] = []
+  const serverErrors: string[] = []
   rows.forEach((row, index) => {
     const name = label(row) || __('Row {0}', [index + 1])
     fields.forEach((field) => {
@@ -254,14 +273,14 @@ function industryErrors() {
   ])
 }
 
-const root = ref(null)
+const root = ref<HTMLElement | null>(null)
 
 // Called by the header Update when validation fails. The marker can land on
 // the wrapper or, through FormControl's attrs, on the input itself.
 function focusFirstError() {
-  const marked = root.value?.querySelector('[data-invalid]')
+  const marked = root.value?.querySelector<HTMLElement>('[data-invalid]')
   if (!marked) return
-  const field = marked.querySelector('input, button') || marked
+  const field = marked.querySelector<HTMLElement>('input, button') || marked
   field.scrollIntoView({ block: 'center' })
   field.focus({ preventScroll: true })
 }

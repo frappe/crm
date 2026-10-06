@@ -51,7 +51,9 @@
             min="1"
             :max="maxPagesLimit"
             class="w-24"
-            @update:model-value="(value) => emit('update:maxPages', value)"
+            @update:model-value="
+              (value: string | number) => emit('update:maxPages', value)
+            "
           />
           <ErrorMessage
             v-if="maxPagesError"
@@ -95,18 +97,28 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ErrorMessage, FormControl, Switch } from 'frappe-ui'
+import type { EnrichmentSettingsDoc } from './types'
 
 // Nothing saves here: the parent holds every change (even hidden ones) until
 // the header Update.
-defineProps({
-  doc: { type: Object, required: true },
-  // Held apart from doc until Update, so half-typed input isn't stored.
-  maxPages: { type: [String, Number], default: undefined },
-  maxPagesError: { type: String, default: '' },
-  maxPagesLimit: { type: Number, required: true },
-})
+withDefaults(
+  defineProps<{
+    doc: EnrichmentSettingsDoc
+    // Held apart from doc until Update, so half-typed input isn't stored.
+    maxPages?: string | number
+    maxPagesError?: string
+    maxPagesLimit: number
+  }>(),
+  {
+    maxPages: undefined,
+    maxPagesError: '',
+  },
+)
 
-const emit = defineEmits(['toggle', 'update:maxPages'])
+const emit = defineEmits<{
+  toggle: [fieldname: 'enabled' | 'auto_enrich', value: boolean]
+  'update:maxPages': [value: string | number]
+}>()
 </script>

@@ -53,28 +53,44 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Button, ErrorMessage, LoadingIndicator } from 'frappe-ui'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { RULE_LIMIT } from './useEnrichmentRules'
 
-defineProps({
-  title: { type: String, required: true },
-  addLabel: { type: String, required: true },
-  // Labels for the two input columns, e.g. ['Platform', 'Pattern'].
-  columns: { type: Array, required: true },
-  // Row errors (field checks and save failures), shown under the rows.
-  errors: { type: Array, default: () => [] },
-  loading: { type: Boolean, default: false },
-  error: { type: Object, default: null },
-  errorMessage: { type: String, default: '' },
-  count: { type: Number, default: 0 },
-  emptyName: { type: String, required: true },
-  emptyTitle: { type: String, default: '' },
-  emptyDescription: { type: String, default: '' },
-  emptyIcon: { type: String, default: 'file-text' },
-  truncated: { type: Boolean, default: false },
-})
+withDefaults(
+  defineProps<{
+    title: string
+    addLabel: string
+    // Labels for the two input columns, e.g. ['Platform', 'Pattern'].
+    columns: string[]
+    // Row errors (field checks and save failures), shown under the rows.
+    errors?: string[]
+    loading?: boolean
+    error?: { messages?: string[] } | null
+    errorMessage?: string
+    count?: number
+    emptyName: string
+    emptyTitle?: string
+    emptyDescription?: string
+    emptyIcon?: string
+    truncated?: boolean
+  }>(),
+  {
+    errors: () => [],
+    loading: false,
+    error: null,
+    errorMessage: '',
+    count: 0,
+    emptyTitle: '',
+    emptyDescription: '',
+    emptyIcon: 'file-text',
+    truncated: false,
+  },
+)
 
-const emit = defineEmits(['add', 'retry'])
+const emit = defineEmits<{
+  add: []
+  retry: []
+}>()
 </script>
