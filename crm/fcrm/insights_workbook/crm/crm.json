@@ -3,6 +3,11 @@
   "crm-deal-numbers": {
    "chart_type": "Number",
    "config": {
+    "date_column": {
+     "column_name": "created_on",
+     "data_type": "Date",
+     "dimension_name": "created_on"
+    },
     "filters": {
      "filters": [],
      "logical_operator": "And"
@@ -10,10 +15,18 @@
     "limit": 100,
     "number_column_options": [
      {
+      "comparison": {
+       "show": "change",
+       "source": "previous"
+      },
       "decimals": 0,
       "shorten": false
      },
      {
+      "comparison": {
+       "show": "delta",
+       "source": "previous"
+      },
       "decimals": 1,
       "shorten": true
      }
@@ -360,6 +373,11 @@
   "crm-lead-numbers": {
    "chart_type": "Number",
    "config": {
+    "date_column": {
+     "column_name": "created_on",
+     "data_type": "Date",
+     "dimension_name": "created_on"
+    },
     "filters": {
      "filters": [],
      "logical_operator": "And"
@@ -367,6 +385,10 @@
     "limit": 100,
     "number_column_options": [
      {
+      "comparison": {
+       "show": "change",
+       "source": "previous"
+      },
       "decimals": 0,
       "shorten": false
      }
@@ -552,6 +574,11 @@
   "crm-won-deal-numbers": {
    "chart_type": "Number",
    "config": {
+    "date_column": {
+     "column_name": "closed_date",
+     "data_type": "Date",
+     "dimension_name": "closed_date"
+    },
     "filters": {
      "filters": [],
      "logical_operator": "And"
@@ -559,20 +586,36 @@
     "limit": 100,
     "number_column_options": [
      {
+      "comparison": {
+       "show": "change",
+       "source": "previous"
+      },
       "decimals": 0,
       "shorten": false
      },
      {
+      "comparison": {
+       "show": "delta",
+       "source": "previous"
+      },
       "decimals": 1,
       "shorten": true
      },
      {
+      "comparison": {
+       "show": "delta",
+       "source": "previous"
+      },
       "decimals": 0,
       "negative_is_better": true,
       "shorten": false,
       "suffix": " days"
      },
      {
+      "comparison": {
+       "show": "delta",
+       "source": "previous"
+      },
       "decimals": 0,
       "negative_is_better": true,
       "shorten": false,
@@ -621,7 +664,7 @@
    "workbook": "crm"
   }
  },
- "creation": "2026-10-01 16:24:22.670585",
+ "creation": "2026-10-06 14:33:26.108420",
  "dashboards": {
   "crm": {
    "items": [
@@ -1026,7 +1069,7 @@
  "folders": [],
  "idx": 0,
  "is_standard": 1,
- "modified": "2026-10-01 16:24:29.332133",
+ "modified": "2026-10-06 14:33:46.916351",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "crm",
