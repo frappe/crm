@@ -1,6 +1,9 @@
+from zoneinfo import ZoneInfo
+
 import frappe
 from frappe.exceptions import ValidationError
 from frappe.integrations.utils import make_get_request
+from frappe.utils import get_datetime, get_system_timezone, now_datetime
 
 FB_GRAPH_API_BASE = "https://graph.facebook.com"
 FB_GRAPH_API_VERSION = "v23.0"
@@ -33,12 +36,17 @@ class FacebookSyncSource:
 		return get_fb_graph_api_url(endpoint)
 
 	def sync(self):
+		# leads that arrive while this run is busy are picked up by the next one
+		started_at = now_datetime()
 		leads = self.fetch_leads()
 		for lead in leads:
 			self.sync_single_lead(lead)
-		self.update_last_synced_at()
+		self.update_last_synced_at(started_at)
 
 	def sync_single_lead(self, lead, raise_exception=False):
+		if frappe.db.exists("CRM Lead", {"facebook_lead_id": lead["id"]}):
+			return
+
 		question_to_field_map = self.get_form_questions_mapping()
 		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
 		crm_lead_data = {
@@ -75,7 +83,7 @@ class FacebookSyncSource:
 
 		filtering = []
 		if self.last_synced_at:
-			timestamp = frappe.utils.data.get_timestamp(self.last_synced_at)
+			timestamp = site_time_to_unix(self.last_synced_at)
 			filtering.append({"field": "time_created", "operator": "GREATER_THAN", "value": timestamp})
 			params["filtering"] = frappe.as_json(filtering)
 
@@ -118,12 +126,12 @@ class FacebookSyncSource:
 			}
 		).insert(ignore_permissions=True)
 
-	def update_last_synced_at(self):
+	def update_last_synced_at(self, synced_at):
 		frappe.db.set_value(
 			"Lead Sync Source",
 			self.source_name or {"facebook_lead_form": self.form_id},
 			"last_synced_at",
-			frappe.utils.now(),
+			synced_at,
 		)
 
 	def get_source_name(self):
@@ -137,6 +145,11 @@ class FacebookSyncSource:
 		validation_filters["facebook_form_id"] = lead_data["facebook_form_id"]  # only for this campaign
 		if frappe.db.exists("CRM Lead", validation_filters):
 			raise DuplicateLeadError
+
+
+def site_time_to_unix(value) -> int:
+	"""Datetimes are stored in the site's time zone, Meta filters on Unix time."""
+	return int(get_datetime(value).replace(tzinfo=ZoneInfo(get_system_timezone())).timestamp())
 
 
 @frappe.whitelist()
