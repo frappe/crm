@@ -13,13 +13,15 @@
     <div v-if="loading" class="flex items-center justify-center py-10">
       <LoadingIndicator class="size-6" />
     </div>
-    <!-- Only with no rows: a failed reload keeps the rows up and toasts. -->
+    <!-- Only with no rows: a failed reload keeps the rows up and toasts.
+         useList's error text is "<ExcType>: …", so the section's own message
+         is shown instead. -->
     <div
       v-else-if="error && !count"
       class="flex flex-col items-center justify-center gap-3 py-10"
     >
       <div class="text-p-base text-ink-gray-6 text-center">
-        {{ error.messages?.[0] || errorMessage }}
+        {{ errorMessage }}
       </div>
       <Button :label="__('Retry')" @click="emit('retry')" />
     </div>
@@ -67,7 +69,7 @@ withDefaults(
     // Row errors (field checks and save failures), shown under the rows.
     errors?: string[]
     loading?: boolean
-    error?: { messages?: string[] } | null
+    error?: Error | null
     errorMessage?: string
     count?: number
     emptyName: string
