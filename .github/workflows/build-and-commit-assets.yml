@@ -1,0 +1,83 @@
+name: Build and Upload Assets
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'version-*'
+
+concurrency:
+  group: build-assets-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-assets:
+    name: Build assets and upload to release
+    runs-on: ubuntu-latest
+    env:
+      # Vite/esbuild builds of large SPAs can exceed Node's default heap and
+      # abort with "JavaScript heap out of memory" (exit 134) even when the
+      # runner has free RAM. Raise the old-space limit to be safe.
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: frappe/frappe
+          path: apps/frappe
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/checkout@v4
+        with:
+          path: apps/crm
+
+      - name: Create bench structure
+        run: |
+          mkdir -p sites
+          printf "frappe\ncrm\n" > sites/apps.txt
+          # frontend/src/socket imports socketio_port from this file at build time
+          echo '{"socketio_port": 9000}' > sites/common_site_config.json
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: yarn
+          cache-dependency-path: apps/frappe/yarn.lock
+
+      - name: Install frappe JS dependencies
+        working-directory: apps/frappe
+        run: yarn install --frozen-lockfile
+
+      - name: Install crm JS dependencies
+        working-directory: apps/crm
+        run: yarn install --frozen-lockfile
+
+      - name: Link node_modules into public/
+        working-directory: apps/frappe
+        run: ln -s "$PWD/node_modules" frappe/public/node_modules
+
+      - name: Build frappe bundles (production)
+        working-directory: apps/frappe
+        run: yarn run production
+
+      - name: Build crm SPA
+        working-directory: apps/crm
+        run: yarn build
+
+      - name: Package assets
+        run: |
+          tar czf crm-assets.tar.gz \
+            --exclude=node_modules --exclude=.gitkeep \
+            -C apps/crm/crm/public .
+
+      - name: Upload to rolling release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="assets-${GITHUB_REF_NAME//\//-}"
+          gh release create "$TAG" -R "$GITHUB_REPOSITORY" --prerelease --title "Assets: $GITHUB_REF_NAME" --notes "" 2>/dev/null || true
+          gh release upload "$TAG" -R "$GITHUB_REPOSITORY" crm-assets.tar.gz --clobber
