@@ -196,29 +196,32 @@ def parse_call_log(call):
 
 def get_call_contact(call, phone_number):
 	"""The lead or deal the call points to, or the best match for the number when it
-	points to neither. Two records can share a number, so the reference comes first."""
-	return get_reference_contact(
-		call.get("reference_doctype"), call.get("reference_docname")
-	) or get_contact_by_phone_number(phone_number)
+	points to neither. Two records can share a number, so once the call points to a
+	record the number is never used to guess who it was."""
+	doctype, name = call.get("reference_doctype"), call.get("reference_docname")
+	if doctype not in ("CRM Lead", "CRM Deal") or not name:
+		return get_contact_by_phone_number(phone_number)
+
+	if not frappe.has_permission(doctype, "read", name):
+		return {}
+
+	return get_reference_contact(doctype, name) or {}
 
 
 def get_reference_contact(doctype, name):
-	if not name:
-		return None
-
 	if doctype == "CRM Lead":
 		lead = frappe.db.get_value("CRM Lead", name, ["lead_name", "image"], as_dict=True)
-		if lead and lead.lead_name:
-			return {"full_name": lead.lead_name, "image": lead.image}
+		return lead and {"full_name": lead.lead_name, "image": lead.image}
 
-	if doctype == "CRM Deal":
-		contact = frappe.db.get_value(
-			"CRM Contacts", {"parenttype": "CRM Deal", "parent": name, "is_primary": 1}, "contact"
-		)
-		if contact:
-			return frappe.db.get_value("Contact", contact, ["full_name", "image"], as_dict=True)
+	contact = frappe.db.get_value(
+		"CRM Contacts", {"parenttype": "CRM Deal", "parent": name, "is_primary": 1}, "contact"
+	)
+	if contact:
+		return frappe.db.get_value("Contact", contact, ["full_name", "image"], as_dict=True)
 
-	return None
+	deal = frappe.db.get_value("CRM Deal", name, ["lead_name", "organization"], as_dict=True)
+	deal_name = deal and (deal.lead_name or deal.organization)
+	return deal_name and {"full_name": deal_name}
 
 
 @frappe.whitelist()
