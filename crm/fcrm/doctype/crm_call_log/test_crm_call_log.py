@@ -304,17 +304,7 @@ class TestCRMCallLog(IntegrationTestCase):
 		).insert()
 		call = create_test_call_log(reference_doctype="CRM Lead", reference_docname=lead.name)
 
-		if not frappe.db.exists("User", "sales-user@example.com"):
-			frappe.get_doc(
-				{
-					"doctype": "User",
-					"email": "sales-user@example.com",
-					"first_name": "Sales",
-					"roles": [{"role": "Sales User"}],
-				}
-			).insert(ignore_permissions=True)
-
-		frappe.set_user("sales-user@example.com")
+		frappe.set_user(create_sales_user())
 		try:
 			result = get_call_log(call.name)
 		finally:
@@ -391,6 +381,41 @@ class TestCRMCallLog(IntegrationTestCase):
 		call = create_test_call_log(type="Outgoing", caller="Administrator", to="+919876500002")
 
 		self.assertEqual(get_call_log(call.name)["_receiver"]["label"], "Number Lead")
+
+	def test_call_log_hides_referenced_lead_name_user_cannot_read(self):
+		referenced = create_test_lead("Referenced Lead", "+919876500004")
+		create_test_lead("Other Lead", "+919876500004")
+		call = create_test_call_log(
+			type="Outgoing",
+			caller="Administrator",
+			to="+919876500004",
+			reference_doctype="CRM Lead",
+			reference_docname=referenced.name,
+		)
+
+		frappe.set_user(create_sales_user())
+		try:
+			result = get_call_log(call.name)
+		finally:
+			frappe.set_user("Administrator")
+
+		self.assertEqual(result["_receiver"]["label"], "Unknown")
+
+	def test_call_log_names_deal_without_contacts_from_the_deal(self):
+		org = frappe.get_doc({"doctype": "CRM Organization", "organization_name": "Referenced Org"}).insert()
+		deal = frappe.get_doc(
+			{"doctype": "CRM Deal", "organization": org.name, "deal_owner": "Administrator"}
+		).insert()
+		create_test_lead("Other Lead", "+919876500005")
+		call = create_test_call_log(
+			type="Outgoing",
+			caller="Administrator",
+			to="+919876500005",
+			reference_doctype="CRM Deal",
+			reference_docname=deal.name,
+		)
+
+		self.assertEqual(get_call_log(call.name)["_receiver"]["label"], "Referenced Org")
 
 	def test_get_call_log_prefers_reference_over_linked_lead(self):
 		referenced = create_test_lead("Referenced Lead", "+919876500003")
@@ -582,6 +607,19 @@ class TestCRMCallLog(IntegrationTestCase):
 		settings.get_password.return_value = "exotel_token"
 		with patch("crm.integrations.api.frappe.get_single", return_value=settings):
 			self.assertEqual(_get_recording_credentials("Exotel"), ("exotel_key", "exotel_token"))
+
+
+def create_sales_user():
+	if not frappe.db.exists("User", "sales-user@example.com"):
+		frappe.get_doc(
+			{
+				"doctype": "User",
+				"email": "sales-user@example.com",
+				"first_name": "Sales",
+				"roles": [{"role": "Sales User"}],
+			}
+		).insert(ignore_permissions=True)
+	return "sales-user@example.com"
 
 
 def create_test_lead(first_name, mobile_no):
