@@ -417,6 +417,13 @@ class TestCRMCallLog(IntegrationTestCase):
 
 		self.assertEqual(get_call_log(call.name)["_receiver"]["label"], "Referenced Org")
 
+	def test_call_log_names_deal_from_typed_organization_name(self):
+		deal = frappe.get_doc({"doctype": "CRM Deal", "deal_owner": "Administrator"}).insert()
+		deal.db_set("organization_name", "Typed Org")
+		call = create_test_call_log(reference_doctype="CRM Deal", reference_docname=deal.name)
+
+		self.assertEqual(get_call_log(call.name)["_caller"]["label"], "Typed Org")
+
 	def test_get_call_log_prefers_reference_over_linked_lead(self):
 		referenced = create_test_lead("Referenced Lead", "+919876500003")
 		other = create_test_lead("Other Lead", "+919876500003")
