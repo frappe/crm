@@ -1,55 +1,9 @@
 import { useEnrichmentRules } from './useEnrichmentRules'
 
-// Not a whitelist; only these map to CRM fields (_SOCIAL_KEYS in mapper.py).
-// Patterns mirror SOCIAL_PATTERNS in crm/domain_enrichment/install.py; keep
-// them in sync.
-export const SOCIAL_PLATFORMS = [
-  {
-    label: 'LinkedIn',
-    value: 'linkedin',
-    pattern: 'linkedin\\.com/(company|in|school)/',
-  },
-  {
-    label: 'X (Twitter)',
-    value: 'twitter',
-    pattern: '(twitter\\.com|x\\.com)/[A-Za-z0-9_]+',
-  },
-  {
-    label: 'GitHub',
-    value: 'github',
-    pattern: 'github\\.com/[A-Za-z0-9_.-]+',
-  },
-  {
-    label: 'Facebook',
-    value: 'facebook',
-    pattern: 'facebook\\.com/[A-Za-z0-9_.\\-/]+',
-  },
-  {
-    label: 'Instagram',
-    value: 'instagram',
-    pattern: 'instagram\\.com/[A-Za-z0-9_.]+',
-  },
-  {
-    label: 'YouTube',
-    value: 'youtube',
-    pattern: 'youtube\\.com/(channel/|c/|user/|@)[A-Za-z0-9_.\\-]+',
-  },
-]
-
-// mapper.py keys profiles by exact lowercase name, so "LinkedIn " from Desk is
-// the same platform.
-export function normalizePlatform(value) {
+// The server lowercases platforms on save; this matches its case-insensitive
+// duplicate check.
+function normalizePlatform(value) {
   return (value || '').trim().toLowerCase()
-}
-
-export function isKnownPlatform(platform) {
-  const value = normalizePlatform(platform)
-  return SOCIAL_PLATFORMS.some((option) => option.value === value)
-}
-
-function defaultPattern(platform) {
-  const value = normalizePlatform(platform)
-  return SOCIAL_PLATFORMS.find((option) => option.value === value)?.pattern
 }
 
 // Only the first pattern is editable (every seeded rule has one); the rest are
@@ -112,8 +66,7 @@ export function useSocialRules() {
     row.patternError = ''
   }
 
-  // Trimmed like Save sends it; platform isn't normalized so Desk's "LinkedIn"
-  // isn't an edit until touched.
+  // Trimmed like Save sends it.
   function isRowChanged(row) {
     return (
       row.platform.trim() !== row.savedPlatform ||
@@ -160,29 +113,10 @@ export function useSocialRules() {
     }
   }
 
-  // Swap in the new default only while the pattern is still the old one, so
-  // custom regexes survive.
   function onPlatformInput(row, value) {
-    const pattern = row.pattern.trim()
-    if (!pattern || pattern === defaultPattern(row.platform)) {
-      row.pattern = defaultPattern(value) || ''
-      row.patternError = ''
-    }
-
     row.platform = value
     row.platformError = ''
     row.serverError = ''
-  }
-
-  function onPlatformCreate(row, value, close) {
-    const platform = normalizePlatform(value)
-    if (!platform) return
-
-    onPlatformInput(row, platform)
-    checkRow(row)
-    // The pattern is still checked on Save.
-    if (!row.pattern) row.patternError = ''
-    close()
   }
 
   function onPatternInput(row, value) {
@@ -192,18 +126,15 @@ export function useSocialRules() {
   }
 
   function toInsert(row) {
-    const platform = normalizePlatform(row.platform)
-
     return {
-      target_value: platform,
+      target_value: row.platform.trim(),
       match_scope: 'HTML',
       patterns: [{ pattern: row.pattern.trim(), is_regex: 1 }],
     }
   }
 
   function toUpdate(row, doc) {
-    const platform = normalizePlatform(row.platform)
-    const values = { target_value: platform }
+    const values = { target_value: row.platform.trim() }
 
     // Child row names are kept so set_value updates them in place instead of
     // re-creating them.
@@ -235,7 +166,6 @@ export function useSocialRules() {
     isRowBlank,
     checkRow,
     onPlatformInput,
-    onPlatformCreate,
     onPatternInput,
   }
 }

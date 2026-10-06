@@ -88,3 +88,9 @@ class IntegrationTestCRMEnrichmentRule(IntegrationTestCase):
 		rule = self._rule(target=" spaced ").insert()
 		self.assertEqual(rule.target_value, "spaced")
 		self.assertEqual(rule.rule_name, "Social: spaced")
+
+	def test_social_target_is_lowercased(self):
+		# mapper.py matches platforms by lowercase name, so Desk and the UI must agree.
+		rule = self._rule(target=" LinkedIn-Test ").insert()
+		self.assertEqual(rule.target_value, "linkedin-test")
+		self.assertEqual(rule.rule_name, "Social: linkedin-test")
