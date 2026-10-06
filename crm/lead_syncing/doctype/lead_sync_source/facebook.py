@@ -48,8 +48,7 @@ class FacebookSyncSource:
 			return
 
 		question_to_field_map = self.get_form_questions_mapping()
-		# Meta sends some fields, like inbox_url, without any values
-		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"] if item.get("values")}
+		lead_data = {item["name"]: item["values"][0] for item in lead["field_data"]}
 		crm_lead_data = {
 			question_to_field_map.get(k): v for k, v in lead_data.items() if k in question_to_field_map
 		}

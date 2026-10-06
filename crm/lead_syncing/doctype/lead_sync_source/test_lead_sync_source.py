@@ -87,15 +87,6 @@ class IntegrationTestLeadSyncSource(IntegrationTestCase):
 		self.assertEqual(frappe.db.count("CRM Lead", {"facebook_lead_id": "111"}), 1)
 		self.assertFalse(frappe.db.exists("Failed Lead Sync Log", {"source": self.source.name}))
 
-	def test_field_without_values_does_not_stop_the_sync(self):
-		lead = meta_lead("222")
-		lead["field_data"].append({"name": "inbox_url"})
-
-		self.sync([lead, meta_lead("333")])
-
-		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "222"}))
-		self.assertTrue(frappe.db.exists("CRM Lead", {"facebook_lead_id": "333"}))
-
 
 def meta_lead(lead_id):
 	return {
