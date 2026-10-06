@@ -19,6 +19,7 @@
         @done="onEnriched"
       />
       <Link
+        v-if="activeTab === 'contacts'"
         value=""
         doctype="Contact"
         :filters="{ company_name: ['!=', props.organizationId] }"
