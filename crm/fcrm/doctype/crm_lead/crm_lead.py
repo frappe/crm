@@ -5,7 +5,10 @@ import json
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import _add as assign
+try:
+	from frappe.desk.form.assign_to import _add as assign
+except ImportError:
+	from frappe.desk.form.assign_to import add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
