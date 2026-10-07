@@ -1,14 +1,19 @@
 import {
+  DARK_SURFACE,
   parseRgb,
+  toCss,
+  contrast,
   invertLightness,
-  isUnreadableOnDark,
-  isTooLightForDark,
+  darkModeBackground,
+  darkModeText,
 } from '@/utils/emailColors'
+
+const rgb = (r, g, b, a = 1) => ({ r, g, b, a })
 
 describe('parseRgb', () => {
   it('reads computed rgb and rgba values', () => {
-    expect(parseRgb('rgb(34, 34, 34)')).toEqual({ r: 34, g: 34, b: 34, a: 1 })
-    expect(parseRgb('rgba(0, 0, 0, 0)')).toEqual({ r: 0, g: 0, b: 0, a: 0 })
+    expect(parseRgb('rgb(34, 34, 34)')).toEqual(rgb(34, 34, 34))
+    expect(parseRgb('rgba(0, 0, 0, 0)')).toEqual(rgb(0, 0, 0, 0))
   })
 
   it('returns null for anything else', () => {
@@ -18,58 +23,78 @@ describe('parseRgb', () => {
   })
 })
 
+describe('toCss', () => {
+  it('rounds channels and keeps partial transparency', () => {
+    expect(toCss(rgb(10.4, 20.6, 30))).toBe('rgb(10, 21, 30)')
+    expect(toCss(rgb(0, 0, 0, 0.5))).toBe('rgba(0, 0, 0, 0.5)')
+  })
+})
+
 describe('invertLightness', () => {
   it('turns black into white and dark gray into light gray', () => {
-    expect(invertLightness({ r: 0, g: 0, b: 0, a: 1 })).toBe(
-      'rgb(255, 255, 255)',
-    )
-    expect(invertLightness({ r: 34, g: 34, b: 34, a: 1 })).toBe(
-      'rgb(221, 221, 221)',
-    )
+    expect(invertLightness(rgb(0, 0, 0))).toEqual(rgb(255, 255, 255))
+    expect(invertLightness(rgb(34, 34, 34))).toEqual(rgb(221, 221, 221))
   })
 
   it('keeps the hue of colored text', () => {
-    expect(invertLightness({ r: 0, g: 0, b: 128, a: 1 })).toBe(
-      'rgb(127, 127, 255)',
-    )
-  })
-
-  it('keeps partial transparency', () => {
-    expect(invertLightness({ r: 0, g: 0, b: 0, a: 0.5 })).toBe(
-      'rgba(255, 255, 255, 0.5)',
-    )
+    expect(invertLightness(rgb(0, 0, 128))).toEqual(rgb(127, 127, 255))
   })
 })
 
-describe('isUnreadableOnDark', () => {
-  it('flags the dark text colors mail clients write', () => {
-    expect(isUnreadableOnDark(parseRgb('rgb(0, 0, 0)'))).toBe(true)
-    expect(isUnreadableOnDark(parseRgb('rgb(34, 34, 34)'))).toBe(true)
-    expect(isUnreadableOnDark(parseRgb('rgb(0, 0, 128)'))).toBe(true)
+describe('darkModeText', () => {
+  it('lightens the dark text colors mail clients write', () => {
+    expect(toCss(darkModeText(rgb(0, 0, 0)))).toBe('rgb(255, 255, 255)')
+    expect(toCss(darkModeText(rgb(34, 34, 34)))).toBe('rgb(221, 221, 221)')
   })
 
-  it('leaves light and bright colors alone', () => {
-    expect(isUnreadableOnDark(parseRgb('rgb(255, 255, 255)'))).toBe(false)
-    expect(isUnreadableOnDark(parseRgb('rgb(255, 0, 0)'))).toBe(false)
+  it('lightens pure blue, which flipping alone leaves unchanged', () => {
+    const blue = rgb(0, 0, 255)
+    const lighter = darkModeText(blue)
+    expect(contrast(lighter, DARK_SURFACE)).toBeGreaterThanOrEqual(3)
+    expect(lighter.b).toBe(255)
+  })
+
+  it('leaves readable colors alone', () => {
+    expect(darkModeText(rgb(255, 255, 255))).toBeNull()
+    expect(darkModeText(rgb(255, 0, 0))).toBeNull()
+    expect(darkModeText(rgb(124, 124, 124))).toBeNull()
+  })
+
+  it('keeps black text on a mid gray background it already reads on', () => {
+    expect(darkModeText(rgb(0, 0, 0), rgb(153, 153, 153))).toBeNull()
+  })
+
+  it('lightens black text whose light background turns dark', () => {
+    const yellow = darkModeBackground(rgb(255, 255, 0))
+    const text = darkModeText(rgb(0, 0, 0), yellow)
+    expect(contrast(text, yellow)).toBeGreaterThanOrEqual(3)
   })
 
   it('ignores fully transparent colors', () => {
-    expect(isUnreadableOnDark(parseRgb('rgba(0, 0, 0, 0)'))).toBe(false)
+    expect(darkModeText(rgb(0, 0, 0, 0))).toBeNull()
   })
 })
 
-describe('isTooLightForDark', () => {
-  it('flags white and pale backgrounds', () => {
-    expect(isTooLightForDark(parseRgb('rgb(255, 255, 255)'))).toBe(true)
-    expect(isTooLightForDark(parseRgb('rgb(255, 255, 0)'))).toBe(true)
+describe('darkModeBackground', () => {
+  it('darkens white and pale backgrounds', () => {
+    expect(toCss(darkModeBackground(rgb(255, 255, 255)))).toBe('rgb(0, 0, 0)')
+    const cream = darkModeBackground(rgb(255, 255, 230))
+    expect(contrast(cream, rgb(255, 255, 255))).toBeGreaterThan(4.5)
+  })
+
+  it('darkens pure yellow, which flipping alone leaves unchanged', () => {
+    const yellow = rgb(255, 255, 0)
+    expect(contrast(darkModeBackground(yellow), DARK_SURFACE)).toBeLessThan(
+      contrast(yellow, DARK_SURFACE),
+    )
   })
 
   it('leaves dark and mid-tone backgrounds alone', () => {
-    expect(isTooLightForDark(parseRgb('rgb(30, 30, 30)'))).toBe(false)
-    expect(isTooLightForDark(parseRgb('rgb(74, 144, 226)'))).toBe(false)
+    expect(darkModeBackground(rgb(30, 30, 30))).toBeNull()
+    expect(darkModeBackground(rgb(153, 153, 153))).toBeNull()
   })
 
   it('ignores the transparent default', () => {
-    expect(isTooLightForDark(parseRgb('rgba(0, 0, 0, 0)'))).toBe(false)
+    expect(darkModeBackground(rgb(0, 0, 0, 0))).toBeNull()
   })
 })
