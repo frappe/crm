@@ -34,6 +34,11 @@ export function contrast(a, b) {
   return (light + 0.05) / (dark + 0.05)
 }
 
+export function blend(top, bottom) {
+  const mix = (channel) => top[channel] * top.a + bottom[channel] * (1 - top.a)
+  return { r: mix('r'), g: mix('g'), b: mix('b'), a: 1 }
+}
+
 // Shifting every channel by the same amount keeps hue and saturation, and this
 // shift moves the lightness from L to 1 - L: black turns white, navy turns light blue.
 export function invertLightness({ r, g, b, a }) {
