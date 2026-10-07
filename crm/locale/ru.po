@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-04 14:56+0000\n"
-"PO-Revision-Date: 2026-10-06 02:38\n"
+"PO-Revision-Date: 2026-10-07 02:35\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Russian\n"
 "MIME-Version: 1.0\n"
@@ -4419,7 +4419,7 @@ msgstr "Репозиторий GitHub"
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:564
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1031
 msgid "Go Back"
-msgstr "Назад"
+msgstr "Вернуться"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:157
 msgid "Go to Invite Page"
