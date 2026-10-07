@@ -599,12 +599,13 @@ def get_records_based_on_order(doctype, rows, filters, page_length, order):
 
 
 @frappe.whitelist()
-def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_permissions: bool = False):
+def remove_assignments(doctype: str, name: str, assignees: str | list):
 	assignees = frappe.parse_json(assignees)
 
 	if not assignees:
 		return
 
+	frappe.get_doc(doctype, name).check_permission("write")
 	for assign_to in assignees:
 		set_status(
 			doctype,
@@ -612,7 +613,7 @@ def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_pe
 			todo=None,
 			assign_to=assign_to,
 			status="Cancelled",
-			ignore_permissions=ignore_permissions,
+			ignore_permissions=True,
 		)
 
 
@@ -625,6 +626,11 @@ def add_seen(doctype: str, name: str):
 
 @frappe.whitelist()
 def get_assigned_users(doctype: str, name: str | int, default_assigned_to: str | None = None):
+	frappe.get_doc(doctype, name).check_permission("read")
+	return get_assignees(doctype, name, default_assigned_to)
+
+
+def get_assignees(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",
 		fields=["allocated_to"],
@@ -700,6 +706,15 @@ def get_linked_docs_of_document(doctype: str, docname: str):
 	except frappe.DoesNotExistError:
 		return []
 
+	doc.check_permission("read")
+	return [
+		d
+		for d in get_linked_docs_data(doc)
+		if frappe.has_permission(d["reference_doctype"], "read", d["reference_docname"])
+	]
+
+
+def get_linked_docs_data(doc):
 	linked_docs = get_linked_docs(doc)
 	dynamic_linked_docs = get_dynamic_linked_docs(doc)
 
@@ -843,7 +858,7 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 				frappe.log_error(f"Document {doctype} {doc} does not exist", "Bulk Delete Error")
 				continue
 
-			linked_docs = get_linked_docs_of_document(doctype, doc)
+			linked_docs = get_linked_docs_data(frappe.get_doc(doctype, doc))
 			for linked_doc in linked_docs:
 				if not linked_doc.get("reference_doctype") or not linked_doc.get("reference_docname"):
 					continue
