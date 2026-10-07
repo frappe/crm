@@ -8,6 +8,15 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useColorScheme } from 'frappe-ui'
+import {
+  DARK_SURFACE,
+  parseRgb,
+  toCss,
+  blend,
+  darkModeBackground,
+  darkModeText,
+} from '@/utils/emailColors'
 import emailContentStyles from './emailContent.css?inline'
 
 const props = defineProps({
@@ -112,6 +121,90 @@ const htmlContent = `
 </html>
 `
 
+const { resolvedColorScheme } = useColorScheme()
+
+const darkModeColors = []
+
+function applyColorScheme() {
+  const html = iframeRef.value?.contentDocument?.documentElement
+  if (!html) return
+  html.setAttribute('data-theme', resolvedColorScheme.value)
+
+  const dark = resolvedColorScheme.value === 'dark'
+  for (const { el, property, original, darkColor } of darkModeColors) {
+    if (dark) el.style.setProperty(property, darkColor, 'important')
+    else if (original.value)
+      el.style.setProperty(property, original.value, original.priority)
+    else el.style.removeProperty(property)
+  }
+}
+
+watch(resolvedColorScheme, applyColorScheme)
+
+const BORDER_SIDES = ['top', 'right', 'bottom', 'left']
+
+// Runs once while the iframe is still in light mode, so computed colors are the
+// email's own. Inherited text is checked too wherever the background changes.
+function collectDarkModeColors(emailContent) {
+  darkModeColors.length = 0
+  const view = emailContent.ownerDocument.defaultView
+  const darkBackgrounds = new Map([[emailContent, DARK_SURFACE]])
+
+  function backgroundInDarkMode(el) {
+    if (!darkBackgrounds.has(el)) {
+      const own = parseRgb(view.getComputedStyle(el).backgroundColor)
+      const behind = backgroundInDarkMode(el.parentElement)
+      const visible = own?.a > 0 ? darkModeBackground(own) ?? own : null
+      darkBackgrounds.set(el, visible ? blend(visible, behind) : behind)
+    }
+    return darkBackgrounds.get(el)
+  }
+
+  function add(el, property, darkColor) {
+    darkModeColors.push({
+      el,
+      property,
+      darkColor: toCss(darkColor),
+      original: {
+        value: el.style.getPropertyValue(property),
+        priority: el.style.getPropertyPriority(property),
+      },
+    })
+  }
+
+  for (const el of emailContent.querySelectorAll(
+    '[style], font[color], [bgcolor]',
+  )) {
+    const computed = view.getComputedStyle(el)
+    const background = backgroundInDarkMode(el)
+    let backgroundChanged = false
+
+    if (el.style.backgroundColor || el.getAttribute('bgcolor')) {
+      const original = parseRgb(computed.backgroundColor)
+      const dark = original && darkModeBackground(original)
+      if (dark) {
+        add(el, 'background-color', dark)
+        backgroundChanged = true
+      }
+    }
+
+    if (el.style.color || el.getAttribute('color') || backgroundChanged) {
+      const original = parseRgb(computed.color)
+      const dark = original && darkModeText(original, background)
+      if (dark) add(el, 'color', dark)
+    }
+
+    for (const side of BORDER_SIDES) {
+      if (!el.style.getPropertyValue(`border-${side}-style`)) continue
+      const original = parseRgb(
+        computed.getPropertyValue(`border-${side}-color`),
+      )
+      const dark = original && darkModeText(original, background)
+      if (dark) add(el, `border-${side}-color`, dark)
+    }
+  }
+}
+
 watch(iframeRef, (iframe) => {
   if (iframe) {
     iframe.onload = () => {
@@ -119,8 +212,8 @@ watch(iframeRef, (iframe) => {
         iframe.contentWindow.document.querySelector('.email-content')
       let parent = emailContent.closest('html')
 
-      let theme = document.documentElement.getAttribute('data-theme')
-      parent.setAttribute('data-theme', theme)
+      collectDarkModeColors(emailContent)
+      applyColorScheme()
 
       iframe.style.height = parent.offsetHeight + 1 + 'px'
 
