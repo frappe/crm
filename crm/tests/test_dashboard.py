@@ -450,7 +450,9 @@ class TestDashboard(IntegrationTestCase):
 	def test_status_change_counts_deduplicate_reentered_stages(self):
 		"""Re-entering a stage (Won -> Negotiation -> Won) must not double-count the deal"""
 		# Baseline counts before adding the toggled deal
-		baseline = {r["stage"]: r["count"] for r in get_deal_status_change_counts(self.from_date, self.to_date)}
+		baseline = {
+			r["stage"]: r["count"] for r in get_deal_status_change_counts(self.from_date, self.to_date)
+		}
 
 		deal = frappe.get_doc(
 			{
