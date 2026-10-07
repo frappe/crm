@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-04 14:56+0000\n"
-"PO-Revision-Date: 2026-10-06 02:39\n"
+"PO-Revision-Date: 2026-10-07 02:35\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Swedish\n"
 "MIME-Version: 1.0\n"
@@ -7845,7 +7845,7 @@ msgstr "Kör {0}"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Running"
-msgstr "Behandlar"
+msgstr "Exekverar"
 
 #. Label of the sla_tab (Tab Break) field in DocType 'CRM Deal'
 #. Label of the sla (Link) field in DocType 'CRM Deal'
