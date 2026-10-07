@@ -10,10 +10,11 @@
 import { ref, watch } from 'vue'
 import { useColorScheme } from 'frappe-ui'
 import {
+  DARK_SURFACE,
   parseRgb,
-  invertLightness,
-  isUnreadableOnDark,
-  isTooLightForDark,
+  toCss,
+  darkModeBackground,
+  darkModeText,
 } from '@/utils/emailColors'
 import emailContentStyles from './emailContent.css?inline'
 
@@ -128,38 +129,58 @@ function applyColorScheme() {
 
 watch(resolvedColorScheme, applyColorScheme)
 
-const BORDER_SIDES = ['Top', 'Right', 'Bottom', 'Left']
+const BORDER_SIDES = ['top', 'right', 'bottom', 'left']
 
 function markColorsForDarkMode(emailContent) {
   const view = emailContent.ownerDocument.defaultView
-  const elements = emailContent.querySelectorAll(
-    '[style*="color"], [style*="background"], [style*="border"], font[color], [bgcolor]',
-  )
-  for (const el of elements) {
-    const computed = view.getComputedStyle(el)
 
-    if (el.style.color || el.getAttribute('color')) {
-      const color = parseRgb(computed.color)
-      if (color && isUnreadableOnDark(color)) {
-        el.style.setProperty('--dark-color', invertLightness(color))
-        el.setAttribute('data-dark-color', '')
-      }
+  function backgroundInDarkMode(el) {
+    for (let node = el; node !== emailContent; node = node.parentElement) {
+      const background = parseRgb(view.getComputedStyle(node).backgroundColor)
+      if (background?.a > 0) return darkModeBackground(background) ?? background
     }
+    return DARK_SURFACE
+  }
+
+  // Our dark mode rules are !important, which only beats a plain inline value.
+  // Light mode is unaffected: a plain inline value still beats the prose styles.
+  function dropImportant(el, property) {
+    if (el.style.getPropertyPriority(property)) {
+      el.style.setProperty(property, el.style.getPropertyValue(property))
+    }
+  }
+
+  function mark(el, property, darkColor) {
+    dropImportant(el, property)
+    el.style.setProperty(`--dark-${property}`, toCss(darkColor))
+    el.setAttribute(`data-dark-${property}`, '')
+  }
+
+  for (const el of emailContent.querySelectorAll(
+    '[style], font[color], [bgcolor]',
+  )) {
+    const computed = view.getComputedStyle(el)
+    const background = backgroundInDarkMode(el)
 
     if (el.style.backgroundColor || el.getAttribute('bgcolor')) {
-      const background = parseRgb(computed.backgroundColor)
-      if (background && isTooLightForDark(background)) {
-        el.style.setProperty('--dark-background', invertLightness(background))
-        el.setAttribute('data-dark-background', '')
-      }
+      const original = parseRgb(computed.backgroundColor)
+      const dark = original && darkModeBackground(original)
+      if (dark) mark(el, 'background-color', dark)
     }
 
-    const border = BORDER_SIDES.filter((side) => el.style[`border${side}Style`])
-      .map((side) => parseRgb(computed[`border${side}Color`]))
-      .find((color) => color && isUnreadableOnDark(color))
-    if (border) {
-      el.style.setProperty('--dark-border', invertLightness(border))
-      el.setAttribute('data-dark-border', '')
+    if (el.style.color || el.getAttribute('color')) {
+      const original = parseRgb(computed.color)
+      const dark = original && darkModeText(original, background)
+      if (dark) mark(el, 'color', dark)
+    }
+
+    for (const side of BORDER_SIDES) {
+      if (!el.style.getPropertyValue(`border-${side}-style`)) continue
+      const original = parseRgb(
+        computed.getPropertyValue(`border-${side}-color`),
+      )
+      const dark = original && darkModeText(original, background)
+      if (dark) mark(el, `border-${side}-color`, dark)
     }
   }
 }
