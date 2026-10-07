@@ -123,7 +123,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		doc.reference_doctype = None
 		doc.reference_docname = None
 
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
+		with patch("crm.api.whatsapp.get_assignees") as mock_users:
 			notify_agent(doc)  # must not raise
 
 		mock_users.assert_not_called()
@@ -135,7 +135,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		doc.reference_doctype = ""
 		doc.reference_docname = "LEAD-0001"
 
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
+		with patch("crm.api.whatsapp.get_assignees") as mock_users:
 			notify_agent(doc)
 
 		mock_users.assert_not_called()
@@ -151,7 +151,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		)
 
 		with (
-			patch("crm.api.whatsapp.get_assigned_users", return_value=["a@example.com", "b@example.com"]),
+			patch("crm.api.whatsapp.get_assignees", return_value=["a@example.com", "b@example.com"]),
 			patch("crm.api.whatsapp.notify_user") as mock_notify,
 		):
 			notify_agent(doc)
@@ -169,7 +169,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 	def test_notify_agent_ignores_outgoing_messages(self):
 		doc = frappe._dict(direction="Outgoing", reference_doctype="CRM Lead", reference_docname="LEAD-1")
 
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
+		with patch("crm.api.whatsapp.get_assignees") as mock_users:
 			notify_agent(doc)
 
 		mock_users.assert_not_called()
