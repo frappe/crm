@@ -8,6 +8,13 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useColorScheme } from 'frappe-ui'
+import {
+  parseRgb,
+  invertLightness,
+  isUnreadableOnDark,
+  isTooLightForDark,
+} from '@/utils/emailColors'
 import emailContentStyles from './emailContent.css?inline'
 
 const props = defineProps({
@@ -112,6 +119,51 @@ const htmlContent = `
 </html>
 `
 
+const { resolvedColorScheme } = useColorScheme()
+
+function applyColorScheme() {
+  const html = iframeRef.value?.contentDocument?.documentElement
+  html?.setAttribute('data-theme', resolvedColorScheme.value)
+}
+
+watch(resolvedColorScheme, applyColorScheme)
+
+const BORDER_SIDES = ['Top', 'Right', 'Bottom', 'Left']
+
+function markColorsForDarkMode(emailContent) {
+  const view = emailContent.ownerDocument.defaultView
+  const elements = emailContent.querySelectorAll(
+    '[style*="color"], [style*="background"], [style*="border"], font[color], [bgcolor]',
+  )
+  for (const el of elements) {
+    const computed = view.getComputedStyle(el)
+
+    if (el.style.color || el.getAttribute('color')) {
+      const color = parseRgb(computed.color)
+      if (color && isUnreadableOnDark(color)) {
+        el.style.setProperty('--dark-color', invertLightness(color))
+        el.setAttribute('data-dark-color', '')
+      }
+    }
+
+    if (el.style.backgroundColor || el.getAttribute('bgcolor')) {
+      const background = parseRgb(computed.backgroundColor)
+      if (background && isTooLightForDark(background)) {
+        el.style.setProperty('--dark-background', invertLightness(background))
+        el.setAttribute('data-dark-background', '')
+      }
+    }
+
+    const border = BORDER_SIDES.filter((side) => el.style[`border${side}Style`])
+      .map((side) => parseRgb(computed[`border${side}Color`]))
+      .find((color) => color && isUnreadableOnDark(color))
+    if (border) {
+      el.style.setProperty('--dark-border', invertLightness(border))
+      el.setAttribute('data-dark-border', '')
+    }
+  }
+}
+
 watch(iframeRef, (iframe) => {
   if (iframe) {
     iframe.onload = () => {
@@ -119,8 +171,8 @@ watch(iframeRef, (iframe) => {
         iframe.contentWindow.document.querySelector('.email-content')
       let parent = emailContent.closest('html')
 
-      let theme = document.documentElement.getAttribute('data-theme')
-      parent.setAttribute('data-theme', theme)
+      markColorsForDarkMode(emailContent)
+      applyColorScheme()
 
       iframe.style.height = parent.offsetHeight + 1 + 'px'
 

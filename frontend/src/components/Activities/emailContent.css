@@ -124,3 +124,15 @@
   )::after {
   content: none;
 }
+
+[data-theme='dark'] [data-dark-color] {
+  color: var(--dark-color) !important;
+}
+
+[data-theme='dark'] [data-dark-background] {
+  background-color: var(--dark-background) !important;
+}
+
+[data-theme='dark'] [data-dark-border] {
+  border-color: var(--dark-border) !important;
+}
