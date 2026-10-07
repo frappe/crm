@@ -3,6 +3,7 @@ import {
   parseRgb,
   toCss,
   contrast,
+  blend,
   invertLightness,
   darkModeBackground,
   darkModeText,
@@ -27,6 +28,19 @@ describe('toCss', () => {
   it('rounds channels and keeps partial transparency', () => {
     expect(toCss(rgb(10.4, 20.6, 30))).toBe('rgb(10, 21, 30)')
     expect(toCss(rgb(0, 0, 0, 0.5))).toBe('rgba(0, 0, 0, 0.5)')
+  })
+})
+
+describe('blend', () => {
+  it('mixes a see-through color over the one behind it', () => {
+    expect(toCss(blend(rgb(255, 255, 255, 0.5), rgb(0, 0, 0)))).toBe(
+      'rgb(128, 128, 128)',
+    )
+  })
+
+  it('keeps opaque colors and ignores fully transparent ones', () => {
+    expect(blend(rgb(10, 20, 30), DARK_SURFACE)).toEqual(rgb(10, 20, 30))
+    expect(blend(rgb(10, 20, 30, 0), DARK_SURFACE)).toEqual(DARK_SURFACE)
   })
 })
 
@@ -68,6 +82,11 @@ describe('darkModeText', () => {
     const yellow = darkModeBackground(rgb(255, 255, 0))
     const text = darkModeText(rgb(0, 0, 0), yellow)
     expect(contrast(text, yellow)).toBeGreaterThanOrEqual(3)
+  })
+
+  it('lightens black text on a faint gray that mostly shows the dark card', () => {
+    const faintGray = blend(rgb(153, 153, 153, 0.1), DARK_SURFACE)
+    expect(darkModeText(rgb(0, 0, 0), faintGray)).not.toBeNull()
   })
 
   it('ignores fully transparent colors', () => {

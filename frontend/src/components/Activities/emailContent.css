@@ -124,27 +124,3 @@
   )::after {
   content: none;
 }
-
-[data-theme='dark'] [data-dark-color] {
-  color: var(--dark-color) !important;
-}
-
-[data-theme='dark'] [data-dark-background-color] {
-  background-color: var(--dark-background-color) !important;
-}
-
-[data-theme='dark'] [data-dark-border-top-color] {
-  border-top-color: var(--dark-border-top-color) !important;
-}
-
-[data-theme='dark'] [data-dark-border-right-color] {
-  border-right-color: var(--dark-border-right-color) !important;
-}
-
-[data-theme='dark'] [data-dark-border-bottom-color] {
-  border-bottom-color: var(--dark-border-bottom-color) !important;
-}
-
-[data-theme='dark'] [data-dark-border-left-color] {
-  border-left-color: var(--dark-border-left-color) !important;
-}

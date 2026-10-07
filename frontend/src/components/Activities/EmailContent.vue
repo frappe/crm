@@ -13,6 +13,7 @@ import {
   DARK_SURFACE,
   parseRgb,
   toCss,
+  blend,
   darkModeBackground,
   darkModeText,
 } from '@/utils/emailColors'
@@ -122,38 +123,53 @@ const htmlContent = `
 
 const { resolvedColorScheme } = useColorScheme()
 
+const darkModeColors = []
+
 function applyColorScheme() {
   const html = iframeRef.value?.contentDocument?.documentElement
-  html?.setAttribute('data-theme', resolvedColorScheme.value)
+  if (!html) return
+  html.setAttribute('data-theme', resolvedColorScheme.value)
+
+  const dark = resolvedColorScheme.value === 'dark'
+  for (const { el, property, original, darkColor } of darkModeColors) {
+    if (dark) el.style.setProperty(property, darkColor, 'important')
+    else if (original.value)
+      el.style.setProperty(property, original.value, original.priority)
+    else el.style.removeProperty(property)
+  }
 }
 
 watch(resolvedColorScheme, applyColorScheme)
 
 const BORDER_SIDES = ['top', 'right', 'bottom', 'left']
 
-function markColorsForDarkMode(emailContent) {
+// Runs once while the iframe is still in light mode, so computed colors are the
+// email's own. Inherited text is checked too wherever the background changes.
+function collectDarkModeColors(emailContent) {
+  darkModeColors.length = 0
   const view = emailContent.ownerDocument.defaultView
+  const darkBackgrounds = new Map([[emailContent, DARK_SURFACE]])
 
   function backgroundInDarkMode(el) {
-    for (let node = el; node !== emailContent; node = node.parentElement) {
-      const background = parseRgb(view.getComputedStyle(node).backgroundColor)
-      if (background?.a > 0) return darkModeBackground(background) ?? background
+    if (!darkBackgrounds.has(el)) {
+      const own = parseRgb(view.getComputedStyle(el).backgroundColor)
+      const behind = backgroundInDarkMode(el.parentElement)
+      const visible = own?.a > 0 ? darkModeBackground(own) ?? own : null
+      darkBackgrounds.set(el, visible ? blend(visible, behind) : behind)
     }
-    return DARK_SURFACE
+    return darkBackgrounds.get(el)
   }
 
-  // Our dark mode rules are !important, which only beats a plain inline value.
-  // Light mode is unaffected: a plain inline value still beats the prose styles.
-  function dropImportant(el, property) {
-    if (el.style.getPropertyPriority(property)) {
-      el.style.setProperty(property, el.style.getPropertyValue(property))
-    }
-  }
-
-  function mark(el, property, darkColor) {
-    dropImportant(el, property)
-    el.style.setProperty(`--dark-${property}`, toCss(darkColor))
-    el.setAttribute(`data-dark-${property}`, '')
+  function add(el, property, darkColor) {
+    darkModeColors.push({
+      el,
+      property,
+      darkColor: toCss(darkColor),
+      original: {
+        value: el.style.getPropertyValue(property),
+        priority: el.style.getPropertyPriority(property),
+      },
+    })
   }
 
   for (const el of emailContent.querySelectorAll(
@@ -161,17 +177,21 @@ function markColorsForDarkMode(emailContent) {
   )) {
     const computed = view.getComputedStyle(el)
     const background = backgroundInDarkMode(el)
+    let backgroundChanged = false
 
     if (el.style.backgroundColor || el.getAttribute('bgcolor')) {
       const original = parseRgb(computed.backgroundColor)
       const dark = original && darkModeBackground(original)
-      if (dark) mark(el, 'background-color', dark)
+      if (dark) {
+        add(el, 'background-color', dark)
+        backgroundChanged = true
+      }
     }
 
-    if (el.style.color || el.getAttribute('color')) {
+    if (el.style.color || el.getAttribute('color') || backgroundChanged) {
       const original = parseRgb(computed.color)
       const dark = original && darkModeText(original, background)
-      if (dark) mark(el, 'color', dark)
+      if (dark) add(el, 'color', dark)
     }
 
     for (const side of BORDER_SIDES) {
@@ -180,7 +200,7 @@ function markColorsForDarkMode(emailContent) {
         computed.getPropertyValue(`border-${side}-color`),
       )
       const dark = original && darkModeText(original, background)
-      if (dark) mark(el, `border-${side}-color`, dark)
+      if (dark) add(el, `border-${side}-color`, dark)
     }
   }
 }
@@ -192,7 +212,7 @@ watch(iframeRef, (iframe) => {
         iframe.contentWindow.document.querySelector('.email-content')
       let parent = emailContent.closest('html')
 
-      markColorsForDarkMode(emailContent)
+      collectDarkModeColors(emailContent)
       applyColorScheme()
 
       iframe.style.height = parent.offsetHeight + 1 + 'px'
