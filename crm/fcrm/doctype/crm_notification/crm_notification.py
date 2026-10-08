@@ -82,16 +82,3 @@ def notify_user(notification):
 	if frappe.db.exists("CRM Notification", values):
 		return
 	frappe.get_doc(values).insert(ignore_permissions=True)
-
-
-def on_doctype_update():
-	add_indexes()
-
-
-def add_indexes():
-	# (to_user, creation) serves the latest-first list; (to_user, read) serves the
-	# unread count and mark as read.
-	frappe.db.add_index("CRM Notification", ["to_user", "creation"])
-	# `read` is a reserved word in SQL and add_index passes field names through as is
-	quote = '"' if frappe.db.db_type == "postgres" else "`"
-	frappe.db.add_index("CRM Notification", ["to_user", f"{quote}read{quote}"], "to_user_read_index")
