@@ -1,17 +1,40 @@
 import frappe
 from frappe.query_builder import Order
 
+# The panel shows the latest ones; older history is never rendered, and
+# loading all of it took seconds for users with thousands of notifications.
+NOTIFICATIONS_PAGE_LENGTH = 50
+
 
 @frappe.whitelist()
 def get_notifications():
 	Notification = frappe.qb.DocType("CRM Notification")
-	query = (
+	notifications = (
 		frappe.qb.from_(Notification)
-		.select("*")
+		.select(
+			Notification.creation,
+			Notification.from_user,
+			Notification.to_user,
+			Notification.type,
+			Notification.read,
+			Notification.message,
+			Notification.notification_text,
+			Notification.notification_type_doctype,
+			Notification.notification_type_doc,
+			Notification.reference_doctype,
+			Notification.reference_name,
+		)
 		.where(Notification.to_user == frappe.session.user)
-		.orderby("creation", order=Order.desc)
+		.orderby(Notification.creation, order=Order.desc)
+		.limit(NOTIFICATIONS_PAGE_LENGTH)
+	).run(as_dict=True)
+
+	from_users = {n.from_user for n in notifications if n.from_user}
+	full_names = dict(
+		frappe.get_all(
+			"User", filters={"name": ["in", list(from_users)]}, fields=["name", "full_name"], as_list=True
+		)
 	)
-	notifications = query.run(as_dict=True)
 
 	_notifications = []
 	for notification in notifications:
@@ -20,7 +43,7 @@ def get_notifications():
 				"creation": notification.creation,
 				"from_user": {
 					"name": notification.from_user,
-					"full_name": frappe.get_value("User", notification.from_user, "full_name"),
+					"full_name": full_names.get(notification.from_user),
 				},
 				"type": notification.type,
 				"to_user": notification.to_user,
@@ -39,19 +62,32 @@ def get_notifications():
 
 
 @frappe.whitelist()
+def get_unread_count() -> int:
+	return frappe.db.count("CRM Notification", {"to_user": frappe.session.user, "read": 0})
+
+
+@frappe.whitelist()
 def mark_as_read(doc: str | None = None):
+	"""Mark the user's unread notifications as read with a single update.
+
+	Saving them one by one sent a realtime event per notification, and every
+	open tab reloaded the list for each event.
+	"""
 	user = frappe.session.user
-	filters = {"to_user": user, "read": False}
-	or_filters = []
+	filters = {"to_user": user, "read": 0}
 	if doc:
-		or_filters = [
-			{"comment": doc},
-			{"notification_type_doc": doc},
-		]
-	for n in frappe.get_all("CRM Notification", filters=filters, or_filters=or_filters):
-		d = frappe.get_doc("CRM Notification", n.name)
-		d.read = True
-		d.save()
+		names = frappe.get_all(
+			"CRM Notification",
+			filters=filters,
+			or_filters={"comment": doc, "notification_type_doc": doc},
+			pluck="name",
+		)
+		if not names:
+			return
+		filters["name"] = ["in", names]
+
+	frappe.db.set_value("CRM Notification", filters, "read", 1, update_modified=False)
+	frappe.publish_realtime("crm_notification", user=user, after_commit=True)
 
 
 def get_hash(notification):
