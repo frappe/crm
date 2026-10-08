@@ -82,3 +82,11 @@ def notify_user(notification):
 	if frappe.db.exists("CRM Notification", values):
 		return
 	frappe.get_doc(values).insert(ignore_permissions=True)
+
+
+def on_doctype_update():
+	# Not search_index on to_user (what Notification Log uses): for a user with
+	# thousands of notifications the database skips that index and scans the whole
+	# table to count unread ones. Adding `read` lets the count come from the index
+	# alone. `read` is quoted because it is a reserved word in SQL.
+	frappe.db.add_index("CRM Notification", ["to_user", "`read`"], "to_user_read_index")
