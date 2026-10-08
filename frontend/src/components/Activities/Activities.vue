@@ -686,13 +686,7 @@ onMounted(() => {
     }
   })
 
-  nextTick(() => {
-    const hash = route.hash.slice(1) || null
-    let tabNames = props.tabs?.map((tab) => tab.name)
-    if (!tabNames?.includes(hash)) {
-      scroll(hash)
-    }
-  })
+  nextTick(() => scrollToHash(route.hash))
 })
 
 // A hash change no longer remounts the page, so links that point at an
@@ -702,6 +696,7 @@ watch(
   (hash) => hash && scrollToHash(hash),
 )
 
+<<<<<<< HEAD
 function linkedRow(hash) {
   const { anchor } = parseActivityHash(hash)
   if (!anchor || props.tabs?.some((tab) => tab.value === anchor)) return null
@@ -710,6 +705,10 @@ function linkedRow(hash) {
 
 function scrollToHash(hash) {
   const id = parseActivityHash(hash).anchor || null
+=======
+function scrollToHash(hash) {
+  const id = hash.slice(1) || null
+>>>>>>> d70d237 (fix: stop rebuilding the lead and deal page on every tab click)
   let tabNames = props.tabs?.map((tab) => tab.name)
   if (!tabNames?.includes(id)) {
     scroll(id)

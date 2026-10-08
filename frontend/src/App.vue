@@ -3,7 +3,11 @@
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
     <router-view v-else-if="$route.name === 'Setup'" />
     <Layout v-else-if="session.isLoggedIn" class="isolate">
+<<<<<<< HEAD
       <router-view :key="$route.meta.viewKey || $route.fullPath" />
+=======
+      <router-view :key="$route.fullPath.split('#')[0]" />
+>>>>>>> d70d237 (fix: stop rebuilding the lead and deal page on every tab click)
     </Layout>
     <Dialogs />
     <DoctypeModals />
