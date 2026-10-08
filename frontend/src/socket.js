@@ -11,7 +11,11 @@ export function initSocket() {
 
   let socket = io(url, {
     withCredentials: true,
-    reconnectionAttempts: 5,
+    // Retry for good, with growing random gaps, so open tabs don't all
+    // reconnect at the same moment while the server is slow.
+    reconnectionDelay: 2000,
+    reconnectionDelayMax: 30000,
+    randomizationFactor: 0.5,
   })
   socket.on('refetch_resource', (data) => {
     if (data.cache_key) {
