@@ -47,7 +47,8 @@
    "in_list_view": 1,
    "label": "To User",
    "options": "User",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "comment",
@@ -116,7 +117,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-09 13:53:15.193656",
+ "modified": "2026-10-08 17:30:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Notification",
