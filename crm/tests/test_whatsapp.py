@@ -1,6 +1,7 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+import random
 from contextlib import contextmanager
 from unittest.mock import MagicMock, call, patch
 
@@ -10,6 +11,7 @@ from frappe.tests.utils import FrappeTestCase
 from crm.api.whatsapp import (
 	ALLOWED_WHATSAPP_ROLES,
 	CONFIRM_PARAM,
+	LEAD_SOURCE,
 	WhatsAppRecipientChangeError,
 	_get_phone_number_from_profile,
 	_link_profile_to_crm_entities,
@@ -24,6 +26,7 @@ from crm.api.whatsapp import (
 	validate,
 	validate_access,
 )
+from crm.patches.v1_0.add_whatsapp_lead_source import execute as add_whatsapp_lead_source
 
 COUNT = "crm.api.whatsapp.count_conversation"
 OLD = "+91 98765 43220"
@@ -79,6 +82,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 				return_value="+15559999999",
 			),
 			patch("crm.api.whatsapp._link_profile_to_crm_entities"),
+			patch("crm.api.whatsapp._lead_append_action", return_value=None),
 			patch(
 				"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
 				return_value=(None, None),
@@ -551,3 +555,100 @@ class TestCountConversation(FrappeTestCase):
 
 	def test_no_number_counts_nothing(self):
 		self.assertEqual(count_conversation("CRM Lead", self.lead, ""), 0)
+
+
+class TestLeadFromIncomingWhatsApp(FrappeTestCase):
+	"""An account that appends incoming messages to CRM Lead gets a Lead for each new sender,
+	stamped with the WhatsApp source, before the whatsapp app's own append action runs."""
+
+	def setUp(self):
+		add_whatsapp_lead_source()
+		self.number = f"+9198765{random.randint(10000, 99999)}"
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _message(self, append_actions=None, direction="Incoming", profile_name="Asha"):
+		account = frappe.get_doc(
+			{
+				"doctype": "WA Account",
+				"account_name": f"_Test Lead Source {frappe.generate_hash(length=5)}",
+				"status": "Active",
+				"phone_id": frappe.generate_hash(length=8),
+				"append_actions": append_actions or [],
+			}
+		).insert()
+		profile = frappe.get_doc(
+			{
+				"doctype": "WA Profile",
+				"whatsapp_account": account.name,
+				"phone_number": self.number,
+				"profile_name": profile_name,
+			}
+		).insert()
+		return frappe.get_doc(
+			{
+				"doctype": "WA Message",
+				"direction": direction,
+				"whatsapp_account": account.name,
+				"to": profile.name,
+				"message": "Hi, tell me more",
+			}
+		)
+
+	def _lead_action(self, trigger_on="Incoming", **mapping):
+		return {
+			"append_to": "CRM Lead",
+			"trigger_on": trigger_on,
+			"sender_field": "mobile_no",
+			"sender_name_field": "first_name",
+			**mapping,
+		}
+
+	def _leads(self):
+		return frappe.get_all("CRM Lead", filters={"mobile_no": self.number}, pluck="name")
+
+	def test_unknown_sender_becomes_a_lead_with_the_whatsapp_source(self):
+		doc = self._message([self._lead_action(message_field="company_description")])
+
+		validate(doc, None)
+
+		lead = frappe.get_doc("CRM Lead", doc.reference_docname)
+		self.assertEqual(doc.reference_doctype, "CRM Lead")
+		self.assertEqual(lead.source, LEAD_SOURCE)
+		self.assertEqual(lead.mobile_no, self.number)
+		self.assertEqual(lead.first_name, "Asha")
+		self.assertEqual(lead.company_description, "Hi, tell me more")
+
+	def test_account_without_a_lead_append_action_leaves_the_message_unlinked(self):
+		doc = self._message()
+
+		validate(doc, None)
+
+		self.assertFalse(doc.reference_docname)
+		self.assertEqual(self._leads(), [])
+
+	def test_outgoing_only_action_does_not_count(self):
+		doc = self._message([self._lead_action(trigger_on="Outgoing")])
+
+		validate(doc, None)
+
+		self.assertEqual(self._leads(), [])
+
+	def test_outgoing_message_never_creates_a_lead(self):
+		doc = self._message([self._lead_action()], direction="Outgoing")
+
+		validate(doc, None)
+
+		self.assertEqual(self._leads(), [])
+
+	def test_known_number_is_linked_instead_of_duplicated(self):
+		existing = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Known", "mobile_no": self.number}
+		).insert()
+		doc = self._message([self._lead_action()])
+
+		validate(doc, None)
+
+		self.assertEqual(doc.reference_docname, existing.name)
+		self.assertEqual(self._leads(), [existing.name])

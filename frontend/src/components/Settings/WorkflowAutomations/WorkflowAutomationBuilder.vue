@@ -169,6 +169,7 @@ import {
   insertAfter,
   layoutSteps,
   newStep,
+  nodeAtRow,
   removeStep,
   stepsBefore,
   toRows,
@@ -597,7 +598,7 @@ function attachError(error) {
 }
 
 function attachRowError(rowIndex, message) {
-  const node = placed.value[rowIndex - 1]?.node
+  const node = nodeAtRow(doc.actions, rowIndex)
   if (!node) return
   errors[node._id] = [{ message }]
   selectedId.value = node._id

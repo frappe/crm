@@ -160,7 +160,7 @@ def parse_call_log(call):
 	call["_duration"] = seconds_to_duration(call.get("duration"))
 	if call.get("type") == "Incoming":
 		call["activity_type"] = "incoming_call"
-		contact = get_contact_by_phone_number(call.get("from"))
+		contact = get_call_contact(call, call.get("from"))
 		receiver = (
 			frappe.db.get_values("User", call.get("receiver"), ["full_name", "user_image"])[0]
 			if call.get("receiver")
@@ -176,7 +176,7 @@ def parse_call_log(call):
 		}
 	elif call.get("type") == "Outgoing":
 		call["activity_type"] = "outgoing_call"
-		contact = get_contact_by_phone_number(call.get("to"))
+		contact = get_call_contact(call, call.get("to"))
 		caller = (
 			frappe.db.get_values("User", call.get("caller"), ["full_name", "user_image"])[0]
 			if call.get("caller")
@@ -192,6 +192,38 @@ def parse_call_log(call):
 		}
 
 	return call
+
+
+def get_call_contact(call, phone_number):
+	"""The lead or deal the call points to, or the best match for the number when it
+	points to neither. Two records can share a number, so once the call points to a
+	record the number is never used to guess who it was."""
+	doctype, name = call.get("reference_doctype"), call.get("reference_docname")
+	if doctype not in ("CRM Lead", "CRM Deal") or not name:
+		return get_contact_by_phone_number(phone_number)
+
+	if not frappe.has_permission(doctype, "read", name):
+		return {}
+
+	return get_reference_contact(doctype, name) or {}
+
+
+def get_reference_contact(doctype, name):
+	if doctype == "CRM Lead":
+		lead = frappe.db.get_value("CRM Lead", name, ["lead_name", "image"], as_dict=True)
+		return lead and {"full_name": lead.lead_name, "image": lead.image}
+
+	contact = frappe.db.get_value(
+		"CRM Contacts", {"parenttype": "CRM Deal", "parent": name, "is_primary": 1}, "contact"
+	)
+	if contact:
+		return frappe.db.get_value("Contact", contact, ["full_name", "image"], as_dict=True)
+
+	deal = frappe.db.get_value(
+		"CRM Deal", name, ["lead_name", "organization", "organization_name"], as_dict=True
+	)
+	deal_name = deal and (deal.lead_name or deal.organization or deal.organization_name)
+	return deal_name and {"full_name": deal_name}
 
 
 @frappe.whitelist()
@@ -236,7 +268,7 @@ def get_call_log(name: str):
 		elif link_doctype == "FCRM Note":
 			note_names.append(link_name)
 		elif link_doctype in ("CRM Lead", "CRM Deal"):
-			references[link_doctype] = link_name
+			references.setdefault(link_doctype, link_name)
 
 	call["_notes"] = get_permitted_docs("FCRM Note", note_names)
 	call["_tasks"] = get_permitted_docs("CRM Task", task_names)

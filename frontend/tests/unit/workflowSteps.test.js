@@ -3,6 +3,7 @@ import {
   EVENT_MATCHED,
   layoutSteps,
   newStep,
+  nodeAtRow,
   removeStep,
   toRows,
   toTree,
@@ -187,5 +188,49 @@ describe('step keys', () => {
     expect(
       toRows([newStep({ step_key: 'mine', action_type: 'X' })])[0].step_key,
     ).toBe('mine')
+  })
+})
+
+describe('row to node lookup', () => {
+  const wait = (arms) => {
+    const node = newStep({ step_type: 'WaitForEvent' })
+    Object.assign(node.children, arms)
+    return node
+  }
+
+  it('matches layout order when no wait has arms', () => {
+    const [a, b] = [newStep(), newStep({ step_type: 'WaitForEvent' })]
+    expect([1, 2].map((i) => nodeAtRow([a, b], i))).toEqual([a, b])
+    expect(nodeAtRow([a, b], 3)).toBeNull()
+  })
+
+  it('counts the outcome row a wait with arms gains', () => {
+    const [a, b, c, d] = [newStep(), newStep(), newStep(), newStep()]
+    const w = wait({ If: [b], Else: [c] })
+    const tree = [a, w, d]
+
+    expect(toRows(tree)).toHaveLength(6)
+    expect([1, 2, 3, 4, 5, 6].map((i) => nodeAtRow(tree, i))).toEqual([
+      a,
+      w,
+      w,
+      b,
+      c,
+      d,
+    ])
+    expect(nodeAtRow(tree, 7)).toBeNull()
+  })
+
+  it('finds steps after a wait nested inside an arm', () => {
+    const inner = newStep()
+    const nested = wait({ If: [inner], Else: [] })
+    const condition = newStep({ step_type: 'If' })
+    condition.children.If.push(nested)
+    const after = newStep()
+    const tree = [condition, after]
+
+    // If, nested wait, its outcome, inner, after
+    expect(nodeAtRow(tree, 4)).toBe(inner)
+    expect(nodeAtRow(tree, 5)).toBe(after)
   })
 })

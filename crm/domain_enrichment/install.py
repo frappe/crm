@@ -14,6 +14,8 @@ without clobbering admin edits.
 
 import frappe
 
+from crm.domain_enrichment.doctype.crm_enrichment_rule.crm_enrichment_rule import find_duplicate
+
 # --------------------------------------------------------------------------- #
 # Rule knowledge (recovered from the POC's extractors.py constant tables)
 # --------------------------------------------------------------------------- #
@@ -317,12 +319,10 @@ def _make_rule(
 	match_scope="Full Text",
 	is_regex=False,
 ):
-	# Match on the rule_name field, not the document name: the autoname
-	# ("{rule_type}.-.####") means name != rule_name, so a bare-string exists()
-	# never matches a seeded rule and re-seeding would collide with the unique
-	# rule_name constraint (breaking bench migrate). rule_name stays out of the
-	# name because it is free text (colons/spaces) that a naming series rejects.
-	if frappe.db.exists("CRM Enrichment Rule", {"rule_name": rule_name}):
+	# Use the doctype's own duplicate check, not the document name (autoname is
+	# "{rule_type}.-.####") or frappe.db.exists (case-sensitive on Postgres), so
+	# re-seeding during bench migrate skips existing rules instead of failing it.
+	if find_duplicate(rule_type, target_value or industry):
 		return
 	doc = frappe.get_doc(
 		{

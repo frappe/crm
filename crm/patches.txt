@@ -33,3 +33,7 @@ crm.patches.v1_0.add_enrichment_fields_to_layouts
 crm.patches.v1_0.reorder_address_quick_entry_layout
 crm.patches.v1_0.set_seen_for_existing_deals_and_leads
 crm.patches.v1_0.migrate_from_frappe_whatsapp
+crm.patches.v1_0.add_whatsapp_lead_source
+crm.patches.v1_0.rebuild_crm_territory_tree
+crm.patches.v1_0.clamp_enrichment_max_pages
+crm.patches.v1_0.set_enrichment_rule_names

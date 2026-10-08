@@ -125,6 +125,45 @@ export function applyStateFieldOptions(
 }
 
 /**
+ * Group the Deal's `contact` Link field by the selected Organization: contacts
+ * of that organization are listed first under their own label, every other
+ * contact under a second one.
+ *
+ * Contact doesn't have a direct "deal" relationship - the tie is via
+ * `Contact.company_name`, which is set to the Deal's organization when a
+ * contact is created from a Deal (see crm_deal.py::create_contact).
+ *
+ * Grouping rather than filtering keeps contacts that aren't linked to the
+ * organization yet reachable, since a Deal's contact isn't always one of them.
+ *
+ * @param {object} field - processed field object
+ * @param {object} doc - the document data (reads doc.organization)
+ * @param {string} doctype - the field's doctype; only 'CRM Deal' is affected
+ * @returns {object} the field, unchanged unless it is CRM Deal's `contact` field
+ */
+export function applyContactOrganizationGrouping(field, doc, doctype) {
+  if (
+    !field ||
+    doctype !== 'CRM Deal' ||
+    field.fieldname !== 'contact' ||
+    field.fieldtype !== 'Link' ||
+    field.options !== 'Contact' ||
+    !doc?.organization
+  ) {
+    return field
+  }
+
+  return {
+    ...field,
+    grouping: {
+      filters: { company_name: doc.organization },
+      label: __('Contacts at {0}', [doc.organization]),
+      otherLabel: __('Other contacts'),
+    },
+  }
+}
+
+/**
  * Find mandatory fields that are missing values in the doc.
  * Respects script overrides for reqd and hidden.
  *
@@ -175,4 +214,34 @@ export function findMissingMandatory(fields, doc, options = {}) {
   }
 
   return missingFields
+}
+
+/**
+ * Whether a filter's field/operator pair should render a multi-select picker
+ * rather than a comma-separated text input.
+ *
+ * `in` / `not in` match against a set, so they need a picker wherever the field
+ * can offer a list: Select and Check carry their own options, Link searches its
+ * target doctype. Dynamic Link is deliberately absent — its target is chosen by
+ * a sibling field at runtime, so there is no doctype to search.
+ */
+export function isMultiValueFilter(field, operator) {
+  if (!['in', 'not in'].includes(operator)) return false
+  return ['Select', 'Check', 'Link'].includes(field?.fieldtype)
+}
+
+/**
+ * Coerce a stored `in` / `not in` value into the array a multi-select expects.
+ *
+ * A filter restored from a saved view or a URL can still hold the legacy
+ * "Open,Qualified" string, and an empty selection can arrive as [''], which
+ * would otherwise render as one blank checked value.
+ */
+export function toFilterValueArray(value) {
+  if (Array.isArray(value)) return value.filter(Boolean)
+  if (!value) return []
+  return String(value)
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean)
 }
