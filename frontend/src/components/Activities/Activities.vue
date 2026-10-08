@@ -656,14 +656,23 @@ onMounted(() => {
   $socket.emit('doc_subscribe', props.doctype, props.docname)
   $socket.on('docinfo_update', handleDocinfoUpdate)
 
-  nextTick(() => {
-    const hash = route.hash.slice(1) || null
-    let tabNames = props.tabs?.map((tab) => tab.name)
-    if (!tabNames?.includes(hash)) {
-      scroll(hash)
-    }
-  })
+  nextTick(() => scrollToHash(route.hash))
 })
+
+// A hash change no longer remounts the page, so links that point at an
+// activity on the page already open (like a mention notification) scroll here.
+watch(
+  () => route.hash,
+  (hash) => hash && scrollToHash(hash),
+)
+
+function scrollToHash(hash) {
+  const id = hash.slice(1) || null
+  let tabNames = props.tabs?.map((tab) => tab.name)
+  if (!tabNames?.includes(id)) {
+    scroll(id)
+  }
+}
 
 function handleDocinfoUpdate({ doc, key }) {
   // 'comments' covers comment activity; 'communications' covers new/updated
