@@ -174,12 +174,16 @@ def get_deal_activities(name: str):
 
 	linked_calls = get_linked_calls(name)
 	calls = calls + linked_calls.get("calls", [])
+<<<<<<< HEAD
 	# the lead's note events already came with its activities, so only add the deal's own
 	lead_notes = {n.get("name") for n in notes}
 	deal_notes = [
 		n for n in get_linked_notes(name) + linked_calls.get("notes", []) if n.get("name") not in lead_notes
 	]
 	notes = notes + deal_notes
+=======
+	notes = notes + get_linked_notes(name) + linked_calls.get("notes", [])
+>>>>>>> e7decac (fix: load linked calls once per activities request)
 	tasks = tasks + get_linked_tasks(name) + linked_calls.get("tasks", [])
 	attachments = attachments + get_attachments("CRM Deal", name)
 	activities += get_note_activities(deal_notes, is_lead=False)
@@ -324,9 +328,10 @@ def get_lead_activities(name: str):
 		}
 		activities.append(activity)
 
-	calls = get_linked_calls(name).get("calls", [])
-	notes = get_linked_notes(name) + get_linked_calls(name).get("notes", [])
-	tasks = get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	linked_calls = get_linked_calls(name)
+	calls = linked_calls.get("calls", [])
+	notes = get_linked_notes(name) + linked_calls.get("notes", [])
+	tasks = get_linked_tasks(name) + linked_calls.get("tasks", [])
 	attachments = get_attachments("CRM Lead", name)
 	activities += get_note_activities(notes, is_lead=True)
 
