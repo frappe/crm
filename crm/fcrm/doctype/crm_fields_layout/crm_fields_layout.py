@@ -54,7 +54,7 @@ def remove_fieldnames_from_layout(layout, fieldnames):
 			for column in section.get("columns") or []:
 				if not column or not column.get("fields"):
 					continue
-				kept = [f for f in column["fields"] if f not in fieldnames]
+				kept = [f for f in column["fields"] if not isinstance(f, str) or f not in fieldnames]
 				if len(kept) != len(column["fields"]):
 					column["fields"] = kept
 					changed = True

@@ -34,7 +34,7 @@ def remove_stale_fieldnames(layout, valid):
 			for column in section.get("columns") or []:
 				if not column or not column.get("fields"):
 					continue
-				kept = [f for f in column["fields"] if f in valid]
+				kept = [f for f in column["fields"] if not isinstance(f, str) or f in valid]
 				if len(kept) != len(column["fields"]):
 					column["fields"] = kept
 					changed = True
