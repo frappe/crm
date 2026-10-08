@@ -68,18 +68,25 @@ def get_unread_count() -> int:
 
 @frappe.whitelist()
 def mark_as_read(doc: str | None = None):
-	"""Mark the user's unread notifications as read in one query.
+	"""Mark the user's unread notifications as read with a single update.
 
 	Saving them one by one sent a realtime event per notification, and every
 	open tab reloaded the list for each event.
 	"""
 	user = frappe.session.user
-	Notification = frappe.qb.DocType("CRM Notification")
-	condition = (Notification.to_user == user) & (Notification.read == 0)
+	filters = {"to_user": user, "read": 0}
 	if doc:
-		condition &= (Notification.comment == doc) | (Notification.notification_type_doc == doc)
+		names = frappe.get_all(
+			"CRM Notification",
+			filters=filters,
+			or_filters={"comment": doc, "notification_type_doc": doc},
+			pluck="name",
+		)
+		if not names:
+			return
+		filters["name"] = ["in", names]
 
-	frappe.qb.update(Notification).set(Notification.read, 1).where(condition).run()
+	frappe.db.set_value("CRM Notification", filters, "read", 1, update_modified=False)
 	frappe.publish_realtime("crm_notification", user=user, after_commit=True)
 
 

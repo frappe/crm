@@ -93,3 +93,11 @@ class TestNotificationsAPI(IntegrationTestCase):
 			"CRM Notification", {"to_user": USER1, "read": 0}, pluck="notification_type_doc"
 		)
 		self.assertEqual(unread, ["COMMENT-2"])
+
+	def test_mark_unknown_doc_as_read_changes_nothing(self):
+		make_notification(USER1)
+
+		frappe.set_user(USER1)
+		mark_as_read("NO-SUCH-COMMENT")
+
+		self.assertEqual(get_unread_count(), 1)
