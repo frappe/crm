@@ -1,10 +1,16 @@
 <template>
   <FrappeUIProvider>
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
+<<<<<<< HEAD
     <router-view v-else-if="$route.name === 'Setup'" />
     <!-- no shell until the first route resolves, which may be the setup -->
     <Layout v-else-if="session.isLoggedIn && $route.name" class="isolate">
       <router-view :key="$route.meta.viewKey || $route.fullPath" />
+=======
+    <router-view v-else-if="$route.name === 'Onboarding'" />
+    <Layout v-else-if="session.isLoggedIn" class="isolate">
+      <router-view :key="$route.fullPath.split('#')[0]" />
+>>>>>>> d70d237 (fix: stop rebuilding the lead and deal page on every tab click)
     </Layout>
     <Dialogs />
     <DoctypeModals />
