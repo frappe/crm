@@ -164,7 +164,7 @@
                               />
                             </div>
                             <div class="flex items-center">
-                              <Dropdown :options="contactOptions(contact.name)">
+                              <Dropdown :options="contactOptions(contact)">
                                 <Button
                                   icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
@@ -553,13 +553,13 @@ const showContactModal = ref(false)
 const _contact = ref({})
 
 function contactOptions(contact) {
-  let options = [
-    {
-      label: __('Delete'),
-      icon: 'lucide-trash-2',
-      onClick: () => removeContact(contact),
-    },
-  ]
+  let options = []
+
+  options.push({
+    label: __('Delete'),
+    icon: 'lucide-trash-2',
+    onClick: () => removeContact(contact.name),
+  })
 
   if (!contact.is_primary) {
     options.push({
