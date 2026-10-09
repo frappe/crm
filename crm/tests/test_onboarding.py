@@ -24,6 +24,8 @@ class TestOnboardingAPI(FrappeTestCase):
 				}
 			).insert(ignore_permissions=True)
 			user.add_roles("Sales User")
+		# on frappe v15 the assignment email is sent synchronously in tests and commits, dropping the savepoint
+		frappe.db.set_value("Notification Settings", SALES_USER, "enable_email_notifications", 0)
 
 	def setUp(self):
 		frappe.db.savepoint("test_onboarding")
