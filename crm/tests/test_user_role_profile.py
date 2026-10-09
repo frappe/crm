@@ -19,7 +19,11 @@ def make_user(email, role_profile=None):
 	).insert(ignore_permissions=True)
 
 	if role_profile:
-		user.append("role_profiles", {"role_profile": role_profile})
+		# frappe v15 has a single role_profile_name link, v16 a role_profiles table
+		if user.meta.has_field("role_profiles"):
+			user.append("role_profiles", {"role_profile": role_profile})
+		else:
+			user.role_profile_name = role_profile
 		user.save(ignore_permissions=True)
 
 	return user
