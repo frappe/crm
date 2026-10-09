@@ -131,13 +131,8 @@ import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { formatDate, convertSize } from '@/utils'
-import {
-  FormControl,
-  CircularProgressBar,
-  createResource,
-  toast,
-} from 'frappe-ui'
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { FormControl, CircularProgressBar, toast, useCall } from 'frappe-ui'
+import { ref, computed, watch, onUnmounted } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -161,28 +156,32 @@ const allowWebLink = ref(props.options.allowWebLink == false ? false : true)
 const allowTakePhoto = ref(
   props.options.allowTakePhoto || window.navigator.mediaDevices || false,
 )
-const restrictions = ref(props.options.restrictions || {})
-const makeAttachmentsPublic = ref(props.options.makeAttachmentsPublic || false)
 
-onMounted(() => {
-  createResource({
-    url: 'crm.api.get_file_uploader_defaults',
-    params: { doctype: props.doctype },
-    cache: ['file_uploader_defaults', props.doctype],
-    auto: true,
-    transform: (data) => {
-      const propRestrictions = props.options.restrictions || {}
-      restrictions.value = {
-        allowedFileTypes: data.allowed_file_types
-          ? data.allowed_file_types.split('\n').map((ext) => `.${ext}`)
-          : [],
-        maxFileSize: data.max_file_size,
-        maxNumberOfFiles: data.max_number_of_files,
-        ...propRestrictions,
-      }
-      makeAttachmentsPublic.value = Boolean(data.make_attachments_public)
-    },
-  })
+const uploaderDefaults = useCall({
+  url: '/api/v2/method/crm.api.get_file_uploader_defaults',
+  params: { doctype: props.doctype },
+  cacheKey: ['file_uploader_defaults', props.doctype],
+})
+
+const restrictions = computed(() => {
+  const data = uploaderDefaults.data
+  const propRestrictions = props.options.restrictions || {}
+  if (!data) return propRestrictions
+
+  return {
+    allowedFileTypes: data.allowed_file_types
+      ? data.allowed_file_types.split('\n').map((ext) => `.${ext}`)
+      : [],
+    maxFileSize: data.max_file_size,
+    maxNumberOfFiles: data.max_number_of_files,
+    ...propRestrictions,
+  }
+})
+
+const makeAttachmentsPublic = computed(() => {
+  const data = uploaderDefaults.data
+  if (!data) return Boolean(props.options.makeAttachmentsPublic)
+  return Boolean(data.make_attachments_public)
 })
 
 function dragover() {
