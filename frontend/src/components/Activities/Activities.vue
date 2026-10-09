@@ -376,7 +376,10 @@
         </div>
       </template>
     </div>
-    <div v-else-if="title == 'Data'" class="h-full flex flex-col px-3 sm:px-10">
+    <div
+      v-else-if="title == 'Data'"
+      class="flex h-full min-h-0 flex-col overflow-hidden px-3 sm:px-10"
+    >
       <DataFields
         v-model:fieldLayoutTabIndex="fieldLayoutTabIndex"
         v-model:fieldLayoutTabName="fieldLayoutTabName"

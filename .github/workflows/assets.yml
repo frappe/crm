@@ -1,0 +1,16 @@
+name: Pre-build assets
+
+on:
+  push:
+    # develop needs the whatsapp app at build time, which the Pilot build does not check out yet.
+    branches: [main]
+
+jobs:
+  assets:
+    name: Pre-build assets
+    uses: frappe/pilot/.github/workflows/app-assets.yml@develop
+    with:
+      # main supports Frappe v15 and v16; Pilot benches run v16 or later.
+      frappe-branch: version-16
+    permissions:
+      contents: write
