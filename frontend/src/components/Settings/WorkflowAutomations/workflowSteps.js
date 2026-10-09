@@ -200,7 +200,28 @@ function outcomeRow(node, idx, parentIdx, branch, taken) {
   }
 }
 
-/** Depth-first list of every node with its canvas position, in flattened (idx) order. */
+/**
+ * The node a flattened row (1-based `idx`) belongs to. Walks the tree in the order `appendRows`
+ * writes it, so the outcome `If` a wait with arms gains on save resolves to that wait.
+ */
+export function nodeAtRow(tree, rowIndex) {
+  return findRow(tree, { next: 1, target: rowIndex })
+}
+
+function findRow(nodes, cursor) {
+  for (const node of nodes) {
+    if (cursor.next++ === cursor.target) return node
+    if (!isBranching(node) || !hasArms(node)) continue
+    if (node.step_type === 'WaitForEvent' && cursor.next++ === cursor.target)
+      return node
+    const found =
+      findRow(node.children.If, cursor) || findRow(node.children.Else, cursor)
+    if (found) return found
+  }
+  return null
+}
+
+/** Depth-first list of every node with its canvas position. Unlike `toRows`, it has no outcome rows. */
 export function layoutSteps(tree) {
   const placed = []
   place(tree, COLUMN_WIDTH, 0, placed)
