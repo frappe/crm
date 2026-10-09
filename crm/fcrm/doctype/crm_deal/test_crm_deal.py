@@ -6,6 +6,7 @@ from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.tests import IntegrationTestCase
 
+from crm.api.doc import get_assigned_users, get_linked_docs_of_document, remove_assignments
 from crm.fcrm.doctype.crm_deal.api import get_deal_contacts
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
@@ -520,6 +521,56 @@ class TestGetDealContacts(IntegrationTestCase):
 		frappe.set_user(create_test_user_without_deal_access())
 		with self.assertRaises(frappe.PermissionError):
 			get_deal_contacts(deal.name)
+
+	def test_create_deal_api_requires_create_permission(self):
+		frappe.set_user(create_test_user_without_deal_access())
+		with self.assertRaises(frappe.PermissionError):
+			create_deal(
+				{"first_name": "No", "email": "noperm-deal@example.com", "organization_name": "No Perm Org"}
+			)
+
+		frappe.set_user("Administrator")
+		self.assertFalse(frappe.db.exists("Contact Email", {"email_id": "noperm-deal@example.com"}))
+		self.assertFalse(frappe.db.exists("CRM Organization", {"organization_name": "No Perm Org"}))
+
+	def test_get_assigned_users_requires_read_permission(self):
+		deal = create_test_deal(organization="Assignees Read Org")
+		assign_add({"assign_to": ["crm.user1@example.com"], "doctype": "CRM Deal", "name": deal.name})
+
+		self.assertIn("crm.user1@example.com", get_assigned_users("CRM Deal", deal.name))
+
+		frappe.set_user(create_test_user_without_deal_access())
+		with self.assertRaises(frappe.PermissionError):
+			get_assigned_users("CRM Deal", deal.name)
+
+	def test_get_linked_docs_of_document_requires_read_permission(self):
+		deal = create_test_deal(organization="Linked Docs Read Org")
+
+		self.assertIn(
+			deal.name,
+			[
+				d["reference_docname"]
+				for d in get_linked_docs_of_document("CRM Organization", deal.organization)
+			],
+		)
+
+		frappe.set_user(create_test_user_without_deal_access())
+		with self.assertRaises(frappe.PermissionError):
+			get_linked_docs_of_document("CRM Organization", deal.organization)
+
+	def test_remove_assignments_requires_write_permission(self):
+		deal = create_test_deal(organization="Remove Assignment Org")
+		assign_add({"assign_to": ["crm.user1@example.com"], "doctype": "CRM Deal", "name": deal.name})
+
+		frappe.set_user(create_test_user_without_deal_access())
+		with self.assertRaises(frappe.PermissionError):
+			remove_assignments("CRM Deal", deal.name, ["crm.user1@example.com"])
+
+		frappe.set_user("Administrator")
+		self.assertIn("crm.user1@example.com", get_assigned_users("CRM Deal", deal.name))
+
+		remove_assignments("CRM Deal", deal.name, ["crm.user1@example.com"])
+		self.assertNotIn("crm.user1@example.com", get_assigned_users("CRM Deal", deal.name))
 
 
 def create_test_user_without_deal_access():
