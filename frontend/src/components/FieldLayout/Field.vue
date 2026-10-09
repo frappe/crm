@@ -538,12 +538,14 @@ const field = computed(() => {
     }
   }
 
+  const linkFilterContext = { doc: data.value, parent: parentDoc?.value }
+
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
     field.link_filters = JSON.stringify({
       name: ['in', users.data.crmUsers?.map((user) => user.name)],
       ignore_user_type: 1,
-      ...(parseLinkFilters(field.link_filters) || {}),
+      ...(parseLinkFilters(field.link_filters, linkFilterContext) || {}),
     })
   }
 
@@ -582,7 +584,7 @@ const field = computed(() => {
 
   let _field = {
     ...field,
-    filters: parseLinkFilters(field.link_filters),
+    filters: parseLinkFilters(field.link_filters, linkFilterContext),
     placeholder: field.placeholder || field.label,
     display_via_depends_on: displayViaDependsOn,
     mandatory_via_depends_on: evaluateDependsOnValue(
