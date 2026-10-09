@@ -19,11 +19,7 @@ const props = defineProps({
   column: { type: Object, required: true },
 })
 
-// skip entries that are not resolved field objects (e.g. a fieldname whose
-// field was deleted after the layout was saved)
 const fields = computed(() =>
-  (props.column.fields || []).filter(
-    (field) => field && typeof field === 'object' && field.fieldname,
-  ),
+  (props.column.fields || []).filter((field) => field?.fieldname),
 )
 </script>

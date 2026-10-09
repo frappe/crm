@@ -311,11 +311,6 @@ doc_events = {
 		"on_update": ["crm.integrations.erpnext.doc_share.on_update"],
 		"on_trash": ["crm.integrations.erpnext.doc_share.on_trash"],
 	},
-	"Custom Field": {
-		"on_trash": [
-			"crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.remove_deleted_field_from_layouts"
-		],
-	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],

@@ -26,41 +26,6 @@ class CRMFieldsLayout(Document):
 	pass
 
 
-def remove_deleted_field_from_layouts(doc, method=None):
-	"""Custom Field on_trash: drop the deleted fieldname from every saved layout of its doctype."""
-	for layout in frappe.get_all("CRM Fields Layout", filters={"dt": doc.dt}, fields=["name", "layout"]):
-		if not layout.layout:
-			continue
-
-		try:
-			parsed = json.loads(layout.layout)
-		except ValueError:
-			# a malformed layout must not block deleting the field
-			continue
-
-		if isinstance(parsed, list) and remove_fieldnames_from_layout(parsed, {doc.fieldname}):
-			frappe.db.set_value("CRM Fields Layout", layout.name, "layout", json.dumps(parsed))
-
-
-def remove_fieldnames_from_layout(layout, fieldnames):
-	"""Remove `fieldnames` in place from a parsed layout (list of tabs or list of sections).
-	Returns True if anything was removed."""
-	changed = False
-	for item in layout:
-		if not isinstance(item, dict):
-			continue
-		sections = item.get("sections") if "sections" in item else [item]
-		for section in sections or []:
-			for column in section.get("columns") or []:
-				if not column or not column.get("fields"):
-					continue
-				kept = [f for f in column["fields"] if not isinstance(f, str) or f not in fieldnames]
-				if len(kept) != len(column["fields"]):
-					column["fields"] = kept
-					changed = True
-	return changed
-
-
 @frappe.whitelist()
 def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None):
 	tabs = []
@@ -93,7 +58,7 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 				allowed_fields.extend(column.get("fields"))
 
 	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldname in allowed_fields]
+	fields = {field.fieldname: field for field in fields if field.fieldname in allowed_fields}
 
 	required_fields = []
 
@@ -109,9 +74,8 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 			for column in section.get("columns") if section.get("columns") else []:
 				resolved_fields = []
 				for fieldname in column.get("fields") or []:
-					field = next((f for f in fields if f.fieldname == fieldname), None)
+					field = fields.get(fieldname)
 					if not field:
-						# fieldname no longer exists on the doctype (e.g. a deleted custom field)
 						continue
 
 					field = field.as_dict()
@@ -166,26 +130,21 @@ def get_sidepanel_sections(doctype: str):
 	]
 
 	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
+	fields = {field.fieldname: field for field in fields if field.fieldtype not in not_allowed_fieldtypes}
 
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
 			resolved_fields = []
 			for fieldname in column.get("fields") or []:
-				field_obj = next((f for f in fields if f.fieldname == fieldname), None)
+				field_obj = fields.get(fieldname)
 				if not field_obj:
-					# fieldname no longer exists on the doctype (e.g. a deleted custom field)
 					continue
 
 				field_obj = field_obj.as_dict()
 				handle_perm_level_restrictions(field_obj, doctype)
 				resolved_fields.append(get_field_obj(field_obj))
 			column["fields"] = resolved_fields
-
-	fields_meta = {}
-	for field in fields:
-		fields_meta[field.fieldname] = field
 
 	return layout
 
