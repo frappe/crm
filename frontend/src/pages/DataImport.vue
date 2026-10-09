@@ -1,48 +1,18 @@
 <template>
-  <DataImport
-    :doctype="route.params.doctype"
-    :importName="route.params.importName"
-    :doctypeMap="doctypeMap"
+  <DataImportListPage
+    v-if="route.name === 'DataImportList'"
+    :key="route.fullPath"
   />
+  <DataImportWizardPage v-else />
 </template>
 
 <script setup>
+import DataImportListPage from '@/components/DataImport/DataImportListPage.vue'
+import DataImportWizardPage from '@/components/DataImport/DataImportWizardPage.vue'
 import { usePageMeta } from 'frappe-ui'
-import { DataImport } from '@framework/ui/components/DataImport'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-
-const doctypeMap = {
-  'CRM Lead': {
-    title: 'Leads',
-    listRoute: '/crm/leads',
-    pageRoute: `/crm/leads/docname`,
-  },
-  'CRM Deal': {
-    title: 'Deals',
-    listRoute: '/crm/deals',
-    pageRoute: `/crm/deals/docname`,
-  },
-  Contact: {
-    title: 'Contacts',
-    listRoute: '/crm/contacts',
-    pageRoute: `/crm/contacts/docname`,
-  },
-  'CRM Task': {
-    title: 'Tasks',
-    listRoute: '/crm/tasks',
-  },
-  'CRM Organization': {
-    title: 'Organizations',
-    listRoute: '/crm/organizations',
-    pageRoute: `/crm/organizations/docname`,
-  },
-  'CRM Call Log': {
-    title: 'Call Log',
-    listRoute: '/crm/call-logs',
-  },
-}
 
 usePageMeta(() => {
   return {
