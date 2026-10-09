@@ -164,7 +164,7 @@
                               />
                             </div>
                             <div class="flex items-center">
-                              <Dropdown :options="contactOptions(contact.name)">
+                              <Dropdown :options="contactOptions(contact)">
                                 <Button
                                   icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
@@ -331,7 +331,7 @@ import { ref, computed, h, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
 
@@ -553,13 +553,21 @@ const showContactModal = ref(false)
 const _contact = ref({})
 
 function contactOptions(contact) {
-  let options = [
-    {
-      label: __('Delete'),
-      icon: 'lucide-trash-2',
-      onClick: () => removeContact(contact),
-    },
-  ]
+  let options = []
+
+  if (callEnabled.value && contact.mobile_no) {
+    options.push({
+      label: __('Make a Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(contact.mobile_no),
+    })
+  }
+
+  options.push({
+    label: __('Delete'),
+    icon: 'lucide-trash-2',
+    onClick: () => removeContact(contact.name),
+  })
 
   if (!contact.is_primary) {
     options.push({
