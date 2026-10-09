@@ -5,9 +5,9 @@ from datetime import datetime, timezone
 from unittest.mock import patch
 
 import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
 
 from crm.lead_syncing.doctype.lead_sync_source.facebook import SYNC_OVERLAP_SECONDS, FacebookSyncSource
+from crm.tests import CRMTestCase as FrappeTestCase
 
 # On IntegrationTestCase, the doctype test records and all
 # link-field test record dependencies are recursively loaded
@@ -17,6 +17,7 @@ IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 FACEBOOK = "crm.lead_syncing.doctype.lead_sync_source.facebook"
 FORM_ID = "test-form-78913"
+
 
 class IntegrationTestLeadSyncSource(FrappeTestCase):
 	def setUp(self):
