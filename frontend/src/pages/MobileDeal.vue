@@ -331,7 +331,7 @@ import { ref, computed, h, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
 
@@ -554,6 +554,14 @@ const _contact = ref({})
 
 function contactOptions(contact) {
   let options = []
+
+  if (callEnabled.value && contact.mobile_no) {
+    options.push({
+      label: __('Make a Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(contact.mobile_no),
+    })
+  }
 
   options.push({
     label: __('Delete'),
