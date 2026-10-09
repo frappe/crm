@@ -28,6 +28,15 @@ async function nextListFetch(page: Page, trigger: () => Promise<void>) {
 	}
 }
 
+/** Close the onboarding help panel, which opens for new users and covers "Load More". */
+async function dismissHelpPanel(page: Page) {
+	const panel = page.locator('div.fixed.right-0.w-80')
+	const opened = await panel.waitFor({ timeout: 5000 }).then(() => true, () => false)
+	if (!opened) return
+	await panel.locator('> div').first().getByRole('button').last().click()
+	await expect(panel).toBeHidden()
+}
+
 test.describe('List view pagination', () => {
 	test.beforeAll(async ({ request }) => {
 		// One more than the default page size so "Load More" is rendered.
@@ -51,6 +60,8 @@ test.describe('List view pagination', () => {
 		expect(initial.payload.page_length).toBe(DEFAULT_PAGE_LENGTH)
 		expect(initial.status).toBe(200)
 		expect(initial.message?.row_count).toBe(DEFAULT_PAGE_LENGTH)
+
+		await dismissHelpPanel(page)
 
 		const loadMore = page.getByRole('button', { name: 'Load More', exact: true })
 		await expect(loadMore).toBeVisible()
