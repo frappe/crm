@@ -31,7 +31,7 @@
               <DotIcon class="h-2.5 w-2.5 text-ink-gray-5" :radius="2" />
             </div>
             <div class="flex gap-2">
-              <TaskPriorityIcon class="!h-2 !w-2" :priority="task.priority" />
+              <TaskPriorityIcon :priority="task.priority" />
               {{ task.priority }}
             </div>
           </div>
