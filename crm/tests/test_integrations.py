@@ -14,16 +14,13 @@ from crm.integrations.api import (
 	is_call_integration_enabled,
 	set_default_calling_medium,
 )
-<<<<<<< HEAD
 from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from crm.integrations.exotel.handler import (
 	EXOTEL_CALL_STATUSES,
 	get_call_log_status,
 	handle_request,
 	normalize_call_status,
 )
->>>>>>> 0035fb2 (fix: map Exotel call statuses to valid Call Log options)
 
 
 class TestIntegrations(FrappeTestCase):
