@@ -346,11 +346,8 @@ import ButtonControl, {
 } from '@/components/Controls/ButtonControl.vue'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
-<<<<<<< HEAD
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
-=======
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
->>>>>>> bf512b6 (fix: show priority bars on tasks and in the priority dropdown)
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import Link from '@/components/Controls/Link.vue'
