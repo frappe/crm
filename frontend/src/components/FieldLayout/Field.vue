@@ -51,6 +51,15 @@
       :parentDoctype="doctype"
       :parentFieldname="field.fieldname"
     />
+    <Select
+      v-else-if="field.fieldtype === 'Select' && hasOptionIcons"
+      v-model="data[field.fieldname]"
+      :options="field.options"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.disabled)"
+      :description="field.description"
+      @update:modelValue="(e) => fieldChange(e, field)"
+    />
     <FormControl
       v-else-if="field.fieldtype === 'Select'"
       v-model="data[field.fieldname]"
@@ -342,6 +351,7 @@ import ButtonControl, {
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -367,12 +377,13 @@ import { useDocument } from '@/data/document'
 
 import {
   Combobox,
+  Select,
   Tooltip,
   DatePicker,
   DateTimePicker,
   TimePicker,
 } from 'frappe-ui'
-import { computed, provide, inject, ref } from 'vue'
+import { computed, provide, inject, ref, h } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
@@ -516,6 +527,15 @@ const field = computed(() => {
     if (field.options[0].value !== '' && !field.reqd) {
       field.options.unshift({ label: '', value: '' })
     }
+
+    if (doctype === 'CRM Task' && field.fieldname === 'priority') {
+      field.options = field.options
+        .filter((option) => option.value)
+        .map((option) => ({
+          ...option,
+          icon: () => h(TaskPriorityIcon, { priority: option.value }),
+        }))
+    }
   }
 
   if (field.fieldtype === 'Link' && field.options === 'User') {
@@ -579,6 +599,10 @@ const field = computed(() => {
   _field.visible = isFieldVisible(_field, scriptHidden)
   return _field
 })
+
+const hasOptionIcons = computed(() =>
+  field.value.options?.some?.((option) => option.icon),
+)
 
 function isFieldVisible(field, scriptHidden) {
   if (preview.value) return true
