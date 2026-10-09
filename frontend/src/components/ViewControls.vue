@@ -23,6 +23,13 @@
         <div class="-ml-2 h-[70%] border-l" />
         <div class="flex shrink-0 gap-2">
           <Button
+            v-if="route.query.import"
+            :label="__('From import')"
+            iconRight="lucide-x"
+            :tooltip="__('Show all records')"
+            @click="clearImportFilter"
+          />
+          <Button
             :tooltip="__('Refresh')"
             icon="lucide-refresh-ccw"
             :loading="isLoading"
@@ -38,7 +45,7 @@
           <Filter
             v-model="list"
             :doctype="doctype"
-            :default_filters="filters"
+            :default_filters="defaultFilters"
             @update="updateFilter"
           />
           <SortBy
@@ -169,6 +176,13 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
+          v-if="route.query.import"
+          :label="__('From import')"
+          iconRight="lucide-x"
+          :tooltip="__('Show all records')"
+          @click="clearImportFilter"
+        />
+        <Button
           :tooltip="__('Refresh')"
           icon="lucide-refresh-ccw"
           :loading="isLoading"
@@ -183,7 +197,7 @@
         <Filter
           v-model="list"
           :doctype="doctype"
-          :default_filters="filters"
+          :default_filters="defaultFilters"
           @update="updateFilter"
         />
         <SortBy
@@ -409,6 +423,36 @@ const resizeColumn = defineModel('resizeColumn', { type: Boolean })
 const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
+
+// Data Import's "Go to list" opens this list on the records one import created
+// or updated. Kept out of the saved view, like the page's own fixed filters.
+const defaultFilters = computed(() => {
+  const { import_field, import_user, import_from, import_to } = route.query
+  if (!route.query.import || !import_user || !import_from || !import_to) {
+    return props.filters
+  }
+  const field = import_field === 'modified' ? 'modified' : 'creation'
+  return {
+    ...props.filters,
+    [field === 'creation' ? 'owner' : 'modified_by']: import_user,
+    [field]: ['between', [import_from, import_to]],
+  }
+})
+
+function clearImportFilter() {
+  const query = { ...route.query }
+  for (const key of [
+    'import',
+    'import_field',
+    'import_user',
+    'import_from',
+    'import_to',
+  ]) {
+    delete query[key]
+  }
+  router.replace({ query })
+}
+
 const router = useRouter()
 
 const defaultParams = ref('')
@@ -544,7 +588,7 @@ function getParams() {
     doctype: props.doctype,
     filters: filters,
     order_by: order_by,
-    default_filters: props.filters,
+    default_filters: defaultFilters.value,
     view: {
       custom_view_name: view_name,
       view_type: view_type,
@@ -566,7 +610,12 @@ let listResource
 listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
-  cache: [props.doctype, route.query.view, route.params.viewType],
+  cache: [
+    props.doctype,
+    route.query.view,
+    route.params.viewType,
+    route.query.import,
+  ],
   auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
@@ -576,7 +625,7 @@ listResource = createResource({
       doctype: props.doctype,
       filters: params.filters,
       order_by: params.order_by,
-      default_filters: props.filters,
+      default_filters: defaultFilters.value,
       view: {
         custom_view_name: cv?.name || '',
         view_type: cv?.type || route.params.viewType || 'list',
@@ -663,7 +712,7 @@ async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
   const userId = getUser()?.name
   let filters = {
-    ...props.filters,
+    ...defaultFilters.value,
     ...list.value.params.filters,
   }
 
