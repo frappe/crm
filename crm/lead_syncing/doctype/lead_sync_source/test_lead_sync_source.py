@@ -1,16 +1,11 @@
 # Copyright (c) 2025, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from datetime import datetime, timezone
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
->>>>>>> 3f559e0 (fix: keep the time of day and site time zone in the Meta lead sync window)
+from crm.tests import CRMTestCase as FrappeTestCase
 
 from crm.lead_syncing.doctype.lead_sync_source.facebook import SYNC_OVERLAP_SECONDS, FacebookSyncSource
 
@@ -23,20 +18,11 @@ IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 FACEBOOK = "crm.lead_syncing.doctype.lead_sync_source.facebook"
 FORM_ID = "test-form-78913"
 
-
-<<<<<<< HEAD
-class TestLeadSyncSource(FrappeTestCase):
-	"""
-	Integration tests for LeadSyncSource.
-	Use this class for testing interactions between multiple components.
-	"""
-=======
-class IntegrationTestLeadSyncSource(IntegrationTestCase):
+class IntegrationTestLeadSyncSource(FrappeTestCase):
 	def setUp(self):
 		patcher = patch(f"{FACEBOOK}.get_system_timezone", return_value="Asia/Karachi")
 		patcher.start()
 		self.addCleanup(patcher.stop)
->>>>>>> 3f559e0 (fix: keep the time of day and site time zone in the Meta lead sync window)
 
 		frappe.get_doc(
 			{
