@@ -14,13 +14,13 @@ from crm.integrations.api import (
 	is_call_integration_enabled,
 	set_default_calling_medium,
 )
-from crm.tests import CRMTestCase as FrappeTestCase
 from crm.integrations.exotel.handler import (
 	EXOTEL_CALL_STATUSES,
 	get_call_log_status,
 	handle_request,
 	normalize_call_status,
 )
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestIntegrations(FrappeTestCase):
@@ -504,7 +504,7 @@ class TestIntegrations(FrappeTestCase):
 		self.assertIsNone(doctype)
 
 
-class TestExotelCallStatus(IntegrationTestCase):
+class TestExotelCallStatus(FrappeTestCase):
 	"""Exotel reports status in its own vocabulary, CRM Call Log status is a Select."""
 
 	def get_status_options(self):
