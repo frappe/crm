@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-04 14:56+0000\n"
-"PO-Revision-Date: 2026-10-06 02:38\n"
+"PO-Revision-Date: 2026-10-09 03:24\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -5293,7 +5293,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:303
 msgid "Lead from call {0}"
-msgstr ""
+msgstr "Cliente potencial desde llamada {0}"
 
 #: crm/api/dashboard.py:1103
 msgid "Lead generation channel analysis"
@@ -5317,7 +5317,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:175
 msgid "Lead sync source deleted successfully"
-msgstr ""
+msgstr "Fuente de sincronización de clientes potenciales eliminada correctamente"
 
 #: crm/automation/scoring.py:42
 msgid "Lead temperature must be one of {0}"
@@ -5514,7 +5514,7 @@ msgstr ""
 #: frontend/src/components/Modals/EditValueModal.vue:176
 #: frontend/src/components/Modals/LostReasonModal.vue:89
 msgid "Lost Notes are required when Lost Reason is \"Other\""
-msgstr ""
+msgstr "Las notas de pérdida son obligatorias cuando el motivo de pérdida es «Otro»"
 
 #. Label of the lost_reason (Link) field in DocType 'CRM Deal'
 #. Label of the lost_reason (Link) field in DocType 'CRM Lead'
@@ -5607,7 +5607,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:4
 msgid "Manage your service level agreement policies"
-msgstr ""
+msgstr "Gestiona tus políticas de acuerdo de nivel de servicio"
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:95
 #: frontend/src/components/Settings/InviteUserPage.vue:164
@@ -5759,15 +5759,15 @@ msgstr ""
 
 #: frontend/src/utils/callLog.js:79
 msgid "Missed Call"
-msgstr ""
+msgstr "Llamada perdida"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
 msgid "Missing mandatory fields: {0}"
-msgstr ""
+msgstr "Faltan campos obligatorios: {0}"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:774
 msgid "Mobile App Installation"
-msgstr ""
+msgstr "Instalación de la app móvil"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Contacts'
 #. Label of the mobile_no (Data) field in DocType 'CRM Lead'
@@ -6107,7 +6107,7 @@ msgstr ""
 #: frontend/src/components/Modals/SidePanelModal.vue:51
 #: frontend/src/pages/Deal.vue:284 frontend/src/pages/MobileDeal.vue:209
 msgid "No Contacts Added"
-msgstr ""
+msgstr "No hay contactos añadidos"
 
 #: frontend/src/components/Controls/Grid.vue:448
 msgid "No Data"
@@ -6183,7 +6183,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:41
 msgid "No Users Found"
-msgstr ""
+msgstr "No se han encontrado usuarios"
 
 #: crm/public/js/domain_enrichment.js:16
 msgid "No Website"
@@ -6241,7 +6241,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:57
 msgid "No holiday list found"
-msgstr ""
+msgstr "No se ha encontrado ninguna lista de festivos"
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:107
 msgid "No matching users"
@@ -6300,7 +6300,7 @@ msgstr "Ningún {0} encontrado"
 
 #: frontend/src/components/PrimaryDropdown.vue:41
 msgid "No {0} available"
-msgstr ""
+msgstr "No hay {0} disponibles"
 
 #: frontend/src/pages/MobileContact.vue:145
 msgid "No {0} found"
@@ -6382,7 +6382,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:379
 #: frontend/src/components/Filter.vue:394
 msgid "Not equals"
-msgstr ""
+msgstr "Distinto de"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.py:32
 msgid "Not implemented yet!"
@@ -6394,7 +6394,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:356
 #: frontend/src/components/Filter.vue:370
 msgid "Not in"
-msgstr ""
+msgstr "No está en"
 
 #: frontend/src/components/Filter.vue:305
 #: frontend/src/components/Filter.vue:316
@@ -6402,7 +6402,7 @@ msgstr ""
 #: frontend/src/components/Filter.vue:354
 #: frontend/src/components/Filter.vue:368
 msgid "Not like"
-msgstr ""
+msgstr "No contiene"
 
 #: crm/api/activities.py:26 crm/api/activities.py:180 crm/api/contact.py:52
 #: crm/api/contact.py:88 crm/api/contact.py:109 crm/api/form.py:239
@@ -6432,7 +6432,7 @@ msgstr "Nota"
 
 #: frontend/src/components/Activities/NoteArea.vue:82
 msgid "Note deleted"
-msgstr ""
+msgstr "Nota eliminada"
 
 #. Label of the notes (Small Text) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -6497,7 +6497,7 @@ msgstr "Número"
 
 #: crm/api/dashboard.py:80
 msgid "Number Chart"
-msgstr ""
+msgstr "Gráfico numérico"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:71
 msgid "Number Format"
@@ -6577,7 +6577,7 @@ msgstr ""
 
 #: crm/api/dashboard.py:86
 msgid "Ongoing Deals"
-msgstr ""
+msgstr "Oportunidades en curso"
 
 #: crm/api/dashboard.py:308
 msgid "Ongoing deals"
@@ -6585,15 +6585,15 @@ msgstr ""
 
 #: crm/api/user.py:127 crm/api/user.py:161
 msgid "Only System Managers can assign the Sales Manager role"
-msgstr ""
+msgstr "Solo los administradores del sistema pueden asignar el rol de gestor comercial"
 
 #: crm/api/user.py:124 crm/api/user.py:155
 msgid "Only System Managers can assign the System Manager role"
-msgstr ""
+msgstr "Solo los administradores del sistema pueden asignar el rol de administrador del sistema"
 
 #: crm/api/user.py:158 crm/api/user.py:203
 msgid "Only System Managers can modify other System Managers"
-msgstr ""
+msgstr "Solo los administradores del sistema pueden modificar a otros administradores del sistema"
 
 #: frontend/src/utils/index.js:509
 msgid "Only image files are allowed"
@@ -6610,7 +6610,7 @@ msgstr ""
 
 #: crm/api/whatsapp.py:26
 msgid "Only sales users can access WhatsApp features."
-msgstr ""
+msgstr "Solo los usuarios comerciales pueden acceder a las funciones de WhatsApp."
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
@@ -6622,11 +6622,11 @@ msgstr "Abrir"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:97
 msgid "Open Nested Conditions"
-msgstr ""
+msgstr "Abrir condiciones anidadas"
 
 #: frontend/src/pages/Organization.vue:103
 msgid "Open Website"
-msgstr ""
+msgstr "Abrir sitio web"
 
 #: crm/fcrm/doctype/crm_deal/crm_deal.js:6
 #: crm/fcrm/doctype/crm_lead/crm_lead.js:6
@@ -6744,7 +6744,7 @@ msgstr "Otro"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:738
 msgid "Other Features"
-msgstr ""
+msgstr "Otras funciones"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -6974,7 +6974,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:734
 msgid "Pinned View"
-msgstr ""
+msgstr "Vista fijada"
 
 #: frontend/src/components/ViewControls.vue:815
 msgid "Pinned Views"
@@ -6990,7 +6990,7 @@ msgstr "Marcador de posición"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:171
 msgid "Playback Speed"
-msgstr ""
+msgstr "Velocidad de reproducción"
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:169
 msgid "Please check your access token"
@@ -7010,7 +7010,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:239
 msgid "Please fix the errors in the form"
-msgstr ""
+msgstr "Corrige los errores del formulario"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:213
 msgid "Please select a currency before saving."
@@ -7038,15 +7038,15 @@ msgstr "Por favor seleccione el día libre de la semana"
 
 #: frontend/src/pages/Lead.vue:144
 msgid "Please set a mobile number to make calls"
-msgstr ""
+msgstr "Indica un número de móvil para hacer llamadas"
 
 #: frontend/src/pages/Deal.vue:112 frontend/src/pages/Lead.vue:166
 msgid "Please set a website to visit"
-msgstr ""
+msgstr "Indica un sitio web para visitar"
 
 #: frontend/src/pages/Deal.vue:101 frontend/src/pages/Lead.vue:156
 msgid "Please set an email address to send emails"
-msgstr ""
+msgstr "Indica una dirección de correo para enviar emails"
 
 #: crm/integrations/exotel/handler.py:82
 msgid "Please setup Exotel integration"
@@ -7104,22 +7104,22 @@ msgstr "Primario"
 
 #: frontend/src/pages/Deal.vue:924 frontend/src/pages/MobileDeal.vue:606
 msgid "Primary Contact Set"
-msgstr ""
+msgstr "Contacto principal establecido"
 
 #. Label of the email (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary email"
-msgstr ""
+msgstr "Email principal"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary mobile no"
-msgstr ""
+msgstr "Móvil principal"
 
 #. Label of the phone (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Primary phone"
-msgstr ""
+msgstr "Teléfono principal"
 
 #. Label of the priorities (Table) field in DocType 'CRM Service Level
 #. Agreement'
@@ -7129,7 +7129,7 @@ msgstr "Prioridades"
 
 #: frontend/src/components/Settings/Sla/utils.js:145
 msgid "Priorities must be unique"
-msgstr ""
+msgstr "Las prioridades deben ser únicas"
 
 #. Label of the priority (Link) field in DocType 'CRM Service Level Priority'
 #. Label of the priority (Select) field in DocType 'CRM Task'
@@ -7221,7 +7221,7 @@ msgstr "Público"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:733
 msgid "Public View"
-msgstr ""
+msgstr "Vista pública"
 
 #: frontend/src/components/ViewControls.vue:809
 msgid "Public Views"
@@ -7270,7 +7270,7 @@ msgstr "Entrada Rápida"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:757
 msgid "Quick Entry Layout"
-msgstr ""
+msgstr "Diseño de entrada rápida"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
@@ -7279,7 +7279,7 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:870
 msgid "Quick filters updated successfully"
-msgstr ""
+msgstr "Filtros rápidos actualizados correctamente"
 
 #: frontend/src/pages/Deal.vue:807 frontend/src/pages/MobileDeal.vue:505
 msgid "Quotations"
@@ -7447,7 +7447,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:163
 msgid "Reject Call"
-msgstr ""
+msgstr "Rechazar llamada"
 
 #. Option for the 'Timeline Timestamp Format' (Select) field in DocType 'FCRM
 #. Settings'
