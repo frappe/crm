@@ -3,6 +3,7 @@
 
 import frappe
 from frappe.utils.nestedset import get_descendants_of
+
 from crm.tests import CRMTestCase as FrappeTestCase
 
 TERRITORIES = ("_Test Territory Grandchild", "_Test Territory Child", "_Test Territory Parent")
