@@ -18,14 +18,14 @@ defineOptions({
 })
 
 const props = defineProps({
-  priority: { type: String, required: true },
+  priority: { type: String, default: '' },
 })
 
-// Tallest bars faded per level: High is fully solid, Low only shows one bar
+// Tallest bars faded per level: High is fully solid, no priority is fully faded
 const FADED_BARS = { High: 0, Medium: 1, Low: 2 }
 
 function barClass(barIndexFromTop) {
-  const faded = FADED_BARS[props.priority] ?? 0
+  const faded = FADED_BARS[props.priority] ?? 3
   return barIndexFromTop < faded ? 'fill-ink-gray-3' : 'fill-ink-gray-6'
 }
 </script>

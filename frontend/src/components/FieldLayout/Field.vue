@@ -54,6 +54,7 @@
     <Select
       v-else-if="field.fieldtype === 'Select' && hasOptionIcons"
       v-model="data[field.fieldname]"
+      class="w-full"
       :options="field.options"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
@@ -529,12 +530,11 @@ const field = computed(() => {
     }
 
     if (doctype === 'CRM Task' && field.fieldname === 'priority') {
-      field.options = field.options
-        .filter((option) => option.value)
-        .map((option) => ({
-          ...option,
-          icon: () => h(TaskPriorityIcon, { priority: option.value }),
-        }))
+      field.options = field.options.map((option) => ({
+        ...option,
+        label: option.value ? option.label : __('No priority'),
+        icon: () => h(TaskPriorityIcon, { priority: option.value }),
+      }))
     }
   }
 
