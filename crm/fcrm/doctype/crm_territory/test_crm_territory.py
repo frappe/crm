@@ -1,22 +1,14 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
-
-
-class TestCRMTerritory(FrappeTestCase):
-	pass
-=======
 import frappe
-from frappe.tests import UnitTestCase
 from frappe.utils.nestedset import get_descendants_of
+from crm.tests import CRMTestCase as FrappeTestCase
 
 TERRITORIES = ("_Test Territory Grandchild", "_Test Territory Child", "_Test Territory Parent")
 
 
-class TestCRMTerritory(UnitTestCase):
+class TestCRMTerritory(FrappeTestCase):
 	def setUp(self):
 		self.cleanup()
 		self.parent = make_territory("_Test Territory Parent", is_group=1)
@@ -102,4 +94,3 @@ def make_territory(name, parent=None, is_group=0):
 			"is_group": is_group,
 		}
 	).insert()
->>>>>>> 132fa61 (fix: use NestedSet for CRM Territory so lft/rgt and tree filters work)
