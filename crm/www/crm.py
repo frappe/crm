@@ -85,6 +85,7 @@ def get_boot():
 				or get_system_timezone(),
 			},
 			"state_options": get_state_options(),
+			"is_insights_installed": is_insights_installed(),
 		}
 	)
 
@@ -111,6 +112,14 @@ def get_state_options() -> dict[str, list[str]]:
 		# Degrade silently to free-text: this runs in boot, so the except branch
 		# must not do anything that can itself raise (e.g. logging to a missing dir).
 		return {}
+
+
+def is_insights_installed() -> bool:
+	"""Runs inside ``get_boot``, so it must never raise; see ``get_state_options``."""
+	try:
+		return "insights" in get_installed_apps()
+	except Exception:
+		return False
 
 
 def get_default_route():
