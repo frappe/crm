@@ -67,6 +67,9 @@ def needs_password_setup() -> bool:
 	if frappe.get_system_settings("disable_user_pass_login"):
 		return False
 
+	if frappe.db.get_single_value("LDAP Settings", "enabled"):
+		return False
+
 	# Every user carries a `frappe` provider row (Frappe issues one on insert
 	# so the site can act as an identity provider), so only other providers
 	# mean the user actually signs in through SSO.
