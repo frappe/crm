@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-09-27 14:48+0000\n"
-"PO-Revision-Date: 2026-09-27 14:48+0000\n"
+"POT-Creation-Date: 2026-10-04 14:56+0000\n"
+"PO-Revision-Date: 2026-10-04 14:56+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -16,12 +16,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: frontend/src/components/ViewControls.vue:1276
+#: frontend/src/components/ViewControls.vue:1438
 msgid " (New)"
 msgstr ""
 
 #: frontend/src/components/Filter.vue:626
 msgid "%John%"
+msgstr ""
+
+#: frontend/src/components/Controls/Link.vue:12
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:38
+msgid "(required)"
 msgstr ""
 
 #: frontend/src/components/Filter.vue:616
@@ -122,8 +127,8 @@ msgstr ""
 msgid "<b>SHORTCUTS</b>"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:94
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:95
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:96
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:97
 msgid "<p>Dear {{ lead_name }},</p>\\n\\n<p>This is a reminder for the payment of {{ grand_total }}.</p>\\n\\n<p>Thanks,</p>\\n<p>Frappé</p>"
 msgstr ""
 
@@ -132,11 +137,15 @@ msgstr ""
 msgid "<span class=\"h5\"><b>PORTAL</b></span>"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:296
+msgid "<step key>"
+msgstr ""
+
 #: frontend/src/components/CommunicationArea.vue:84
 msgid "@John, can you please check this?"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:133
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:136
 msgid "A Lead requires either a person's name or an organization's name"
 msgstr ""
 
@@ -147,6 +156,10 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1089
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1231
 msgid "A section can have up to {0} columns"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:39
+msgid "A trigger runs only when these filters match."
 msgstr ""
 
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.py:273
@@ -268,18 +281,30 @@ msgstr ""
 msgid "Account name is required"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:176
+#: frontend/src/components/Settings/Settings.vue:178
 msgid "Accounts"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:103
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:217
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:78
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:98
+msgid "Action"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:97
+msgid "Action on {0}"
+msgstr ""
+
 #: frontend/src/components/CustomActions.vue:76
-#: frontend/src/components/ViewControls.vue:764
-#: frontend/src/components/ViewControls.vue:1168
+#: frontend/src/components/ViewControls.vue:772
+#: frontend/src/components/ViewControls.vue:1330
 msgid "Actions"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:572 frontend/src/pages/Lead.vue:435
-#: frontend/src/pages/MobileDeal.vue:446 frontend/src/pages/MobileLead.vue:306
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:144
+#: frontend/src/pages/Deal.vue:749 frontend/src/pages/Lead.vue:564
+#: frontend/src/pages/MobileDeal.vue:448 frontend/src/pages/MobileLead.vue:306
 msgid "Activity"
 msgstr ""
 
@@ -322,18 +347,22 @@ msgstr ""
 msgid "Add Column"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFConditions.vue:26
-#: frontend/src/components/ConditionsFilter/CFConditions.vue:68
+#: frontend/src/components/ConditionsFilter/CFConditions.vue:27
+#: frontend/src/components/ConditionsFilter/CFConditions.vue:70
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:28
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:65
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:26
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:63
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:23
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:83
 msgid "Add Condition"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFConditions.vue:77
+#: frontend/src/components/ConditionsFilter/CFConditions.vue:79
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:71
 #: frontend/src/components/Settings/Sla/SlaAssignmentConditions.vue:69
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:84
 msgid "Add Condition Group"
 msgstr ""
 
@@ -371,7 +400,7 @@ msgstr ""
 msgid "Add Organization..."
 msgstr ""
 
-#: frontend/src/components/Controls/Grid.vue:458
+#: frontend/src/components/Controls/Grid.vue:460
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
@@ -438,6 +467,10 @@ msgstr ""
 msgid "Add a name for your source"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:215
+msgid "Add block"
+msgstr ""
+
 #: frontend/src/components/Telephony/TaskPanel.vue:13
 msgid "Add description..."
 msgstr ""
@@ -450,6 +483,10 @@ msgstr ""
 msgid "Add existing system users to this CRM. Assign them a role to grant access with their current credentials."
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:62
+msgid "Add field"
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:634
 msgid "Add fields to see them here."
 msgstr ""
@@ -458,6 +495,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailAccountList.vue:51
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:113
 #: frontend/src/components/Settings/Users.vue:53
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:58
 msgid "Add one to get started."
 msgstr ""
 
@@ -475,7 +513,7 @@ msgstr ""
 msgid "Add to Holidays"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:630
+#: frontend/src/components/Layouts/AppSidebar.vue:581
 msgid "Add your first comment"
 msgstr ""
 
@@ -503,6 +541,14 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:144
+msgid "Advanced"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:282
+msgid "After branches"
+msgstr ""
+
 #: crm/integrations/twilio/twilio_handler.py:144
 msgid "Agent is unavailable to take the call, please call after some time."
 msgstr ""
@@ -514,6 +560,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:205
 msgid "All available priorities have already been added"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:31
+msgid "All filters must match."
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:470
@@ -533,7 +583,11 @@ msgstr ""
 msgid "Amount after discount"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:454
+#: crm/automation/actions.py:78
+msgid "Amount is required"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:460
 msgid "An Error Occurred"
 msgstr ""
 
@@ -544,7 +598,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:277
 #: frontend/src/data/script.js:78 frontend/src/data/script.js:79
-#: frontend/src/pages/Lead.vue:357
+#: frontend/src/pages/Lead.vue:360
 msgid "An error occurred"
 msgstr ""
 
@@ -582,6 +636,10 @@ msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:64
 msgid "Another CRM"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:88
+msgid "Any document"
 msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:69
@@ -627,6 +685,10 @@ msgstr ""
 msgid "Are you sure you want to clear demo data? This action cannot be undone."
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:470
+msgid "Are you sure you want to delete the trigger and all workflow steps?"
+msgstr ""
+
 #: frontend/src/components/Activities/AttachmentArea.vue:128
 msgid "Are you sure you want to delete this attachment?"
 msgstr ""
@@ -637,6 +699,10 @@ msgstr ""
 
 #: frontend/src/pages/MobileOrganization.vue:276
 msgid "Are you sure you want to delete this organization?"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:471
+msgid "Are you sure you want to delete this step?"
 msgstr ""
 
 #: frontend/src/components/Activities/TaskArea.vue:60
@@ -734,13 +800,13 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/components/Layouts/AppSidebar.vue:781
+#: frontend/src/components/Layouts/AppSidebar.vue:732
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:7
-#: frontend/src/components/Settings/Settings.vue:192
+#: frontend/src/components/Settings/Settings.vue:200
 msgid "Assignment Rules"
 msgstr ""
 
@@ -784,6 +850,10 @@ msgstr ""
 msgid "At least one priority is required"
 msgstr ""
 
+#: crm/automation/actions.py:299
+msgid "At least one recipient is required"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
 msgstr ""
@@ -794,7 +864,7 @@ msgid "Attach"
 msgstr ""
 
 #: frontend/src/components/CommentBox.vue:49
-#: frontend/src/components/EmailEditor.vue:142 frontend/src/pages/Deal.vue:114
+#: frontend/src/components/EmailEditor.vue:142 frontend/src/pages/Deal.vue:115
 #: frontend/src/pages/Lead.vue:169
 msgid "Attach a File"
 msgstr ""
@@ -803,8 +873,8 @@ msgstr ""
 msgid "Attach file…"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:607 frontend/src/pages/Lead.vue:470
-#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:341
+#: frontend/src/pages/Deal.vue:784 frontend/src/pages/Lead.vue:599
+#: frontend/src/pages/MobileDeal.vue:484 frontend/src/pages/MobileLead.vue:341
 msgid "Attachments"
 msgstr ""
 
@@ -865,8 +935,42 @@ msgstr ""
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:189
+#. Option for the 'Type' (Select) field in DocType 'CRM Notification'
+#: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
+msgid "Automation"
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:191
 msgid "Automation & Rules"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:105
+msgid "Automation User"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:408
+msgid "Automation deleted"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:359
+msgid "Automation duplicated"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:521
+msgid "Automation saved"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:29
+msgid "Automation title"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:317
+msgid "Automation updated"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:169
+msgid "Available to later steps"
 msgstr ""
 
 #: crm/api/dashboard.py:252
@@ -943,6 +1047,7 @@ msgstr ""
 #: frontend/src/components/FilesUploader/FilesUploader.vue:25
 #: frontend/src/components/Settings/EmailAdd.vue:80
 #: frontend/src/components/Settings/EmailEdit.vue:68
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:8
 msgid "Back"
 msgstr ""
 
@@ -952,6 +1057,10 @@ msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:25
 msgid "Back to File Upload"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:9
+msgid "Back to automations"
 msgstr ""
 
 #: frontend/src/components/Questionnaire.vue:94
@@ -974,8 +1083,17 @@ msgstr ""
 msgid "Basic settings for this form."
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:760
+#: frontend/src/components/Activities/Activities.vue:762
 msgid "Be the first to add one."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:235
+msgid "Before the first step"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:65
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:73
+msgid "Belonging to"
 msgstr ""
 
 #: frontend/src/components/Filter.vue:383
@@ -988,7 +1106,7 @@ msgstr ""
 msgid "Bidirectional Product Sync"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:141
+#: frontend/src/components/Settings/Settings.vue:143
 msgid "Brand"
 msgstr ""
 
@@ -1057,6 +1175,10 @@ msgstr ""
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "CRM Deal Status"
+msgstr ""
+
+#: crm/automation/actions.py:166
+msgid "CRM Deal has no field {0}"
 msgstr ""
 
 #. Name of a DocType
@@ -1226,7 +1348,7 @@ msgstr ""
 msgid "Call Details"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:755
+#: frontend/src/components/Layouts/AppSidebar.vue:706
 msgid "Call Log"
 msgstr ""
 
@@ -1262,8 +1384,8 @@ msgstr ""
 msgid "Calling..."
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:592 frontend/src/pages/Lead.vue:455
-#: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:326
+#: frontend/src/pages/Deal.vue:769 frontend/src/pages/Lead.vue:584
+#: frontend/src/pages/MobileDeal.vue:468 frontend/src/pages/MobileLead.vue:326
 msgid "Calls"
 msgstr ""
 
@@ -1308,7 +1430,7 @@ msgstr ""
 msgid "Cannot change role of user with Admin access"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:510
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:519
 msgid "Cannot convert a lead with status {0}"
 msgstr ""
 
@@ -1348,7 +1470,7 @@ msgstr ""
 msgid "Capture leads and deals from public forms you embed on your website."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:534
+#: frontend/src/components/Layouts/AppSidebar.vue:485
 msgid "Capture leads with a form"
 msgstr ""
 
@@ -1356,7 +1478,7 @@ msgstr ""
 msgid "Capture my first lead"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:760
+#: frontend/src/components/Layouts/AppSidebar.vue:711
 msgid "Capturing Leads"
 msgstr ""
 
@@ -1370,7 +1492,7 @@ msgid "Category"
 msgstr ""
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Layouts/AppSidebar.vue:684
+#: frontend/src/components/Layouts/AppSidebar.vue:635
 msgid "Change"
 msgstr ""
 
@@ -1398,8 +1520,8 @@ msgstr ""
 msgid "Change Status"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:674
-#: frontend/src/components/Layouts/AppSidebar.vue:683
+#: frontend/src/components/Layouts/AppSidebar.vue:625
+#: frontend/src/components/Layouts/AppSidebar.vue:634
 msgid "Change deal status"
 msgstr ""
 
@@ -1440,6 +1562,23 @@ msgstr ""
 msgid "Choose Existing Organization"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:43
+msgid "Choose a field to set"
+msgstr ""
+
+#: crm/automation/actions.py:113
+msgid "Choose a lead temperature"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:58
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:57
+msgid "Choose an event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:16
+msgid "Choose field"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:171
 msgid "Choose how long this SLA policy will be active."
 msgstr ""
@@ -1460,6 +1599,14 @@ msgstr ""
 msgid "Choose the email service provider you want to configure."
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:41
+msgid "Choose value"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:105
+msgid "Choose what this step does"
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:107
 msgid "Choose which leads/deals are affected by this policy."
 msgstr ""
@@ -1468,9 +1615,13 @@ msgstr ""
 msgid "Choose which {0} are affected by this un-assignment rule."
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:33
+msgid "Choose {0}"
+msgstr ""
+
 #: frontend/src/components/Controls/AttachControl.vue:58
 #: frontend/src/components/Controls/GeolocationControl.vue:40
-#: frontend/src/components/Controls/Link.vue:59
+#: frontend/src/components/Controls/Link.vue:69
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:59
 msgid "Clear"
 msgstr ""
@@ -1499,6 +1650,10 @@ msgstr ""
 msgid "Clear Table"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:112
+msgid "Clear to pick a record instead"
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
 msgstr ""
@@ -1507,7 +1662,12 @@ msgstr ""
 #: frontend/src/components/Notifications.vue:27
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleListItem.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:128
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:63
 msgid "Close"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
+msgid "Close inspector"
 msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:126
@@ -1517,6 +1677,11 @@ msgstr ""
 #. Label of the closed_date (Date) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Closed Date"
+msgstr ""
+
+#. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Cold"
 msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:100
@@ -1558,10 +1723,10 @@ msgstr ""
 
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:115
+#: frontend/src/components/Activities/ActivityHeader.vue:119
 #: frontend/src/components/CommentBox.vue:75
 #: frontend/src/components/CommunicationArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:778
+#: frontend/src/components/Layouts/AppSidebar.vue:729
 msgid "Comment"
 msgstr ""
 
@@ -1569,8 +1734,8 @@ msgstr ""
 msgid "Comment sent"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:582 frontend/src/pages/Lead.vue:445
-#: frontend/src/pages/MobileDeal.vue:456 frontend/src/pages/MobileLead.vue:316
+#: frontend/src/pages/Deal.vue:759 frontend/src/pages/Lead.vue:574
+#: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:316
 msgid "Comments"
 msgstr ""
 
@@ -1618,8 +1783,13 @@ msgstr ""
 #. Label of the condition_json (Code) field in DocType 'CRM Service Level
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:66
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:73
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:233
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:84
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:59
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:23
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:67
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:93
 msgid "Condition"
 msgstr ""
 
@@ -1636,6 +1806,10 @@ msgstr ""
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:181
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:208
 msgid "Configure"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:131
+msgid "Configure action"
 msgstr ""
 
 #: frontend/src/components/Settings/HomeActions.vue:10
@@ -1709,20 +1883,20 @@ msgstr ""
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:751
+#: frontend/src/components/Layouts/AppSidebar.vue:702
 #: frontend/src/components/Modals/ConvertToDealModal.vue:51
 msgid "Contact"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:688 frontend/src/pages/MobileDeal.vue:560
+#: frontend/src/pages/Deal.vue:884 frontend/src/pages/MobileDeal.vue:568
 msgid "Contact Added"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:678 frontend/src/pages/MobileDeal.vue:550
+#: frontend/src/pages/Deal.vue:874 frontend/src/pages/MobileDeal.vue:558
 msgid "Contact Already Added"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:304
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:307
 msgid "Contact Already Exists"
 msgstr ""
 
@@ -1730,7 +1904,7 @@ msgstr ""
 msgid "Contact Image Updated"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:699 frontend/src/pages/MobileDeal.vue:571
+#: frontend/src/pages/Deal.vue:895 frontend/src/pages/MobileDeal.vue:579
 msgid "Contact Removed"
 msgstr ""
 
@@ -1742,7 +1916,7 @@ msgstr ""
 msgid "Contact Us"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:303
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:306
 msgid "Contact already exists with {0}"
 msgstr ""
 
@@ -1766,22 +1940,22 @@ msgstr ""
 
 #. Label of the content (Text Editor) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:90
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:101
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:91
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:102
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:92
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:103
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:93
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:104
 msgid "Content"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:77
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:78
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:79
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:80
 msgid "Content Type"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:148
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:152
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:161
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:165
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:150
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:154
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:163
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:167
 msgid "Content is required"
 msgstr ""
 
@@ -1789,15 +1963,15 @@ msgstr ""
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:569
+#: frontend/src/components/Layouts/AppSidebar.vue:520
 #: frontend/src/components/ListBulkActions.vue:86
 #: frontend/src/components/Modals/ConvertToDealModal.vue:83
 #: frontend/src/pages/MobileLead.vue:59
 msgid "Convert"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:560
-#: frontend/src/components/Layouts/AppSidebar.vue:568
+#: frontend/src/components/Layouts/AppSidebar.vue:511
+#: frontend/src/components/Layouts/AppSidebar.vue:519
 msgid "Convert lead to deal"
 msgstr ""
 
@@ -1830,6 +2004,10 @@ msgstr ""
 msgid "Copy link"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:61
+msgid "Core"
+msgstr ""
+
 #: frontend/src/components/Modals/DoctypeModal.vue:125
 msgid "Could not create document"
 msgstr ""
@@ -1840,6 +2018,10 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:157
 msgid "Could not create the Frappe CRM custom fields on {0} automatically. If it is running the latest ERPNext, enable <b>Frappe CRM Data Synchronization</b> in its CRM Settings, Otherwise check the Error Log."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:362
+msgid "Could not duplicate automation"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:860
@@ -1854,9 +2036,17 @@ msgstr ""
 msgid "Could not save"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:613
+msgid "Could not save automation"
+msgstr ""
+
 #: frontend/src/components/PrimaryDropdownItem.vue:181
 #: frontend/src/components/PrimaryDropdownItem.vue:188
 msgid "Could not save, try again"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:320
+msgid "Could not update automation"
 msgstr ""
 
 #: frontend/src/components/Modals/DoctypeModal.vue:147
@@ -1906,7 +2096,7 @@ msgstr ""
 msgid "Create Lead from Incoming Emails"
 msgstr ""
 
-#: frontend/src/components/Controls/Link.vue:50
+#: frontend/src/components/Controls/Link.vue:60
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:57
 #: frontend/src/components/Modals/WhatsappTemplateSelectorModal.vue:61
 #: frontend/src/components/PrimaryDropdown.vue:49
@@ -1922,8 +2112,12 @@ msgid "Create New Template"
 msgstr ""
 
 #: frontend/src/components/Modals/ViewModal.vue:9
-#: frontend/src/components/ViewControls.vue:768
+#: frontend/src/components/ViewControls.vue:776
 msgid "Create View"
+msgstr ""
+
+#: frontend/src/components/Activities/QuotationsList.vue:14
+msgid "Create a quotation from this deal to see it here."
 msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:274
@@ -1954,16 +2148,32 @@ msgstr ""
 msgid "Create quotation button on deal page and auto customer creation on deal status change will be disabled. Are you sure?"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:522
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:5
+msgid "Create workflow automations for CRM documents"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:473
 msgid "Create your first lead"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:609
+#: frontend/src/components/Layouts/AppSidebar.vue:560
 msgid "Create your first note"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:588
+#: frontend/src/components/Layouts/AppSidebar.vue:539
 msgid "Create your first task"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:73
+msgid "Created By"
+msgstr ""
+
+#: crm/automation/actions.py:190
+msgid "Created Deal {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:30
+msgid "Cron Expression"
 msgstr ""
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
@@ -1997,19 +2207,23 @@ msgstr ""
 msgid "Current pipeline distribution"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:790
+#: frontend/src/components/Layouts/AppSidebar.vue:741
 msgid "Custom Actions"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:740
+#: frontend/src/components/Layouts/AppSidebar.vue:691
 msgid "Custom Branding"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:789
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:68
+msgid "Custom Event"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:740
 msgid "Custom Fields"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:792
+#: frontend/src/components/Layouts/AppSidebar.vue:743
 msgid "Custom List Actions"
 msgstr ""
 
@@ -2017,16 +2231,20 @@ msgstr ""
 msgid "Custom Range"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:791
+#: frontend/src/components/Layouts/AppSidebar.vue:742
 msgid "Custom Statuses"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:505
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:92
+msgid "Custom event"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:511
 msgid "Customer Created Successfully"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:786
-#: frontend/src/components/Settings/Settings.vue:210
+#: frontend/src/components/Layouts/AppSidebar.vue:737
+#: frontend/src/components/Settings/Settings.vue:218
 msgid "Customization"
 msgstr ""
 
@@ -2049,7 +2267,7 @@ msgid "Dark"
 msgstr ""
 
 #: frontend/src/components/Settings/DashboardSettings.vue:6
-#: frontend/src/components/Settings/Settings.vue:131
+#: frontend/src/components/Settings/Settings.vue:133
 msgid "Dashboard"
 msgstr ""
 
@@ -2066,9 +2284,9 @@ msgid "Dashboard settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:6
-#: frontend/src/components/Layouts/AppSidebar.vue:779
-#: frontend/src/pages/Deal.vue:587 frontend/src/pages/Lead.vue:450
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:321
+#: frontend/src/components/Layouts/AppSidebar.vue:730
+#: frontend/src/pages/Deal.vue:764 frontend/src/pages/Lead.vue:579
+#: frontend/src/pages/MobileDeal.vue:463 frontend/src/pages/MobileLead.vue:321
 msgid "Data"
 msgstr ""
 
@@ -2086,21 +2304,33 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:57
+msgid "Date Direction"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:41
+msgid "Date Field"
+msgstr ""
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:111
 msgid "Date Format"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:50
+msgid "Date Offset"
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:214
 msgid "Day"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:750
+#: frontend/src/components/Layouts/AppSidebar.vue:701
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:50
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:58
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:51
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:59
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:77
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:51
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:59
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:52
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:60
 #: frontend/src/components/Telephony/ExotelCallUI.vue:197
 #: frontend/src/pages/Tasks.vue:133
 msgid "Deal"
@@ -2130,6 +2360,10 @@ msgstr ""
 msgid "Deal Value"
 msgstr ""
 
+#: crm/automation/actions.py:54
+msgid "Deal field overrides must be a JSON object"
+msgstr ""
+
 #: crm/api/dashboard.py:1023
 msgid "Deal generation channel analysis"
 msgstr ""
@@ -2144,8 +2378,8 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:521 frontend/src/pages/MobileContact.vue:309
-#: frontend/src/pages/MobileDeal.vue:396
+#: frontend/src/pages/Deal.vue:527 frontend/src/pages/MobileContact.vue:309
+#: frontend/src/pages/MobileDeal.vue:398
 #: frontend/src/pages/MobileOrganization.vue:344
 msgid "Deals"
 msgstr ""
@@ -2190,8 +2424,8 @@ msgstr ""
 msgid "Deals by territory"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:108
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:109
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:110
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:111
 msgid "Dear {{ lead_name }}, \\n\\nThis is a reminder for the payment of {{ grand_total }}. \\n\\nThanks, \\nFrappé"
 msgstr ""
 
@@ -2258,7 +2492,7 @@ msgstr ""
 msgid "Default value"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:136
+#: frontend/src/components/Settings/Settings.vue:138
 msgid "Defaults"
 msgstr ""
 
@@ -2274,7 +2508,7 @@ msgstr ""
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:49
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:74
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:113
-#: frontend/src/components/Controls/Grid.vue:453
+#: frontend/src/components/Controls/Grid.vue:455
 #: frontend/src/components/DeleteLinkedDocModal.vue:13
 #: frontend/src/components/DeleteLinkedDocModal.vue:93
 #: frontend/src/components/Kanban/KanbanView.vue:235
@@ -2285,12 +2519,13 @@ msgstr ""
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:166
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
-#: frontend/src/components/ViewControls.vue:1220
-#: frontend/src/components/ViewControls.vue:1231
-#: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:121
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:476
+#: frontend/src/components/ViewControls.vue:1382
+#: frontend/src/components/ViewControls.vue:1393
+#: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:122
 #: frontend/src/pages/Lead.vue:176 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:284
-#: frontend/src/pages/MobileDeal.vue:531
+#: frontend/src/pages/MobileDeal.vue:539
 #: frontend/src/pages/MobileOrganization.vue:73
 #: frontend/src/pages/MobileOrganization.vue:279
 #: frontend/src/pages/Notes.vue:44 frontend/src/pages/Organization.vue:90
@@ -2335,8 +2570,8 @@ msgstr ""
 msgid "Delete Task"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1216
-#: frontend/src/components/ViewControls.vue:1224
+#: frontend/src/components/ViewControls.vue:1378
+#: frontend/src/components/ViewControls.vue:1386
 msgid "Delete View"
 msgstr ""
 
@@ -2346,6 +2581,14 @@ msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:26
 msgid "Delete or unlink these linked documents before deleting this document"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:461
+msgid "Delete step"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:461
+msgid "Delete trigger"
 msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:70
@@ -2398,7 +2641,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:197
 #: frontend/src/pages/MobileContact.vue:304
-#: frontend/src/pages/MobileDeal.vue:440 frontend/src/pages/MobileLead.vue:300
+#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:300
 #: frontend/src/pages/MobileOrganization.vue:339
 msgid "Details"
 msgstr ""
@@ -2450,6 +2693,10 @@ msgstr ""
 msgid "Discard Changes"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:279
+msgid "Discard and exit"
+msgstr ""
+
 #. Label of the discount_percentage (Percent) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount %"
@@ -2478,6 +2725,10 @@ msgstr ""
 msgid "DocType"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:43
+msgid "DocType resolved at runtime"
+msgstr ""
+
 #: crm/api/doc.py:810
 msgid "Doctype is required"
 msgstr ""
@@ -2486,12 +2737,13 @@ msgstr ""
 msgid "Document ID, not the full name"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:451 frontend/src/pages/MobileLead.vue:221
+#: frontend/src/pages/Deal.vue:457 frontend/src/pages/MobileLead.vue:221
 msgid "Document Not Found"
 msgstr ""
 
 #. Label of the dt (Link) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:70
 msgid "Document Type"
 msgstr ""
 
@@ -2503,8 +2755,8 @@ msgstr ""
 msgid "Document does not exist"
 msgstr ""
 
-#: crm/api/activities.py:20 frontend/src/pages/Lead.vue:354
-#: frontend/src/pages/MobileDeal.vue:359
+#: crm/api/activities.py:20 frontend/src/pages/Lead.vue:357
+#: frontend/src/pages/MobileDeal.vue:361
 msgid "Document not found"
 msgstr ""
 
@@ -2532,6 +2784,8 @@ msgid "Download"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:74
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:19
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:94
 msgid "Draft"
 msgstr ""
 
@@ -2575,7 +2829,8 @@ msgstr ""
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:186
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:133
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:183
-#: frontend/src/components/ViewControls.vue:1172
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:338
+#: frontend/src/components/ViewControls.vue:1334
 msgid "Duplicate"
 msgstr ""
 
@@ -2606,8 +2861,8 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:803
-#: frontend/src/components/Settings/Settings.vue:235
+#: frontend/src/components/Layouts/AppSidebar.vue:754
+#: frontend/src/components/Settings/Settings.vue:243
 msgid "ERPNext"
 msgstr ""
 
@@ -2650,7 +2905,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:71
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:88
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:600
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:684
 msgid "ERPNext is not installed in the current site"
 msgstr ""
 
@@ -2672,7 +2927,8 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FormsList.vue:264
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:202
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:188
-#: frontend/src/components/ViewControls.vue:1190
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:35
+#: frontend/src/components/ViewControls.vue:1352
 #: frontend/src/pages/Dashboard.vue:16 frontend/src/pages/Tasks.vue:379
 msgid "Edit"
 msgstr ""
@@ -2729,7 +2985,7 @@ msgstr ""
 msgid "Edit Response & Resolution"
 msgstr ""
 
-#: frontend/src/components/Controls/Grid.vue:420
+#: frontend/src/components/Controls/Grid.vue:422
 msgid "Edit Row"
 msgstr ""
 
@@ -2754,6 +3010,7 @@ msgid "Editing Row {0}"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:714
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:209
 msgid "Editor"
 msgstr ""
 
@@ -2763,9 +3020,9 @@ msgstr ""
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Activities/ActivityHeader.vue:110
+#: frontend/src/components/Activities/ActivityHeader.vue:114
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
-#: frontend/src/components/Settings/Settings.vue:173
+#: frontend/src/components/Settings/Settings.vue:175
 #: frontend/src/pages/Contact.vue:400 frontend/src/pages/MobileContact.vue:392
 #: frontend/src/pages/MobileOrganization.vue:474
 #: frontend/src/pages/MobileOrganization.vue:502
@@ -2783,7 +3040,7 @@ msgstr ""
 msgid "Email Accounts"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:777
+#: frontend/src/components/Layouts/AppSidebar.vue:728
 msgid "Email Communication"
 msgstr ""
 
@@ -2808,7 +3065,7 @@ msgstr ""
 msgid "Email Settings"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:756
+#: frontend/src/components/Layouts/AppSidebar.vue:707
 msgid "Email Template"
 msgstr ""
 
@@ -2833,9 +3090,13 @@ msgstr ""
 msgid "Email settings updated successfully"
 msgstr ""
 
+#: crm/automation/actions.py:250
+msgid "Emailed {0}: {1}"
+msgstr ""
+
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
-#: frontend/src/pages/Deal.vue:577 frontend/src/pages/Lead.vue:440
-#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:311
+#: frontend/src/pages/Deal.vue:754 frontend/src/pages/Lead.vue:569
+#: frontend/src/pages/MobileDeal.vue:453 frontend/src/pages/MobileLead.vue:311
 msgid "Emails"
 msgstr ""
 
@@ -2926,6 +3187,11 @@ msgstr ""
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:57
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:65
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:73
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:19
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:72
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:94
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:105
 msgid "Enabled"
 msgstr ""
 
@@ -3028,7 +3294,7 @@ msgstr ""
 msgid "Equals"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:452 frontend/src/pages/MobileLead.vue:222
+#: frontend/src/pages/Deal.vue:458 frontend/src/pages/MobileLead.vue:222
 msgid "Error Occurred"
 msgstr ""
 
@@ -3049,7 +3315,7 @@ msgstr ""
 msgid "Error creating lead: {0}"
 msgstr ""
 
-#: frontend/src/pages/Lead.vue:355 frontend/src/pages/MobileDeal.vue:360
+#: frontend/src/pages/Lead.vue:358 frontend/src/pages/MobileDeal.vue:362
 msgid "Error occurred"
 msgstr ""
 
@@ -3063,6 +3329,15 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:275
 msgid "Error updating lead sync source"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:39
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:156
+msgid "Event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
+msgid "Event happened"
 msgstr ""
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
@@ -3114,7 +3389,7 @@ msgstr ""
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:801
+#: frontend/src/components/Layouts/AppSidebar.vue:752
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
@@ -3184,6 +3459,14 @@ msgstr ""
 
 #: frontend/src/components/ViewControls.vue:309
 msgid "Export all {0} record(s)"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:68
+msgid "Expression"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:86
+msgid "Extra check that must also pass; use Expression for Python logic."
 msgstr ""
 
 #. Name of a DocType
@@ -3274,7 +3557,7 @@ msgstr ""
 msgid "Failed to create email account: invalid credentials"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:179
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:181
 msgid "Failed to create template"
 msgstr ""
 
@@ -3298,7 +3581,7 @@ msgstr ""
 msgid "Failed to fetch exchange rate from {0} to {1} on {2}. Please check your internet connection or try again later."
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:544
+#: frontend/src/components/Activities/Activities.vue:546
 msgid "Failed to load activities"
 msgstr ""
 
@@ -3314,7 +3597,7 @@ msgstr ""
 msgid "Failed to load form controller: {0}"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:231
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:233
 msgid "Failed to rename template"
 msgstr ""
 
@@ -3331,7 +3614,7 @@ msgstr ""
 msgid "Failed to send WhatsApp message"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:622
+#: frontend/src/components/Activities/Activities.vue:624
 msgid "Failed to send WhatsApp template"
 msgstr ""
 
@@ -3371,7 +3654,7 @@ msgstr ""
 msgid "Failed to update source"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:197
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:199
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:202
 msgid "Failed to update template"
 msgstr ""
@@ -3385,15 +3668,27 @@ msgstr ""
 msgid "Failure Logs"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
+msgid "False"
+msgstr ""
+
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/BrandSettings.vue:97
 msgid "Favicon"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:39
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:43
 #: frontend/src/components/Modals/EditValueModal.vue:5
 msgid "Field"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:72
+msgid "Field Values"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:40
+msgid "Field value changes"
 msgstr ""
 
 #: frontend/src/components/Controls/GridFieldsEditorModal.vue:19
@@ -3401,15 +3696,15 @@ msgstr ""
 msgid "Fields Order"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:334
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:333
 msgid "File \"{0}\" was skipped because of invalid file type"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:355
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:354
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed"
 msgstr ""
 
-#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:360
+#: frontend/src/components/FilesUploader/FilesUploaderArea.vue:359
 msgid "File \"{0}\" was skipped because only {1} uploads are allowed for DocType \"{2}\""
 msgstr ""
 
@@ -3420,6 +3715,8 @@ msgstr ""
 #. Label of the filters (Code) field in DocType 'CRM View Settings'
 #. Label of the filters_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:67
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFilters.vue:69
 msgid "Filters"
 msgstr ""
 
@@ -3475,18 +3772,30 @@ msgstr ""
 msgid "First name"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:67
+msgid "Fit entire flow"
+msgstr ""
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:43
+msgid "Flow"
 msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:91
 msgid "Following up consistently"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:47
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:48
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:48
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:49
 msgid "For"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:137
+msgid "Forced"
 msgstr ""
 
 #: frontend/src/components/Dashboard/AddChartModal.vue:91
@@ -3542,7 +3851,7 @@ msgid "Form updated"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
-#: frontend/src/components/Settings/Settings.vue:202
+#: frontend/src/components/Settings/Settings.vue:210
 msgid "Forms"
 msgstr ""
 
@@ -3555,7 +3864,7 @@ msgstr ""
 msgid "Frappe CRM"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:807
+#: frontend/src/components/Layouts/AppSidebar.vue:758
 msgid "Frappe CRM mobile"
 msgstr ""
 
@@ -3597,6 +3906,10 @@ msgstr ""
 msgid "From User"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:16
+msgid "From Value"
+msgstr ""
+
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
 #. Option for the 'Status' (Select) field in DocType 'CRM Rolling Response
@@ -3633,7 +3946,7 @@ msgstr ""
 msgid "Gender"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:126
+#: frontend/src/components/Settings/Settings.vue:128
 msgid "General"
 msgstr ""
 
@@ -3658,8 +3971,12 @@ msgstr ""
 msgid "Go to Invite Page"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:104 frontend/src/pages/Lead.vue:159
+#: frontend/src/pages/Deal.vue:105 frontend/src/pages/Lead.vue:159
 msgid "Go to Website"
+msgstr ""
+
+#: frontend/src/components/CommandPalette/recordCommands.js:187
+msgid "Go to {0}"
 msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:75
@@ -3685,8 +4002,8 @@ msgstr ""
 
 #. Label of the group_by_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:400
-#: frontend/src/components/ViewControls.vue:681 frontend/src/utils/view.js:16
+#: frontend/src/components/ViewControls.vue:408
+#: frontend/src/components/ViewControls.vue:689 frontend/src/utils/view.js:16
 msgid "Group By"
 msgstr ""
 
@@ -3732,7 +4049,7 @@ msgstr ""
 msgid "Hidden required fields"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:246
+#: frontend/src/components/Activities/Activities.vue:247
 msgid "Hide"
 msgstr ""
 
@@ -3759,6 +4076,10 @@ msgstr ""
 msgid "Hide Recording"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:59
+msgid "Hide details"
+msgstr ""
+
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json
 msgid "High"
@@ -3782,10 +4103,15 @@ msgstr ""
 msgid "Holidays"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:741
+#: frontend/src/components/Layouts/AppSidebar.vue:692
 #: frontend/src/components/Settings/HomeActions.vue:7
-#: frontend/src/components/Settings/Settings.vue:213
+#: frontend/src/components/Settings/Settings.vue:221
 msgid "Home Actions"
+msgstr ""
+
+#. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Hot"
 msgstr ""
 
 #. Option for the 'Background Sync Frequency' (Select) field in DocType 'Lead
@@ -3841,6 +4167,11 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 #: frontend/src/components/Modals/ViewModal.vue:27
 msgid "Icon"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:220
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:12
+msgid "If / Else"
 msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:61
@@ -3953,7 +4284,11 @@ msgstr ""
 msgid "Insert Emoji"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:797
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:14
+msgid "Insert field"
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:748
 msgid "Integration"
 msgstr ""
 
@@ -3965,13 +4300,13 @@ msgstr ""
 msgid "Integrations"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:221
+#: frontend/src/components/Settings/Settings.vue:229
 msgctxt "FCRM"
 msgid "Integrations"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:728
-#: frontend/src/components/Layouts/AppSidebar.vue:731
+#: frontend/src/components/Layouts/AppSidebar.vue:679
+#: frontend/src/components/Layouts/AppSidebar.vue:682
 msgid "Introduction"
 msgstr ""
 
@@ -4017,6 +4352,10 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.py:42
 msgid "Invalid credentials"
+msgstr ""
+
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:403
+msgid "Invalid deal"
 msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:185
@@ -4091,11 +4430,11 @@ msgstr ""
 msgid "Invite New User"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:158
+#: frontend/src/components/Settings/Settings.vue:160
 msgid "Invite User"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:742
+#: frontend/src/components/Layouts/AppSidebar.vue:693
 msgid "Invite Users"
 msgstr ""
 
@@ -4107,7 +4446,7 @@ msgstr ""
 msgid "Invite users to access CRM. Specify their roles to control access and permissions"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:547
+#: frontend/src/components/Layouts/AppSidebar.vue:498
 msgid "Invite your team"
 msgstr ""
 
@@ -4216,8 +4555,8 @@ msgstr ""
 
 #. Label of the kanban_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:405
-#: frontend/src/components/ViewControls.vue:670 frontend/src/utils/view.js:20
+#: frontend/src/components/ViewControls.vue:413
+#: frontend/src/components/ViewControls.vue:678 frontend/src/utils/view.js:20
 msgid "Kanban"
 msgstr ""
 
@@ -4237,6 +4576,10 @@ msgstr ""
 
 #: frontend/src/components/Kanban/KanbanSettings.vue:3
 msgid "Kanban settings"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:277
+msgid "Keep editing"
 msgstr ""
 
 #: frontend/src/pages/PersonaForm.vue:93
@@ -4362,6 +4705,10 @@ msgstr ""
 msgid "Last user assigned by this rule"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:71
+msgid "Launch manually"
+msgstr ""
+
 #. Label of the layout (Code) field in DocType 'CRM Dashboard'
 #. Label of the layout (Code) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
@@ -4371,11 +4718,11 @@ msgstr ""
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
-#: frontend/src/components/Layouts/AppSidebar.vue:749
+#: frontend/src/components/Layouts/AppSidebar.vue:700
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:54
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:55
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:55
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:56
 #: frontend/src/components/Telephony/ExotelCallUI.vue:197
 #: frontend/src/pages/Tasks.vue:134
 msgid "Lead"
@@ -4402,8 +4749,13 @@ msgstr ""
 msgid "Lead Owner"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:150
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:153
 msgid "Lead Owner cannot be same as the Lead Email Address"
+msgstr ""
+
+#. Label of the lead_score (Int) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Lead Score"
 msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
@@ -4422,8 +4774,13 @@ msgstr ""
 msgid "Lead Sync Source"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:241
+#: frontend/src/components/Settings/Settings.vue:249
 msgid "Lead Syncing"
+msgstr ""
+
+#. Label of the lead_temperature (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Lead Temperature"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:311
@@ -4438,6 +4795,14 @@ msgstr ""
 msgid "Lead generation channel analysis"
 msgstr ""
 
+#: crm/automation/scoring.py:47
+msgid "Lead is now {0}"
+msgstr ""
+
+#: crm/automation/scoring.py:29
+msgid "Lead score {0} → {1}{2}"
+msgstr ""
+
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.js:8
 msgid "Lead sync initiated."
 msgstr ""
@@ -4450,13 +4815,21 @@ msgstr ""
 msgid "Lead sync source deleted successfully"
 msgstr ""
 
+#: crm/automation/scoring.py:42
+msgid "Lead temperature must be one of {0}"
+msgstr ""
+
 #: crm/api/dashboard.py:788
 msgid "Lead to deal conversion pipeline"
 msgstr ""
 
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:549
+msgid "Lead {0} is already converted to Deal {1}"
+msgstr ""
+
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:387
+#: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:390
 #: frontend/src/pages/MobileLead.vue:256
 msgid "Leads"
 msgstr ""
@@ -4487,6 +4860,10 @@ msgstr ""
 
 #: frontend/src/components/Filter.vue:396
 msgid "Less than or equal to"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:162
+msgid "Lets a later step act on what this one produced."
 msgstr ""
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:47
@@ -4523,8 +4900,8 @@ msgstr ""
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
-#: frontend/src/components/ViewControls.vue:395
-#: frontend/src/components/ViewControls.vue:659 frontend/src/utils/view.js:12
+#: frontend/src/components/ViewControls.vue:403
+#: frontend/src/components/ViewControls.vue:667 frontend/src/utils/view.js:12
 msgid "List"
 msgstr ""
 
@@ -4545,10 +4922,12 @@ msgstr ""
 msgid "Load More"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:19
+#: frontend/src/components/Activities/Activities.vue:20
 #: frontend/src/components/Activities/DataFields.vue:35
+#: frontend/src/components/Activities/QuotationsList.vue:8
+#: frontend/src/components/CommandPalette/CommandPalette.vue:168
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:30
-#: frontend/src/pages/Deal.vue:186 frontend/src/pages/MobileDeal.vue:121
+#: frontend/src/pages/Deal.vue:187 frontend/src/pages/MobileDeal.vue:121
 msgid "Loading..."
 msgstr ""
 
@@ -4563,8 +4942,8 @@ msgstr ""
 msgid "Log ID"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:120
-#: frontend/src/components/Activities/ActivityHeader.vue:163
+#: frontend/src/components/Activities/ActivityHeader.vue:124
+#: frontend/src/components/Activities/ActivityHeader.vue:167
 msgid "Log a Call"
 msgstr ""
 
@@ -4645,18 +5024,18 @@ msgid "Make Call"
 msgstr ""
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1205
+#: frontend/src/components/ViewControls.vue:1367
 msgid "Make Private"
 msgstr ""
 
 #: frontend/src/components/Activities/AttachmentArea.vue:39
-#: frontend/src/components/ViewControls.vue:1205
+#: frontend/src/components/ViewControls.vue:1367
 msgid "Make Public"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:125
-#: frontend/src/components/Activities/ActivityHeader.vue:168
-#: frontend/src/pages/Deal.vue:86 frontend/src/pages/Deals.vue:503
+#: frontend/src/components/Activities/ActivityHeader.vue:129
+#: frontend/src/components/Activities/ActivityHeader.vue:172
+#: frontend/src/pages/Deal.vue:87 frontend/src/pages/Deals.vue:509
 #: frontend/src/pages/Lead.vue:135 frontend/src/pages/Leads.vue:537
 #: frontend/src/pages/MobileContact.vue:73
 msgid "Make a Call"
@@ -4772,7 +5151,7 @@ msgstr ""
 msgid "Mark lead/deal as replied on response"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:746
+#: frontend/src/components/Layouts/AppSidebar.vue:697
 msgid "Masters"
 msgstr ""
 
@@ -4802,6 +5181,10 @@ msgstr ""
 msgid "Minimize"
 msgstr ""
 
+#: crm/automation/actions.py:81
+msgid "Minimum score is above the maximum"
+msgstr ""
+
 #: frontend/src/utils/callLog.js:79
 msgid "Missed Call"
 msgstr ""
@@ -4810,7 +5193,7 @@ msgstr ""
 msgid "Missing mandatory fields: {0}"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:810
+#: frontend/src/components/Layouts/AppSidebar.vue:761
 msgid "Mobile App Installation"
 msgstr ""
 
@@ -4918,16 +5301,25 @@ msgstr ""
 #: frontend/src/components/Settings/LeadSyncing/leadSyncSourceConfig.js:23
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
-#: frontend/src/components/ViewControls.vue:848
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:69
+#: frontend/src/components/ViewControls.vue:856
 #: frontend/src/pages/MobileOrganization.vue:497
 #: frontend/src/pages/Organization.vue:527
 msgid "Name"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:412
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:140
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:153
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:142
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:155
 msgid "Name is required"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:160
+msgid "Name the result"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:153
+msgid "Names this step in run logs and in its result path."
 msgstr ""
 
 #. Label of the naming_series (Select) field in DocType 'CRM Deal'
@@ -4937,7 +5329,7 @@ msgstr ""
 msgid "Naming Series"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:99
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:107
 msgid "Nested Conditions"
 msgstr ""
 
@@ -4953,13 +5345,14 @@ msgstr ""
 msgid "Net Total"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:66
+#: frontend/src/components/Activities/ActivityHeader.vue:70
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:19
 #: frontend/src/components/Settings/Forms/FormsList.vue:19
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:20
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:8
 #: frontend/src/components/Settings/Users.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:24
 msgid "New"
 msgstr ""
 
@@ -4992,7 +5385,7 @@ msgid "New Message"
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:31
-#: frontend/src/pages/Deals.vue:509 frontend/src/pages/Leads.vue:543
+#: frontend/src/pages/Deals.vue:515 frontend/src/pages/Leads.vue:543
 msgid "New Note"
 msgstr ""
 
@@ -5022,7 +5415,7 @@ msgid "New Tab"
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:38
-#: frontend/src/pages/Deals.vue:514 frontend/src/pages/Leads.vue:548
+#: frontend/src/pages/Deals.vue:520 frontend/src/pages/Leads.vue:548
 msgid "New Task"
 msgstr ""
 
@@ -5090,7 +5483,11 @@ msgstr ""
 msgid "Next question"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:730
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:295
+msgid "No"
+msgstr ""
+
+#: frontend/src/components/Activities/Activities.vue:732
 msgid "No Activities Found"
 msgstr ""
 
@@ -5100,36 +5497,36 @@ msgstr ""
 msgid "No Answer"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:744
+#: frontend/src/components/Activities/Activities.vue:746
 msgid "No Attachments Found"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:738
+#: frontend/src/components/Activities/Activities.vue:740
 msgid "No Call History"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:734
+#: frontend/src/components/Activities/Activities.vue:736
 msgid "No Comments Found"
 msgstr ""
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
-#: frontend/src/pages/Deal.vue:281 frontend/src/pages/MobileDeal.vue:209
+#: frontend/src/pages/Deal.vue:282 frontend/src/pages/MobileDeal.vue:209
 msgid "No Contacts Added"
 msgstr ""
 
-#: frontend/src/components/Controls/Grid.vue:446
+#: frontend/src/components/Controls/Grid.vue:448
 msgid "No Data"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:736
+#: frontend/src/components/Activities/Activities.vue:738
 msgid "No Data Fields Added Yet"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:267
+#: frontend/src/pages/Deal.vue:268
 msgid "No Details Added"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:732
+#: frontend/src/components/Activities/Activities.vue:734
 msgid "No Emails Found"
 msgstr ""
 
@@ -5141,7 +5538,7 @@ msgstr ""
 msgid "No Label"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:741
+#: frontend/src/pages/Deal.vue:936
 msgid "No Mobile Number Set"
 msgstr ""
 
@@ -5149,11 +5546,11 @@ msgstr ""
 msgid "No New Notifications"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:740
+#: frontend/src/components/Activities/Activities.vue:742
 msgid "No Notes Found"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:734
+#: frontend/src/pages/Deal.vue:929
 msgid "No Primary Contact Set"
 msgstr ""
 
@@ -5165,7 +5562,7 @@ msgstr ""
 msgid "No Results Found"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:742
+#: frontend/src/components/Activities/Activities.vue:744
 msgid "No Tasks Found"
 msgstr ""
 
@@ -5185,7 +5582,7 @@ msgstr ""
 msgid "No Website Found"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:746
+#: frontend/src/components/Activities/Activities.vue:748
 msgid "No WhatsApp Messages Found"
 msgstr ""
 
@@ -5202,7 +5599,7 @@ msgstr ""
 msgid "No companies found in the given site"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:762
+#: frontend/src/components/Activities/Activities.vue:764
 msgid "No data fields have been added yet."
 msgstr ""
 
@@ -5210,11 +5607,11 @@ msgstr ""
 msgid "No domains added. The embed will only work on this site until you add one."
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:756
+#: frontend/src/components/Activities/Activities.vue:758
 msgid "No emails found in your inbox. New messages will appear here soon."
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:776
+#: frontend/src/components/Activities/Activities.vue:778
 msgid "No files have been attached yet. Upload files to see them here."
 msgstr ""
 
@@ -5226,17 +5623,34 @@ msgstr ""
 msgid "No matching users"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:764
+#: frontend/src/components/Activities/QuotationsList.vue:13
+msgid "No quotations yet"
+msgstr ""
+
+#: frontend/src/components/Activities/Activities.vue:766
 msgid "No recent calls to display. Log a call or call someone now!"
+msgstr ""
+
+#: crm/automation/actions.py:307
+msgid "No recipients to notify"
+msgstr ""
+
+#: frontend/src/components/CommandPalette/CommandPalette.vue:171
+msgid "No results for \"{0}\""
 msgstr ""
 
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:72
 #: frontend/src/components/Controls/MultiSelectUserInput.vue:72
-#: frontend/src/components/frappe-ui/Autocomplete.vue:119
+#: frontend/src/components/frappe-ui/Autocomplete.vue:120
 msgid "No results found"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationRuns.vue:10
+msgid "No runs yet"
+msgstr ""
+
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:64
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:9
 msgid "No users found"
 msgstr ""
 
@@ -5252,6 +5666,10 @@ msgstr ""
 msgid "No web forms yet"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:57
+msgid "No workflow automations yet"
+msgstr ""
+
 #: frontend/src/components/ListViews/EmptyState.vue:37
 #: frontend/src/pages/MobileOrganization.vue:145
 msgid "No {0} Found"
@@ -5263,6 +5681,10 @@ msgstr ""
 
 #: frontend/src/pages/MobileContact.vue:153
 msgid "No {0} found"
+msgstr ""
+
+#: frontend/src/components/Controls/Grid.vue:27
+msgid "No."
 msgstr ""
 
 #. Label of the no_of_employees (Select) field in DocType 'CRM Deal'
@@ -5278,7 +5700,7 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
-#: crm/utils/__init__.py:135
+#: crm/utils/__init__.py:136
 msgid "Not Allowed"
 msgstr ""
 
@@ -5316,7 +5738,7 @@ msgstr ""
 msgid "Not allowed to add contact to Deal"
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:506
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:533
 msgid "Not allowed to convert Lead to Deal"
 msgstr ""
 
@@ -5363,6 +5785,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/api.py:8
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:409
 #: crm/integrations/api.py:79 crm/integrations/api.py:104
 msgid "Not permitted"
 msgstr ""
@@ -5379,10 +5802,14 @@ msgstr ""
 msgid "Not permitted to modify fields layout"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:37
+msgid "Not something filters can express. Edit it below."
+msgstr ""
+
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
-#: frontend/src/components/Activities/ActivityHeader.vue:131
-#: frontend/src/components/Layouts/AppSidebar.vue:753
+#: frontend/src/components/Activities/ActivityHeader.vue:135
+#: frontend/src/components/Layouts/AppSidebar.vue:704
 msgid "Note"
 msgstr ""
 
@@ -5390,8 +5817,8 @@ msgstr ""
 msgid "Note deleted"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:602 frontend/src/pages/Lead.vue:465
-#: frontend/src/pages/MobileDeal.vue:477 frontend/src/pages/MobileLead.vue:336
+#: frontend/src/pages/Deal.vue:779 frontend/src/pages/Lead.vue:594
+#: frontend/src/pages/MobileDeal.vue:479 frontend/src/pages/MobileLead.vue:336
 msgid "Notes"
 msgstr ""
 
@@ -5399,16 +5826,20 @@ msgstr ""
 msgid "Notes View"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:768
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:22
+msgid "Nothing here"
+msgstr ""
+
+#: frontend/src/components/Activities/Activities.vue:770
 msgid "Nothing here for now. Add a note to keep track of things."
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:772
+#: frontend/src/components/Activities/Activities.vue:774
 msgid "Nothing to do at the moment. Start organizing by adding one here."
 msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:782
+#: frontend/src/components/Layouts/AppSidebar.vue:733
 msgid "Notification"
 msgstr ""
 
@@ -5435,9 +5866,12 @@ msgstr ""
 msgid "Notifications"
 msgstr ""
 
+#: crm/automation/actions.py:312
+msgid "Notified {0}"
+msgstr ""
+
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
-#: frontend/src/components/Controls/Grid.vue:27
 msgid "Number"
 msgstr ""
 
@@ -5497,6 +5931,18 @@ msgstr ""
 msgid "On Hold"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:85
+msgid "On a date"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:78
+msgid "On a schedule"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:42
+msgid "One {0} record"
+msgstr ""
+
 #. Option for the 'Type' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Type' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -5533,6 +5979,10 @@ msgstr ""
 msgid "Only one {0} can be set as primary."
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:133
+msgid "Only run when"
+msgstr ""
+
 #: crm/api/whatsapp.py:16
 msgid "Only sales users can access WhatsApp features."
 msgstr ""
@@ -5545,7 +5995,7 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:89
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:97
 msgid "Open Nested Conditions"
 msgstr ""
 
@@ -5563,12 +6013,16 @@ msgstr ""
 msgid "Open in new window"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:120
+msgid "Open inspector"
+msgstr ""
+
 #: frontend/src/doctypes/crm_task/form.js:9
 #: frontend/src/doctypes/fcrm_note/form.js:9
 msgid "Open {0}"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:48
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:53
 msgid "Operator"
 msgstr ""
 
@@ -5607,7 +6061,7 @@ msgstr ""
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
-#: frontend/src/components/Layouts/AppSidebar.vue:752
+#: frontend/src/components/Layouts/AppSidebar.vue:703
 #: frontend/src/components/Modals/ConvertToDealModal.vue:25
 #: frontend/src/pages/Contact.vue:348 frontend/src/pages/Contact.vue:384
 #: frontend/src/pages/MobileContact.vue:376
@@ -5627,7 +6081,7 @@ msgstr ""
 #. Label of the organization_logo (Attach Image) field in DocType 'CRM
 #. Organization'
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
-#: frontend/src/pages/Deal.vue:67
+#: frontend/src/pages/Deal.vue:68
 msgid "Organization Logo"
 msgstr ""
 
@@ -5638,7 +6092,7 @@ msgstr ""
 msgid "Organization Name"
 msgstr ""
 
-#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:580
+#: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:664
 msgid "Organization or a primary Contact is required to create a customer"
 msgstr ""
 
@@ -5653,17 +6107,19 @@ msgstr ""
 msgid "Organize my contacts"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:62
 #: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
 #: frontend/src/pages/PersonaForm.vue:103
 msgid "Other"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:774
+#: frontend/src/components/Layouts/AppSidebar.vue:725
 msgid "Other Features"
 msgstr ""
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:145
 msgid "Others"
 msgstr ""
 
@@ -5674,6 +6130,10 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Outgoing"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:130
+msgid "Output of {0}"
 msgstr ""
 
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
@@ -5738,17 +6198,29 @@ msgstr ""
 msgid "Passwords match"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:116
+msgid "Pause the run"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:21
+msgid "Pause the run for a fixed amount of time."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:31
+msgid "Pause until an event is raised for this record."
+msgstr ""
+
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:10
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:37
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:38
 msgid "Payment Reminder"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:69
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:70
 msgid "Payment Reminder from Frappé - (#{{ name }})"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:69
 msgid "Payment reminder from Frappé - (#{{ name }})"
 msgstr ""
 
@@ -5801,7 +6273,32 @@ msgstr ""
 msgid "Phone calls"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1197
+#: crm/automation/actions.py:225
+msgid "Pick a template or write a subject"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:12
+msgid "Pick a {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:34
+msgid "Pick an action"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:121
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:29
+msgid "Pick an event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:56
+msgid "Pick initial trigger"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:19
+msgid "Pick {0}"
+msgstr ""
+
+#: frontend/src/components/ViewControls.vue:1359
 msgid "Pin View"
 msgstr ""
 
@@ -5810,11 +6307,11 @@ msgstr ""
 msgid "Pinned"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:770
+#: frontend/src/components/Layouts/AppSidebar.vue:721
 msgid "Pinned View"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:757
+#: frontend/src/components/ViewControls.vue:765
 msgid "Pinned Views"
 msgstr ""
 
@@ -5874,11 +6371,11 @@ msgstr ""
 msgid "Please set a mobile number to make calls"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:109 frontend/src/pages/Lead.vue:164
+#: frontend/src/pages/Deal.vue:110 frontend/src/pages/Lead.vue:164
 msgid "Please set a website to visit"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:98 frontend/src/pages/Lead.vue:154
+#: frontend/src/pages/Deal.vue:99 frontend/src/pages/Lead.vue:154
 msgid "Please set an email address to send emails"
 msgstr ""
 
@@ -5890,7 +6387,7 @@ msgstr ""
 msgid "Please specify a reason for losing the deal."
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:158
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:161
 msgid "Please specify a reason for losing the lead."
 msgstr ""
 
@@ -5898,7 +6395,7 @@ msgstr ""
 msgid "Please specify the reason for losing the deal."
 msgstr ""
 
-#: crm/fcrm/doctype/crm_lead/crm_lead.py:160
+#: crm/fcrm/doctype/crm_lead/crm_lead.py:163
 msgid "Please specify the reason for losing the lead."
 msgstr ""
 
@@ -5914,7 +6411,7 @@ msgid "Position"
 msgstr ""
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:116
+#: frontend/src/components/Settings/Settings.vue:118
 msgid "Preferences"
 msgstr ""
 
@@ -5931,11 +6428,11 @@ msgid "Preview again"
 msgstr ""
 
 #: frontend/src/components/PrimaryDropdownItem.vue:16
-#: frontend/src/pages/Deal.vue:215 frontend/src/pages/MobileDeal.vue:153
+#: frontend/src/pages/Deal.vue:216 frontend/src/pages/MobileDeal.vue:153
 msgid "Primary"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:710 frontend/src/pages/MobileDeal.vue:582
+#: frontend/src/pages/Deal.vue:906 frontend/src/pages/MobileDeal.vue:590
 msgid "Primary Contact Set"
 msgstr ""
 
@@ -6033,9 +6530,9 @@ msgstr ""
 msgid "Products"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:739
+#: frontend/src/components/Layouts/AppSidebar.vue:690
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
-#: frontend/src/components/Settings/Settings.vue:106
+#: frontend/src/components/Settings/Settings.vue:108
 msgid "Profile"
 msgstr ""
 
@@ -6052,11 +6549,11 @@ msgstr ""
 msgid "Public"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:769
+#: frontend/src/components/Layouts/AppSidebar.vue:720
 msgid "Public View"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:751
+#: frontend/src/components/ViewControls.vue:759
 msgid "Public Views"
 msgstr ""
 
@@ -6067,6 +6564,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:74
 msgid "Published"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:34
+msgid "Python, evaluated against doc, target and context."
 msgstr ""
 
 #. Label of the qty (Float) field in DocType 'CRM Products'
@@ -6090,7 +6591,7 @@ msgstr ""
 msgid "Quick Entry"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:793
+#: frontend/src/components/Layouts/AppSidebar.vue:744
 msgid "Quick Entry Layout"
 msgstr ""
 
@@ -6099,8 +6600,12 @@ msgstr ""
 msgid "Quick Filters"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:812
+#: frontend/src/components/ViewControls.vue:820
 msgid "Quick filters updated successfully"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:795 frontend/src/pages/MobileDeal.vue:495
+msgid "Quotations"
 msgstr ""
 
 #. Label of the rate (Currency) field in DocType 'CRM Products'
@@ -6122,6 +6627,10 @@ msgstr ""
 msgid "Reason"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:118
+msgid "Record"
+msgstr ""
+
 #. Label of the record_calls (Check) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 #: frontend/src/components/Settings/Telephony/ExotelSettings.vue:86
@@ -6132,6 +6641,26 @@ msgstr ""
 #. Label of the record_call (Check) field in DocType 'CRM Exotel Settings'
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json
 msgid "Record Outgoing Calls"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:61
+msgid "Record is cancelled"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:26
+msgid "Record is created"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:47
+msgid "Record is deleted"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:54
+msgid "Record is submitted"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:33
+msgid "Record is updated"
 msgstr ""
 
 #. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
@@ -6151,8 +6680,16 @@ msgstr ""
 msgid "Recording not available"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:143
+msgid "Records"
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:348
 msgid "Redirect URL"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:35
+msgid "Redo"
 msgstr ""
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM
@@ -6231,7 +6768,7 @@ msgstr ""
 msgid "Reload Columns"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:176
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:186
 #: frontend/src/components/Controls/ImageUploader.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:434
 #: frontend/src/components/FieldLayoutEditor.vue:492
@@ -6239,7 +6776,7 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FieldCard.vue:73
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:83
 #: frontend/src/components/Settings/Users.vue:221
-#: frontend/src/pages/Deal.vue:659
+#: frontend/src/pages/Deal.vue:855
 msgid "Remove"
 msgstr ""
 
@@ -6247,7 +6784,7 @@ msgstr ""
 msgid "Remove All"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:184
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:194
 msgid "Remove Group"
 msgstr ""
 
@@ -6283,8 +6820,20 @@ msgstr ""
 msgid "Remove Tab"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:24
+msgid "Remove field"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
+msgid "Remove step"
+msgstr ""
+
 #: crm/api/user.py:176
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:76
+msgid "Remove trigger"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:195
@@ -6456,12 +7005,16 @@ msgstr ""
 msgid "Retry Sync"
 msgstr ""
 
+#: crm/automation/actions.py:190
+msgid "Reused Deal {0}"
+msgstr ""
+
 #: crm/api/dashboard.py:727
 msgid "Revenue"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:80
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:81
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
 msgid "Rich Text"
 msgstr ""
 
@@ -6525,12 +7078,36 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:98
+msgid "Run As"
+msgstr ""
+
 #: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
 msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:251
 msgid "Run a manual synchronization to pull the latest Items from ERPNext."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:86
+msgid "Run before or after a date stored on the record."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:79
+msgid "Run on a repeating schedule you define with cron."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:72
+msgid "Run only when someone starts it from a record."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:93
+msgid "Run when the app raises a named event you pick."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:233
+msgid "Run {0}"
 msgstr ""
 
 #. Label of the sla_tab (Tab Break) field in DocType 'CRM Deal'
@@ -6556,7 +7133,7 @@ msgstr ""
 msgid "SLA Name"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:197
+#: frontend/src/components/Settings/Settings.vue:205
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:3
 msgid "SLA Policies"
 msgstr ""
@@ -6597,7 +7174,7 @@ msgid "SUBJECT"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:7
-#: frontend/src/components/Settings/Settings.vue:164
+#: frontend/src/components/Settings/Settings.vue:166
 msgid "Sales Hierarchy"
 msgstr ""
 
@@ -6740,6 +7317,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:51
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:34
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:78
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:54
 #: frontend/src/components/Telephony/ExotelCallUI.vue:218
 #: frontend/src/components/ViewControls.vue:138
 #: frontend/src/pages/Dashboard.vue:36
@@ -6752,11 +7330,15 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:768
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:89
+msgid "Save the flow before testing it."
+msgstr ""
+
+#: frontend/src/components/Layouts/AppSidebar.vue:719
 msgid "Saved View"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:745
+#: frontend/src/components/ViewControls.vue:753
 msgid "Saved Views"
 msgstr ""
 
@@ -6771,7 +7353,8 @@ msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:23
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:21
-#: frontend/src/components/frappe-ui/Autocomplete.vue:57
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:34
+#: frontend/src/components/frappe-ui/Autocomplete.vue:58
 msgid "Search"
 msgstr ""
 
@@ -6783,13 +7366,35 @@ msgstr ""
 msgid "Search User"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:202
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:247
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:271
+msgid "Search blocks"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:6
+msgid "Search fields"
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:194
 msgid "Search fields…"
+msgstr ""
+
+#: frontend/src/components/CommandPalette/CommandPalette.vue:26
+msgid "Search records or type a command..."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:97
+msgid "Search triggers"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:83
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:6
 msgid "Search users"
+msgstr ""
+
+#: frontend/src/components/CommandPalette/CommandPalette.vue:169
+msgid "Searching..."
 msgstr ""
 
 #: frontend/src/components/FieldLayoutEditor.vue:454
@@ -6854,6 +7459,10 @@ msgstr ""
 msgid "Select a Value"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:11
+msgid "Select a record"
+msgstr ""
+
 #: frontend/src/components/Questionnaire.vue:93
 msgid "Select all that apply"
 msgstr ""
@@ -6879,6 +7488,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:304
 msgid "Select the deal status to trigger the auto customer creation in ERPNext"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:8
+msgid "Select users"
 msgstr ""
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
@@ -6909,11 +7522,11 @@ msgstr ""
 msgid "Send Template"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:92 frontend/src/pages/Lead.vue:148
+#: frontend/src/pages/Deal.vue:93 frontend/src/pages/Lead.vue:148
 msgid "Send an Email"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:652
+#: frontend/src/components/Layouts/AppSidebar.vue:603
 msgid "Send email"
 msgstr ""
 
@@ -6943,7 +7556,7 @@ msgstr ""
 msgid "Series"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:780
+#: frontend/src/components/Layouts/AppSidebar.vue:731
 msgid "Service Level Agreement"
 msgstr ""
 
@@ -6957,7 +7570,7 @@ msgstr ""
 msgid "Set"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1182
+#: frontend/src/components/ViewControls.vue:1344
 msgid "Set As Default"
 msgstr ""
 
@@ -6977,6 +7590,11 @@ msgstr ""
 msgid "Set Location"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:106
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:25
+msgid "Set a condition"
+msgstr ""
+
 #: crm/api/form.py:394
 msgid "Set a default value before publishing for: {0}"
 msgstr ""
@@ -6993,11 +7611,11 @@ msgstr ""
 msgid "Set all as public"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:78
+#: frontend/src/pages/Deal.vue:79
 msgid "Set an Organization"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:667 frontend/src/pages/MobileDeal.vue:539
+#: frontend/src/pages/Deal.vue:863 frontend/src/pages/MobileDeal.vue:547
 msgid "Set as Primary Contact"
 msgstr ""
 
@@ -7005,14 +7623,26 @@ msgstr ""
 msgid "Set as default SLA"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:27
+msgid "Set how long to wait"
+msgstr ""
+
 #: frontend/src/components/Controls/GeolocationControl.vue:14
 msgid "Set location…"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:232
+msgid "Set more fields at once as JSON. These are applied together with the Field and Value above, in the same save."
 msgstr ""
 
 #. Description of the 'Persona Captured' (Check) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Set once the first admin completes the onboarding persona questionnaire"
+msgstr ""
+
+#: frontend/src/pages/Deal.vue:674 frontend/src/pages/Lead.vue:492
+msgid "Set status: {0}"
 msgstr ""
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:108
@@ -7035,7 +7665,7 @@ msgstr ""
 msgid "Set working days, hours, and holidays by selecting a predefined schedule or creating a new one"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:732
+#: frontend/src/components/Layouts/AppSidebar.vue:683
 msgid "Setting Up"
 msgstr ""
 
@@ -7081,7 +7711,7 @@ msgstr ""
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
-#: frontend/src/components/Layouts/AppSidebar.vue:736
+#: frontend/src/components/Layouts/AppSidebar.vue:687
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:715
 msgid "Settings"
 msgstr ""
@@ -7102,7 +7732,7 @@ msgstr ""
 msgid "Setup the Exchange Rate Provider other than 'Frankfurter' in settings, as default provider does not support currency conversion for {0} to {1}."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:511
+#: frontend/src/components/Layouts/AppSidebar.vue:462
 msgid "Setup your password"
 msgstr ""
 
@@ -7110,7 +7740,7 @@ msgstr ""
 msgid "Share"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:246
+#: frontend/src/components/Activities/Activities.vue:247
 msgid "Show"
 msgstr ""
 
@@ -7131,6 +7761,10 @@ msgstr ""
 #: frontend/src/components/Modals/QuickEntryModal.vue:20
 #: frontend/src/components/Modals/SidePanelModal.vue:20
 msgid "Show Preview"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:59
+msgid "Show details"
 msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:86
@@ -7183,6 +7817,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:474
 msgid "Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:18
+msgid "Skip"
 msgstr ""
 
 #: frontend/src/components/Questionnaire.vue:97
@@ -7261,6 +7899,10 @@ msgstr ""
 msgid "Spacer"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:13
+msgid "Split the run into two arms on a condition."
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:59
 msgid "Spreadsheets"
 msgstr ""
@@ -7278,7 +7920,7 @@ msgstr ""
 msgid "Standard Selling Rate"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:709
+#: frontend/src/components/ViewControls.vue:717
 msgid "Standard Views"
 msgstr ""
 
@@ -7301,12 +7943,40 @@ msgstr ""
 msgid "Start Time"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:780
+#: frontend/src/components/Activities/Activities.vue:782
 msgid "Start a conversation now!"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:48
+msgid "Start a run just after a record is deleted."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:55
+msgid "Start a run when a submittable record is submitted."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:62
+msgid "Start a run when a submitted record is cancelled."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:27
+msgid "Start a run whenever a new record is created."
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:34
+msgid "Start a run whenever an existing record is saved."
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/utils.js:160
 msgid "Start date cannot be after end date"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:53
+msgid "Start from scratch"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:23
+msgid "Start test run"
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:186
@@ -7336,6 +8006,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: frontend/src/components/Settings/Forms/FormsList.vue:45
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:71
 #: frontend/src/pages/Contact.vue:395 frontend/src/pages/MobileContact.vue:387
 #: frontend/src/pages/MobileOrganization.vue:469
 #: frontend/src/pages/Organization.vue:499
@@ -7354,6 +8025,18 @@ msgstr ""
 msgid "Status is required"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:155
+msgid "Step"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:7
+msgid "Step Type"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
+msgid "Step name"
+msgstr ""
+
 #: frontend/src/components/Questionnaire.vue:91
 msgid "Step {0} of {1}"
 msgstr ""
@@ -7364,13 +8047,13 @@ msgstr ""
 msgid "Subdomain"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:67
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:68
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:68
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:69
 msgid "Subject"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:144
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:157
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:146
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:159
 msgid "Subject is required"
 msgstr ""
 
@@ -7454,7 +8137,7 @@ msgstr ""
 msgid "System"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:123
+#: frontend/src/components/Settings/Settings.vue:125
 msgid "System Configuration"
 msgstr ""
 
@@ -7513,17 +8196,17 @@ msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Activities/ActivityHeader.vue:136
-#: frontend/src/components/Layouts/AppSidebar.vue:754
+#: frontend/src/components/Activities/ActivityHeader.vue:140
+#: frontend/src/components/Layouts/AppSidebar.vue:705
 msgid "Task"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:597 frontend/src/pages/Lead.vue:460
-#: frontend/src/pages/MobileDeal.vue:472 frontend/src/pages/MobileLead.vue:331
+#: frontend/src/pages/Deal.vue:774 frontend/src/pages/Lead.vue:589
+#: frontend/src/pages/MobileDeal.vue:474 frontend/src/pages/MobileLead.vue:331
 msgid "Tasks"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:224
+#: frontend/src/components/Settings/Settings.vue:232
 msgid "Telephony"
 msgstr ""
 
@@ -7540,7 +8223,7 @@ msgstr ""
 msgid "Template Name"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:174
+#: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:176
 msgid "Template created successfully"
 msgstr ""
 
@@ -7556,15 +8239,15 @@ msgstr ""
 msgid "Template enabled successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:228
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:230
 msgid "Template renamed successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:193
+#: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:195
 msgid "Template updated successfully"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:182
+#: frontend/src/components/Settings/Settings.vue:184
 msgid "Templates"
 msgstr ""
 
@@ -7590,6 +8273,10 @@ msgstr ""
 #. Label of the territory_name (Data) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Territory Name"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
+msgid "Test Run"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:528
@@ -7619,7 +8306,7 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:752
+#: frontend/src/components/Activities/Activities.vue:754
 msgid "There are no activities to display here. Go ahead and make some changes."
 msgstr ""
 
@@ -7647,6 +8334,10 @@ msgstr ""
 msgid "This Year"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTargetPicker.vue:40
+msgid "This alias is not available at this step"
+msgstr ""
+
 #: frontend/src/components/FieldLayoutEditor.vue:581
 msgid "This column contains fields. Are you sure you want to remove it?"
 msgstr ""
@@ -7663,7 +8354,7 @@ msgstr ""
 msgid "This is my first CRM"
 msgstr ""
 
-#: crm/www/crm.py:62
+#: crm/www/crm.py:64
 msgid "This method is only meant for developer mode"
 msgstr ""
 
@@ -7702,6 +8393,10 @@ msgstr ""
 msgid "Time Format"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
+msgid "Timed out"
+msgstr ""
+
 #. Label of the crm_timeline_sort_order (Select) field in DocType 'FCRM
 #. Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -7720,6 +8415,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:82
 msgid "Timeline timestamp format"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:83
+msgid "Timeout"
 msgstr ""
 
 #: frontend/src/components/Filter.vue:384
@@ -7778,6 +8477,10 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 msgid "To User"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
+msgid "To Value"
 msgstr ""
 
 #: frontend/src/components/Settings/EmailEdit.vue:121
@@ -7854,6 +8557,23 @@ msgstr ""
 msgid "Traceback"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:156
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:52
+msgid "Trigger"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:8
+msgid "Trigger Field"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
+msgid "Trigger record"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:30
+msgid "True"
+msgstr ""
+
 #. Option for the 'Weekly Off' (Select) field in DocType 'CRM Holiday List'
 #. Option for the 'Workday' (Select) field in DocType 'CRM Service Day'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
@@ -7861,7 +8581,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:157
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:167
 msgid "Turn into a Group"
 msgstr ""
 
@@ -7875,7 +8595,7 @@ msgstr ""
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/components/Layouts/AppSidebar.vue:800
+#: frontend/src/components/Layouts/AppSidebar.vue:751
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
@@ -7944,12 +8664,24 @@ msgstr ""
 msgid "Type an email address to invite"
 msgstr ""
 
+#: frontend/src/components/CommandPalette/CommandPalette.vue:172
+msgid "Type to search"
+msgstr ""
+
 #: frontend/src/components/Activities/WhatsAppBox.vue:101
 msgid "Type your message here..."
 msgstr ""
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:117
 msgid "Unable to connect to Twilio account to fetch applications."
+msgstr ""
+
+#: frontend/src/composables/useCommandPalette.js:110
+msgid "Unable to run command"
+msgstr ""
+
+#: frontend/src/components/CommandPalette/recordCommands.js:73
+msgid "Unable to update assignment"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:449
@@ -7969,13 +8701,30 @@ msgstr ""
 msgid "Uncollapsible"
 msgstr ""
 
-#: frontend/src/components/ConditionsFilter/CFCondition.vue:167
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:28
+msgid "Undo"
+msgstr ""
+
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:177
 msgid "Ungroup Conditions"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:43
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:91
+msgid "Unit"
 msgstr ""
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
 msgid "Unknown"
+msgstr ""
+
+#: crm/automation/relationships.py:40
+msgid "Unknown CRM relationship: {0}"
+msgstr ""
+
+#: crm/automation/actions.py:227
+msgid "Unknown Email Template"
 msgstr ""
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:124
@@ -8010,12 +8759,16 @@ msgstr ""
 msgid "Unnamed field"
 msgstr ""
 
-#: frontend/src/components/ViewControls.vue:1197
+#: frontend/src/components/ViewControls.vue:1359
 msgid "Unpin View"
 msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:269
 msgid "Unpublish"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:44
+msgid "Unsaved"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:570
@@ -8024,12 +8777,26 @@ msgstr ""
 msgid "Unsaved Changes"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:273
+msgid "Unsaved changes"
+msgstr ""
+
+#: crm/automation/actions.py:158
+msgid "Unsupported conversion policy"
+msgstr ""
+
 #: frontend/src/components/CollapsibleSection.vue:21
 #: frontend/src/components/FieldLayoutEditor.vue:32
 #: frontend/src/components/Modals/CreateDocumentModal.vue:8
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:9
 #: frontend/src/components/SidePanelLayoutEditor.vue:19
 msgid "Untitled"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:24
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:30
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:542
+msgid "Untitled automation"
 msgstr ""
 
 #: frontend/src/components/ColumnSettings.vue:129
@@ -8091,7 +8858,7 @@ msgid "Upload"
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:45
-#: frontend/src/components/Activities/ActivityHeader.vue:141
+#: frontend/src/components/Activities/ActivityHeader.vue:145
 msgid "Upload Attachment"
 msgstr ""
 
@@ -8142,11 +8909,11 @@ msgstr ""
 msgid "User"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:103
+#: frontend/src/components/Settings/Settings.vue:105
 msgid "User Configuration"
 msgstr ""
 
-#: frontend/src/components/Settings/Settings.vue:149
+#: frontend/src/components/Settings/Settings.vue:151
 msgid "User Management"
 msgstr ""
 
@@ -8177,7 +8944,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AddExistingUserModal.vue:20
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:603
-#: frontend/src/components/Settings/Settings.vue:152
+#: frontend/src/components/Settings/Settings.vue:154
 #: frontend/src/components/Settings/Users.vue:7
 msgid "Users"
 msgstr ""
@@ -8198,6 +8965,10 @@ msgstr ""
 msgid "Valid conditions are required"
 msgstr ""
 
+#: frontend/src/components/Activities/QuotationsList.vue:107
+msgid "Valid till {0}"
+msgstr ""
+
 #. Label of the section_break_nevd (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
@@ -8205,6 +8976,7 @@ msgid "Validity"
 msgstr ""
 
 #: frontend/src/components/Modals/EditValueModal.vue:16
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:48
 msgid "Value"
 msgstr ""
 
@@ -8216,7 +8988,7 @@ msgstr ""
 msgid "Verify Connection"
 msgstr ""
 
-#: frontend/src/pages/Deal.vue:229
+#: frontend/src/pages/Deal.vue:230
 msgid "View Contact"
 msgstr ""
 
@@ -8229,10 +9001,11 @@ msgid "View Name"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:9
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:12
 msgid "View documentation"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:765
+#: frontend/src/components/Layouts/AppSidebar.vue:716
 msgid "Views"
 msgstr ""
 
@@ -8240,15 +9013,50 @@ msgstr ""
 msgid "Visible if"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:35
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:218
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:20
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:95
+msgid "Wait"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:55
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:94
+msgid "Wait for"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:219
+#: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:30
+msgid "Wait for event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:72
+msgid "Wait for {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:69
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:115
+msgid "Wait {0} {1}"
+msgstr ""
+
 #: frontend/src/pages/PersonaForm.vue:80
 msgid "Walk-ins"
+msgstr ""
+
+#. Option for the 'Lead Temperature' (Select) field in DocType 'CRM Lead'
+#: crm/fcrm/doctype/crm_lead/crm_lead.json
+msgid "Warm"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:41
+msgid "Watch one field and run when it moves to a new value."
 msgstr ""
 
 #: crm/integrations/twilio/api.py:108
 msgid "We're unable to connect your call right now. Please try again later."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:762
+#: frontend/src/components/Layouts/AppSidebar.vue:713
 msgid "Web Form"
 msgstr ""
 
@@ -8309,15 +9117,15 @@ msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
-#: frontend/src/components/Layouts/AppSidebar.vue:802
-#: frontend/src/components/Settings/Settings.vue:229
-#: frontend/src/pages/Deal.vue:612 frontend/src/pages/Lead.vue:475
-#: frontend/src/pages/MobileDeal.vue:487 frontend/src/pages/MobileLead.vue:346
+#: frontend/src/components/Layouts/AppSidebar.vue:753
+#: frontend/src/components/Settings/Settings.vue:237
+#: frontend/src/pages/Deal.vue:789 frontend/src/pages/Lead.vue:604
+#: frontend/src/pages/MobileDeal.vue:489 frontend/src/pages/MobileLead.vue:346
 #: frontend/src/pages/PersonaForm.vue:76
 msgid "WhatsApp"
 msgstr ""
 
-#: frontend/src/components/Activities/ActivityHeader.vue:146
+#: frontend/src/components/Activities/ActivityHeader.vue:150
 msgid "WhatsApp Message"
 msgstr ""
 
@@ -8364,6 +9172,16 @@ msgstr ""
 msgid "Workday"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:215
+msgid "Workflow Automation"
+msgstr ""
+
+#: frontend/src/components/Settings/Settings.vue:194
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:4
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:10
+msgid "Workflow Automations"
+msgstr ""
+
 #. Label of the section_break_rmgo (Section Break) field in DocType 'CRM
 #. Service Level Agreement'
 #. Label of the working_hours (Table) field in DocType 'CRM Service Level
@@ -8372,7 +9190,12 @@ msgstr ""
 msgid "Working Hours"
 msgstr ""
 
+#: crm/automation/actions.py:301
+msgid "Write the notification text"
+msgstr ""
+
 #: frontend/src/components/Filter.vue:636
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:294
 msgid "Yes"
 msgstr ""
 
@@ -8398,7 +9221,7 @@ msgstr ""
 msgid "You are not permitted to access CRM resources."
 msgstr ""
 
-#: crm/utils/__init__.py:134
+#: crm/utils/__init__.py:135
 msgid "You are not permitted to access this resource."
 msgstr ""
 
@@ -8438,7 +9261,7 @@ msgstr ""
 msgid "You do not have mobile number set in your Telephony Agent"
 msgstr ""
 
-#: crm/www/crm.py:18
+#: crm/www/crm.py:20
 msgid "You do not have permission to access Frappe CRM"
 msgstr ""
 
@@ -8448,6 +9271,10 @@ msgstr ""
 
 #: crm/api/__init__.py:155
 msgid "You don't have permission to delete this attachment"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:274
+msgid "You have unsaved changes. Do you wish to exit?"
 msgstr ""
 
 #: crm/api/user.py:17
@@ -8490,6 +9317,26 @@ msgstr ""
 msgid "Zoho CRM"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:57
+msgid "Zoom in"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:46
+msgid "Zoom out"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:10
+msgid "a date field"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:7
+msgid "a field to watch"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:9
+msgid "a schedule"
+msgstr ""
+
 #: frontend/src/components/Activities/CommentArea.vue:9
 msgid "added a"
 msgstr ""
@@ -8499,6 +9346,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "amber"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:11
+msgid "an event"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
+msgid "and"
 msgstr ""
 
 #: crm/api/todo.py:132
@@ -8523,7 +9378,7 @@ msgstr ""
 msgid "blue"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:249
+#: frontend/src/components/Activities/Activities.vue:250
 msgid "changes from"
 msgstr ""
 
@@ -8554,6 +9409,10 @@ msgstr ""
 msgid "cyan"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:161
+msgid "deal"
+msgstr ""
+
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:135
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:375
 msgid "deals"
@@ -8566,6 +9425,14 @@ msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:47
 msgid "disabled"
+msgstr ""
+
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:231
+msgid "e.g. @gmail.com"
+msgstr ""
+
+#: frontend/src/components/ConditionsFilter/CFCondition.vue:232
+msgid "e.g. Open, Replied"
 msgstr ""
 
 #: frontend/src/components/Controls/MultiSelectEmailInput.vue:266
@@ -8755,6 +9622,14 @@ msgstr ""
 msgid "old_value"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:55
+msgid "on {0}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:146
+msgid "or"
+msgstr ""
+
 #. Option for the 'Color' (Select) field in DocType 'CRM Deal Status'
 #. Option for the 'Color' (Select) field in DocType 'CRM Lead Status'
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
@@ -8814,8 +9689,8 @@ msgstr ""
 msgid "teal"
 msgstr ""
 
-#: frontend/src/components/Activities/Activities.vue:288
-#: frontend/src/components/Activities/Activities.vue:351
+#: frontend/src/components/Activities/Activities.vue:289
+#: frontend/src/components/Activities/Activities.vue:352
 msgid "to"
 msgstr ""
 
@@ -8879,6 +9754,10 @@ msgstr ""
 msgid "{0} can't be used as a layout break"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:159
+msgid "{0} contains {1}"
+msgstr ""
+
 #: frontend/src/utils/index.js:158
 msgid "{0} d"
 msgstr ""
@@ -8891,8 +9770,16 @@ msgstr ""
 msgid "{0} deleted successfully"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:160
+msgid "{0} does not contain {1}"
+msgstr ""
+
 #: frontend/src/utils/index.js:153
 msgid "{0} h"
+msgstr ""
+
+#: crm/automation/actions.py:235
+msgid "{0} has no email address"
 msgstr ""
 
 #: frontend/src/utils/index.js:206
@@ -8906,9 +9793,34 @@ msgstr ""
 msgid "{0} is an invalid email address"
 msgstr ""
 
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:168
+msgid "{0} is empty"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:158
+msgid "{0} is none of {1}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:156
+msgid "{0} is not {1}"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:157
+msgid "{0} is one of {1}"
+msgstr ""
+
 #: crm/api/form.py:555 frontend/src/components/Modals/ContactModal.vue:106
 #: frontend/src/components/Modals/ConvertToDealModal.vue:171
+#: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:51
 msgid "{0} is required"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:167
+msgid "{0} is set"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:155
+msgid "{0} is {1}"
 msgstr ""
 
 #: crm/api/form.py:276
@@ -8927,8 +9839,20 @@ msgstr ""
 msgid "{0} months ago"
 msgstr ""
 
+#: crm/automation/actions.py:31
+msgid "{0} must act on {1}, not {2}"
+msgstr ""
+
 #: frontend/src/components/Settings/ERPNextSettings.vue:569
 msgid "{0} not yet synced"
+msgstr ""
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:46
+msgid "{0} of {1} steps ran"
+msgstr ""
+
+#: frontend/src/components/CommandPalette/useCRMCommands.js:246
+msgid "{0} overdue"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:507

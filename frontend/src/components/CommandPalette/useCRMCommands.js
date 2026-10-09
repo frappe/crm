@@ -72,7 +72,9 @@ const SETTINGS_SECTIONS = [
       ['Users', 'users'],
       ['Invite User', 'user-plus'],
       ['Sales Hierarchy', 'network'],
-      ['Workflow Automations', 'workflow'],
+      ...(window.has_automation_engine
+        ? [['Workflow Automations', 'workflow']]
+        : []),
       ['Assignment Rules', 'git-branch'],
     ],
   },
@@ -175,6 +177,7 @@ function onVisibility(open, context) {
 
 function scheduleSearch(query, context) {
   clearTimeout(context.state.timer)
+  context.state.requestId++
   commandPaletteSearching.value = query.trim().length >= 2
   if (!query.trim()) return fetchRecords('', context)
   if (query.trim().length < 2) return (context.state.records.value = [])

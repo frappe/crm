@@ -18,6 +18,7 @@
         </div>
         <div class="flex gap-1">
           <Button
+            v-if="notifications.data?.length"
             :tooltip="__('Mark all as read')"
             :icon="MarkAsDoneIcon"
             variant="ghost"

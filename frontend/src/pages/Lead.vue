@@ -437,13 +437,14 @@ function leadCommands() {
     ...communicationCommands(),
   ]
   commands.push(...scriptCommands())
-  commands.push({
-    id: 'lead-convert',
-    title: 'Convert to deal',
-    group: 'Lead',
-    icon: 'repeat-2',
-    perform: () => (showConvertToDealModal.value = true),
-  })
+  if (!isLeadConversionDisabled.value)
+    commands.push({
+      id: 'lead-convert',
+      title: 'Convert to deal',
+      group: 'Lead',
+      icon: 'repeat-2',
+      perform: () => (showConvertToDealModal.value = true),
+    })
   if (canDelete.value) commands.push(deleteLeadCommand())
   return commands
 }
