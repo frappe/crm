@@ -9,11 +9,13 @@
   >
     <div class="relative w-full">
       <EditorContent
+        data-resizable-editor
         :class="[
           'prose-sm max-w-none',
-          editable &&
-            'mx-4 max-h-[50vh] min-h-[7rem] overflow-y-auto border-t py-3',
+          editable && 'mx-4 min-h-[7rem] overflow-y-auto border-t py-3',
+          editable && !height && 'max-h-[50vh]',
         ]"
+        :style="editable && height ? { height: `${height}px` } : null"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
@@ -109,6 +111,7 @@ defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  height: { type: Number, default: 0 },
 })
 
 const modelValue = defineModel({ type: Object })

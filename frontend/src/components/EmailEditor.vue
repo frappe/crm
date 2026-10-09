@@ -97,10 +97,13 @@
         </div>
       </div>
       <EditorContent
+        data-resizable-editor
         :class="[
           'prose-sm max-w-none [&_p.reply-to-content]:hidden',
-          editable && 'mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          editable && 'mx-4 overflow-y-auto border-t py-3',
+          editable && !height && 'max-h-[35vh]',
         ]"
+        :style="editable && height ? { height: `${height}px` } : null"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
@@ -213,6 +216,7 @@ const props = defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  height: { type: Number, default: 0 },
 })
 
 const CustomParagraph = Paragraph.extend({
