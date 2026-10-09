@@ -344,11 +344,8 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { viewsStore } from '@/stores/views'
 import { usersStore } from '@/stores/users'
-<<<<<<< HEAD
-=======
 import { organizationsStore } from '@/stores/organizations'
 import { statusesStore } from '@/stores/statuses'
->>>>>>> f37070f (fix: add error handling and Lost Reason prompt to Kanban drag-and-drop)
 import { getMeta } from '@/stores/meta'
 import { isEmoji } from '@/utils'
 import {
@@ -386,14 +383,12 @@ const { $dialog } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 
 const { isManager, getUser } = usersStore()
-<<<<<<< HEAD
-=======
+
 const { organizations } = organizationsStore()
 const { getLeadStatus, getDealStatus } = statusesStore()
 
 const showKanbanLostReasonModal = ref(false)
 const pendingKanbanMove = ref(null)
->>>>>>> f37070f (fix: add error handling and Lost Reason prompt to Kanban drag-and-drop)
 
 const list = defineModel({ type: Object, default: () => ({}) })
 const loadMore = defineModel('loadMore', { type: Boolean })
