@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-04 14:56+0000\n"
-"PO-Revision-Date: 2026-10-10 04:18\n"
+"PO-Revision-Date: 2026-10-11 04:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -934,7 +934,7 @@ msgstr "Se requiere al menos una prioridad"
 
 #: crm/automation/actions.py:299
 msgid "At least one recipient is required"
-msgstr ""
+msgstr "Se requiere al menos un destinatario"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
@@ -1044,7 +1044,7 @@ msgstr "Automatización y Reglas"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:105
 msgid "Automation User"
-msgstr ""
+msgstr "Usuario de automatización"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:413
 msgid "Automation deleted"
@@ -2051,11 +2051,11 @@ msgstr "Configurar el proveedor de tipo de cambio para su CRM"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:202
 msgid "Configure your Exotel telephony integration settings here"
-msgstr ""
+msgstr "Configura aquí la integración telefónica de Exotel"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:175
 msgid "Configure your Twilio telephony integration settings here"
-msgstr ""
+msgstr "Configura aquí la integración telefónica de Twilio"
 
 #: frontend/src/components/Settings/BrandSettings.vue:10
 msgid "Configure your brand name, logo and favicon"
@@ -2082,7 +2082,7 @@ msgstr "Confirmar Contraseña"
 
 #: frontend/src/utils/index.js:788
 msgid "Confirm {0}"
-msgstr ""
+msgstr "Confirmar {0}"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:436
 msgid "Connect ERPNext to Frappe CRM"
@@ -2212,7 +2212,7 @@ msgstr "Copiado al portapapeles"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:452
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:397
 #: frontend/src/components/Settings/Forms/FormsList.vue:275
@@ -2433,7 +2433,7 @@ msgstr "Oportunidad creada {0}"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:30
 msgid "Cron Expression"
-msgstr ""
+msgstr "Expresión cron"
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -2488,7 +2488,7 @@ msgstr "Listado de acciones personalizadas"
 
 #: frontend/src/pages/Dashboard.vue:231
 msgid "Custom Range"
-msgstr ""
+msgstr "Rango personalizado"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:755
 msgid "Custom Statuses"
@@ -2568,7 +2568,7 @@ msgstr "Fecha"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:57
 msgid "Date Direction"
-msgstr ""
+msgstr "Dirección de la fecha"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:41
 msgid "Date Field"
@@ -2826,7 +2826,7 @@ msgstr "Borrar Todo"
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
 msgid "Delete Attachment"
-msgstr ""
+msgstr "Eliminar adjunto"
 
 #: frontend/src/pages/MobileContact.vue:272
 msgid "Delete Contact"
@@ -3674,7 +3674,7 @@ msgstr "Introduzca su número de móvil personal utilizado por Exotel para reali
 
 #: frontend/src/components/FieldLayout/Field.vue:615
 msgid "Enter {0}"
-msgstr ""
+msgstr "Introduzca {0}"
 
 #: frontend/src/components/Filter.vue:67 frontend/src/components/Filter.vue:101
 #: frontend/src/components/Filter.vue:302
@@ -3699,7 +3699,7 @@ msgstr "Ocurrió un error"
 #: frontend/src/components/FilesUploader/FilesUploader.vue:192
 #: frontend/src/components/FilesUploader/FilesUploader.vue:215
 msgid "Error Uploading File"
-msgstr ""
+msgstr "Error al subir el archivo"
 
 #: frontend/src/components/Modals/ConvertToDealModal.vue:171
 msgid "Error converting to deal: {0}"
@@ -4295,7 +4295,7 @@ msgstr "Formulario actualizado"
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
 #: frontend/src/components/Settings/Settings.vue:213
 msgid "Forms"
-msgstr ""
+msgstr "Formularios"
 
 #: crm/api/form.py:246 crm/api/form.py:255 crm/api/form.py:440
 msgid "Forms can only map to: {0}"
@@ -5046,7 +5046,7 @@ msgstr "John, Jane, Doe"
 
 #: frontend/src/pages/PersonaForm.vue:127
 msgid "Just exploring"
-msgstr ""
+msgstr "Solo estoy explorando"
 
 #: frontend/src/pages/PersonaForm.vue:110
 msgid "Just me"
@@ -5079,7 +5079,7 @@ msgstr "Configuración de Kanban"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:282
 msgid "Keep editing"
-msgstr ""
+msgstr "Seguir editando"
 
 #: frontend/src/pages/PersonaForm.vue:93
 msgid "Keeping my pipeline organized"
@@ -6257,11 +6257,11 @@ msgstr "No hay llamadas recientes que mostrar. ¡Registra una llamada o llama a 
 
 #: crm/automation/actions.py:307
 msgid "No recipients to notify"
-msgstr ""
+msgstr "No hay destinatarios a notificar"
 
 #: frontend/src/components/CommandPalette/CommandPalette.vue:173
 msgid "No results for \"{0}\""
-msgstr ""
+msgstr "Sin resultados para \"{0}\""
 
 #: frontend/src/components/Controls/EmailMultiSelect.vue:133
 #: frontend/src/components/frappe-ui/Autocomplete.vue:126
@@ -6447,7 +6447,7 @@ msgstr "Vista de notas"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepSummary.vue:22
 msgid "Nothing here"
-msgstr ""
+msgstr "No hay nada aquí"
 
 #: frontend/src/components/Activities/Activities.vue:830
 msgid "Nothing here for now. Add a note to keep track of things."
@@ -6488,7 +6488,7 @@ msgstr "Notificaciones"
 
 #: crm/automation/actions.py:312
 msgid "Notified {0}"
-msgstr ""
+msgstr "Notificado {0}"
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
@@ -6902,7 +6902,7 @@ msgstr "Persona"
 #. Label of the persona_captured (Check) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Persona Captured"
-msgstr ""
+msgstr "Perfil de uso registrado"
 
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:132
 msgid "Personal Mobile Number"
@@ -7082,7 +7082,7 @@ msgstr "Posición"
 #: frontend/src/components/Settings/PreferencesSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:122
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:115
 msgid "Preferences updated successfully"
@@ -7275,7 +7275,7 @@ msgstr "Diseño de entrada rápida"
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Quick Filters"
-msgstr ""
+msgstr "Filtros rápidos"
 
 #: frontend/src/components/ViewControls.vue:870
 msgid "Quick filters updated successfully"
@@ -7443,7 +7443,7 @@ msgstr "Actualizar compañías"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
-msgstr ""
+msgstr "Rechazar"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:163
 msgid "Reject Call"
@@ -7582,7 +7582,7 @@ msgstr "Informes y previsiones"
 #. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 msgid "Reports To"
-msgstr ""
+msgstr "Informa a"
 
 #. Label of the request_timeout (Int) field in DocType 'CRM Enrichment
 #. Settings'
@@ -7808,7 +7808,7 @@ msgstr "Nombre de la regla"
 #. Label of the rule_type (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
 msgid "Rule Type"
-msgstr ""
+msgstr "Tipo de regla"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:98
 msgid "Run As"
@@ -8131,7 +8131,7 @@ msgstr "Buscar bloques"
 
 #: frontend/src/components/IconPicker.vue:38
 msgid "Search by keyword"
-msgstr ""
+msgstr "Buscar por palabra clave"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:6
 msgid "Search fields"
@@ -8629,7 +8629,7 @@ msgstr "Patrones de omisión"
 
 #: frontend/src/components/Questionnaire.vue:95
 msgid "Skip for now"
-msgstr ""
+msgstr "Omitir por ahora"
 
 #. Option for the 'Rule Type' (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
@@ -8732,7 +8732,7 @@ msgstr "Divide la ejecución en dos ramas según una condición."
 
 #: frontend/src/pages/PersonaForm.vue:59
 msgid "Spreadsheets"
-msgstr ""
+msgstr "Hojas de cálculo"
 
 #: crm/api/dashboard.py:908 crm/api/dashboard.py:966
 msgid "Stage"
@@ -8800,7 +8800,7 @@ msgstr "La fecha de inicio no puede ser posterior a la de fin"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:53
 msgid "Start from scratch"
-msgstr ""
+msgstr "Empezar desde cero"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTrialRun.vue:23
 msgid "Start test run"
@@ -9288,7 +9288,7 @@ msgstr "Este es mi primer CRM"
 
 #: crm/www/crm.py:62
 msgid "This method is only meant for developer mode"
-msgstr ""
+msgstr "Este método solo está destinado al modo de desarrollador."
 
 #: crm/domain_enrichment/api.py:83
 msgid "This run has no linked record to re-enrich."
@@ -9519,11 +9519,11 @@ msgstr "Tratar el patrón como expresión regular en lugar de una subcadena simp
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:156
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:52
 msgid "Trigger"
-msgstr ""
+msgstr "Disparador"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:8
 msgid "Trigger Field"
-msgstr ""
+msgstr "Campo disparador"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
 msgid "Trigger record"
@@ -9688,7 +9688,7 @@ msgstr "Relación CRM desconocida: {0}"
 
 #: crm/automation/actions.py:227
 msgid "Unknown Email Template"
-msgstr ""
+msgstr "Plantilla de correo desconocida"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:140
 msgid "Unlink"
@@ -10285,7 +10285,7 @@ msgstr "No tienes permiso para eliminar este adjunto"
 
 #: frontend/src/components/Notifications.vue:74
 msgid "You have no new notifications"
-msgstr ""
+msgstr "No tienes notificaciones nuevas"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:279
 msgid "You have unsaved changes. Do you wish to exit?"
@@ -10337,7 +10337,7 @@ msgstr "Su estado anterior se sobrescribirá. ¿Está seguro de que desea guarda
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:397
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
-msgstr ""
+msgstr "Se sobrescribirán tus condiciones anteriores. ¿Seguro que quieres guardar?"
 
 #: frontend/src/pages/PersonaForm.vue:62
 msgid "Zoho CRM"
@@ -10345,11 +10345,11 @@ msgstr "Zoho CRM"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:57
 msgid "Zoom in"
-msgstr ""
+msgstr "Acercar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:46
 msgid "Zoom out"
-msgstr ""
+msgstr "Alejar"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:10
 msgid "a date field"
@@ -10977,7 +10977,7 @@ msgstr "Se ejecutaron {0} de {1} pasos"
 
 #: frontend/src/components/CommandPalette/useCRMCommands.js:244
 msgid "{0} overdue"
-msgstr ""
+msgstr "{0} vencidos"
 
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:176
 msgid "{0} set as default account"
