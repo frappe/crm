@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-04 14:56+0000\n"
-"PO-Revision-Date: 2026-10-06 02:39\n"
+"PO-Revision-Date: 2026-10-11 04:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -2200,7 +2200,7 @@ msgstr ""
 #. Label of the converted (Check) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Converted"
-msgstr ""
+msgstr "Конвертовано"
 
 #: frontend/src/components/ListBulkActions.vue:95
 msgid "Converted Successfully"
@@ -2343,7 +2343,7 @@ msgstr ""
 #: frontend/src/components/Modals/CallLogDetailModal.vue:167
 #: frontend/src/components/Modals/LeadModal.vue:9
 msgid "Create Lead"
-msgstr ""
+msgstr "Створити потенційного клієнта"
 
 #: frontend/src/components/Settings/emailConfig.js:58
 msgid "Create Lead from Incoming Emails"
@@ -2448,7 +2448,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:52
 msgid "Currency Precision"
-msgstr ""
+msgstr "Точність валюти"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:250
 msgid "Currency set as {0} successfully"
@@ -4350,7 +4350,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:16
 msgid "From Value"
-msgstr ""
+msgstr "Від значення"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
@@ -5031,7 +5031,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Job Title"
-msgstr ""
+msgstr "Посада"
 
 #: frontend/src/components/AssignToBody.vue:10
 #: frontend/src/components/Filter.vue:644
@@ -5241,12 +5241,12 @@ msgstr ""
 #. Label of the lead_details_tab (Tab Break) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lead Details"
-msgstr ""
+msgstr "Деталі потенційного клієнта"
 
 #. Label of the lead_name (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 msgid "Lead Name"
-msgstr ""
+msgstr "Ім’я потенційного клієнта"
 
 #. Label of the lead_owner (Link) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -5906,7 +5906,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Naming Series"
-msgstr ""
+msgstr "Серія нумерації"
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:107
 msgid "Nested Conditions"
@@ -7362,7 +7362,7 @@ msgstr "Запис оновлено"
 #. Label of the recording_url (Small Text) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Recording URL"
-msgstr ""
+msgstr "URL-адреса запису"
 
 #: crm/integrations/api.py:284
 msgid "Recording URL is not allowed"
@@ -7378,7 +7378,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:143
 msgid "Records"
-msgstr ""
+msgstr "Записи"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:351
 msgid "Redirect URL"
@@ -7412,7 +7412,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_task/crm_task.json
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
 msgid "Reference Document Type"
-msgstr ""
+msgstr "Тип пов’язаного документа"
 
 #. Label of the reference_name (Dynamic Link) field in DocType 'CRM Enrichment
 #. Run'
@@ -9183,7 +9183,7 @@ msgstr ""
 #. Label of the territory_name (Data) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Territory Name"
-msgstr ""
+msgstr "Назва території"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
 msgid "Test Run"
@@ -9433,7 +9433,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
-msgstr ""
+msgstr "До значення"
 
 #: frontend/src/components/Settings/EmailEdit.vue:121
 msgid "To know more about setting up email accounts, click"
@@ -9778,7 +9778,7 @@ msgstr "Автоматизація без назви"
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:32
 #: frontend/src/components/Telephony/ExotelCallUI.vue:206
 msgid "Update"
-msgstr ""
+msgstr "Оновити"
 
 #: frontend/src/components/Settings/EmailEdit.vue:75
 msgid "Update Account"
@@ -10642,7 +10642,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:172 frontend/src/utils/index.js:198
 msgid "just now"
-msgstr ""
+msgstr "щойно"
 
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -10953,7 +10953,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:202
 msgid "{0} minutes ago"
-msgstr ""
+msgstr "{0} хвилин тому"
 
 #: frontend/src/utils/index.js:221
 msgid "{0} months ago"
@@ -10993,7 +10993,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:160
 msgid "{0} w"
-msgstr ""
+msgstr "{0} т"
 
 #: frontend/src/utils/index.js:217
 msgid "{0} weeks ago"
