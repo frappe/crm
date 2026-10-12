@@ -29,3 +29,8 @@
 .menu-content {
   z-index: 101;
 }
+
+/* the editor's @ list is attached to the page body, so let it take clicks while a dialog is open */
+[role='dialog'][aria-label='Suggestions'] {
+  pointer-events: auto;
+}

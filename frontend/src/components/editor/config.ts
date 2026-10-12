@@ -85,6 +85,22 @@ export const fullToolbar: MenuItem[] = [
  *  shown in a floating bubble on text selection rather than a fixed bar. */
 export const bubbleToolbar: MenuItem[] = [Bold, Italic, Strike, InsertLink]
 
+/** Shorter toolbar for notes, where writing matters more than layout. */
+export const noteToolbar: MenuItem[] = [
+  HeadingGroup,
+  Separator,
+  Bold,
+  Italic,
+  Strike,
+  Separator,
+  BulletList,
+  OrderedList,
+  Separator,
+  InsertLink,
+  Blockquote,
+  InsertImage,
+]
+
 /** Upload handler for images/files dropped or pasted into an editor. */
 export function uploadFile(
   file: File,
