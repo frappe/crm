@@ -7,6 +7,7 @@ from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.tests import IntegrationTestCase
 
+from crm.fcrm.doctype.crm_deal.test_crm_deal import create_test_sales_user
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
 
 
@@ -28,6 +29,43 @@ class TestCRMLead(IntegrationTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback()
+
+	def test_assign_agent_respects_permissions(self):
+		"""assign_agent must not bypass the acting user's permissions on the lead"""
+		lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Assign", "organization": "Assign Permission Org"}
+		).insert()
+
+		if not frappe.db.exists("User", "no-crm-access@example.com"):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": "no-crm-access@example.com",
+					"first_name": "No",
+					"last_name": "Access",
+				}
+			).insert(ignore_permissions=True)
+
+		try:
+			frappe.set_user("no-crm-access@example.com")
+			with self.assertRaises(frappe.PermissionError):
+				lead.assign_agent("Administrator")
+		finally:
+			frappe.set_user("Administrator")
+
+		self.assertNotIn("Administrator", lead.get_assigned_users())
+
+	def test_owner_change_assigns_new_owner(self):
+		"""Changing lead_owner on save still assigns the new owner through the permission-checked path"""
+		lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Owner", "organization": "Owner Change Org"}
+		).insert()
+		owner = create_test_sales_user("lead-owner-change@example.com")
+
+		lead.lead_owner = owner
+		lead.save()
+
+		self.assertIn(owner, lead.reload().get_assigned_users())
 
 	def test_lead_creation_with_first_name(self):
 		"""Test creating a lead with first name"""
