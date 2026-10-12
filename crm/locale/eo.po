@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-10-04 14:56+0000\n"
-"PO-Revision-Date: 2026-10-06 02:39\n"
+"POT-Creation-Date: 2026-10-11 15:53+0000\n"
+"PO-Revision-Date: 2026-10-12 04:52\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Esperanto\n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid " (New)"
 msgstr "crwdns152667:0crwdne152667:0"
 
-#: frontend/src/components/Filter.vue:628
+#: frontend/src/components/Filter.vue:657
 msgid "%John%"
 msgstr "crwdns196020:0%John%crwdne196020:0"
 
@@ -31,7 +31,15 @@ msgstr "crwdns196020:0%John%crwdne196020:0"
 msgid "(required)"
 msgstr "crwdns270985:0crwdne270985:0"
 
-#: frontend/src/components/Filter.vue:618
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:174
+msgid "+{0} more keyword(s) on this rule"
+msgstr "crwdns274771:0{0}crwdne274771:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:67
+msgid "+{0} more pattern(s) on this rule"
+msgstr "crwdns274773:0{0}crwdne274773:0"
+
+#: frontend/src/components/Filter.vue:644
 msgid "01/01/2022 to 01/31/2022"
 msgstr "crwdns196024:0crwdne196024:0"
 
@@ -143,7 +151,7 @@ msgstr "crwdns152689:0crwdne152689:0"
 msgid "<step key>"
 msgstr "crwdns270987:0crwdne270987:0"
 
-#: frontend/src/components/CommunicationArea.vue:84
+#: frontend/src/components/CommunicationArea.vue:101
 msgid "@John, can you please check this?"
 msgstr "crwdns152691:0crwdne152691:0"
 
@@ -174,13 +182,17 @@ msgstr "crwdns240301:0crwdne240301:0"
 msgid "A trigger runs only when these filters match."
 msgstr "crwdns270991:0crwdne270991:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:273
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:305
 msgid "A valid call log is required."
 msgstr "crwdns196030:0crwdne196030:0"
 
 #: frontend/src/components/Settings/Hierarchy/useDragDrop.js:69
 msgid "A {0} cannot report to a {1}"
 msgstr "crwdns203615:0{0}crwdnd203615:0{1}crwdne203615:0"
+
+#: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.py:78
+msgid "A {0} rule for {1} already exists"
+msgstr "crwdns274775:0{0}crwdnd274775:0{1}crwdne274775:0"
 
 #. Label of the api_key (Data) field in DocType 'CRM Exotel Settings'
 #. Label of the api_key (Data) field in DocType 'CRM Twilio Settings'
@@ -263,7 +275,7 @@ msgstr "crwdns157242:0{0}crwdne157242:0"
 msgid "Access Token"
 msgstr "crwdns160744:0crwdne160744:0"
 
-#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:145
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:165
 msgid "Access token is required"
 msgstr "crwdns160746:0crwdne160746:0"
 
@@ -332,8 +344,8 @@ msgid "Actions"
 msgstr "crwdns152711:0crwdne152711:0"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:144
-#: frontend/src/pages/Deal.vue:752 frontend/src/pages/Lead.vue:566
-#: frontend/src/pages/MobileDeal.vue:449 frontend/src/pages/MobileLead.vue:305
+#: frontend/src/pages/Deal.vue:761 frontend/src/pages/Lead.vue:566
+#: frontend/src/pages/MobileDeal.vue:458 frontend/src/pages/MobileLead.vue:305
 msgid "Activity"
 msgstr "crwdns152713:0crwdne152713:0"
 
@@ -396,6 +408,11 @@ msgstr "crwdns196046:0crwdne196046:0"
 msgid "Add Condition Group"
 msgstr "crwdns196048:0crwdne196048:0"
 
+#: frontend/src/pages/MobileOrganization.vue:32
+#: frontend/src/pages/Organization.vue:40
+msgid "Add Contact"
+msgstr "crwdns274777:0crwdne274777:0"
+
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:99
 msgid "Add Email"
 msgstr "crwdns199286:0crwdne199286:0"
@@ -430,7 +447,7 @@ msgstr "crwdns196058:0crwdne196058:0"
 msgid "Add Organization..."
 msgstr "crwdns196062:0crwdne196062:0"
 
-#: frontend/src/components/Controls/Grid.vue:460
+#: frontend/src/components/Controls/Grid.vue:461
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
@@ -505,7 +522,7 @@ msgstr "crwdns273297:0crwdne273297:0"
 msgid "Add a mobile number to send a template."
 msgstr "crwdns273299:0crwdne273299:0"
 
-#: frontend/src/components/Activities/Activities.vue:844
+#: frontend/src/components/Activities/Activities.vue:853
 msgid "Add a mobile number to start a WhatsApp conversation."
 msgstr "crwdns273301:0crwdne273301:0"
 
@@ -541,6 +558,10 @@ msgstr "crwdns271001:0crwdne271001:0"
 msgid "Add fields to see them here."
 msgstr "crwdns240307:0crwdne240307:0"
 
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:108
+msgid "Add industry rule"
+msgstr "crwdns274779:0crwdne274779:0"
+
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:11
 #: frontend/src/components/Settings/EmailAccountList.vue:51
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:44
@@ -554,6 +575,18 @@ msgstr "crwdns196076:0crwdne196076:0"
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:13
 msgid "Add one to start messaging."
 msgstr "crwdns273305:0crwdne273305:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:118
+msgid "Add one to tell enrichment which keywords point at which industry."
+msgstr "crwdns274781:0crwdne274781:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:21
+msgid "Add one to tell enrichment which profile links to look for."
+msgstr "crwdns274783:0crwdne274783:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:11
+msgid "Add social rule"
+msgstr "crwdns274785:0crwdne274785:0"
 
 #. Description of the 'Icon' (Code) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json
@@ -655,8 +688,8 @@ msgstr "crwdns240315:0crwdne240315:0"
 #. Label of the amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 #: frontend/src/pages/Contact.vue:383 frontend/src/pages/MobileContact.vue:375
-#: frontend/src/pages/MobileOrganization.vue:460
-#: frontend/src/pages/Organization.vue:502
+#: frontend/src/pages/MobileOrganization.vue:512
+#: frontend/src/pages/Organization.vue:552
 msgid "Amount"
 msgstr "crwdns152751:0crwdne152751:0"
 
@@ -669,7 +702,7 @@ msgstr "crwdns156120:0crwdne156120:0"
 msgid "Amount is required"
 msgstr "crwdns271009:0crwdne271009:0"
 
-#: frontend/src/pages/Deal.vue:464
+#: frontend/src/pages/Deal.vue:473
 msgid "An Error Occurred"
 msgstr "crwdns267977:0crwdne267977:0"
 
@@ -716,7 +749,7 @@ msgstr "crwdns152759:0crwdne152759:0"
 msgid "Annual Revenue should be a number"
 msgstr "crwdns152761:0crwdne152761:0"
 
-#: frontend/src/pages/PersonaForm.vue:64
+#: frontend/src/pages/PersonaForm.vue:71
 msgid "Another CRM"
 msgstr "crwdns207223:0crwdne207223:0"
 
@@ -767,7 +800,7 @@ msgstr "crwdns152771:0crwdne152771:0"
 msgid "Are you sure you want to clear demo data? This action cannot be undone."
 msgstr "crwdns199508:0crwdne199508:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:474
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:475
 msgid "Are you sure you want to delete the trigger and all workflow steps?"
 msgstr "crwdns271013:0crwdne271013:0"
 
@@ -779,11 +812,11 @@ msgstr "crwdns152775:0crwdne152775:0"
 msgid "Are you sure you want to delete this contact?"
 msgstr "crwdns152777:0crwdne152777:0"
 
-#: frontend/src/pages/MobileOrganization.vue:268
+#: frontend/src/pages/MobileOrganization.vue:303
 msgid "Are you sure you want to delete this organization?"
 msgstr "crwdns152779:0crwdne152779:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:475
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:476
 msgid "Are you sure you want to delete this step?"
 msgstr "crwdns271015:0crwdne271015:0"
 
@@ -945,8 +978,8 @@ msgstr "crwdns241917:0crwdne241917:0"
 msgid "Attach"
 msgstr "crwdns152801:0crwdne152801:0"
 
-#: frontend/src/components/CommentBox.vue:47
-#: frontend/src/components/EmailEditor.vue:141 frontend/src/pages/Deal.vue:117
+#: frontend/src/components/CommentBox.vue:49
+#: frontend/src/components/EmailEditor.vue:144 frontend/src/pages/Deal.vue:117
 #: frontend/src/pages/Lead.vue:171
 msgid "Attach a File"
 msgstr "crwdns196122:0crwdne196122:0"
@@ -955,8 +988,8 @@ msgstr "crwdns196122:0crwdne196122:0"
 msgid "Attach file…"
 msgstr "crwdns200062:0crwdne200062:0"
 
-#: frontend/src/pages/Deal.vue:794 frontend/src/pages/Lead.vue:608
-#: frontend/src/pages/MobileDeal.vue:492 frontend/src/pages/MobileLead.vue:347
+#: frontend/src/pages/Deal.vue:803 frontend/src/pages/Lead.vue:608
+#: frontend/src/pages/MobileDeal.vue:501 frontend/src/pages/MobileLead.vue:347
 msgid "Attachments"
 msgstr "crwdns152805:0crwdne152805:0"
 
@@ -986,7 +1019,7 @@ msgstr "crwdns199292:0crwdne199292:0"
 
 #. Label of the auto_enrich (Check) field in DocType 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
-#: frontend/src/components/Settings/EnrichmentSettings.vue:43
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:76
 msgid "Auto-enrich new records"
 msgstr "crwdns268181:0crwdne268181:0"
 
@@ -1001,6 +1034,10 @@ msgstr "crwdns196132:0crwdne196132:0"
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Automatically enrich a new CRM Lead, Deal or Organization in the background as soon as it is created (requires a website on the record). Only applies to the doctypes enabled above. When off, enrichment is triggered manually with the Enrich button."
 msgstr "crwdns268183:0crwdne268183:0"
+
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:80
+msgid "Automatically enrich new Leads, Deals and Organizations in the background when they have a website. When off, use the Enrich button on the record."
+msgstr "crwdns274787:0crwdne274787:0"
 
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
@@ -1034,6 +1071,7 @@ msgstr "crwdns159284:0crwdne159284:0"
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:71
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
 msgid "Automation"
 msgstr "crwdns240321:0crwdne240321:0"
@@ -1054,7 +1092,7 @@ msgstr "crwdns271021:0crwdne271021:0"
 msgid "Automation duplicated"
 msgstr "crwdns271023:0crwdne271023:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:525
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:526
 msgid "Automation saved"
 msgstr "crwdns271025:0crwdne271025:0"
 
@@ -1134,7 +1172,6 @@ msgstr "crwdns156160:0crwdne156160:0"
 msgid "Axis Chart"
 msgstr "crwdns196146:0crwdne196146:0"
 
-#: frontend/src/components/Activities/EmailArea.vue:58
 #: frontend/src/components/EmailEditor.vue:53
 #: frontend/src/components/EmailEditor.vue:79
 msgid "BCC"
@@ -1159,7 +1196,7 @@ msgstr "crwdns196150:0crwdne196150:0"
 msgid "Back to automations"
 msgstr "crwdns271033:0crwdne271033:0"
 
-#: frontend/src/components/Questionnaire.vue:92
+#: frontend/src/components/Questionnaire.vue:102
 msgid "Back to previous question"
 msgstr "crwdns207225:0crwdne207225:0"
 
@@ -1179,7 +1216,7 @@ msgstr "crwdns152815:0crwdne152815:0"
 msgid "Basic settings for this form."
 msgstr "crwdns240323:0crwdne240323:0"
 
-#: frontend/src/components/Activities/Activities.vue:822
+#: frontend/src/components/Activities/Activities.vue:831
 msgid "Be the first to add one."
 msgstr "crwdns267979:0crwdne267979:0"
 
@@ -1192,7 +1229,7 @@ msgstr "crwdns271035:0crwdne271035:0"
 msgid "Belonging to"
 msgstr "crwdns271037:0crwdne271037:0"
 
-#: frontend/src/components/Filter.vue:385
+#: frontend/src/components/Filter.vue:391
 msgid "Between"
 msgstr "crwdns152817:0crwdne152817:0"
 
@@ -1244,7 +1281,6 @@ msgstr "crwdns267981:0crwdne267981:0"
 msgid "Busy"
 msgstr "crwdns152825:0crwdne152825:0"
 
-#: frontend/src/components/Activities/EmailArea.vue:53
 #: frontend/src/components/EmailEditor.vue:43
 #: frontend/src/components/EmailEditor.vue:65
 msgid "CC"
@@ -1267,7 +1303,7 @@ msgstr "crwdns152833:0crwdne152833:0"
 
 #. Name of a DocType
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json
-#: frontend/src/pages/Dashboard.vue:310
+#: frontend/src/pages/Dashboard.vue:312
 msgid "CRM Dashboard"
 msgstr "crwdns156168:0crwdne156168:0"
 
@@ -1484,7 +1520,7 @@ msgstr "crwdns152887:0crwdne152887:0"
 msgid "CSV"
 msgstr "crwdns152889:0crwdne152889:0"
 
-#: frontend/src/pages/PersonaForm.vue:81
+#: frontend/src/pages/PersonaForm.vue:88
 msgid "CSV imports"
 msgstr "crwdns207227:0crwdne207227:0"
 
@@ -1533,8 +1569,8 @@ msgstr "crwdns152903:0crwdne152903:0"
 msgid "Calling..."
 msgstr "crwdns152905:0crwdne152905:0"
 
-#: frontend/src/pages/Deal.vue:776 frontend/src/pages/Lead.vue:590
-#: frontend/src/pages/MobileDeal.vue:473 frontend/src/pages/MobileLead.vue:329
+#: frontend/src/pages/Deal.vue:785 frontend/src/pages/Lead.vue:590
+#: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:329
 msgid "Calls"
 msgstr "crwdns152907:0crwdne152907:0"
 
@@ -1628,7 +1664,7 @@ msgstr "crwdns240345:0crwdne240345:0"
 msgid "Capture leads with a form"
 msgstr "crwdns271041:0crwdne271041:0"
 
-#: frontend/src/pages/PersonaForm.vue:122
+#: frontend/src/pages/PersonaForm.vue:129
 msgid "Capture my first lead"
 msgstr "crwdns207229:0crwdne207229:0"
 
@@ -1636,7 +1672,7 @@ msgstr "crwdns207229:0crwdne207229:0"
 msgid "Capturing Leads"
 msgstr "crwdns196170:0crwdne196170:0"
 
-#: frontend/src/pages/PersonaForm.vue:90
+#: frontend/src/pages/PersonaForm.vue:97
 msgid "Capturing leads"
 msgstr "crwdns207231:0crwdne207231:0"
 
@@ -1657,8 +1693,8 @@ msgstr "crwdns240347:0crwdne240347:0"
 
 #: frontend/src/pages/Contact.vue:47 frontend/src/pages/Lead.vue:102
 #: frontend/src/pages/MobileContact.vue:37
-#: frontend/src/pages/MobileOrganization.vue:37
-#: frontend/src/pages/Organization.vue:53
+#: frontend/src/pages/MobileOrganization.vue:64
+#: frontend/src/pages/Organization.vue:78
 msgid "Change Image"
 msgstr "crwdns196172:0crwdne196172:0"
 
@@ -1827,7 +1863,7 @@ msgstr "crwdns240351:0crwdne240351:0"
 #: frontend/src/components/Controls/GridRowModal.vue:24
 #: frontend/src/components/DeleteLinkedDocModal.vue:23
 #: frontend/src/components/DeleteLinkedDocModal.vue:123
-#: frontend/src/components/Modals/CallLogDetailModal.vue:49
+#: frontend/src/components/Modals/CallLogDetailModal.vue:53
 #: frontend/src/components/Modals/ContactModal.vue:24
 #: frontend/src/components/Modals/DealModal.vue:24
 #: frontend/src/components/Modals/DoctypeModal.vue:33
@@ -1844,7 +1880,7 @@ msgstr "crwdns152939:0crwdne152939:0"
 msgid "Close inspector"
 msgstr "crwdns271063:0crwdne271063:0"
 
-#: frontend/src/pages/PersonaForm.vue:126
+#: frontend/src/pages/PersonaForm.vue:133
 msgid "Close my first deal"
 msgstr "crwdns207233:0crwdne207233:0"
 
@@ -1858,7 +1894,7 @@ msgstr "crwdns156198:0crwdne156198:0"
 msgid "Cold"
 msgstr "crwdns271065:0crwdne271065:0"
 
-#: frontend/src/pages/PersonaForm.vue:100
+#: frontend/src/pages/PersonaForm.vue:107
 msgid "Collaborating with my team"
 msgstr "crwdns207235:0crwdne207235:0"
 
@@ -1898,18 +1934,18 @@ msgstr "crwdns152953:0crwdne152953:0"
 #. Label of the comment (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json
 #: frontend/src/components/Activities/ActivityHeader.vue:103
-#: frontend/src/components/CommentBox.vue:71
-#: frontend/src/components/CommunicationArea.vue:15
+#: frontend/src/components/CommentBox.vue:73
+#: frontend/src/components/CommunicationArea.vue:28
 #: frontend/src/components/Layouts/AppSidebar.vue:742
 msgid "Comment"
 msgstr "crwdns152955:0crwdne152955:0"
 
-#: frontend/src/components/CommunicationArea.vue:299
+#: frontend/src/components/CommunicationArea.vue:357
 msgid "Comment sent"
 msgstr "crwdns200230:0crwdne200230:0"
 
-#: frontend/src/pages/Deal.vue:764 frontend/src/pages/Lead.vue:578
-#: frontend/src/pages/MobileDeal.vue:461 frontend/src/pages/MobileLead.vue:317
+#: frontend/src/pages/Deal.vue:773 frontend/src/pages/Lead.vue:578
+#: frontend/src/pages/MobileDeal.vue:470 frontend/src/pages/MobileLead.vue:317
 msgid "Comments"
 msgstr "crwdns152957:0crwdne152957:0"
 
@@ -2066,6 +2102,7 @@ msgstr "crwdns241933:0crwdne241933:0"
 msgid "Confirm"
 msgstr "crwdns152971:0crwdne152971:0"
 
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:291
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:39
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
 msgid "Confirm Delete"
@@ -2102,11 +2139,11 @@ msgstr "crwdns196210:0crwdne196210:0"
 msgid "Contact"
 msgstr "crwdns152973:0crwdne152973:0"
 
-#: frontend/src/pages/Deal.vue:896 frontend/src/pages/MobileDeal.vue:578
+#: frontend/src/pages/Deal.vue:905 frontend/src/pages/MobileDeal.vue:587
 msgid "Contact Added"
 msgstr "crwdns196212:0crwdne196212:0"
 
-#: frontend/src/pages/Deal.vue:886 frontend/src/pages/MobileDeal.vue:568
+#: frontend/src/pages/Deal.vue:895 frontend/src/pages/MobileDeal.vue:577
 msgid "Contact Already Added"
 msgstr "crwdns196214:0crwdne196214:0"
 
@@ -2118,7 +2155,7 @@ msgstr "crwdns152975:0crwdne152975:0"
 msgid "Contact Image Updated"
 msgstr "crwdns196216:0crwdne196216:0"
 
-#: frontend/src/pages/Deal.vue:910 frontend/src/pages/MobileDeal.vue:592
+#: frontend/src/pages/Deal.vue:919 frontend/src/pages/MobileDeal.vue:601
 msgid "Contact Removed"
 msgstr "crwdns196218:0crwdne196218:0"
 
@@ -2129,6 +2166,11 @@ msgstr "crwdns156214:0crwdne156214:0"
 #: frontend/src/components/Modals/EditValueModal.vue:21
 msgid "Contact Us"
 msgstr "crwdns152977:0crwdne152977:0"
+
+#: frontend/src/pages/MobileOrganization.vue:444
+#: frontend/src/pages/Organization.vue:484
+msgid "Contact added to {0}"
+msgstr "crwdns274789:0{0}crwdne274789:0"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:337
 msgid "Contact already exists with Email: {0}"
@@ -2149,9 +2191,14 @@ msgstr "crwdns240359:0crwdne240359:0"
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:114
 #: frontend/src/pages/Contact.vue:240 frontend/src/pages/MobileContact.vue:221
-#: frontend/src/pages/MobileOrganization.vue:345
+#: frontend/src/pages/MobileOrganization.vue:382
 msgid "Contacts"
 msgstr "crwdns152989:0crwdne152989:0"
+
+#: frontend/src/pages/Deal.vue:160 frontend/src/pages/MobileDeal.vue:90
+#: frontend/src/utils/fieldTransforms.js:160
+msgid "Contacts at {0}"
+msgstr "crwdns274791:0{0}crwdne274791:0"
 
 #. Label of the content (Text Editor) field in DocType 'FCRM Note'
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json
@@ -2247,6 +2294,14 @@ msgstr "crwdns242039:0crwdne242039:0"
 msgid "Could not load chart options"
 msgstr "crwdns267985:0crwdne267985:0"
 
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:113
+msgid "Could not load industry rules"
+msgstr "crwdns274793:0crwdne274793:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:16
+msgid "Could not load social rules"
+msgstr "crwdns274795:0crwdne274795:0"
+
 #: frontend/src/components/ViewControls.vue:1273
 msgid "Could not move the card. Reverting."
 msgstr "crwdns271073:0crwdne271073:0"
@@ -2255,14 +2310,17 @@ msgstr "crwdns271073:0crwdne271073:0"
 msgid "Could not remove."
 msgstr "crwdns203639:0crwdne203639:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:87
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1524
 msgid "Could not save"
 msgstr "crwdns240369:0crwdne240369:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:617
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:618
 msgid "Could not save automation"
 msgstr "crwdns271075:0crwdne271075:0"
+
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:198
+msgid "Could not save settings"
+msgstr "crwdns274797:0crwdne274797:0"
 
 #: frontend/src/components/PrimaryDropdownItem.vue:181
 #: frontend/src/components/PrimaryDropdownItem.vue:188
@@ -2306,6 +2364,10 @@ msgstr "crwdns240375:0crwdne240375:0"
 msgid "Crawl Tuning"
 msgstr "crwdns240377:0crwdne240377:0"
 
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:31
+msgid "Crawl settings"
+msgstr "crwdns274799:0crwdne274799:0"
+
 #. Description of the 'Link Priority Order' (Table) field in DocType 'CRM
 #. Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
@@ -2340,7 +2402,7 @@ msgstr "crwdns273311:0crwdne273311:0"
 msgid "Create Deal"
 msgstr "crwdns153005:0crwdne153005:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:167
+#: frontend/src/components/Modals/CallLogDetailModal.vue:171
 #: frontend/src/components/Modals/LeadModal.vue:9
 msgid "Create Lead"
 msgstr "crwdns153009:0crwdne153009:0"
@@ -2486,7 +2548,7 @@ msgstr "crwdns196238:0crwdne196238:0"
 msgid "Custom List Actions"
 msgstr "crwdns196240:0crwdne196240:0"
 
-#: frontend/src/pages/Dashboard.vue:231
+#: frontend/src/pages/Dashboard.vue:233
 msgid "Custom Range"
 msgstr "crwdns196242:0crwdne196242:0"
 
@@ -2498,7 +2560,7 @@ msgstr "crwdns196244:0crwdne196244:0"
 msgid "Custom event"
 msgstr "crwdns271091:0crwdne271091:0"
 
-#: frontend/src/pages/Deal.vue:513
+#: frontend/src/pages/Deal.vue:522
 msgid "Customer Created Successfully"
 msgstr "crwdns196246:0crwdne196246:0"
 
@@ -2547,8 +2609,8 @@ msgstr "crwdns200246:0crwdne200246:0"
 
 #: frontend/src/components/Activities/DataFields.vue:7
 #: frontend/src/components/Layouts/AppSidebar.vue:743
-#: frontend/src/pages/Deal.vue:770 frontend/src/pages/Lead.vue:584
-#: frontend/src/pages/MobileDeal.vue:467 frontend/src/pages/MobileLead.vue:323
+#: frontend/src/pages/Deal.vue:779 frontend/src/pages/Lead.vue:584
+#: frontend/src/pages/MobileDeal.vue:476 frontend/src/pages/MobileLead.vue:323
 msgid "Data"
 msgstr "crwdns153029:0crwdne153029:0"
 
@@ -2557,7 +2619,7 @@ msgstr "crwdns153029:0crwdne153029:0"
 msgid "Data Fields"
 msgstr "crwdns153031:0crwdne153031:0"
 
-#: frontend/src/pages/DataImport.vue:49
+#: frontend/src/pages/DataImport.vue:51
 msgid "Data Import"
 msgstr "crwdns196252:0crwdne196252:0"
 
@@ -2601,8 +2663,8 @@ msgstr "crwdns153035:0crwdne153035:0"
 #. Label of the deal_owner (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json frontend/src/pages/Contact.vue:404
 #: frontend/src/pages/MobileContact.vue:396
-#: frontend/src/pages/MobileOrganization.vue:481
-#: frontend/src/pages/Organization.vue:523
+#: frontend/src/pages/MobileOrganization.vue:533
+#: frontend/src/pages/Organization.vue:573
 msgid "Deal Owner"
 msgstr "crwdns153037:0crwdne153037:0"
 
@@ -2640,9 +2702,9 @@ msgstr "crwdns156260:0crwdne156260:0"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/Deal.vue:529 frontend/src/pages/MobileContact.vue:303
-#: frontend/src/pages/MobileDeal.vue:397
-#: frontend/src/pages/MobileOrganization.vue:338
+#: frontend/src/pages/Deal.vue:538 frontend/src/pages/MobileContact.vue:303
+#: frontend/src/pages/MobileDeal.vue:406
+#: frontend/src/pages/MobileOrganization.vue:375
 msgid "Deals"
 msgstr "crwdns153047:0crwdne153047:0"
 
@@ -2788,12 +2850,14 @@ msgstr "crwdns200252:0crwdne200252:0"
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:57
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:88
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:129
-#: frontend/src/components/Controls/Grid.vue:455
+#: frontend/src/components/Controls/Grid.vue:456
 #: frontend/src/components/DeleteLinkedDocModal.vue:14
 #: frontend/src/components/DeleteLinkedDocModal.vue:101
 #: frontend/src/components/Kanban/KanbanView.vue:234
 #: frontend/src/components/ListBulkActions.vue:178
 #: frontend/src/components/PrimaryDropdownItem.vue:60
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:93
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:199
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:185
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:235
 #: frontend/src/components/Settings/Hierarchy/HierarchyRow.vue:162
@@ -2801,16 +2865,16 @@ msgstr "crwdns200252:0crwdne200252:0"
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:66
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:250
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:265
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:480
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:481
 #: frontend/src/components/ViewControls.vue:1500
 #: frontend/src/components/ViewControls.vue:1511
 #: frontend/src/pages/Contact.vue:99 frontend/src/pages/Deal.vue:124
 #: frontend/src/pages/Lead.vue:178 frontend/src/pages/MobileContact.vue:80
 #: frontend/src/pages/MobileContact.vue:276
-#: frontend/src/pages/MobileDeal.vue:549
-#: frontend/src/pages/MobileOrganization.vue:73
-#: frontend/src/pages/MobileOrganization.vue:271
-#: frontend/src/pages/Notes.vue:49 frontend/src/pages/Organization.vue:96
+#: frontend/src/pages/MobileDeal.vue:558
+#: frontend/src/pages/MobileOrganization.vue:100
+#: frontend/src/pages/MobileOrganization.vue:306
+#: frontend/src/pages/Notes.vue:49 frontend/src/pages/Organization.vue:121
 #: frontend/src/pages/Tasks.vue:385 frontend/src/utils/index.js:774
 msgid "Delete"
 msgstr "crwdns153069:0crwdne153069:0"
@@ -2844,7 +2908,7 @@ msgstr "crwdns196290:0crwdne196290:0"
 msgid "Delete Only User"
 msgstr "crwdns203647:0crwdne203647:0"
 
-#: frontend/src/pages/MobileOrganization.vue:267
+#: frontend/src/pages/MobileOrganization.vue:302
 msgid "Delete Organization"
 msgstr "crwdns196292:0crwdne196292:0"
 
@@ -2865,11 +2929,11 @@ msgstr "crwdns156288:0crwdne156288:0"
 msgid "Delete or unlink these linked documents before deleting this document"
 msgstr "crwdns156290:0crwdne156290:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:465
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:466
 msgid "Delete step"
 msgstr "crwdns271101:0crwdne271101:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:465
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:466
 msgid "Delete trigger"
 msgstr "crwdns271103:0crwdne271103:0"
 
@@ -2929,8 +2993,8 @@ msgstr "crwdns203649:0crwdne203649:0"
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:203
 #: frontend/src/pages/MobileContact.vue:297
-#: frontend/src/pages/MobileDeal.vue:442 frontend/src/pages/MobileLead.vue:298
-#: frontend/src/pages/MobileOrganization.vue:332
+#: frontend/src/pages/MobileDeal.vue:451 frontend/src/pages/MobileLead.vue:298
+#: frontend/src/pages/MobileOrganization.vue:369
 msgid "Details"
 msgstr "crwdns153089:0crwdne153089:0"
 
@@ -2970,8 +3034,8 @@ msgstr "crwdns203653:0crwdne203653:0"
 msgid "Disabled"
 msgstr "crwdns156296:0crwdne156296:0"
 
-#: crm/www/crm_form.html:241 frontend/src/components/CommentBox.vue:67
-#: frontend/src/components/EmailEditor.vue:161
+#: crm/www/crm_form.html:241 frontend/src/components/CommentBox.vue:69
+#: frontend/src/components/EmailEditor.vue:164
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:643
 msgid "Discard"
 msgstr "crwdns153095:0crwdne153095:0"
@@ -3025,11 +3089,11 @@ msgstr "crwdns271107:0crwdne271107:0"
 msgid "Doctype is required"
 msgstr "crwdns196300:0crwdne196300:0"
 
-#: frontend/src/components/Filter.vue:242
+#: frontend/src/components/Filter.vue:245
 msgid "Document ID, not the full name"
 msgstr "crwdns241943:0crwdne241943:0"
 
-#: frontend/src/pages/Deal.vue:461 frontend/src/pages/MobileLead.vue:220
+#: frontend/src/pages/Deal.vue:470 frontend/src/pages/MobileLead.vue:220
 msgid "Document Not Found"
 msgstr "crwdns196302:0crwdne196302:0"
 
@@ -3048,7 +3112,7 @@ msgid "Document does not exist"
 msgstr "crwdns157256:0crwdne157256:0"
 
 #: crm/api/activities.py:21 frontend/src/pages/Lead.vue:360
-#: frontend/src/pages/MobileDeal.vue:362
+#: frontend/src/pages/MobileDeal.vue:371
 msgid "Document not found"
 msgstr "crwdns153103:0crwdne153103:0"
 
@@ -3221,7 +3285,7 @@ msgstr "crwdns153137:0crwdne153137:0"
 
 #: frontend/src/components/Activities/CommentArea.vue:94
 #: frontend/src/components/Activities/NoteArea.vue:12
-#: frontend/src/components/FieldLayout/Field.vue:116
+#: frontend/src/components/FieldLayout/Field.vue:127
 #: frontend/src/components/FieldLayoutEditor.vue:414
 #: frontend/src/components/FieldLayoutEditor.vue:457
 #: frontend/src/components/ListBulkActions.vue:171
@@ -3244,7 +3308,7 @@ msgstr "crwdns153139:0crwdne153139:0"
 msgid "Edit "
 msgstr "crwdns273319:0crwdne273319:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:42
+#: frontend/src/components/Modals/CallLogDetailModal.vue:46
 msgid "Edit Call Log"
 msgstr "crwdns153141:0crwdne153141:0"
 
@@ -3296,7 +3360,7 @@ msgstr "crwdns153153:0crwdne153153:0"
 msgid "Edit Response & Resolution"
 msgstr "crwdns196330:0crwdne196330:0"
 
-#: frontend/src/components/Controls/Grid.vue:422
+#: frontend/src/components/Controls/Grid.vue:423
 msgid "Edit Row"
 msgstr "crwdns196332:0crwdne196332:0"
 
@@ -3321,7 +3385,7 @@ msgid "Editing Row {0}"
 msgstr "crwdns153165:0{0}crwdne153165:0"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:717
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:209
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
 msgid "Editor"
 msgstr "crwdns240405:0crwdne240405:0"
 
@@ -3336,11 +3400,11 @@ msgstr "crwdns240405:0crwdne240405:0"
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
 #: frontend/src/components/Settings/Settings.vue:179
 #: frontend/src/pages/Contact.vue:394 frontend/src/pages/MobileContact.vue:386
-#: frontend/src/pages/MobileOrganization.vue:471
-#: frontend/src/pages/MobileOrganization.vue:499
-#: frontend/src/pages/Organization.vue:513
-#: frontend/src/pages/Organization.vue:541
-#: frontend/src/pages/PersonaForm.vue:77
+#: frontend/src/pages/MobileOrganization.vue:523
+#: frontend/src/pages/MobileOrganization.vue:551
+#: frontend/src/pages/Organization.vue:563
+#: frontend/src/pages/Organization.vue:591
+#: frontend/src/pages/PersonaForm.vue:84
 msgid "Email"
 msgstr "crwdns153167:0crwdne153167:0"
 
@@ -3356,7 +3420,7 @@ msgstr "crwdns156316:0crwdne156316:0"
 msgid "Email Communication"
 msgstr "crwdns196346:0crwdne196346:0"
 
-#: frontend/src/components/EmailEditor.vue:209
+#: frontend/src/components/EmailEditor.vue:212
 msgid "Email From Lead"
 msgstr "crwdns196348:0crwdne196348:0"
 
@@ -3390,7 +3454,7 @@ msgstr "crwdns153171:0crwdne153171:0"
 msgid "Email account created successfully"
 msgstr "crwdns241945:0crwdne241945:0"
 
-#: frontend/src/components/Settings/EmailEdit.vue:211
+#: frontend/src/components/Settings/EmailEdit.vue:213
 msgid "Email account updated successfully"
 msgstr "crwdns241947:0crwdne241947:0"
 
@@ -3398,7 +3462,7 @@ msgstr "crwdns241947:0crwdne241947:0"
 msgid "Email already exists"
 msgstr "crwdns196354:0crwdne196354:0"
 
-#: frontend/src/components/CommunicationArea.vue:277
+#: frontend/src/components/CommunicationArea.vue:335
 msgid "Email sent"
 msgstr "crwdns200256:0crwdne200256:0"
 
@@ -3411,8 +3475,8 @@ msgid "Emailed {0}: {1}"
 msgstr "crwdns271109:0{0}crwdnd271109:0{1}crwdne271109:0"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
-#: frontend/src/pages/Deal.vue:758 frontend/src/pages/Lead.vue:572
-#: frontend/src/pages/MobileDeal.vue:455 frontend/src/pages/MobileLead.vue:311
+#: frontend/src/pages/Deal.vue:767 frontend/src/pages/Lead.vue:572
+#: frontend/src/pages/MobileDeal.vue:464 frontend/src/pages/MobileLead.vue:311
 msgid "Emails"
 msgstr "crwdns153175:0crwdne153175:0"
 
@@ -3485,7 +3549,7 @@ msgstr "crwdns199026:0crwdne199026:0"
 msgid "Enable call recording for incoming and outgoing calls"
 msgstr "crwdns199028:0crwdne199028:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:22
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:6
 msgid "Enable enrichment"
 msgstr "crwdns268189:0crwdne268189:0"
 
@@ -3514,6 +3578,7 @@ msgstr "crwdns241949:0crwdne241949:0"
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:18
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:84
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:20
+#: frontend/src/components/Settings/Enrichment/EnrichmentRuleSection.vue:42
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:18
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSources.vue:57
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:66
@@ -3567,10 +3632,6 @@ msgstr "crwdns241957:0{0}crwdne241957:0"
 msgid "Enrich"
 msgstr "crwdns240419:0crwdne240419:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:46
-msgid "Enrich a new record as soon as it is created"
-msgstr "crwdns268191:0crwdne268191:0"
-
 #: crm/public/js/domain_enrichment.js:12
 msgid "Enrich from Website"
 msgstr "crwdns240421:0crwdne240421:0"
@@ -3591,7 +3652,6 @@ msgstr "crwdns268193:0crwdne268193:0"
 msgid "Enriching…"
 msgstr "crwdns240427:0crwdne240427:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:5
 #: frontend/src/components/Settings/Settings.vue:218
 msgid "Enrichment"
 msgstr "crwdns268195:0crwdne268195:0"
@@ -3600,6 +3660,10 @@ msgstr "crwdns268195:0crwdne268195:0"
 #: crm/public/js/domain_enrichment.js:60
 msgid "Enrichment Failed"
 msgstr "crwdns240429:0crwdne240429:0"
+
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:9
+msgid "Enrichment Settings"
+msgstr "crwdns274801:0crwdne274801:0"
 
 #: crm/public/js/domain_enrichment.js:52
 msgid "Enrichment complete"
@@ -3624,6 +3688,10 @@ msgstr "crwdns240439:0crwdne240439:0"
 #: crm/domain_enrichment/api.py:44
 msgid "Enrichment is not enabled for {0}."
 msgstr "crwdns240441:0{0}crwdne240441:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:7
+msgid "Enrichment is off. These rules apply once it is turned on."
+msgstr "crwdns274803:0crwdne274803:0"
 
 #: frontend/src/components/Settings/DashboardSettings.vue:160
 msgid "Enter Access Key"
@@ -3653,11 +3721,11 @@ msgstr "crwdns160764:0crwdne160764:0"
 msgid "Enter Twilio Number"
 msgstr "crwdns199034:0crwdne199034:0"
 
-#: frontend/src/components/Filter.vue:646
+#: frontend/src/components/Filter.vue:675
 msgid "Enter Value"
 msgstr "crwdns196372:0crwdne196372:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:305
+#: frontend/src/components/FieldLayout/Field.vue:316
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:88
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:119
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:150
@@ -3672,18 +3740,18 @@ msgstr "crwdns160766:0crwdne160766:0"
 msgid "Enter your personal mobile number used by Exotel to make calls"
 msgstr "crwdns199036:0crwdne199036:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:615
+#: frontend/src/components/FieldLayout/Field.vue:643
 msgid "Enter {0}"
 msgstr "crwdns153191:0{0}crwdne153191:0"
 
 #: frontend/src/components/Filter.vue:67 frontend/src/components/Filter.vue:101
-#: frontend/src/components/Filter.vue:302
-#: frontend/src/components/Filter.vue:323
-#: frontend/src/components/Filter.vue:340
-#: frontend/src/components/Filter.vue:351
-#: frontend/src/components/Filter.vue:362
-#: frontend/src/components/Filter.vue:378
-#: frontend/src/components/Filter.vue:393
+#: frontend/src/components/Filter.vue:308
+#: frontend/src/components/Filter.vue:329
+#: frontend/src/components/Filter.vue:346
+#: frontend/src/components/Filter.vue:357
+#: frontend/src/components/Filter.vue:368
+#: frontend/src/components/Filter.vue:384
+#: frontend/src/components/Filter.vue:399
 msgid "Equals"
 msgstr "crwdns153193:0crwdne153193:0"
 
@@ -3692,7 +3760,7 @@ msgstr "crwdns153193:0crwdne153193:0"
 msgid "Error"
 msgstr "crwdns273321:0crwdne273321:0"
 
-#: frontend/src/pages/Deal.vue:462 frontend/src/pages/MobileLead.vue:221
+#: frontend/src/pages/Deal.vue:471 frontend/src/pages/MobileLead.vue:221
 msgid "Error Occurred"
 msgstr "crwdns196374:0crwdne196374:0"
 
@@ -3709,11 +3777,11 @@ msgstr "crwdns156340:0{0}crwdne156340:0"
 msgid "Error creating lead sync source"
 msgstr "crwdns241961:0crwdne241961:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:376
+#: frontend/src/components/Modals/CallLogDetailModal.vue:392
 msgid "Error creating lead: {0}"
 msgstr "crwdns196378:0{0}crwdne196378:0"
 
-#: frontend/src/pages/Lead.vue:361 frontend/src/pages/MobileDeal.vue:363
+#: frontend/src/pages/Lead.vue:361 frontend/src/pages/MobileDeal.vue:372
 msgid "Error occurred"
 msgstr "crwdns196380:0crwdne196380:0"
 
@@ -3928,7 +3996,7 @@ msgstr "crwdns160788:0crwdne160788:0"
 msgid "Facebook Page"
 msgstr "crwdns160790:0crwdne160790:0"
 
-#: frontend/src/pages/PersonaForm.vue:74
+#: frontend/src/pages/PersonaForm.vue:81
 msgid "Facebook/Instagram Ads"
 msgstr "crwdns207237:0crwdne207237:0"
 
@@ -4027,11 +4095,11 @@ msgstr "crwdns273329:0crwdne273329:0"
 msgid "Failed to save workday: {0}"
 msgstr "crwdns196414:0{0}crwdne196414:0"
 
-#: frontend/src/components/CommunicationArea.vue:300
+#: frontend/src/components/CommunicationArea.vue:358
 msgid "Failed to send comment!"
 msgstr "crwdns196420:0crwdne196420:0"
 
-#: frontend/src/components/CommunicationArea.vue:278
+#: frontend/src/components/CommunicationArea.vue:336
 msgid "Failed to send email!"
 msgstr "crwdns196422:0crwdne196422:0"
 
@@ -4059,7 +4127,7 @@ msgstr "crwdns273335:0crwdne273335:0"
 msgid "Failed to update comment"
 msgstr "crwdns203673:0crwdne203673:0"
 
-#: frontend/src/components/Settings/EmailEdit.vue:216
+#: frontend/src/components/Settings/EmailEdit.vue:218
 msgid "Failed to update email account: invalid credentials"
 msgstr "crwdns241969:0crwdne241969:0"
 
@@ -4141,9 +4209,9 @@ msgstr "crwdns240447:0crwdne240447:0"
 msgid "Fill if empty: only write when the field is blank. Always refresh: overwrite on every run (for fully enrichment-derived fields). Override defaults: write even when the current value is a known default (see Default Values)."
 msgstr "crwdns240449:0crwdne240449:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:8
-msgid "Fill in company details from a record’s website"
-msgstr "crwdns268197:0crwdne268197:0"
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:10
+msgid "Fill in company details on Leads, Deals and Organizations from their website."
+msgstr "crwdns274805:0crwdne274805:0"
 
 #: frontend/src/components/Filter.vue:6
 msgid "Filter"
@@ -4157,7 +4225,7 @@ msgstr "crwdns153259:0crwdne153259:0"
 msgid "Filters"
 msgstr "crwdns153261:0crwdne153261:0"
 
-#: frontend/src/components/Questionnaire.vue:94
+#: frontend/src/components/Questionnaire.vue:104
 msgid "Finish"
 msgstr "crwdns207239:0crwdne207239:0"
 
@@ -4218,6 +4286,10 @@ msgstr "crwdns153275:0crwdne153275:0"
 msgid "Fit entire flow"
 msgstr "crwdns271123:0crwdne271123:0"
 
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:217
+msgid "Fix the highlighted fields before saving"
+msgstr "crwdns274807:0crwdne274807:0"
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:92
 msgid "Float Precision"
 msgstr "crwdns200260:0crwdne200260:0"
@@ -4226,7 +4298,7 @@ msgstr "crwdns200260:0crwdne200260:0"
 msgid "Flow"
 msgstr "crwdns271125:0crwdne271125:0"
 
-#: frontend/src/pages/PersonaForm.vue:91
+#: frontend/src/pages/PersonaForm.vue:98
 msgid "Following up consistently"
 msgstr "crwdns207241:0crwdne207241:0"
 
@@ -4396,6 +4468,7 @@ msgstr "crwdns153295:0crwdne153295:0"
 #. Label of the general_tab (Tab Break) field in DocType 'CRM Enrichment
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:94
 #: frontend/src/components/Settings/Settings.vue:132
 msgid "General"
 msgstr "crwdns199322:0crwdne199322:0"
@@ -4433,7 +4506,7 @@ msgstr "crwdns196440:0crwdne196440:0"
 msgid "Go to {0}"
 msgstr "crwdns273337:0{0}crwdne273337:0"
 
-#: frontend/src/pages/PersonaForm.vue:75
+#: frontend/src/pages/PersonaForm.vue:82
 msgid "Google Ads"
 msgstr "crwdns207243:0crwdne207243:0"
 
@@ -4441,11 +4514,11 @@ msgstr "crwdns207243:0crwdne207243:0"
 msgid "Grant Access"
 msgstr "crwdns242043:0crwdne242043:0"
 
-#: frontend/src/components/Filter.vue:395
+#: frontend/src/components/Filter.vue:401
 msgid "Greater than"
 msgstr "crwdns199984:0crwdne199984:0"
 
-#: frontend/src/components/Filter.vue:397
+#: frontend/src/components/Filter.vue:403
 msgid "Greater than or equal to"
 msgstr "crwdns199986:0crwdne199986:0"
 
@@ -4509,7 +4582,7 @@ msgstr "crwdns156394:0crwdne156394:0"
 msgid "Helper text under the field (optional)"
 msgstr "crwdns240483:0crwdne240483:0"
 
-#: frontend/src/components/CommunicationArea.vue:56
+#: frontend/src/components/CommunicationArea.vue:71
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
 msgstr "crwdns153309:0crwdne153309:0"
 
@@ -4593,15 +4666,15 @@ msgstr "crwdns271133:0crwdne271133:0"
 msgid "Hourly"
 msgstr "crwdns160802:0crwdne160802:0"
 
-#: frontend/src/pages/PersonaForm.vue:56
+#: frontend/src/pages/PersonaForm.vue:63
 msgid "How are you managing your sales today?"
 msgstr "crwdns207245:0crwdne207245:0"
 
-#: frontend/src/pages/PersonaForm.vue:70
+#: frontend/src/pages/PersonaForm.vue:77
 msgid "How do new leads usually come to you?"
 msgstr "crwdns207247:0crwdne207247:0"
 
-#: frontend/src/pages/PersonaForm.vue:108
+#: frontend/src/pages/PersonaForm.vue:115
 msgid "How many people will use Frappe CRM?"
 msgstr "crwdns207249:0crwdne207249:0"
 
@@ -4611,7 +4684,7 @@ msgstr "crwdns207249:0crwdne207249:0"
 msgid "How timestamps are shown in the activity timeline for all users"
 msgstr "crwdns204737:0crwdne204737:0"
 
-#: frontend/src/pages/PersonaForm.vue:60
+#: frontend/src/pages/PersonaForm.vue:66
 msgid "HubSpot"
 msgstr "crwdns207251:0crwdne207251:0"
 
@@ -4684,15 +4757,15 @@ msgstr "crwdns153337:0crwdne153337:0"
 msgid "Import"
 msgstr "crwdns196462:0crwdne196462:0"
 
-#: frontend/src/pages/PersonaForm.vue:121
+#: frontend/src/pages/PersonaForm.vue:128
 msgid "Import my existing data"
 msgstr "crwdns207253:0crwdne207253:0"
 
-#: frontend/src/components/Filter.vue:306
-#: frontend/src/components/Filter.vue:327
-#: frontend/src/components/Filter.vue:342
-#: frontend/src/components/Filter.vue:355
-#: frontend/src/components/Filter.vue:369
+#: frontend/src/components/Filter.vue:312
+#: frontend/src/components/Filter.vue:333
+#: frontend/src/components/Filter.vue:348
+#: frontend/src/components/Filter.vue:361
+#: frontend/src/components/Filter.vue:375
 msgid "In"
 msgstr "crwdns153339:0crwdne153339:0"
 
@@ -4741,11 +4814,14 @@ msgstr "crwdns153351:0crwdne153351:0"
 #. Label of the industry (Link) field in DocType 'CRM Lead'
 #. Label of the industry (Link) field in DocType 'CRM Organization'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
+#: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.py:72
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 #: crm/domain_enrichment/mapper.py:37 crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_industry/crm_industry.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:109
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:140
 msgid "Industry"
 msgstr "crwdns153353:0crwdne153353:0"
 
@@ -4754,6 +4830,10 @@ msgstr "crwdns153353:0crwdne153353:0"
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Industry Confidence"
 msgstr "crwdns240489:0crwdne240489:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:107
+msgid "Industry rules"
+msgstr "crwdns274809:0crwdne274809:0"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -4765,12 +4845,12 @@ msgstr "crwdns153355:0crwdne153355:0"
 msgid "Initiating call..."
 msgstr "crwdns153357:0crwdne153357:0"
 
-#: frontend/src/components/EmailEditor.vue:128
+#: frontend/src/components/EmailEditor.vue:131
 msgid "Insert Email Template"
 msgstr "crwdns158666:0crwdne158666:0"
 
-#: frontend/src/components/CommentBox.vue:60
-#: frontend/src/components/EmailEditor.vue:154
+#: frontend/src/components/CommentBox.vue:62
+#: frontend/src/components/EmailEditor.vue:157
 msgid "Insert Emoji"
 msgstr "crwdns158668:0crwdne158668:0"
 
@@ -4836,7 +4916,7 @@ msgstr "crwdns196472:0crwdne196472:0"
 msgid "Invalid Website URL"
 msgstr "crwdns196474:0crwdne196474:0"
 
-#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:149
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:169
 msgid "Invalid access token provided for Facebook."
 msgstr "crwdns160804:0crwdne160804:0"
 
@@ -4881,9 +4961,13 @@ msgstr "crwdns199988:0crwdne199988:0"
 msgid "Invalid format. Try: 1h 30m 45s, 1:30:45, 90s"
 msgstr "crwdns199990:0crwdne199990:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:285
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:317
 msgid "Invalid lead details supplied."
 msgstr "crwdns196482:0crwdne196482:0"
+
+#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.py:60
+msgid "Invalid maximum pages"
+msgstr "crwdns274811:0crwdne274811:0"
 
 #: crm/api/__init__.py:83 crm/api/__init__.py:87
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.py:66
@@ -4932,7 +5016,7 @@ msgstr "crwdns156420:0crwdne156420:0"
 msgid "Invite Users"
 msgstr "crwdns196492:0crwdne196492:0"
 
-#: frontend/src/pages/PersonaForm.vue:125
+#: frontend/src/pages/PersonaForm.vue:132
 msgid "Invite my team"
 msgstr "crwdns207255:0crwdne207255:0"
 
@@ -4949,14 +5033,14 @@ msgstr "crwdns156426:0crwdne156426:0"
 msgid "Invited By"
 msgstr "crwdns153377:0crwdne153377:0"
 
-#: frontend/src/components/Filter.vue:308
-#: frontend/src/components/Filter.vue:317
-#: frontend/src/components/Filter.vue:329
-#: frontend/src/components/Filter.vue:344
-#: frontend/src/components/Filter.vue:357
-#: frontend/src/components/Filter.vue:371
-#: frontend/src/components/Filter.vue:380
-#: frontend/src/components/Filter.vue:399
+#: frontend/src/components/Filter.vue:314
+#: frontend/src/components/Filter.vue:323
+#: frontend/src/components/Filter.vue:335
+#: frontend/src/components/Filter.vue:350
+#: frontend/src/components/Filter.vue:363
+#: frontend/src/components/Filter.vue:377
+#: frontend/src/components/Filter.vue:386
+#: frontend/src/components/Filter.vue:405
 msgid "Is"
 msgstr "crwdns153379:0crwdne153379:0"
 
@@ -5034,21 +5118,21 @@ msgid "Job Title"
 msgstr "crwdns153393:0crwdne153393:0"
 
 #: frontend/src/components/AssignToBody.vue:10
-#: frontend/src/components/Filter.vue:644
+#: frontend/src/components/Filter.vue:673
 #: frontend/src/components/Modals/AssignmentModal.vue:13
 #: frontend/src/components/Telephony/TaskPanel.vue:43
 msgid "John Doe"
 msgstr "crwdns153395:0crwdne153395:0"
 
-#: frontend/src/components/Filter.vue:623
+#: frontend/src/components/Filter.vue:652
 msgid "John, Jane, Doe"
 msgstr "crwdns196500:0crwdne196500:0"
 
-#: frontend/src/pages/PersonaForm.vue:127
+#: frontend/src/pages/PersonaForm.vue:134
 msgid "Just exploring"
 msgstr "crwdns207257:0crwdne207257:0"
 
-#: frontend/src/pages/PersonaForm.vue:110
+#: frontend/src/pages/PersonaForm.vue:117
 msgid "Just me"
 msgstr "crwdns207259:0crwdne207259:0"
 
@@ -5081,7 +5165,7 @@ msgstr "crwdns196502:0crwdne196502:0"
 msgid "Keep editing"
 msgstr "crwdns271139:0crwdne271139:0"
 
-#: frontend/src/pages/PersonaForm.vue:93
+#: frontend/src/pages/PersonaForm.vue:100
 msgid "Keeping my pipeline organized"
 msgstr "crwdns207261:0crwdne207261:0"
 
@@ -5096,6 +5180,14 @@ msgstr "crwdns153405:0crwdne153405:0"
 #: crm/domain_enrichment/doctype/crm_enrichment_link_priority/crm_enrichment_link_priority.json
 msgid "Keyword"
 msgstr "crwdns240497:0crwdne240497:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:109
+msgid "Keywords"
+msgstr "crwdns274813:0crwdne274813:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:160
+msgid "Keywords, comma separated"
+msgstr "crwdns274815:0crwdne274815:0"
 
 #. Label of the kind (Select) field in DocType 'CRM Product Sync Issue'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
@@ -5124,35 +5216,35 @@ msgstr "crwdns199326:0crwdne199326:0"
 msgid "Last"
 msgstr "crwdns158880:0crwdne158880:0"
 
-#: frontend/src/pages/Dashboard.vue:205
+#: frontend/src/pages/Dashboard.vue:207
 msgid "Last 30 Days"
 msgstr "crwdns196508:0crwdne196508:0"
 
-#: frontend/src/components/Filter.vue:702
+#: frontend/src/components/Filter.vue:731
 msgid "Last 6 Months"
 msgstr "crwdns153409:0crwdne153409:0"
 
-#: frontend/src/pages/Dashboard.vue:213
+#: frontend/src/pages/Dashboard.vue:215
 msgid "Last 60 Days"
 msgstr "crwdns196510:0crwdne196510:0"
 
-#: frontend/src/pages/Dashboard.vue:197
+#: frontend/src/pages/Dashboard.vue:199
 msgid "Last 7 Days"
 msgstr "crwdns196512:0crwdne196512:0"
 
-#: frontend/src/pages/Dashboard.vue:221
+#: frontend/src/pages/Dashboard.vue:223
 msgid "Last 90 Days"
 msgstr "crwdns196514:0crwdne196514:0"
 
 #: frontend/src/pages/Contact.vue:409 frontend/src/pages/MobileContact.vue:401
-#: frontend/src/pages/MobileOrganization.vue:486
-#: frontend/src/pages/MobileOrganization.vue:514
-#: frontend/src/pages/Organization.vue:528
-#: frontend/src/pages/Organization.vue:556
+#: frontend/src/pages/MobileOrganization.vue:538
+#: frontend/src/pages/MobileOrganization.vue:566
+#: frontend/src/pages/Organization.vue:578
+#: frontend/src/pages/Organization.vue:606
 msgid "Last Modified"
 msgstr "crwdns196516:0crwdne196516:0"
 
-#: frontend/src/components/Filter.vue:694
+#: frontend/src/components/Filter.vue:723
 msgid "Last Month"
 msgstr "crwdns153411:0crwdne153411:0"
 
@@ -5161,7 +5253,7 @@ msgstr "crwdns153411:0crwdne153411:0"
 msgid "Last Name"
 msgstr "crwdns153413:0crwdne153413:0"
 
-#: frontend/src/components/Filter.vue:698
+#: frontend/src/components/Filter.vue:727
 msgid "Last Quarter"
 msgstr "crwdns153415:0crwdne153415:0"
 
@@ -5191,12 +5283,12 @@ msgstr "crwdns153417:0crwdne153417:0"
 msgid "Last Synced At"
 msgstr "crwdns160806:0crwdne160806:0"
 
-#: frontend/src/components/Filter.vue:632
-#: frontend/src/components/Filter.vue:690
+#: frontend/src/components/Filter.vue:661
+#: frontend/src/components/Filter.vue:719
 msgid "Last Week"
 msgstr "crwdns153419:0crwdne153419:0"
 
-#: frontend/src/components/Filter.vue:706
+#: frontend/src/components/Filter.vue:735
 msgid "Last Year"
 msgstr "crwdns153421:0crwdne153421:0"
 
@@ -5291,7 +5383,7 @@ msgstr "crwdns271145:0crwdne271145:0"
 msgid "Lead and deal visibility will no longer be restricted by the reporting tree. Are you sure?"
 msgstr "crwdns203679:0crwdne203679:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:303
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:335
 msgid "Lead from call {0}"
 msgstr "crwdns196518:0{0}crwdne196518:0"
 
@@ -5358,11 +5450,11 @@ msgstr "crwdns158884:0crwdne158884:0"
 msgid "Left"
 msgstr "crwdns153445:0crwdne153445:0"
 
-#: frontend/src/components/Filter.vue:396
+#: frontend/src/components/Filter.vue:402
 msgid "Less than"
 msgstr "crwdns199992:0crwdne199992:0"
 
-#: frontend/src/components/Filter.vue:398
+#: frontend/src/components/Filter.vue:404
 msgid "Less than or equal to"
 msgstr "crwdns199994:0crwdne199994:0"
 
@@ -5378,11 +5470,11 @@ msgstr "crwdns153447:0crwdne153447:0"
 msgid "Light"
 msgstr "crwdns199328:0crwdne199328:0"
 
-#: frontend/src/components/Filter.vue:304
-#: frontend/src/components/Filter.vue:315
-#: frontend/src/components/Filter.vue:325
-#: frontend/src/components/Filter.vue:353
-#: frontend/src/components/Filter.vue:367
+#: frontend/src/components/Filter.vue:310
+#: frontend/src/components/Filter.vue:321
+#: frontend/src/components/Filter.vue:331
+#: frontend/src/components/Filter.vue:359
+#: frontend/src/components/Filter.vue:373
 msgid "Like"
 msgstr "crwdns153449:0crwdne153449:0"
 
@@ -5446,7 +5538,7 @@ msgstr "crwdns153461:0crwdne153461:0"
 #: frontend/src/components/Activities/QuotationsList.vue:8
 #: frontend/src/components/CommandPalette/CommandPalette.vue:170
 #: frontend/src/components/Modals/FieldLayoutDialog.vue:30
-#: frontend/src/pages/Deal.vue:189 frontend/src/pages/MobileDeal.vue:121
+#: frontend/src/pages/Deal.vue:198 frontend/src/pages/MobileDeal.vue:130
 msgid "Loading..."
 msgstr "crwdns153463:0crwdne153463:0"
 
@@ -5618,7 +5710,7 @@ msgstr "crwdns196540:0crwdne196540:0"
 msgid "Manager"
 msgstr "crwdns156462:0crwdne156462:0"
 
-#: frontend/src/pages/PersonaForm.vue:97
+#: frontend/src/pages/PersonaForm.vue:104
 msgid "Managing contacts and companies"
 msgstr "crwdns207263:0crwdne207263:0"
 
@@ -5723,6 +5815,19 @@ msgstr "crwdns240519:0crwdne240519:0"
 msgid "Maximum number of pages crawled per enrichment."
 msgstr "crwdns240521:0crwdne240521:0"
 
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:40
+msgid "Maximum number of pages that can be crawled during a single enrichment run."
+msgstr "crwdns274817:0crwdne274817:0"
+
+#: frontend/src/components/Settings/Enrichment/GeneralTab.vue:36
+msgid "Maximum pages"
+msgstr "crwdns274819:0crwdne274819:0"
+
+#: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.py:59
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:174
+msgid "Maximum pages must be a whole number between 1 and {0}"
+msgstr "crwdns274821:0{0}crwdne274821:0"
+
 #. Label of the medium (Data) field in DocType 'CRM Call Log'
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -5781,8 +5886,8 @@ msgstr "crwdns153515:0crwdne153515:0"
 #: frontend/src/components/Telephony/CallUI.vue:20
 #: frontend/src/pages/Contact.vue:341 frontend/src/pages/Contact.vue:399
 #: frontend/src/pages/MobileContact.vue:391
-#: frontend/src/pages/MobileOrganization.vue:476
-#: frontend/src/pages/Organization.vue:518
+#: frontend/src/pages/MobileOrganization.vue:528
+#: frontend/src/pages/Organization.vue:568
 msgid "Mobile Number"
 msgstr "crwdns153517:0crwdne153517:0"
 
@@ -5820,7 +5925,7 @@ msgstr "crwdns160824:0crwdne160824:0"
 msgid "More Options"
 msgstr "crwdns158676:0crwdne158676:0"
 
-#: frontend/src/pages/PersonaForm.vue:113
+#: frontend/src/pages/PersonaForm.vue:120
 msgid "More than 20"
 msgstr "crwdns207265:0crwdne207265:0"
 
@@ -5882,8 +5987,8 @@ msgstr "crwdns153533:0crwdne153533:0"
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:71
 #: frontend/src/components/ViewControls.vue:906
-#: frontend/src/pages/MobileOrganization.vue:494
-#: frontend/src/pages/Organization.vue:536
+#: frontend/src/pages/MobileOrganization.vue:546
+#: frontend/src/pages/Organization.vue:586
 msgid "Name"
 msgstr "crwdns153535:0crwdne153535:0"
 
@@ -6012,6 +6117,10 @@ msgstr "crwdns153565:0crwdne153565:0"
 msgid "New form"
 msgstr "crwdns240523:0crwdne240523:0"
 
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:153
+msgid "New industry, created on save"
+msgstr "crwdns274823:0crwdne274823:0"
+
 #: crm/api/whatsapp.py:209
 msgid "New messages will go to {0}."
 msgstr "crwdns273347:0{0}crwdne273347:0"
@@ -6045,15 +6154,15 @@ msgstr "crwdns204739:0crwdne204739:0"
 msgid "Newline-separated values treated as \"unset\" defaults that may be overwritten, in addition to a truly empty field."
 msgstr "crwdns240525:0crwdne240525:0"
 
-#: frontend/src/components/Filter.vue:750
+#: frontend/src/components/Filter.vue:779
 msgid "Next 6 Months"
 msgstr "crwdns153569:0crwdne153569:0"
 
-#: frontend/src/components/Filter.vue:742
+#: frontend/src/components/Filter.vue:771
 msgid "Next Month"
 msgstr "crwdns153571:0crwdne153571:0"
 
-#: frontend/src/components/Filter.vue:746
+#: frontend/src/components/Filter.vue:775
 msgid "Next Quarter"
 msgstr "crwdns153573:0crwdne153573:0"
 
@@ -6062,15 +6171,15 @@ msgstr "crwdns153573:0crwdne153573:0"
 msgid "Next Step"
 msgstr "crwdns153575:0crwdne153575:0"
 
-#: frontend/src/components/Filter.vue:738
+#: frontend/src/components/Filter.vue:767
 msgid "Next Week"
 msgstr "crwdns153577:0crwdne153577:0"
 
-#: frontend/src/components/Filter.vue:754
+#: frontend/src/components/Filter.vue:783
 msgid "Next Year"
 msgstr "crwdns153579:0crwdne153579:0"
 
-#: frontend/src/components/Questionnaire.vue:93
+#: frontend/src/components/Questionnaire.vue:103
 msgid "Next question"
 msgstr "crwdns207267:0crwdne207267:0"
 
@@ -6078,7 +6187,7 @@ msgstr "crwdns207267:0crwdne207267:0"
 msgid "No"
 msgstr "crwdns271165:0crwdne271165:0"
 
-#: frontend/src/components/Activities/Activities.vue:790
+#: frontend/src/components/Activities/Activities.vue:799
 msgid "No Activities Found"
 msgstr "crwdns267993:0crwdne267993:0"
 
@@ -6092,36 +6201,36 @@ msgstr "crwdns153583:0crwdne153583:0"
 msgid "No Assignment Rules Found"
 msgstr "crwdns273349:0crwdne273349:0"
 
-#: frontend/src/components/Activities/Activities.vue:804
+#: frontend/src/components/Activities/Activities.vue:813
 msgid "No Attachments Found"
 msgstr "crwdns267995:0crwdne267995:0"
 
-#: frontend/src/components/Activities/Activities.vue:798
+#: frontend/src/components/Activities/Activities.vue:807
 msgid "No Call History"
 msgstr "crwdns267997:0crwdne267997:0"
 
-#: frontend/src/components/Activities/Activities.vue:794
+#: frontend/src/components/Activities/Activities.vue:803
 msgid "No Comments Found"
 msgstr "crwdns267999:0crwdne267999:0"
 
 #: frontend/src/components/Modals/SidePanelModal.vue:51
-#: frontend/src/pages/Deal.vue:284 frontend/src/pages/MobileDeal.vue:209
+#: frontend/src/pages/Deal.vue:293 frontend/src/pages/MobileDeal.vue:218
 msgid "No Contacts Added"
 msgstr "crwdns196574:0crwdne196574:0"
 
-#: frontend/src/components/Controls/Grid.vue:448
+#: frontend/src/components/Controls/Grid.vue:449
 msgid "No Data"
 msgstr "crwdns153585:0crwdne153585:0"
 
-#: frontend/src/components/Activities/Activities.vue:796
+#: frontend/src/components/Activities/Activities.vue:805
 msgid "No Data Fields Added Yet"
 msgstr "crwdns268001:0crwdne268001:0"
 
-#: frontend/src/pages/Deal.vue:270
+#: frontend/src/pages/Deal.vue:279
 msgid "No Details Added"
 msgstr "crwdns196576:0crwdne196576:0"
 
-#: frontend/src/components/Activities/Activities.vue:792
+#: frontend/src/components/Activities/Activities.vue:801
 msgid "No Emails Found"
 msgstr "crwdns268003:0crwdne268003:0"
 
@@ -6133,11 +6242,11 @@ msgstr "crwdns196578:0crwdne196578:0"
 msgid "No Label"
 msgstr "crwdns196580:0crwdne196580:0"
 
-#: frontend/src/components/Activities/Activities.vue:808
+#: frontend/src/components/Activities/Activities.vue:817
 msgid "No Mobile Number"
 msgstr "crwdns273351:0crwdne273351:0"
 
-#: frontend/src/pages/Deal.vue:954
+#: frontend/src/pages/Deal.vue:963
 msgid "No Mobile Number Set"
 msgstr "crwdns196582:0crwdne196582:0"
 
@@ -6146,11 +6255,11 @@ msgstr "crwdns196582:0crwdne196582:0"
 msgid "No New Notifications"
 msgstr "crwdns196584:0crwdne196584:0"
 
-#: frontend/src/components/Activities/Activities.vue:800
+#: frontend/src/components/Activities/Activities.vue:809
 msgid "No Notes Found"
 msgstr "crwdns268005:0crwdne268005:0"
 
-#: frontend/src/pages/Deal.vue:947
+#: frontend/src/pages/Deal.vue:956
 msgid "No Primary Contact Set"
 msgstr "crwdns196586:0crwdne196586:0"
 
@@ -6166,7 +6275,7 @@ msgstr "crwdns196590:0crwdne196590:0"
 msgid "No SLA Policies Found"
 msgstr "crwdns273353:0crwdne273353:0"
 
-#: frontend/src/components/Activities/Activities.vue:802
+#: frontend/src/components/Activities/Activities.vue:811
 msgid "No Tasks Found"
 msgstr "crwdns268007:0crwdne268007:0"
 
@@ -6189,12 +6298,12 @@ msgstr "crwdns196594:0crwdne196594:0"
 msgid "No Website"
 msgstr "crwdns240527:0crwdne240527:0"
 
-#: frontend/src/pages/MobileOrganization.vue:289
-#: frontend/src/pages/Organization.vue:339
+#: frontend/src/pages/MobileOrganization.vue:324
+#: frontend/src/pages/Organization.vue:374
 msgid "No Website Found"
 msgstr "crwdns196596:0crwdne196596:0"
 
-#: frontend/src/components/Activities/Activities.vue:807
+#: frontend/src/components/Activities/Activities.vue:816
 msgid "No WhatsApp Messages Found"
 msgstr "crwdns268009:0crwdne268009:0"
 
@@ -6223,7 +6332,7 @@ msgstr "crwdns156484:0crwdne156484:0"
 msgid "No companies found in the given site"
 msgstr "crwdns200102:0crwdne200102:0"
 
-#: frontend/src/components/Activities/Activities.vue:824
+#: frontend/src/components/Activities/Activities.vue:833
 msgid "No data fields have been added yet."
 msgstr "crwdns268011:0crwdne268011:0"
 
@@ -6231,11 +6340,11 @@ msgstr "crwdns268011:0crwdne268011:0"
 msgid "No domains added. The embed will only work on this site until you add one."
 msgstr "crwdns240529:0crwdne240529:0"
 
-#: frontend/src/components/Activities/Activities.vue:818
+#: frontend/src/components/Activities/Activities.vue:827
 msgid "No emails found in your inbox. New messages will appear here soon."
 msgstr "crwdns268013:0crwdne268013:0"
 
-#: frontend/src/components/Activities/Activities.vue:838
+#: frontend/src/components/Activities/Activities.vue:847
 msgid "No files have been attached yet. Upload files to see them here."
 msgstr "crwdns268015:0crwdne268015:0"
 
@@ -6243,15 +6352,23 @@ msgstr "crwdns268015:0crwdne268015:0"
 msgid "No holiday list found"
 msgstr "crwdns196602:0crwdne196602:0"
 
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:116
+msgid "No industry rules yet"
+msgstr "crwdns274825:0crwdne274825:0"
+
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:107
 msgid "No matching users"
 msgstr "crwdns203689:0crwdne203689:0"
+
+#: frontend/src/components/FieldLayout/Field.vue:535
+msgid "No priority"
+msgstr "crwdns274827:0crwdne274827:0"
 
 #: frontend/src/components/Activities/QuotationsList.vue:13
 msgid "No quotations yet"
 msgstr "crwdns273361:0crwdne273361:0"
 
-#: frontend/src/components/Activities/Activities.vue:826
+#: frontend/src/components/Activities/Activities.vue:835
 msgid "No recent calls to display. Log a call or call someone now!"
 msgstr "crwdns268017:0crwdne268017:0"
 
@@ -6271,6 +6388,10 @@ msgstr "crwdns156488:0crwdne156488:0"
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationRuns.vue:10
 msgid "No runs yet"
 msgstr "crwdns271171:0crwdne271171:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:19
+msgid "No social rules yet"
+msgstr "crwdns274829:0crwdne274829:0"
 
 #: frontend/src/components/Settings/Hierarchy/UserMultiSelect.vue:64
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowUserPicker.vue:9
@@ -6294,7 +6415,7 @@ msgid "No workflow automations yet"
 msgstr "crwdns271173:0crwdne271173:0"
 
 #: frontend/src/components/ListViews/EmptyState.vue:37
-#: frontend/src/pages/MobileOrganization.vue:137
+#: frontend/src/pages/MobileOrganization.vue:164
 msgid "No {0} Found"
 msgstr "crwdns153609:0{0}crwdne153609:0"
 
@@ -6334,6 +6455,7 @@ msgstr "crwdns156494:0crwdne156494:0"
 #: frontend/src/components/Modals/QuickEntryModal.vue:10
 #: frontend/src/components/Modals/SidePanelModal.vue:10
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:23
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:12
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:19
 #: frontend/src/components/Settings/PreferencesSettings.vue:44
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:15
@@ -6347,7 +6469,7 @@ msgstr "crwdns156494:0crwdne156494:0"
 msgid "Not Saved"
 msgstr "crwdns153621:0crwdne153621:0"
 
-#: frontend/src/components/Filter.vue:418
+#: frontend/src/components/Filter.vue:424
 msgid "Not Set"
 msgstr "crwdns268019:0crwdne268019:0"
 
@@ -6375,12 +6497,12 @@ msgstr "crwdns153627:0crwdne153627:0"
 msgid "Not allowed to set primary contact for Deal"
 msgstr "crwdns153629:0crwdne153629:0"
 
-#: frontend/src/components/Filter.vue:303
-#: frontend/src/components/Filter.vue:324
-#: frontend/src/components/Filter.vue:341
-#: frontend/src/components/Filter.vue:352
-#: frontend/src/components/Filter.vue:379
-#: frontend/src/components/Filter.vue:394
+#: frontend/src/components/Filter.vue:309
+#: frontend/src/components/Filter.vue:330
+#: frontend/src/components/Filter.vue:347
+#: frontend/src/components/Filter.vue:358
+#: frontend/src/components/Filter.vue:385
+#: frontend/src/components/Filter.vue:400
 msgid "Not equals"
 msgstr "crwdns196610:0crwdne196610:0"
 
@@ -6388,25 +6510,25 @@ msgstr "crwdns196610:0crwdne196610:0"
 msgid "Not implemented yet!"
 msgstr "crwdns160928:0crwdne160928:0"
 
-#: frontend/src/components/Filter.vue:307
-#: frontend/src/components/Filter.vue:328
-#: frontend/src/components/Filter.vue:343
-#: frontend/src/components/Filter.vue:356
-#: frontend/src/components/Filter.vue:370
+#: frontend/src/components/Filter.vue:313
+#: frontend/src/components/Filter.vue:334
+#: frontend/src/components/Filter.vue:349
+#: frontend/src/components/Filter.vue:362
+#: frontend/src/components/Filter.vue:376
 msgid "Not in"
 msgstr "crwdns196612:0crwdne196612:0"
 
-#: frontend/src/components/Filter.vue:305
-#: frontend/src/components/Filter.vue:316
-#: frontend/src/components/Filter.vue:326
-#: frontend/src/components/Filter.vue:354
-#: frontend/src/components/Filter.vue:368
+#: frontend/src/components/Filter.vue:311
+#: frontend/src/components/Filter.vue:322
+#: frontend/src/components/Filter.vue:332
+#: frontend/src/components/Filter.vue:360
+#: frontend/src/components/Filter.vue:374
 msgid "Not like"
 msgstr "crwdns196614:0crwdne196614:0"
 
-#: crm/api/activities.py:26 crm/api/activities.py:180 crm/api/contact.py:52
+#: crm/api/activities.py:26 crm/api/activities.py:181 crm/api/contact.py:52
 #: crm/api/contact.py:88 crm/api/contact.py:109 crm/api/form.py:239
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:200
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:232
 #: crm/fcrm/doctype/crm_deal/api.py:8
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
@@ -6436,8 +6558,8 @@ msgstr "crwdns196622:0crwdne196622:0"
 
 #. Label of the notes (Small Text) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
-#: frontend/src/pages/Deal.vue:788 frontend/src/pages/Lead.vue:602
-#: frontend/src/pages/MobileDeal.vue:486 frontend/src/pages/MobileLead.vue:341
+#: frontend/src/pages/Deal.vue:797 frontend/src/pages/Lead.vue:602
+#: frontend/src/pages/MobileDeal.vue:495 frontend/src/pages/MobileLead.vue:341
 msgid "Notes"
 msgstr "crwdns153633:0crwdne153633:0"
 
@@ -6449,15 +6571,15 @@ msgstr "crwdns153635:0crwdne153635:0"
 msgid "Nothing here"
 msgstr "crwdns271177:0crwdne271177:0"
 
-#: frontend/src/components/Activities/Activities.vue:830
+#: frontend/src/components/Activities/Activities.vue:839
 msgid "Nothing here for now. Add a note to keep track of things."
 msgstr "crwdns268021:0crwdne268021:0"
 
-#: frontend/src/components/Activities/Activities.vue:834
+#: frontend/src/components/Activities/Activities.vue:843
 msgid "Nothing to do at the moment. Start organizing by adding one here."
 msgstr "crwdns268023:0crwdne268023:0"
 
-#: frontend/src/components/Activities/EmailArea.vue:15
+#: frontend/src/components/Activities/EmailArea.vue:6
 #: frontend/src/components/Layouts/AppSidebar.vue:746
 msgid "Notification"
 msgstr "crwdns153637:0crwdne153637:0"
@@ -6624,7 +6746,7 @@ msgstr "crwdns156512:0crwdne156512:0"
 msgid "Open Nested Conditions"
 msgstr "crwdns196638:0crwdne196638:0"
 
-#: frontend/src/pages/Organization.vue:103
+#: frontend/src/pages/Organization.vue:128
 msgid "Open Website"
 msgstr "crwdns196640:0crwdne196640:0"
 
@@ -6690,10 +6812,10 @@ msgstr "crwdns204745:0crwdne204745:0"
 #: frontend/src/components/Modals/ConvertToDealModal.vue:20
 #: frontend/src/pages/Contact.vue:342 frontend/src/pages/Contact.vue:378
 #: frontend/src/pages/MobileContact.vue:370
-#: frontend/src/pages/MobileOrganization.vue:455
-#: frontend/src/pages/MobileOrganization.vue:509
-#: frontend/src/pages/Organization.vue:497
-#: frontend/src/pages/Organization.vue:551
+#: frontend/src/pages/MobileOrganization.vue:507
+#: frontend/src/pages/MobileOrganization.vue:561
+#: frontend/src/pages/Organization.vue:547
+#: frontend/src/pages/Organization.vue:601
 msgid "Organization"
 msgstr "crwdns153669:0crwdne153669:0"
 
@@ -6727,24 +6849,29 @@ msgstr "crwdns203699:0crwdne203699:0"
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
-#: frontend/src/pages/MobileOrganization.vue:211
-#: frontend/src/pages/Organization.vue:262
+#: frontend/src/pages/MobileOrganization.vue:246
+#: frontend/src/pages/Organization.vue:297
 msgid "Organizations"
 msgstr "crwdns153681:0crwdne153681:0"
 
-#: frontend/src/pages/PersonaForm.vue:124
+#: frontend/src/pages/PersonaForm.vue:131
 msgid "Organize my contacts"
 msgstr "crwdns207269:0crwdne207269:0"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:62
-#: frontend/src/pages/PersonaForm.vue:65 frontend/src/pages/PersonaForm.vue:82
-#: frontend/src/pages/PersonaForm.vue:103
+#: frontend/src/pages/PersonaForm.vue:72 frontend/src/pages/PersonaForm.vue:89
+#: frontend/src/pages/PersonaForm.vue:110
 msgid "Other"
 msgstr "crwdns207271:0crwdne207271:0"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:738
 msgid "Other Features"
 msgstr "crwdns196646:0crwdne196646:0"
+
+#: frontend/src/pages/Deal.vue:161 frontend/src/pages/MobileDeal.vue:91
+#: frontend/src/utils/fieldTransforms.js:161
+msgid "Other contacts"
+msgstr "crwdns274831:0crwdne274831:0"
 
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -6790,6 +6917,10 @@ msgstr "crwdns160836:0crwdne160836:0"
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Parent CRM Territory"
 msgstr "crwdns153691:0crwdne153691:0"
+
+#: crm/fcrm/doctype/crm_territory/crm_territory.py:42
+msgid "Parent Territory {0} is not a group. Only group territories can have children."
+msgstr "crwdns274833:0{0}crwdne274833:0"
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:114
 #: frontend/src/components/Settings/emailConfig.js:71
@@ -6837,6 +6968,7 @@ msgstr "crwdns196654:0crwdne196654:0"
 #. Label of the pattern (Data) field in DocType 'CRM Enrichment Skip Pattern'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule_pattern/crm_enrichment_rule_pattern.json
 #: crm/domain_enrichment/doctype/crm_enrichment_skip_pattern/crm_enrichment_skip_pattern.json
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:12
 msgid "Pattern"
 msgstr "crwdns240545:0crwdne240545:0"
 
@@ -6915,8 +7047,8 @@ msgstr "crwdns241981:0crwdne241981:0"
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
-#: frontend/src/pages/MobileOrganization.vue:504
-#: frontend/src/pages/Organization.vue:546
+#: frontend/src/pages/MobileOrganization.vue:556
+#: frontend/src/pages/Organization.vue:596
 msgid "Phone"
 msgstr "crwdns153705:0crwdne153705:0"
 
@@ -6929,7 +7061,7 @@ msgstr "crwdns273367:0{0}crwdne273367:0"
 msgid "Phone Numbers"
 msgstr "crwdns153707:0crwdne153707:0"
 
-#: frontend/src/pages/PersonaForm.vue:78
+#: frontend/src/pages/PersonaForm.vue:85
 msgid "Phone calls"
 msgstr "crwdns207275:0crwdne207275:0"
 
@@ -6980,7 +7112,7 @@ msgstr "crwdns196658:0crwdne196658:0"
 msgid "Pinned Views"
 msgstr "crwdns153713:0crwdne153713:0"
 
-#: frontend/src/pages/PersonaForm.vue:63
+#: frontend/src/pages/PersonaForm.vue:69
 msgid "Pipedrive"
 msgstr "crwdns207277:0crwdne207277:0"
 
@@ -6988,11 +7120,16 @@ msgstr "crwdns207277:0crwdne207277:0"
 msgid "Placeholder"
 msgstr "crwdns240555:0crwdne240555:0"
 
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:12
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:39
+msgid "Platform"
+msgstr "crwdns274835:0crwdne274835:0"
+
 #: frontend/src/components/Activities/AudioPlayer.vue:171
 msgid "Playback Speed"
 msgstr "crwdns196660:0crwdne196660:0"
 
-#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:169
+#: crm/lead_syncing/doctype/lead_sync_source/facebook.py:189
 msgid "Please check your access token"
 msgstr "crwdns160838:0crwdne160838:0"
 
@@ -7098,11 +7235,11 @@ msgid "Preview again"
 msgstr "crwdns240563:0crwdne240563:0"
 
 #: frontend/src/components/PrimaryDropdownItem.vue:16
-#: frontend/src/pages/Deal.vue:218 frontend/src/pages/MobileDeal.vue:153
+#: frontend/src/pages/Deal.vue:227 frontend/src/pages/MobileDeal.vue:162
 msgid "Primary"
 msgstr "crwdns153729:0crwdne153729:0"
 
-#: frontend/src/pages/Deal.vue:924 frontend/src/pages/MobileDeal.vue:606
+#: frontend/src/pages/Deal.vue:933 frontend/src/pages/MobileDeal.vue:615
 msgid "Primary Contact Set"
 msgstr "crwdns196680:0crwdne196680:0"
 
@@ -7281,7 +7418,7 @@ msgstr "crwdns153753:0crwdne153753:0"
 msgid "Quick filters updated successfully"
 msgstr "crwdns196702:0crwdne196702:0"
 
-#: frontend/src/pages/Deal.vue:807 frontend/src/pages/MobileDeal.vue:505
+#: frontend/src/pages/Deal.vue:816 frontend/src/pages/MobileDeal.vue:514
 msgid "Quotations"
 msgstr "crwdns273371:0crwdne273371:0"
 
@@ -7372,7 +7509,7 @@ msgstr "crwdns241993:0crwdne241993:0"
 msgid "Recording URL not found"
 msgstr "crwdns199044:0crwdne199044:0"
 
-#: frontend/src/components/Modals/CallLogDetailModal.vue:110
+#: frontend/src/components/Modals/CallLogDetailModal.vue:114
 msgid "Recording not available"
 msgstr "crwdns241995:0crwdne241995:0"
 
@@ -7423,7 +7560,7 @@ msgstr "crwdns153769:0crwdne153769:0"
 msgid "Reference Name"
 msgstr "crwdns153771:0crwdne153771:0"
 
-#: frontend/src/pages/PersonaForm.vue:79
+#: frontend/src/pages/PersonaForm.vue:86
 msgid "Referrals"
 msgstr "crwdns207279:0crwdne207279:0"
 
@@ -7469,7 +7606,7 @@ msgstr "crwdns199998:0crwdne199998:0"
 #: frontend/src/components/Settings/Forms/FieldCard.vue:73
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:83
 #: frontend/src/components/Settings/Users.vue:220
-#: frontend/src/pages/Deal.vue:867
+#: frontend/src/pages/Deal.vue:876
 msgid "Remove"
 msgstr "crwdns153779:0crwdne153779:0"
 
@@ -7483,8 +7620,8 @@ msgstr "crwdns196714:0crwdne196714:0"
 
 #: frontend/src/pages/Contact.vue:53 frontend/src/pages/Lead.vue:108
 #: frontend/src/pages/MobileContact.vue:43
-#: frontend/src/pages/MobileOrganization.vue:43
-#: frontend/src/pages/Organization.vue:59
+#: frontend/src/pages/MobileOrganization.vue:70
+#: frontend/src/pages/Organization.vue:84
 msgid "Remove Image"
 msgstr "crwdns196716:0crwdne196716:0"
 
@@ -7552,17 +7689,17 @@ msgstr "crwdns199530:0crwdne199530:0"
 msgid "Replace with an icon..."
 msgstr "crwdns241997:0crwdne241997:0"
 
-#: frontend/src/pages/PersonaForm.vue:102
+#: frontend/src/pages/PersonaForm.vue:109
 msgid "Replacing my current CRM"
 msgstr "crwdns207281:0crwdne207281:0"
 
 #: frontend/src/components/Activities/Activities.vue:34
-#: frontend/src/components/Activities/EmailArea.vue:30
-#: frontend/src/components/CommunicationArea.vue:9
+#: frontend/src/components/Activities/EmailArea.vue:11
+#: frontend/src/components/CommunicationArea.vue:22
 msgid "Reply"
 msgstr "crwdns153793:0crwdne153793:0"
 
-#: frontend/src/components/Activities/EmailArea.vue:37
+#: frontend/src/components/Activities/EmailArea.vue:18
 msgid "Reply All"
 msgstr "crwdns153795:0crwdne153795:0"
 
@@ -7575,7 +7712,7 @@ msgstr "crwdns273377:0crwdne273377:0"
 msgid "Report an Issue"
 msgstr "crwdns156562:0crwdne156562:0"
 
-#: frontend/src/pages/PersonaForm.vue:101
+#: frontend/src/pages/PersonaForm.vue:108
 msgid "Reporting & forecasting"
 msgstr "crwdns207283:0crwdne207283:0"
 
@@ -7705,6 +7842,10 @@ msgstr "crwdns203719:0crwdne203719:0"
 msgid "Retake"
 msgstr "crwdns153817:0crwdne153817:0"
 
+#: frontend/src/components/Settings/Enrichment/EnrichmentRuleSection.vue:26
+msgid "Retry"
+msgstr "crwdns274837:0crwdne274837:0"
+
 #. Label of the retry_count (Int) field in DocType 'CRM Enrichment Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json
 msgid "Retry Count"
@@ -7795,6 +7936,14 @@ msgstr "crwdns153829:0crwdne153829:0"
 msgid "Route Name"
 msgstr "crwdns153831:0crwdne153831:0"
 
+#: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.py:92
+msgid "Row #{0}: Not a valid regular expression: {1}"
+msgstr "crwdns274839:0#{0}crwdnd274839:0{1}crwdne274839:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:255
+msgid "Row {0}"
+msgstr "crwdns274841:0{0}crwdne274841:0"
+
 #. Label of the rows (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Rows"
@@ -7809,6 +7958,10 @@ msgstr "crwdns240593:0crwdne240593:0"
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
 msgid "Rule Type"
 msgstr "crwdns240595:0crwdne240595:0"
+
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:95
+msgid "Rules"
+msgstr "crwdns274843:0crwdne274843:0"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:98
 msgid "Run As"
@@ -8020,7 +8173,7 @@ msgstr "crwdns242015:0crwdne242015:0"
 msgid "Sales trend"
 msgstr "crwdns156568:0crwdne156568:0"
 
-#: frontend/src/pages/PersonaForm.vue:61
+#: frontend/src/pages/PersonaForm.vue:67
 msgid "Salesforce"
 msgstr "crwdns207285:0crwdne207285:0"
 
@@ -8227,7 +8380,7 @@ msgstr "crwdns196770:0crwdne196770:0"
 msgid "Select a Twilio app for your CRM"
 msgstr "crwdns242017:0crwdne242017:0"
 
-#: frontend/src/components/Filter.vue:640
+#: frontend/src/components/Filter.vue:669
 msgid "Select a Value"
 msgstr "crwdns196772:0crwdne196772:0"
 
@@ -8235,11 +8388,11 @@ msgstr "crwdns196772:0crwdne196772:0"
 msgid "Select a record"
 msgstr "crwdns271267:0crwdne271267:0"
 
-#: frontend/src/components/Questionnaire.vue:91
+#: frontend/src/components/Questionnaire.vue:101
 msgid "Select all that apply"
 msgstr "crwdns207287:0crwdne207287:0"
 
-#: frontend/src/components/Filter.vue:642
+#: frontend/src/components/Filter.vue:671
 msgid "Select an Option"
 msgstr "crwdns196774:0crwdne196774:0"
 
@@ -8266,6 +8419,10 @@ msgstr "crwdns200112:0crwdne200112:0"
 msgid "Select users"
 msgstr "crwdns271269:0crwdne271269:0"
 
+#: frontend/src/components/Filter.vue:647
+msgid "Select values"
+msgstr "crwdns274845:0crwdne274845:0"
+
 #: frontend/src/components/Settings/DefaultsSettings.vue:131
 msgid "Select whether to display time with or without seconds"
 msgstr "crwdns200280:0crwdne200280:0"
@@ -8274,12 +8431,12 @@ msgstr "crwdns200280:0crwdne200280:0"
 msgid "Select your ERPNext company to connect with"
 msgstr "crwdns200114:0crwdne200114:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:613
+#: frontend/src/components/FieldLayout/Field.vue:641
 msgid "Select {0}"
 msgstr "crwdns153865:0{0}crwdne153865:0"
 
 #: frontend/src/components/Activities/Activities.vue:457
-#: frontend/src/components/EmailEditor.vue:165
+#: frontend/src/components/EmailEditor.vue:168
 #: frontend/src/components/Modals/WhatsAppTemplateSelectorModal.vue:79
 msgid "Send"
 msgstr "crwdns153867:0crwdne153867:0"
@@ -8312,11 +8469,11 @@ msgstr "crwdns240619:0crwdne240619:0"
 msgid "Send visitors here after they submit. Leave blank to show the success message."
 msgstr "crwdns240621:0crwdne240621:0"
 
-#: frontend/src/components/CommunicationArea.vue:298
+#: frontend/src/components/CommunicationArea.vue:356
 msgid "Sending comment..."
 msgstr "crwdns196782:0crwdne196782:0"
 
-#: frontend/src/components/CommunicationArea.vue:276
+#: frontend/src/components/CommunicationArea.vue:334
 msgid "Sending email..."
 msgstr "crwdns196784:0crwdne196784:0"
 
@@ -8339,8 +8496,8 @@ msgstr "crwdns196786:0crwdne196786:0"
 msgid "Service Provider"
 msgstr "crwdns157276:0crwdne157276:0"
 
-#: frontend/src/components/Filter.vue:414
-#: frontend/src/components/Filter.vue:630
+#: frontend/src/components/Filter.vue:420
+#: frontend/src/components/Filter.vue:659
 msgid "Set"
 msgstr "crwdns196788:0crwdne196788:0"
 
@@ -8406,7 +8563,7 @@ msgstr "crwdns196798:0crwdne196798:0"
 msgid "Set another account as the default before deleting it."
 msgstr "crwdns273387:0crwdne273387:0"
 
-#: frontend/src/pages/Deal.vue:875 frontend/src/pages/MobileDeal.vue:557
+#: frontend/src/pages/Deal.vue:884 frontend/src/pages/MobileDeal.vue:566
 msgid "Set as Primary Contact"
 msgstr "crwdns153887:0crwdne153887:0"
 
@@ -8436,7 +8593,7 @@ msgstr "crwdns271275:0crwdne271275:0"
 msgid "Set once the first admin completes the onboarding persona questionnaire"
 msgstr "crwdns207289:0crwdne207289:0"
 
-#: frontend/src/pages/Deal.vue:676 frontend/src/pages/Lead.vue:493
+#: frontend/src/pages/Deal.vue:685 frontend/src/pages/Lead.vue:493
 msgid "Set status: {0}"
 msgstr "crwdns273391:0{0}crwdne273391:0"
 
@@ -8452,7 +8609,11 @@ msgstr "crwdns199052:0crwdne199052:0"
 msgid "Set the name of your brand. Appears in the left sidebar."
 msgstr "crwdns199054:0crwdne199054:0"
 
-#: frontend/src/pages/PersonaForm.vue:123
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:4
+msgid "Set up enrichment availability and match website data to CRM fields."
+msgstr "crwdns274847:0crwdne274847:0"
+
+#: frontend/src/pages/PersonaForm.vue:130
 msgid "Set up my sales pipeline"
 msgstr "crwdns207291:0crwdne207291:0"
 
@@ -8464,12 +8625,10 @@ msgstr "crwdns196802:0crwdne196802:0"
 msgid "Setting Up"
 msgstr "crwdns196804:0crwdne196804:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:85
 #: frontend/src/components/Settings/GeneralSettings.vue:153
 msgid "Setting disabled successfully"
 msgstr "crwdns199344:0crwdne199344:0"
 
-#: frontend/src/components/Settings/EnrichmentSettings.vue:84
 #: frontend/src/components/Settings/GeneralSettings.vue:152
 msgid "Setting enabled successfully"
 msgstr "crwdns199346:0crwdne199346:0"
@@ -8519,6 +8678,7 @@ msgid "Settings saved"
 msgstr "crwdns200120:0crwdne200120:0"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:166
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:241
 msgid "Settings updated successfully"
 msgstr "crwdns200282:0crwdne200282:0"
 
@@ -8568,6 +8728,10 @@ msgstr "crwdns271277:0crwdne271277:0"
 #: frontend/src/components/Settings/GeneralSettings.vue:86
 msgid "Show timestamps in the activity timeline as relative time (5 mins ago) or an exact date & time"
 msgstr "crwdns204751:0crwdne204751:0"
+
+#: frontend/src/components/Settings/Enrichment/EnrichmentRuleSection.vue:47
+msgid "Showing the first {0} rules"
+msgstr "crwdns274849:0{0}crwdne274849:0"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:344
 msgid "Shown after a successful submission"
@@ -8627,7 +8791,7 @@ msgstr "crwdns271279:0crwdne271279:0"
 msgid "Skip Patterns"
 msgstr "crwdns240637:0crwdne240637:0"
 
-#: frontend/src/components/Questionnaire.vue:95
+#: frontend/src/components/Questionnaire.vue:105
 msgid "Skip for now"
 msgstr "crwdns207293:0crwdne207293:0"
 
@@ -8641,6 +8805,14 @@ msgstr "crwdns240639:0crwdne240639:0"
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Social Profiles"
 msgstr "crwdns240641:0crwdne240641:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:10
+msgid "Social profile rules"
+msgstr "crwdns274851:0crwdne274851:0"
+
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:243
+msgid "Some changes could not be saved"
+msgstr "crwdns274853:0crwdne274853:0"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:432
 msgid "Some error occurred while creating SLA policy"
@@ -8730,7 +8902,7 @@ msgstr "crwdns156614:0crwdne156614:0"
 msgid "Split the run into two arms on a condition."
 msgstr "crwdns271281:0crwdne271281:0"
 
-#: frontend/src/pages/PersonaForm.vue:59
+#: frontend/src/pages/PersonaForm.vue:65
 msgid "Spreadsheets"
 msgstr "crwdns207295:0crwdne207295:0"
 
@@ -8770,7 +8942,7 @@ msgstr "crwdns153921:0crwdne153921:0"
 msgid "Start Time"
 msgstr "crwdns153923:0crwdne153923:0"
 
-#: frontend/src/components/Activities/Activities.vue:843
+#: frontend/src/components/Activities/Activities.vue:852
 msgid "Start a conversation now!"
 msgstr "crwdns268029:0crwdne268029:0"
 
@@ -8842,8 +9014,8 @@ msgstr "crwdns240647:0crwdne240647:0"
 #: frontend/src/components/Settings/Forms/FormsList.vue:45
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:73
 #: frontend/src/pages/Contact.vue:389 frontend/src/pages/MobileContact.vue:381
-#: frontend/src/pages/MobileOrganization.vue:466
-#: frontend/src/pages/Organization.vue:508
+#: frontend/src/pages/MobileOrganization.vue:518
+#: frontend/src/pages/Organization.vue:558
 msgid "Status"
 msgstr "crwdns153925:0crwdne153925:0"
 
@@ -8871,7 +9043,7 @@ msgstr "crwdns271299:0crwdne271299:0"
 msgid "Step name"
 msgstr "crwdns271301:0crwdne271301:0"
 
-#: frontend/src/components/Questionnaire.vue:89
+#: frontend/src/components/Questionnaire.vue:99
 msgid "Step {0} of {1}"
 msgstr "crwdns207297:0{0}crwdnd207297:0{1}crwdne207297:0"
 
@@ -9083,6 +9255,7 @@ msgstr "crwdns240669:0crwdne240669:0"
 
 #. Label of the target_value (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json
+#: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.py:72
 msgid "Target Value"
 msgstr "crwdns240671:0crwdne240671:0"
 
@@ -9093,8 +9266,8 @@ msgstr "crwdns240671:0crwdne240671:0"
 msgid "Task"
 msgstr "crwdns153949:0crwdne153949:0"
 
-#: frontend/src/pages/Deal.vue:782 frontend/src/pages/Lead.vue:596
-#: frontend/src/pages/MobileDeal.vue:480 frontend/src/pages/MobileLead.vue:335
+#: frontend/src/pages/Deal.vue:791 frontend/src/pages/Lead.vue:596
+#: frontend/src/pages/MobileDeal.vue:489 frontend/src/pages/MobileLead.vue:335
 msgid "Tasks"
 msgstr "crwdns153951:0crwdne153951:0"
 
@@ -9185,7 +9358,11 @@ msgstr "crwdns153963:0crwdne153963:0"
 msgid "Territory Name"
 msgstr "crwdns153965:0crwdne153965:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:210
+#: crm/fcrm/doctype/crm_territory/crm_territory.py:38
+msgid "Territory cannot be its own parent"
+msgstr "crwdns274855:0crwdne274855:0"
+
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:211
 msgid "Test Run"
 msgstr "crwdns271303:0crwdne271303:0"
 
@@ -9238,7 +9415,7 @@ msgstr "crwdns240679:0crwdne240679:0"
 msgid "Theme"
 msgstr "crwdns199356:0crwdne199356:0"
 
-#: frontend/src/components/Activities/Activities.vue:814
+#: frontend/src/components/Activities/Activities.vue:823
 msgid "There are no activities to display here. Go ahead and make some changes."
 msgstr "crwdns268033:0crwdne268033:0"
 
@@ -9250,19 +9427,19 @@ msgstr "crwdns153969:0crwdne153969:0"
 msgid "These fields aren't shown to users. Default values are used when the form is submitted."
 msgstr "crwdns240681:0crwdne240681:0"
 
-#: frontend/src/components/Filter.vue:726
+#: frontend/src/components/Filter.vue:755
 msgid "This Month"
 msgstr "crwdns153971:0crwdne153971:0"
 
-#: frontend/src/components/Filter.vue:730
+#: frontend/src/components/Filter.vue:759
 msgid "This Quarter"
 msgstr "crwdns153973:0crwdne153973:0"
 
-#: frontend/src/components/Filter.vue:722
+#: frontend/src/components/Filter.vue:751
 msgid "This Week"
 msgstr "crwdns153975:0crwdne153975:0"
 
-#: frontend/src/components/Filter.vue:734
+#: frontend/src/components/Filter.vue:763
 msgid "This Year"
 msgstr "crwdns153977:0crwdne153977:0"
 
@@ -9282,7 +9459,7 @@ msgstr "crwdns196864:0crwdne196864:0"
 msgid "This form isn’t published yet. Turn on Publish to make the link and embeds live."
 msgstr "crwdns240683:0crwdne240683:0"
 
-#: frontend/src/pages/PersonaForm.vue:58
+#: frontend/src/pages/PersonaForm.vue:70
 msgid "This is my first CRM"
 msgstr "crwdns207299:0crwdne207299:0"
 
@@ -9367,7 +9544,7 @@ msgstr "crwdns204759:0crwdne204759:0"
 msgid "Timeout"
 msgstr "crwdns271309:0crwdne271309:0"
 
-#: frontend/src/components/Filter.vue:386
+#: frontend/src/components/Filter.vue:392
 msgid "Timespan"
 msgstr "crwdns153985:0crwdne153985:0"
 
@@ -9401,7 +9578,6 @@ msgstr "crwdns240689:0crwdne240689:0"
 
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json
-#: frontend/src/components/Activities/EmailArea.vue:49
 msgid "To"
 msgstr "crwdns153991:0crwdne153991:0"
 
@@ -9440,7 +9616,7 @@ msgid "To know more about setting up email accounts, click"
 msgstr "crwdns156658:0crwdne156658:0"
 
 #: frontend/src/components/Activities/Activities.vue:38
-#: frontend/src/components/Filter.vue:714
+#: frontend/src/components/Filter.vue:743
 msgid "Today"
 msgstr "crwdns153997:0crwdne153997:0"
 
@@ -9453,7 +9629,7 @@ msgstr "crwdns153999:0crwdne153999:0"
 msgid "Toggle on for Preview"
 msgstr "crwdns196870:0crwdne196870:0"
 
-#: frontend/src/components/Filter.vue:718
+#: frontend/src/components/Filter.vue:747
 msgid "Tomorrow"
 msgstr "crwdns154003:0crwdne154003:0"
 
@@ -9543,10 +9719,6 @@ msgstr "crwdns154011:0crwdne154011:0"
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:167
 msgid "Turn into a Group"
 msgstr "crwdns196874:0crwdne196874:0"
-
-#: frontend/src/components/Settings/EnrichmentSettings.vue:26
-msgid "Turn on enrichment for this site. When off, the Enrich button is hidden and no record is enriched"
-msgstr "crwdns268199:0crwdne268199:0"
 
 #. Label of the twiml_sid (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
@@ -9758,7 +9930,7 @@ msgstr "crwdns154039:0crwdne154039:0"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:24
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:30
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:546
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:547
 msgid "Untitled automation"
 msgstr "crwdns271335:0crwdne271335:0"
 
@@ -9770,6 +9942,7 @@ msgstr "crwdns271335:0crwdne271335:0"
 #: frontend/src/components/Settings/DashboardSettings.vue:19
 #: frontend/src/components/Settings/DefaultsSettings.vue:19
 #: frontend/src/components/Settings/ERPNextSettings.vue:41
+#: frontend/src/components/Settings/Enrichment/EnrichmentSettings.vue:20
 #: frontend/src/components/Settings/HomeActions.vue:16
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:25
@@ -9831,8 +10004,8 @@ msgstr "crwdns154049:0crwdne154049:0"
 #: frontend/src/components/Activities/Activities.vue:454
 #: frontend/src/pages/Contact.vue:48 frontend/src/pages/Lead.vue:103
 #: frontend/src/pages/MobileContact.vue:38
-#: frontend/src/pages/MobileOrganization.vue:38
-#: frontend/src/pages/Organization.vue:54
+#: frontend/src/pages/MobileOrganization.vue:65
+#: frontend/src/pages/Organization.vue:79
 msgid "Upload Image"
 msgstr "crwdns154051:0crwdne154051:0"
 
@@ -9848,7 +10021,7 @@ msgstr "crwdns154053:0crwdne154053:0"
 msgid "Uploading {0}%"
 msgstr "crwdns159320:0{0}crwdne159320:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:640
+#: frontend/src/components/FieldLayout/Field.vue:668
 msgid "Use \"{0}\""
 msgstr "crwdns268035:0{0}crwdne268035:0"
 
@@ -9861,7 +10034,7 @@ msgstr "crwdns203737:0crwdne203737:0"
 msgid "Use Sitemap"
 msgstr "crwdns240699:0crwdne240699:0"
 
-#: frontend/src/components/FieldLayout/Field.vue:638
+#: frontend/src/components/FieldLayout/Field.vue:666
 msgid "Use custom value"
 msgstr "crwdns268037:0crwdne268037:0"
 
@@ -9956,7 +10129,7 @@ msgstr "crwdns268039:0crwdne268039:0"
 msgid "Verify Connection"
 msgstr "crwdns200132:0crwdne200132:0"
 
-#: frontend/src/pages/Deal.vue:232
+#: frontend/src/pages/Deal.vue:241
 msgid "View Contact"
 msgstr "crwdns196910:0crwdne196910:0"
 
@@ -10008,7 +10181,7 @@ msgstr "crwdns271343:0{0}crwdne271343:0"
 msgid "Wait {0} {1}"
 msgstr "crwdns271345:0{0}crwdnd271345:0{1}crwdne271345:0"
 
-#: frontend/src/pages/PersonaForm.vue:80
+#: frontend/src/pages/PersonaForm.vue:87
 msgid "Walk-ins"
 msgstr "crwdns207301:0crwdne207301:0"
 
@@ -10046,7 +10219,7 @@ msgstr "crwdns154067:0crwdne154067:0"
 msgid "Website"
 msgstr "crwdns154069:0crwdne154069:0"
 
-#: frontend/src/pages/PersonaForm.vue:73
+#: frontend/src/pages/PersonaForm.vue:80
 msgid "Website forms"
 msgstr "crwdns207303:0crwdne207303:0"
 
@@ -10081,7 +10254,7 @@ msgstr "crwdns240703:0crwdne240703:0"
 msgid "Welcome Message"
 msgstr "crwdns154077:0crwdne154077:0"
 
-#: frontend/src/pages/PersonaForm.vue:132
+#: frontend/src/pages/PersonaForm.vue:140
 msgid "Welcome to Frappe CRM"
 msgstr "crwdns207305:0crwdne207305:0"
 
@@ -10089,11 +10262,11 @@ msgstr "crwdns207305:0crwdne207305:0"
 msgid "Welcome {0}, lets add your first lead"
 msgstr "crwdns156698:0{0}crwdne156698:0"
 
-#: frontend/src/pages/PersonaForm.vue:87
+#: frontend/src/pages/PersonaForm.vue:94
 msgid "What are your biggest challenges with sales today?"
 msgstr "crwdns207307:0crwdne207307:0"
 
-#: frontend/src/pages/PersonaForm.vue:118
+#: frontend/src/pages/PersonaForm.vue:125
 msgid "What would you like to accomplish first?"
 msgstr "crwdns207309:0crwdne207309:0"
 
@@ -10102,9 +10275,9 @@ msgstr "crwdns207309:0crwdne207309:0"
 #: frontend/src/components/Layouts/AppSidebar.vue:766
 #: frontend/src/components/Settings/Settings.vue:245
 #: frontend/src/components/Settings/WhatsAppSettings.vue:22
-#: frontend/src/pages/Deal.vue:800 frontend/src/pages/Lead.vue:614
-#: frontend/src/pages/MobileDeal.vue:498 frontend/src/pages/MobileLead.vue:353
-#: frontend/src/pages/PersonaForm.vue:76
+#: frontend/src/pages/Deal.vue:809 frontend/src/pages/Lead.vue:614
+#: frontend/src/pages/MobileDeal.vue:507 frontend/src/pages/MobileLead.vue:353
+#: frontend/src/pages/PersonaForm.vue:83
 msgid "WhatsApp"
 msgstr "crwdns154079:0crwdne154079:0"
 
@@ -10161,7 +10334,7 @@ msgstr "crwdns196924:0crwdne196924:0"
 msgid "Workday"
 msgstr "crwdns154089:0crwdne154089:0"
 
-#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:215
+#: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:216
 msgid "Workflow Automation"
 msgstr "crwdns271351:0crwdne271351:0"
 
@@ -10200,13 +10373,13 @@ msgstr "crwdns271355:0crwdne271355:0"
 msgid "X (Twitter)"
 msgstr "crwdns240709:0crwdne240709:0"
 
-#: frontend/src/components/Filter.vue:638
+#: frontend/src/components/Filter.vue:667
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:294
 msgid "Yes"
 msgstr "crwdns196926:0crwdne196926:0"
 
 #: frontend/src/components/Activities/Activities.vue:39
-#: frontend/src/components/Filter.vue:710
+#: frontend/src/components/Filter.vue:739
 msgid "Yesterday"
 msgstr "crwdns154093:0crwdne154093:0"
 
@@ -10231,11 +10404,11 @@ msgstr "crwdns196930:0crwdne196930:0"
 msgid "You are not permitted to access this resource."
 msgstr "crwdns156704:0crwdne156704:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:281
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:313
 msgid "You are not permitted to create leads."
 msgstr "crwdns196932:0crwdne196932:0"
 
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:278
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.py:310
 msgid "You are not permitted to update this call log."
 msgstr "crwdns196934:0crwdne196934:0"
 
@@ -10339,7 +10512,7 @@ msgstr "crwdns158950:0crwdne158950:0"
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
 msgstr "crwdns196942:0crwdne196942:0"
 
-#: frontend/src/pages/PersonaForm.vue:62
+#: frontend/src/pages/PersonaForm.vue:68
 msgid "Zoho CRM"
 msgstr "crwdns207311:0crwdne207311:0"
 
@@ -10430,7 +10603,7 @@ msgstr "crwdns196948:0crwdne196948:0"
 msgid "created this deal"
 msgstr "crwdns196950:0crwdne196950:0"
 
-#: crm/api/activities.py:200
+#: crm/api/activities.py:201
 msgid "created this lead"
 msgstr "crwdns196952:0crwdne196952:0"
 
@@ -10473,6 +10646,10 @@ msgstr "crwdns271375:0crwdne271375:0"
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:232
 msgid "e.g. Open, Replied"
 msgstr "crwdns271377:0crwdne271377:0"
+
+#: frontend/src/components/Settings/Enrichment/RulesTab.vue:54
+msgid "e.g. mastodon\\\\.social/@\\\\w+"
+msgstr "crwdns274857:0crwdne274857:0"
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
@@ -10692,7 +10869,7 @@ msgstr "crwdns154141:0crwdne154141:0"
 msgid "now"
 msgstr "crwdns156744:0crwdne156744:0"
 
-#: crm/api/activities.py:110 crm/api/activities.py:248
+#: crm/api/activities.py:110 crm/api/activities.py:249
 msgid "old_value"
 msgstr "crwdns197348:0crwdne197348:0"
 
@@ -10801,7 +10978,7 @@ msgstr "crwdns240751:0crwdne240751:0"
 msgid "unlinked_orphan"
 msgstr "crwdns203749:0crwdne203749:0"
 
-#: crm/api/activities.py:107 crm/api/activities.py:245
+#: crm/api/activities.py:107 crm/api/activities.py:246
 msgid "value"
 msgstr "crwdns197350:0crwdne197350:0"
 
@@ -10935,6 +11112,10 @@ msgstr "crwdns271395:0{0}crwdnd271395:0{1}crwdne271395:0"
 msgid "{0} is required"
 msgstr "crwdns156762:0{0}crwdne156762:0"
 
+#: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.py:73
+msgid "{0} is required for {1} rules"
+msgstr "crwdns274859:0{0}crwdnd274859:0{1}crwdne274859:0"
+
 #: frontend/src/components/Settings/WorkflowAutomations/workflowConditions.js:167
 msgid "{0} is set"
 msgstr "crwdns271397:0{0}crwdne271397:0"
@@ -11007,7 +11188,7 @@ msgstr "crwdns156774:0{0}crwdne156774:0"
 msgid "{0} years ago"
 msgstr "crwdns156776:0{0}crwdne156776:0"
 
-#: frontend/src/components/Questionnaire.vue:90
+#: frontend/src/components/Questionnaire.vue:100
 #, python-format
 msgid "{0}% complete"
 msgstr "crwdns207313:0{0}crwdne207313:0"
