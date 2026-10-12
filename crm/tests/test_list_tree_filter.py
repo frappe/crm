@@ -1,5 +1,5 @@
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.api.doc import get_data, get_filterable_fields
 
@@ -15,7 +15,7 @@ def make_territory(name, parent=None, is_group=0):
 	).insert(ignore_permissions=True)
 
 
-class TestListTreeFilter(IntegrationTestCase):
+class TestListTreeFilter(FrappeTestCase):
 	"""Filtering leads by a parent territory must also match its child
 	territories (#2209)."""
 
