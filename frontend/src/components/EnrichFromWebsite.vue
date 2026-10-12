@@ -1,6 +1,13 @@
 <template>
+  <!-- Disabled buttons get no hover events, so the tooltip sits on a wrapper. -->
+  <Tooltip v-if="!hasWebsite" :text="__('Add website to auto enrich')">
+    <div class="inline-flex">
+      <Button :label="__('Enrich')" iconLeft="lucide-zap" disabled />
+    </div>
+  </Tooltip>
   <!-- While running, the spinner replaces the icon (no crawl details). -->
   <Button
+    v-else
     :label="__('Enrich')"
     :loading="running"
     :loadingText="__('Enriching')"
@@ -11,8 +18,8 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
-import { Button, call, toast } from 'frappe-ui'
+import { ref, computed, onBeforeUnmount } from 'vue'
+import { Button, Tooltip, call, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
@@ -31,6 +38,7 @@ const { capture } = useTelemetry()
 const EVENT = 'domain_enrichment_progress'
 
 const running = ref(false)
+const hasWebsite = computed(() => Boolean((props.website || '').trim()))
 
 function isForThisDoc(data) {
   return (
