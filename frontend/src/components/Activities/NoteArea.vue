@@ -14,6 +14,11 @@
             onClick: () => modalRef.showNote(note),
           },
           {
+            label: __('Copy link'),
+            icon: 'lucide-link',
+            onClick: () => copyToClipboard(noteLink(note.name)),
+          },
+          {
             label: __('Delete'),
             icon: 'lucide-trash-2',
             onClick: () => deleteNote(note.name),
@@ -34,7 +39,7 @@
     <!-- eslint-disable vue/no-v-html -->
     <div
       v-if="note.content"
-      class="prose-f prose-sm text-p-sm max-w-none text-ink-gray-5 flex-1 overflow-hidden"
+      class="prose-f prose-sm text-p-sm max-w-none text-ink-gray-5 flex-1 overflow-hidden prose-headings:my-1 prose-headings:text-p-sm prose-headings:font-medium prose-headings:text-ink-gray-7 [&>*:first-child]:mt-0"
       v-html="sanitizeHTML(note.content)"
     />
     <!-- eslint-enable vue/no-v-html -->
@@ -60,7 +65,8 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { Dropdown, call, toast } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
-import { sanitizeHTML } from '@/utils'
+import { sanitizeHTML, copyToClipboard } from '@/utils'
+import { useNoteView } from '@/composables/noteView'
 
 defineProps({
   note: { type: Object, default: () => ({}) },
@@ -70,6 +76,7 @@ defineProps({
 const notes = defineModel({ type: Object })
 
 const { getUser } = usersStore()
+const { noteLink } = useNoteView()
 
 async function deleteNote(name) {
   await toast.promise(

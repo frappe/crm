@@ -64,7 +64,7 @@
         <div
           v-for="note in activities"
           :key="note.name"
-          @click="modalRef.showNote(note)"
+          @click="openNote(note, { edit: () => modalRef.showNote(note) })"
         >
           <NoteArea
             v-model="all_activities"
@@ -502,6 +502,7 @@ import EmailArea from '@/components/Activities/EmailArea.vue'
 import CommentArea from '@/components/Activities/CommentArea.vue'
 import CallArea from '@/components/Activities/CallArea.vue'
 import NoteArea from '@/components/Activities/NoteArea.vue'
+import { useNoteView } from '@/composables/noteView'
 import TaskArea from '@/components/Activities/TaskArea.vue'
 import AttachmentArea from '@/components/Activities/AttachmentArea.vue'
 import QuotationsList from '@/components/Activities/QuotationsList.vue'
@@ -559,6 +560,7 @@ const { $socket } = globalStore()
 const { getUser } = usersStore()
 const { capture } = useTelemetry()
 const { isNewestFirst } = useTimelinePreferences()
+const { openNote } = useNoteView()
 
 const props = defineProps({
   doctype: { type: String, default: 'CRM Lead' },
