@@ -3,7 +3,7 @@
 
 @layer components {
   .prose-f {
-    @apply break-all
+    @apply break-words
 			max-w-none
 			prose
 			prose-code:break-all
