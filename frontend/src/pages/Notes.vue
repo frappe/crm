@@ -31,16 +31,44 @@
       <div
         v-for="note in notes.data.data"
         :key="note.name"
+<<<<<<< HEAD
         class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
         @click="editNote(note.name)"
+=======
+        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-6 border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
+        @click="openNote(note, { edit: () => editNote(note.name) })"
+>>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
       >
-        <div class="flex items-center justify-between">
-          <div class="truncate text-lg-medium text-ink-gray-9">
-            {{ note.title }}
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex min-w-0 flex-col gap-1">
+            <div class="truncate text-lg-medium text-ink-gray-9">
+              {{ note.title }}
+            </div>
+            <router-link
+              v-if="linkedRoute(note)"
+              :to="linkedRoute(note)"
+              class="truncate text-sm text-ink-gray-5 hover:text-ink-gray-8 hover:underline"
+              @click.stop
+            >
+              {{ linkedLabel(note) }}
+            </router-link>
           </div>
           <Dropdown
             :options="[
               {
+<<<<<<< HEAD
+=======
+                label: __('Edit'),
+                icon: 'lucide-edit-2',
+                onClick: () => editNote(note.name),
+              },
+              {
+                label: __('Copy link'),
+                icon: 'lucide-link',
+                onClick: () => copyNoteLink(note.name),
+              },
+              {
+>>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
                 label: __('Delete'),
                 icon: 'trash-2',
                 onClick: () => deleteNote(note.name),
@@ -59,7 +87,7 @@
         <!-- eslint-disable vue/no-v-html -->
         <div
           v-if="note.content"
-          class="prose-f prose-sm text-p-sm max-w-none text-ink-gray-5 flex-1 overflow-hidden"
+          class="prose-f prose-sm text-p-sm max-w-none text-ink-gray-5 flex-1 overflow-hidden prose-headings:my-1 prose-headings:text-p-sm prose-headings:font-medium prose-headings:text-ink-gray-7 [&>*:first-child]:mt-0"
           v-html="sanitizeHTML(note.content)"
         />
         <!-- eslint-enable vue/no-v-html -->
@@ -99,18 +127,30 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
+import { useNoteView } from '@/composables/noteView'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
+<<<<<<< HEAD
 import { timeAgo, formatDate, sanitizeHTML } from '@/utils'
 import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
 import { call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
 import { ref, watch } from 'vue'
+=======
+import { timeAgo, formatDate, sanitizeHTML, copyToClipboard } from '@/utils'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { call, Dropdown, Tooltip } from 'frappe-ui'
+import { ListFooter } from 'frappe-ui/experimental'
+import { ref, watch, onMounted } from 'vue'
+>>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
 
 const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const { showModal } = useDoctypeModal()
+const { openNote, noteLink, loadLinkedTitles, linkedRoute, linkedLabel } =
+  useNoteView()
 
 const notes = ref({})
 const loadMore = ref(1)
@@ -120,11 +160,19 @@ const viewControls = ref(null)
 watch(
   () => notes.value?.data?.page_length_count,
   (val, old_value) => {
-    openNoteFromURL()
     if (!val || val === old_value) return
     updatedPageCount.value = val
   },
 )
+
+watch(
+  () => notes.value?.data?.data,
+  (rows) => loadLinkedTitles(rows),
+)
+
+function copyNoteLink(name) {
+  copyToClipboard(noteLink(name))
+}
 
 const noteCallbacks = {
   afterInsert: () => {
@@ -163,19 +211,13 @@ async function deleteNote(name) {
   notes.value.reload()
 }
 
-const openNoteFromURL = () => {
+// open a shared note link, even when the note is not on the loaded page
+onMounted(() => {
   const searchParams = new URLSearchParams(window.location.search)
   const noteName = searchParams.get('open')
-
-  if (noteName && notes.value?.data?.data) {
-    const foundNote = notes.value.data.data.find(
-      (note) => note.name === noteName,
-    )
-    if (foundNote) {
-      editNote(foundNote.name)
-    }
-    searchParams.delete('open')
-    window.history.replaceState(null, '', window.location.pathname)
-  }
-}
+  if (!noteName) return
+  openNote({ name: noteName }, { edit: () => editNote(noteName) })
+  searchParams.delete('open')
+  window.history.replaceState(null, '', window.location.pathname)
+})
 </script>
