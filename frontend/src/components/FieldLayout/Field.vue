@@ -290,6 +290,10 @@
       v-else-if="field.fieldtype === 'Text Editor'"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
+      :mentions="isNote"
+      :toolbar="isNote ? noteToolbar : undefined"
+      :bubbleMenu="isNote"
+      :editorClass="isNote ? '!min-h-[16rem]' : ''"
       :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
@@ -339,6 +343,7 @@ import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
+import { noteToolbar } from '@/components/editor/config'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
@@ -377,7 +382,7 @@ import {
   DateTimePicker,
   TimePicker,
 } from 'frappe-ui'
-import { computed, provide, inject, ref, h } from 'vue'
+import { computed, provide, inject, ref, h, unref } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
@@ -385,6 +390,7 @@ const props = defineProps({
 
 const data = inject('data')
 const doctype = inject('doctype')
+const isNote = computed(() => unref(doctype) === 'FCRM Note')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')

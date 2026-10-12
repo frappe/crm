@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <Dialog v-model:open="show" :size="'xl'">
     <template #body>
       <div class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6">
@@ -11,6 +12,31 @@
                   : __('Create ' + (doctypeTitle || doctype))
               }}
             </h3>
+=======
+  <Dialog
+    v-model:open="show"
+    :size="doctype === 'FCRM Note' ? '2xl' : 'xl'"
+    :dismissible="doctype !== 'FCRM Note'"
+    bare
+  >
+    <template #default>
+      <div
+        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
+        @keydown.meta.enter.capture.prevent.stop="submit"
+        @keydown.ctrl.enter.capture.prevent.stop="submit"
+      >
+        <div class="mb-5 flex items-center justify-between">
+          <div class="flex gap-2 items-center">
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{
+                  editMode
+                    ? __('Edit {0}', [__(doctypeTitle || doctype)])
+                    : __('Create {0}', [__(doctypeTitle || doctype)])
+                }}
+              </h3>
+            </Dialog.Title>
+>>>>>>> 2d726da (feat: mention teammates in notes and simplify the note editor)
           </div>
           <div class="flex items-center gap-1">
             <CustomActions
@@ -51,7 +77,7 @@
             variant="solid"
             :label="editMode ? __('Update') : __('Create')"
             :loading="editMode ? document.save.loading : create.loading"
-            @click="editMode ? update() : create()"
+            @click="submit"
           />
         </div>
       </div>
@@ -147,6 +173,14 @@ function update() {
       error.value = err.messages?.[0] || __('Could not update document')
     },
   })
+}
+
+async function submit() {
+  // editors save their text on blur, so blur first when saving from the keyboard
+  window.document.activeElement?.blur()
+  await nextTick()
+  if (editMode.value) update()
+  else create()
 }
 
 function openQuickEntryModal() {

@@ -10,8 +10,13 @@
   >
     <EditorFixedMenu
       v-if="fixedMenu && !disabled"
+<<<<<<< HEAD
       :items="fullToolbar"
       class="w-full overflow-x-auto rounded-t-lg border border-outline-gray-2 p-1"
+=======
+      :items="toolbar"
+      class="w-full overflow-x-auto rounded-t-6 border border-outline-gray-2 p-1"
+>>>>>>> 2d726da (feat: mention teammates in notes and simplify the note editor)
     />
     <EditorBubbleMenu v-if="bubbleMenu" :items="bubbleToolbar" />
     <EditorContent :class="editorClasses" />
@@ -31,6 +36,7 @@ import {
   bubbleToolbar,
   uploadFile,
 } from '@/components/editor/config'
+import { usersStore } from '@/stores/users'
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -49,7 +55,10 @@ const props = defineProps({
     validator: (v) => ['sm', 'md', 'lg'].includes(v),
   },
   fixedMenu: { type: Boolean, default: true },
+  toolbar: { type: Array, default: () => fullToolbar },
   bubbleMenu: { type: Boolean, default: false },
+  // lets people @mention teammates
+  mentions: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['change'])
@@ -92,7 +101,21 @@ const editorClasses = computed(() => {
   ]
 })
 
-const extensions = buildEditorExtensions()
+const { users } = usersStore()
+
+const mentionItems = computed(
+  () =>
+    users.data?.crmUsers
+      ?.filter((user) => user.enabled)
+      .map((user) => ({
+        value: user.name,
+        label: user.full_name?.trim() || user.name,
+      })) || [],
+)
+
+const extensions = buildEditorExtensions(
+  props.mentions ? { mentions: () => mentionItems.value } : {},
+)
 
 const content = ref(props.value ?? '')
 const isDirty = ref(false)
