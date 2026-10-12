@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { supportsTreeFilter } from '@/utils/fieldTransforms'
 
 // #2209: filtering by a parent territory should also match its child
