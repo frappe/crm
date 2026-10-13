@@ -15,7 +15,7 @@
       <Button
         :label="__('New Deal')"
         iconLeft="lucide-plus"
-        @click="showDealModal = true"
+        @click="openDealModal"
       />
     </template>
   </LayoutHeader>
@@ -173,10 +173,7 @@
   <DealModal
     v-if="showDealModal"
     v-model="showDealModal"
-    :defaults="{
-      contact: contact.doc.name,
-      organization: contact.doc.company_name,
-    }"
+    :defaults="dealDefaults"
   />
 </template>
 
@@ -297,6 +294,25 @@ usePageMeta(() => {
 })
 const showDeleteLinkedDocModal = ref(false)
 const showDealModal = ref(false)
+const dealDefaults = ref({})
+
+// company_name is free text, so only pick an existing organization; otherwise the deal creates one
+async function openDealModal() {
+  const company = contact.doc.company_name
+  const isOrganization =
+    company &&
+    (await call('frappe.client.get_count', {
+      doctype: 'CRM Organization',
+      filters: { name: company },
+    }))
+  dealDefaults.value = {
+    contact: contact.doc.name,
+    ...(isOrganization
+      ? { organization: company }
+      : { organization_name: company }),
+  }
+  showDealModal.value = true
+}
 
 async function deleteContact() {
   showDeleteLinkedDocModal.value = true
