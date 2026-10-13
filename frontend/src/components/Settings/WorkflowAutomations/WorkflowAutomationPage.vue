@@ -2,7 +2,7 @@
   <SettingsLayoutBase
     v-if="screen === 'list'"
     :title="__('Workflow Automations')"
-    :description="__('Create workflow automations for CRM documents')"
+    :description="__('Create workflow automations for CRM documents.')"
   >
     <template #title>
       <div class="flex items-center gap-2">

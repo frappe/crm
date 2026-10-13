@@ -10,7 +10,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Add, edit, and manage sources for automatic lead syncing to your CRM',
+              'Add, edit, and manage sources for automatic lead syncing to your CRM.',
             )
           }}
         </p>
