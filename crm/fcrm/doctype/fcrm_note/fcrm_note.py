@@ -20,6 +20,9 @@ class FCRMNote(Document):
 		from frappe.types import DF
 
 		content: DF.TextEditor | None
+		pinned: DF.Check
+		pinned_by: DF.Link | None
+		pinned_on: DF.Datetime | None
 		reference_docname: DF.DynamicLink | None
 		reference_doctype: DF.Link | None
 		title: DF.Data
@@ -83,3 +86,32 @@ class FCRMNote(Document):
 					"redirect_to_docname": self.reference_docname,
 				}
 			)
+
+
+@frappe.whitelist()
+def set_pinned(name: str, pinned: bool):
+	"""Pin or unpin a note without changing when it was last edited."""
+	note = frappe.get_doc("FCRM Note", name)
+	note.check_permission("write")
+	if bool(note.pinned) == bool(pinned):
+		return
+
+	frappe.db.set_value(
+		"FCRM Note",
+		name,
+		{
+			"pinned": int(pinned),
+			"pinned_by": frappe.session.user if pinned else None,
+			"pinned_on": frappe.utils.now() if pinned else None,
+		},
+		update_modified=False,
+	)
+	# keep a history entry (shown on the lead or deal timeline) without changing "last edited"
+	frappe.get_doc(
+		{
+			"doctype": "Version",
+			"ref_doctype": "FCRM Note",
+			"docname": name,
+			"data": frappe.as_json({"changed": [["pinned", int(note.pinned), int(pinned)]]}),
+		}
+	).insert(ignore_permissions=True)
