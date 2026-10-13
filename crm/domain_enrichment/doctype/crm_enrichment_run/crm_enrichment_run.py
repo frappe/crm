@@ -14,6 +14,11 @@ class CRMEnrichmentRun(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from crm.domain_enrichment.doctype.crm_enrichment_run_change.crm_enrichment_run_change import (
+			CRMEnrichmentRunChange,
+		)
+
+		changes: DF.Table[CRMEnrichmentRunChange]
 		company_name: DF.Data | None
 		emails_found: DF.Int
 		finished_on: DF.Datetime | None
@@ -27,7 +32,9 @@ class CRMEnrichmentRun(Document):
 		social_profiles: DF.SmallText | None
 		source_website: DF.Data | None
 		started_on: DF.Datetime | None
-		status: DF.Literal["Queued", "Running", "Completed", "Failed"]
+		status: DF.Literal["Queued", "Running", "Completed", "Failed", "Reverted"]
+		undone_by: DF.Link | None
+		undone_on: DF.Datetime | None
 	# end: auto-generated types
 
 	pass
