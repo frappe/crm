@@ -29,8 +29,12 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_default_quick_filters()
 	add_standard_dropdown_items()
+<<<<<<< HEAD
 	add_default_availability_statuses()
 	add_availability_user_fields()
+=======
+	add_user_email_subject_fields()
+>>>>>>> 3635368 (feat: let each user set the default email subject for leads and deals)
 	add_default_scripts()
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
@@ -547,6 +551,7 @@ def add_standard_dropdown_items():
 	crm_settings.save()
 
 
+<<<<<<< HEAD
 def add_default_availability_statuses():
 	statuses = [
 		{"availability_status": "Active", "category": "Active", "color": "green", "position": 1},
@@ -560,10 +565,15 @@ def add_default_availability_statuses():
 
 def add_availability_user_fields():
 	"""Each user's availability, used by assignment rules and shown next to their avatar."""
+=======
+def add_user_email_subject_fields():
+	"""Each user's default subject for new emails from a lead or deal."""
+>>>>>>> 3635368 (feat: let each user set the default email subject for leads and deals)
 	meta = frappe.get_meta("User")
 
 	fields = [
 		{
+<<<<<<< HEAD
 			"fieldname": "crm_availability",
 			"fieldtype": "Link",
 			"options": "CRM Availability Status",
@@ -584,6 +594,18 @@ def add_availability_user_fields():
 			"label": "CRM Availability Changed By",
 			"read_only": 1,
 			"insert_after": "crm_availability_changed_on",
+=======
+			"fieldname": "crm_lead_email_subject",
+			"fieldtype": "Data",
+			"label": "Lead Email Subject",
+			"insert_after": "email_signature",
+		},
+		{
+			"fieldname": "crm_deal_email_subject",
+			"fieldtype": "Data",
+			"label": "Deal Email Subject",
+			"insert_after": "crm_lead_email_subject",
+>>>>>>> 3635368 (feat: let each user set the default email subject for leads and deals)
 		},
 	]
 
