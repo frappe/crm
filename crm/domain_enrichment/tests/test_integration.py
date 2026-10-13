@@ -18,10 +18,10 @@ from unittest import mock
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from crm.domain_enrichment import config, install, tasks
+from crm.domain_enrichment import api, config, install, tasks
 from crm.domain_enrichment.config import get_config
 from crm.domain_enrichment.cross_record import copy_enrichment_from_organization
-from crm.domain_enrichment.mapper import apply_to_document
+from crm.domain_enrichment.mapper import FieldChange, apply_to_document
 from crm.domain_enrichment.result import EnrichmentResult, Field, SocialProfile
 from crm.domain_enrichment.tests import fixtures
 
@@ -256,10 +256,10 @@ class ApiPermissionTest(IntegrationTestCase):
 			enrich("CRM Organization", org.name)
 
 	def test_enrich_routes_are_rate_limited(self):
-		# enrich / retry each carry rate_limit(limit=ENRICH_RATE_LIMIT).
+		# enrich / retry / undo each carry rate_limit(limit=ENRICH_RATE_LIMIT).
 		from crm.domain_enrichment import api
 
-		for fn in (api.enrich, api.retry):
+		for fn in (api.enrich, api.retry, api.undo):
 			self.assertTrue(hasattr(fn, "__wrapped__"), fn.__name__)
 
 
@@ -374,6 +374,194 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 	def test_skips_without_website(self):
 		enq = self._run(self._doc("CRM Deal", website=""), self._settings())
 		enq.assert_not_called()
+
+
+class UndoTest(IntegrationTestCase):
+	"""api.undo reverts the latest run's field changes on the record; api.get_status
+	reports the Enrich button's state around it."""
+
+	def setUp(self):
+		# Run as if enrichment were enabled and no job were in flight, whatever the
+		# test site's Settings / queue hold.
+		enabled = mock.patch.object(api, "_enabled_doctypes", return_value=list(config.ENRICHABLE_DOCTYPES))
+		enqueued = mock.patch.object(api, "is_job_enqueued", return_value=False)
+		enabled.start()
+		self.job_enqueued = enqueued.start()
+		self.addCleanup(mock.patch.stopall)
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def _enriched_org(self, **kwargs):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Undo Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		for k, v in kwargs.items():
+			org.set(k, v)
+		org.insert()
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		return frappe.get_doc("CRM Organization", org.name)
+
+	def _latest_run(self, org):
+		return frappe.get_doc("CRM Enrichment Run", api._latest_run("CRM Organization", org.name))
+
+	def test_undo_reverts_changed_fields(self):
+		org = self._enriched_org(company_description="", twitter="https://twitter.com/old")
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/acme")
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertIn("company_description", out["reverted"])
+		self.assertIn("linkedin", out["reverted"])
+		self.assertFalse(org.company_description)
+		self.assertFalse(org.linkedin)
+		# Never written by the run, so untouched by the undo.
+		self.assertEqual(org.twitter, "https://twitter.com/old")
+
+	def test_undo_skips_field_edited_after_enrichment(self):
+		org = self._enriched_org()
+		org.linkedin = "https://www.linkedin.com/company/edited-by-user"
+		org.save()
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertIn("linkedin", out["skipped"])
+		self.assertNotIn("linkedin", out["reverted"])
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/edited-by-user")
+		self.assertFalse(org.company_description)
+
+	def test_undo_restores_non_text_field(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Undo Revenue Org " + frappe.generate_hash(length=4)
+		org.annual_revenue = 9000
+		org.insert()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			"https://acme.example",
+			status="Completed",
+			changes=[FieldChange("annual_revenue", 5000, 9000, "Annual Revenue")],
+		)
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertEqual(out["reverted"], ["annual_revenue"])
+		self.assertEqual(org.annual_revenue, 5000.0)
+		self.assertIsInstance(org.annual_revenue, float)
+
+	def test_undo_run_without_changes_throws(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Undo No Changes Org " + frappe.generate_hash(length=4)
+		org.insert()
+		run_name = tasks.write_run("CRM Organization", org.name, "https://acme.example", status="Completed")
+
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+		with self.assertRaises(frappe.ValidationError):
+			frappe.get_doc("CRM Enrichment Run", run_name).undo()
+
+	def test_undo_blocked_while_job_is_queued(self):
+		org = self._enriched_org()
+		self.job_enqueued.return_value = True
+
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+		self.job_enqueued.assert_called_with(tasks.enrichment_job_id("CRM Organization", org.name))
+		org.reload()
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/acme")
+
+	def test_undo_requires_write_permission(self):
+		org = self._enriched_org()
+		frappe.set_user(_make_minimal_user())
+
+		with self.assertRaises(frappe.PermissionError):
+			api.undo("CRM Organization", org.name)
+
+	def test_undo_marks_run_reverted(self):
+		org = self._enriched_org()
+		api.undo("CRM Organization", org.name)
+
+		run = self._latest_run(org)
+		self.assertEqual(run.status, "Reverted")
+		self.assertEqual(run.undone_by, "Administrator")
+		self.assertTrue(run.undone_on)
+		# The latest run is no longer undoable.
+		self.assertFalse(api.get_status("CRM Organization", org.name)["can_undo"])
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+
+	def test_undo_with_every_field_edited_reverts_nothing(self):
+		org = self._enriched_org()
+		changed = [c.fieldname for c in self._latest_run(org).changes]
+		self.assertTrue(changed)
+		edited = {fieldname: f"https://edited.example/{fieldname}" for fieldname in changed}
+		if "industry" in edited:
+			# A Link field: the user's value must be an existing CRM Industry.
+			edited["industry"] = "Edited Industry " + frappe.generate_hash(length=6)
+			frappe.get_doc({"doctype": "CRM Industry", "industry": edited["industry"]}).insert()
+		org.update(edited)
+		org.save()
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertEqual(out["reverted"], [])
+		self.assertCountEqual(out["skipped"], changed)
+		for fieldname, value in edited.items():
+			self.assertEqual(org.get(fieldname), value)
+		self.assertEqual(self._latest_run(org).status, "Reverted")
+
+	def test_status_follows_enrich_and_undo(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Status Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		org.insert()
+
+		status = api.get_status("CRM Organization", org.name)
+		self.assertEqual(status["state"], "idle")
+		self.assertTrue(status["has_website"])
+		self.assertFalse(status["can_undo"])
+
+		self.job_enqueued.return_value = True
+		self.assertEqual(api.get_status("CRM Organization", org.name)["state"], "running")
+		self.job_enqueued.assert_called_with(tasks.enrichment_job_id("CRM Organization", org.name))
+		self.job_enqueued.return_value = False
+
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		status = api.get_status("CRM Organization", org.name)
+		self.assertEqual(status["state"], "done")
+		self.assertTrue(status["can_undo"])
+
+		api.undo("CRM Organization", org.name)
+		status = api.get_status("CRM Organization", org.name)
+		self.assertEqual(status["state"], "idle")
+		self.assertFalse(status["can_undo"])
+
+	def test_status_has_website_false_without_website(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "No Website Org " + frappe.generate_hash(length=4)
+		org.insert()
+
+		self.assertFalse(api.get_status("CRM Organization", org.name)["has_website"])
+
+	def test_status_requires_read_permission(self):
+		org = self._enriched_org()
+		frappe.set_user(_make_minimal_user())
+
+		with self.assertRaises(frappe.PermissionError):
+			api.get_status("CRM Organization", org.name)
 
 
 def _make_minimal_user():
