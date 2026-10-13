@@ -1,5 +1,4 @@
 import { sessionStore } from '@/stores/session'
-import { interpolateTemplate } from '@/utils'
 import { createResource } from 'frappe-ui'
 
 export const defaultEmailSubjects = {
@@ -29,12 +28,29 @@ export function loadUserEmailSubjects() {
   }
 }
 
-// Drop empty brackets and stray separators left behind by empty fields
-function tidy(subject) {
+// Marks where a field came out empty so only the text around it is cleaned up
+const EMPTY = '\u0000'
+const SEPARATORS = '[\\s\\-–—|:·,]*'
+const emptyInBrackets = new RegExp(`[(\\[]\\s*#?\\s*${EMPTY}\\s*[)\\]]`, 'g')
+const leadingEmpty = new RegExp(`^${SEPARATORS}${EMPTY}${SEPARATORS}`)
+const emptyWithSeparator = new RegExp(`${SEPARATORS}${EMPTY}`, 'g')
+
+function fillFields(template, doc) {
+  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
+    const value = doc?.[key]
+    return value === undefined || value === null || value === ''
+      ? EMPTY
+      : String(value)
+  })
+}
+
+function removeEmptyFields(subject) {
+  if (!subject.includes(EMPTY)) return subject.trim()
   return subject
-    .replace(/\(\s*#?\s*\)|\[\s*#?\s*\]/g, '')
-    .replace(/\s+/g, ' ')
-    .replace(/^[\s\-–—|:·,]+|[\s\-–—|:·,]+$/g, '')
+    .replace(emptyInBrackets, '')
+    .replace(leadingEmpty, '')
+    .replace(emptyWithSeparator, '')
+    .replace(/\s{2,}/g, ' ')
     .trim()
 }
 
@@ -45,7 +61,7 @@ function fallbackSubject(doc) {
 
 export function renderEmailSubject(template, doc) {
   if (!template) return fallbackSubject(doc)
-  return tidy(interpolateTemplate(template, doc)) || fallbackSubject(doc)
+  return removeEmptyFields(fillFields(template, doc)) || fallbackSubject(doc)
 }
 
 export function getEmailSubject(doctype, doc) {
