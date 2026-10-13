@@ -30,6 +30,13 @@
             @click="clearImportFilter"
           />
           <Button
+            v-if="filtersLabel"
+            :label="filtersLabel"
+            iconRight="lucide-x"
+            :tooltip="__('Show all records')"
+            @click="emit('clearFilters')"
+          />
+          <Button
             :tooltip="__('Refresh')"
             icon="lucide-refresh-ccw"
             :loading="isLoading"
@@ -183,6 +190,13 @@
           @click="clearImportFilter"
         />
         <Button
+          v-if="filtersLabel"
+          :label="filtersLabel"
+          iconRight="lucide-x"
+          :tooltip="__('Show all records')"
+          @click="emit('clearFilters')"
+        />
+        <Button
           :tooltip="__('Refresh')"
           icon="lucide-refresh-ccw"
           :loading="isLoading"
@@ -236,6 +250,7 @@
                     }),
                   condition: () =>
                     !options.hideColumnsButton &&
+                    doctype !== 'Data Import' &&
                     route.params.viewType !== 'kanban',
                 },
                 {
@@ -397,6 +412,8 @@ import ImportIcon from '~icons/lucide/import'
 const props = defineProps({
   doctype: { type: String, required: true },
   filters: { type: Object, default: () => ({}) },
+  // names the page's own `filters` in a chip that emits clearFilters
+  filtersLabel: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -406,6 +423,8 @@ const props = defineProps({
     }),
   },
 })
+
+const emit = defineEmits(['clearFilters'])
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()

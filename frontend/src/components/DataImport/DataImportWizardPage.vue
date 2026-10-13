@@ -66,9 +66,7 @@ watch(
 const breadcrumbs = computed(() => {
   const doctype = dataImport.doc.value.reference_doctype || route.params.doctype
   const title = crmPages[doctype]?.title || doctype
-  const items = [
-    { label: __('Data Import'), route: { name: 'DataImportList' } },
-  ]
+  const items = [{ label: __('Data Import'), route: { name: 'Data Import' } }]
   // lead with the records list, so it is one click away whatever the outcome
   const page = crmPages[doctype]
   if (page) items.unshift({ label: __(page.title), route: { name: page.list } })
@@ -103,7 +101,7 @@ function openRecord(doctype, docname) {
 }
 
 function openImports(doctype) {
-  router.push({ name: 'DataImportList', query: { doctype, status: 'Pending' } })
+  router.push({ name: 'Data Import', query: { doctype, status: 'Pending' } })
 }
 
 function newImport(doctype) {
