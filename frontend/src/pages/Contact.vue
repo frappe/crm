@@ -12,6 +12,11 @@
         v-if="contact._actions?.length"
         :actions="contact._actions"
       />
+      <Button
+        :label="__('New Deal')"
+        iconLeft="lucide-plus"
+        @click="showDealModal = true"
+      />
     </template>
   </LayoutHeader>
   <div v-if="contact.doc" ref="parentRef" class="flex h-full">
@@ -144,7 +149,12 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <EmptyState v-if="!rows.length" :icon="tab.iconLeft" name="Deals" />
+        <EmptyState
+          v-if="!rows.length"
+          :icon="tab.iconLeft"
+          name="Deals"
+          :description="__('Use New Deal to create a deal for this contact.')"
+        />
       </template>
     </Tabs>
   </div>
@@ -160,6 +170,14 @@
     :docname="contact.doc.name"
     name="Contacts"
   />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="{
+      contact: contact.doc.name,
+      organization: contact.doc.company_name,
+    }"
+  />
 </template>
 
 <script setup>
@@ -172,6 +190,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { validateIsImageFile, setupCustomizations } from '@/utils'
 import { useContactFields } from '@/composables/useContactFields'
@@ -277,6 +296,7 @@ usePageMeta(() => {
   }
 })
 const showDeleteLinkedDocModal = ref(false)
+const showDealModal = ref(false)
 
 async function deleteContact() {
   showDeleteLinkedDocModal.value = true

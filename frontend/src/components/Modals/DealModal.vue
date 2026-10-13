@@ -111,9 +111,9 @@ const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
 
 watch(
-  [chooseExistingOrganization, chooseExistingContact],
+  [chooseExistingOrganization, chooseExistingContact, () => tabs.data],
   ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
+    tabs.data?.forEach((tab) => {
       tab.sections.forEach((section) => {
         if (section.name === 'organization_section') {
           section.hidden = !organization
@@ -127,6 +127,7 @@ watch(
       })
     })
   },
+  { immediate: true },
 )
 
 const tabs = createResource({
@@ -241,6 +242,8 @@ function openQuickEntryModal() {
 onMounted(() => {
   deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
+  chooseExistingOrganization.value = Boolean(props.defaults.organization)
+  chooseExistingContact.value = Boolean(props.defaults.contact)
 
   if (!deal.doc.deal_owner) {
     deal.doc.deal_owner = getUser().name
