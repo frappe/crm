@@ -183,7 +183,20 @@
   <EmptyState
     v-else-if="tasks.data && !rows.length"
     name="Tasks"
+<<<<<<< HEAD
     :icon="Email2Icon"
+=======
+    :icon="TaskIcon"
+    :title="__('No tasks yet')"
+    :description="
+      __(
+        'Tasks are to-dos for you and your team, like a follow-up call or sending a quote. Add them here or from a lead or deal.',
+      )
+    "
+    :filtered="!!Object.keys(tasks.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/task"
+    @create="createTask()"
+>>>>>>> 698d516 (fix: use the tasks icon on the empty Tasks list)
   />
   <DeleteLinkedDocModal
     v-if="showDeleteTaskModal"
@@ -201,7 +214,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
