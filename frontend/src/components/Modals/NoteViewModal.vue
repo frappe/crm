@@ -67,9 +67,9 @@
     </template>
   </Dialog>
 </template>
-<script setup>
+<script setup lang="ts">
 import UserAvatar from '@/components/UserAvatar.vue'
-import { useNoteView } from '@/composables/noteView'
+import { useNoteView, type NoteRef } from '@/composables/noteView'
 import { usersStore } from '@/stores/users'
 import { copyToClipboard, formatDate, sanitizeHTML, timeAgo } from '@/utils'
 import { Dialog, Tooltip, call } from 'frappe-ui'
@@ -86,14 +86,14 @@ const {
 } = useNoteView()
 const { getUser } = usersStore()
 
-const doc = ref({})
+const doc = ref<NoteRef & { owner?: string; modified?: string }>({ name: '' })
 const loaded = ref(false)
 
 // a shared link only carries the note name, so load the rest
 watch(
   note,
-  async (n) => {
-    doc.value = n || {}
+  async (n: NoteRef | null) => {
+    doc.value = n || { name: '' }
     loaded.value = Boolean(n?.owner)
     if (n?.name && !n.owner) {
       doc.value = await call('frappe.client.get', {
