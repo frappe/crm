@@ -17,6 +17,7 @@
   />
   <AboutModal v-model="showAboutModal" />
   <NoteViewModal v-if="showNoteView" />
+  <MentionHoverCard />
   <FieldLayoutDialogContainer />
   <CommandPalette />
 </template>
@@ -28,6 +29,7 @@ import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
 import NoteViewModal from '@/components/Modals/NoteViewModal.vue'
+import MentionHoverCard from '@/components/MentionHoverCard.vue'
 import { useNoteView } from '@/composables/noteView'
 import {
   showCreateDocumentModal,
