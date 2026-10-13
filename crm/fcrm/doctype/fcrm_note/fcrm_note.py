@@ -52,6 +52,20 @@ class FCRMNote(Document):
 		before = self.get_doc_before_save()
 		already_mentioned = {m.email for m in extract_mentions(before.content)} if before else set()
 		mentioned = {m.email for m in extract_mentions(self.content)} - already_mentioned
+		if mentioned:
+			# a mention removed and added back later shouldn't notify the same person again
+			mentioned -= set(
+				frappe.get_all(
+					"CRM Notification",
+					filters={
+						"type": "Mention",
+						"notification_type_doctype": "FCRM Note",
+						"notification_type_doc": self.name,
+						"to_user": ("in", list(mentioned)),
+					},
+					pluck="to_user",
+				)
+			)
 		if not mentioned:
 			return
 

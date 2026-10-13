@@ -166,11 +166,23 @@ def get_deal_activities(name: str):
 		}
 		activities.append(activity)
 
+<<<<<<< HEAD
 	calls = calls + get_linked_calls(name).get("calls", [])
 	notes = notes + get_linked_notes(name) + get_linked_calls(name).get("notes", [])
 	tasks = tasks + get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+=======
+	linked_calls = get_linked_calls(name)
+	calls = calls + linked_calls.get("calls", [])
+	# the lead's note events already came with its activities, so only add the deal's own
+	lead_notes = {n.get("name") for n in notes}
+	deal_notes = [
+		n for n in get_linked_notes(name) + linked_calls.get("notes", []) if n.get("name") not in lead_notes
+	]
+	notes = notes + deal_notes
+	tasks = tasks + get_linked_tasks(name) + linked_calls.get("tasks", [])
+>>>>>>> d57b820 (fix: note timeline and mention notification issues from review)
 	attachments = attachments + get_attachments("CRM Deal", name)
-	activities += get_note_activities(notes, is_lead=False)
+	activities += get_note_activities(deal_notes, is_lead=False)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
@@ -471,7 +483,17 @@ def get_linked_calls(name: str):
 		notes = frappe.db.get_all(
 			"FCRM Note",
 			filters={"name": ("in", notes)},
-			fields=["name", "title", "content", "owner", "modified"],
+			fields=[
+				"name",
+				"title",
+				"content",
+				"pinned",
+				"pinned_by",
+				"pinned_on",
+				"owner",
+				"modified",
+				"creation",
+			],
 		)
 
 	if tasks:
