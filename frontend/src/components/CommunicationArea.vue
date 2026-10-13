@@ -109,6 +109,10 @@ import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
+import {
+  getEmailSubject,
+  loadUserEmailSubjects,
+} from '@/composables/emailSubject'
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
 import { useOnboarding } from '@framework/ui/components/Onboarding'
@@ -201,14 +205,14 @@ const attachments = useStorage(
   },
 )
 
-const subject = computed(() => {
-  let prefix = ''
-  if (doc.value?.lead_name) {
-    prefix = doc.value.lead_name
-  } else if (doc.value?.organization) {
-    prefix = doc.value.organization
-  }
-  return `${prefix} (#${doc.value.name})`
+loadUserEmailSubjects()
+
+const subject = computed(() => getEmailSubject(props.doctype, doc.value))
+
+// Subject format may load after mount; update it unless the user already typed one
+watch(subject, (value, oldValue) => {
+  const editor = newEmailEditor.value
+  if (editor && editor.subject === oldValue) editor.subject = value
 })
 
 const signature = createResource({
