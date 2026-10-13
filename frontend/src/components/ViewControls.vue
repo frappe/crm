@@ -769,6 +769,7 @@ const viewsDropdownOptions = computed(() => {
       options: standardViews.map((item) => ({
         ...item,
         selected: item.name === currentView.value.name,
+        isDefault: isStandardDefault(item.name),
       })),
     },
   ]
@@ -779,6 +780,7 @@ const viewsDropdownOptions = computed(() => {
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
       view.selected = view.name === currentView.value.name
+      view.isDefault = isDefaultView(view)
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
@@ -1461,7 +1463,7 @@ const viewActions = (view, close) => {
     actions[0].options.unshift({
       label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
-      onClick: () => setAsDefault(_view),
+      onClick: () => setAsDefault(_view, close),
     })
   }
 
@@ -1530,6 +1532,12 @@ function isDefaultView(v) {
   return defaultView.name == v.name
 }
 
+// List opens by default when no view has been set as default
+function isStandardDefault(type) {
+  if (!getDefaultView(route.name)) return type === 'list'
+  return isDefaultView(getView(null, type, props.doctype) || {})
+}
+
 const viewModalObj = ref({})
 
 function createView() {
@@ -1541,7 +1549,8 @@ function createView() {
   showViewModal.value = true
 }
 
-function setAsDefault(v) {
+function setAsDefault(v, close) {
+  close?.()
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.set_as_default', {
     name: v.name,
     type: v.type,
