@@ -21,7 +21,7 @@
         />
         <Button
           label="Save"
-          :disabled="!document.isDirty"
+          :disabled="!document.isDirty || document.enriching"
           variant="solid"
           :loading="document.save.loading"
           @click="saveChanges"
@@ -127,7 +127,8 @@ const tabs = createResource({
 })
 
 function saveChanges() {
-  if (!document.isDirty) return
+  // An enrichment run saves this doc itself; saving now would collide.
+  if (!document.isDirty || document.enriching) return
 
   const updatedDoc = { ...document.doc }
   const oldDoc = { ...document.originalDoc }
