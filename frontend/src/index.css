@@ -35,3 +35,8 @@
 [role='dialog'][aria-label='Suggestions'] {
   pointer-events: auto;
 }
+
+/* mentions show a hover card, so use the arrow instead of the text cursor */
+.mention[data-id] {
+  cursor: default;
+}
