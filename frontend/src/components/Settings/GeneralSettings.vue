@@ -5,7 +5,7 @@
         {{ __('General Settings') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
-        {{ __('Configure general settings for your application') }}
+        {{ __('Configure general settings for your application.') }}
       </p>
     </div>
 

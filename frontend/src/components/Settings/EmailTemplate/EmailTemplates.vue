@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Add, edit, and manage email templates for various CRM communications',
+              'Add, edit, and manage email templates for various CRM communications.',
             )
           }}
         </p>

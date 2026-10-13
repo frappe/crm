@@ -1,7 +1,7 @@
 <template>
   <SettingsLayoutBase
     :title="__('ERPNext Settings')"
-    :description="__('Manage ERPNext integration settings')"
+    :description="__('Manage ERPNext integration settings.')"
   >
     <template #title>
       <div class="flex gap-2 items-center">

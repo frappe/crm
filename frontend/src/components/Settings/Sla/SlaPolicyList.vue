@@ -1,7 +1,7 @@
 <template>
   <SettingsLayoutBase
     :title="__('SLA Policies')"
-    :description="__('Manage your service level agreement policies')"
+    :description="__('Manage your service level agreement policies.')"
   >
     <template #header-actions>
       <Button
