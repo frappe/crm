@@ -34,7 +34,7 @@
   </HoverCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
 import { HoverCard } from 'frappe-ui'
@@ -44,12 +44,12 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 const { getUser } = usersStore()
 
 const open = ref(false)
-const userId = ref(null)
+const userId = ref<string | null>(null)
 const rect = reactive({ left: 0, top: 0, width: 0, height: 0 })
 const user = computed(() => (userId.value ? getUser(userId.value) : null))
 
-let openTimer = null
-let closeTimer = null
+let openTimer: ReturnType<typeof setTimeout> | undefined
+let closeTimer: ReturnType<typeof setTimeout> | undefined
 
 function cancelClose() {
   clearTimeout(closeTimer)
@@ -60,18 +60,24 @@ function scheduleClose() {
   closeTimer = setTimeout(() => (open.value = false), 300)
 }
 
-function onMouseOver(e) {
-  const mention = e.target.closest?.('.mention[data-id]')
+function mentionAt(e: MouseEvent): HTMLElement | null {
+  return e.target instanceof Element
+    ? e.target.closest<HTMLElement>('.mention[data-id]')
+    : null
+}
+
+function onMouseOver(e: MouseEvent) {
+  const mention = mentionAt(e)
   if (!mention) return
   cancelClose()
   Object.assign(rect, mention.getBoundingClientRect().toJSON())
-  userId.value = mention.dataset.id
+  userId.value = mention.dataset.id ?? null
   clearTimeout(openTimer)
   openTimer = setTimeout(() => (open.value = true), 300)
 }
 
-function onMouseOut(e) {
-  if (e.target.closest?.('.mention[data-id]')) scheduleClose()
+function onMouseOut(e: MouseEvent) {
+  if (mentionAt(e)) scheduleClose()
 }
 
 onMounted(() => {

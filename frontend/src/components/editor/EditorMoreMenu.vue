@@ -6,16 +6,15 @@
   </span>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Dropdown } from 'frappe-ui'
+import type { Editor } from '@tiptap/core'
 import { computed, ref } from 'vue'
 import { moreToolbarItems } from '@/components/editor/config'
 
-const props = defineProps({
-  editor: { type: Object, required: true },
-})
+const props = defineProps<{ editor: Editor }>()
 
-const anchor = ref(null)
+const anchor = ref<HTMLElement | null>(null)
 
 const options = computed(() =>
   moreToolbarItems
@@ -24,7 +23,8 @@ const options = computed(() =>
       label: __(item.label),
       icon: item.icon,
       // pickers like font colour open next to the More button
-      onClick: () => item.action(props.editor, { trigger: anchor.value }),
+      onClick: () =>
+        item.action(props.editor, { trigger: anchor.value ?? undefined }),
     })),
 )
 </script>
