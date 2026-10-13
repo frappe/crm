@@ -1,19 +1,12 @@
 <template>
-  <DataImportListPage
-    v-if="route.name === 'DataImportList'"
-    :key="route.fullPath"
-  />
-  <DataImportWizardPage v-else />
+  <DataImportWizardPage />
 </template>
 
 <script setup>
-import DataImportListPage from '@/components/DataImport/DataImportListPage.vue'
 import DataImportWizardPage from '@/components/DataImport/DataImportWizardPage.vue'
 import { usePageMeta } from 'frappe-ui'
-import { useRoute } from 'vue-router'
 import { getSettings } from '@/stores/settings'
 
-const route = useRoute()
 const { brand } = getSettings()
 
 usePageMeta(() => {

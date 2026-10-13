@@ -102,14 +102,14 @@ const routes = [
     name: 'Call Logs',
     component: () => import('@/pages/CallLogs.vue'),
   },
+  {
+    alias: '/data-import',
+    path: '/data-import/view/:viewType?',
+    name: 'Data Import',
+    component: () => import('@/pages/DataImports.vue'),
+  },
   // one page across these routes, so an import stays open when its URL changes
   // after the first save
-  {
-    path: '/data-import',
-    name: 'DataImportList',
-    component: () => import('@/pages/DataImport.vue'),
-    meta: { viewKey: 'data-import' },
-  },
   {
     path: '/data-import/doctype/:doctype?',
     name: 'NewDataImport',
