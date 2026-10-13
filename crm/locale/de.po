@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-11 15:53+0000\n"
-"PO-Revision-Date: 2026-10-12 04:51\n"
+"PO-Revision-Date: 2026-10-13 04:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -1776,7 +1776,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:172
 msgid "Choose how long this SLA policy will be active."
-msgstr ""
+msgstr "Wählen Sie aus, wie lange diese SLA-Richtlinie gültig sein soll."
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:6
 msgid "Choose how you want to use the application by setting your preferences."
@@ -3206,7 +3206,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:115
 msgid "Duplicate SLA Policy"
-msgstr ""
+msgstr "SLA-Richtlinie duplizieren"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 msgid "Duplicate Template"
@@ -4692,7 +4692,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:282
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:152
 msgid "I understand, add conditions"
-msgstr ""
+msgstr "Ich verstehe, Bedingungen hinzufügen"
 
 #. Label of the id (Data) field in DocType 'CRM Call Log'
 #. Label of the id (Data) field in DocType 'Facebook Lead Form'
@@ -6083,11 +6083,11 @@ msgstr "Neues Passwort"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:8
 msgid "New SLA Policy"
-msgstr ""
+msgstr "Neue SLA-Richtlinie"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:121
 msgid "New SLA Policy Name"
-msgstr ""
+msgstr "Neuer SLA-Richtlinien-Name"
 
 #: frontend/src/components/SidePanelLayoutEditor.vue:131
 msgid "New Section"
@@ -6654,7 +6654,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:125
 msgid "Old Conditions"
-msgstr ""
+msgstr "Alte Bedingung"
 
 #. Label of the old_parent (Link) field in DocType 'CRM Sales Hierarchy'
 #. Label of the old_parent (Link) field in DocType 'CRM Territory'
@@ -8573,7 +8573,7 @@ msgstr "Als Standard festlegen"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:114
 msgid "Set as default SLA"
-msgstr ""
+msgstr "Als Standard-SLA festlegen"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowValidation.js:27
 msgid "Set how long to wait"
@@ -9914,7 +9914,7 @@ msgstr "Nicht gespeicherte Änderungen"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:278
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Nicht gespeicherte Änderungen"
 
 #: crm/automation/actions.py:158
 msgid "Unsupported conversion policy"
@@ -10510,7 +10510,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:397
 msgid "Your old conditions will be overwritten. Are you sure you want to save?"
-msgstr ""
+msgstr "Ihre alten Bedingungen werden überschrieben. Sind Sie sicher, dass Sie speichern möchten?"
 
 #: frontend/src/pages/PersonaForm.vue:68
 msgid "Zoho CRM"
