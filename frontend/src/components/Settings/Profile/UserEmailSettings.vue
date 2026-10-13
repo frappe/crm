@@ -27,7 +27,10 @@
       />
     </template>
     <template #content>
-      <EmailSubjectSettings :doc="user.doc" />
+      <EmailSubjectSettings
+        :doc="user.doc"
+        @change="(field, val) => (user.doc[field] = val)"
+      />
       <div class="flex flex-col gap-4 mt-16">
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
