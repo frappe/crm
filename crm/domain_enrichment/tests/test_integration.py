@@ -142,6 +142,94 @@ class RunWriterTest(IntegrationTestCase):
 		self.assertIn("Acme Analytics", run.raw_json)
 
 
+class RunChangeLogTest(IntegrationTestCase):
+	"""run_enrichment records each field it changed as a CRM Enrichment Run Change row."""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _new_org(self, **kwargs):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Change Log Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		for k, v in kwargs.items():
+			org.set(k, v)
+		org.insert()
+		return org
+
+	def _enrich(self, org, result):
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=result),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		run_name = frappe.db.get_value(
+			"CRM Enrichment Run",
+			{"reference_doctype": "CRM Organization", "reference_name": org.name},
+			"name",
+			order_by="creation desc",
+		)
+		run = frappe.get_doc("CRM Enrichment Run", run_name)
+		self.assertEqual(run.status, "Completed")
+		return {c.fieldname: c for c in run.changes}
+
+	def test_records_old_and_new_values(self):
+		org = self._new_org(company_description="", twitter="https://twitter.com/old")
+		changes = self._enrich(org, canned_result())
+
+		description = changes["company_description"]
+		self.assertFalse(description.old_value)
+		self.assertEqual(description.new_value, "AI powered analytics SaaS for product teams.")
+		self.assertFalse(description.created_link_doctype)
+		self.assertEqual(changes["linkedin"].new_value, "https://www.linkedin.com/company/acme")
+		# Fill-if-empty left the user's twitter alone, so it is not recorded.
+		self.assertNotIn("twitter", changes)
+
+	def test_unchanged_field_creates_no_row(self):
+		org = self._new_org(linkedin="https://www.linkedin.com/company/acme")
+		changes = self._enrich(org, canned_result())
+		self.assertNotIn("linkedin", changes)
+
+	def test_write_run_skips_changes_with_equal_values(self):
+		from crm.domain_enrichment.mapper import FieldChange
+
+		org = self._new_org()
+		run_name = tasks.write_run(
+			"CRM Organization",
+			org.name,
+			org.website,
+			status="Completed",
+			changes=[
+				FieldChange("linkedin", "https://x.example", "https://x.example", "LinkedIn"),
+				FieldChange("twitter", None, "https://twitter.com/acme", "X (Twitter)"),
+			],
+		)
+		run = frappe.get_doc("CRM Enrichment Run", run_name)
+		self.assertEqual([c.fieldname for c in run.changes], ["twitter"])
+
+	def test_records_created_industry(self):
+		industry = "Quantum Widgets " + frappe.generate_hash(length=6)
+		result = canned_result()
+		result.industry = Field(industry, "https://x.example", "Keyword Classifier")
+		org = self._new_org(industry="")
+		changes = self._enrich(org, result)
+
+		self.assertTrue(frappe.db.exists("CRM Industry", industry))
+		self.assertEqual(changes["industry"].new_value, industry)
+		self.assertEqual(changes["industry"].created_link_doctype, "CRM Industry")
+
+	def test_existing_industry_is_not_marked_created(self):
+		industry = "Existing Widgets " + frappe.generate_hash(length=6)
+		frappe.get_doc({"doctype": "CRM Industry", "industry": industry}).insert()
+		result = canned_result()
+		result.industry = Field(industry, "https://x.example", "Keyword Classifier")
+		org = self._new_org(industry="")
+		changes = self._enrich(org, result)
+
+		self.assertEqual(changes["industry"].new_value, industry)
+		self.assertFalse(changes["industry"].created_link_doctype)
+
+
 class ApiPermissionTest(IntegrationTestCase):
 	def tearDown(self):
 		frappe.db.rollback()

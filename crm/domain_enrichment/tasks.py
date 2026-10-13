@@ -19,7 +19,7 @@ import frappe
 from frappe.utils.telemetry import capture
 
 from .config import _setting, auto_enrich_enabled_for, get_config, get_settings
-from .mapper import apply_to_document
+from .mapper import apply_to_document, filled_labels
 from .pipeline import PROGRESS_STEPS
 from .pipeline import run as run_pipeline
 
@@ -61,12 +61,15 @@ def write_run(
 	result=None,
 	started_on=None,
 	notes: str = "",
+	changes=None,
 ):
 	"""Persist exactly one ``CRM Enrichment Run`` from an ``EnrichmentResult``.
 
 	The single point of run-history writing -- storage stays swappable behind it.
 	When ``result`` is given the summary fields + ``raw_json`` (full ``to_dict()``)
-	are populated; otherwise a bare Run (status/website) is written.
+	are populated; otherwise a bare Run (status/website) is written. ``changes`` (the
+	mapper's ``FieldChange`` list) is stored as ``CRM Enrichment Run Change`` rows,
+	skipping any whose value did not actually change.
 	"""
 	doc = frappe.new_doc("CRM Enrichment Run")
 	doc.reference_doctype = reference_doctype
@@ -92,6 +95,19 @@ def write_run(
 		doc.raw_json = frappe.as_json(result.to_dict())
 		if not notes and result.notes:
 			doc.notes = "\n".join(result.notes)
+
+	for change in changes or []:
+		if frappe.utils.cstr(change.old_value) == frappe.utils.cstr(change.new_value):
+			continue
+		doc.append(
+			"changes",
+			{
+				"fieldname": change.fieldname,
+				"old_value": change.old_value,
+				"new_value": change.new_value,
+				"created_link_doctype": change.created_link_doctype,
+			},
+		)
 
 	doc.insert(ignore_permissions=True)
 	return doc.name
@@ -191,9 +207,10 @@ def run_enrichment(
 
 		doc = frappe.get_doc(reference_doctype, reference_name)
 		doc.check_permission("write")
-		filled_fields = apply_to_document(doc, result, cfg)
-		if filled_fields:
+		changes = apply_to_document(doc, result, cfg)
+		if changes:
 			doc.save()
+		filled_fields = filled_labels(changes)
 
 		write_run(
 			reference_doctype,
@@ -202,6 +219,7 @@ def run_enrichment(
 			status="Completed",
 			result=result,
 			started_on=started_on,
+			changes=changes,
 		)
 
 		_publish(
