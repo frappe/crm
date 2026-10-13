@@ -113,6 +113,12 @@ def write_run(
 	return doc.name
 
 
+def enrichment_job_id(reference_doctype: str, reference_name: str) -> str:
+	"""The fixed per-record job id: dedupes enqueues and lets callers check for an
+	in-flight run with ``is_job_enqueued``."""
+	return f"domain-enrich-{reference_doctype}-{reference_name}"
+
+
 def enqueue_enrichment(
 	reference_doctype: str, reference_name: str, website: str, user: str, trigger: str = "manual"
 ) -> dict:
@@ -128,7 +134,7 @@ def enqueue_enrichment(
 	"""
 	s = get_settings()
 	timeout = int(_setting(s, "request_timeout")) * int(_setting(s, "max_pages")) + 60
-	job_id = f"domain-enrich-{reference_doctype}-{reference_name}"
+	job_id = enrichment_job_id(reference_doctype, reference_name)
 	frappe.enqueue(
 		"crm.domain_enrichment.tasks.run_enrichment",
 		queue="long",
