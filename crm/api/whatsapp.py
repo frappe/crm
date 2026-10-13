@@ -162,7 +162,7 @@ def notify_agent(doc, method=None):
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">{_("You")}</span>
-                <span>{_("received a WhatsApp message in {0}").format(doctype)}</span>
+                <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
                 <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
             </div>
         """
