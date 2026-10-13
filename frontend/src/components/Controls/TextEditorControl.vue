@@ -27,7 +27,7 @@ import {
 } from 'frappe-ui/editor'
 import {
   buildEditorExtensions,
-  fullToolbar,
+  formToolbar,
   bubbleToolbar,
   uploadFile,
 } from '@/components/editor/config'
@@ -50,7 +50,7 @@ const props = defineProps({
     validator: (v) => ['sm', 'md', 'lg'].includes(v),
   },
   fixedMenu: { type: Boolean, default: true },
-  toolbar: { type: Array, default: () => fullToolbar },
+  toolbar: { type: Array, default: () => formToolbar },
   bubbleMenu: { type: Boolean, default: false },
   // lets people @mention teammates
   mentions: { type: Boolean, default: false },

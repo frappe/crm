@@ -296,7 +296,6 @@
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
       :mentions="isNote"
-      :toolbar="isNote ? noteToolbar : undefined"
       :bubbleMenu="isNote"
       :editorClass="isNote ? '!min-h-[16rem]' : ''"
       :disabled="Boolean(field.disabled)"
@@ -348,7 +347,6 @@ import RatingInput from '@/components/Controls/RatingInput.vue'
 import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
-import { noteToolbar } from '@/components/editor/config'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import ButtonControl, {
   getButtonTheme,
