@@ -183,7 +183,7 @@
   <EmptyState
     v-else-if="tasks.data && !rows.length"
     name="Tasks"
-    :icon="Email2Icon"
+    :icon="TaskIcon"
     :title="__('No tasks yet')"
     :description="
       __(
@@ -210,7 +210,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
