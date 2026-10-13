@@ -6,9 +6,10 @@
       <Button :label="__('Enrich')" iconLeft="lucide-zap" disabled />
     </div>
   </Tooltip>
-  <!-- No `loading` prop: it swaps the icon for a spinner. While running, a grey
-       fill tracks the real progress instead, and pointer-events-none + the
-       guard in enrich() block repeat clicks. `label` is kept for aria-label. -->
+  <!-- No `loading` prop: it changes the button's look. While running, the
+       same Spinner it renders replaces the icon in the prefix, a grey fill
+       tracks the real progress, and pointer-events-none + the guard in
+       enrich() block repeat clicks. `label` is kept for aria-label. -->
   <Button
     v-else
     :label="running ? __('Enriching…') : __('Enrich')"
@@ -34,7 +35,8 @@
           transitionDuration: `${TICK_MS}ms`,
         }"
       />
-      <span class="lucide-zap size-4" aria-hidden="true" />
+      <Spinner v-if="running" class="size-4" aria-hidden="true" />
+      <span v-else class="lucide-zap size-4" aria-hidden="true" />
     </template>
     <!-- Both labels share one grid cell so the button is always as wide as the
          longer one and the header doesn't shift when the label changes. -->
@@ -51,8 +53,9 @@
 
 <script setup>
 import { ref, computed, onBeforeUnmount } from 'vue'
-import { Button, Tooltip, call, toast } from 'frappe-ui'
+import { Button, Spinner, Tooltip, call, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
+import { useDocument } from '@/data/document'
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 
@@ -67,6 +70,9 @@ const emit = defineEmits(['done'])
 const { $socket } = globalStore()
 const { organizations } = organizationsStore()
 const { capture } = useTelemetry()
+// Shared per-record document resource. `enriching` on it lets the Data tab
+// disable Save during a run, so it can't collide with the job's own save.
+const { document } = useDocument(props.doctype, props.docname)
 const EVENT = 'domain_enrichment_progress'
 
 const running = ref(false)
@@ -142,6 +148,7 @@ function reset() {
   stop()
   clearTimers()
   running.value = false
+  document.enriching = false
   fill.value = 0
   creepCeiling = START_FILL
 }
@@ -189,6 +196,7 @@ async function enrich() {
   capture('enrichment_triggered', { doctype: props.doctype })
   clearTimers()
   running.value = true
+  document.enriching = true
   // Set in the same tick the transition turns on, so it slides in from 0.
   fill.value = START_FILL
   creepCeiling = START_FILL
