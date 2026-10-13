@@ -82,7 +82,7 @@ import { usersStore } from '@/stores/users'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { setupCustomizations } from '@/utils'
-import { Dialog, call, createResource } from 'frappe-ui'
+import { Dialog, call, createResource, toast } from 'frappe-ui'
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -150,16 +150,24 @@ async function create() {
   })
 }
 
-function update() {
-  document.save.submit(null, {
+async function update() {
+  let done = false
+  await document.save.submit(null, {
     onSuccess: (d) => {
+      done = true
       emit('afterUpdate', d)
       show.value = false
     },
     onError: (err) => {
+      done = true
       error.value = err.messages?.[0] || __('Could not update document')
     },
   })
+  // frappe-ui skips the save when nothing changed and calls neither callback
+  if (!done) {
+    toast.info(__('Nothing to update'))
+    show.value = false
+  }
 }
 
 async function submit() {
