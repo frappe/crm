@@ -231,6 +231,7 @@ automation_events = [
 override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
+	"Data Import": "crm.overrides.data_import.CustomDataImport",
 }
 
 # Document Events
