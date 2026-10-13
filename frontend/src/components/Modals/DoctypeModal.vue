@@ -167,24 +167,22 @@ async function create() {
   })
 }
 
-async function update() {
-  let done = false
-  await document.save.submit(null, {
+function update() {
+  // frappe-ui skips saving an unchanged doc without calling back, so handle it here
+  if (!document.isDirty) {
+    toast.info(__('Nothing to update'))
+    show.value = false
+    return
+  }
+  document.save.submit(null, {
     onSuccess: (d) => {
-      done = true
       emit('afterUpdate', d)
       show.value = false
     },
     onError: (err) => {
-      done = true
       error.value = err.messages?.[0] || __('Could not update document')
     },
   })
-  // frappe-ui skips the save when nothing changed and calls neither callback
-  if (!done) {
-    toast.info(__('Nothing to update'))
-    show.value = false
-  }
 }
 
 async function submit() {
