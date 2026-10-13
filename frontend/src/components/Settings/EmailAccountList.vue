@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails.',
+              'Connect email accounts to send and receive emails from CRM. Set one as the default for incoming and outgoing emails.',
             )
           }}
         </p>
