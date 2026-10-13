@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-11 15:53+0000\n"
-"PO-Revision-Date: 2026-10-12 04:51\n"
+"PO-Revision-Date: 2026-10-13 04:47\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -5448,7 +5448,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Left"
-msgstr "Lewo"
+msgstr "Opuścił"
 
 #: frontend/src/components/Filter.vue:402
 msgid "Less than"
