@@ -77,6 +77,8 @@ const props = defineProps({
   doc: { type: Object, required: true },
 })
 
+const emit = defineEmits(['change'])
+
 const doctypes = [
   { doctype: 'CRM Lead', label: __('Lead'), idLabel: __('Lead ID') },
   { doctype: 'CRM Deal', label: __('Deal'), idLabel: __('Deal ID') },
@@ -95,7 +97,7 @@ function subject(doctype) {
 
 function setSubject(doctype, value) {
   edited[doctype] = value
-  props.doc[emailSubjectFields[doctype]] = value
+  emit('change', emailSubjectFields[doctype], value)
 }
 
 // Field types that don't read as plain text in a subject line
