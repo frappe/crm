@@ -1,5 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { holdsEnrichedValue } from '@/data/enrichedFields'
+
+// document.js pulls in dialogs.jsx, which vitest can't compile.
+vi.mock('@/data/document', () => ({ useDocument: () => ({}) }))
 
 describe('holdsEnrichedValue', () => {
   it('matches the value enrichment wrote', () => {
