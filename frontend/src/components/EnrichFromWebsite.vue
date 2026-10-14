@@ -18,11 +18,11 @@
   <!-- No `loading` prop: it changes the button's look. While running, the
        same Spinner it renders replaces the icon in the prefix, a grey fill
        tracks the real progress, and pointer-events-none + the guard in
-       enrich() block repeat clicks. `label` is kept for aria-label. -->
+       enrich() block repeat clicks. -->
   <Button
     v-else
-    :label="running ? __('Enriching…') : __('Enrich')"
-    :tooltip="running ? __('Enriching…') : __('Enrich from website')"
+    :label="label"
+    :tooltip="tooltip"
     :aria-disabled="running || undefined"
     :disabled="undoing"
     class="relative isolate overflow-hidden"
@@ -48,16 +48,6 @@
       <Spinner v-if="running" class="size-4" aria-hidden="true" />
       <span v-else class="lucide-zap size-4" aria-hidden="true" />
     </template>
-    <!-- Both labels share one grid cell so the button is always as wide as the
-         longer one and the header doesn't shift when the label changes. -->
-    <span class="grid">
-      <span class="col-start-1 row-start-1" :class="{ invisible: running }">
-        {{ __('Enrich') }}
-      </span>
-      <span class="col-start-1 row-start-1" :class="{ invisible: !running }">
-        {{ __('Enriching…') }}
-      </span>
-    </span>
   </Button>
 </template>
 
@@ -92,6 +82,9 @@ const EVENT = 'domain_enrichment_progress'
 const running = ref(false)
 // From api.get_status: the latest run can be undone.
 const canUndo = ref(false)
+// From api.get_status: 'idle' | 'running' | 'done'. 'done' means the latest
+// run Completed, so the button offers Re-enrich.
+const state = ref('idle')
 const undoing = ref(false)
 // Fill width in percent (0–100). Only animated while running, so resetting it
 // to 0 snaps back instead of sliding.
@@ -119,6 +112,17 @@ const POLL_MS = 3000
 let creepCeiling = START_FILL
 
 const hasWebsite = computed(() => Boolean((props.website || '').trim()))
+
+const label = computed(() => {
+  if (running.value) return __('Enriching…')
+  return state.value === 'done' ? __('Re-enrich') : __('Enrich')
+})
+const tooltip = computed(() => {
+  if (running.value) return __('Enriching…')
+  return state.value === 'done'
+    ? __('Re-enrich from website')
+    : __('Enrich from website')
+})
 
 function isForThisDoc(data) {
   return (
@@ -208,9 +212,11 @@ async function loadStatus() {
       reference_name: props.docname,
     })
     canUndo.value = Boolean(status.can_undo)
+    state.value = status.state
     return status
   } catch {
-    // Status only adds Undo and the resumed state; the button works without it.
+    // Status only adds Undo, Re-enrich and the resumed state; the button
+    // works without it.
     return null
   }
 }
