@@ -17,6 +17,12 @@
         class="text-ink-red-4"
         >*</span
       >
+      <Tooltip v-if="isEnriched" :text="__('Enriched from website')">
+        <span
+          class="lucide-zap ml-1 inline-block size-3 align-[-1px] text-ink-gray-5"
+          :aria-label="__('Enriched from website')"
+        />
+      </Tooltip>
     </div>
     <FormControl
       v-if="
@@ -399,6 +405,14 @@ const isNote = computed(() => unref(doctype) === 'FCRM Note')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
+// Fieldnames still holding the value enrichment wrote; only the Data tab
+// provides it, so the enriched icon shows nowhere else.
+const enrichedFieldnames = inject('enrichedFieldnames', null)
+const isEnriched = computed(
+  () =>
+    !isGridRow &&
+    Boolean(enrichedFieldnames?.value?.has(props.field.fieldname)),
+)
 
 // Guard getMeta — skip when doctype is empty (inline/standalone mode)
 let getFormattedPercent, getFormattedFloat, getFormattedCurrency

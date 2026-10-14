@@ -70,8 +70,9 @@ import { Badge, createResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+import { useEnrichedFields, holdsEnrichedValue } from '@/data/enrichedFields'
 import { isMobileView } from '@/composables/settings'
-import { ref, watch, getCurrentInstance, computed } from 'vue'
+import { ref, watch, getCurrentInstance, computed, provide } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -96,6 +97,21 @@ const attrs = instance?.vnode?.props ?? {}
 const showDataFieldsModal = ref(false)
 
 const { document } = useDocument(props.doctype, props.docname)
+// Fields the latest enrichment run wrote that still hold its value, read from
+// the live doc so a field's enriched icon goes away as soon as it's edited.
+const enrichedFields = useEnrichedFields(props.doctype, props.docname)
+provide(
+  'enrichedFieldnames',
+  computed(
+    () =>
+      new Set(
+        (enrichedFields.data || [])
+          .filter((field) => holdsEnrichedValue(document.doc, field))
+          .map((field) => field.fieldname),
+      ),
+  ),
+)
+
 const fieldLayoutTabStorageKey = computed(
   () => `fieldLayoutTab:${props.doctype}:${props.docname}`,
 )
