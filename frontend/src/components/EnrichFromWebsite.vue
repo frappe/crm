@@ -210,6 +210,10 @@ function finish(payload) {
 // Refresh everything a finished run or an undo changes.
 function afterChange() {
   reloadEnrichedFields(props.doctype, props.docname)
+  // Re-validate the cached organizations store so list views (whose logos/names
+  // are read from it) reflect this update even if no list page was open to catch
+  // it — otherwise navigating back to a list serves stale cached data.
+  organizations.reload()
   emit('done') // parent reloads the document + side panel — no manual refresh
   loadStatus()
 }
@@ -267,10 +271,6 @@ function onProgress(data) {
   } else if (data.status === 'completed') {
     stop()
     fill.value = 100
-    // Re-validate the cached organizations store so list views (whose logos/names
-    // are read from it) reflect this update even if no list page was open to catch
-    // the event — otherwise navigating back to a list serves stale cached data.
-    organizations.reload()
     // Let the fill reach 100%, hold it there with the "Enriching…" label, then
     // finish. Cleared on unmount, so nothing fires on a dead component.
     finishTimer = setTimeout(() => finish(data.payload), TICK_MS + HOLD_MS)
@@ -305,6 +305,8 @@ async function enrich() {
   } finally {
     checking = false
   }
+  // The user may have left the page while the edit check was in flight.
+  if (unmounted) return
   if (!edited.length) return start()
 
   createDialog({
@@ -321,7 +323,7 @@ async function enrich() {
         variant: 'solid',
         onClick: ({ close }) => {
           close()
-          start()
+          if (!unmounted) start()
         },
       },
     ],
