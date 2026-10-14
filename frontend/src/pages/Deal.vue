@@ -381,6 +381,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { provideEnrichedFieldnames } from '@/data/enrichedFields'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { canViewQuotations } from '@/composables/erpnext'
 import { callEnabled } from '@/composables/telephony'
@@ -443,6 +444,9 @@ const {
   scripts,
   error,
 } = useDocument('CRM Deal', props.dealId)
+
+// For the enriched-field icon in the side panel and Data tab.
+provideEnrichedFieldnames('CRM Deal', props.dealId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 

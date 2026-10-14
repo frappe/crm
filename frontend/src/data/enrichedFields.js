@@ -1,4 +1,6 @@
 import { createResource, getCachedResource } from 'frappe-ui'
+import { useDocument } from '@/data/document'
+import { computed, inject, provide, unref } from 'vue'
 
 const cacheKey = (doctype, docname) => ['enrichedFields', doctype, docname]
 
@@ -22,4 +24,38 @@ export function reloadEnrichedFields(doctype, docname) {
 // so a Float field's 9000 matches the run's 9000.0 and null matches ''.
 export function holdsEnrichedValue(doc, field) {
   return String(doc?.[field.fieldname] ?? '') === String(field.value ?? '')
+}
+
+// Provided once by the record's page so its side panel and Data tab share one
+// fetch: frappe-ui reloads a cached `auto` resource each time it's created.
+// The set holds the fieldnames that still hold the value enrichment wrote,
+// read from the live doc so a field's icon goes away as soon as it's edited.
+export function provideEnrichedFieldnames(doctype, docname) {
+  const { document } = useDocument(doctype, docname)
+  const enrichedFields = useEnrichedFields(doctype, docname)
+  provide('enrichedFieldnames', {
+    doctype,
+    docname,
+    fieldnames: computed(
+      () =>
+        new Set(
+          (enrichedFields.data || [])
+            .filter((field) => holdsEnrichedValue(document.doc, field))
+            .map((field) => field.fieldname),
+        ),
+    ),
+  })
+}
+
+// Empty unless the provided set is for this record, so a modal opened from the
+// page (Quick Entry, a layout preview) never shows the page record's icons.
+export function injectEnrichedFieldnames(doctype, docname) {
+  const enriched = inject('enrichedFieldnames', null)
+  return computed(() =>
+    enriched &&
+    enriched.doctype === unref(doctype) &&
+    enriched.docname === unref(docname)
+      ? enriched.fieldnames.value
+      : new Set(),
+  )
 }
