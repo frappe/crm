@@ -47,11 +47,11 @@
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
-    @applyFilter="(data) => viewControls.applyFilter(data)"
-    @applyLikeFilter="(data) => viewControls.applyLikeFilter(data)"
-    @likeDoc="(data) => viewControls.likeDoc(data)"
+    @applyFilter="(data) => viewControls?.applyFilter(data)"
+    @applyLikeFilter="() => viewControls?.applyLikeFilter()"
+    @likeDoc="(data) => viewControls?.likeDoc(data)"
     @selectionsChanged="
-      (selections) => viewControls.updateSelections(selections)
+      (selections) => viewControls?.updateSelections(selections)
     "
   />
   <EmptyState
@@ -65,28 +65,34 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import DataImportsListView from '@/components/ListViews/DataImportsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
-import { getDataImportRow } from '@/utils/dataImport'
+import {
+  getDataImportRow,
+  type DataImportList,
+  type ListColumn,
+} from '@/utils/dataImport'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 
-const dataImportsListView = ref(null)
+const dataImportsListView = ref<InstanceType<
+  typeof DataImportsListView
+> | null>(null)
 
 // dataImports data is loaded in the ViewControls component
-const dataImports = ref({})
+const dataImports = ref<DataImportList>({})
 const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
-const viewControls = ref(null)
+const viewControls = ref<InstanceType<typeof ViewControls> | null>(null)
 
 // "Review pending imports" in the wizard opens this list for one doctype
 const queryFilters = computed(() => {
@@ -100,19 +106,16 @@ const queryFilters = computed(() => {
 const queryFiltersLabel = computed(() =>
   [route.query.status, route.query.doctype]
     .filter(Boolean)
-    .map((value) => __(value))
+    .map((value) => __(value as string))
     .join(' · '),
 )
 
 const rows = computed(() => {
-  if (
-    !dataImports.value?.data?.data ||
-    !['list', 'group_by'].includes(dataImports.value.data.view_type)
-  )
-    return []
-  return dataImports.value.data.data.map((dataImport) => {
-    let _rows = {}
-    dataImports.value.data.rows.forEach((row) => {
+  const list = dataImports.value?.data
+  if (!list?.data || !['list', 'group_by'].includes(list.view_type)) return []
+  return list.data.map((dataImport) => {
+    let _rows: Record<string, unknown> = {}
+    list.rows.forEach((row) => {
       _rows[row] = getDataImportRow(row, dataImport)
     })
     return _rows
@@ -120,7 +123,7 @@ const rows = computed(() => {
 })
 
 const columns = computed(() => {
-  let _columns = dataImports.value?.data?.columns || []
+  let _columns: ListColumn[] = dataImports.value?.data?.columns || []
 
   // Set align right for last column
   if (_columns.length) {
