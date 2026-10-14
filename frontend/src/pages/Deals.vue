@@ -25,6 +25,7 @@
     doctype="CRM Deal"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
+      groupSummary: true,
     }"
   />
   <KanbanView
