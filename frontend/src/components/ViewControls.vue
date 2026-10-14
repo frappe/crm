@@ -42,6 +42,13 @@
             :hideLabel="isMobileView"
             @update="updateGroupBy"
           />
+          <GroupSummaryButton
+            v-if="isListViewType"
+            :modelValue="groupSummary"
+            :doctype="doctype"
+            hideLabel
+            @update:modelValue="updateGroupSummary"
+          />
           <Filter
             v-model="list"
             :doctype="doctype"
@@ -49,7 +56,7 @@
             @update="updateFilter"
           />
           <SortBy
-            v-if="route.params.viewType !== 'kanban'"
+            v-if="route.params.viewType !== 'kanban' && !groupSummary"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
@@ -194,14 +201,21 @@
           :doctype="doctype"
           @update="updateGroupBy"
         />
+        <GroupSummaryButton
+          v-if="isListViewType"
+          :modelValue="groupSummary"
+          :doctype="doctype"
+          @update:modelValue="updateGroupSummary"
+        />
         <Filter
           v-model="list"
           :doctype="doctype"
           :default_filters="defaultFilters"
           @update="updateFilter"
         />
+        <!-- a grouped list sorts from its column headers instead -->
         <SortBy
-          v-if="route.params.viewType !== 'kanban'"
+          v-if="route.params.viewType !== 'kanban' && !groupSummary"
           v-model="list"
           :doctype="doctype"
           @update="updateSort"
@@ -317,7 +331,7 @@
         ]"
         :placeholder="__('Excel')"
       />
-      <div class="mt-3">
+      <div v-if="!groupSummary" class="mt-3">
         <FormControl
           v-model="export_all"
           type="checkbox"
@@ -340,6 +354,11 @@ import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
+import {
+  GroupBy as GroupSummaryButton,
+  parseGroupBy,
+  serializeGroupBy,
+} from '@framework/ui/components/GroupBy'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
@@ -503,6 +522,9 @@ usePageMeta(() => {
   }
 })
 
+// grouping turns the list into one summary row per group, like desk's report view
+const groupSummary = ref(null)
+
 const view = ref({
   name: '',
   label: '',
@@ -578,7 +600,11 @@ function getParams() {
     load_default_columns: _view?.row || true,
     pinned: _view?.pinned || false,
     public: _view?.public || false,
+    group_by_settings: _view?.group_by_settings || '',
   }
+  // the saved grouping comes back with the view; only list views can be grouped
+  groupSummary.value =
+    view_type === 'list' ? parseGroupBy(_view?.group_by_settings) : null
 
   return {
     doctype: props.doctype,
@@ -723,34 +749,67 @@ function updateSelections(selections) {
   selectedRows.value = Array.from(selections)
 }
 
-async function exportRows() {
-  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
+function resolveCurrentUser(filters) {
   const userId = getUser()?.name
+<<<<<<< HEAD
   let filters = {
     ...list.value.params.filters,
     ...defaultFilters.value,
   }
 
+=======
+>>>>>>> 96b3976 (feat: save group by settings on CRM View Settings)
   // Only resolve @me placeholders when we know the current user; otherwise
   // leave filters untouched rather than emitting undefined / "%undefined%".
-  if (userId) {
-    Object.keys(filters).forEach((key) => {
-      const value = filters[key]
+  if (!userId) return filters
+  Object.keys(filters).forEach((key) => {
+    const value = filters[key]
 
-      // Handle direct filter format: { owner: "@me" }
-      if (value === '@me') {
-        filters[key] = userId
-        return
-      }
-      if (!Array.isArray(value)) return
-      // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
-      filters[key] = value.map((entry) =>
-        entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
-      )
-    })
+    // Handle direct filter format: { owner: "@me" }
+    if (value === '@me') {
+      filters[key] = userId
+      return
+    }
+    if (!Array.isArray(value)) return
+    // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
+    filters[key] = value.map((entry) =>
+      entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
+    )
+  })
+  return filters
+}
+
+const isListViewType = computed(
+  () => !route.params.viewType || route.params.viewType === 'list',
+)
+const groupSummaryFilters = computed(() =>
+  resolveCurrentUser({
+    ...props.filters,
+    ...(list.value.params?.filters || {}),
+  }),
+)
+
+async function exportRows() {
+  let filters = JSON.stringify(
+    resolveCurrentUser({ ...props.filters, ...list.value.params.filters }),
+  )
+
+  // a grouped list exports what it shows: one row per group, every group
+  if (groupSummary.value) {
+    const grouped = serializeGroupBy(groupSummary.value)
+    window.location.href =
+      `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}` +
+      `&title=${encodeURIComponent(props.doctype)}&doctype=${encodeURIComponent(props.doctype)}` +
+      `&fields=${encodeURIComponent(JSON.stringify(grouped.fields))}` +
+      `&filters=${encodeURIComponent(filters)}` +
+      `&group_by=${encodeURIComponent(grouped.group_by)}` +
+      `&order_by=${encodeURIComponent(grouped.order_by || '')}&view=Report`
+    showExportDialog.value = false
+    export_type.value = 'Excel'
+    return
   }
 
-  filters = JSON.stringify(filters)
+  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
@@ -1229,6 +1288,19 @@ function updateSort(order_by) {
   }
 }
 
+function updateGroupSummary(value) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  groupSummary.value = value
+  view.value.group_by_settings = value ? JSON.stringify(value) : ''
+
+  if (!route.query.view) {
+    createOrUpdateStandardView()
+  }
+}
+
 function updateGroupBy(group_by_field) {
   viewUpdated.value = true
   if (!defaultParams.value) {
@@ -1467,6 +1539,7 @@ function createOrUpdateStandardView() {
       rows: defaultParams.value.rows,
       route_name: route.name,
       load_default_columns: view.value.load_default_columns,
+      group_by_settings: view.value.group_by_settings,
     }
     viewUpdated.value = false
   })
@@ -1708,6 +1781,7 @@ function saveView() {
     rows: defaultParams.value.rows,
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
+    group_by_settings: view.value.group_by_settings,
   }
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'edit'
@@ -1766,6 +1840,9 @@ function likeDoc({ name, liked }) {
 }
 
 defineExpose({
+  groupSummary,
+  groupSummaryFilters,
+  updateGroupSummary,
   applyFilter,
   applyLikeFilter,
   likeDoc,
