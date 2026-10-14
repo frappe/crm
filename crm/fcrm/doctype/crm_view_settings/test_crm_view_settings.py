@@ -1,13 +1,24 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+import json
+
 import frappe
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_view_settings.crm_view_settings import (
+	create,
 	create_or_update_standard_view,
 	set_as_default,
+	update,
 )
+
+GROUPING = {"fields": ["status"], "aggregates": [{"function": "count"}], "showTotals": True}
+
+
+def stored_grouping(name):
+	value = frappe.db.get_value("CRM View Settings", name, "group_by_settings")
+	return json.loads(value) if value else None
 
 
 class TestCRMViewSettings(IntegrationTestCase):
@@ -61,3 +72,29 @@ class TestCRMViewSettings(IntegrationTestCase):
 
 		self.assertEqual(frappe.db.get_value("CRM View Settings", kanban.name, "is_default"), 1)
 		self.assertEqual(frappe.db.get_value("CRM View Settings", list_view.name, "is_default"), 0)
+
+	def test_standard_view_saves_and_clears_grouping(self):
+		view = {"type": "list", "doctype": "CRM Lead", "group_by_settings": GROUPING}
+		grouped = create_or_update_standard_view(view)
+		self.assertEqual(stored_grouping(grouped.name), GROUPING)
+
+		cleared = create_or_update_standard_view({**view, "group_by_settings": None})
+		self.assertEqual(cleared.name, grouped.name)
+		self.assertIsNone(stored_grouping(cleared.name))
+
+	def test_saved_view_create_and_update_store_grouping(self):
+		view = {
+			"label": "Grouped Leads",
+			"type": "list",
+			"doctype": "CRM Lead",
+			"group_by_settings": GROUPING,
+		}
+		doc = create(view)
+		self.assertEqual(stored_grouping(doc.name), GROUPING)
+
+		# the view dialog sends the stored JSON text back when editing
+		update({**view, "name": doc.name, "group_by_settings": json.dumps(GROUPING)})
+		self.assertEqual(stored_grouping(doc.name), GROUPING)
+
+		update({**view, "name": doc.name, "group_by_settings": None})
+		self.assertIsNone(stored_grouping(doc.name))
