@@ -73,7 +73,6 @@ import ViewControls from '@/components/ViewControls.vue'
 import DataImportsListView from '@/components/ListViews/DataImportsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { getDataImportRow } from '@/utils/dataImport'
-import { usePageMeta } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -135,6 +134,4 @@ const columns = computed(() => {
 
   return _columns
 })
-
-usePageMeta(() => ({ title: __('Data Import') }))
 </script>
