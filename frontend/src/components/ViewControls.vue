@@ -664,7 +664,7 @@ listResource = createResource({
       default_filters: defaultFilters.value,
       view: {
         custom_view_name: cv?.name || '',
-        view_type: cv?.type || route.params.viewType || 'list',
+        view_type: viewTypeOf(cv),
         group_by_field: params?.view?.group_by_field || 'owner',
         group_by_settings: params?.view?.group_by_settings || null,
       },
