@@ -18,8 +18,15 @@ export function getDataImportRow(row, dataImport) {
   }
   if (row === 'reference_doctype') return __(dataImport.reference_doctype)
   if (row === 'import_file') {
-    if (dataImport.import_file) return dataImport.import_file.split('/').pop()
-    return dataImport.google_sheets_url || ''
+    // shows the short file name but filters on the stored path; a Google
+    // Sheet has no file, so clicking it clears the file filter instead
+    return {
+      label:
+        dataImport.import_file?.split('/').pop() ||
+        dataImport.google_sheets_url ||
+        '',
+      name: dataImport.import_file || '',
+    }
   }
   if (['modified', 'creation'].includes(row)) {
     return timestampCell(dataImport[row])
