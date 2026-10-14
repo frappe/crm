@@ -62,10 +62,10 @@ class CRMEnrichmentRun(Document):
 		for change in self.changes:
 			df = record.meta.get_field(change.fieldname)
 			# Cast first so a numeric field's 9000.0 matches its stored "9000".
-			if not df or cstr(record.get(change.fieldname)) != cstr(_restore_value(df, change.new_value)):
+			if not df or cstr(record.get(change.fieldname)) != cstr(restore_value(df, change.new_value)):
 				skipped.append(change.fieldname)
 				continue
-			record.set(change.fieldname, _restore_value(df, change.old_value))
+			record.set(change.fieldname, restore_value(df, change.old_value))
 			reverted.append(change.fieldname)
 
 		if reverted:
@@ -75,7 +75,7 @@ class CRMEnrichmentRun(Document):
 		return {"reverted": reverted, "skipped": skipped}
 
 
-def _restore_value(df, value):
+def restore_value(df, value):
 	"""Cast a value stored as text on a Change row back to the field's type; empty
 	restores as None."""
 	if value is None or value == "":
