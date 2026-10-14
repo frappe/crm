@@ -219,12 +219,9 @@ def set_as_default(name: str | int | None = None, type: str | None = None, docty
 
 
 def dump_group_by_settings(value):
-	"""Grouping is stored as JSON text; the frontend sends an object, or nothing when ungrouped."""
-	if not value:
-		return None
-	if isinstance(value, str):
-		value = frappe.parse_json(value)
-	return json.dumps(value)
+	"""Store the grouping as JSON text. The list sends the settings object, or None when
+	cleared; editing or duplicating a saved view sends back the stored JSON text."""
+	return json.dumps(parse_json(value)) if value else None
 
 
 @frappe.whitelist()
