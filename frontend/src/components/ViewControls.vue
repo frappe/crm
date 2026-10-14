@@ -1236,8 +1236,9 @@ function updateGroupSummary(settings) {
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
-  listResource.params = defaultParams.value
-  listResource.params.view.group_by_settings = settings
+  // set in place: swapping the params object makes the grouped table refetch
+  defaultParams.value.view.group_by_settings = settings
+  getListParams().view.group_by_settings = settings
 
   if (!route.query.view) {
     createOrUpdateStandardView()
