@@ -156,12 +156,14 @@ def notify_agent(doc, method=None):
 		doctype = doc.reference_doctype
 		if doctype and doctype.startswith("CRM "):
 			doctype = doctype[4:].lower()
-		safe_reference_docname = frappe.utils.escape_html(doc.reference_docname)
+		safe_reference_title = frappe.utils.escape_html(
+			get_record_title(doc.reference_doctype, doc.reference_docname)
+		)
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">{_("You")}</span>
                 <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
-                <span class="font-medium text-ink-gray-9">{safe_reference_docname}</span>
+                <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
             </div>
         """
 		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_docname)
@@ -179,6 +181,18 @@ def notify_agent(doc, method=None):
 					"redirect_to_docname": doc.reference_docname,
 				}
 			)
+
+
+def get_record_title(doctype: str, name: str) -> str:
+	"""The name people know a lead or deal by, as mention notifications show it."""
+	if doctype == "CRM Lead":
+		title = frappe.db.get_value(doctype, name, "lead_name")
+	elif doctype == "CRM Deal":
+		deal = frappe.db.get_value(doctype, name, ["organization", "lead_name"], as_dict=True)
+		title = deal and (deal.organization or deal.lead_name)
+	else:
+		title = None
+	return title or name
 
 
 def guard_doc_recipient_change(doc) -> None:
