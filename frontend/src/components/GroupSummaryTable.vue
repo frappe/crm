@@ -38,12 +38,20 @@
     v-if="groups.rowCount.value"
     v-model="groups.pageLength.value"
     class="border-t px-3 py-2 sm:px-5"
-    :options="{
-      rowCount: groups.rowCount.value,
-      totalCount: groups.totalCount.value,
-    }"
-    @loadMore="groups.loadMore"
-  />
+  >
+    <!-- groups are counted up to a cap, so the total can be a floor -->
+    <template #right>
+      <div class="flex items-center">
+        <template v-if="groups.hasNextPage.value">
+          <Button :label="__('Load More')" @click="groups.loadMore" />
+          <div class="mx-3 h-[80%] border-l" />
+        </template>
+        <div class="text-base text-ink-gray-5">
+          {{ __('{0} of {1}', [groups.rowCount.value, totalLabel]) }}
+        </div>
+      </div>
+    </template>
+  </ListFooter>
 </template>
 
 <script setup lang="ts">
@@ -57,7 +65,9 @@ import type {
   GroupByColumn,
   GroupBySettings,
 } from '@framework/ui/components/GroupBy'
+import { Button } from 'frappe-ui'
 import { ListFooter } from 'frappe-ui/experimental'
+import { computed } from 'vue'
 
 const props = defineProps<{
   doctype: string
@@ -84,6 +94,12 @@ const groups = useGroupByData(
   () => props.doctype,
   () => props.settings,
   () => props.filters,
+)
+
+const totalLabel = computed(() =>
+  groups.totalCapped.value
+    ? `${groups.totalCount.value}+`
+    : String(groups.totalCount.value),
 )
 
 // as desk's report view: a currency read from another field shows only when grouped by it
