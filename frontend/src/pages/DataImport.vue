@@ -75,13 +75,13 @@ watch(
 
 const breadcrumbs = computed(() => {
   const doctype = dataImport.doc.value.reference_doctype || route.params.doctype
-  const title = crmPages[doctype]?.title || doctype
-  const items = [{ label: __('Data Import'), route: { name: 'Data Import' } }]
-  // lead with the records list, so it is one click away whatever the outcome
   const page = crmPages[doctype]
-  if (page) items.unshift({ label: __(page.title), route: { name: page.list } })
-  if (title) items.push({ label: __('Importing {0}', [__(title)]) })
-  return items
+  const title = page?.title || doctype
+  return [
+    page && { label: __(page.title), route: { name: page.list } },
+    { label: __('Data Import'), route: { name: 'Data Import' } },
+    title && { label: __('Importing {0}', [__(title)]) },
+  ].filter(Boolean)
 })
 
 function openList(doctype) {
