@@ -13,18 +13,27 @@ describe('getDataImportRow', () => {
     expect(getDataImportRow('status', { status: 'Other' }).color).toBe('gray')
   })
 
-  it('shows the file name, or the Google Sheet when there is no file', () => {
+  it('shows the file name but filters on the stored path', () => {
     expect(
       getDataImportRow('import_file', {
         import_file: '/private/files/crm_deals_500.csv',
       }),
-    ).toBe('crm_deals_500.csv')
+    ).toEqual({
+      label: 'crm_deals_500.csv',
+      name: '/private/files/crm_deals_500.csv',
+    })
+  })
+
+  it('shows the Google Sheet without filtering the file on its URL', () => {
     expect(
       getDataImportRow('import_file', {
         google_sheets_url: 'https://docs.google.com/spreadsheets/d/abc/edit',
       }),
-    ).toBe('https://docs.google.com/spreadsheets/d/abc/edit')
-    expect(getDataImportRow('import_file', {})).toBe('')
+    ).toEqual({
+      label: 'https://docs.google.com/spreadsheets/d/abc/edit',
+      name: '',
+    })
+    expect(getDataImportRow('import_file', {})).toEqual({ label: '', name: '' })
   })
 
   it('shows modified as a timestamp cell and other fields as they are', () => {
