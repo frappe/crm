@@ -232,6 +232,13 @@
       </div>
     </template>
   </KanbanView>
+  <GroupSummaryTable
+    v-else-if="viewControls?.groupSummary"
+    doctype="CRM Lead"
+    :settings="viewControls.groupSummary"
+    :filters="viewControls.groupSummaryFilters"
+    @update:settings="(s) => viewControls.updateGroupSummary(s)"
+  />
   <LeadsListView
     v-else-if="leads.data && rows.length"
     ref="leadsListView"
@@ -279,6 +286,7 @@
 
 <script setup>
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
+import GroupSummaryTable from '@/components/GroupSummaryTable.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
