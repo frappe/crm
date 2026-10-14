@@ -413,7 +413,7 @@ const doctype = inject('doctype')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
-// Provided by the record's page, and empty for any other record, so the icon
+// Provided by the Data tab, and empty for any other record, so the icon
 // never shows in a modal's fields (Quick Entry, layout preview).
 const enrichedFieldnames = injectEnrichedFieldnames(doctype, docname)
 const isEnriched = computed(
