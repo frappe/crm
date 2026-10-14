@@ -242,7 +242,6 @@ import Link from '@/components/Controls/Link.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import { useDocument } from '@/data/document'
-import { provideEnrichedFieldnames } from '@/data/enrichedFields'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
@@ -300,9 +299,6 @@ const {
   scripts,
   triggerOnRender,
 } = useDocument('CRM Organization', props.organizationId)
-
-// For the enriched-field icon in the side panel and Data tab.
-provideEnrichedFieldnames('CRM Organization', props.organizationId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 

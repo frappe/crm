@@ -42,43 +42,30 @@
                       isTextareaField(field) ? 'items-start' : 'items-center'
                     "
                   >
-                    <div
+                    <Tooltip
                       v-if="!['Button', 'HTML'].includes(field.fieldtype)"
-                      class="w-[35%] min-w-20 shrink-0 flex items-center gap-1"
-                      :class="{ 'pt-[9px]': isTextareaField(field) }"
+                      :text="__(field.label)"
+                      :hoverDelay="1000"
                     >
-                      <Tooltip :text="__(field.label)" :hoverDelay="1000">
-                        <div class="flex min-w-0 items-center gap-0.5">
-                          <div class="truncate text-sm text-ink-gray-5">
-                            {{ __(field.label) }}
-                          </div>
-                          <div
-                            v-if="
-                              field.reqd ||
-                              (field.mandatory_depends_on &&
-                                field.mandatory_via_depends_on)
-                            "
-                            class="text-ink-red-4"
-                          >
-                            *
-                          </div>
-                        </div>
-                      </Tooltip>
-                      <!-- A sibling of the label's tooltip, not inside it, so
-                           it keeps its own hover delay. shrink-0 keeps it
-                           visible while the label truncates. -->
-                      <Tooltip
-                        v-if="
-                          !preview && enrichedFieldnames.has(field.fieldname)
-                        "
-                        :text="__('Enriched from website')"
+                      <div
+                        class="w-[35%] min-w-20 shrink-0 flex items-center gap-0.5"
+                        :class="{ 'pt-[9px]': isTextareaField(field) }"
                       >
-                        <span
-                          class="lucide-zap size-3 shrink-0 text-ink-blue-5"
-                          :aria-label="__('Enriched from website')"
-                        />
-                      </Tooltip>
-                    </div>
+                        <div class="truncate text-sm text-ink-gray-5">
+                          {{ __(field.label) }}
+                        </div>
+                        <div
+                          v-if="
+                            field.reqd ||
+                            (field.mandatory_depends_on &&
+                              field.mandatory_via_depends_on)
+                          "
+                          class="text-ink-red-4"
+                        >
+                          *
+                        </div>
+                      </div>
+                    </Tooltip>
                     <div
                       :class="[
                         'flex items-center justify-between',
@@ -480,7 +467,6 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { useDocument } from '@/data/document'
-import { injectEnrichedFieldnames } from '@/data/enrichedFields'
 import { ref, computed, getCurrentInstance } from 'vue'
 
 const props = defineProps({
@@ -512,11 +498,6 @@ if (props.docname) {
 }
 
 const doc = computed(() => document.doc || {})
-
-const enrichedFieldnames = injectEnrichedFieldnames(
-  props.doctype,
-  props.docname,
-)
 
 const _sections = computed(() => {
   if (!props.sections?.length) return []
