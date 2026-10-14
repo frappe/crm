@@ -17,6 +17,7 @@
 
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import { importListQuery } from '@/utils/dataImport'
 import {
   DataImportWizard,
   useDataImport,
@@ -74,23 +75,14 @@ const breadcrumbs = computed(() => {
   return items
 })
 
-// The list shows only what this import touched: records its user created (or,
-// for updates, changed) between making the import and its last finish.
 function openList(doctype) {
   const page = crmPages[doctype]
-  if (!page) return
-  const { name, owner, creation, modified, import_type } = dataImport.doc.value
-  router.push({
-    name: page.list,
-    query: {
-      import: name,
-      import_field:
-        import_type === 'Insert New Records' ? 'creation' : 'modified',
-      import_user: owner,
-      import_from: creation,
-      import_to: modified,
-    },
-  })
+  if (page) {
+    router.push({
+      name: page.list,
+      query: importListQuery(dataImport.doc.value),
+    })
+  }
 }
 
 function openRecord(doctype, docname) {
