@@ -27,7 +27,9 @@
             v-else-if="statusColor(column, row[column.key])"
             :class="statusColor(column, row[column.key])"
           />
-          <span class="truncate">{{ cellText(row, column, value) }}</span>
+          <span class="truncate">{{
+            cellText(row, column, value, total)
+          }}</span>
         </div>
       </template>
     </GroupByTable>
@@ -84,18 +86,31 @@ const groups = useGroupByData(
   () => props.filters,
 )
 
-// CRM knows user names and the site currency; the shared table falls back to raw values
+// as desk's report view: a currency read from another field shows only when grouped by it
+function currencyOf(
+  row: Record<string, unknown>,
+  column: GroupByColumn,
+  total?: boolean,
+): string | null {
+  if (!column.options) return window.sysdefaults?.currency || 'USD'
+  if (total || !props.settings.fields.includes(column.options)) return null
+  return row[column.options] ? String(row[column.options]) : null
+}
+
+// CRM knows user names and currencies; the shared table falls back to raw values
 function cellText(
   row: Record<string, unknown>,
   column: GroupByColumn,
   value: string,
+  total?: boolean,
 ): string {
   const raw = row[column.key]
   if (column.options === 'User' && raw) {
     return getUser(String(raw)).full_name || value
   }
   if (column.fieldtype === 'Currency' && typeof raw === 'number') {
-    return formatCurrency(raw, '', window.sysdefaults?.currency || 'USD')
+    const currency = currencyOf(row, column, total)
+    if (currency) return formatCurrency(raw, '', currency)
   }
   return value
 }
