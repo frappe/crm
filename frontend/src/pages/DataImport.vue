@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import { importListQuery } from '@/utils/dataImport'
 import {
@@ -23,11 +23,18 @@ import {
   useDataImport,
 } from '@framework/ui/components/DataImport'
 import { getSettings } from '@/stores/settings'
-import { Breadcrumbs, usePageMeta } from 'frappe-ui'
+import { Breadcrumbs, usePageMeta, type BreadcrumbsProps } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const crmPages = {
+interface CrmPage {
+  title: string
+  list: string
+  page?: string
+  param?: string
+}
+
+const crmPages: Record<string, CrmPage> = {
   'CRM Lead': { title: 'Leads', list: 'Leads', page: 'Lead', param: 'leadId' },
   'CRM Deal': { title: 'Deals', list: 'Deals', page: 'Deal', param: 'dealId' },
   Contact: {
@@ -53,13 +60,13 @@ const { brand } = getSettings()
 usePageMeta(() => {
   return {
     title: __('Data Import'),
-    icon: brand.favicon,
+    icon: (brand as { favicon?: string }).favicon,
   }
 })
 
-const name = ref(route.params.importName || null)
+const name = ref<string | null>((route.params.importName as string) || null)
 const dataImport = useDataImport(name, {
-  doctype: () => route.params.doctype || undefined,
+  doctype: () => (route.params.doctype as string) || undefined,
 })
 
 // the first save names a new import; keep the URL on it so a reload reopens it
@@ -70,21 +77,22 @@ watch(name, (importName) => {
 })
 watch(
   () => route.params.importName,
-  (importName) => (name.value = importName || null),
+  (importName) => (name.value = (importName as string) || null),
 )
 
 const breadcrumbs = computed(() => {
-  const doctype = dataImport.doc.value.reference_doctype || route.params.doctype
+  const doctype =
+    dataImport.doc.value.reference_doctype || (route.params.doctype as string)
   const page = crmPages[doctype]
   const title = page?.title || doctype
   return [
     page && { label: __(page.title), route: { name: page.list } },
     { label: __('Data Import'), route: { name: 'Data Import' } },
     title && { label: __('Importing {0}', [__(title)]) },
-  ].filter(Boolean)
+  ].filter(Boolean) as BreadcrumbsProps['items']
 })
 
-function openList(doctype) {
+function openList(doctype: string) {
   const page = crmPages[doctype]
   if (page) {
     router.push({
@@ -94,18 +102,18 @@ function openList(doctype) {
   }
 }
 
-function openRecord(doctype, docname) {
+function openRecord(doctype: string, docname: string) {
   const page = crmPages[doctype]
-  if (page?.page) {
+  if (page?.page && page.param) {
     router.push({ name: page.page, params: { [page.param]: docname } })
   }
 }
 
-function openImports(doctype) {
+function openImports(doctype: string) {
   router.push({ name: 'Data Import', query: { doctype, status: 'Pending' } })
 }
 
-function newImport(doctype) {
+function newImport(doctype: string) {
   router.push({ name: 'NewDataImport', params: { doctype } })
 }
 </script>

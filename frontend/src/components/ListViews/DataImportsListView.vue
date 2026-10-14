@@ -3,14 +3,16 @@
     :columns="columns"
     :rows="rows"
     :options="{
-      onRowClick: (row) => emit('openImport', row.name),
+      onRowClick: (row: { name: string }) => emit('openImport', row.name),
       selectable: options.selectable,
       showTooltip: options.showTooltip,
       resizeColumn: options.resizeColumn,
     }"
     row-key="name"
     v-bind="$attrs"
-    @update:selections="(selections) => emit('selectionsChanged', selections)"
+    @update:selections="
+      (selections: Set<string>) => emit('selectionsChanged', selections)
+    "
   >
     <ListHeader
       class="sm:mx-5 mx-3"
@@ -20,7 +22,9 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-        @columnWidthUpdated="(e) => onColumnWidthUpdated(e, column)"
+        @columnWidthUpdated="
+          (e: ColumnWidthUpdate) => onColumnWidthUpdated(e, column)
+        "
       >
         <Button
           v-if="column.key == '_liked_by'"
@@ -68,7 +72,7 @@
               size="md"
               :label="__(item.label)"
               @click="
-                (event) =>
+                (event: Event) =>
                   emit('applyFilter', {
                     event,
                     idx,
@@ -91,7 +95,11 @@
             <Button
               variant="ghost"
               @click.stop.prevent="
-                () => emit('likeDoc', { name: row.name, liked: isLiked(item) })
+                () =>
+                  emit('likeDoc', {
+                    name: (row as { name: string }).name,
+                    liked: isLiked(item),
+                  })
               "
             >
               <HeartIcon
@@ -122,7 +130,7 @@
     <ListSelectBanner>
       <template #actions="{ selections, unselectAll }">
         <Dropdown
-          :options="listBulkActionsRef.bulkActions(selections, unselectAll)"
+          :options="listBulkActionsRef?.bulkActions(selections, unselectAll)"
         >
           <Button icon="lucide-more-horizontal" variant="ghost" />
         </Dropdown>
@@ -148,10 +156,11 @@
     }"
   />
 </template>
-<script setup>
+<script setup lang="ts">
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import type { DataImportList, ListColumn } from '@/utils/dataImport'
 import { Tooltip, Dropdown } from 'frappe-ui'
 import {
   ListView,
@@ -164,12 +173,33 @@ import {
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 
-defineProps({
-  rows: { type: Array, required: true },
-  columns: { type: Array, required: true },
-  options: {
-    type: Object,
-    default: () => ({
+interface ColumnWidthUpdate {
+  width: string
+  save: boolean
+}
+
+interface FilterClick {
+  event: Event
+  idx: number
+  column: ListColumn
+  item: unknown
+  firstColumn: ListColumn
+}
+
+withDefaults(
+  defineProps<{
+    rows: Record<string, unknown>[]
+    columns: ListColumn[]
+    options?: {
+      selectable?: boolean
+      showTooltip?: boolean
+      resizeColumn?: boolean
+      totalCount?: number
+      rowCount?: number
+    }
+  }>(),
+  {
+    options: () => ({
       selectable: true,
       showTooltip: true,
       resizeColumn: false,
@@ -177,23 +207,26 @@ defineProps({
       rowCount: 0,
     }),
   },
-})
+)
 
-const emit = defineEmits([
-  'openImport',
-  'loadMore',
-  'updatePageCount',
-  'columnWidthUpdated',
-  'applyFilter',
-  'applyLikeFilter',
-  'likeDoc',
-  'selectionsChanged',
-])
+const emit = defineEmits<{
+  openImport: [name: string]
+  loadMore: []
+  updatePageCount: [count: number]
+  columnWidthUpdated: [column?: ListColumn]
+  applyFilter: [data: FilterClick]
+  applyLikeFilter: []
+  likeDoc: [data: { name: string; liked: boolean }]
+  selectionsChanged: [selections: Set<string>]
+}>()
 
-const pageLengthCount = defineModel({ type: Number })
-const list = defineModel('list', { type: Object })
+const pageLengthCount = defineModel<number>({ required: true })
+const list = defineModel<DataImportList>('list', { required: true })
 
-function onColumnWidthUpdated({ width, save }, column) {
+function onColumnWidthUpdated(
+  { width, save }: ColumnWidthUpdate,
+  column: ListColumn,
+) {
   column.width = width
   if (save) emit('columnWidthUpdated', column)
 }
@@ -204,11 +237,10 @@ const isLikeFilterApplied = computed(() => {
 
 const { user } = sessionStore()
 
-function isLiked(item) {
-  if (item) {
-    let likedByMe = JSON.parse(item)
-    return likedByMe.includes(user)
-  }
+function isLiked(item: string | null): boolean {
+  if (!item) return false
+  let likedByMe: (string | null)[] = JSON.parse(item)
+  return likedByMe.includes(user)
 }
 
 watch(pageLengthCount, (val, old_value) => {
@@ -216,7 +248,9 @@ watch(pageLengthCount, (val, old_value) => {
   emit('updatePageCount', val)
 })
 
-const listBulkActionsRef = ref(null)
+const listBulkActionsRef = ref<InstanceType<typeof ListBulkActions> | null>(
+  null,
+)
 
 defineExpose({
   customListActions: computed(

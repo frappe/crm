@@ -1,5 +1,7 @@
+import { describe, expect, it, vi } from 'vitest'
+
 vi.mock('@/composables/useTimelinePreferences', () => ({
-  timestampCell: (date) => ({ label: date }),
+  timestampCell: (date: string) => ({ label: date }),
 }))
 
 import {

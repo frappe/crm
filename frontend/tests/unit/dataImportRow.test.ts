@@ -1,5 +1,7 @@
+import { describe, expect, it, vi } from 'vitest'
+
 vi.mock('@/composables/useTimelinePreferences', () => ({
-  timestampCell: (date) => ({ label: date, timeAgo: 'just now' }),
+  timestampCell: (date: string) => ({ label: date, timeAgo: 'just now' }),
 }))
 
 import { getDataImportRow } from '@/utils/dataImport'
@@ -10,7 +12,10 @@ describe('getDataImportRow', () => {
       label: 'Error',
       color: 'red',
     })
-    expect(getDataImportRow('status', { status: 'Other' }).color).toBe('gray')
+    expect(getDataImportRow('status', { status: 'Other' })).toEqual({
+      label: 'Other',
+      color: 'gray',
+    })
   })
 
   it('shows the file name but filters on the stored path', () => {
