@@ -2,8 +2,8 @@
 # For license information, please see license.txt
 
 """Whitelisted entry points: ``enrich`` (enqueue a full run for a record),
-``retry`` (re-run one from its Run history), ``undo`` (revert a record's latest
-run) and ``get_status`` (the Enrich button's state for a record).
+``retry`` (re-run one from its Run history), ``undo`` (revert a record's newest
+run that still stands) and ``get_status`` (the Enrich button's state for a record).
 
 All are type-annotated -- hooks.py sets ``require_type_annotated_api_methods``.
 Security: ``enrich`` / ``retry`` / ``undo`` enforce the doctype allow-list (from
@@ -17,7 +17,7 @@ from __future__ import annotations
 import frappe
 from frappe import _
 from frappe.rate_limiter import rate_limit
-from frappe.utils import cstr
+from frappe.utils import cstr, now_datetime
 from frappe.utils.background_jobs import is_job_enqueued
 
 from .config import ENRICHABLE_DOCTYPES, EnrichmentConfig, get_config
@@ -50,23 +50,43 @@ def _check_writable(cfg, reference_doctype: str, reference_name: str):
 	doc.check_permission("write")
 
 
-def _latest_run(reference_doctype: str, reference_name: str):
-	"""The record's most recent ``CRM Enrichment Run`` name, or ``None``."""
-	return frappe.db.get_value(
+def _completed_runs(reference_doctype: str, reference_name: str) -> list[str]:
+	"""The record's Completed ``CRM Enrichment Run`` names, newest first. Reverted
+	and Failed runs wrote nothing that still stands, so they are left out."""
+	return frappe.get_all(
 		"CRM Enrichment Run",
-		{"reference_doctype": reference_doctype, "reference_name": reference_name},
-		"name",
+		filters={
+			"reference_doctype": reference_doctype,
+			"reference_name": reference_name,
+			"status": "Completed",
+		},
+		pluck="name",
 		order_by="creation desc",
 	)
 
 
-def _can_undo(run: str | None) -> bool:
-	"""Whether ``run`` is Completed and wrote at least one field."""
-	if not run or frappe.db.get_value("CRM Enrichment Run", run, "status") != "Completed":
-		return False
-	return bool(
-		frappe.db.exists("CRM Enrichment Run Change", {"parent": run, "parenttype": "CRM Enrichment Run"})
+def _run_changes(runs: list[str]) -> dict[str, list]:
+	"""The Change rows of ``runs``, grouped by run name, in row order."""
+	if not runs:
+		return {}
+	rows = frappe.get_all(
+		"CRM Enrichment Run Change",
+		filters={"parenttype": "CRM Enrichment Run", "parent": ["in", runs]},
+		fields=["parent", "fieldname", "new_value"],
+		order_by="idx asc",
 	)
+	out = {}
+	for row in rows:
+		out.setdefault(row.parent, []).append(row)
+	return out
+
+
+def _undoable_run(runs: list[str]) -> str | None:
+	"""The run Undo targets: the newest of ``runs`` (Completed, newest first) that
+	changed at least one field. A re-enrich that found nothing new is skipped, so
+	Undo still reaches the run that wrote the values."""
+	changed = _run_changes(runs)
+	return next((run for run in runs if run in changed), None)
 
 
 def _enqueue_run(cfg, reference_doctype: str, reference_name: str, website: str) -> dict:
@@ -122,11 +142,12 @@ def retry(run: str) -> dict:
 @frappe.whitelist(methods=["POST"])
 @rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def undo(reference_doctype: str, reference_name: str) -> dict:
-	"""Revert the fields written by the record's latest enrichment run.
-
-	Only the latest run can be undone, and only when it is Completed and changed
-	fields -- the same rule as ``get_status``'s ``can_undo``. Blocked while an
-	enrichment job for the record is queued or running.
+	"""Revert the fields written by the record's newest Completed enrichment run
+	that changed fields (a re-enrich that changed nothing is skipped) -- the same
+	run ``get_status``'s ``can_undo`` reports on. The newer Completed runs that
+	changed nothing only confirmed the values just reverted, so they are marked
+	Reverted too. Blocked while an enrichment job for the record is queued or
+	running.
 
 	Returns ``{reverted: [fieldname, ...], skipped: [fieldname, ...]}``.
 	"""
@@ -138,11 +159,20 @@ def undo(reference_doctype: str, reference_name: str) -> dict:
 			frappe.ValidationError,
 		)
 
-	run = _latest_run(reference_doctype, reference_name)
-	if not _can_undo(run):
+	runs = _completed_runs(reference_doctype, reference_name)
+	run = _undoable_run(runs)
+	if not run:
 		frappe.throw(_("There is no enrichment to undo for this record."), frappe.ValidationError)
 
-	return frappe.get_doc("CRM Enrichment Run", run).undo()
+	out = frappe.get_doc("CRM Enrichment Run", run).undo()
+	# Runs are newest first, so every run before the target changed nothing.
+	for newer in runs[: runs.index(run)]:
+		frappe.db.set_value(
+			"CRM Enrichment Run",
+			newer,
+			{"status": "Reverted", "undone_on": now_datetime(), "undone_by": frappe.session.user},
+		)
+	return out
 
 
 @frappe.whitelist()
@@ -150,16 +180,19 @@ def get_status(reference_doctype: str, reference_name: str) -> dict:
 	"""The Enrich button's state for one record.
 
 	Returns ``{has_website: bool, state: "idle" | "running" | "done", can_undo: bool}``.
-	``running`` while a job is queued/running, ``done`` when the latest run
-	Completed, else ``idle`` (never enriched, failed, or reverted).
+	``running`` while a job is queued/running; otherwise ``done`` while enriched
+	values stand -- some Completed run changed fields, the same run ``undo``
+	targets -- else ``idle``. Completed runs with no Change rows (a re-enrich that
+	found nothing new, or a run from before the change log existed) do not count.
+	Outside ``running``, ``done`` and ``can_undo`` are the same condition.
 	"""
 	doc = frappe.get_doc(reference_doctype, reference_name)
 	doc.check_permission("read")
 
-	run = _latest_run(reference_doctype, reference_name)
+	can_undo = bool(_undoable_run(_completed_runs(reference_doctype, reference_name)))
 	if is_job_enqueued(enrichment_job_id(reference_doctype, reference_name)):
 		state = "running"
-	elif run and frappe.db.get_value("CRM Enrichment Run", run, "status") == "Completed":
+	elif can_undo:
 		state = "done"
 	else:
 		state = "idle"
@@ -167,29 +200,30 @@ def get_status(reference_doctype: str, reference_name: str) -> dict:
 	return {
 		"has_website": bool((doc.get("website") or "").strip()),
 		"state": state,
-		"can_undo": _can_undo(run),
+		"can_undo": can_undo,
 	}
 
 
 @frappe.whitelist()
 def get_enriched_fields(reference_doctype: str, reference_name: str) -> list[dict]:
-	"""The fields the record's latest enrichment run wrote, for the Data tab's
+	"""The fields the record's enrichment runs wrote, for the Data tab's
 	enriched-field icon and the re-enrich warning.
 
-	Empty unless the latest run is Completed (a Reverted or Failed run wrote
-	nothing that still stands). Fields the run found unchanged are never recorded,
-	so they are not listed. Each entry is ``{fieldname, label, value, edited,
-	refreshes}``: ``value`` is what the run wrote, cast to the field's type so the
-	client can compare it with an unsaved value; ``edited`` is whether the saved
-	record no longer holds it (compared like ``Run.undo``); ``refreshes`` is whether
-	re-enriching overwrites the field even after the user edited it (an "Always
-	refresh" mapping).
+	Covers every Completed run (a Reverted or Failed run wrote nothing that still
+	stands); a field written by several runs is reported from the newest. A run
+	records only the fields it changed, so a re-enrich that found the same values
+	leaves the earlier run's entries in place. Each entry is ``{fieldname, label,
+	value, edited, refreshes}``: ``value`` is what the newest run wrote, cast to the
+	field's type so the client can compare it with an unsaved value; ``edited`` is
+	whether the saved record no longer holds it (compared like ``Run.undo``);
+	``refreshes`` is whether re-enriching overwrites the field even after the user
+	edited it (an "Always refresh" mapping).
 	"""
 	doc = frappe.get_doc(reference_doctype, reference_name)
 	doc.check_permission("read")
 
-	run = _latest_run(reference_doctype, reference_name)
-	if not run or frappe.db.get_value("CRM Enrichment Run", run, "status") != "Completed":
+	runs = _completed_runs(reference_doctype, reference_name)
+	if not runs:
 		return []
 
 	refreshed = {
@@ -197,19 +231,25 @@ def get_enriched_fields(reference_doctype: str, reference_name: str) -> list[dic
 		for mapping in get_config().mappings_by_doctype.get(reference_doctype, [])
 		if mapping.write_policy == POLICY_ALWAYS_REFRESH
 	}
-	out = []
-	for change in frappe.get_doc("CRM Enrichment Run", run).changes:
-		df = doc.meta.get_field(change.fieldname)
-		if not df:
-			continue
-		value = restore_value(df, change.new_value)
-		out.append(
-			{
-				"fieldname": change.fieldname,
-				"label": _(df.label),
-				"value": value,
-				"edited": cstr(doc.get(change.fieldname)) != cstr(value),
-				"refreshes": change.fieldname in refreshed,
-			}
-		)
+	changes_by_run = _run_changes(runs)
+	out, seen = [], set()
+	for run in runs:
+		for change in changes_by_run.get(run, []):
+			# Runs are newest first, so the first change seen for a field wins.
+			if change.fieldname in seen:
+				continue
+			seen.add(change.fieldname)
+			df = doc.meta.get_field(change.fieldname)
+			if not df:
+				continue
+			value = restore_value(df, change.new_value)
+			out.append(
+				{
+					"fieldname": change.fieldname,
+					"label": _(df.label),
+					"value": value,
+					"edited": cstr(doc.get(change.fieldname)) != cstr(value),
+					"refreshes": change.fieldname in refreshed,
+				}
+			)
 	return out
