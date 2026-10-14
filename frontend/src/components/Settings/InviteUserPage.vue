@@ -8,7 +8,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Invite users to access CRM. Specify their roles to control access and permissions',
+              'Invite users to access CRM. Specify their roles to control access and permissions.',
             )
           }}
         </p>
