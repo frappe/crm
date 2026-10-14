@@ -26,3 +26,41 @@ export function getDataImportRow(row, dataImport) {
   }
   return dataImport[row]
 }
+
+const importQueryKeys = [
+  'import',
+  'import_field',
+  'import_user',
+  'import_from',
+  'import_to',
+]
+
+// "Go to list" shows only what one import touched: records its user created
+// (or, for updates, changed) between making the import and its last finish.
+export function importListQuery(dataImport) {
+  const { name, owner, creation, modified, import_type } = dataImport
+  return {
+    import: name,
+    import_field:
+      import_type === 'Insert New Records' ? 'creation' : 'modified',
+    import_user: owner,
+    import_from: creation,
+    import_to: modified,
+  }
+}
+
+export function importListFilters(query) {
+  const { import_field, import_user, import_from, import_to } = query
+  if (!query.import || !import_user || !import_from || !import_to) return {}
+  const range = ['between', [import_from, import_to]]
+  if (import_field === 'modified') {
+    return { modified_by: import_user, modified: range }
+  }
+  return { owner: import_user, creation: range }
+}
+
+export function withoutImportQuery(query) {
+  const rest = { ...query }
+  for (const key of importQueryKeys) delete rest[key]
+  return rest
+}

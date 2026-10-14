@@ -407,6 +407,7 @@ import {
 } from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
+import { importListFilters, withoutImportQuery } from '@/utils/dataImport'
 import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
@@ -444,37 +445,16 @@ const resizeColumn = defineModel('resizeColumn', { type: Boolean })
 const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
+const router = useRouter()
 
-// Data Import's "Go to list" opens this list on the records one import created
-// or updated. Kept out of the saved view, like the page's own fixed filters.
-const defaultFilters = computed(() => {
-  const { import_field, import_user, import_from, import_to } = route.query
-  if (!route.query.import || !import_user || !import_from || !import_to) {
-    return props.filters
-  }
-  const field = import_field === 'modified' ? 'modified' : 'creation'
-  return {
-    ...props.filters,
-    [field === 'creation' ? 'owner' : 'modified_by']: import_user,
-    [field]: ['between', [import_from, import_to]],
-  }
-})
+const defaultFilters = computed(() => ({
+  ...props.filters,
+  ...importListFilters(route.query),
+}))
 
 function clearImportFilter() {
-  const query = { ...route.query }
-  for (const key of [
-    'import',
-    'import_field',
-    'import_user',
-    'import_from',
-    'import_to',
-  ]) {
-    delete query[key]
-  }
-  router.replace({ query })
+  router.replace({ query: withoutImportQuery(route.query) })
 }
-
-const router = useRouter()
 
 const defaultParams = ref('')
 
