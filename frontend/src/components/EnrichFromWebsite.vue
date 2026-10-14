@@ -294,6 +294,11 @@ async function enrich() {
   // Keyboard activation still reaches here while running; `checking` stops a
   // second click during the edit check from opening a second dialog.
   if (running.value || undoing.value || checking || !hasWebsite.value) return
+  // The record reloads when the run finishes, which would drop unsaved edits.
+  if (document.isDirty) {
+    toast.warning(__('Save your changes before enriching'))
+    return
+  }
 
   let edited
   checking = true
