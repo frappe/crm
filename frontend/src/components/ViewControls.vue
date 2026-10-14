@@ -626,6 +626,10 @@ function getParams() {
 
 let listResource
 
+const pageFiltersKey = Object.keys(defaultFilters.value).length
+  ? [JSON.stringify(defaultFilters.value)]
+  : []
+
 listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
@@ -633,7 +637,7 @@ listResource = createResource({
     props.doctype,
     route.query.view,
     route.params.viewType,
-    route.query.import,
+    ...pageFiltersKey,
   ],
   auto: true,
   onSuccess(data) {
