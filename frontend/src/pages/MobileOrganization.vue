@@ -161,7 +161,6 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import { useDocument } from '@/data/document'
-import { provideEnrichedFieldnames } from '@/data/enrichedFields'
 import { getSettings } from '@/stores/settings'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -209,9 +208,6 @@ const {
   permissions,
   triggerOnRender,
 } = useDocument('CRM Organization', props.organizationId)
-
-// For the enriched-field icon in the side panel and Data tab.
-provideEnrichedFieldnames('CRM Organization', props.organizationId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
 

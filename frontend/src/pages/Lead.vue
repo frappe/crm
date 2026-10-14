@@ -335,7 +335,7 @@ const {
   error,
 } = useDocument('CRM Lead', props.leadId)
 
-// For the enriched-field icon in the side panel and Data tab.
+// For the enriched-field icon in the Data tab.
 provideEnrichedFieldnames('CRM Lead', props.leadId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
