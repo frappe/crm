@@ -23,18 +23,11 @@
         <div class="-ml-2 h-[70%] border-l" />
         <div class="flex shrink-0 gap-2">
           <Button
-            v-if="route.query.import"
-            :label="__('From import')"
+            v-if="filterChip"
+            :label="filterChip.label"
             iconRight="lucide-x"
             :tooltip="__('Show all records')"
-            @click="clearImportFilter"
-          />
-          <Button
-            v-if="filtersLabel"
-            :label="filtersLabel"
-            iconRight="lucide-x"
-            :tooltip="__('Show all records')"
-            @click="emit('clearFilters')"
+            @click="filterChip.clear"
           />
           <Button
             :tooltip="__('Refresh')"
@@ -183,18 +176,11 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
-          v-if="route.query.import"
-          :label="__('From import')"
+          v-if="filterChip"
+          :label="filterChip.label"
           iconRight="lucide-x"
           :tooltip="__('Show all records')"
-          @click="clearImportFilter"
-        />
-        <Button
-          v-if="filtersLabel"
-          :label="filtersLabel"
-          iconRight="lucide-x"
-          :tooltip="__('Show all records')"
-          @click="emit('clearFilters')"
+          @click="filterChip.clear"
         />
         <Button
           :tooltip="__('Refresh')"
@@ -452,9 +438,18 @@ const defaultFilters = computed(() => ({
   ...importListFilters(route.query),
 }))
 
-function clearImportFilter() {
-  router.replace({ query: withoutImportQuery(route.query) })
-}
+const filterChip = computed(() => {
+  if (props.filtersLabel) {
+    return { label: props.filtersLabel, clear: () => emit('clearFilters') }
+  }
+  if (route.query.import) {
+    return {
+      label: __('From import'),
+      clear: () => router.replace({ query: withoutImportQuery(route.query) }),
+    }
+  }
+  return null
+})
 
 const defaultParams = ref('')
 
