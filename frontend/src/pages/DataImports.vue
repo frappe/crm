@@ -58,6 +58,9 @@
     v-else-if="dataImports.data && !rows.length"
     name="Data Imports"
     icon="import"
+    :filtered="
+      !!Object.keys({ ...queryFilters, ...dataImports.params?.filters }).length
+    "
     :description="__('Imports you start from a list appear here.')"
   />
 </template>
