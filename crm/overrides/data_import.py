@@ -1,7 +1,4 @@
-from frappe.core.doctype.data_import.data_import import DataImport
-
-
-class CustomDataImport(DataImport):
+class DataImportListView:
 	@staticmethod
 	def default_list_data():
 		columns = [
