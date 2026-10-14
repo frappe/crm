@@ -219,8 +219,7 @@ def set_as_default(name: str | int | None = None, type: str | None = None, docty
 
 
 def dump_group_by_settings(value):
-	"""Store the grouping as JSON text. The list sends the settings object, or None when
-	cleared; editing or duplicating a saved view sends back the stored JSON text."""
+	"""Store the grouping as JSON text, from the list's object or a saved view's stored text."""
 	return json.dumps(parse_json(value)) if value else None
 
 

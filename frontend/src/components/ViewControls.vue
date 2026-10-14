@@ -631,8 +631,7 @@ listResource = createResource({
 
 list.value = listResource
 
-// grouping turns the list into one summary row per group, like desk's report view;
-// it lives on the list params with the rest of the view state
+// one summary row per group, like desk's report view; stored on the list params
 const groupSummary = computed(() =>
   canGroup.value ? listResource.params?.view?.group_by_settings || null : null,
 )
