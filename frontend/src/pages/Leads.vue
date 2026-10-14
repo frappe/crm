@@ -26,6 +26,7 @@
     :filters="{ converted: 0 }"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
+      groupSummary: true,
     }"
   />
   <KanbanView

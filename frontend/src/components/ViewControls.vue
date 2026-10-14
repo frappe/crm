@@ -43,7 +43,7 @@
             @update="updateGroupBy"
           />
           <GroupSummaryButton
-            v-if="isListViewType"
+            v-if="canGroup"
             :modelValue="groupSummary"
             :doctype="doctype"
             hideLabel
@@ -202,7 +202,7 @@
           @update="updateGroupBy"
         />
         <GroupSummaryButton
-          v-if="isListViewType"
+          v-if="canGroup"
           :modelValue="groupSummary"
           :doctype="doctype"
           @update:modelValue="updateGroupSummary"
@@ -522,6 +522,20 @@ usePageMeta(() => {
   }
 })
 
+// a saved view carries its own type; otherwise the route's
+function viewTypeOf(_view) {
+  return _view?.type || route.params.viewType || 'list'
+}
+
+// only list views of a host that renders the grouped table can be grouped
+const canGroup = computed(
+  () =>
+    Boolean(props.options?.groupSummary) &&
+    viewTypeOf(
+      getView(route.query.view, route.params.viewType, props.doctype),
+    ) === 'list',
+)
+
 // grouping turns the list into one summary row per group, like desk's report view
 const groupSummary = ref(null)
 
@@ -571,7 +585,7 @@ watch(updatedPageCount, (value) => {
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const view_name = _view?.name || ''
-  const view_type = _view?.type || route.params.viewType || 'list'
+  const view_type = viewTypeOf(_view)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const group_by_field = _view?.group_by_field || 'owner'
@@ -602,9 +616,10 @@ function getParams() {
     public: _view?.public || false,
     group_by_settings: _view?.group_by_settings || '',
   }
-  // the saved grouping comes back with the view; only list views can be grouped
-  groupSummary.value =
-    view_type === 'list' ? parseGroupBy(_view?.group_by_settings) : null
+  // the saved grouping comes back with the view
+  groupSummary.value = canGroup.value
+    ? parseGroupBy(_view?.group_by_settings)
+    : null
 
   return {
     doctype: props.doctype,
@@ -779,9 +794,6 @@ function resolveCurrentUser(filters) {
   return filters
 }
 
-const isListViewType = computed(
-  () => !route.params.viewType || route.params.viewType === 'list',
-)
 const groupSummaryFilters = computed(() =>
   resolveCurrentUser({
     ...props.filters,
