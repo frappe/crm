@@ -56,6 +56,8 @@ import { ref, computed, onBeforeUnmount } from 'vue'
 import { Button, Spinner, Tooltip, call, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useDocument } from '@/data/document'
+import { reloadEnrichedFields } from '@/data/enrichedFields'
+import { createDialog } from '@/utils/dialogs'
 import { globalStore } from '@/stores/global'
 import { organizationsStore } from '@/stores/organizations'
 
@@ -80,6 +82,7 @@ const running = ref(false)
 // to 0 snaps back instead of sliding.
 const fill = ref(0)
 let creepTimer = null
+let checking = false
 let finishTimer = null
 
 // Fill shown right after the click, before the first socket event arrives.
@@ -165,6 +168,7 @@ function finish(payload) {
   } else {
     toast.success(__('Enrichment complete.'))
   }
+  reloadEnrichedFields(props.doctype, props.docname)
   emit('done') // parent reloads the document + side panel — no manual refresh
 }
 
@@ -189,10 +193,55 @@ function onProgress(data) {
   }
 }
 
-async function enrich() {
-  // Keyboard activation still reaches here while running.
-  if (running.value || !hasWebsite.value) return
+// Labels of fields the user edited since the last run that re-enriching would
+// overwrite. "Fill if empty" fields keep the user's value, so they aren't listed.
+async function overwrittenEdits() {
+  const fields = await call('crm.domain_enrichment.api.get_enriched_fields', {
+    reference_doctype: props.doctype,
+    reference_name: props.docname,
+  })
+  return fields.filter((f) => f.edited && f.refreshes).map((f) => f.label)
+}
 
+async function enrich() {
+  // Keyboard activation still reaches here while running; `checking` stops a
+  // second click during the edit check from opening a second dialog.
+  if (running.value || checking || !hasWebsite.value) return
+
+  let edited
+  checking = true
+  try {
+    edited = await overwrittenEdits()
+  } catch (error) {
+    toast.error(error.messages?.[0] || __('Could not start enrichment.'))
+    return
+  } finally {
+    checking = false
+  }
+  if (!edited.length) return start()
+
+  createDialog({
+    title: __('Overwrite your edits?'),
+    message: __(
+      'You edited these fields after the last enrichment. Enriching again will replace them with values from the website: {0}',
+      [edited.join(', ')],
+    ),
+    size: 'sm',
+    actions: [
+      { label: __('Cancel'), onClick: ({ close }) => close() },
+      {
+        label: __('Enrich'),
+        variant: 'solid',
+        onClick: ({ close }) => {
+          close()
+          start()
+        },
+      },
+    ],
+  })
+}
+
+async function start() {
   capture('enrichment_triggered', { doctype: props.doctype })
   clearTimers()
   running.value = true
