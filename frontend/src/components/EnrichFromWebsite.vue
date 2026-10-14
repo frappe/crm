@@ -16,20 +16,26 @@
     </div>
   </Tooltip>
   <!-- No `loading` prop: it changes the button's look. While running, the
-       same Spinner it renders replaces the icon in the prefix, a grey fill
-       tracks the real progress, and pointer-events-none + the guard in
-       enrich() block repeat clicks. -->
+       same Spinner it renders replaces iconLeft through the prefix slot, a
+       grey fill tracks the real progress, and pointer-events-none + the guard
+       in enrich() block repeat clicks. -->
   <Button
     v-else
     :label="label"
     :tooltip="tooltip"
+    iconLeft="lucide-zap"
     :aria-disabled="running || undefined"
     :disabled="undoing"
     class="relative isolate overflow-hidden"
     :class="{ 'pointer-events-none': running }"
     @click="enrich"
   >
-    <template #prefix>
+    <template v-if="running" #prefix>
+      <Spinner class="size-4" aria-hidden="true" />
+    </template>
+    <!-- In the suffix only so it doesn't displace iconLeft; it's absolutely
+         positioned, so where it sits in the button doesn't matter. -->
+    <template #suffix>
       <!-- Same technique as frappe-ui's Progress.vue: a full-width fill slid
            left so only `fill`% shows. z-[-1] inside the isolated button keeps
            it above the button background but under the icon and label. -->
@@ -45,8 +51,6 @@
           transitionDuration: `${TICK_MS}ms`,
         }"
       />
-      <Spinner v-if="running" class="size-4" aria-hidden="true" />
-      <span v-else class="lucide-zap size-4" aria-hidden="true" />
     </template>
   </Button>
 </template>

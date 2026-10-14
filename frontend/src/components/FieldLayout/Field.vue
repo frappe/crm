@@ -6,20 +6,22 @@
         field.fieldtype != 'Button' &&
         field.fieldtype != 'HTML'
       "
-      class="mb-2 text-sm text-ink-gray-5"
+      class="mb-2 flex items-center justify-between gap-2 text-sm text-ink-gray-5"
     >
-      {{ __(field.label) }}
-      <span
-        v-if="
-          field.reqd ||
-          (field.mandatory_depends_on && field.mandatory_via_depends_on)
-        "
-        class="text-ink-red-4"
-        >*</span
-      >
+      <span>
+        {{ __(field.label) }}
+        <span
+          v-if="
+            field.reqd ||
+            (field.mandatory_depends_on && field.mandatory_via_depends_on)
+          "
+          class="text-ink-red-4"
+          >*</span
+        >
+      </span>
       <Tooltip v-if="isEnriched" :text="__('Enriched from website')">
         <span
-          class="lucide-zap ml-1 inline-block size-3 align-[-1px] text-ink-gray-5"
+          class="lucide-zap size-3 shrink-0 text-ink-blue-5"
           :aria-label="__('Enriched from website')"
         />
       </Tooltip>
@@ -384,6 +386,7 @@ import {
 import { isFetchedFromLink } from '@/utils/fetchFrom'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+import { injectEnrichedFieldnames } from '@/data/enrichedFields'
 
 import {
   Combobox,
@@ -405,13 +408,14 @@ const isNote = computed(() => unref(doctype) === 'FCRM Note')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
-// Fieldnames still holding the value enrichment wrote; only the Data tab
-// provides it, so the enriched icon shows nowhere else.
-const enrichedFieldnames = inject('enrichedFieldnames', null)
+// Provided by the record's page, and empty for any other record, so the icon
+// never shows in a modal's fields (Quick Entry, layout preview).
+const enrichedFieldnames = injectEnrichedFieldnames(doctype, docname)
 const isEnriched = computed(
   () =>
+    !preview &&
     !isGridRow &&
-    Boolean(enrichedFieldnames?.value?.has(props.field.fieldname)),
+    enrichedFieldnames.value.has(props.field.fieldname),
 )
 
 // Guard getMeta — skip when doctype is empty (inline/standalone mode)
