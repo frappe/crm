@@ -211,7 +211,7 @@
     v-else-if="viewControls?.groupSummary"
     doctype="CRM Deal"
     :settings="viewControls.groupSummary"
-    :filters="viewControls.groupSummaryFilters"
+    :filters="viewControls.currentFilters"
     @update:settings="(s) => viewControls.updateGroupSummary(s)"
   />
   <DealsListView

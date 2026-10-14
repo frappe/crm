@@ -237,7 +237,7 @@
     v-else-if="viewControls?.groupSummary"
     doctype="CRM Lead"
     :settings="viewControls.groupSummary"
-    :filters="viewControls.groupSummaryFilters"
+    :filters="viewControls.currentFilters"
     @update:settings="(s) => viewControls.updateGroupSummary(s)"
   />
   <LeadsListView

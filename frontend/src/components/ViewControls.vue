@@ -724,7 +724,7 @@ function resolveCurrentUser(filters) {
   return filters
 }
 
-const groupSummaryFilters = computed(() =>
+const currentFilters = computed(() =>
   resolveCurrentUser({
     ...props.filters,
     ...(list.value.params?.filters || {}),
@@ -732,25 +732,31 @@ const groupSummaryFilters = computed(() =>
 )
 
 async function exportRows() {
-  let filters = JSON.stringify(
-    resolveCurrentUser({ ...props.filters, ...list.value.params.filters }),
-  )
+  let filters = JSON.stringify(currentFilters.value)
 
   // a grouped list exports what it shows: one row per group, every group
-  if (groupSummary.value) {
-    const grouped = serializeGroupBy(groupSummary.value)
-    window.location.href =
-      `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}` +
-      `&title=${encodeURIComponent(props.doctype)}&doctype=${encodeURIComponent(props.doctype)}` +
-      `&fields=${encodeURIComponent(JSON.stringify(grouped.fields))}` +
-      `&filters=${encodeURIComponent(filters)}` +
-      `&group_by=${encodeURIComponent(grouped.group_by)}` +
-      `&order_by=${encodeURIComponent(grouped.order_by || '')}&view=Report`
-    showExportDialog.value = false
-    export_type.value = 'Excel'
-    return
-  }
+  window.location.href = groupSummary.value
+    ? groupedExportUrl(filters)
+    : listExportUrl(filters)
 
+  showExportDialog.value = false
+  export_all.value = false
+  export_type.value = 'Excel'
+}
+
+function groupedExportUrl(filters) {
+  const grouped = serializeGroupBy(groupSummary.value)
+  return (
+    `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}` +
+    `&title=${encodeURIComponent(props.doctype)}&doctype=${encodeURIComponent(props.doctype)}` +
+    `&fields=${encodeURIComponent(JSON.stringify(grouped.fields))}` +
+    `&filters=${encodeURIComponent(filters)}` +
+    `&group_by=${encodeURIComponent(grouped.group_by)}` +
+    `&order_by=${encodeURIComponent(grouped.order_by || '')}&view=Report`
+  )
+}
+
+function listExportUrl(filters) {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
 
   let order_by = list.value.params.order_by
@@ -765,12 +771,7 @@ async function exportRows() {
   if (selectedRows.value?.length && !export_all.value) {
     url += `&selected_items=${JSON.stringify(selectedRows.value)}`
   }
-
-  window.location.href = url
-
-  showExportDialog.value = false
-  export_all.value = false
-  export_type.value = 'Excel'
+  return url
 }
 
 let standardViews = []
@@ -1790,7 +1791,7 @@ function likeDoc({ name, liked }) {
 
 defineExpose({
   groupSummary,
-  groupSummaryFilters,
+  currentFilters,
   updateGroupSummary,
   applyFilter,
   applyLikeFilter,
