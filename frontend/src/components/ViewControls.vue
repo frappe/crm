@@ -496,9 +496,6 @@ const canGroup = computed(
     ) === 'list',
 )
 
-// grouping turns the list into one summary row per group, like desk's report view
-const groupSummary = ref(null)
-
 const view = ref({
   name: '',
   label: '',
@@ -574,12 +571,7 @@ function getParams() {
     load_default_columns: _view?.row || true,
     pinned: _view?.pinned || false,
     public: _view?.public || false,
-    group_by_settings: _view?.group_by_settings || '',
   }
-  // the saved grouping comes back with the view
-  groupSummary.value = canGroup.value
-    ? parseGroupBy(_view?.group_by_settings)
-    : null
 
   return {
     doctype: props.doctype,
@@ -590,6 +582,7 @@ function getParams() {
       custom_view_name: view_name,
       view_type: view_type,
       group_by_field: group_by_field,
+      group_by_settings: parseGroupBy(_view?.group_by_settings),
     },
     column_field: column_field,
     title_field: title_field,
@@ -622,6 +615,7 @@ listResource = createResource({
         custom_view_name: cv?.name || '',
         view_type: cv?.type || route.params.viewType || 'list',
         group_by_field: params?.view?.group_by_field || 'owner',
+        group_by_settings: params?.view?.group_by_settings || null,
       },
       column_field: data.column_field,
       title_field: data.title_field,
@@ -636,6 +630,13 @@ listResource = createResource({
 })
 
 list.value = listResource
+
+// grouping turns the list into one summary row per group, like desk's report view;
+// it lives on the list params with the rest of the view state
+const groupSummary = computed(() =>
+  canGroup.value ? listResource.params?.view?.group_by_settings || null : null,
+)
+
 // Keep an unsaved view change on cached re-entry; don't reset to the saved view (frappe/crm#2833).
 // kanban_columns is excluded: pagination (load more) mutates it without being a user edit.
 const dirtySignature = (p) =>
@@ -643,6 +644,7 @@ const dirtySignature = (p) =>
     p.filters || {},
     p.order_by,
     p.view?.group_by_field,
+    parseGroupBy(p.view?.group_by_settings),
     p.column_field,
     p.title_field,
     p.kanban_fields,
@@ -1228,13 +1230,13 @@ function updateSort(order_by) {
   }
 }
 
-function updateGroupSummary(value) {
+function updateGroupSummary(settings) {
   viewUpdated.value = true
   if (!defaultParams.value) {
     defaultParams.value = getParams()
   }
-  groupSummary.value = value
-  view.value.group_by_settings = value ? JSON.stringify(value) : ''
+  listResource.params = defaultParams.value
+  listResource.params.view.group_by_settings = settings
 
   if (!route.query.view) {
     createOrUpdateStandardView()
@@ -1292,10 +1294,15 @@ function updateColumns(obj) {
   }
 }
 
+// saves read the grouping from the list params, its only copy
+function groupBySettingsToSave() {
+  return getListParams().view?.group_by_settings || null
+}
+
 function persistCustomView() {
   view.value.doctype = props.doctype
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
-    view: view.value,
+    view: { ...view.value, group_by_settings: groupBySettingsToSave() },
   }).then(() => {
     reloadView()
     viewUpdated.value = false
@@ -1459,7 +1466,7 @@ function createOrUpdateStandardView() {
   call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
-      view: view.value,
+      view: { ...view.value, group_by_settings: groupBySettingsToSave() },
     },
   ).then(() => {
     reloadViewAfterSave()
@@ -1479,7 +1486,6 @@ function createOrUpdateStandardView() {
       rows: defaultParams.value.rows,
       route_name: route.name,
       load_default_columns: view.value.load_default_columns,
-      group_by_settings: view.value.group_by_settings,
     }
     viewUpdated.value = false
   })
@@ -1621,7 +1627,10 @@ function createView() {
   view.value.name = ''
   view.value.label = ''
   view.value.icon = ''
-  viewModalObj.value = view.value
+  viewModalObj.value = {
+    ...view.value,
+    group_by_settings: groupBySettingsToSave(),
+  }
   viewModalObj.value.mode = 'create'
   showViewModal.value = true
 }
@@ -1721,7 +1730,7 @@ function saveView() {
     rows: defaultParams.value.rows,
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
-    group_by_settings: view.value.group_by_settings,
+    group_by_settings: groupBySettingsToSave(),
   }
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'edit'
