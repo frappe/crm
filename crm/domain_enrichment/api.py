@@ -8,7 +8,8 @@ run) and ``get_status`` (the Enrich button's state for a record).
 All are type-annotated -- hooks.py sets ``require_type_annotated_api_methods``.
 Security: ``enrich`` / ``retry`` / ``undo`` enforce the doctype allow-list (from
 Settings) + a ``write`` permission check and are rate-limited per user (see
-``ENRICH_RATE_LIMIT``); ``get_status`` needs ``read`` on the record.
+``ENRICH_RATE_LIMIT``); ``get_status`` / ``get_enriched_fields`` need ``read``
+on the record.
 """
 
 from __future__ import annotations
@@ -16,9 +17,12 @@ from __future__ import annotations
 import frappe
 from frappe import _
 from frappe.rate_limiter import rate_limit
+from frappe.utils import cstr
 from frappe.utils.background_jobs import is_job_enqueued
 
 from .config import ENRICHABLE_DOCTYPES, EnrichmentConfig, get_config
+from .doctype.crm_enrichment_run.crm_enrichment_run import restore_value
+from .mapper import POLICY_ALWAYS_REFRESH
 from .tasks import enqueue_enrichment, enrichment_job_id
 
 # Per-user, per-minute cap on each enrich entry point (each gets its own bucket).
@@ -165,3 +169,47 @@ def get_status(reference_doctype: str, reference_name: str) -> dict:
 		"state": state,
 		"can_undo": _can_undo(run),
 	}
+
+
+@frappe.whitelist()
+def get_enriched_fields(reference_doctype: str, reference_name: str) -> list[dict]:
+	"""The fields the record's latest enrichment run wrote, for the Data tab's
+	enriched-field icon and the re-enrich warning.
+
+	Empty unless the latest run is Completed (a Reverted or Failed run wrote
+	nothing that still stands). Fields the run found unchanged are never recorded,
+	so they are not listed. Each entry is ``{fieldname, label, value, edited,
+	refreshes}``: ``value`` is what the run wrote, cast to the field's type so the
+	client can compare it with an unsaved value; ``edited`` is whether the saved
+	record no longer holds it (compared like ``Run.undo``); ``refreshes`` is whether
+	re-enriching overwrites the field even after the user edited it (an "Always
+	refresh" mapping).
+	"""
+	doc = frappe.get_doc(reference_doctype, reference_name)
+	doc.check_permission("read")
+
+	run = _latest_run(reference_doctype, reference_name)
+	if not run or frappe.db.get_value("CRM Enrichment Run", run, "status") != "Completed":
+		return []
+
+	refreshed = {
+		mapping.target_fieldname
+		for mapping in get_config().mappings_by_doctype.get(reference_doctype, [])
+		if mapping.write_policy == POLICY_ALWAYS_REFRESH
+	}
+	out = []
+	for change in frappe.get_doc("CRM Enrichment Run", run).changes:
+		df = doc.meta.get_field(change.fieldname)
+		if not df:
+			continue
+		value = restore_value(df, change.new_value)
+		out.append(
+			{
+				"fieldname": change.fieldname,
+				"label": _(df.label),
+				"value": value,
+				"edited": cstr(doc.get(change.fieldname)) != cstr(value),
+				"refreshes": change.fieldname in refreshed,
+			}
+		)
+	return out

@@ -563,6 +563,81 @@ class UndoTest(IntegrationTestCase):
 		with self.assertRaises(frappe.PermissionError):
 			api.get_status("CRM Organization", org.name)
 
+	def test_enriched_fields_lists_latest_run_changes(self):
+		org = self._enriched_org()
+		changed = [c.fieldname for c in self._latest_run(org).changes]
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertCountEqual([f["fieldname"] for f in fields], changed)
+		linkedin = next(f for f in fields if f["fieldname"] == "linkedin")
+		self.assertEqual(linkedin["value"], "https://www.linkedin.com/company/acme")
+		self.assertTrue(linkedin["label"])
+		self.assertFalse(any(f["edited"] for f in fields))
+
+	def test_enriched_fields_flags_field_edited_after_enrichment(self):
+		org = self._enriched_org()
+		org.linkedin = "https://www.linkedin.com/company/edited-by-user"
+		org.save()
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertEqual([f["fieldname"] for f in fields if f["edited"]], ["linkedin"])
+
+	def test_enriched_fields_skips_unchanged_field(self):
+		# The run found the value already there, so it wrote nothing and gets no icon.
+		org = self._enriched_org(linkedin="https://www.linkedin.com/company/acme")
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertNotIn("linkedin", [f["fieldname"] for f in fields])
+
+	def test_enriched_fields_casts_value_to_field_type(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Enriched Revenue Org " + frappe.generate_hash(length=4)
+		org.insert()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			"https://acme.example",
+			status="Completed",
+			changes=[FieldChange("annual_revenue", None, 9000, "Annual Revenue")],
+		)
+
+		(field,) = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertEqual(field["value"], 9000.0)
+		self.assertIsInstance(field["value"], float)
+		# write_run alone never saved the value onto the record.
+		self.assertTrue(field["edited"])
+
+	def test_enriched_fields_flags_always_refresh_mappings(self):
+		org = self._enriched_org()
+		fieldname = self._latest_run(org).changes[0].fieldname
+		cfg = get_config()
+		for mapping in cfg.mappings_by_doctype["CRM Organization"]:
+			mapping.write_policy = (
+				"Always refresh" if mapping.target_fieldname == fieldname else "Fill if empty"
+			)
+
+		with mock.patch.object(api, "get_config", return_value=cfg):
+			fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertEqual([f["fieldname"] for f in fields if f["refreshes"]], [fieldname])
+
+	def test_enriched_fields_empty_after_undo(self):
+		org = self._enriched_org()
+		api.undo("CRM Organization", org.name)
+
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+	def test_enriched_fields_requires_read_permission(self):
+		org = self._enriched_org()
+		frappe.set_user(_make_minimal_user())
+
+		with self.assertRaises(frappe.PermissionError):
+			api.get_enriched_fields("CRM Organization", org.name)
+
 
 def _make_minimal_user():
 	"""Create (or reuse) a user with no CRM Organization role for permission tests."""
