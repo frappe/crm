@@ -56,8 +56,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
 import { Button, Spinner, Tooltip, call, toast } from 'frappe-ui'
+import Icon from '@/components/Icon.vue'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useDocument } from '@/data/document'
 import { reloadEnrichedFields } from '@/data/enrichedFields'
@@ -191,13 +192,17 @@ function finish(payload) {
   reset()
   const filled = (payload && payload.filled_fields) || []
   const notes = (payload && payload.notes) || []
-  if (filled.length) {
-    toast.success(__('Enriched. Filled: {0}', [filled.join(', ')]))
-  } else if (notes.length) {
+  if (notes.length && !filled.length) {
     // Nothing extracted — explain why (blocked / JS-only site).
     toast.warning(notes[0])
   } else {
-    toast.success(__('Enrichment complete.'))
+    // Lightning icon as in the Figma toast, passed the way scriptToast does.
+    toast.success(__('Enrichment successful'), {
+      icon: () => h(Icon, { icon: 'lucide-zap', class: 'size-4' }),
+      description: filled.length
+        ? __('Filled: {0}', [filled.join(', ')])
+        : undefined,
+    })
   }
   afterChange()
 }
@@ -240,6 +245,7 @@ async function poll() {
   if (!pollTimer || finishTimer || !status || status.state === 'running') return
   // Not 'done' means the run failed: no full fill to show, go straight back.
   if (status.state !== 'done') {
+    toast.error(__('Enrichment failed.'))
     reset()
     afterChange()
     return
