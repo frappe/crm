@@ -26,8 +26,8 @@ export function holdsEnrichedValue(doc, field) {
   return String(doc?.[field.fieldname] ?? '') === String(field.value ?? '')
 }
 
-// Provided once by the record's page so every field in its Data tab shares one
-// fetch: frappe-ui reloads a cached `auto` resource each time it's created.
+// Provided once by the Data tab so all its fields share one fetch: frappe-ui
+// reloads a cached `auto` resource each time it's created.
 // The set holds the fieldnames that still hold the value enrichment wrote,
 // read from the live doc so a field's icon goes away as soon as it's edited.
 export function provideEnrichedFieldnames(doctype, docname) {
