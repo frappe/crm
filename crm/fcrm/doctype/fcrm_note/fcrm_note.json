@@ -11,7 +11,10 @@
   "title",
   "content",
   "reference_doctype",
-  "reference_docname"
+  "reference_docname",
+  "pinned",
+  "pinned_by",
+  "pinned_on"
  ],
  "fields": [
   {
@@ -41,6 +44,27 @@
    "fieldtype": "Dynamic Link",
    "label": "Reference Doc",
    "options": "reference_doctype"
+  },
+  {
+   "default": "0",
+   "fieldname": "pinned",
+   "fieldtype": "Check",
+   "label": "Pinned"
+  },
+  {
+   "depends_on": "pinned",
+   "fieldname": "pinned_by",
+   "fieldtype": "Link",
+   "label": "Pinned By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "depends_on": "pinned",
+   "fieldname": "pinned_on",
+   "fieldtype": "Datetime",
+   "label": "Pinned On",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -50,7 +74,7 @@
    "link_fieldname": "note"
   }
  ],
- "modified": "2026-02-23 12:22:56.394635",
+ "modified": "2026-10-13 10:30:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Note",

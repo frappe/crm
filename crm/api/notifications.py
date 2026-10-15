@@ -58,6 +58,8 @@ def get_hash(notification):
 	_hash = ""
 	if notification.type == "Mention" and notification.notification_type_doc:
 		_hash = "#" + notification.notification_type_doc
+		if notification.notification_type_doctype == "FCRM Note":
+			_hash = "#notes"
 
 	if notification.type == "WhatsApp":
 		_hash = "#whatsapp"

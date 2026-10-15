@@ -1,15 +1,24 @@
 <template>
-  <Dialog v-model:open="show" :size="'xl'" bare>
+  <Dialog
+    v-model:open="show"
+    :size="doctype === 'FCRM Note' ? '2xl' : 'xl'"
+    :dismissible="doctype !== 'FCRM Note'"
+    bare
+  >
     <template #default>
-      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
+      <div
+        class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
+        @keydown.meta.enter.capture.prevent.stop="submit"
+        @keydown.ctrl.enter.capture.prevent.stop="submit"
+      >
         <div class="mb-5 flex items-center justify-between">
           <div class="flex gap-2 items-center">
             <Dialog.Title as-child>
               <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
                 {{
                   editMode
-                    ? __('Edit ', [doctypeTitle || doctype])
-                    : __('Create ', [doctypeTitle || doctype])
+                    ? __('Edit {0}', [__(doctypeTitle || doctype)])
+                    : __('Create {0}', [__(doctypeTitle || doctype)])
                 }}
               </h3>
             </Dialog.Title>
@@ -55,7 +64,7 @@
             variant="solid"
             :label="editMode ? __('Update') : __('Create')"
             :loading="editMode ? document.save.loading : create.loading"
-            @click="editMode ? update() : create()"
+            @click="submit"
           />
         </div>
       </div>
@@ -73,7 +82,8 @@ import { usersStore } from '@/stores/users'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { setupCustomizations } from '@/utils'
-import { Dialog, call, createResource } from 'frappe-ui'
+
+import { Dialog, call, createResource, toast } from 'frappe-ui'
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -142,6 +152,12 @@ async function create() {
 }
 
 function update() {
+  // frappe-ui skips saving an unchanged doc without calling back, so handle it here
+  if (!document.isDirty) {
+    toast.info(__('Nothing to update'))
+    show.value = false
+    return
+  }
   document.save.submit(null, {
     onSuccess: (d) => {
       emit('afterUpdate', d)
@@ -151,6 +167,14 @@ function update() {
       error.value = err.messages?.[0] || __('Could not update document')
     },
   })
+}
+
+async function submit() {
+  // editors save their text on blur, so blur first when saving from the keyboard
+  window.document.activeElement?.blur()
+  await nextTick()
+  if (editMode.value) update()
+  else create()
 }
 
 function openQuickEntryModal() {
