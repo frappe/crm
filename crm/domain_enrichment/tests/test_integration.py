@@ -85,6 +85,27 @@ class MapperWritePolicyTest(IntegrationTestCase):
 		apply_to_document(org, self.result, self.cfg)
 		self.assertEqual(org.company_description, "Hand-written by sales.")
 
+	def test_mappings_writing_same_field_collapse_into_one_change(self):
+		# Two mappings on one field (O -> A -> B) must record a single O -> B change,
+		# else undo restores the intermediate A instead of the original value.
+		cfg = config.EnrichmentConfig(
+			mappings_by_doctype={
+				"CRM Organization": [
+					config.Mapping(
+						"company_name", "CRM Organization", "company_description", "Always refresh"
+					),
+					config.Mapping(
+						"description", "CRM Organization", "company_description", "Always refresh"
+					),
+				]
+			}
+		)
+		org = self._new_org(company_description="Original")
+		changes = apply_to_document(org, self.result, cfg)
+		self.assertEqual(len(changes), 1)
+		self.assertEqual(changes[0].old_value, "Original")
+		self.assertEqual(changes[0].new_value, "AI powered analytics SaaS for product teams.")
+
 	def test_create_missing_link_creates_industry(self):
 		industry = "Quantum Widgets " + frappe.generate_hash(length=6)
 		self.assertFalse(frappe.db.exists("CRM Industry", industry))
@@ -318,10 +339,22 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 		with (
 			mock.patch.object(config, "get_settings", return_value=settings),
 			mock.patch.object(tasks, "get_settings", return_value=settings),
+			mock.patch.object(tasks, "is_job_enqueued", return_value=False),
 			mock.patch.object(tasks.frappe, "enqueue") as enq,
 		):
 			tasks.auto_enrich_on_create(doc)
 		return enq
+
+	def test_reports_not_queued_when_job_already_in_flight(self):
+		settings = self._settings()
+		with (
+			mock.patch.object(tasks, "get_settings", return_value=settings),
+			mock.patch.object(tasks, "is_job_enqueued", return_value=True),
+			mock.patch.object(tasks.frappe, "enqueue") as enq,
+		):
+			out = tasks.enqueue_enrichment("CRM Lead", "L1", "https://acme.example", "Administrator")
+		enq.assert_not_called()
+		self.assertFalse(out["queued"])
 
 	def test_enqueues_for_new_lead(self):
 		enq = self._run(self._doc("CRM Lead", name="L1"), self._settings())
@@ -545,7 +578,32 @@ class UndoTest(IntegrationTestCase):
 
 		status = api.get_status("CRM Organization", org.name)
 
-		self.assertCountEqual(status.keys(), ["running", "last_run_status"])
+		self.assertCountEqual(status.keys(), ["running", "last_run_status", "filled_fields", "notes"])
+
+	def test_status_reports_newest_completed_run_toast_data(self):
+		org = self._enriched_org()
+		run = self._latest_run(org)
+		meta = frappe.get_meta("CRM Organization")
+		labels = []
+		for change in run.changes:
+			label = meta.get_field(change.fieldname).label
+			if label not in labels:
+				labels.append(label)
+
+		status = api.get_status("CRM Organization", org.name)
+
+		self.assertTrue(labels)
+		self.assertEqual(status["filled_fields"], labels)
+		self.assertEqual(status["notes"], (run.notes or "").splitlines())
+
+	def test_status_has_no_toast_data_for_failed_run(self):
+		org = self._enriched_org()
+		tasks.write_run("CRM Organization", org.name, org.website, status="Failed", notes="boom")
+
+		status = api.get_status("CRM Organization", org.name)
+
+		self.assertEqual(status["filled_fields"], [])
+		self.assertEqual(status["notes"], [])
 
 	def test_status_last_run_status_reports_newest_run(self):
 		org = frappe.new_doc("CRM Organization")

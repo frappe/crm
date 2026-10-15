@@ -222,9 +222,17 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[F
 	Never overwrites real user-entered data except per the policies above. Does NOT
 	save the document -- the caller controls persistence/permissions. Returns one
 	``FieldChange`` per field whose value was changed (old and new value);
-	``filled_labels`` turns it into human labels.
+	``filled_labels`` turns it into human labels. When several mappings write the
+	same field, they collapse into one change from the original value to the final
+	one, so undo restores the value the field had before the run.
 	"""
-	changes: list[FieldChange] = []
+	changes: dict[str, FieldChange] = {}
+
+	def record(fieldname, old_value, new_value, label):
+		if fieldname in changes:
+			old_value = changes[fieldname].old_value
+		changes[fieldname] = FieldChange(fieldname, old_value, new_value, label)
+
 	mappings = cfg.mappings_by_doctype.get(doc.doctype, [])
 
 	for mapping in mappings:
@@ -246,7 +254,7 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[F
 				if value is None:
 					continue
 			doc.set(fieldname, value)
-			changes.append(FieldChange(fieldname, current, value, label))
+			record(fieldname, current, value, label)
 			continue
 
 		# Fill-if-empty / Override-defaults both require a non-empty fresh value.
@@ -270,6 +278,6 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[F
 				continue
 
 		doc.set(fieldname, value)
-		changes.append(FieldChange(fieldname, current, value, label))
+		record(fieldname, current, value, label)
 
-	return changes
+	return list(changes.values())
