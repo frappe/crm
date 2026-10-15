@@ -681,7 +681,8 @@ def classify_industry(pages, company_info, industry_rules):
 		SCOPE_HEADLINE: headline,
 		SCOPE_FULL_TEXT: " ".join((p.text or "") for p in pages).lower(),
 		SCOPE_HTML: " ".join((p.html or "") for p in pages).lower(),
-		SCOPE_URL: " ".join((p.url or "") for p in pages).lower(),
+		# A page rejected for redirecting off-site keeps its foreign URL.
+		SCOPE_URL: " ".join(p.url for p in pages if p.url and not p.error).lower(),
 	}
 
 	scores = apply_keyword_rules(text_by_scope, industry_rules)

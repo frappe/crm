@@ -15,6 +15,7 @@ from __future__ import annotations
 from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment import extractors
+from crm.domain_enrichment.config import Rule, _compile_pattern
 from crm.domain_enrichment.result import CrawledPage, Method
 from crm.domain_enrichment.tests import fixtures
 
@@ -749,8 +750,12 @@ class IndustryTest(FrappeTestCase):
 
 	def test_url_scope_matches_page_urls(self):
 		page, _ = fixtures.make_page("https://x.example/shop", "<html><body>Welcome</body></html>")
-		rule = fixtures.keyword_rule("Industry", ["/shop"], industry="Retail", match_scope="URL", weight=2)
-		self.assertEqual(extractors.classify_industry([page], {}, [rule])[0], "Retail")
+		self.assertEqual(extractors.classify_industry([page], {}, [url_rule("/shop")])[0], "Retail")
+
+	def test_url_scope_skips_pages_rejected_as_off_site(self):
+		page, _ = fixtures.make_page("https://other.example/shop", "<html><body></body></html>")
+		page.error = "redirected off-site to other.example"
+		self.assertEqual(extractors.classify_industry([page], {}, [url_rule("/shop")]), ("", 0.0))
 
 	def test_d2c_brand_maps_to_ecommerce(self):
 		self.assertEqual(self._classify("Gymshark", "Shop gym clothing and workout apparel.")[0], "Ecommerce")
@@ -874,3 +879,13 @@ class ReadabilityTest(FrappeTestCase):
 	def test_readable_site_returns_empty_reason(self):
 		page, _ = fixtures.make_page("https://acme.example", fixtures.HOMEPAGE)
 		self.assertEqual(extractors.diagnose_readability([page]), "")
+
+
+def url_rule(pattern):
+	return Rule(
+		rule_type="Industry",
+		industry="Retail",
+		weight=2,
+		match_scope="URL",
+		patterns=[(_compile_pattern(pattern, 0), pattern)],
+	)
