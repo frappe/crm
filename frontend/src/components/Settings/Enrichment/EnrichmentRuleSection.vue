@@ -39,7 +39,7 @@
       <div class="flex items-center gap-2 text-sm text-ink-gray-5">
         <div class="w-40 shrink-0">{{ columns[0] }}</div>
         <div class="flex-1 min-w-0">{{ columns[1] }}</div>
-        <div class="w-8 shrink-0 whitespace-nowrap">{{ __('Enabled') }}</div>
+        <div class="ml-3 w-8 shrink-0" />
         <div class="w-7 shrink-0" />
       </div>
       <slot />
