@@ -465,3 +465,18 @@ class OffSiteRedirectScopeTest(FrappeTestCase):
 			results = crawler.crawl("https://old-home-test.com", cfg)
 		self.assertEqual(results[0][0].url, "https://new-home-test.com")
 		self.assertFalse(results[0][0].error)
+
+
+class ProbeAboutPagesTest(FrappeTestCase):
+	def test_rejects_about_page_that_redirects_off_site(self):
+		about_text = "<html><body>" + "About another company. " * 20 + "</body></html>"
+		responses = {
+			"https://acme-test.com/about": (200, about_text),
+			"https://other-test.com/about": (200, about_text),
+		}
+		redirects = {"https://acme-test.com/about": "https://other-test.com/about"}
+		with mock.patch.object(
+			crawler, "fetch", side_effect=fixtures.fake_fetch_with_redirects(responses, redirects)
+		):
+			results = crawler.probe_about_pages("https://acme-test.com", make_config())
+		self.assertEqual(results, [])
