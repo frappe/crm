@@ -166,7 +166,6 @@ def get_deal_activities(name: str):
 		}
 		activities.append(activity)
 
-
 	linked_calls = get_linked_calls(name)
 	calls = calls + linked_calls.get("calls", [])
 	# the lead's note events already came with its activities, so only add the deal's own
