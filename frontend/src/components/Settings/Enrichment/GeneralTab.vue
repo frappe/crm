@@ -23,13 +23,6 @@
     </div>
 
     <template v-if="doc.enabled">
-      <div class="h-px border-t border-outline-elevation-2" />
-
-      <div
-        class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3"
-      >
-        {{ __('Crawl settings') }}
-      </div>
       <div class="flex gap-4 items-start justify-between py-3">
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -63,13 +56,6 @@
         </div>
       </div>
 
-      <div class="h-px border-t border-outline-elevation-2" />
-
-      <div
-        class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3"
-      >
-        {{ __('Automation') }}
-      </div>
       <div class="flex gap-4 items-center justify-between py-3">
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
