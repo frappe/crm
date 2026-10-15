@@ -64,7 +64,6 @@ SOCIAL_NEGATIVE = re.compile(r"/(sharer|share|intent|home|login|signup|privacy|t
 SCOPE_HEADLINE = "Headline"
 SCOPE_FULL_TEXT = "Full Text"
 SCOPE_HTML = "HTML"
-SCOPE_HEADERS = "Headers"
 SCOPE_URL = "URL"
 
 
@@ -678,13 +677,11 @@ def classify_industry(pages, company_info, industry_rules):
 			headline_parts.append(" ".join(about.headings))
 	headline = " ".join(p for p in headline_parts if p).lower()
 
-	# Same corpus under multiple scope keys so admins can re-scope rules without
-	# code changes; default seed uses Headline.
-	full_text = " ".join((p.text or "") for p in pages).lower()
 	text_by_scope = {
 		SCOPE_HEADLINE: headline,
-		SCOPE_FULL_TEXT: full_text,
-		SCOPE_HTML: full_text,
+		SCOPE_FULL_TEXT: " ".join((p.text or "") for p in pages).lower(),
+		SCOPE_HTML: " ".join((p.html or "") for p in pages).lower(),
+		SCOPE_URL: " ".join((p.url or "") for p in pages).lower(),
 	}
 
 	scores = apply_keyword_rules(text_by_scope, industry_rules)

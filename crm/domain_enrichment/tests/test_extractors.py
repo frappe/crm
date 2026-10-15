@@ -738,6 +738,20 @@ class IndustryTest(FrappeTestCase):
 		page, _ = fixtures.make_page("https://e.example", fixtures.HOMEPAGE)
 		self.assertEqual(extractors.classify_industry([page], {}, []), ("", 0.0))
 
+	def test_html_scope_matches_markup_not_visible_text(self):
+		page, _ = fixtures.make_page(
+			"https://x.example", '<html><body><script src="/shopify.js"></script>Welcome</body></html>'
+		)
+		rule = fixtures.keyword_rule(
+			"Industry", ["shopify"], industry="Ecommerce", match_scope="HTML", weight=2
+		)
+		self.assertEqual(extractors.classify_industry([page], {}, [rule])[0], "Ecommerce")
+
+	def test_url_scope_matches_page_urls(self):
+		page, _ = fixtures.make_page("https://x.example/shop", "<html><body>Welcome</body></html>")
+		rule = fixtures.keyword_rule("Industry", ["/shop"], industry="Retail", match_scope="URL", weight=2)
+		self.assertEqual(extractors.classify_industry([page], {}, [rule])[0], "Retail")
+
 	def test_d2c_brand_maps_to_ecommerce(self):
 		self.assertEqual(self._classify("Gymshark", "Shop gym clothing and workout apparel.")[0], "Ecommerce")
 
