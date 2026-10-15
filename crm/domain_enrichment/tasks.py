@@ -16,6 +16,7 @@ reported over realtime.
 from __future__ import annotations
 
 import frappe
+from frappe.utils.telemetry import capture
 
 from .config import _setting, auto_enrich_enabled_for, get_config, get_settings
 from .mapper import apply_to_document
@@ -96,7 +97,9 @@ def write_run(
 	return doc.name
 
 
-def enqueue_enrichment(reference_doctype: str, reference_name: str, website: str, user: str) -> dict:
+def enqueue_enrichment(
+	reference_doctype: str, reference_name: str, website: str, user: str, trigger: str = "manual"
+) -> dict:
 	"""Enqueue one ``run_enrichment`` job (long queue, per-doc ``job_id`` +
 	``deduplicate``, after commit). The single place the job is enqueued -- shared by
 	the manual (``api.enrich``/``api.retry``) and auto (``after_insert``) paths so a
@@ -121,6 +124,7 @@ def enqueue_enrichment(reference_doctype: str, reference_name: str, website: str
 		reference_name=reference_name,
 		website=website,
 		user=user,
+		trigger=trigger,
 	)
 	return {"queued": True, "job_id": job_id, "website": website}
 
@@ -147,12 +151,18 @@ def auto_enrich_on_create(doc, method=None):
 		if not website:
 			return
 
-		enqueue_enrichment(doc.doctype, doc.name, website, frappe.session.user)
+		enqueue_enrichment(doc.doctype, doc.name, website, frappe.session.user, trigger="auto")
 	except Exception:
 		frappe.log_error(title="Domain Enrichment: auto_enrich_on_create failed")
 
 
-def run_enrichment(reference_doctype: str, reference_name: str, website: str, user: str | None = None):
+def run_enrichment(
+	reference_doctype: str,
+	reference_name: str,
+	website: str,
+	user: str | None = None,
+	trigger: str = "manual",
+):
 	"""Enqueued worker: crawl, map onto the origin doc, write a Run, stream progress.
 
 	Never raises to the worker. On success the mapped origin doc is saved (a normal
@@ -207,6 +217,15 @@ def run_enrichment(reference_doctype: str, reference_name: str, website: str, us
 			},
 			user=user,
 		)
+		capture(
+			"enrichment_run_completed",
+			"crm",
+			properties={
+				"doctype": reference_doctype,
+				"trigger": trigger,
+				"status": "success",
+			},
+		)
 	except Exception:
 		# Discard any partial writes (e.g. a doc.save() that fired side effects before a
 		# later step threw). execute_job commits when this function returns normally, so
@@ -234,4 +253,13 @@ def run_enrichment(reference_doctype: str, reference_name: str, website: str, us
 			message=frappe._("Enrichment failed. Check the error log."),
 			step=0,
 			user=user,
+		)
+		capture(
+			"enrichment_run_completed",
+			"crm",
+			properties={
+				"doctype": reference_doctype,
+				"trigger": trigger,
+				"status": "failure",
+			},
 		)
