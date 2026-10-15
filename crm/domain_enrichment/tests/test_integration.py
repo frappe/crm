@@ -522,8 +522,7 @@ class UndoTest(IntegrationTestCase):
 		self.assertEqual(run.status, "Reverted")
 		self.assertEqual(run.undone_by, "Administrator")
 		self.assertTrue(run.undone_on)
-		# The latest run is no longer undoable.
-		self.assertFalse(api.get_status("CRM Organization", org.name)["can_undo"])
+		# Nothing left to undo.
 		with self.assertRaises(frappe.ValidationError):
 			api.undo("CRM Organization", org.name)
 
@@ -548,49 +547,21 @@ class UndoTest(IntegrationTestCase):
 			self.assertEqual(org.get(fieldname), value)
 		self.assertEqual(self._latest_run(org).status, "Reverted")
 
-	def test_status_follows_enrich_and_undo(self):
-		org = frappe.new_doc("CRM Organization")
-		org.organization_name = "Status Org " + frappe.generate_hash(length=4)
-		org.website = "https://acme.example"
-		org.insert()
-
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "idle")
-		self.assertTrue(status["has_website"])
-		self.assertFalse(status["can_undo"])
+	def test_status_reports_running_job(self):
+		org = self._enriched_org()
+		self.assertFalse(api.get_status("CRM Organization", org.name)["running"])
 
 		self.job_enqueued.return_value = True
-		self.assertEqual(api.get_status("CRM Organization", org.name)["state"], "running")
+		self.assertTrue(api.get_status("CRM Organization", org.name)["running"])
 		self.job_enqueued.assert_called_with(tasks.enrichment_job_id("CRM Organization", org.name))
-		self.job_enqueued.return_value = False
 
-		with (
-			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
-			mock.patch.object(tasks, "capture"),
-		):
-			tasks.run_enrichment("CRM Organization", org.name, org.website)
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "done")
-		self.assertTrue(status["can_undo"])
-
-		api.undo("CRM Organization", org.name)
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "idle")
-		self.assertFalse(status["can_undo"])
-
-	def test_status_idle_for_completed_run_without_changes(self):
-		# A legacy run from before the change log: Completed, but no Change rows.
-		org = frappe.new_doc("CRM Organization")
-		org.organization_name = "Legacy Run Org " + frappe.generate_hash(length=4)
-		org.website = "https://acme.example"
-		org.insert()
-		tasks.write_run("CRM Organization", org.name, org.website, status="Completed")
+	def test_status_has_no_undo_state(self):
+		# Undo is session-only on the client, so the server never offers it.
+		org = self._enriched_org()
 
 		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "idle")
-		self.assertFalse(status["can_undo"])
-		# The run itself succeeded, so a poll must not report it as failed.
-		self.assertEqual(status["last_run_status"], "Completed")
+
+		self.assertCountEqual(status.keys(), ["running", "last_run_status"])
 
 	def test_status_last_run_status_reports_newest_run(self):
 		org = frappe.new_doc("CRM Organization")
@@ -606,20 +577,21 @@ class UndoTest(IntegrationTestCase):
 			tasks.run_enrichment("CRM Organization", org.name, org.website)
 		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Completed")
 
-		# A failed re-enrich leaves the first run's values standing (state stays
-		# 'done'), but the newest run is the failed one. Written directly: the real
-		# failure path rolls back the transaction, which would drop this test's data.
+		# The first run's values still stand, but the newest run is the failed one.
+		# Written directly: the real failure path rolls back the transaction, which
+		# would drop this test's data.
 		tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "done")
-		self.assertEqual(status["last_run_status"], "Failed")
+		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Failed")
 
-	def test_status_has_website_false_without_website(self):
+	def test_status_completed_for_run_without_changes(self):
+		# A run that changed nothing still succeeded, so a poll must not report it as failed.
 		org = frappe.new_doc("CRM Organization")
-		org.organization_name = "No Website Org " + frappe.generate_hash(length=4)
+		org.organization_name = "No Changes Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
 		org.insert()
+		tasks.write_run("CRM Organization", org.name, org.website, status="Completed")
 
-		self.assertFalse(api.get_status("CRM Organization", org.name)["has_website"])
+		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Completed")
 
 	def test_status_requires_read_permission(self):
 		org = self._enriched_org()
@@ -707,9 +679,6 @@ class UndoTest(IntegrationTestCase):
 
 		fields = api.get_enriched_fields("CRM Organization", org.name)
 		self.assertCountEqual([f["fieldname"] for f in fields], changed)
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "done")
-		self.assertTrue(status["can_undo"])
 
 		# Undo skips the no-change re-enrich and reverts the first run.
 		out = api.undo("CRM Organization", org.name)
@@ -717,9 +686,7 @@ class UndoTest(IntegrationTestCase):
 		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", first.name, "status"), "Reverted")
 		# The no-change re-enrich only confirmed the reverted values, so it is Reverted too.
 		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", second.name, "status"), "Reverted")
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "idle")
-		self.assertFalse(status["can_undo"])
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
 
 	def test_undo_reenrich_reverts_only_its_field(self):
 		org = self._enriched_org()
@@ -747,11 +714,8 @@ class UndoTest(IntegrationTestCase):
 		description = next(f for f in fields if f["fieldname"] == "company_description")
 		self.assertEqual(description["value"], first_description)
 		self.assertFalse(any(f["edited"] for f in fields))
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "done")
-		self.assertTrue(status["can_undo"])
 
-	def test_undo_every_run_returns_to_idle(self):
+	def test_undo_every_run_clears_enriched_fields(self):
 		org = self._enriched_org()
 		self._reenrich_description(org, "Re-enriched description")
 
@@ -762,11 +726,57 @@ class UndoTest(IntegrationTestCase):
 		self.assertFalse(org.company_description)
 		self.assertFalse(org.linkedin)
 		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
-		status = api.get_status("CRM Organization", org.name)
-		self.assertEqual(status["state"], "idle")
-		self.assertFalse(status["can_undo"])
 		with self.assertRaises(frappe.ValidationError):
 			api.undo("CRM Organization", org.name)
+
+	def test_enriched_fields_detects_enriched_record(self):
+		# The client asks before re-enriching only when this list is non-empty.
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Detect Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		org.insert()
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+		# Failed runs and runs that changed nothing don't make it enriched.
+		tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
+		tasks.write_run("CRM Organization", org.name, org.website, status="Completed")
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		self.assertTrue(api.get_enriched_fields("CRM Organization", org.name))
+
+	def test_enriched_fields_covers_every_completed_run(self):
+		org = self._enriched_org()
+		first = [c.fieldname for c in self._latest_run(org).changes]
+		self.assertNotIn("annual_revenue", first)
+		org.annual_revenue = 9000
+		org.save()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			org.website,
+			status="Completed",
+			changes=[FieldChange("annual_revenue", None, 9000, "Annual Revenue")],
+		)
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertCountEqual([f["fieldname"] for f in fields], [*first, "annual_revenue"])
+
+	def test_undo_targets_completed_run_past_failed_one(self):
+		org = self._enriched_org()
+		first = self._latest_run(org)
+		failed = tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
+
+		out = api.undo("CRM Organization", org.name)
+
+		self.assertCountEqual(out["reverted"], [c.fieldname for c in first.changes])
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", first.name, "status"), "Reverted")
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", failed, "status"), "Failed")
 
 	def test_enriched_fields_requires_read_permission(self):
 		org = self._enriched_org()

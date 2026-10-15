@@ -236,10 +236,8 @@ async function poll() {
   const status = await loadStatus()
   // pollTimer is cleared on reset/unmount; finishTimer means the socket's
   // 'completed' event already got here.
-  if (!pollTimer || finishTimer || !status || status.state === 'running') return
-  // The newest run's own status, not `state`: older runs' values can keep
-  // `state` at 'done' after a failed run, or 'idle' after one that changed
-  // nothing. A failed run gets no full fill, go straight back.
+  if (!pollTimer || finishTimer || !status || status.running) return
+  // A failed run gets no full fill, go straight back.
   if (status.last_run_status !== 'Completed') {
     toast.error(__('Enrichment failed.'))
     reset()
@@ -418,7 +416,7 @@ async function undo() {
 onMounted(async () => {
   const status = await loadStatus()
   // Skip if the user already clicked Enrich while status was loading.
-  if (status?.state === 'running' && !running.value && !unmounted) resume()
+  if (status?.running && !running.value && !unmounted) resume()
 })
 
 onBeforeUnmount(() => {

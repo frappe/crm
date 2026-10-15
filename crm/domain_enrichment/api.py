@@ -3,7 +3,8 @@
 
 """Whitelisted entry points: ``enrich`` (enqueue a full run for a record),
 ``retry`` (re-run one from its Run history), ``undo`` (revert a record's newest
-run that still stands) and ``get_status`` (the Enrich button's state for a record).
+run that changed fields), ``get_status`` (whether a run is in flight, to resume the
+Enrich button after a refresh) and ``get_enriched_fields`` (fields runs wrote).
 
 All are type-annotated -- hooks.py sets ``require_type_annotated_api_methods``.
 Security: ``enrich`` / ``retry`` / ``undo`` enforce the doctype allow-list (from
@@ -143,11 +144,10 @@ def retry(run: str) -> dict:
 @rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def undo(reference_doctype: str, reference_name: str) -> dict:
 	"""Revert the fields written by the record's newest Completed enrichment run
-	that changed fields (a re-enrich that changed nothing is skipped) -- the same
-	run ``get_status``'s ``can_undo`` reports on. The newer Completed runs that
-	changed nothing only confirmed the values just reverted, so they are marked
-	Reverted too. Blocked while an enrichment job for the record is queued or
-	running.
+	that changed fields (a re-enrich that changed nothing is skipped). The newer
+	Completed runs that changed nothing only confirmed the values just reverted,
+	so they are marked Reverted too. Blocked while an enrichment job for the
+	record is queued or running.
 
 	Returns ``{reverted: [fieldname, ...], skipped: [fieldname, ...]}``.
 	"""
@@ -177,34 +177,16 @@ def undo(reference_doctype: str, reference_name: str) -> dict:
 
 @frappe.whitelist()
 def get_status(reference_doctype: str, reference_name: str) -> dict:
-	"""The Enrich button's state for one record.
+	"""Whether an enrichment job for the record is queued or running, and the
+	newest run's status (``None`` before any run), so a page opened mid-run can
+	show it and tell whether it succeeded once it ends.
 
-	Returns ``{has_website: bool, state: "idle" | "running" | "done", can_undo: bool,
-	last_run_status: str | None}``.
-	``running`` while a job is queued/running; otherwise ``done`` while enriched
-	values stand -- some Completed run changed fields, the same run ``undo``
-	targets -- else ``idle``. Completed runs with no Change rows (a re-enrich that
-	found nothing new, or a run from before the change log existed) do not count.
-	Outside ``running``, ``done`` and ``can_undo`` are the same condition.
-	``last_run_status`` is the newest run's own status (``Completed``, ``Failed``,
-	``Reverted``), or ``None`` before any run: whether the run that just finished
-	succeeded, which ``state`` cannot tell once older runs' values stand.
+	Returns ``{running: bool, last_run_status: str | None}``.
 	"""
-	doc = frappe.get_doc(reference_doctype, reference_name)
-	doc.check_permission("read")
-
-	can_undo = bool(_undoable_run(_completed_runs(reference_doctype, reference_name)))
-	if is_job_enqueued(enrichment_job_id(reference_doctype, reference_name)):
-		state = "running"
-	elif can_undo:
-		state = "done"
-	else:
-		state = "idle"
+	frappe.get_doc(reference_doctype, reference_name).check_permission("read")
 
 	return {
-		"has_website": bool((doc.get("website") or "").strip()),
-		"state": state,
-		"can_undo": can_undo,
+		"running": is_job_enqueued(enrichment_job_id(reference_doctype, reference_name)),
 		"last_run_status": frappe.db.get_value(
 			"CRM Enrichment Run",
 			{"reference_doctype": reference_doctype, "reference_name": reference_name},
