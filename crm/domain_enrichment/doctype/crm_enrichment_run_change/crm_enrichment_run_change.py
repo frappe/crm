@@ -14,7 +14,6 @@ class CRMEnrichmentRunChange(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		created_link_doctype: DF.Link | None
 		fieldname: DF.Data
 		new_value: DF.SmallText | None
 		old_value: DF.SmallText | None

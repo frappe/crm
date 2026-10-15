@@ -50,17 +50,12 @@ def _source_key_labels() -> dict:
 
 @dataclass
 class FieldChange:
-	"""One field ``apply_to_document`` actually changed on a document.
-
-	``created_link_doctype`` is set when the mapper also inserted the linked master
-	named by ``new_value`` (e.g. a new CRM Industry), so the change can be undone.
-	"""
+	"""One field ``apply_to_document`` actually changed on a document."""
 
 	fieldname: str
 	old_value: object
 	new_value: object
 	label: str
-	created_link_doctype: str | None = None
 
 
 def filled_labels(changes: list[FieldChange]) -> list[str]:
@@ -146,26 +141,24 @@ def _ensure_link_target(target_doctype: str, target_fieldname: str, value: str):
 	permission-respecting: the master is only created if the enriching user could
 	create it themselves (no ``ignore_permissions`` escalation from scraped data).
 
-	Returns ``(value, created_doctype)``: the value to write (the linked name) or
-	``None`` to skip the field -- when the master is missing and the user lacks create
-	rights, or on any error (the field is skipped, the run is not aborted).
-	``created_doctype`` is the master's doctype when this call inserted it, else
-	``None``.
+	Returns the value to write (the linked name) or ``None`` to skip the field --
+	when the master is missing and the user lacks create rights, or on any error
+	(the field is skipped, the run is not aborted).
 	"""
 	meta = frappe.get_meta(target_doctype)
 	df = meta.get_field(target_fieldname)
 	if not df or df.fieldtype != "Link" or not df.options:
 		# Not a Link (or unknown field) -- nothing to create; write as-is.
-		return value, None
+		return value
 	link_doctype = df.options
 	if frappe.db.exists(link_doctype, value):
-		return value, None
+		return value
 	# Auto-create respects the enriching user's rights: the worker runs as the user
 	# who triggered enrichment (frappe.set_user in execute_job), so a user who cannot
 	# create the master must not be able to insert one via a crafted website. Skip the
 	# field rather than write a dangling link.
 	if not frappe.has_permission(link_doctype, ptype="create"):
-		return None, None
+		return None
 	try:
 		link_meta = frappe.get_meta(link_doctype)
 		new_doc = {"doctype": link_doctype}
@@ -180,13 +173,13 @@ def _ensure_link_target(target_doctype: str, target_fieldname: str, value: str):
 			new_doc["__newname"] = value
 		# Permission-respecting insert -- the create right was checked above.
 		frappe.get_doc(new_doc).insert()
-		return value, link_doctype
+		return value
 	except Exception:
 		frappe.log_error(
 			title="Domain Enrichment: could not create link master",
 			message=f"{link_doctype}={value!r} for {target_doctype}.{target_fieldname}",
 		)
-		return None, None
+		return None
 
 
 def _label_for(doc, source_key: str, target_fieldname: str) -> str:
@@ -228,8 +221,8 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[F
 
 	Never overwrites real user-entered data except per the policies above. Does NOT
 	save the document -- the caller controls persistence/permissions. Returns one
-	``FieldChange`` per field whose value was changed (old and new value, plus any
-	link master created for it); ``filled_labels`` turns it into human labels.
+	``FieldChange`` per field whose value was changed (old and new value);
+	``filled_labels`` turns it into human labels.
 	"""
 	changes: list[FieldChange] = []
 	mappings = cfg.mappings_by_doctype.get(doc.doctype, [])
@@ -248,13 +241,12 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[F
 			# enrichment must not destroy data a site temporarily stopped exposing.
 			if not value or current == value:
 				continue
-			created_link_doctype = None
 			if mapping.create_missing_link:
-				value, created_link_doctype = _ensure_link_target(doc.doctype, fieldname, value)
+				value = _ensure_link_target(doc.doctype, fieldname, value)
 				if value is None:
 					continue
 			doc.set(fieldname, value)
-			changes.append(FieldChange(fieldname, current, value, label, created_link_doctype))
+			changes.append(FieldChange(fieldname, current, value, label))
 			continue
 
 		# Fill-if-empty / Override-defaults both require a non-empty fresh value.
@@ -272,13 +264,12 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[F
 		if current == value:
 			continue
 
-		created_link_doctype = None
 		if mapping.create_missing_link:
-			value, created_link_doctype = _ensure_link_target(doc.doctype, fieldname, value)
+			value = _ensure_link_target(doc.doctype, fieldname, value)
 			if value is None:
 				continue
 
 		doc.set(fieldname, value)
-		changes.append(FieldChange(fieldname, current, value, label, created_link_doctype))
+		changes.append(FieldChange(fieldname, current, value, label))
 
 	return changes

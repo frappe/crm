@@ -180,7 +180,6 @@ class RunChangeLogTest(IntegrationTestCase):
 		description = changes["company_description"]
 		self.assertFalse(description.old_value)
 		self.assertEqual(description.new_value, "AI powered analytics SaaS for product teams.")
-		self.assertFalse(description.created_link_doctype)
 		self.assertEqual(changes["linkedin"].new_value, "https://www.linkedin.com/company/acme")
 		# Fill-if-empty left the user's twitter alone, so it is not recorded.
 		self.assertNotIn("twitter", changes)
@@ -213,18 +212,6 @@ class RunChangeLogTest(IntegrationTestCase):
 
 		self.assertTrue(frappe.db.exists("CRM Industry", industry))
 		self.assertEqual(changes["industry"].new_value, industry)
-		self.assertEqual(changes["industry"].created_link_doctype, "CRM Industry")
-
-	def test_existing_industry_is_not_marked_created(self):
-		industry = "Existing Widgets " + frappe.generate_hash(length=6)
-		frappe.get_doc({"doctype": "CRM Industry", "industry": industry}).insert()
-		result = canned_result()
-		result.industry = Field(industry, "https://x.example", "Keyword Classifier")
-		org = self._new_org(industry="")
-		changes = self._enrich(org, result)
-
-		self.assertEqual(changes["industry"].new_value, industry)
-		self.assertFalse(changes["industry"].created_link_doctype)
 
 
 class ApiPermissionTest(IntegrationTestCase):
