@@ -29,7 +29,6 @@
         v-for="row in social.rows"
         :key="row.key"
         class="group/row flex flex-col"
-        @mouseleave="cancelDelete(row)"
       >
         <div class="flex items-start gap-2">
           <!-- Messages are listed under the section; the border marks the field. -->
@@ -85,15 +84,14 @@
           <!-- Left visible on touch, which has no hover to reveal it -->
           <div
             class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/row:opacity-100"
-            :class="{ '!opacity-100': confirmingKey === row.key }"
           >
             <Button
-              v-bind="deleteButtonProps(row)"
+              variant="ghost"
+              icon="lucide-trash-2"
               theme="red"
               :tooltip="__('Delete')"
               :disabled="social.saving || row.removed"
-              @click="confirmDelete(row, () => social.deleteRow(row))"
-              @blur="cancelDelete(row)"
+              @click="confirmDelete(row, social.deleteRow)"
             />
           </div>
         </div>
@@ -126,7 +124,6 @@
         v-for="row in industry.rows"
         :key="row.key"
         class="group/row flex flex-col"
-        @mouseleave="cancelDelete(row)"
       >
         <div class="flex items-start gap-2">
           <div class="w-40 shrink-0">
@@ -191,15 +188,14 @@
           <!-- Left visible on touch, which has no hover to reveal it -->
           <div
             class="shrink-0 transition-opacity [&:has(:focus-visible)]:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/row:opacity-100"
-            :class="{ '!opacity-100': confirmingKey === row.key }"
           >
             <Button
-              v-bind="deleteButtonProps(row)"
+              variant="ghost"
+              icon="lucide-trash-2"
               theme="red"
               :tooltip="__('Delete')"
               :disabled="industry.saving || row.removed"
-              @click="confirmDelete(row, () => industry.deleteRow(row))"
-              @blur="cancelDelete(row)"
+              @click="confirmDelete(row, industry.deleteRow)"
             />
           </div>
         </div>
@@ -212,6 +208,7 @@
 import { Button, FormControl, Switch, Tooltip } from 'frappe-ui'
 import { ref, type Reactive } from 'vue'
 import Link from '@/components/Controls/Link.vue'
+import { createDialog } from '@/utils/dialogs'
 import EnrichmentRuleSection from './EnrichmentRuleSection.vue'
 import type { BaseRow } from './types'
 import type { IndustryRules } from './useIndustryRules'
@@ -279,32 +276,26 @@ function industryErrors() {
 
 // A saved rule's delete asks first, like the other Settings lists; Update then
 // removes it for good, and undoing that means reloading away other edits.
-const confirmingKey = ref<string | null>(null)
-
-// The tooltip stays set in both states: dropping it remounts the button,
-// which would lose the focus the blur reset relies on.
-function deleteButtonProps(row: BaseRow) {
-  return confirmingKey.value === row.key
-    ? {
-        variant: 'subtle' as const,
-        iconLeft: 'lucide-trash-2',
-        label: __('Confirm Delete'),
-      }
-    : { variant: 'ghost' as const, icon: 'lucide-trash-2' }
-}
-
-function confirmDelete(row: BaseRow, remove: () => void) {
+function confirmDelete<R extends BaseRow>(row: R, remove: (row: R) => void) {
   // An unsaved row has nothing on the server to lose.
-  if (row.name && confirmingKey.value !== row.key) {
-    confirmingKey.value = row.key
-    return
-  }
-  confirmingKey.value = null
-  remove()
-}
-
-function cancelDelete(row: BaseRow) {
-  if (confirmingKey.value === row.key) confirmingKey.value = null
+  if (!row.name) return remove(row)
+  createDialog({
+    title: __('Delete this rule?'),
+    message: __('It will be removed when you click Update.'),
+    size: 'sm',
+    actions: [
+      { label: __('Cancel'), onClick: ({ close }) => close() },
+      {
+        label: __('Delete'),
+        variant: 'solid',
+        theme: 'red',
+        onClick: ({ close }) => {
+          close()
+          remove(row)
+        },
+      },
+    ],
+  })
 }
 
 const root = ref<HTMLElement | null>(null)
