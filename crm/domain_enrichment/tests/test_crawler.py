@@ -467,7 +467,7 @@ class OffSiteRedirectScopeTest(FrappeTestCase):
 		self.assertFalse(results[0][0].error)
 
 
-class ProbeAboutPagesTest(UnitTestCase):
+class ProbeAboutPagesTest(FrappeTestCase):
 	def test_rejects_about_page_that_redirects_off_site(self):
 		about_text = "<html><body>" + "About another company. " * 20 + "</body></html>"
 		responses = {
