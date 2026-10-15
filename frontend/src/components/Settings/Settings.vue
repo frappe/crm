@@ -2,14 +2,16 @@
   <Dialog
     v-model:open="showSettings"
     :size="'5xl'"
-    :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    :dismissible="!disableSettingModalOutsideClick"
+    bare
     @close="activeSettingsPage = ''"
   >
-    <template #body>
+    <template #default>
+      <Dialog.Title class="sr-only">{{ __('Settings') }}</Dialog.Title>
       <div class="flex h-[calc(100vh_-_8rem)] bg-surface-gray-1">
         <div
           ref="sidebarContainer"
-          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-6 w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
             <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
@@ -76,6 +78,7 @@ import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
+import EnrichmentSettings from '@/components/Settings/Enrichment/EnrichmentSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import WorkflowAutomationPage from '@/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
@@ -93,6 +96,7 @@ import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h, nextTick } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
+import LucideZap from '~icons/lucide/zap'
 import SlaConfig from './Sla/SlaConfig.vue'
 
 const { isManager, getUser } = usersStore()
@@ -210,6 +214,11 @@ const tabs = computed(() => {
           label: __('Forms'),
           component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
+        },
+        {
+          label: __('Enrichment'),
+          component: markRaw(EnrichmentSettings),
+          icon: markRaw(LucideZap),
         },
       ],
       condition: () => isManager(),

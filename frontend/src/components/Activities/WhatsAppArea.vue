@@ -12,7 +12,7 @@
     >
       <div
         :id="whatsapp.name"
-        class="group/message relative max-w-[90%] rounded-md bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 text-base shadow-sm"
+        class="group/message relative max-w-[90%] rounded-5 bg-surface-gray-1 text-ink-gray-9 p-1.5 pl-2 text-base shadow-sm"
       >
         <Badge
           v-if="whatsapp.status == 'failed'"
@@ -22,7 +22,7 @@
         />
         <div
           v-if="whatsapp.is_reply"
-          class="mb-1 cursor-pointer rounded border-0 border-l-4 bg-surface-gray-3 p-2 text-ink-gray-5"
+          class="mb-1 cursor-pointer rounded-4 border-0 border-l-4 bg-surface-gray-3 p-2 text-ink-gray-5"
           :class="
             whatsapp.reply_to_type == 'Incoming'
               ? 'border-green-500'
@@ -97,7 +97,7 @@
           <div v-else-if="whatsapp.content_type == 'image'">
             <img
               :src="whatsapp.attach"
-              class="h-40 cursor-pointer rounded-md"
+              class="h-40 cursor-pointer rounded-5"
               @click="() => openFileInAnotherTab(whatsapp.attach)"
             />
             <div
@@ -111,7 +111,7 @@
             class="flex items-center gap-2"
           >
             <DocumentIcon
-              class="size-10 cursor-pointer rounded-md text-ink-gray-4"
+              class="size-10 cursor-pointer rounded-5 text-ink-gray-4"
               @click="() => openFileInAnotherTab(whatsapp.attach)"
             />
             <div class="text-ink-gray-5">Document</div>
@@ -129,7 +129,7 @@
             <video
               :src="whatsapp.attach"
               controls
-              class="h-40 cursor-pointer rounded-md"
+              class="h-40 cursor-pointer rounded-5"
             />
             <div
               v-if="!whatsapp.message.startsWith('/files/')"
@@ -188,7 +188,7 @@ import DoubleCheckIcon from '@/components/Icons/DoubleCheckIcon.vue'
 import DocumentIcon from '@/components/Icons/DocumentIcon.vue'
 import ReactIcon from '@/components/Icons/ReactIcon.vue'
 import { formatDate, sanitizeHTML } from '@/utils'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { Tooltip, Dropdown, createResource, toast } from 'frappe-ui'
 import { ref } from 'vue'
 

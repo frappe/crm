@@ -118,12 +118,12 @@
               class="whitespace-nowrap mr-2"
               variant="ghost"
               :label="__('Add Filter')"
-              iconLeft="plus"
+              iconLeft="lucide-plus"
               @click="setOpen(!open)"
             />
           </template>
           <template #item-label="{ item }">
-            <Tooltip :text="item.value" :hover-delay="1">
+            <Tooltip :text="item.value" :hover-delay="1000">
               <div class="flex-1 truncate text-ink-gray-7">
                 {{ item.label }}
               </div>
@@ -206,12 +206,12 @@
         />
         <Dropdown
           v-if="route.params.viewType !== 'kanban' || isManager()"
-          placement="right"
+          align="end"
           :options="[
             {
               group: __('Options'),
               hideLabel: true,
-              items: [
+              options: [
                 {
                   label: __('Import'),
                   icon: () => h(ImportIcon, { class: 'h-4 w-4' }),
@@ -355,10 +355,17 @@ import {
   Dropdown,
   toast,
   call,
-  FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
-import { computed, ref, watch, h, markRaw } from 'vue'
+import {
+  computed,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  h,
+  markRaw,
+} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { isMobileView } from '@/composables/settings'
 import {
@@ -387,7 +394,7 @@ const props = defineProps({
 })
 
 const { brand } = getSettings()
-const { $dialog } = globalStore()
+const { $dialog, $socket } = globalStore()
 const { reload: reloadView, getDefaultView, getView } = viewsStore()
 
 const { isManager, getUser } = usersStore()
@@ -610,6 +617,28 @@ if (!listResource.params) {
   viewUpdated.value = true
 }
 
+// Refresh the list when a Domain Enrichment enrichment finishes for this
+// doctype, so newly-filled fields (logo, etc.) show without a manual reload.
+function onEnrichmentDone(data) {
+  if (data?.status !== 'completed') return
+  if (data.reference_doctype === props.doctype) reload()
+  // The Deals list logo comes from the cached organizations store
+  // (getOrganization → organization_logo), not the deal row. Refresh that store so a
+  // newly enriched org's logo appears without a hard refresh; `rows` is a
+  // computed reading the store, so it re-renders reactively.
+  if (props.doctype === 'CRM Deal') {
+    organizations.reload()
+  }
+}
+
+onMounted(() => {
+  $socket?.on('domain_enrichment_progress', onEnrichmentDone)
+})
+
+onBeforeUnmount(() => {
+  $socket?.off('domain_enrichment_progress', onEnrichmentDone)
+})
+
 const isLoading = computed(() => list.value?.loading)
 
 function getListParams() {
@@ -727,8 +756,8 @@ function getIcon(icon, type) {
     return markRaw(KanbanIcon)
   } else if (icon && typeof icon === 'string') {
     // a lucide icon name (from the IconPicker) — render it through Icon so it
-    // resolves from the injected lucide sprite. The Dropdown renders a bare
-    // string via FeatherIcon, which lacks the newer lucide names and shows blank.
+    // resolves from the injected lucide sprite. The Dropdown shows nothing for
+    // a bare icon name.
     return () => h(Icon, { icon, class: 'h-4 w-4' })
   }
   return icon || markRaw(ListIcon)
@@ -739,7 +768,7 @@ const viewsDropdownOptions = computed(() => {
     {
       group: __('Standard Views'),
       hideLabel: true,
-      items: standardViews.map((item) => ({
+      options: standardViews.map((item) => ({
         ...item,
         selected: item.name === currentView.value.name,
       })),
@@ -774,19 +803,19 @@ const viewsDropdownOptions = computed(() => {
     if (savedViews.length) {
       _views.push({
         group: __('Saved Views'),
-        items: savedViews,
+        options: savedViews,
       })
     }
     if (publicViews.length) {
       _views.push({
         group: __('Public Views'),
-        items: publicViews,
+        options: publicViews,
       })
     }
     if (pinnedViews.length) {
       _views.push({
         group: __('Pinned Views'),
-        items: pinnedViews,
+        options: pinnedViews,
       })
     }
   }
@@ -794,10 +823,10 @@ const viewsDropdownOptions = computed(() => {
   _views.push({
     group: __('Actions'),
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Create View'),
-        icon: 'plus',
+        icon: 'lucide-plus',
         onClick: () => createView(),
       },
     ],
@@ -1006,7 +1035,7 @@ async function loadFlatFilterOptions() {
 
 function viewCommands() {
   return viewsDropdownOptions.value
-    .flatMap((group) => group.items || [])
+    .flatMap((group) => group.options || [])
     .filter((item) => item.onClick && (!item.condition || item.condition()))
     .map((item, index) => ({
       id: `list-view-${index}-${item.name || item.label}`,
@@ -1420,7 +1449,7 @@ const viewActions = (view, close) => {
     {
       group: __('Actions'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
@@ -1431,7 +1460,7 @@ const viewActions = (view, close) => {
   ]
 
   if (isStandard && !isDefaultView(_view)) {
-    actions[0].items.unshift({
+    actions[0].options.unshift({
       label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
       onClick: () => setAsDefault(_view),
@@ -1439,14 +1468,14 @@ const viewActions = (view, close) => {
   }
 
   if (!isStandard && (!_view.public || isManager())) {
-    actions[0].items.push({
+    actions[0].options.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
       onClick: () => editView(_view, close),
     })
 
     if (!_view.public) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.pinned ? __('Unpin View') : __('Pin View'),
         icon: () => h(_view.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(_view),
@@ -1454,12 +1483,12 @@ const viewActions = (view, close) => {
     }
 
     if (isManager()) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
-          h(FeatherIcon, {
-            name: _view.public ? 'lock' : 'unlock',
-            class: 'h-4 w-4',
+          h('span', {
+            class: [_view.public ? 'lucide-lock' : 'lucide-unlock', 'h-4 w-4'],
+            'aria-hidden': true,
           }),
         onClick: () => publicView(_view),
       })
@@ -1468,10 +1497,10 @@ const viewActions = (view, close) => {
     actions.push({
       group: __('Delete View'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () =>
             $dialog({
               title: __('Delete View'),
@@ -1484,7 +1513,7 @@ const viewActions = (view, close) => {
                   label: __('Delete'),
                   variant: 'solid',
                   theme: 'red',
-                  onClick: (close) => deleteView(_view, close),
+                  onClick: ({ close }) => deleteView(_view, close),
                 },
               ],
             }),

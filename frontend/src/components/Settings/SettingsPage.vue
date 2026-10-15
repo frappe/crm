@@ -22,7 +22,7 @@
             v-if="data.isDirty"
             :label="__('Not Saved')"
             variant="subtle"
-            theme="orange"
+            theme="amber"
           />
         </div>
       </div>

@@ -53,7 +53,7 @@
             />
           </div>
           <div v-else-if="['type', 'duration'].includes(column.key)">
-            <FeatherIcon :name="item.icon" class="h-3 w-3" />
+            <Icon :icon="item.icon" class="h-3 w-3" />
           </div>
         </template>
         <template #default="{ label }">
@@ -184,21 +184,20 @@
 </template>
 <script setup>
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
+import Icon from '@/components/Icon.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import { isTranslatable } from '@/utils'
+import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import {
-  Avatar,
   ListView,
   ListHeader,
   ListHeaderItem,
   ListSelectBanner,
   ListRowItem,
   ListFooter,
-  Tooltip,
-  Dropdown,
-} from 'frappe-ui'
+} from 'frappe-ui/experimental'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 

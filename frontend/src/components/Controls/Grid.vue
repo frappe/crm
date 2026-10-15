@@ -6,7 +6,7 @@
 
     <div
       v-if="fields?.length"
-      class="rounded border border-outline-elevation-2"
+      class="rounded-4 border border-outline-elevation-2"
     >
       <!-- Header -->
       <div
@@ -47,7 +47,7 @@
                 field.reqd ||
                 (field.mandatory_depends_on && field.mandatory_via_depends_on)
               "
-              class="text-ink-red-5"
+              class="text-ink-red-4"
               >*</span
             >
           </div>
@@ -55,7 +55,7 @@
         <div class="flex items-center justify-center w-12 shrink-0">
           <Button
             :tooltip="__('Edit Grid Fields')"
-            class="rounded !bg-surface-gray-2 border-0 !text-ink-gray-5"
+            class="rounded-4 !bg-surface-gray-2 border-0 !text-ink-gray-5"
             variant="outline"
             icon="lucide-settings"
             @click="showGridFieldsEditorModal = true"
@@ -74,7 +74,7 @@
         >
           <template #item="{ element: row, index }">
             <div
-              class="grid-row flex cursor-pointer items-center border-b border-outline-elevation-2 bg-surface-modals last:rounded-b last:border-b-0"
+              class="grid-row flex cursor-pointer items-center border-b border-outline-elevation-2 bg-surface-modals last:rounded-b-4 last:border-b-0"
               @click.stop="
                 () => {
                   if (!gridSettings.editable_grid) {
@@ -207,26 +207,26 @@
                       </div>
                       <TimePicker
                         v-else-if="field.fieldtype === 'Time'"
-                        :value="row[field.fieldname]"
+                        :model-value="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', false, true, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        class="border-none text-sm text-ink-gray-8"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <DatePicker
                         v-else-if="field.fieldtype === 'Date'"
-                        :value="row[field.fieldname]"
+                        :model-value="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', true, false, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        class="border-none text-sm text-ink-gray-8"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <DateTimePicker
                         v-else-if="field.fieldtype === 'Datetime'"
-                        :value="row[field.fieldname]"
+                        :model-value="row[field.fieldname]"
                         variant="outline"
                         :format="getFormat('', '', true, true, false)"
-                        input-class="border-none text-sm text-ink-gray-8"
+                        class="border-none text-sm text-ink-gray-8"
                         @change="(v) => fieldChange(v, field, row)"
                       />
                       <FormControl
@@ -420,7 +420,7 @@
               >
                 <Button
                   :tooltip="__('Edit Row')"
-                  class="rounded border-0 !text-ink-gray-7"
+                  class="rounded-4 border-0 !text-ink-gray-7"
                   variant="outline"
                   :icon="EditIcon"
                   @click="showRowList[index] = true"
@@ -443,7 +443,7 @@
 
       <div
         v-else
-        class="flex flex-col items-center rounded p-5 text-sm text-ink-gray-5"
+        class="flex flex-col items-center rounded-4 p-5 text-sm text-ink-gray-5"
       >
         {{ __('No Data') }}
       </div>

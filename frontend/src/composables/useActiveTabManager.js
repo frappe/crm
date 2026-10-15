@@ -3,22 +3,21 @@ import { useRoute, useRouter } from 'vue-router'
 import { useDebounceFn, useStorage } from '@vueuse/core'
 
 export function useActiveTabManager(tabs, storageKey) {
-  const activeTab = useStorage(storageKey, 'activity')
+  const lastVisitedTab = useStorage(storageKey, 'activity')
   const route = useRoute()
   const router = useRouter()
 
   const changeTabTo = (tabName) => {
-    let index = findTabIndex(tabName)
-    if (index == -1) return
-    tabIndex.value = index
+    if (!hasTab(tabName)) return
+    activeTab.value = tabName
   }
 
   const preserveLastVisitedTab = useDebounceFn((tabName) => {
-    activeTab.value = tabName.toLowerCase()
+    lastVisitedTab.value = tabName
   }, 300)
 
   function setActiveTabInUrl(tabName) {
-    let hash = '#' + tabName.toLowerCase()
+    let hash = '#' + tabName
     if (route.hash === hash) return
     router.push({ ...route, hash })
   }
@@ -27,42 +26,34 @@ export function useActiveTabManager(tabs, storageKey) {
     return route.hash.replace('#', '')
   }
 
-  function findTabIndex(tabName) {
-    return tabs.value?.findIndex(
-      (tabOptions) => tabOptions.name.toLowerCase() === tabName,
-    )
+  function hasTab(tabName) {
+    return tabs.value?.some((tab) => tab.value === tabName)
   }
 
-  function getTabIndex(tabName) {
-    let index = findTabIndex(tabName)
-    return index !== -1 ? index : 0 // Default to the first tab if not found
+  function firstTab() {
+    return tabs.value?.[0]?.value
   }
 
   function getActiveTab() {
     let _activeTab = getActiveTabFromUrl()
     if (_activeTab) {
-      let index = findTabIndex(_activeTab)
-      if (index !== -1) {
+      if (hasTab(_activeTab)) {
         preserveLastVisitedTab(_activeTab)
-        return index
+        return _activeTab
       }
-      return 0
+      return firstTab()
     }
 
-    let lastVisitedTab = activeTab.value
-    if (lastVisitedTab) {
-      return getTabIndex(lastVisitedTab)
-    }
+    if (hasTab(lastVisitedTab.value)) return lastVisitedTab.value
 
-    return 0 // Default to the first tab if nothing is found
+    return firstTab()
   }
 
-  const tabIndex = ref(getActiveTab())
+  const activeTab = ref(getActiveTab())
 
-  watch(tabIndex, (tabIndexValue) => {
-    let currentTab = tabs.value?.[tabIndexValue].name
-    setActiveTabInUrl(currentTab)
-    preserveLastVisitedTab(currentTab)
+  watch(activeTab, (tabName) => {
+    setActiveTabInUrl(tabName)
+    preserveLastVisitedTab(tabName)
   })
 
   watch(
@@ -71,18 +62,16 @@ export function useActiveTabManager(tabs, storageKey) {
       if (!tabValue) return
 
       let tabName = tabValue.replace('#', '')
-      let index = findTabIndex(tabName)
-      if (index === -1) index = 0
+      if (!hasTab(tabName)) tabName = firstTab()
 
-      let currentTab = tabs.value?.[index].name
-      preserveLastVisitedTab(currentTab)
-      tabIndex.value = index
+      preserveLastVisitedTab(tabName)
+      activeTab.value = tabName
     },
   )
 
   watch(tabs, () => {
-    tabIndex.value = getActiveTab()
+    activeTab.value = getActiveTab()
   })
 
-  return { tabIndex, changeTabTo }
+  return { activeTab, changeTabTo }
 }
