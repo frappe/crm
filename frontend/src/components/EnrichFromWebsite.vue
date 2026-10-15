@@ -85,11 +85,9 @@ const { document } = useDocument(props.doctype, props.docname)
 const EVENT = 'domain_enrichment_progress'
 
 const running = ref(false)
-// From api.get_status: the latest run can be undone.
+// Session-only: set when a run started from this button fills fields, never
+// restored from the server, so it's gone after a refresh or navigation.
 const canUndo = ref(false)
-// From api.get_status: 'idle' | 'running' | 'done'. 'done' means the latest
-// run Completed, so the button offers Re-enrich.
-const state = ref('idle')
 const undoing = ref(false)
 // Fill width in percent (0–100). Only animated while running, so resetting it
 // to 0 snaps back instead of sliding.
@@ -99,6 +97,7 @@ let checking = false
 let finishTimer = null
 // Only set when the page opened mid-run (see resume()).
 let pollTimer = null
+let startedHere = false
 let unmounted = false
 
 // Fill shown right after the click, before the first socket event arrives.
@@ -118,16 +117,10 @@ let creepCeiling = START_FILL
 
 const hasWebsite = computed(() => Boolean((props.website || '').trim()))
 
-const label = computed(() => {
-  if (running.value) return __('Enriching…')
-  return state.value === 'done' ? __('Re-enrich') : __('Enrich')
-})
-const tooltip = computed(() => {
-  if (running.value) return __('Enriching…')
-  return state.value === 'done'
-    ? __('Re-enrich from website')
-    : __('Enrich from website')
-})
+const label = computed(() => (running.value ? __('Enriching…') : __('Enrich')))
+const tooltip = computed(() =>
+  running.value ? __('Enriching…') : __('Enrich from website'),
+)
 
 function isForThisDoc(data) {
   return (
@@ -191,6 +184,7 @@ function reset() {
 function finish(payload) {
   reset()
   const filled = (payload && payload.filled_fields) || []
+  canUndo.value = startedHere && filled.length > 0
   const notes = (payload && payload.notes) || []
   if (notes.length && !filled.length) {
     // Nothing extracted — explain why (blocked / JS-only site).
@@ -215,7 +209,6 @@ function afterChange() {
   // it — otherwise navigating back to a list serves stale cached data.
   organizations.reload()
   emit('done') // parent reloads the document + side panel — no manual refresh
-  loadStatus()
 }
 
 async function loadStatus() {
@@ -224,12 +217,9 @@ async function loadStatus() {
       reference_doctype: props.doctype,
       reference_name: props.docname,
     })
-    canUndo.value = Boolean(status.can_undo)
-    state.value = status.state
     return status
   } catch {
-    // Status only adds Undo, Re-enrich and the resumed state; the button
-    // works without it.
+    // Status only resumes a run in progress; the button works without it.
     return null
   }
 }
@@ -238,7 +228,7 @@ async function loadStatus() {
 // Enriching. The socket still finishes it for the user who started the run;
 // polling covers everyone else.
 function resume() {
-  begin()
+  begin(false)
   pollTimer = setInterval(poll, POLL_MS)
 }
 
@@ -339,7 +329,7 @@ async function enrich() {
 
 async function start() {
   capture('enrichment_triggered', { doctype: props.doctype })
-  begin()
+  begin(true)
 
   try {
     await call('crm.domain_enrichment.api.enrich', {
@@ -353,8 +343,10 @@ async function start() {
 }
 
 // Enter the Enriching state and start listening for progress.
-function begin() {
+function begin(fromClick) {
   clearTimers()
+  startedHere = fromClick
+  canUndo.value = false
   running.value = true
   document.enriching = true
   // Set in the same tick the transition turns on, so it slides in from 0.
@@ -413,10 +405,10 @@ async function undo() {
     } else {
       toast.success(__('Enrichment undone'))
     }
+    canUndo.value = false
     afterChange()
   } catch (error) {
     toast.error(error.messages?.[0] || __('Could not undo enrichment.'))
-    loadStatus()
   } finally {
     undoing.value = false
     document.enriching = false
