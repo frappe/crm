@@ -40,6 +40,13 @@ DEFAULT_SETTINGS = {
 }
 
 
+# Upper bound for Settings.max_pages, enforced in the Settings controller.
+# A crawl is network-bound and its enqueue timeout is derived from this value
+# (``request_timeout * max_pages + 60`` in tasks.py), so an unbounded page
+# budget would let one record hold a long-queue worker for hours.
+MAX_PAGES_LIMIT = 20
+
+
 def _setting(doc, key):
 	"""One Settings field, falling back to DEFAULT_SETTINGS when unset."""
 	val = doc.get(key)
