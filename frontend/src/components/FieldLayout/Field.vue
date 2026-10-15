@@ -6,17 +6,25 @@
         field.fieldtype != 'Button' &&
         field.fieldtype != 'HTML'
       "
-      class="mb-2 text-sm text-ink-gray-5"
+      class="mb-2 flex items-center justify-between gap-2 text-sm text-ink-gray-5"
     >
-      {{ __(field.label) }}
-      <span
-        v-if="
-          field.reqd ||
-          (field.mandatory_depends_on && field.mandatory_via_depends_on)
-        "
-        class="text-ink-red-4"
-        >*</span
-      >
+      <span>
+        {{ __(field.label) }}
+        <span
+          v-if="
+            field.reqd ||
+            (field.mandatory_depends_on && field.mandatory_via_depends_on)
+          "
+          class="text-ink-red-4"
+          >*</span
+        >
+      </span>
+      <Tooltip v-if="isEnriched" :text="__('Enriched from website')">
+        <span
+          class="lucide-zap size-3 shrink-0 text-ink-blue-5"
+          :aria-label="__('Enriched from website')"
+        />
+      </Tooltip>
     </div>
     <FormControl
       v-if="
@@ -373,6 +381,8 @@ import {
 import { isFetchedFromLink } from '@/utils/fetchFrom'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+import { injectEnrichedFieldnames } from '@/data/enrichedFields'
+
 import {
   Combobox,
   Select,
@@ -392,6 +402,15 @@ const doctype = inject('doctype')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
+// Provided by the Data tab, and empty for any other record, so the icon
+// never shows in a modal's fields (Quick Entry, layout preview).
+const enrichedFieldnames = injectEnrichedFieldnames(doctype, docname)
+const isEnriched = computed(
+  () =>
+    !preview &&
+    !isGridRow &&
+    enrichedFieldnames.value.has(props.field.fieldname),
+)
 
 // Guard getMeta — skip when doctype is empty (inline/standalone mode)
 let getFormattedPercent, getFormattedFloat, getFormattedCurrency

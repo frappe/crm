@@ -21,7 +21,7 @@
         />
         <Button
           label="Save"
-          :disabled="!document.isDirty"
+          :disabled="!document.isDirty || document.enriching"
           variant="solid"
           :loading="document.save.loading"
           @click="saveChanges"
@@ -70,6 +70,7 @@ import { Badge, createResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+import { provideEnrichedFieldnames } from '@/data/enrichedFields'
 import { isMobileView } from '@/composables/settings'
 import { ref, watch, getCurrentInstance, computed } from 'vue'
 
@@ -96,6 +97,10 @@ const attrs = instance?.vnode?.props ?? {}
 const showDataFieldsModal = ref(false)
 
 const { document } = useDocument(props.doctype, props.docname)
+
+// For the enriched-field icon on each field below.
+provideEnrichedFieldnames(props.doctype, props.docname)
+
 const fieldLayoutTabStorageKey = computed(
   () => `fieldLayoutTab:${props.doctype}:${props.docname}`,
 )
@@ -127,7 +132,8 @@ const tabs = createResource({
 })
 
 function saveChanges() {
-  if (!document.isDirty) return
+  // An enrichment run saves this doc itself; saving now would collide.
+  if (!document.isDirty || document.enriching) return
 
   const updatedDoc = { ...document.doc }
   const oldDoc = { ...document.originalDoc }
