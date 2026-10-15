@@ -143,14 +143,14 @@
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
+          v-if="tab.value === 'deals' && rows.length"
           class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <EmptyState
-          v-if="tab.label === 'Deals' && !rows.length"
+          v-if="tab.value === 'deals' && !rows.length"
           :icon="tab.iconLeft"
           name="Deals"
           :description="__('Use New Deal to create a deal for this contact.')"
