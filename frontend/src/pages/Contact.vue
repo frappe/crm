@@ -12,6 +12,11 @@
         v-if="contact._actions?.length"
         :actions="contact._actions"
       />
+      <Button
+        :label="__('New Deal')"
+        iconLeft="lucide-plus"
+        @click="openDealModal"
+      />
     </template>
   </LayoutHeader>
   <div v-if="contact.doc" ref="parentRef" class="flex h-full">
@@ -42,14 +47,14 @@
                         ? {
                             options: [
                               {
-                                icon: 'upload',
+                                icon: 'lucide-upload',
                                 label: contact.doc.image
                                   ? __('Change Image')
                                   : __('Upload Image'),
                                 onClick: openFileSelector,
                               },
                               {
-                                icon: 'trash-2',
+                                icon: 'lucide-trash-2',
                                 label: __('Remove Image'),
                                 onClick: () => changeContactImage(''),
                               },
@@ -99,7 +104,7 @@
                   :label="__('Delete')"
                   theme="red"
                   size="sm"
-                  iconLeft="trash-2"
+                  iconLeft="lucide-trash-2"
                   @click="deleteContact()"
                 />
               </div>
@@ -120,28 +125,21 @@
       </div>
     </Resizer>
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
-      <template #tab-item="{ tab, selected }">
-        <button
-          class="group flex items-center gap-2 border-b border-transparent py-2.5 text-base text-ink-gray-5 duration-300 ease-in-out hover:text-ink-gray-9"
-          :class="{ 'text-ink-gray-9': selected }"
+      <template #tab-label="{ tab }">{{ __(tab.label) }}</template>
+      <template #tab-suffix="{ tab, active }">
+        <Badge
+          :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
+          variant="solid"
+          theme="gray"
+          size="sm"
         >
-          <component :is="tab.icon" v-if="tab.icon" class="h-5" />
-          {{ __(tab.label) }}
-          <Badge
-            class="group-hover:bg-surface-gray-10"
-            :class="[selected ? 'bg-surface-gray-10' : 'bg-gray-600']"
-            variant="solid"
-            theme="gray"
-            size="sm"
-          >
-            {{ tab.count }}
-          </Badge>
-        </button>
+          {{ tab.count }}
+        </Badge>
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
@@ -151,7 +149,13 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <EmptyState v-if="!rows.length" :icon="tab.icon" name="Deals" />
+
+        <EmptyState
+          v-if="!rows.length"
+          :icon="tab.iconLeft"
+          name="Deals"
+          :description="__('Use New Deal to create a deal for this contact.')"
+        />
       </template>
     </Tabs>
   </div>
@@ -167,6 +171,11 @@
     :docname="contact.doc.name"
     name="Contacts"
   />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="dealDefaults"
+  />
 </template>
 
 <script setup>
@@ -179,6 +188,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { validateIsImageFile, setupCustomizations } from '@/utils'
 import { useContactFields } from '@/composables/useContactFields'
@@ -204,7 +214,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
@@ -284,6 +294,26 @@ usePageMeta(() => {
   }
 })
 const showDeleteLinkedDocModal = ref(false)
+const showDealModal = ref(false)
+const dealDefaults = ref({})
+
+// company_name is free text, so only pick an existing organization; otherwise the deal creates one
+async function openDealModal() {
+  const company = contact.doc.company_name
+  const isOrganization =
+    company &&
+    (await call('frappe.client.get_count', {
+      doctype: 'CRM Organization',
+      filters: { name: company },
+    }))
+  dealDefaults.value = {
+    contact: contact.doc.name,
+    ...(isOrganization
+      ? { organization: company }
+      : { organization_name: company }),
+  }
+  showDealModal.value = true
+}
 
 async function deleteContact() {
   showDeleteLinkedDocModal.value = true
@@ -298,11 +328,12 @@ function changeContactImage(file) {
   })
 }
 
-const tabIndex = ref(0)
+const activeTab = ref('deals')
 const tabs = [
   {
+    value: 'deals',
     label: 'Deals',
-    icon: DealsIcon,
+    iconLeft: DealsIcon,
     count: computed(() => deals.data?.length),
   },
 ]
@@ -444,9 +475,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField: contact.setValue.submit,
-        createToast: toast.create,
         deleteDoc: deleteContact,
         call,
       })

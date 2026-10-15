@@ -55,6 +55,7 @@ def get_deal_activities(name: str):
 		# skip the lead's history instead of failing the whole timeline
 		if frappe.has_permission("CRM Lead", "read", lead):
 			activities, calls, notes, tasks, attachments = get_lead_activities(lead)
+			activities = ungroup_note_activities(activities)
 
 	activities.append(
 		{
@@ -166,13 +167,21 @@ def get_deal_activities(name: str):
 		}
 		activities.append(activity)
 
-	calls = calls + get_linked_calls(name).get("calls", [])
-	notes = notes + get_linked_notes(name) + get_linked_calls(name).get("notes", [])
-	tasks = tasks + get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
+	linked_calls = get_linked_calls(name)
+	calls = calls + linked_calls.get("calls", [])
+	# the lead's note events already came with its activities, so only add the deal's own
+	lead_notes = {n.get("name") for n in notes}
+	deal_notes = [
+		n for n in get_linked_notes(name) + linked_calls.get("notes", []) if n.get("name") not in lead_notes
+	]
+	notes = notes + deal_notes
+	tasks = tasks + get_linked_tasks(name) + linked_calls.get("tasks", [])
 	attachments = attachments + get_attachments("CRM Deal", name)
+	activities += get_note_activities(deal_notes, is_lead=False)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
+	activities = group_note_activities(activities)
 
 	return activities, calls, notes, tasks, attachments
 
@@ -311,9 +320,11 @@ def get_lead_activities(name: str):
 	notes = get_linked_notes(name) + get_linked_calls(name).get("notes", [])
 	tasks = get_linked_tasks(name) + get_linked_calls(name).get("tasks", [])
 	attachments = get_attachments("CRM Lead", name)
+	activities += get_note_activities(notes, is_lead=True)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
+	activities = group_note_activities(activities)
 
 	return activities, calls, notes, tasks, attachments
 
@@ -365,6 +376,32 @@ def handle_multiple_versions(versions: list):
 			activities.append(parse_grouped_versions(grouped_versions))
 
 	return activities
+
+
+def group_note_activities(activities: list):
+	"""Fold back-to-back note entries by the same person into one, like field changes."""
+	grouped = []
+	for activity in activities:
+		previous = grouped[-1] if grouped else None
+		if (
+			activity["activity_type"] == "note"
+			and previous
+			and previous["activity_type"] == "note"
+			and previous["owner"] == activity["owner"]
+		):
+			previous.setdefault("other_notes", []).append(activity)
+		else:
+			grouped.append(activity)
+	return grouped
+
+
+def ungroup_note_activities(activities: list):
+	"""Undo `group_note_activities` so the lead's notes can regroup with the deal's."""
+	ungrouped = []
+	for activity in activities:
+		ungrouped.append(activity)
+		ungrouped.extend(activity.pop("other_notes", []))
+	return ungrouped
 
 
 def parse_grouped_versions(versions: list):
@@ -450,7 +487,17 @@ def get_linked_calls(name: str):
 		notes = frappe.db.get_all(
 			"FCRM Note",
 			filters={"name": ("in", notes)},
-			fields=["name", "title", "content", "owner", "modified"],
+			fields=[
+				"name",
+				"title",
+				"content",
+				"pinned",
+				"pinned_by",
+				"pinned_on",
+				"owner",
+				"modified",
+				"creation",
+			],
 		)
 
 	if tasks:
@@ -478,9 +525,65 @@ def get_linked_notes(name: str):
 	notes = frappe.db.get_all(
 		"FCRM Note",
 		filters={"reference_docname": name},
-		fields=["name", "title", "content", "owner", "modified", "creation"],
+		fields=[
+			"name",
+			"title",
+			"content",
+			"pinned",
+			"pinned_by",
+			"pinned_on",
+			"owner",
+			"modified",
+			"creation",
+		],
 	)
 	return notes or []
+
+
+def get_note_activities(notes: list, is_lead: bool):
+	"""Timeline entries for notes being added, pinned and unpinned."""
+	notes = [n for n in notes if n.get("name")]
+	if not notes:
+		return []
+
+	titles = {n.get("name"): n.get("title") for n in notes}
+	activities = [
+		{
+			"name": note.get("name"),
+			"activity_type": "note",
+			"creation": note.get("creation"),
+			"owner": note.get("owner"),
+			"data": {"action": "added", "note": note.get("name"), "title": note.get("title")},
+			"is_lead": is_lead,
+		}
+		for note in notes
+	]
+
+	versions = frappe.get_all(
+		"Version",
+		filters={"ref_doctype": "FCRM Note", "docname": ["in", list(titles)], "data": ["like", '%"pinned"%']},
+		fields=["name", "docname", "owner", "creation", "data"],
+	)
+	for version in versions:
+		changed = json.loads(version.data).get("changed", [])
+		pinned = next((c[2] for c in changed if c[0] == "pinned"), None)
+		if pinned is None:
+			continue
+		activities.append(
+			{
+				"name": version.name,
+				"activity_type": "note",
+				"creation": version.creation,
+				"owner": version.owner,
+				"data": {
+					"action": "pinned" if int(pinned) else "unpinned",
+					"note": version.docname,
+					"title": titles.get(version.docname),
+				},
+				"is_lead": is_lead,
+			}
+		)
+	return activities
 
 
 def get_linked_tasks(name: str):

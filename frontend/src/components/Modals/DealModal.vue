@@ -1,12 +1,14 @@
 <template>
-  <Dialog v-model:open="show" :size="'3xl'">
-    <template #body>
-      <div class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6">
+  <Dialog v-model:open="show" :size="'3xl'" bare>
+    <template #default>
+      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Deal') }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ __('Create Deal') }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
             <Button
@@ -17,12 +19,14 @@
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                variant="ghost"
+                class="w-7"
+                icon="lucide-x"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div>
@@ -80,8 +84,8 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { useTelemetry } from 'frappe-ui/frappe'
-import { Switch, createResource } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { Dialog, Switch, createResource } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -105,25 +109,6 @@ const isDealCreating = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
-
-watch(
-  [chooseExistingOrganization, chooseExistingContact],
-  ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        if (section.name === 'organization_section') {
-          section.hidden = !organization
-        } else if (section.name === 'organization_details_section') {
-          section.hidden = organization
-        } else if (section.name === 'contact_section') {
-          section.hidden = !contact
-        } else if (section.name === 'contact_details_section') {
-          section.hidden = contact
-        }
-      })
-    })
-  },
-)
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -164,6 +149,26 @@ const tabs = createResource({
     })
   },
 })
+
+watch(
+  [chooseExistingOrganization, chooseExistingContact, () => tabs.data],
+  ([organization, contact]) => {
+    tabs.data?.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        if (section.name === 'organization_section') {
+          section.hidden = !organization
+        } else if (section.name === 'organization_details_section') {
+          section.hidden = organization
+        } else if (section.name === 'contact_section') {
+          section.hidden = !contact
+        } else if (section.name === 'contact_details_section') {
+          section.hidden = contact
+        }
+      })
+    })
+  },
+  { immediate: true },
+)
 
 const dealStatuses = computed(() => statusOptions('deal'))
 
@@ -237,6 +242,8 @@ function openQuickEntryModal() {
 onMounted(() => {
   deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
+  chooseExistingOrganization.value = Boolean(props.defaults.organization)
+  chooseExistingContact.value = Boolean(props.defaults.contact)
 
   if (!deal.doc.deal_owner) {
     deal.doc.deal_owner = getUser().name

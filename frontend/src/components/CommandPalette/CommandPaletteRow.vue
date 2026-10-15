@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex h-9 w-full min-w-0 items-center rounded px-2 text-sm"
+    class="flex h-9 w-full min-w-0 items-center rounded-4 px-2 text-sm"
     :class="[
       active ? 'bg-surface-gray-2' : '',
       command.disabled
@@ -26,7 +26,7 @@
     </span>
     <span
       v-if="command.badge"
-      class="ms-2 shrink-0 rounded bg-surface-gray-2 px-1.5 py-0.5 text-xs"
+      class="ms-2 shrink-0 rounded-4 bg-surface-gray-2 px-1.5 py-0.5 text-xs"
       :class="command.badgeClass || 'text-ink-gray-5'"
     >
       {{ command.badge }}

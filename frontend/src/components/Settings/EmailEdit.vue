@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
-      <h2 class="text-2xl-semibold text-ink-gray-8">
+      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
         {{ __('Edit Email') }}
       </h2>
     </div>
@@ -14,7 +14,7 @@
     </div>
     <!-- banner for setting up email account -->
     <div
-      class="flex items-center gap-2 p-2 rounded-md ring-1 ring-outline-gray-3"
+      class="flex items-center gap-2 p-2 rounded-5 ring-1 ring-outline-gray-3"
     >
       <CircleAlert
         class="size-6 text-ink-gray-4 w-min-5 w-max-5 min-h-5 max-w-5"

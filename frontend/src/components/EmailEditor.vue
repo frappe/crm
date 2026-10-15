@@ -28,11 +28,12 @@
           :class="from.length ? '' : 'border-t pt-2.5'"
         >
           <span class="text-xs text-ink-gray-4 mr-2">{{ __('TO') }}:</span>
-          <MultiSelectEmailInput
+          <EmailMultiSelect
             v-model="toEmails"
             class="flex-1"
             variant="ghost"
             :validate="validateEmail"
+            :fetchContacts="true"
             :error-message="
               (value) => __('{0} is an invalid email address', [value])
             "
@@ -62,7 +63,7 @@
         </div>
         <div v-if="cc" class="mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('CC') }}:</span>
-          <MultiSelectEmailInput
+          <EmailMultiSelect
             ref="ccInput"
             v-model="ccEmails"
             class="flex-1"
@@ -76,7 +77,7 @@
         </div>
         <div v-if="bcc" class="mx-4 flex items-center gap-2">
           <span class="text-xs text-ink-gray-4">{{ __('BCC') }}:</span>
-          <MultiSelectEmailInput
+          <EmailMultiSelect
             ref="bccInput"
             v-model="bccEmails"
             class="flex-1"
@@ -97,10 +98,13 @@
         </div>
       </div>
       <EditorContent
+        data-resizable-editor
         :class="[
           'prose-sm max-w-none [&_p.reply-to-content]:hidden',
-          editable && 'mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          editable && 'mx-4 overflow-y-auto border-t py-3',
+          editable && !height && 'max-h-[35vh]',
         ]"
+        :style="editable && height ? { height: `${height}px` } : null"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
@@ -130,11 +134,9 @@
               @click="showEmailTemplateSelectorModal = true"
             />
             <FileUploader
-              :upload-args="{
-                doctype: doctype,
-                docname: modelValue.name,
-                private: true,
-              }"
+              :doctype="doctype"
+              :docname="modelValue.name"
+              private
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
@@ -148,7 +150,6 @@
             </FileUploader>
             <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
-              v-slot="{ togglePopover }"
               v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
@@ -156,7 +157,6 @@
                 :tooltip="__('Insert Emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
-                @click="togglePopover()"
               />
             </IconPicker>
           </div>
@@ -185,7 +185,7 @@ import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import AttachmentItem from '@/components/AttachmentItem.vue'
-import MultiSelectEmailInput from '@/components/Controls/MultiSelectEmailInput.vue'
+import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import EmailTemplateSelectorModal from '@/components/Modals/EmailTemplateSelectorModal.vue'
 import {
   buildEditorExtensions,
@@ -199,7 +199,7 @@ import {
   EditorFixedMenu,
   EditorTableMenu,
 } from 'frappe-ui/editor'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { useDocument } from '@/data/document'
 import { validateEmail, submitShortcutLabel } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -213,6 +213,7 @@ const props = defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  height: { type: Number, default: 0 },
 })
 
 const CustomParagraph = Paragraph.extend({

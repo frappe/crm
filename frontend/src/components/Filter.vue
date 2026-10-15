@@ -1,12 +1,11 @@
 <template>
-  <Popover placement="bottom-end">
-    <template #target="{ togglePopover, close }">
+  <Popover side="bottom" align="end" bare>
+    <template #trigger="{ close }">
       <div class="flex items-center">
         <Button
           :label="__('Filter')"
           :class="filters?.size ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
-          @click="togglePopover"
         >
           <template v-if="filters?.size" #suffix>
             <div
@@ -25,9 +24,9 @@
         />
       </div>
     </template>
-    <template #body="{ close }">
+    <template #default="{ close }">
       <div
-        class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 min-w-40 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
           <template v-if="filters?.size">
@@ -139,7 +138,7 @@
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                   @click="setOpen(!open)"
                 />
               </template>

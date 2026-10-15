@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showLeadModal = true"
       />
     </template>
@@ -259,6 +259,16 @@
     v-else-if="leads.data && !rows.length"
     name="Leads"
     :icon="LeadsIcon"
+    :title="__('No leads yet')"
+    :description="
+      __(
+        'A lead is someone who might buy from you. Add one yourself, import a list, or capture them from a web form.',
+      )
+    "
+    :filtered="!!Object.keys(leads.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/lead"
+    importDoctype="CRM Lead"
+    @create="showLeadModal = true"
   />
   <LeadModal
     v-if="showLeadModal"
@@ -293,7 +303,8 @@ import { callEnabled } from '@/composables/telephony'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { Avatar, Tooltip, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, computed, reactive, h } from 'vue'
@@ -468,7 +479,7 @@ function parseRows(rows, columns = []) {
             ? 'red'
             : lead.sla_status == 'Fulfilled'
               ? 'green'
-              : 'orange'
+              : 'amber'
         if (value == 'First Response Due' || value == 'Rolling Response Due') {
           value = __(timeAgo(lead.response_by))
           tooltipText = formatDate(lead.response_by)

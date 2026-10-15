@@ -1,15 +1,14 @@
 @import 'frappe-ui/style.css';
-@import 'frappe-ui/list-style.css';
 
 @layer components {
   .prose-f {
-    @apply break-all
+    @apply break-words
 			max-w-none
 			prose
 			prose-code:break-all
 			prose-code:whitespace-pre-wrap
 			prose-img:border
-			prose-img:rounded-lg
+			prose-img:rounded-6
 			prose-sm
 			prose-table:table-fixed
 			prose-td:border
@@ -29,4 +28,14 @@
    (z-[100]). Lift menus above popovers so nested menus stay visible. */
 .menu-content {
   z-index: 101;
+}
+
+/* the editor's @ list is attached to the page body, so let it take clicks while a dialog is open */
+[role='dialog'][aria-label='Suggestions'] {
+  pointer-events: auto;
+}
+
+/* mentions show a hover card, so use the arrow instead of the text cursor */
+.mention[data-id] {
+  cursor: default;
 }

@@ -1,0 +1,433 @@
+<template>
+  <Button
+    v-if="canUndo && !running"
+    :label="__('Undo')"
+    :tooltip="__('Undo last enrichment')"
+    iconLeft="lucide-undo-2"
+    :disabled="undoing"
+    @click="confirmUndo"
+  />
+  <!-- Disabled buttons get no hover events, so the tooltip sits on a wrapper.
+       tabindex lets keyboard users focus it and see the tooltip too. -->
+  <Tooltip v-if="!hasWebsite" :text="__('Add website to auto enrich')">
+    <div class="inline-flex" tabindex="0">
+      <Button :label="__('Enrich')" iconLeft="lucide-zap" disabled />
+    </div>
+  </Tooltip>
+  <!-- No `loading` prop: it restyles the button. The prefix slot swaps in the
+       same Spinner instead. -->
+  <Button
+    v-else
+    :label="label"
+    :tooltip="tooltip"
+    iconLeft="lucide-zap"
+    :aria-disabled="running || undefined"
+    :disabled="undoing"
+    class="relative isolate overflow-hidden"
+    :class="{ 'pointer-events-none': running }"
+    @click="enrich"
+  >
+    <template v-if="running" #prefix>
+      <Spinner class="size-4" aria-hidden="true" />
+    </template>
+    <!-- Like frappe-ui's Progress.vue: a full-width fill slid left so only
+         `fill`% shows. z-[-1] in the isolated button keeps it under the label.
+         In the suffix so it doesn't displace iconLeft. -->
+    <template #suffix>
+      <span
+        aria-hidden="true"
+        class="absolute inset-0 z-[-1] bg-surface-gray-4"
+        :class="{
+          'transition-transform ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none':
+            running,
+        }"
+        :style="{
+          transform: `translateX(${fill - 100}%)`,
+          transitionDuration: `${TICK_MS}ms`,
+        }"
+      />
+    </template>
+  </Button>
+</template>
+
+<script setup>
+import { ref, computed, h, onMounted, onBeforeUnmount } from 'vue'
+import { Button, Spinner, Tooltip, call, toast } from 'frappe-ui'
+import Icon from '@/components/Icon.vue'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { useDocument } from '@/data/document'
+import { editedToReplace, reloadEnrichedFields } from '@/data/enrichedFields'
+import { createDialog } from '@/utils/dialogs'
+import { getMeta } from '@/stores/meta'
+import { globalStore } from '@/stores/global'
+import { organizationsStore } from '@/stores/organizations'
+
+const props = defineProps({
+  doctype: { type: String, required: true },
+  docname: { type: String, required: true },
+  website: { type: String, default: '' },
+})
+
+const emit = defineEmits(['done'])
+
+const { $socket } = globalStore()
+const { organizations } = organizationsStore()
+const { capture } = useTelemetry()
+const { doctypeMeta } = getMeta(props.doctype)
+// Shared per-record document resource. `enriching` on it lets the Data tab
+// disable Save during a run, so it can't collide with the job's own save.
+const { document } = useDocument(props.doctype, props.docname)
+const EVENT = 'domain_enrichment_progress'
+
+const running = ref(false)
+// Session-only: set when a run started from this button fills fields, never
+// restored from the server, so it's gone after a refresh or navigation.
+const canUndo = ref(false)
+const undoing = ref(false)
+// Fill width in percent (0–100). Only animated while running, so resetting it
+// to 0 snaps back instead of sliding.
+const fill = ref(0)
+let creepTimer = null
+let checking = false
+let finishTimer = null
+// Set for every run (see begin()), as a fallback for a missed socket event.
+let pollTimer = null
+// True while api.enrich is in flight: the job isn't queued yet, so a poll
+// would read it as finished.
+let enqueuing = false
+let startedHere = false
+let unmounted = false
+
+// Fill shown right after the click, before the first socket event arrives.
+const START_FILL = 8
+// Running events never fill past this; the last stretch is for 'completed'.
+const MAX_RUNNING_FILL = 90
+// Also the fill's transition duration, so each creep step lands before the next.
+const TICK_MS = 660
+// How long the full fill stays visible before the button goes back to normal.
+const HOLD_MS = 500
+// How often to re-check a run's status. Socket events only reach the user who
+// started the job and can be missed (e.g. a dropped connection), so every run
+// is also polled.
+const POLL_MS = 3000
+// Ceiling the fill may creep up to while waiting on the current step: just
+// short of where the next step would put it.
+let creepCeiling = START_FILL
+
+const hasWebsite = computed(() => Boolean((props.website || '').trim()))
+
+const label = computed(() => (running.value ? __('Enriching…') : __('Enrich')))
+const tooltip = computed(() =>
+  running.value ? __('Enriching…') : __('Enrich from website'),
+)
+
+function isForThisDoc(data) {
+  return (
+    data &&
+    data.reference_doctype === props.doctype &&
+    data.reference_name === props.docname
+  )
+}
+
+// Fill for a running event. Steps are 0-based (0 … total-1), spread evenly
+// between START_FILL and MAX_RUNNING_FILL.
+function fillForStep(step, total) {
+  if (!total || total < 2) return START_FILL
+  const ratio = Math.min(Math.max(step / (total - 1), 0), 1)
+  return START_FILL + ratio * (MAX_RUNNING_FILL - START_FILL)
+}
+
+function setStep(step, total) {
+  const next = Math.min(step + 1, total - 1)
+  fill.value = Math.max(fill.value, fillForStep(step, total))
+  creepCeiling = Math.max(creepCeiling, fillForStep(next, total) - 2)
+}
+
+function startCreep() {
+  // Steps can be far apart (crawling is the long one), so ease the fill toward
+  // the next step's mark instead of sitting still between events.
+  creepTimer = setInterval(() => {
+    if (fill.value < creepCeiling) {
+      fill.value += Math.max((creepCeiling - fill.value) * 0.1, 0.2)
+      fill.value = Math.min(fill.value, creepCeiling)
+    }
+  }, TICK_MS)
+}
+
+function clearTimers() {
+  clearInterval(creepTimer)
+  clearTimeout(finishTimer)
+  clearInterval(pollTimer)
+  creepTimer = null
+  finishTimer = null
+  pollTimer = null
+}
+
+// Stop listening and creeping but keep the running look, so the completed
+// fill can finish and hold before reset().
+function stop() {
+  $socket.off(EVENT, onProgress)
+  clearInterval(creepTimer)
+  creepTimer = null
+}
+
+function reset() {
+  stop()
+  clearTimers()
+  running.value = false
+  document.enriching = false
+  fill.value = 0
+  creepCeiling = START_FILL
+}
+
+function finish(payload) {
+  reset()
+  const filled = (payload && payload.filled_fields) || []
+  canUndo.value = startedHere && filled.length > 0
+  const notes = (payload && payload.notes) || []
+  if (notes.length && !filled.length) {
+    // Nothing extracted — explain why (blocked / JS-only site).
+    toast.warning(notes[0])
+  } else {
+    // Lightning icon as in the Figma toast.
+    toast.success(__('Enrichment successful'), {
+      icon: () => h(Icon, { icon: 'lucide-zap', class: 'size-4' }),
+      description: filled.length
+        ? __('Filled: {0}', [filled.join(', ')])
+        : undefined,
+    })
+  }
+  afterChange()
+}
+
+// Refresh everything a finished run or an undo changes.
+function afterChange() {
+  reloadEnrichedFields(props.doctype, props.docname)
+  // Re-validate the cached organizations store so list views (whose logos/names
+  // are read from it) reflect this update even if no list page was open to catch
+  // it — otherwise navigating back to a list serves stale cached data.
+  organizations.reload()
+  emit('done') // parent reloads the document + side panel — no manual refresh
+}
+
+async function loadStatus() {
+  try {
+    return await call('crm.domain_enrichment.api.get_status', {
+      reference_doctype: props.doctype,
+      reference_name: props.docname,
+    })
+  } catch {
+    // Status only resumes a run in progress; the button works without it.
+    return null
+  }
+}
+
+// The page opened while a run is going (e.g. refreshed mid-run): show it as
+// Enriching. The socket still finishes it for the user who started the run;
+// polling covers everyone else.
+function resume() {
+  begin(false)
+}
+
+async function poll() {
+  if (enqueuing) return
+  const status = await loadStatus()
+  // pollTimer is cleared on reset/unmount; finishTimer means the socket's
+  // 'completed' event already got here.
+  if (!pollTimer || finishTimer || !status || status.running) return
+  // A failed run gets no full fill, go straight back.
+  if (status.last_run_status !== 'Completed') {
+    toast.error(__('Enrichment failed.'))
+    reset()
+    afterChange()
+    return
+  }
+  stop()
+  fill.value = 100
+  // status carries the same filled_fields / notes as the socket's payload.
+  finishTimer = setTimeout(() => finish(status), TICK_MS + HOLD_MS)
+}
+
+function onProgress(data) {
+  if (!isForThisDoc(data) || !running.value) return
+  if (data.status === 'running') {
+    // Only step/total drive the fill; crawl messages are never shown.
+    setStep(Number(data.step) || 0, Number(data.total) || 0)
+  } else if (data.status === 'completed') {
+    stop()
+    fill.value = 100
+    // Let the fill reach 100% and hold briefly before finishing.
+    finishTimer = setTimeout(() => finish(data.payload), TICK_MS + HOLD_MS)
+  } else if (data.status === 'error') {
+    reset()
+    toast.error(data.message || __('Enrichment failed.'))
+  }
+}
+
+async function enrich() {
+  // Keyboard activation still reaches here while running; `checking` stops a
+  // second click during the fetch from opening a second dialog.
+  if (running.value || undoing.value || checking || !hasWebsite.value) return
+  // The record reloads when the run finishes, which would drop unsaved edits.
+  if (document.isDirty) {
+    toast.warning(__('Save your changes before enriching'))
+    return
+  }
+
+  let enriched
+  checking = true
+  try {
+    enriched = await call('crm.domain_enrichment.api.get_enriched_fields', {
+      reference_doctype: props.doctype,
+      reference_name: props.docname,
+    })
+  } catch (error) {
+    toast.error(error.messages?.[0] || __('Could not start enrichment.'))
+    return
+  } finally {
+    checking = false
+  }
+  // The user may have left the page while the fetch was in flight.
+  if (unmounted) return
+  if (!enriched.length) return start()
+
+  const edited = editedToReplace(enriched)
+  let message = __(
+    'This record was already enriched. Enriching again may update those fields with newer values from the website.',
+  )
+  if (edited.length) {
+    message +=
+      ' ' +
+      __('These fields you edited will be replaced: {0}', [edited.join(', ')])
+  }
+  createDialog({
+    title: __('Re-enrich this record?'),
+    message,
+    size: 'sm',
+    actions: [
+      { label: __('Cancel'), onClick: ({ close }) => close() },
+      {
+        label: __('Enrich'),
+        variant: 'solid',
+        onClick: ({ close }) => {
+          close()
+          if (!unmounted) start()
+        },
+      },
+    ],
+  })
+}
+
+async function start() {
+  // resume() may have picked up a run while get_enriched_fields was loading.
+  if (running.value) return
+  capture('enrichment_triggered', { doctype: props.doctype })
+  begin(true)
+
+  enqueuing = true
+  try {
+    const { queued } = await call('crm.domain_enrichment.api.enrich', {
+      reference_doctype: props.doctype,
+      reference_name: props.docname,
+    })
+    // A job for this record was already in flight (maybe another user's), so
+    // this click didn't start a run: show it until it ends, but offer no Undo.
+    // Polling finishes it if its socket events never reach us.
+    if (!queued) startedHere = false
+  } catch (error) {
+    reset()
+    toast.error(error.messages?.[0] || __('Could not start enrichment.'))
+  } finally {
+    enqueuing = false
+  }
+}
+
+function begin(fromClick) {
+  clearTimers()
+  startedHere = fromClick
+  canUndo.value = false
+  running.value = true
+  document.enriching = true
+  // Set in the same tick the transition turns on, so it slides in from 0.
+  fill.value = START_FILL
+  creepCeiling = START_FILL
+  startCreep()
+  // Subscribe before enqueueing so we never miss the completion event.
+  $socket.on(EVENT, onProgress)
+  pollTimer = setInterval(poll, POLL_MS)
+}
+
+function confirmUndo() {
+  if (running.value || undoing.value || checking) return
+  // The record reloads after the undo, which would drop unsaved edits.
+  if (document.isDirty) {
+    toast.warning(__('Save your changes before undoing'))
+    return
+  }
+  createDialog({
+    title: __('Undo enrichment?'),
+    message: __(
+      'This restores the values these fields had before the last enrichment.',
+    ),
+    size: 'sm',
+    actions: [
+      { label: __('Cancel'), onClick: ({ close }) => close() },
+      {
+        label: __('Undo'),
+        variant: 'solid',
+        onClick: ({ close }) => {
+          close()
+          if (!unmounted) undo()
+        },
+      },
+    ],
+  })
+}
+
+function fieldLabel(fieldname) {
+  const df = doctypeMeta.value?.fields?.find((f) => f.fieldname === fieldname)
+  return df?.label ? __(df.label) : fieldname
+}
+
+async function undo() {
+  if (running.value || undoing.value) return
+  undoing.value = true
+  // Same flag as a run: keeps the Data tab's Save off while the undo saves.
+  document.enriching = true
+  try {
+    const { reverted = [], skipped = [] } = await call(
+      'crm.domain_enrichment.api.undo',
+      { reference_doctype: props.doctype, reference_name: props.docname },
+    )
+    if (!reverted.length) {
+      toast.warning(__("Nothing to undo, you've edited all enriched fields"))
+    } else if (skipped.length) {
+      toast.success(
+        __('Enrichment undone. Kept your edits to: {0}', [
+          skipped.map(fieldLabel).join(', '),
+        ]),
+      )
+    } else {
+      toast.success(__('Enrichment undone'))
+    }
+    canUndo.value = false
+    afterChange()
+  } catch (error) {
+    toast.error(error.messages?.[0] || __('Could not undo enrichment.'))
+  } finally {
+    undoing.value = false
+    document.enriching = false
+  }
+}
+
+onMounted(async () => {
+  const status = await loadStatus()
+  // Skip if the user already clicked Enrich while status was loading.
+  if (status?.running && !running.value && !unmounted) resume()
+})
+
+onBeforeUnmount(() => {
+  unmounted = true
+  reset()
+})
+</script>
