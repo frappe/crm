@@ -102,7 +102,6 @@ def write_run(
 				"fieldname": change.fieldname,
 				"old_value": change.old_value,
 				"new_value": change.new_value,
-				"created_link_doctype": change.created_link_doctype,
 			},
 		)
 
