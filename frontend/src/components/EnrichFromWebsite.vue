@@ -247,8 +247,10 @@ async function poll() {
   // pollTimer is cleared on reset/unmount; finishTimer means the socket's
   // 'completed' event already got here.
   if (!pollTimer || finishTimer || !status || status.state === 'running') return
-  // Not 'done' means the run failed: no full fill to show, go straight back.
-  if (status.state !== 'done') {
+  // The newest run's own status, not `state`: older runs' values can keep
+  // `state` at 'done' after a failed run, or 'idle' after one that changed
+  // nothing. A failed run gets no full fill, go straight back.
+  if (status.last_run_status !== 'Completed') {
     toast.error(__('Enrichment failed.'))
     reset()
     afterChange()
