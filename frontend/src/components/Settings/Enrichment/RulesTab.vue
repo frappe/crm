@@ -71,7 +71,7 @@
           </div>
           <!-- Only flips the row; the header Update saves it. The slot stays
                on blank rows so the column doesn't shift. -->
-          <div class="w-8 shrink-0">
+          <div class="ml-3 w-8 shrink-0">
             <Switch
               v-if="!social.isRowBlank(row)"
               size="sm"
@@ -177,7 +177,7 @@
             </Tooltip>
           </div>
           <!-- Slot stays on blank rows so the column doesn't shift. -->
-          <div class="w-8 shrink-0">
+          <div class="ml-3 w-8 shrink-0">
             <Switch
               v-if="!industry.isRowBlank(row)"
               size="sm"
