@@ -108,6 +108,22 @@
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
+        <div
+          v-if="unsubscribedEmails.length"
+          role="status"
+          class="mx-4 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7"
+        >
+          <span
+            class="lucide-info size-4 shrink-0 text-ink-amber-5"
+            aria-hidden="true"
+          />
+          {{
+            __(
+              '{0} unsubscribed from emails for this record. Remove them to send.',
+              [unsubscribedEmails.join(', ')],
+            )
+          }}
+        </div>
         <div class="flex flex-wrap gap-2 px-4">
           <AttachmentItem
             v-for="a in attachments"
@@ -165,6 +181,9 @@
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
+              :disabled="
+                submitButtonProps?.disabled || !!unsubscribedEmails.length
+              "
               :label="`${__('Send')} (${submitShortcutLabel})`"
             />
           </div>
@@ -295,6 +314,26 @@ watch(
 
 const editor = computed(() => textEditor.value?.editor)
 
+const unsubscribedEmails = ref([])
+
+watch(
+  [toEmails, () => modelValue.value.name],
+  async ([emails, name], _, onCleanup) => {
+    let stale = false
+    onCleanup(() => (stale = true))
+    const unsubscribed =
+      emails.length && name
+        ? await call('crm.api.get_unsubscribed_emails', {
+            emails,
+            doctype: props.doctype,
+            name,
+          })
+        : []
+    if (!stale) unsubscribedEmails.value = unsubscribed
+  },
+  { immediate: true, deep: true },
+)
+
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
 }
@@ -359,5 +398,6 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  unsubscribedEmails,
 })
 </script>

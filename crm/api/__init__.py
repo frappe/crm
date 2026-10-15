@@ -52,6 +52,27 @@ def get_user_signature():
 	return content
 
 
+@frappe.whitelist()
+def get_unsubscribed_emails(emails: list[str], doctype: str, name: str) -> list[str]:
+	"""Mirror the filter in frappe's QueueBuilder, which drops these recipients without an error."""
+	frappe.has_permission(doctype, "read", name, throw=True)
+	if not emails:
+		return []
+
+	EmailUnsubscribe = frappe.qb.DocType("Email Unsubscribe")
+	return (
+		frappe.qb.from_(EmailUnsubscribe)
+		.select(EmailUnsubscribe.email)
+		.distinct()
+		.where(EmailUnsubscribe.email.isin(emails))
+		.where(
+			(EmailUnsubscribe.global_unsubscribe == 1)
+			| ((EmailUnsubscribe.reference_doctype == doctype) & (EmailUnsubscribe.reference_name == name))
+		)
+		.run(pluck=True)
+	)
+
+
 def check_app_permission():
 	if frappe.session.user == "Administrator":
 		return True
