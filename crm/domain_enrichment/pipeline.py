@@ -164,7 +164,14 @@ def run(website: str, cfg: EnrichmentConfig = None, progress=None) -> Enrichment
 		result.logo = company.get("logo") or Field()
 		result.image = company.get("image") or Field()
 		result.description = (
-			extractors.select_description(pages, soups_by_url) or company.get("description") or Field()
+			extractors.select_description(
+				pages,
+				soups_by_url,
+				industry_rules=cfg.rules("Industry"),
+				company_name=result.company_name.value,
+			)
+			or company.get("description")
+			or Field()
 		)
 
 		# 4. Contacts: emails, phones, social.

@@ -129,6 +129,62 @@ BROKEN_JSON_LD = """
 </head><body><h1>Broken</h1></body></html>
 """
 
+# --------------------------------------------------------------------------- #
+# Sitemap fixtures
+# --------------------------------------------------------------------------- #
+URLSET_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.example/about</loc></url>
+  <url><loc>https://acme.example/contact</loc></url>
+  <url><loc>https://acme.example/blog/post-1</loc></url>
+</urlset>"""
+
+SITEMAP_INDEX_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap><loc>https://acme.example/sitemap-pages.xml</loc></sitemap>
+  <sitemap><loc>https://acme.example/sitemap-blog.xml</loc></sitemap>
+</sitemapindex>"""
+
+# A sitemap trying to smuggle a DTD entity-expansion payload -- must be rejected
+# outright by _parse_sitemap before ET.fromstring ever sees it.
+MALICIOUS_DOCTYPE_XML = """<?xml version="1.0"?>
+<!DOCTYPE foo [<!ENTITY xxe "boom">]>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.example/&xxe;</loc></url>
+</urlset>"""
+
+
+def fake_fetch(responses):
+	"""Build a ``fetch(url, cfg, session=None, html_only=True)`` stub keyed by exact URL.
+
+	``responses`` maps url -> (status, body) for a 200-shaped response. A URL absent
+	from the map behaves like a 404 (mirrors a missing sitemap/robots.txt), so tests
+	only need to declare the endpoints they care about.
+	"""
+
+	def fake(url, cfg, session=None, html_only=True):
+		entry = responses.get(url)
+		if entry is None:
+			return 404, "", "not found", url
+		status, body = entry
+		return status, body, "", url
+
+	return fake
+
+
+def fake_fetch_with_redirects(responses, redirects):
+	"""Like ``fake_fetch``, but ``redirects`` maps a requested URL to the resolved
+	(post-redirect) URL returned as ``final_url`` -- simulates a 301/302 hop without
+	modeling the actual redirect chain, since callers only ever look at the result.
+	"""
+	base = fake_fetch(responses)
+
+	def fake(url, cfg, session=None, html_only=True):
+		status, body, error, final_url = base(url, cfg, session=session, html_only=html_only)
+		return status, body, error, redirects.get(url, final_url)
+
+	return fake
+
 
 # --------------------------------------------------------------------------- #
 # Page helper

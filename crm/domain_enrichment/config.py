@@ -35,6 +35,7 @@ DEFAULT_SETTINGS = {
 	"auto_enrich": 0,
 	"max_pages": 10,
 	"max_depth": 2,
+	"use_sitemap": 1,
 	"request_timeout": 10,
 	"max_download_bytes": 3_000_000,
 	"retry_count": 2,
@@ -158,7 +159,11 @@ def _compile_pattern(pattern: str, is_regex: int):
 	try:
 		if is_regex:
 			return re.compile(pattern, re.IGNORECASE)
-		return re.compile(re.escape(pattern), re.IGNORECASE)
+		# Word-boundary-anchor substring patterns: an un-anchored short keyword like
+		# "erp" or "api" matches inside completely unrelated words ("waterproofing",
+		# "capital"), causing false industry-classification hits. An admin who wants
+		# unanchored substring matching can still opt in via is_regex=1.
+		return re.compile(rf"\b{re.escape(pattern)}\b", re.IGNORECASE)
 	except re.error:
 		# A malformed admin-entered regex must not break the whole config build.
 		frappe.log_error(

@@ -3,15 +3,11 @@
 
 """Generic, config-driven extractors.
 
-This module contains NO literal keyword / industry / social tables: the
-classifiers (``classify_industry``, social-profile matching) are generic rule
-executors that iterate over ``cfg.rules_by_type[...]``, honoring each rule's
-``match_scope``, ``weight`` and compiled (substring-or-regex) patterns.
-
-What stays as pure mechanics (these are not tunable knowledge, just algorithms):
-JSON-LD parsing, the favicon scorer, readability diagnosis, email/phone regex
-extraction, and company-name cleaning. These are deliberately NOT pushed into
-doctypes (avoid over-engineering).
+No literal keyword/industry/social tables here: classifiers iterate over
+``cfg.rules_by_type[...]``, honoring each rule's ``match_scope``, ``weight`` and
+compiled patterns. JSON-LD parsing, the favicon scorer, readability diagnosis,
+email/phone regex, and company-name cleaning stay as plain mechanics -- not
+tunable knowledge, so not pushed into doctypes.
 """
 
 from __future__ import annotations
@@ -34,7 +30,6 @@ from .result import (
 # --------------------------------------------------------------------------- #
 EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 
-# International-ish phone numbers: optional +, country/area groups, separators.
 PHONE_RE = re.compile(
 	r"""(?<!\w)
     (\+?\d{1,3}[\s.-]?)?      # optional country code
@@ -64,9 +59,8 @@ SOCIAL_NEGATIVE = re.compile(r"/(sharer|share|intent|home|login|signup|privacy|t
 
 
 # --------------------------------------------------------------------------- #
-# Generic rule executors -- the heart of the config-driven engine
+# Generic rule executors
 # --------------------------------------------------------------------------- #
-# Map a rule's match_scope to the text key the executor should match against.
 SCOPE_HEADLINE = "Headline"
 SCOPE_FULL_TEXT = "Full Text"
 SCOPE_HTML = "HTML"
@@ -75,14 +69,8 @@ SCOPE_URL = "URL"
 
 
 def apply_keyword_rules(text_by_scope: dict, rules: list) -> dict:
-	"""Score keyword/regex rules against scoped text.
-
-	``text_by_scope`` maps a scope name (Headline/Full Text/URL/...) to the text
-	to match for that scope. Each rule is matched only against its own
-	``match_scope``. Returns ``{label: weighted_score}`` where ``label`` is the
-	rule's industry (Industry rules) or target_value (everything else), and the
-	score is ``pattern_hits * weight`` summed across rules sharing a label.
-	"""
+	"""Returns ``{label: weighted_score}`` -- ``label`` is the rule's industry
+	(Industry rules) or target_value (everything else)."""
 	scores: dict = {}
 	for rule in rules:
 		text = text_by_scope.get(rule.match_scope, "")
@@ -96,7 +84,6 @@ def apply_keyword_rules(text_by_scope: dict, rules: list) -> dict:
 # JSON-LD (mechanics)
 # --------------------------------------------------------------------------- #
 def parse_json_ld(soup):
-	"""Return a flat list of JSON-LD dicts found on the page (handles @graph)."""
 	blocks = []
 	for tag in soup.find_all("script", attrs={"type": "application/ld+json"}):
 		raw = tag.string or tag.get_text() or ""
@@ -125,11 +112,6 @@ def _ld_type_matches(block, wanted):
 # --------------------------------------------------------------------------- #
 # Readability diagnosis (mechanics)
 # --------------------------------------------------------------------------- #
-# Markers of a bot-protection / WAF challenge page served instead of content.
-# Kept as a small constant: these are diagnostic mechanics, not classifier
-# knowledge an admin tunes (and they map 1:1 to a fixed set of human messages).
-# Strong markers: unambiguous WAF/challenge fingerprints -- a page carrying one is a
-# challenge page regardless of how much other text it has.
 WAF_MARKERS_STRONG = (
 	"_incapsula_resource",
 	"incapsula",
@@ -139,16 +121,12 @@ WAF_MARKERS_STRONG = (
 	"ddos protection",
 	"are you a human",
 )
-# Weak markers: generic phrases that legitimate content-rich pages also contain (a
-# contact form embedding reCAPTCHA, a stock <noscript> notice). Only treat these as a
-# block when the page is also nearly devoid of readable text.
 WAF_MARKERS_WEAK = (
 	"captcha",
 	"please enable javascript",
 	"enable cookies to continue",
 	"access denied",
 )
-# Below this much readable text, a weak marker is taken as a real challenge page.
 WAF_WEAK_TEXT_THRESHOLD = 1000
 
 READABILITY_MESSAGES = {
@@ -190,7 +168,6 @@ def diagnose_readability(pages):
 # Company information (mechanics)
 # --------------------------------------------------------------------------- #
 def _meta_with_method(soup, *names):
-	"""Return (content, matched_name) for the first present meta tag."""
 	for name in names:
 		tag = soup.find("meta", attrs={"property": name}) or soup.find("meta", attrs={"name": name})
 		if tag and tag.get("content"):
@@ -252,15 +229,14 @@ _APPLE_TOUCH_PX = 180
 
 
 def _safe_url(base_url, raw):
-	"""Resolve ``raw`` against ``base_url``; return it only if it is a non-empty
-	``http(s)`` URL. Rejects ``javascript:`` / ``data:`` / other schemes a crawled
-	site could inject into a stored logo/image/icon value (defense against stored XSS
-	-- these values land in a CRM field). Returns ``""`` otherwise."""
+	"""Resolve ``raw`` against ``base_url``; return it only if it's a non-empty
+	``http(s)`` URL. Rejects ``javascript:``/``data:`` schemes a crawled site could
+	inject into a stored logo/image/icon field (stored-XSS defense)."""
 	raw = (raw or "").strip()
 	if not raw:
 		return ""
-	# Reject an explicit non-http(s) scheme on the raw value up front (urljoin keeps
-	# javascript:/data: as-is), then re-check the resolved URL for relative inputs.
+	# urljoin() leaves javascript:/data: schemes as-is, so check the raw scheme
+	# first, then re-check the resolved URL for relative inputs.
 	scheme = urlparse(raw).scheme.lower()
 	if scheme and scheme not in ("http", "https"):
 		return ""
@@ -269,11 +245,8 @@ def _safe_url(base_url, raw):
 
 
 def _best_icon(soup, base_url):
-	"""Best ``<link rel=icon>`` candidate URL.
-
-	Scalable SVGs win over any raster; among rasters the largest declared size wins
-	(apple-touch-icons default to 180px). Returns ``""`` if no icon is declared.
-	"""
+	"""Best ``<link rel=icon>`` candidate: scalable SVG beats any raster, then
+	largest declared size wins."""
 	candidates = []
 	for tag in soup.find_all("link", href=True):
 		rel = tag.get("rel") or []
@@ -291,7 +264,6 @@ def _best_icon(soup, base_url):
 		)
 		m = re.search(r"(\d+)x\d+", tag.get("sizes", "") or "")
 		px = int(m.group(1)) if m else (_APPLE_TOUCH_PX if "apple-touch" in rel else 0)
-		# Sort key: SVG beats any raster; then by pixel size.
 		candidates.append(((1 if is_svg else 0, px), safe))
 	if not candidates:
 		return ""
@@ -300,13 +272,9 @@ def _best_icon(soup, base_url):
 
 
 def extract_logo(soup, base_url):
-	"""The company's **link icon** -- the crisp, square brand mark suitable as an
-	avatar. Only ``<link rel=icon>`` sources are considered: scalable SVG > largest
-	declared raster / apple-touch > the conventional ``/favicon.ico`` fallback.
-
-	The larger social-share / JSON-LD image is deliberately NOT used as the logo
-	(``og:image`` is usually a wide banner, not a brand mark); it is captured
-	separately by :func:`extract_image`. Returns a :class:`Field`.
+	"""The company's link icon -- a crisp, square brand mark, not the wider
+	social-share image (``og:image`` is usually a banner; see :func:`extract_image`).
+	Priority: SVG > largest declared raster/apple-touch > ``/favicon.ico`` fallback.
 	"""
 	icon_url = _best_icon(soup, base_url)
 	if icon_url:
@@ -319,11 +287,9 @@ def extract_logo(soup, base_url):
 
 
 def extract_image(soup, base_url):
-	"""The company's larger brand / social image: JSON-LD ``Organization.logo``
-	(curated, full-size) → ``og:image`` / ``twitter:image`` (social-share). Kept in the
-	run JSON for reference; it is NOT the company logo (that is the link icon -- see
-	:func:`extract_logo`). Returns a :class:`Field`, empty if none is declared.
-	"""
+	"""The larger brand/social image (JSON-LD ``Organization.logo`` -> ``og:image``/
+	``twitter:image``), NOT the company logo -- see :func:`extract_logo`. Returns a
+	:class:`Field`, empty if none declared."""
 	for block in parse_json_ld(soup):
 		if not _ld_type_matches(block, _ORG_TYPES):
 			continue
@@ -350,8 +316,10 @@ _ORG_TYPES = {
 	"softwareapplication",
 }
 
+# Full-segment match, not a prefix: "about-our-reporting" (an ESG page) must not
+# qualify just because it starts with "about-".
 _ABOUT_SEGMENT_RE = re.compile(
-	r"^(about|about-us|aboutus|company|who-we-are|our-story|overview|mission)([-_]|$)",
+	r"^(about|about-us|about_us|aboutus|company|who-we-are|our-story|overview|mission)$",
 	re.I,
 )
 _NON_ABOUT_WORDS = (
@@ -394,7 +362,6 @@ def _is_about_page(url):
 
 
 def extract_company_info(homepage, soup):
-	"""Extract company identity with full provenance (mechanics)."""
 	url = homepage.url
 	info = {
 		"company_name": Field(),
@@ -436,36 +403,60 @@ def extract_company_info(homepage, soup):
 	return info
 
 
-# Tags whose text is chrome (navigation/forms), not company copy -- skipped when
-# hunting for a body paragraph.
 _NON_CONTENT_PARENTS = {"nav", "header", "footer", "aside", "form"}
 _MIN_PARAGRAPH_LEN = 80
+_MAX_PARAGRAPHS_SCANNED = 6
 
 
-def first_paragraph(soup):
-	"""First substantial body paragraph on a page (mechanics).
+def _company_name_hits(text, company_name):
+	name = (company_name or "").strip()
+	if not name:
+		return 0
+	return len(re.findall(rf"\b{re.escape(name)}\b", text, re.IGNORECASE))
 
-	Returns the cleaned text of the first ``<p>`` that holds sentence-like copy and is
-	not inside nav/header/footer/aside/form chrome, or ``""`` if none qualifies. Used
-	as a description fallback when a site exposes no description metadata. Read-only --
-	does not mutate ``soup``.
+
+def first_paragraph(soup, industry_rules=None, company_name=""):
+	"""Best substantial body paragraph on a page. Scores up to
+	``_MAX_PARAGRAPHS_SCANNED`` qualifying ``<p>`` tags by Industry-rule keyword hits
+	(the same corpus ``classify_industry`` uses); ``company_name`` mentions only
+	break ties, never outrank keyword signal. Read-only -- does not mutate ``soup``.
 	"""
+	candidates = []
 	for p in soup.find_all("p"):
 		if any(parent.name in _NON_CONTENT_PARENTS for parent in p.parents):
 			continue
 		text = " ".join((p.get_text(" ") or "").split())
-		if len(text) >= _MIN_PARAGRAPH_LEN and " " in text:
-			return text
-	return ""
+		if len(text) < _MIN_PARAGRAPH_LEN or " " not in text:
+			continue
+		candidates.append(text)
+		if len(candidates) >= _MAX_PARAGRAPHS_SCANNED:
+			break
+
+	if not candidates:
+		return ""
+	if not industry_rules:
+		return candidates[0]
+
+	# max() keeps the first-encountered element on ties, so document order still
+	# wins when nothing scores higher (covers the "all zero hits" case for free).
+	# Company-name hits are a separate tuple slot -- they can only break ties,
+	# never add to the industry-hit count.
+	return max(
+		candidates,
+		key=lambda text: (
+			sum(rule.matches(text) for rule in industry_rules),
+			_company_name_hits(text, company_name),
+		),
+	)
 
 
-def select_description(pages, soups_by_url):
-	"""Pick the best *company* description across crawled pages (mechanics).
+def select_description(pages, soups_by_url, industry_rules=None, company_name=""):
+	"""Pick the best *company* description across crawled pages.
 
-	Priority (highest first): JSON-LD ``Organization.description`` → About-page body
-	paragraph → head ``og:description``/``<meta description>`` → home-page body
-	paragraph (last resort). The body-paragraph fallbacks let descriptions be derived
-	even when a site exposes no description metadata at all.
+	Priority: JSON-LD ``Organization.description`` -> About-page body paragraph ->
+	head ``og:description``/``<meta description>`` -> home-page body paragraph
+	(last resort). ``industry_rules``/``company_name`` steer the body-paragraph
+	fallbacks (see ``first_paragraph``).
 	"""
 	home_url = pages[0].url if pages else ""
 	best_key = None
@@ -487,17 +478,16 @@ def select_description(pages, soups_by_url):
 		is_home = page.url == home_url
 		is_about = _is_about_page(page.url)
 
-		# JSON-LD Organization.description -- curated structured data, highest priority.
 		for block in parse_json_ld(soup):
 			if _ld_type_matches(block, _ORG_TYPES) and block.get("description"):
 				consider(Field(block["description"].strip(), page.url, Method.JSON_LD), 6)
 				break
 
-		# About-page body paragraph outranks head meta.
 		if is_about:
-			consider(Field(first_paragraph(soup), page.url, Method.BODY_TEXT), 5)
+			consider(
+				Field(first_paragraph(soup, industry_rules, company_name), page.url, Method.BODY_TEXT), 5
+			)
 
-		# Head description on the home or About page.
 		if is_home or is_about:
 			content, _name = _meta_with_method(soup, "og:description", "description")
 			if content:
@@ -505,9 +495,10 @@ def select_description(pages, soups_by_url):
 				score = 2 if (is_home and _COMMERCE_RE.search(content)) else 4
 				consider(Field(content, page.url, Method.META_TAG), score)
 
-		# Home-page body paragraph -- last resort.
 		if is_home:
-			consider(Field(first_paragraph(soup), page.url, Method.BODY_TEXT), 1)
+			consider(
+				Field(first_paragraph(soup, industry_rules, company_name), page.url, Method.BODY_TEXT), 1
+			)
 
 	return best_field or Field()
 
@@ -523,7 +514,6 @@ def _clean_email(email):
 
 
 def extract_emails(pages):
-	"""pages: list[CrawledPage] -> list[Email] (deduped, first source kept)."""
 	found = {}
 	for page in pages:
 		if not page.html:
@@ -535,13 +525,19 @@ def extract_emails(pages):
 	return list(found.values())
 
 
+# TODO: Need to make this robust by adding proper mechanics or using a
+# thirdparty library like google/libphonenumbers
 def _valid_phone(raw):
+	# Requires an explicit "+" country-code prefix: a bare digit string is either
+	# ambiguous local formatting or noise (stats, reference numbers) that happens
+	# to look phone-shaped -- precision over recall.
+	if not raw.strip().startswith("+"):
+		return False
 	digits = re.sub(r"\D", "", raw)
 	return 7 <= len(digits) <= 15
 
 
 def extract_phones(pages):
-	"""Extract phone numbers, preferring tel: links, then visible text."""
 	found = {}
 	for page in pages:
 		if not page.html:
@@ -571,12 +567,8 @@ def extract_phones(pages):
 # Social profiles (config-driven via Social rules)
 # --------------------------------------------------------------------------- #
 def extract_social_profiles(pages, soups_by_url, social_rules, extra_links=None):
-	"""Return dict network -> SocialProfile(value, source, method).
-
-	Each Social rule's ``target_value`` is the network name and its compiled
-	patterns are the host/path matchers. JSON-LD ``sameAs`` links (``extra_links``)
-	are considered first, then anchor hrefs discovered while crawling.
-	"""
+	"""Return dict network -> SocialProfile(value, source, method); each Social
+	rule's ``target_value`` is the network name."""
 	profiles = {rule.target_value: SocialProfile() for rule in social_rules}
 
 	home_url = pages[0].url if pages else ""
@@ -605,12 +597,12 @@ def extract_social_profiles(pages, soups_by_url, social_rules, extra_links=None)
 # Industry classification (config-driven via Industry rules)
 # --------------------------------------------------------------------------- #
 def classify_industry(pages, company_info, industry_rules):
-	"""Rule-based industry from the homepage's headline corpus only.
-
-	Builds a per-scope text map and runs ``apply_keyword_rules`` over Industry
-	rules. Industry rules are seeded with ``match_scope='Headline'`` so they match
-	the company name + description + homepage title/headings, never body/footer.
-	Returns (industry, confidence 0-1), or ("", 0.0) when the signal is too weak.
+	"""Rule-based industry from the homepage's (and, when crawled, the About page's)
+	headline corpus. Industry rules are typically seeded with ``match_scope='Headline'``
+	(company name/description/title/headings, never body/footer). The homepage alone
+	is often thin (stylized brand copy, no meta description), so a crawled About
+	page's title/headings are folded in too. Returns (industry, confidence 0-1), or
+	("", 0.0) when the signal is too weak.
 	"""
 	if not industry_rules:
 		return "", 0.0
@@ -624,10 +616,14 @@ def classify_industry(pages, company_info, industry_rules):
 		home = pages[0]
 		headline_parts.append(home.title or "")
 		headline_parts.append(" ".join(home.headings))
+		about = next((p for p in pages[1:] if _is_about_page(p.url)), None)
+		if about:
+			headline_parts.append(about.title or "")
+			headline_parts.append(" ".join(about.headings))
 	headline = " ".join(p for p in headline_parts if p).lower()
 
-	# Provide the same corpus under common scopes so admins can re-scope rules
-	# without code changes; default seed uses Headline.
+	# Same corpus under multiple scope keys so admins can re-scope rules without
+	# code changes; default seed uses Headline.
 	full_text = " ".join((p.text or "") for p in pages).lower()
 	text_by_scope = {
 		SCOPE_HEADLINE: headline,
