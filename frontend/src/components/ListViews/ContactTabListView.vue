@@ -20,7 +20,9 @@
     </ListHeader>
     <ListRows v-slot="{ column, item }" :rows="rows" :doctype="doctype">
       <ListRowItem :item="item" :align="column.align" class="overflow-hidden">
-        <div class="truncate text-base">{{ item }}</div>
+        <template #default="{ label }">
+          <div class="truncate text-base">{{ label }}</div>
+        </template>
       </ListRowItem>
     </ListRows>
   </ListView>

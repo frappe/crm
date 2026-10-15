@@ -55,6 +55,7 @@ export function useContactTabs(contactId, activeTab) {
       })
       state.rows = more ? state.rows.concat(result.rows) : result.rows
       state.totalCount = result.total_count
+      state.failed = false
     } catch {
       // a failing provider leaves the tab empty; one toast per tab
       if (!state.failed)
@@ -75,7 +76,8 @@ export function useContactTabs(contactId, activeTab) {
 
   if (activeTab) {
     watch(activeTab, (name) => {
-      if (states[name] && states[name].totalCount === null) loadRows(name)
+      const state = states[name]
+      if (state && (state.totalCount === null || state.failed)) loadRows(name)
     })
   }
 
