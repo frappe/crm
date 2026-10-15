@@ -117,7 +117,20 @@
     }"
     @loadMore="() => loadMore++"
   />
-  <EmptyState v-else name="Notes" :icon="NoteIcon" />
+  <EmptyState
+    v-else
+    name="Notes"
+    :icon="NoteIcon"
+    :title="__('No notes yet')"
+    :description="
+      __(
+        'Notes keep what you learned on a call or in a meeting next to the lead or deal it belongs to.',
+      )
+    "
+    :filtered="!!Object.keys(notes.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/note"
+    @create="createNote"
+  />
 </template>
 
 <script setup>
