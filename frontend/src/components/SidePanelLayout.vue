@@ -388,7 +388,7 @@
                         />
                         <ArrowUpRightIcon
                           v-else-if="isExternalUrl(doc[field.fieldname])"
-                          class="h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
+                          class="relative -left-[13px] h-4 w-4 shrink-0 cursor-pointer text-ink-gray-5 hover:text-ink-gray-8"
                           @click.stop="openExternalUrl(doc[field.fieldname])"
                         />
                         <EditIcon
