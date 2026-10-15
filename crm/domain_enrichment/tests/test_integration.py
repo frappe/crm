@@ -190,22 +190,19 @@ class RunChangeLogTest(IntegrationTestCase):
 		changes = self._enrich(org, canned_result())
 		self.assertNotIn("linkedin", changes)
 
-	def test_write_run_skips_changes_with_equal_values(self):
+	def test_change_with_equal_values_is_not_recorded_or_reported(self):
 		from crm.domain_enrichment.mapper import FieldChange
 
 		org = self._new_org()
-		run_name = tasks.write_run(
-			"CRM Organization",
-			org.name,
-			org.website,
-			status="Completed",
-			changes=[
-				FieldChange("linkedin", "https://x.example", "https://x.example", "LinkedIn"),
-				FieldChange("twitter", None, "https://twitter.com/acme", "X (Twitter)"),
-			],
-		)
-		run = frappe.get_doc("CRM Enrichment Run", run_name)
-		self.assertEqual([c.fieldname for c in run.changes], ["twitter"])
+		equal = FieldChange("annual_revenue", 9000, "9000", "Annual Revenue")
+		with (
+			mock.patch.object(tasks, "apply_to_document", return_value=[equal]),
+			mock.patch.object(tasks, "_publish") as publish,
+		):
+			changes = self._enrich(org, canned_result())
+
+		self.assertEqual(changes, {})
+		self.assertEqual(publish.call_args.kwargs["payload"]["filled_fields"], [])
 
 	def test_records_created_industry(self):
 		industry = "Quantum Widgets " + frappe.generate_hash(length=6)
