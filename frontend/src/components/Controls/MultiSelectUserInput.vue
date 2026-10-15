@@ -48,7 +48,7 @@
             <template #body="{ isOpen }">
               <div v-show="isOpen">
                 <div
-                  class="mt-1 rounded-6 bg-surface-modal shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  class="mt-1 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                 >
                   <ComboboxOptions
                     class="p-1.5 max-h-[12rem] overflow-y-auto"
