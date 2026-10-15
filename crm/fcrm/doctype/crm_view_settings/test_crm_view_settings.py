@@ -3,15 +3,11 @@
 
 import frappe
 
-<<<<<<< HEAD
-from crm.fcrm.doctype.crm_view_settings.crm_view_settings import set_as_default
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from crm.fcrm.doctype.crm_view_settings.crm_view_settings import (
 	create_or_update_standard_view,
 	set_as_default,
 )
->>>>>>> 4edef1c (test: keep the default when standard views are saved)
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMViewSettings(FrappeTestCase):
