@@ -233,6 +233,10 @@ override_doctype_class = {
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
+extend_doctype_class = {
+	"Data Import": ["crm.overrides.data_import.DataImportListView"],
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events

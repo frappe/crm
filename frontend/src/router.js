@@ -103,21 +103,24 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
-    path: '/data-import',
-    name: 'DataImportList',
-    component: () => import('@/pages/DataImport.vue'),
+    alias: '/data-import',
+    path: '/data-import/view/:viewType?',
+    name: 'Data Imports',
+    component: () => import('@/pages/DataImports.vue'),
   },
+  // one page across these routes, so an import stays open when its URL changes
+  // after the first save
   {
-    path: '/data-import/doctype/:doctype',
+    path: '/data-import/doctype/:doctype?',
     name: 'NewDataImport',
     component: () => import('@/pages/DataImport.vue'),
-    props: true,
+    meta: { viewKey: 'data-import' },
   },
   {
     path: '/data-import/:importName',
     name: 'DataImport',
     component: () => import('@/pages/DataImport.vue'),
-    props: true,
+    meta: { viewKey: 'data-import' },
   },
   {
     path: '/welcome',
@@ -241,6 +244,7 @@ router.beforeEach(async (to, from, next) => {
       'Notes',
       'Tasks',
       'Call Logs',
+      'Data Imports',
     ].includes(to.name) &&
     !to.query?.view
   ) {
@@ -259,6 +263,7 @@ router.beforeEach(async (to, from, next) => {
         Notes: 'FCRM Note',
         Tasks: 'CRM Task',
         'Call Logs': 'CRM Call Log',
+        'Data Imports': 'Data Import',
       }
 
       const doctype = doctypeMap[to.name]
