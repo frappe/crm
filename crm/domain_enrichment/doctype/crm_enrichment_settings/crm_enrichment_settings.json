@@ -1,0 +1,242 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-06-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "general_tab",
+  "enabled",
+  "enabled_doctypes_section",
+  "enable_lead",
+  "enable_deal",
+  "enable_organization",
+  "automation_section",
+  "auto_enrich",
+  "crawl_tab",
+  "max_pages",
+  "max_depth",
+  "request_timeout",
+  "column_break_crawl",
+  "max_download_bytes",
+  "retry_count",
+  "user_agent",
+  "preview_section",
+  "preview_max_pages",
+  "preview_timeout",
+  "tuning_section",
+  "link_priority_order",
+  "column_break_tuning",
+  "skip_patterns",
+  "ssrf_guard_tab",
+  "allowed_domains_section",
+  "allowed_domains",
+  "blocked_domains_section",
+  "blocked_domains"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_tab",
+   "fieldtype": "Tab Break",
+   "label": "General"
+  },
+  {
+   "default": "1",
+   "description": "Master switch for the Domain Enrichment feature.",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "enabled_doctypes_section",
+   "fieldtype": "Section Break",
+   "label": "Enabled Doctypes"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_lead",
+   "fieldtype": "Check",
+   "label": "Enable for CRM Lead"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_deal",
+   "fieldtype": "Check",
+   "label": "Enable for CRM Deal"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_organization",
+   "fieldtype": "Check",
+   "label": "Enable for CRM Organization"
+  },
+  {
+   "fieldname": "automation_section",
+   "fieldtype": "Section Break",
+   "label": "Automation"
+  },
+  {
+   "default": "0",
+   "description": "Automatically enrich a CRM Organization in the background as soon as it is created (requires a website). When off, enrichment is triggered manually via the Enrich button.",
+   "depends_on": "eval:doc.enable_organization",
+   "fieldname": "auto_enrich",
+   "fieldtype": "Check",
+   "label": "Auto-enrich new Organizations"
+  },
+  {
+   "fieldname": "crawl_tab",
+   "fieldtype": "Tab Break",
+   "label": "Crawl"
+  },
+  {
+   "default": "10",
+   "description": "Maximum number of pages crawled per enrichment.",
+   "fieldname": "max_pages",
+   "fieldtype": "Int",
+   "label": "Max Pages"
+  },
+  {
+   "default": "2",
+   "description": "Maximum link depth followed from the homepage.",
+   "fieldname": "max_depth",
+   "fieldtype": "Int",
+   "label": "Max Depth"
+  },
+  {
+   "default": "10",
+   "description": "Per-request timeout in seconds.",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (s)"
+  },
+  {
+   "fieldname": "column_break_crawl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "3000000",
+   "description": "Maximum bytes downloaded per page (the stream is capped).",
+   "fieldname": "max_download_bytes",
+   "fieldtype": "Int",
+   "label": "Max Download Bytes"
+  },
+  {
+   "default": "2",
+   "description": "Number of retries on a failed request.",
+   "fieldname": "retry_count",
+   "fieldtype": "Int",
+   "label": "Retry Count"
+  },
+  {
+   "default": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+   "fieldname": "user_agent",
+   "fieldtype": "Data",
+   "label": "User Agent"
+  },
+  {
+   "fieldname": "preview_section",
+   "fieldtype": "Section Break",
+   "label": "Quick Prefill (Preview)"
+  },
+  {
+   "default": "1",
+   "description": "Pages crawled for the fast, synchronous create-time prefill.",
+   "fieldname": "preview_max_pages",
+   "fieldtype": "Int",
+   "label": "Preview Max Pages"
+  },
+  {
+   "default": "8",
+   "description": "Per-request timeout in seconds for the preview prefill.",
+   "fieldname": "preview_timeout",
+   "fieldtype": "Int",
+   "label": "Preview Timeout (s)"
+  },
+  {
+   "fieldname": "tuning_section",
+   "fieldtype": "Section Break",
+   "label": "Crawl Tuning"
+  },
+  {
+   "description": "Crawl-ordering hints (not extraction). Links whose URL path or anchor text contain one of these are fetched first; higher weight = sooner. Lets the crawler spend its page budget on company pages (about/contact/team) before the cap. Defaults are seeded; edit or remove as needed.",
+   "fieldname": "link_priority_order",
+   "fieldtype": "Table",
+   "label": "Link Priority Order",
+   "options": "CRM Enrichment Link Priority"
+  },
+  {
+   "fieldname": "column_break_tuning",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Substrings that exclude a candidate link from the crawl.",
+   "fieldname": "skip_patterns",
+   "fieldtype": "Table",
+   "label": "Skip Patterns",
+   "options": "CRM Enrichment Skip Pattern"
+  },
+  {
+   "fieldname": "ssrf_guard_tab",
+   "fieldtype": "Tab Break",
+   "label": "SSRF Guard"
+  },
+  {
+   "fieldname": "allowed_domains_section",
+   "fieldtype": "Section Break",
+   "label": "Allowed Domains"
+  },
+  {
+   "description": "Allowlist (subdomain-aware). If you add any domains here, the crawler may ONLY visit those domains and their subdomains — everything else is rejected by the SSRF guard. Leave empty (the normal case) to allow any public site; this is for locked-down deployments that should reach only specific domains.",
+   "fieldname": "allowed_domains",
+   "fieldtype": "Table",
+   "label": "Allowed Domains",
+   "options": "CRM Enrichment Domain"
+  },
+  {
+   "fieldname": "blocked_domains_section",
+   "fieldtype": "Section Break",
+   "label": "Blocked Domains"
+  },
+  {
+   "description": "Denylist (subdomain-aware). A host that equals or is a subdomain of any entry is always rejected by the SSRF guard — e.g. blocking \"acme.com\" also blocks \"shop.acme.com\". Use it to permanently exclude internal domains, known-bad hosts, or link shorteners. Always wins over the allowlist.",
+   "fieldname": "blocked_domains",
+   "fieldtype": "Table",
+   "label": "Blocked Domains",
+   "options": "CRM Enrichment Domain"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-06-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Domain Enrichment",
+ "name": "CRM Enrichment Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
