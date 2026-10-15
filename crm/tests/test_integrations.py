@@ -530,15 +530,12 @@ class TestExotelCallStatus(IntegrationTestCase):
 
 	def test_normalize_call_status_logs_unknown_status(self):
 		"""An unknown status means the mapping is stale, so leave a trace instead of guessing"""
-		frappe.db.delete("Error Log", {"method": "Unknown Exotel call status"})
+		with patch("frappe.log_error") as log_error:
+			self.assertIsNone(normalize_call_status("some-new-exotel-status"))
 
-		self.assertIsNone(normalize_call_status("some-new-exotel-status"))
-
-		error_logs = frappe.get_all(
-			"Error Log", filters={"method": "Unknown Exotel call status"}, pluck="error"
-		)
-		self.assertEqual(len(error_logs), 1)
-		self.assertIn("some-new-exotel-status", error_logs[0])
+		log_error.assert_called_once()
+		self.assertEqual(log_error.call_args.kwargs["title"], "Unknown Exotel call status")
+		self.assertIn("some-new-exotel-status", log_error.call_args.kwargs["message"])
 
 	def test_incoming_no_answer_without_matching_call_type(self):
 		"""The status reported in #824, which used to be passed through as "no-answer" """
