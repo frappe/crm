@@ -1,7 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <SettingsPage doctype="WhatsApp Settings" class="p-8" />
-=======
   <!-- Adding a record is the same screen as editing one, just unsaved. -->
   <WhatsAppTemplatePage
     v-if="step === 'template'"
@@ -85,13 +82,10 @@
       </template>
     </Tabs>
   </div>
->>>>>>> 79d85b5 (fix: match the page title style on WhatsApp and email account settings)
 </template>
 <script setup>
 import SettingsPage from '@/components/Settings/SettingsPage.vue'
 </script>
-<<<<<<< HEAD
-=======
 
 <style scoped>
 /* frappe-ui bakes px-5 into the tab list; drop it so the labels and the
@@ -115,4 +109,3 @@ import SettingsPage from '@/components/Settings/SettingsPage.vue'
   flex: 1 1 0%;
 }
 </style>
->>>>>>> 79d85b5 (fix: match the page title style on WhatsApp and email account settings)
