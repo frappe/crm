@@ -54,7 +54,12 @@ export function getDataImportRow(row: string, dataImport: DataImportRow) {
       color: statusColorMap[dataImport.status ?? ''] || 'gray',
     }
   }
-  if (row === 'reference_doctype') return __(dataImport.reference_doctype)
+  if (row === 'reference_doctype') {
+    return {
+      label: __(dataImport.reference_doctype),
+      name: dataImport.reference_doctype,
+    }
+  }
   if (row === 'import_file') {
     // shows the short file name but filters on the stored path; a Google
     // Sheet has no file, so clicking it clears the file filter instead
