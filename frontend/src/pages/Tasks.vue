@@ -184,6 +184,15 @@
     v-else-if="tasks.data && !rows.length"
     name="Tasks"
     :icon="Email2Icon"
+    :title="__('No tasks yet')"
+    :description="
+      __(
+        'Tasks are to-dos for you and your team, like a follow-up call or sending a quote. Add them here or from a lead or deal.',
+      )
+    "
+    :filtered="!!Object.keys(tasks.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/task"
+    @create="createTask()"
   />
   <DeleteLinkedDocModal
     v-if="showDeleteTaskModal"
