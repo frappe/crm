@@ -68,8 +68,7 @@ def write_run(
 	The single point of run-history writing -- storage stays swappable behind it.
 	When ``result`` is given the summary fields + ``raw_json`` (full ``to_dict()``)
 	are populated; otherwise a bare Run (status/website) is written. ``changes`` (the
-	mapper's ``FieldChange`` list) is stored as ``CRM Enrichment Run Change`` rows,
-	skipping any whose value did not actually change.
+	mapper's ``FieldChange`` list) is stored as ``CRM Enrichment Run Change`` rows.
 	"""
 	doc = frappe.new_doc("CRM Enrichment Run")
 	doc.reference_doctype = reference_doctype
@@ -97,8 +96,6 @@ def write_run(
 			doc.notes = "\n".join(result.notes)
 
 	for change in changes or []:
-		if frappe.utils.cstr(change.old_value) == frappe.utils.cstr(change.new_value):
-			continue
 		doc.append(
 			"changes",
 			{
@@ -213,7 +210,13 @@ def run_enrichment(
 
 		doc = frappe.get_doc(reference_doctype, reference_name)
 		doc.check_permission("write")
-		changes = apply_to_document(doc, result, cfg)
+		# Drop changes that only differ in type (9000 vs "9000"), so the toast's
+		# filled fields, which decide whether Undo shows, match the stored rows.
+		changes = [
+			change
+			for change in apply_to_document(doc, result, cfg)
+			if frappe.utils.cstr(change.old_value) != frappe.utils.cstr(change.new_value)
+		]
 		if changes:
 			doc.save()
 		filled_fields = filled_labels(changes)
