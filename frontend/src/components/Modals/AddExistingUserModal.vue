@@ -23,13 +23,14 @@
       <div
         class="p-2 group bg-surface-gray-2 hover:bg-surface-gray-3 rounded-4"
       >
-        <MultiSelectUserInput
+        <EmailMultiSelect
           v-if="users?.data?.crmUsers?.length"
           v-model="newUsers"
           class="flex-1"
           inputClass="!bg-surface-gray-2 hover:!bg-surface-gray-3 group-hover:!bg-surface-gray-3"
           :placeholder="__('john@doe.com')"
           :validate="validateEmail"
+          :fetchUsers="true"
           :existingEmails="[
             ...users.data.crmUsers.map((user) => user.name),
             'admin@example.com',
@@ -37,6 +38,7 @@
           :error-message="
             (value) => __('{0} is an invalid email address', [value])
           "
+          :emptyPlaceholder="__('No Users Found')"
         />
       </div>
       <FormControl
@@ -63,7 +65,7 @@
 </template>
 
 <script setup>
-import MultiSelectUserInput from '@/components/Controls/MultiSelectUserInput.vue'
+import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
 import { validateEmail } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { createResource, toast } from 'frappe-ui'
