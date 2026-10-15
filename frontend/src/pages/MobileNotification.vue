@@ -104,11 +104,7 @@ function getRoute(notification) {
   return {
     name: notification.route_name,
     params: params,
-<<<<<<< HEAD
-    hash: '#' + (notification.comment || notification.notification_type_doc),
-=======
     hash: notification.hash,
->>>>>>> 0e24bd2 (fix: open the right tab from the notifications page)
   }
 }
 </script>

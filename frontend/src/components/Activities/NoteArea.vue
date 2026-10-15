@@ -14,8 +14,6 @@
       <Dropdown
         :options="[
           {
-<<<<<<< HEAD
-=======
             label: __('Edit'),
             icon: 'lucide-edit-2',
             onClick: () => modalRef.showNote(note),
@@ -31,7 +29,6 @@
             onClick: () => copyToClipboard(noteLink(note.name)),
           },
           {
->>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
             label: __('Delete'),
             icon: 'lucide-trash-2',
             onClick: () => deleteNote(note.name),
