@@ -75,7 +75,7 @@
    "fieldname": "match_scope",
    "fieldtype": "Select",
    "label": "Match Scope",
-   "options": "Headline\nFull Text\nHTML\nHeaders\nURL"
+   "options": "Headline\nFull Text\nHTML\nURL"
   },
   {
    "fieldname": "patterns_section",
@@ -91,7 +91,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-05 14:58:03.677829",
+ "modified": "2026-10-15 23:00:00.000000",
  "modified_by": "Administrator",
  "module": "Domain Enrichment",
  "name": "CRM Enrichment Rule",
