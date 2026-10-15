@@ -85,6 +85,32 @@ describe('useActiveTabManager with hidden tabs', () => {
   })
 })
 
+describe('useActiveTabManager with script tab values', () => {
+  const tabs = computed(() => [
+    ...allTabs,
+    { name: 'Shipping Notes', value: 'shipping-notes' },
+    { name: 'عروض', value: 'عروض' },
+  ])
+
+  it('selects a slugified tab from the url hash', () => {
+    route.hash = '#shipping-notes'
+    const { activeTab } = useActiveTabManager(tabs, 'lastDealTab')
+    expect(activeTab.value).toBe('shipping-notes')
+  })
+
+  it('decodes a percent-encoded hash', () => {
+    route.hash = '#' + encodeURIComponent('عروض')
+    const { activeTab } = useActiveTabManager(tabs, 'lastDealTab')
+    expect(activeTab.value).toBe('عروض')
+  })
+
+  it('falls back to the first tab on a malformed hash', () => {
+    route.hash = '#%E0%A4%A'
+    const { activeTab } = useActiveTabManager(tabs, 'lastDealTab')
+    expect(activeTab.value).toBe('activity')
+  })
+})
+
 describe('useActiveTabManager with every tab hidden', () => {
   const none = () => computed(() => [])
 

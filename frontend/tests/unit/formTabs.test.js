@@ -1,4 +1,9 @@
-import { mergeFormTabs, filterVisibleTabs } from '@/utils/formTabs'
+import { isProxy, isReactive, reactive } from 'vue'
+import {
+  mergeFormTabs,
+  filterVisibleTabs,
+  slugifyTabName,
+} from '@/utils/formTabs'
 
 const base = [
   { name: 'Activity', label: 'Activity' },
@@ -24,6 +29,54 @@ describe('mergeFormTabs', () => {
       { name: 'Shipping', value: 'ship' },
     ])
     expect(result.slice(2).map((t) => t.value)).toEqual(['excom', 'ship'])
+  })
+
+  it('slugifies a name with spaces into a URL-safe value', () => {
+    const result = mergeFormTabs(base, [{ name: '  Shipping  Notes ' }])
+    expect(result[2].value).toBe('shipping-notes')
+  })
+
+  it('keeps non-latin letters in the derived value', () => {
+    expect(slugifyTabName('عروض الأسعار')).toBe('عروض-الأسعار')
+    expect(slugifyTabName('Q&A / FAQ?')).toBe('qa--faq')
+  })
+
+  it('patches a built-in tab whose name differs only in case', () => {
+    const named = [{ name: 'Emails', value: 'emails', label: 'Emails' }]
+    const result = mergeFormTabs(named, [{ name: 'emails', label: 'Inbox' }])
+    expect(result).toEqual([
+      { name: 'Emails', value: 'emails', label: 'Inbox' },
+    ])
+  })
+
+  it('keeps the built-in value when a script patches a tab', () => {
+    const named = [{ name: 'Emails', value: 'emails' }]
+    const result = mergeFormTabs(named, [{ name: 'Emails', value: 'inbox' }])
+    expect(result[0].value).toBe('emails')
+  })
+
+  it('skips a tab whose value is already taken, with a warning', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const named = [{ name: 'Emails', value: 'emails' }]
+    const result = mergeFormTabs(named, [
+      { name: 'Mail', value: 'emails' },
+      { name: 'Excom', value: 'x' },
+      { name: 'Other', value: 'x' },
+      { name: '???' },
+    ])
+    expect(result.map((t) => t.name)).toEqual(['Emails', 'Excom'])
+    expect(new Set(result.map((t) => t.value)).size).toBe(result.length)
+    expect(warn).toHaveBeenCalledTimes(3)
+    warn.mockRestore()
+  })
+
+  it('does not let a reactive tab list proxy the component', () => {
+    const component = { render: () => null }
+    const scriptTabs = reactive([{ name: 'Excom', component }])
+    const result = mergeFormTabs(base, scriptTabs)
+    expect(isProxy(result[2].component)).toBe(false)
+    expect(result[2].component).toBe(component)
+    expect(isReactive(reactive({ c: result[2].component }).c)).toBe(false)
   })
 
   it('patches a built-in tab in place when names match', () => {

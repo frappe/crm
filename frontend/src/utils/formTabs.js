@@ -1,11 +1,18 @@
+import { markRaw, toRaw } from 'vue'
+
 /**
  * Merge script-contributed tabs into a page's built-in tab list.
  *
  * Built-in tabs always keep their order and identity. A script tab whose `name`
- * matches a built-in tab patches that tab in place (so a script can relabel,
- * re-icon or `hide` `Emails` without redefining it); anything else is appended.
- * An appended tab without a `value` gets its lowercased `name`, the key the tab
- * bar and the URL hash select tabs by.
+ * matches a built-in tab, ignoring case, patches that tab in place (so a script
+ * can relabel, re-icon or `hide` `Emails` without redefining it); the patched
+ * tab keeps its own `name` and `value`. Anything else is appended.
+ *
+ * An appended tab without a `value` gets a slug of its `name`, the key the tab
+ * bar and the URL hash select tabs by. A tab whose value is empty or already
+ * taken by another tab is skipped with a warning, so no two tabs share a value.
+ *
+ * Components are marked raw so a reactive `document.tabs` never proxies them.
  *
  * Returns a NEW array — never mutates either input.
  *
@@ -18,23 +25,58 @@ export function mergeFormTabs(baseTabs = [], scriptTabs = []) {
   const extra = Array.isArray(scriptTabs) ? scriptTabs : []
 
   const merged = base.map((tab) => ({ ...tab }))
-  const seen = new Map(merged.map((tab, index) => [tab.name, index]))
+  const byName = new Map(merged.map((tab, index) => [nameKey(tab.name), index]))
+  const values = new Set(merged.map((tab) => tab.value))
 
   for (const tab of extra) {
     if (!tab || typeof tab !== 'object') continue
     if (!tab.name || typeof tab.name !== 'string') continue
 
-    if (seen.has(tab.name)) {
-      const index = seen.get(tab.name)
-      merged[index] = { ...merged[index], ...tab }
+    const patch = { ...tab }
+    if (patch.component) patch.component = markRaw(toRaw(patch.component))
+
+    const key = nameKey(tab.name)
+    if (byName.has(key)) {
+      const index = byName.get(key)
+      const { name, value } = merged[index]
+      merged[index] = { ...merged[index], ...patch, name, value }
       continue
     }
 
-    seen.set(tab.name, merged.length)
-    merged.push({ value: tab.name.toLowerCase(), ...tab })
+    const value = patch.value ?? slugifyTabName(tab.name)
+    if (!value || values.has(value)) {
+      console.warn(
+        `CRM: tab "${tab.name}" skipped, its value "${value}" is empty or already used`,
+      )
+      continue
+    }
+
+    byName.set(key, merged.length)
+    values.add(value)
+    merged.push({ ...patch, value })
   }
 
   return merged
+}
+
+/**
+ * Turn a tab name into a URL-safe value: trimmed, lowercased, whitespace runs
+ * replaced by `-`, and anything but letters (any script), digits, `-` and `_`
+ * dropped.
+ *
+ * @param {string} name
+ * @returns {string}
+ */
+export function slugifyTabName(name) {
+  return String(name)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\p{L}\p{N}_-]/gu, '')
+}
+
+function nameKey(name) {
+  return typeof name === 'string' ? name.trim().toLowerCase() : name
 }
 
 /**
