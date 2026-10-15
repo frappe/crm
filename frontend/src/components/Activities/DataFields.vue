@@ -36,7 +36,13 @@
         <LoadingIndicator class="h-6 w-6" />
         <span>{{ __('Loading...') }}</span>
       </div>
-      <div v-else class="pb-8">
+      <!-- The record reloads when enrichment finishes, so edits made mid-run would be lost. -->
+      <div
+        v-else
+        class="pb-8"
+        :class="{ 'opacity-60': document.enriching }"
+        :inert="document.enriching"
+      >
         <FieldLayout
           v-if="tabs.data"
           v-model:tabIndex="fieldLayoutTabIndex"

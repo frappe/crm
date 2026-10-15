@@ -220,6 +220,7 @@ def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
 	own_session = session is None
 	session = session or build_session(cfg)
 	robots = load_robots(home_url, cfg, session)
+	home_netloc = urlparse(home_url).netloc
 	try:
 		for path in ABOUT_PROBE_PATHS:
 			url = normalize_url(urljoin(home_url, path))
@@ -233,6 +234,7 @@ def probe_about_pages(home_url, cfg, session=None, skip_urls=()):
 				soup is not None
 				and page.status_code == 200
 				and not page.error
+				and same_site(page.url, home_netloc)
 				and len(page.text) >= ABOUT_MIN_TEXT
 			):
 				return [(page, soup)]
