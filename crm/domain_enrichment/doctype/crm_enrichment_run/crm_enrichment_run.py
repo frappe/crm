@@ -6,6 +6,8 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cast, cstr, now_datetime
 
+from crm.permissions.org_hierarchy import _permission_query_conditions
+
 
 class CRMEnrichmentRun(Document):
 	# begin: auto-generated types
@@ -81,3 +83,43 @@ def restore_value(df, value):
 	if value is None or value == "":
 		return None
 	return cast(df.fieldtype, value)
+
+
+def get_permission_query_conditions(user=None):
+	"""Limit runs to those whose lead or deal the user can see."""
+	user = user or frappe.session.user
+	Run = frappe.qb.DocType("CRM Enrichment Run")
+	restricted, visible = [], None
+	for doctype in ("CRM Lead", "CRM Deal"):
+		conditions = _permission_query_conditions(user, doctype)
+		if not conditions:
+			continue
+		restricted.append(doctype)
+		DT = frappe.qb.DocType(doctype)
+		readable = Run.reference_name.isin(frappe.qb.from_(DT).select(DT.name).where(conditions))
+		criterion = (Run.reference_doctype == doctype) & (readable | _shared_with(user, doctype, Run))
+		visible = criterion if visible is None else visible | criterion
+
+	if not restricted:
+		return ""
+	visible = Run.reference_doctype.notin(restricted) | visible
+	return visible.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'")
+
+
+def has_permission(doc, ptype, user):
+	if ptype == "create" or not (doc.reference_doctype and doc.reference_name):
+		return True
+	return frappe.has_permission(doc.reference_doctype, "read", doc=doc.reference_name, user=user)
+
+
+def _shared_with(user, doctype, Run):
+	Share = frappe.qb.DocType("DocShare")
+	return Run.reference_name.isin(
+		frappe.qb.from_(Share)
+		.select(Share.share_name)
+		.where(
+			(Share.share_doctype == doctype)
+			& (Share.read == 1)
+			& ((Share.user == user) | (Share.everyone == 1))
+		)
+	)
