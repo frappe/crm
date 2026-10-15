@@ -16,7 +16,7 @@ from __future__ import annotations
 from unittest import mock
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment import api, config, install, tasks
 from crm.domain_enrichment.config import get_config
@@ -41,7 +41,7 @@ def canned_result(website="https://acme.example") -> EnrichmentResult:
 	return r
 
 
-class SeederIdempotencyTest(IntegrationTestCase):
+class SeederIdempotencyTest(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
@@ -60,7 +60,7 @@ class SeederIdempotencyTest(IntegrationTestCase):
 		self.assertGreater(mappings_before, 0)
 
 
-class MapperWritePolicyTest(IntegrationTestCase):
+class MapperWritePolicyTest(FrappeTestCase):
 	def setUp(self):
 		self.cfg = get_config()
 		self.result = canned_result()
@@ -134,7 +134,7 @@ class MapperWritePolicyTest(IntegrationTestCase):
 		self.assertFalse(org.industry)
 
 
-class RunWriterTest(IntegrationTestCase):
+class RunWriterTest(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
@@ -163,7 +163,7 @@ class RunWriterTest(IntegrationTestCase):
 		self.assertIn("Acme Analytics", run.raw_json)
 
 
-class RunChangeLogTest(IntegrationTestCase):
+class RunChangeLogTest(FrappeTestCase):
 	"""run_enrichment records each field it changed as a CRM Enrichment Run Change row."""
 
 	def tearDown(self):
@@ -235,7 +235,7 @@ class RunChangeLogTest(IntegrationTestCase):
 		self.assertEqual(changes["industry"].new_value, industry)
 
 
-class ApiPermissionTest(IntegrationTestCase):
+class ApiPermissionTest(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 		frappe.set_user("Administrator")
@@ -268,7 +268,7 @@ class ApiPermissionTest(IntegrationTestCase):
 			self.assertTrue(hasattr(fn, "__wrapped__"), fn.__name__)
 
 
-class CrossRecordCopyTest(IntegrationTestCase):
+class CrossRecordCopyTest(FrappeTestCase):
 	def setUp(self):
 		self.org = frappe.new_doc("CRM Organization")
 		self.org.organization_name = "Enriched Org " + frappe.generate_hash(length=4)
@@ -316,7 +316,7 @@ class CrossRecordCopyTest(IntegrationTestCase):
 		self.assertFalse(deal.company_description)
 
 
-class AutoEnrichOnCreateTest(IntegrationTestCase):
+class AutoEnrichOnCreateTest(FrappeTestCase):
 	"""The after_insert auto-enrich hook (Lead, Deal, Organization), gated by Settings."""
 
 	def _settings(self, **overrides):
@@ -393,7 +393,7 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 		enq.assert_not_called()
 
 
-class UndoTest(IntegrationTestCase):
+class UndoTest(FrappeTestCase):
 	"""api.undo reverts the newest run that changed fields on the record;
 	api.get_status and api.get_enriched_fields report the state around it."""
 

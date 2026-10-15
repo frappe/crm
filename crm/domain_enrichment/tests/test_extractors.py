@@ -12,7 +12,7 @@ standalone.
 
 from __future__ import annotations
 
-from frappe.tests import UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment import extractors
 from crm.domain_enrichment.result import CrawledPage, Method
@@ -32,7 +32,7 @@ def _pages(*specs):
 # --------------------------------------------------------------------------- #
 # Company information (mechanics)
 # --------------------------------------------------------------------------- #
-class CompanyInfoTest(UnitTestCase):
+class CompanyInfoTest(FrappeTestCase):
 	def setUp(self):
 		self.page, self.soup = fixtures.make_page("https://acme.example", fixtures.HOMEPAGE)
 
@@ -128,7 +128,7 @@ class CompanyInfoTest(UnitTestCase):
 		self.assertEqual(info["description"].value, copy)
 
 
-class LogoResolutionTest(UnitTestCase):
+class LogoResolutionTest(FrappeTestCase):
 	"""extract_logo returns the link icon only; the larger social/JSON-LD image is
 	captured by extract_image, never used as the logo."""
 
@@ -220,7 +220,7 @@ class LogoResolutionTest(UnitTestCase):
 		self.assertEqual(extractors.extract_image(soup, "https://x.example").value, "")
 
 
-class CompanyNameCleaningTest(UnitTestCase):
+class CompanyNameCleaningTest(FrappeTestCase):
 	def test_strips_tagline_after_separator(self):
 		self.assertEqual(extractors._clean_company_name("PostHog – dev tools"), "PostHog")
 
@@ -249,7 +249,7 @@ class CompanyNameCleaningTest(UnitTestCase):
 		)
 
 
-class JsonLdTest(UnitTestCase):
+class JsonLdTest(FrappeTestCase):
 	def test_parses_graph_blocks(self):
 		_page, soup = fixtures.make_page(
 			"https://x.com",
@@ -266,7 +266,7 @@ class JsonLdTest(UnitTestCase):
 		self.assertEqual(extractors.parse_json_ld(soup), [])
 
 
-class DescriptionSelectionTest(UnitTestCase):
+class DescriptionSelectionTest(FrappeTestCase):
 	def test_prefers_about_over_product_homepage(self):
 		pages, soups = _pages(
 			(
@@ -359,7 +359,7 @@ class DescriptionSelectionTest(UnitTestCase):
 		self.assertTrue(desc.value.startswith("Acme Bank is a full-service"))
 
 
-class FirstParagraphTest(UnitTestCase):
+class FirstParagraphTest(FrappeTestCase):
 	def test_skips_nav_and_returns_first_substantial_paragraph(self):
 		html = (
 			"<html><body><nav><p>Home About Contact Login Signup Pricing Docs Blog "
@@ -593,7 +593,7 @@ class FirstParagraphTest(UnitTestCase):
 		self.assertTrue(result.startswith("A full-service financial institution"))
 
 
-class AboutPageDetectionTest(UnitTestCase):
+class AboutPageDetectionTest(FrappeTestCase):
 	def test_canonical_about_slugs_match(self):
 		for path in (
 			"/about",
@@ -620,7 +620,7 @@ class AboutPageDetectionTest(UnitTestCase):
 # --------------------------------------------------------------------------- #
 # Contacts: emails + phones (mechanics)
 # --------------------------------------------------------------------------- #
-class EmailExtractionTest(UnitTestCase):
+class EmailExtractionTest(FrappeTestCase):
 	def setUp(self):
 		self.pages, _ = _pages(
 			("https://acme.example", fixtures.HOMEPAGE),
@@ -644,7 +644,7 @@ class EmailExtractionTest(UnitTestCase):
 		self.assertNotIn("test@example.com", values)
 
 
-class PhoneExtractionTest(UnitTestCase):
+class PhoneExtractionTest(FrappeTestCase):
 	def setUp(self):
 		self.pages, _ = _pages(
 			("https://acme.example", fixtures.HOMEPAGE),
@@ -682,7 +682,7 @@ class PhoneExtractionTest(UnitTestCase):
 # --------------------------------------------------------------------------- #
 # Social profiles (config-driven via Social rules)
 # --------------------------------------------------------------------------- #
-class SocialTest(UnitTestCase):
+class SocialTest(FrappeTestCase):
 	def test_detects_networks_and_skips_share_links(self):
 		page, soup = fixtures.make_page("https://acme.example", fixtures.HOMEPAGE)
 		company = extractors.extract_company_info(page, soup)
@@ -711,7 +711,7 @@ class SocialTest(UnitTestCase):
 # --------------------------------------------------------------------------- #
 # Industry classification (config-driven via Industry rules)
 # --------------------------------------------------------------------------- #
-class IndustryTest(UnitTestCase):
+class IndustryTest(FrappeTestCase):
 	def _classify(self, name, description, extra_html=""):
 		page, _ = fixtures.make_page(
 			"https://x.example",
@@ -816,7 +816,7 @@ class IndustryTest(UnitTestCase):
 # --------------------------------------------------------------------------- #
 # Generic rule executors directly
 # --------------------------------------------------------------------------- #
-class RuleExecutorTest(UnitTestCase):
+class RuleExecutorTest(FrappeTestCase):
 	def test_apply_keyword_rules_weights_and_sums(self):
 		rule = fixtures.keyword_rule(
 			"Industry", ["saas", "subscription"], industry="SaaS", weight=2.0, match_scope="Headline"
@@ -829,7 +829,7 @@ class RuleExecutorTest(UnitTestCase):
 # --------------------------------------------------------------------------- #
 # Readability diagnosis (mechanics)
 # --------------------------------------------------------------------------- #
-class ReadabilityTest(UnitTestCase):
+class ReadabilityTest(FrappeTestCase):
 	def test_blocked_waf_challenge(self):
 		page, _ = fixtures.make_page(
 			"https://www.pepsi.com",

@@ -16,7 +16,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from unittest import mock
 
-from frappe.tests import UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment import http
 from crm.domain_enrichment.http import SSRFError, validate_url
@@ -45,7 +45,7 @@ def _resolves_to(ip_map):
 		yield
 
 
-class SSRFGuardTest(UnitTestCase):
+class SSRFGuardTest(FrappeTestCase):
 	def setUp(self):
 		self.cfg = make_config()  # default: no allow/block lists
 
@@ -161,7 +161,7 @@ class SSRFGuardTest(UnitTestCase):
 		self.assertTrue(http._is_blocked_ip("not-an-ip"))
 
 
-class PinnedConnectionTest(UnitTestCase):
+class PinnedConnectionTest(FrappeTestCase):
 	"""DNS-rebinding defense: the socket must go to the IP the guard validated.
 
 	``_pinned_get`` rewrites the URL netloc to the validated IP and keeps the

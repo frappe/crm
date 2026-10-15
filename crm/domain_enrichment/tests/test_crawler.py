@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from unittest import mock
 
-from frappe.tests import UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment import crawler
 from crm.domain_enrichment.crawler import (
@@ -37,7 +37,7 @@ PRIORITY = [
 SKIP_PATTERNS = [r"/wp-admin", r"\?replytocom="]
 
 
-class NormalizeUrlTest(UnitTestCase):
+class NormalizeUrlTest(FrappeTestCase):
 	def test_strips_fragment(self):
 		self.assertEqual(normalize_url("https://x.com/about/#team"), "https://x.com/about")
 
@@ -59,7 +59,7 @@ class NormalizeUrlTest(UnitTestCase):
 		self.assertEqual(normalize_url("https://x.com/w/book/1"), "https://x.com/w/book/1")
 
 
-class RegistrableDomainTest(UnitTestCase):
+class RegistrableDomainTest(FrappeTestCase):
 	def test_strips_www_and_port(self):
 		self.assertEqual(registrable_domain("www.example.com:443"), "example.com")
 
@@ -87,7 +87,7 @@ class RegistrableDomainTest(UnitTestCase):
 		self.assertNotEqual(registrable_domain("acme.github.io"), registrable_domain("other.github.io"))
 
 
-class SameSiteTest(UnitTestCase):
+class SameSiteTest(FrappeTestCase):
 	def test_ignores_www_and_subdomains(self):
 		self.assertTrue(same_site("https://www.x.com/a", "x.com"))
 		self.assertTrue(same_site("https://blog.x.com/a", "x.com"))
@@ -101,7 +101,7 @@ class SameSiteTest(UnitTestCase):
 		self.assertFalse(same_site("https://other.com/a", "x.com"))
 
 
-class LinkPriorityTest(UnitTestCase):
+class LinkPriorityTest(FrappeTestCase):
 	def test_priority_pages_rank_before_generic(self):
 		about = _link_priority("https://x.com/about", "About", PRIORITY)
 		blog = _link_priority("https://x.com/blog/post", "Read the post", PRIORITY)
@@ -127,7 +127,7 @@ class LinkPriorityTest(UnitTestCase):
 		self.assertLess(about_page, news_article)
 
 
-class IsCrawlableTest(UnitTestCase):
+class IsCrawlableTest(FrappeTestCase):
 	def test_rejects_non_http_schemes(self):
 		self.assertFalse(_is_crawlable("mailto:a@b.com", []))
 		self.assertFalse(_is_crawlable("tel:+15555550142", []))
@@ -151,7 +151,7 @@ class IsCrawlableTest(UnitTestCase):
 		self.assertFalse(_is_crawlable("https://x.com/[bad", ["[bad"]))
 
 
-class ExtractContentTest(UnitTestCase):
+class ExtractContentTest(FrappeTestCase):
 	def test_pulls_title_headings_and_text(self):
 		_page, soup = fixtures.make_page("https://acme.example", fixtures.HOMEPAGE)
 		content = extract_content(soup)
@@ -169,7 +169,7 @@ class ExtractContentTest(UnitTestCase):
 		self.assertNotIn("var x", content["text"])
 
 
-class ParseSitemapTest(UnitTestCase):
+class ParseSitemapTest(FrappeTestCase):
 	def test_parses_urlset(self):
 		kind, locs = crawler._parse_sitemap(fixtures.URLSET_XML)
 		self.assertEqual(kind, "urlset")
@@ -202,7 +202,7 @@ class ParseSitemapTest(UnitTestCase):
 		self.assertEqual(locs, [])
 
 
-class DiscoverSitemapUrlsTest(UnitTestCase):
+class DiscoverSitemapUrlsTest(FrappeTestCase):
 	def setUp(self):
 		self.cfg = make_config()
 
@@ -275,7 +275,7 @@ class DiscoverSitemapUrlsTest(UnitTestCase):
 		self.assertEqual(urls, [])
 
 
-class CrawlSitemapSeedingTest(UnitTestCase):
+class CrawlSitemapSeedingTest(FrappeTestCase):
 	"""End-to-end: crawl() seeded from a robots.txt-declared sitemap.
 
 	Sitemap discovery must be a pure addition on top of the ordinary BFS: it should
@@ -349,7 +349,7 @@ class CrawlSitemapSeedingTest(UnitTestCase):
 		self.assertEqual(len(results), 2)  # homepage + contact only, no crash, no phantom pages
 
 
-class RedirectDedupTest(UnitTestCase):
+class RedirectDedupTest(FrappeTestCase):
 	"""A redirect can land two different *requested* URLs on the same resolved page
 	(e.g. /contact.html -> /contact) -- the pre-fetch `visited` check can't catch
 	this since the requested URLs genuinely differ. crawl() must collapse the
@@ -386,7 +386,7 @@ class RedirectDedupTest(UnitTestCase):
 		self.assertIn("https://acme.example/team", urls)
 
 
-class OffSiteRedirectScopeTest(UnitTestCase):
+class OffSiteRedirectScopeTest(FrappeTestCase):
 	"""A same-site link that redirects off-domain must not be treated as an
 	in-scope crawled page: fetch()'s redirect loop only re-validates SSRF safety
 	per hop, never registrable-domain scope.

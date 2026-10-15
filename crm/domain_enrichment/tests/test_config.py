@@ -10,12 +10,12 @@ words ("waterproofing", "capital"), causing false industry-classification hits.
 
 from __future__ import annotations
 
-from frappe.tests import UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment.config import _compile_pattern
 
 
-class CompilePatternTest(UnitTestCase):
+class CompilePatternTest(FrappeTestCase):
 	def test_substring_pattern_does_not_match_inside_unrelated_word(self):
 		erp_rx = _compile_pattern("erp", is_regex=0)
 		self.assertIsNone(erp_rx.search("Industrial Adhesives, Paints and Waterproofing Solutions"))

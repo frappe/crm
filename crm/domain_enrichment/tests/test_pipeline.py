@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from unittest import mock
 
-from frappe.tests import UnitTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.domain_enrichment import pipeline as pipeline_mod
 from crm.domain_enrichment.pipeline import PROGRESS_STEPS, _normalize_website
@@ -66,7 +66,7 @@ def _canned_crawl(*_args, **_kwargs):
 	]
 
 
-class NormalizeWebsiteTest(UnitTestCase):
+class NormalizeWebsiteTest(FrappeTestCase):
 	def test_adds_https_scheme(self):
 		self.assertEqual(_normalize_website("frappe.io"), "https://frappe.io")
 
@@ -79,7 +79,7 @@ class NormalizeWebsiteTest(UnitTestCase):
 			_normalize_website("ftp://x.com")
 
 
-class PipelineRunTest(UnitTestCase):
+class PipelineRunTest(FrappeTestCase):
 	def setUp(self):
 		self.cfg = _full_config()
 
@@ -127,7 +127,7 @@ class PipelineRunTest(UnitTestCase):
 		self.assertTrue(result.notes)  # carries the "couldn't reach" note
 
 
-class JsSpaSiteTest(UnitTestCase):
+class JsSpaSiteTest(FrappeTestCase):
 	"""Enriching a JavaScript-only SPA (empty body, client-rendered content).
 
 	Without a render step the engine sees only the build-tool-default `<head>` metadata
@@ -169,7 +169,7 @@ class JsSpaSiteTest(UnitTestCase):
 		self.assertEqual(extractors.diagnose_readability([page]), "empty")
 
 
-class SchemaStabilityTest(UnitTestCase):
+class SchemaStabilityTest(FrappeTestCase):
 	"""The result schema must be identical regardless of what a site exposes."""
 
 	def _assert_invariants(self, out, flat):
