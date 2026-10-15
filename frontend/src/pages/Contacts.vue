@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showContactModal = true"
       />
     </template>
@@ -51,6 +51,16 @@
     v-else-if="contacts.data && !rows.length"
     name="Contacts"
     :icon="ContactsIcon"
+    :title="__('No contacts yet')"
+    :description="
+      __(
+        'Contacts are the people you talk to at your leads and customers. They are added when you convert a lead, or you can add them here.',
+      )
+    "
+    :filtered="!!Object.keys(contacts.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/contact"
+    importDoctype="Contact"
+    @create="showContactModal = true"
   />
   <ContactModal
     v-if="showContactModal"

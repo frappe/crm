@@ -10,9 +10,9 @@ vi.mock('vue-router', () => ({
 }))
 
 const allTabs = [
-  { name: 'Activity' },
-  { name: 'Emails' },
-  { name: 'Comments' },
+  { name: 'Activity', value: 'activity' },
+  { name: 'Emails', value: 'emails' },
+  { name: 'Comments', value: 'comments' },
 ]
 
 function visible(hiddenNames = []) {
@@ -30,35 +30,44 @@ beforeEach(() => {
 describe('useActiveTabManager with hidden tabs', () => {
   it('selects the remembered tab while it is still visible', () => {
     localStorage.setItem('lastDealTab', 'comments')
-    const { tabIndex } = useActiveTabManager(visible(), 'lastDealTab')
-    expect(tabIndex.value).toBe(2)
+    const { activeTab } = useActiveTabManager(visible(), 'lastDealTab')
+    expect(activeTab.value).toBe('comments')
   })
 
   it('falls back to the first tab when the remembered tab is hidden', () => {
     localStorage.setItem('lastDealTab', 'comments')
-    const { tabIndex } = useActiveTabManager(visible(['Comments']), 'lastDealTab')
-    expect(tabIndex.value).toBe(0)
+    const { activeTab } = useActiveTabManager(
+      visible(['Comments']),
+      'lastDealTab',
+    )
+    expect(activeTab.value).toBe('activity')
   })
 
-  it('re-indexes the remembered tab when an earlier tab is hidden', () => {
+  it('keeps the remembered tab when an earlier tab is hidden', () => {
     localStorage.setItem('lastDealTab', 'comments')
-    const { tabIndex } = useActiveTabManager(visible(['Emails']), 'lastDealTab')
-    expect(tabIndex.value).toBe(1)
+    const { activeTab } = useActiveTabManager(
+      visible(['Emails']),
+      'lastDealTab',
+    )
+    expect(activeTab.value).toBe('comments')
   })
 
   it('falls back to the first tab when the url hash points at a hidden tab', () => {
     route.hash = '#comments'
-    const { tabIndex } = useActiveTabManager(visible(['Comments']), 'lastDealTab')
-    expect(tabIndex.value).toBe(0)
+    const { activeTab } = useActiveTabManager(
+      visible(['Comments']),
+      'lastDealTab',
+    )
+    expect(activeTab.value).toBe('activity')
   })
 
   it('ignores changeTabTo for a hidden tab instead of throwing', () => {
-    const { tabIndex, changeTabTo } = useActiveTabManager(
+    const { activeTab, changeTabTo } = useActiveTabManager(
       visible(['Emails']),
       'lastDealTab',
     )
     changeTabTo('emails')
-    expect(tabIndex.value).toBe(0)
+    expect(activeTab.value).toBe('activity')
   })
 
   it('re-resolves when the open tab is hidden while it is showing', async () => {
@@ -66,13 +75,13 @@ describe('useActiveTabManager with hidden tabs', () => {
     const tabs = computed(() =>
       allTabs.filter((tab) => !hidden.value.includes(tab.name)),
     )
-    const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
+    const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
     changeTabTo('comments')
-    expect(tabIndex.value).toBe(2)
+    expect(activeTab.value).toBe('comments')
 
     hidden.value = ['Comments']
     await nextTick()
-    expect(tabIndex.value).toBe(0)
+    expect(activeTab.value).toBe('activity')
   })
 })
 
@@ -84,9 +93,9 @@ describe('useActiveTabManager with every tab hidden', () => {
     expect(() => useActiveTabManager(none(), 'lastDealTab')).not.toThrow()
   })
 
-  it('does not throw when the tab index changes', async () => {
-    const { tabIndex } = useActiveTabManager(none(), 'lastDealTab')
-    tabIndex.value = 1
+  it('does not throw when the active tab changes', async () => {
+    const { activeTab } = useActiveTabManager(none(), 'lastDealTab')
+    activeTab.value = 'emails'
     await expect(nextTick()).resolves.not.toThrow()
     expect(push).not.toHaveBeenCalled()
   })

@@ -5,13 +5,50 @@ import { useAttachments } from '@/composables/useAttachments'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { runSequentially, parseAssignees, sanitizeText } from '@/utils'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
-import { createDocumentResource, createResource, toast } from 'frappe-ui'
+import {
+  CONFIRM_RECIPIENT_CHANGE,
+  confirmRecipientChange,
+  isRecipientChangeRefusal,
+} from '@/utils/whatsappRecipient'
+import {
+  getFetchSource,
+  getFieldsToFetch,
+  getPendingFetchFields,
+  getSourceFieldnames,
+} from '@/utils/fetchFrom'
+import { call, createDocumentResource, createResource, toast } from 'frappe-ui'
 import { ref, reactive, getCurrentInstance } from 'vue'
 
 const documentsCache = {}
 const controllersCache = {}
 const assigneesCache = {}
 const permissionsCache = {}
+
+// Deleting a doc triggers a realtime `doc_update` event (sent by the
+// framework as part of `delete_doc`), which makes the still-mounted document
+// resource refetch and hit a DoesNotExistError right as we're navigating
+// away. Docs marked here have that one expected error swallowed instead of
+// surfaced as an error page.
+const intentionallyDeletedDocs = new Set()
+
+export function markDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.add(`${doctype}:${docname}`)
+}
+
+// Called once the delete request has completed, so a reused docname
+// doesn't have a later, unrelated error silently swallowed. Kept separate
+// from markDocumentAsDeleted so the marker survives the full (possibly
+// slow) delete request instead of a fixed window starting before it.
+export function expireDeletionMarker(doctype, docname) {
+  const key = `${doctype}:${docname}`
+  setTimeout(() => intentionallyDeletedDocs.delete(key), 10000)
+}
+
+// Called if the delete request itself fails, so a legitimate later
+// DoesNotExistError for this doc isn't silently swallowed.
+export function unmarkDocumentAsDeleted(doctype, docname) {
+  intentionallyDeletedDocs.delete(`${doctype}:${docname}`)
+}
 
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   if (typeof docname === 'number') docname = String(docname)
@@ -36,6 +73,14 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
           name: docname,
           onSuccess: async () => await setupFormScript(),
           onError: (err) => {
+            const deletionKey = `${doctype}:${docname}`
+            if (
+              err.exc_type === 'DoesNotExistError' &&
+              intentionallyDeletedDocs.has(deletionKey)
+            ) {
+              intentionallyDeletedDocs.delete(deletionKey)
+              return
+            }
             error.value = err
             if (err.exc_type === 'DoesNotExistError') {
               toast.error(__(err.messages[0] || 'Document does not exist'))
@@ -50,12 +95,13 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
             }
           },
           setValue: {
-            onSuccess: () => {
-              triggerOnSave()
-              toast.success(__('Document updated successfully'))
-              processPendingDeletions()
-            },
+            onSuccess: onSaved,
             onError: (err) => {
+              if (isRecipientChangeRefusal(err)) {
+                resaveWithRecipientConfirmation(err)
+                return
+              }
+
               triggerOnError(err)
 
               if (err.exc_type == 'MandatoryError') {
@@ -73,7 +119,7 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
                 toast.error(msg)
               })
 
-              if (err.messages?.length === 0) {
+              if (!err.messages?.length) {
                 toast.error(__('An error occurred while updating the document'))
               }
 
@@ -104,6 +150,9 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
         }
         const mandatory = checkMandatory(documentsCache[doctype][docname].doc)
         if (mandatory) return
+        // kept so a save resent after the WhatsApp recipient prompt still
+        // runs the caller's onSuccess
+        _save.submitOptions = args[1]
         return _originalSubmit.apply(_save, args)
       }
     } else {
@@ -112,6 +161,51 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
         fieldPropertyOverrides: {},
       })
       setupFormScript()
+    }
+  }
+
+  function onSaved() {
+    triggerOnSave()
+    toast.success(__('Document updated successfully'))
+    processPendingDeletions()
+  }
+
+  // Goes straight to set_value because a frappe-ui resource cannot add a param.
+  async function resaveWithRecipientConfirmation(err) {
+    const resource = documentsCache[doctype][docname]
+    const failed = [
+      resource.save,
+      resource.setValue,
+      resource.setValueDebounced,
+    ].find((r) => r.error === err)
+    if (!failed?.params) return
+
+    if (!(await confirmRecipientChange(err))) {
+      restoreSavedValues(resource, Object.keys(failed.params.fieldname))
+      return
+    }
+
+    try {
+      const saved = await call('frappe.client.set_value', {
+        ...failed.params,
+        ...CONFIRM_RECIPIENT_CHANGE,
+      })
+      await resource.reload()
+      onSaved()
+      failed.submitOptions?.onSuccess?.(saved)
+    } catch (error) {
+      toast.error(
+        error.messages?.[0] ||
+          __('An error occurred while updating the document'),
+      )
+    }
+  }
+
+  // frappe-ui's own rollback after a failed `save` keeps the edit, because it
+  // snapshots the doc after the field was already changed.
+  function restoreSavedValues(resource, fields) {
+    for (const field of fields) {
+      resource.doc[field] = resource.originalDoc[field]
     }
   }
 
@@ -272,6 +366,57 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
     await trigger(handler)
   }
 
+  async function fetchLinkValues(linkDoctype, linkValue, sourceFieldnames) {
+    try {
+      return await call('frappe.client.get_value', {
+        doctype: linkDoctype,
+        filters: linkValue,
+        fieldname: sourceFieldnames,
+      })
+    } catch (error) {
+      // the server sets these again on save, so a failed preview can be ignored
+      console.warn('Could not fetch linked values from', linkDoctype, error)
+      return {}
+    }
+  }
+
+  function setFetchedValues(target, fields, linkValues) {
+    fields.forEach((f) => {
+      const { source } = getFetchSource(f.fetch_from)
+      target[f.fieldname] = linkValues[source] ?? null
+    })
+  }
+
+  async function applyFetchFrom(fieldname, value, row) {
+    const target = row || documentsCache[doctype][docname || ''].doc
+    const targetDoctype = row?.doctype || doctype
+    const fields = getMeta(targetDoctype).doctypeMeta.value?.fields || []
+
+    const linkDf = fields.find((f) => f.fieldname === fieldname)
+    if (typeof linkDf?.options !== 'string') return
+
+    const fieldsToFetch = getFieldsToFetch(fields, fieldname)
+    if (!fieldsToFetch.length) return
+
+    if (!value) {
+      fieldsToFetch.forEach((f) => (target[f.fieldname] = null))
+      return
+    }
+
+    const pending = getPendingFetchFields(fields, fieldname, target)
+    if (!pending.length) return
+
+    const sources = getSourceFieldnames(pending)
+    const linkValues = await fetchLinkValues(linkDf.options, value, sources)
+
+    // the link may have been changed again while this request was in flight
+    if (target[fieldname] !== value) return
+    // frappe.client.get_value applies permissions, an unreadable link returns {}
+    if (!Object.keys(linkValues).length) return
+
+    setFetchedValues(target, pending, linkValues)
+  }
+
   async function triggerOnChange(fieldname, _value, row) {
     const value = sanitizeText(_value)
     let oldValue = null
@@ -283,6 +428,8 @@ export function useDocument(doctype, docname, resourceOverrides = {}) {
       documentsCache[doctype][docname || ''].doc[fieldname] = value
       trackOldFile(oldValue, value)
     }
+
+    await applyFetchFrom(fieldname, value, row)
 
     const handler = async function () {
       this.value = value

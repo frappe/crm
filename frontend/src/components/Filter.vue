@@ -1,12 +1,11 @@
 <template>
-  <Popover placement="bottom-end">
-    <template #target="{ togglePopover, close }">
+  <Popover side="bottom" align="end" bare>
+    <template #trigger="{ close }">
       <div class="flex items-center">
         <Button
           :label="__('Filter')"
           :class="filters?.size ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
-          @click="togglePopover"
         >
           <template v-if="filters?.size" #suffix>
             <div
@@ -25,9 +24,9 @@
         />
       </div>
     </template>
-    <template #body="{ close }">
+    <template #default="{ close }">
       <div
-        class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 min-w-40 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
           <template v-if="filters?.size">
@@ -139,7 +138,7 @@
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                   @click="setOpen(!open)"
                 />
               </template>
@@ -160,11 +159,13 @@
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import LinkMultiSelect from '@/components/Controls/LinkMultiSelect.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   Combobox,
   FormControl,
+  MultiSelect,
   createResource,
   Popover,
   DatePicker,
@@ -173,6 +174,8 @@ import {
 } from 'frappe-ui'
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
+import { getFormat } from '@/utils'
+import { isMultiValueFilter, toFilterValueArray } from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -283,11 +286,14 @@ function convertFilters(data, allFilters) {
     }
 
     if (field) {
+      const operator = oppositeOperatorMap[value[0]]
       f.push({
         field,
         fieldname: key,
-        operator: oppositeOperatorMap[value[0]],
-        value: value[1],
+        operator,
+        value: isMultiValueFilter(field, operator)
+          ? toFilterValueArray(value[1])
+          : value[1],
       })
     }
   }
@@ -411,11 +417,11 @@ function getValueControl(f) {
       trigger: 'button',
       options: [
         {
-          label: 'Set',
+          label: __('Set'),
           value: 'set',
         },
         {
-          label: 'Not Set',
+          label: __('Not Set'),
           value: 'not set',
         },
       ],
@@ -426,6 +432,21 @@ function getValueControl(f) {
     return h(Combobox, {
       trigger: 'button',
       options: timespanOptions,
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
+    })
+  } else if (isMultiValueFilter(field, operator)) {
+    if (typeLink.includes(fieldtype)) {
+      return h(LinkMultiSelect, {
+        doctype: options,
+        modelValue: f.value,
+        'onUpdate:modelValue': (v) => updateValue(v, f),
+      })
+    }
+    const _options =
+      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
+    return h(MultiSelect, {
+      options: _options.map((o) => ({ label: o, value: o })),
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
@@ -451,7 +472,11 @@ function getValueControl(f) {
   } else if (typeNumber.includes(fieldtype)) {
     return h(FormControl, { type: 'number' })
   } else if (typeDate.includes(fieldtype) && operator == 'between') {
-    return h(DateRangePicker, { value: f.value, iconLeft: '' })
+    return h(DateRangePicker, {
+      value: f.value,
+      iconLeft: '',
+      format: getFormat('', '', true, false, false),
+    })
   } else if (typeDuration.includes(fieldtype)) {
     return h(DurationInput, { value: f.value })
   } else if (typeRating.includes(fieldtype)) {
@@ -464,13 +489,20 @@ function getValueControl(f) {
     return h(fieldtype == 'Date' ? DatePicker : DateTimePicker, {
       value: f.value,
       iconLeft: '',
+      format:
+        fieldtype == 'Date'
+          ? getFormat('', '', true, false, false)
+          : getFormat('', '', true, true, false),
     })
   } else {
     return h(FormControl, { type: 'text' })
   }
 }
 
-function getDefaultValue(field) {
+function getDefaultValue(field, operator) {
+  if (isMultiValueFilter(field, operator)) {
+    return []
+  }
   if (typeSelect.includes(field.fieldtype)) {
     return getSelectOptions(field.options)[0]
   }
@@ -502,6 +534,7 @@ function getSelectOptions(options) {
 
 function setfilter(data) {
   if (!data) return
+  const operator = getDefaultOperator(data.fieldtype)
   filters.value.add({
     field: {
       label: data.label,
@@ -510,8 +543,8 @@ function setfilter(data) {
       options: data.options,
     },
     fieldname: data.fieldname,
-    operator: getDefaultOperator(data.fieldtype),
-    value: getDefaultValue(data),
+    operator,
+    value: getDefaultValue(data, operator),
   })
   apply()
 }
@@ -520,10 +553,11 @@ function updateFilter(data, index) {
   if (!data?.fieldname) return
 
   filters.value.delete(Array.from(filters.value)[index])
+  const operator = getDefaultOperator(data.fieldtype)
   filters.value.add({
     fieldname: data.fieldname,
-    operator: getDefaultOperator(data.fieldtype),
-    value: getDefaultValue(data),
+    operator,
+    value: getDefaultValue(data, operator),
     field: {
       label: data.label,
       fieldname: data.fieldname,
@@ -560,7 +594,7 @@ function updateValue(value, filter) {
 }
 
 function updateOperator(filter) {
-  filter.value = getDefaultValue(filter.field)
+  filter.value = getDefaultValue(filter.field, filter.operator)
 
   if (filter.operator === 'is' || filter.operator === 'is not') {
     filter.value = 'set'
@@ -609,6 +643,9 @@ function placeholder(f) {
   if (f.operator === 'between') {
     return __('01/01/2022 to 01/31/2022')
   } else if (f.operator === 'in' || f.operator === 'not in') {
+    if (isMultiValueFilter(f.field, f.operator)) {
+      return __('Select values')
+    }
     if (typeNumber.includes(f.field.fieldtype)) {
       return __('100, 200, 300')
     }

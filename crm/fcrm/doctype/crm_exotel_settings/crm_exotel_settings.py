@@ -38,6 +38,8 @@ class CRMExotelSettings(Document):
 			)
 			if response.status_code != 200:
 				frappe.throw(
-					_(f"Please enter valid exotel Account SID, API key & API token: {response.reason}"),
+					_("Please enter valid exotel Account SID, API key & API token: {0}").format(
+						response.reason
+					),
 					title=_("Invalid credentials"),
 				)

@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-3">
     <div
-      class="flex-1 rounded-lg border cursor-pointer"
+      class="flex-1 rounded-6 border cursor-pointer"
       :class="
         theme == 'light'
           ? 'border-outline-gray-7'
@@ -10,7 +10,7 @@
       @click="theme = 'light'"
     >
       <div class="pl-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
-        <div class="bg-white rounded-tl-sm">
+        <div class="bg-white rounded-tl-1">
           <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-100">
             <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
             <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
@@ -25,7 +25,7 @@
                 :src="logo"
                 class="size-5 object-cover"
               />
-              <component :is="logo" v-else class="size-5 shrink-0 rounded" />
+              <component :is="logo" v-else class="size-5 shrink-0 rounded-4" />
               <div>{{ __(name) }}</div>
             </div>
             <div class="flex flex-col flex-1 gap-[5px]">
@@ -51,14 +51,14 @@
       </div>
     </div>
     <div
-      class="flex-1 rounded-lg border cursor-pointer"
+      class="flex-1 rounded-6 border cursor-pointer"
       :class="
         theme == 'dark' ? 'border-outline-gray-7' : 'border-outline-elevation-2'
       "
       @click="theme = 'dark'"
     >
       <div class="pl-5 pt-3.5 bg-surface-gray-2 rounded-t-[10.5px]">
-        <div class="bg-gray-900 rounded-tl-sm">
+        <div class="bg-gray-900 rounded-tl-1">
           <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-800">
             <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
             <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
@@ -73,7 +73,7 @@
                 :src="logo"
                 class="size-5 object-cover"
               />
-              <component :is="logo" v-else class="size-5 shrink-0 rounded" />
+              <component :is="logo" v-else class="size-5 shrink-0 rounded-4" />
               <div>{{ __(name) }}</div>
             </div>
             <div class="flex flex-col flex-1 gap-[5px]">
@@ -99,7 +99,7 @@
       </div>
     </div>
     <div
-      class="flex-1 rounded-lg border cursor-pointer"
+      class="flex-1 rounded-6 border cursor-pointer"
       :class="
         theme == 'system'
           ? 'border-outline-gray-7'
@@ -111,7 +111,7 @@
         <div
           class="flex flex-1 pl-5 pt-3.5 bg-surface-gray-2 rounded-tl-[10.5px]"
         >
-          <div class="bg-white rounded-tl-sm w-full">
+          <div class="bg-white rounded-tl-1 w-full">
             <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-100">
               <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
               <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
@@ -126,7 +126,11 @@
                   :src="logo"
                   class="size-5 object-cover"
                 />
-                <component :is="logo" v-else class="size-5 shrink-0 rounded" />
+                <component
+                  :is="logo"
+                  v-else
+                  class="size-5 shrink-0 rounded-4"
+                />
                 <div>{{ __(name) }}</div>
               </div>
             </div>
@@ -135,7 +139,7 @@
         <div
           class="flex flex-1 pl-5 pt-3.5 bg-surface-gray-3 rounded-tr-[10.5px]"
         >
-          <div class="bg-gray-900 rounded-tl-sm w-full">
+          <div class="bg-gray-900 rounded-tl-1 w-full">
             <div class="flex gap-[3px] py-[3px] px-1 border-b border-gray-800">
               <div class="size-1.5 bg-[#FF5F57] rounded-full"></div>
               <div class="size-1.5 bg-[#FEBC2D] rounded-full"></div>
@@ -150,7 +154,11 @@
                   :src="logo"
                   class="size-5 object-cover"
                 />
-                <component :is="logo" v-else class="size-5 shrink-0 rounded" />
+                <component
+                  :is="logo"
+                  v-else
+                  class="size-5 shrink-0 rounded-4"
+                />
                 <div>{{ __(name) }}</div>
               </div>
             </div>
@@ -175,7 +183,7 @@
 </template>
 
 <script setup>
-import { useTheme } from 'frappe-ui'
+import { useColorScheme } from 'frappe-ui'
 import { computed } from 'vue'
 
 defineProps({
@@ -183,16 +191,16 @@ defineProps({
   name: { type: String, default: '' },
 })
 
-const { currentTheme, setTheme } = useTheme()
+const { colorScheme, setColorScheme } = useColorScheme()
 
 const theme = computed({
   get() {
-    if (currentTheme.value === 'light') return 'light'
-    if (currentTheme.value === 'dark') return 'dark'
+    if (colorScheme.value === 'light') return 'light'
+    if (colorScheme.value === 'dark') return 'dark'
     return 'system'
   },
   set(value) {
-    setTheme(value)
+    setColorScheme(value)
   },
 })
 </script>

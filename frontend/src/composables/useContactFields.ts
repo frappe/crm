@@ -1,5 +1,6 @@
 import { call, toast } from 'frappe-ui'
 import { validateEmail, validatePhone } from '@/utils'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 
 // Shared email/mobile/address side-panel field logic for Contact.vue (desktop)
 // and MobileContact.vue. Emails and phones render as `Dropdown` fields; new
@@ -41,11 +42,14 @@ export function useContactFields(contact: ContactDocument) {
   }
 
   async function setAsPrimary(field: string, value: string) {
-    const updated = await call('crm.api.contact.set_as_primary', {
-      contact: contact.doc.name,
-      field,
-      value,
-    })
+    const updated = await withRecipientConfirmation((confirm?: object) =>
+      call('crm.api.contact.set_as_primary', {
+        contact: contact.doc.name,
+        field,
+        value,
+        ...confirm,
+      }),
+    )
     if (updated)
       reloadWithToast(
         isEmailField(field)
@@ -76,12 +80,15 @@ export function useContactFields(contact: ContactDocument) {
     fieldname: string,
     value: string,
   ) {
-    const updated = await call('frappe.client.set_value', {
-      doctype,
-      name,
-      fieldname,
-      value,
-    })
+    const updated = await withRecipientConfirmation((confirm?: object) =>
+      call('frappe.client.set_value', {
+        doctype,
+        name,
+        fieldname,
+        value,
+        ...confirm,
+      }),
+    )
     if (updated)
       reloadWithToast(
         isEmailDoctype(doctype)
@@ -92,7 +99,13 @@ export function useContactFields(contact: ContactDocument) {
   }
 
   async function deleteOption(doctype: string, name: string) {
-    await call('frappe.client.delete', { doctype, name })
+    const deleted = await withRecipientConfirmation((confirm?: object) =>
+      call('frappe.client.delete', { doctype, name, ...confirm }).then(
+        () => true,
+      ),
+    )
+    // the row was already dropped from the dropdown; bring it back
+    if (!deleted) return contact.reload()
     reloadWithToast(
       isEmailDoctype(doctype)
         ? __('Email address removed')

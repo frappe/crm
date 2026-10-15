@@ -79,7 +79,7 @@ def handle_request(**kwargs):
 @frappe.whitelist()
 def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
 	if not is_integration_enabled():
-		frappe.throw(_("Please setup Exotel intergration"), title=_("Integration Not Enabled"))
+		frappe.throw(_("Please setup Exotel integration"), title=_("Integration Not Enabled"))
 
 	endpoint = get_exotel_endpoint("Calls/connect.json?details=true")
 
@@ -248,32 +248,63 @@ def get_call_log(call_payload):
 		return frappe.get_doc("CRM Call Log", call_log_id)
 
 
+# Exotel reports call status in lowercase, hyphenated form. Map it onto the
+# options of the CRM Call Log status field, which is a mandatory Select.
+# https://support.exotel.com/support/solutions/articles/27323-call-status
+EXOTEL_CALL_STATUSES = {
+	"initiated": "Initiated",
+	"ringing": "Ringing",
+	"in-progress": "In Progress",
+	"completed": "Completed",
+	"failed": "Failed",
+	"busy": "Busy",
+	"no-answer": "No Answer",
+	"queued": "Queued",
+	"canceled": "Canceled",
+	"cancelled": "Canceled",
+}
+
+# Exotel sends these when a leg never connected, eg. the caller hung up before
+# an agent picked up. There is no status to record, not an unknown one.
+# Leg2Status is documented as empty when there is no second leg:
+# https://support.exotel.com/support/solutions/articles/27323-call-status
+EXOTEL_EMPTY_STATUSES = ("", "null", "none", "undefined")
+
+
+def normalize_call_status(status):
+	"""Map a raw Exotel status onto a CRM Call Log status, or None if there isn't one."""
+	if not status:
+		return None
+
+	status = str(status).strip().lower().replace("_", "-").replace(" ", "-")
+	if status in EXOTEL_EMPTY_STATUSES:
+		return None
+
+	if status not in EXOTEL_CALL_STATUSES:
+		frappe.log_error(
+			title="Unknown Exotel call status",
+			message=f"Exotel sent call status {status!r}, which is not in EXOTEL_CALL_STATUSES",
+		)
+		return None
+
+	return EXOTEL_CALL_STATUSES[status]
+
+
 def get_call_log_status(call_payload, direction="inbound"):
 	if direction == "outbound-api" or direction == "outbound-dial":
-		status = call_payload.get("Status")
-		if status == "completed":
-			return "Completed"
-		elif status == "in-progress":
-			return "In Progress"
-		elif status == "busy":
-			return "Ringing"
-		elif status == "no-answer":
-			return "No Answer"
-		elif status == "failed":
-			return "Failed"
+		status = normalize_call_status(call_payload.get("Status"))
+		if status == "Busy":
+			# the call is still ringing on another leg
+			status = "Ringing"
+		if status:
+			return status
 
 	call_type = call_payload.get("CallType")
-	status = call_payload.get("DialCallStatus") or call_payload.get("Status")
+	status = normalize_call_status(call_payload.get("DialCallStatus") or call_payload.get("Status"))
 
-	if call_type == "incomplete" and status == "no-answer":
-		status = "No Answer"
-	elif call_type == "client-hangup" and status == "canceled":
-		status = "Canceled"
-	elif call_type == "incomplete" and status == "failed":
-		status = "Failed"
-	elif call_type == "completed":
+	if call_type == "completed":
 		status = "Completed"
-	elif status == "busy":
+	elif status == "Busy":
 		status = "Ringing"
 
 	return status
@@ -285,7 +316,8 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 	status = get_call_log_status(call_payload, direction)
 	try:
 		if call_log:
-			call_log.status = status
+			if status:
+				call_log.status = status
 			# resetting this because call might be redirected to other number
 			call_log.to = call_payload.get("DialWhomNumber") or call_payload.get("To")
 			call_log.duration = (

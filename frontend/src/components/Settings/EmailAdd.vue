@@ -2,10 +2,10 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
-      <h2 class="text-2xl-semibold text-ink-gray-8">
+      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
         {{ __('Setup Email') }}
       </h2>
-      <p class="text-sm text-ink-gray-5">
+      <p class="text-p-base text-ink-gray-6">
         {{ __('Choose the email service provider you want to configure.') }}
       </p>
     </div>
@@ -27,7 +27,7 @@
     <div v-if="selectedService" class="flex flex-col gap-4">
       <!-- email service provider info -->
       <div
-        class="flex items-center gap-2 p-2 rounded-md ring-1 ring-outline-gray-3 text-ink-gray-6"
+        class="flex items-center gap-2 p-2 rounded-5 ring-1 ring-outline-gray-3 text-ink-gray-6"
       >
         <CircleAlert class="w-5 h-6 w-min-5 w-max-5 min-h-5 max-w-5" />
         <div class="text-xs text-wrap">
@@ -95,7 +95,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,

@@ -1,22 +1,17 @@
 <template>
   <Dialog v-model:open="show" :size="'xl'">
-    <template #body-header>
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-            {{ __('Convert to Deal') }}
-          </h3>
-        </div>
-        <div class="flex items-center gap-1">
-          <Button
-            v-if="isManager() && !isMobileView"
-            variant="ghost"
-            :tooltip="__('Edit deal\'s mandatory fields layout')"
-            :icon="EditIcon"
-            @click="openQuickEntryModal"
-          />
-          <Button icon="lucide-x" variant="ghost" @click="show = false" />
-        </div>
+    <template #title>
+      <div class="flex items-center justify-between">
+        <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+          {{ __('Convert to Deal') }}
+        </h3>
+        <Button
+          v-if="isManager() && !isMobileView"
+          variant="ghost"
+          :tooltip="__('Edit deal\'s mandatory fields layout')"
+          :icon="EditIcon"
+          @click="openQuickEntryModal"
+        />
       </div>
     </template>
     <template #default>
@@ -98,7 +93,8 @@ import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { Switch, Dialog, createResource, call } from 'frappe-ui'
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'

@@ -14,7 +14,7 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-5"
+        class="text-ink-red-4"
         >*</span
       >
     </div>
@@ -51,6 +51,16 @@
       :parentDoctype="doctype"
       :parentFieldname="field.fieldname"
     />
+    <Select
+      v-else-if="field.fieldtype === 'Select' && hasOptionIcons"
+      v-model="data[field.fieldname]"
+      class="w-full"
+      :options="field.options"
+      :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.disabled)"
+      :description="field.description"
+      @update:modelValue="(e) => fieldChange(e, field)"
+    />
     <FormControl
       v-else-if="field.fieldtype === 'Select'"
       v-model="data[field.fieldname]"
@@ -59,6 +69,7 @@
       :class="field.prefix ? 'prefix' : ''"
       :options="field.options"
       :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @update:modelValue="(e) => fieldChange(e, field)"
     >
@@ -66,28 +77,32 @@
         <IndicatorIcon :class="field.prefix" />
       </template>
     </FormControl>
-    <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
-      <FormControl
-        v-model="data[field.fieldname]"
-        class="form-control"
-        type="checkbox"
-        :disabled="Boolean(field.read_only)"
-        :description="field.description"
-        @change="(e) => fieldChange(e.target.checked, field)"
-      />
-      <label
-        class="text-sm text-ink-gray-5"
-        @click="
-          () => {
-            if (!Boolean(field.read_only)) {
-              data[field.fieldname] = !data[field.fieldname]
+    <div v-else-if="field.fieldtype == 'Check'">
+      <div class="flex items-center gap-2">
+        <FormControl
+          v-model="data[field.fieldname]"
+          class="form-control"
+          type="checkbox"
+          :disabled="Boolean(field.disabled)"
+          @change="(e) => fieldChange(e.target.checked, field)"
+        />
+        <label
+          class="text-sm text-ink-gray-5"
+          @click="
+            () => {
+              if (!Boolean(field.disabled)) {
+                data[field.fieldname] = !data[field.fieldname]
+              }
             }
-          }
-        "
-      >
-        {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
-      </label>
+          "
+        >
+          {{ __(field.label) }}
+          <span v-if="field.mandatory" class="text-ink-red-5">*</span>
+        </label>
+      </div>
+      <p v-if="field.description" class="mt-1.5 text-p-sm text-ink-gray-5">
+        {{ __(field.description) }}
+      </p>
     </div>
     <div
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
@@ -100,7 +115,9 @@
           field.fieldtype == 'Link' ? field.options : data[field.options]
         "
         :filters="field.filters"
+        :grouping="field.grouping"
         :placeholder="getPlaceholder(field)"
+        :disabled="Boolean(field.disabled)"
         :onCreate="field.create"
         @change="(v) => fieldChange(v, field)"
       />
@@ -152,33 +169,36 @@
     <Combobox
       v-else-if="field.fieldtype === 'Autocomplete'"
       v-model="data[field.fieldname]"
-      :options="getOptions(field.options)"
+      :options="getAutocompleteOptions(field)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       @update:modelValue="(v) => fieldChange(v, field, data)"
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
       :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :disabled="Boolean(field.disabled)"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :disabled="Boolean(field.disabled)"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
-      input-class="border-none"
+      :disabled="Boolean(field.disabled)"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl
@@ -188,6 +208,7 @@
       type="textarea"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
@@ -195,6 +216,7 @@
       v-else-if="field.fieldtype === 'Password'"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
@@ -203,7 +225,7 @@
       type="text"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname] || '0'"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="fieldChange($event.target.value, field)"
     />
@@ -212,7 +234,7 @@
       type="text"
       :value="getFormattedPercent(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
@@ -221,7 +243,7 @@
       type="text"
       :value="getFormattedFloat(field.fieldname, data)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
@@ -230,7 +252,7 @@
       type="text"
       :value="getFormattedCurrency(field.fieldname, data, parentDoc)"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="fieldChange(flt($event.target.value), field)"
     />
@@ -238,7 +260,7 @@
       v-else-if="field.fieldtype === 'Duration'"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       @change="(v) => fieldChange(v, field)"
     />
@@ -246,7 +268,7 @@
       v-else-if="field.fieldtype === 'Rating'"
       :value="data[field.fieldname]"
       :max="field.options || 5"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
     <ButtonControl
@@ -255,7 +277,7 @@
       :icon="field.icon"
       :theme="getButtonTheme(field.button_color)"
       :variant="getButtonVariant(field.button_color)"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       @click="handleButtonClick(field)"
     />
     <AttachControl
@@ -265,7 +287,7 @@
       :docname="data.name"
       :fieldname="field.fieldname"
       :imageOnly="field.fieldtype === 'Attach Image'"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
     <HtmlControl v-else-if="field.fieldtype === 'HTML'" :html="resolvedHtml" />
@@ -273,13 +295,16 @@
       v-else-if="field.fieldtype === 'Text Editor'"
       :value="data[field.fieldname]"
       :placeholder="getPlaceholder(field)"
-      :disabled="Boolean(field.read_only)"
+      :mentions="isNote"
+      :bubbleMenu="isNote"
+      :editorClass="isNote ? '!min-h-[16rem]' : ''"
+      :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
     <GeolocationControl
       v-else-if="field.fieldtype === 'Geolocation'"
       :value="data[field.fieldname]"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl
@@ -287,7 +312,7 @@
       type="text"
       :placeholder="getPlaceholder(field)"
       :value="data[field.fieldname]"
-      :disabled="Boolean(field.read_only)"
+      :disabled="Boolean(field.disabled)"
       :description="field.description"
       :error="
         Boolean(data[field.fieldname]) && !validatePhone(data[field.fieldname])
@@ -302,7 +327,7 @@
         type="text"
         :placeholder="getPlaceholder(field)"
         :value="data[field.fieldname]"
-        :disabled="Boolean(field.read_only)"
+        :disabled="Boolean(field.disabled)"
         :description="field.description"
         @change="fieldChange($event.target.value, field)"
       />
@@ -330,6 +355,7 @@ import ButtonControl, {
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
+import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import Link from '@/components/Controls/Link.vue'
@@ -347,18 +373,21 @@ import { getMeta } from '@/stores/meta'
 import {
   parseLinkFilters,
   applyStateFieldOptions,
+  applyContactOrganizationGrouping,
 } from '@/utils/fieldTransforms'
+import { isFetchedFromLink } from '@/utils/fetchFrom'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
 
 import {
   Combobox,
+  Select,
   Tooltip,
   DatePicker,
   DateTimePicker,
   TimePicker,
 } from 'frappe-ui'
-import { computed, provide, inject, ref } from 'vue'
+import { computed, provide, inject, ref, h, unref } from 'vue'
 
 const props = defineProps({
   field: { type: Object, required: true },
@@ -366,6 +395,7 @@ const props = defineProps({
 
 const data = inject('data')
 const doctype = inject('doctype')
+const isNote = computed(() => unref(doctype) === 'FCRM Note')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
@@ -496,11 +526,19 @@ const field = computed(() => {
 
   if (field.fieldtype == 'Select' && typeof field.options === 'string') {
     field.options = field.options.split('\n').map((option) => {
-      return { label: option, value: option }
+      return { label: __(option), value: option }
     })
 
     if (field.options[0].value !== '' && !field.reqd) {
       field.options.unshift({ label: '', value: '' })
+    }
+
+    if (doctype === 'CRM Task' && field.fieldname === 'priority') {
+      field.options = field.options.map((option) => ({
+        ...option,
+        label: option.value ? option.label : __('No priority'),
+        icon: () => h(TaskPriorityIcon, { priority: option.value }),
+      }))
     }
   }
 
@@ -523,6 +561,8 @@ const field = computed(() => {
       }
     }
   }
+
+  field = applyContactOrganizationGrouping(field, data.value, doctype)
 
   const read_only_via_depends_on = evaluateDependsOnValue(
     field.read_only_depends_on,
@@ -554,11 +594,19 @@ const field = computed(() => {
       data.value,
     ),
     read_only: effectiveReadOnly,
+    // separate from read_only because isFieldVisible hides empty read-only fields
+    disabled: Boolean(
+      effectiveReadOnly || isFetchedFromLink(field, data.value),
+    ),
   }
 
   _field.visible = isFieldVisible(_field, scriptHidden)
   return _field
 })
+
+const hasOptionIcons = computed(() =>
+  field.value.options?.some?.((option) => option.icon),
+)
 
 function isFieldVisible(field, scriptHidden) {
   if (preview.value) return true
@@ -605,11 +653,40 @@ const getOptions = (options) => {
     return options
   } else if (typeof options === 'string') {
     return options.split('\n').map((option) => {
-      return { label: option, value: option }
+      return { label: __(option), value: option }
     })
   } else {
     return []
   }
+}
+
+const getAutocompleteOptions = (field) => {
+  const options = getOptions(field.options)
+  return [
+    ...options,
+    {
+      type: 'custom',
+      key: '__custom_value',
+      label: __('Use custom value'),
+      slots: {
+        label: ({ query }) => __('Use "{0}"', [query.trim()]),
+      },
+      condition: ({ query }) => {
+        const q = (query || '').trim()
+        if (!q) return false
+        return !options.some((opt) => {
+          const isObject = opt !== null && typeof opt === 'object'
+          const value = isObject ? opt.value : opt
+          const label = isObject ? opt.label : opt
+          return String(value ?? '') === q || String(label ?? '') === q
+        })
+      },
+      onClick: ({ query }) => {
+        data.value[field.fieldname] = query.trim()
+        fieldChange(query.trim(), field)
+      },
+    },
+  ]
 }
 
 function isExternalUrl(value) {

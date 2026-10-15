@@ -140,7 +140,15 @@ class CRMCallLog(Document):
 
 	def as_dict(self, *args, **kwargs):
 		d = super().as_dict(*args, **kwargs)
-		if d.get("recording_url"):
+		recording_url = d.get("recording_url")
+		if not recording_url:
+			return d
+
+		# a recording uploaded to this site is played straight from its file path,
+		# the proxy only fetches recordings hosted somewhere else
+		if recording_url.startswith(("/files/", "/private/files/")):
+			d["recording_url_path"] = recording_url
+		else:
 			d["recording_url_path"] = (
 				f"/api/method/crm.integrations.api.get_recording_url?call_log_name={d.get('name')}"
 			)
@@ -152,7 +160,7 @@ def parse_call_log(call):
 	call["_duration"] = seconds_to_duration(call.get("duration"))
 	if call.get("type") == "Incoming":
 		call["activity_type"] = "incoming_call"
-		contact = get_contact_by_phone_number(call.get("from"))
+		contact = get_call_contact(call, call.get("from"))
 		receiver = (
 			frappe.db.get_values("User", call.get("receiver"), ["full_name", "user_image"])[0]
 			if call.get("receiver")
@@ -168,7 +176,7 @@ def parse_call_log(call):
 		}
 	elif call.get("type") == "Outgoing":
 		call["activity_type"] = "outgoing_call"
-		contact = get_contact_by_phone_number(call.get("to"))
+		contact = get_call_contact(call, call.get("to"))
 		caller = (
 			frappe.db.get_values("User", call.get("caller"), ["full_name", "user_image"])[0]
 			if call.get("caller")
@@ -186,8 +194,43 @@ def parse_call_log(call):
 	return call
 
 
+def get_call_contact(call, phone_number):
+	"""The lead or deal the call points to, or the best match for the number when it
+	points to neither. Two records can share a number, so once the call points to a
+	record the number is never used to guess who it was."""
+	doctype, name = call.get("reference_doctype"), call.get("reference_docname")
+	if doctype not in ("CRM Lead", "CRM Deal") or not name:
+		return get_contact_by_phone_number(phone_number)
+
+	if not frappe.has_permission(doctype, "read", name):
+		return {}
+
+	return get_reference_contact(doctype, name) or {}
+
+
+def get_reference_contact(doctype, name):
+	if doctype == "CRM Lead":
+		lead = frappe.db.get_value("CRM Lead", name, ["lead_name", "image"], as_dict=True)
+		return lead and {"full_name": lead.lead_name, "image": lead.image}
+
+	contact = frappe.db.get_value(
+		"CRM Contacts", {"parenttype": "CRM Deal", "parent": name, "is_primary": 1}, "contact"
+	)
+	if contact:
+		return frappe.db.get_value("Contact", contact, ["full_name", "image"], as_dict=True)
+
+	deal = frappe.db.get_value(
+		"CRM Deal", name, ["lead_name", "organization", "organization_name"], as_dict=True
+	)
+	deal_name = deal and (deal.lead_name or deal.organization or deal.organization_name)
+	return deal_name and {"full_name": deal_name}
+
+
 @frappe.whitelist()
 def get_call_log(name: str):
+	if not frappe.has_permission("CRM Call Log", "read", name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	call = frappe.get_cached_doc(
 		"CRM Call Log",
 		name,
@@ -211,35 +254,40 @@ def get_call_log(name: str):
 
 	call = parse_call_log(call)
 
-	notes = []
-	tasks = []
+	note_names = [call["note"]] if call.get("note") else []
+	task_names = []
+	references = {}
 
-	if call.get("note"):
-		note = frappe.get_cached_doc("FCRM Note", call.get("note")).as_dict()
-		notes.append(note)
+	if call.get("reference_doctype") in ("CRM Lead", "CRM Deal") and call.get("reference_docname"):
+		references[call["reference_doctype"]] = call["reference_docname"]
 
-	if call.get("reference_doctype") and call.get("reference_docname"):
-		if call.get("reference_doctype") == "CRM Lead":
-			call["_lead"] = call.get("reference_docname")
-		elif call.get("reference_doctype") == "CRM Deal":
-			call["_deal"] = call.get("reference_docname")
+	for link in call.get("links") or []:
+		link_doctype, link_name = link.get("link_doctype"), link.get("link_name")
+		if link_doctype == "CRM Task":
+			task_names.append(link_name)
+		elif link_doctype == "FCRM Note":
+			note_names.append(link_name)
+		elif link_doctype in ("CRM Lead", "CRM Deal"):
+			references.setdefault(link_doctype, link_name)
 
-	if call.get("links"):
-		for link in call.get("links"):
-			if link.get("link_doctype") == "CRM Task":
-				task = frappe.get_cached_doc("CRM Task", link.get("link_name")).as_dict()
-				tasks.append(task)
-			elif link.get("link_doctype") == "FCRM Note":
-				note = frappe.get_cached_doc("FCRM Note", link.get("link_name")).as_dict()
-				notes.append(note)
-			elif link.get("link_doctype") == "CRM Lead":
-				call["_lead"] = link.get("link_name")
-			elif link.get("link_doctype") == "CRM Deal":
-				call["_deal"] = link.get("link_name")
+	call["_notes"] = get_permitted_docs("FCRM Note", note_names)
+	call["_tasks"] = get_permitted_docs("CRM Task", task_names)
 
-	call["_tasks"] = tasks
-	call["_notes"] = notes
+	lead, deal = references.get("CRM Lead"), references.get("CRM Deal")
+	if lead and frappe.has_permission("CRM Lead", "read", lead):
+		call["_lead"] = lead
+	if deal and frappe.has_permission("CRM Deal", "read", deal):
+		call["_deal"] = deal
+
 	return call
+
+
+def get_permitted_docs(doctype: str, names: list[str]) -> list[dict]:
+	if not names or not frappe.has_permission(doctype, "read"):
+		return []
+
+	docs = frappe.get_list(doctype, filters={"name": ("in", names)}, fields=["*"], limit=len(names))
+	return sorted(docs, key=lambda doc: names.index(str(doc.name)))
 
 
 @frappe.whitelist()

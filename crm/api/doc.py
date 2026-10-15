@@ -300,8 +300,11 @@ def get_data(
 	data = []
 	_list = get_controller(doctype)
 	default_rows = []
+	default_column_keys = []
 	if hasattr(_list, "default_list_data"):
-		default_rows = _list.default_list_data().get("rows")
+		default_list_data = _list.default_list_data()
+		default_rows = default_list_data.get("rows")
+		default_column_keys = [column.get("key") for column in default_list_data.get("columns", [])]
 
 	meta = frappe.get_meta(doctype)
 
@@ -337,23 +340,30 @@ def get_data(
 			rows = default_rows
 			columns = _list.default_list_data().get("columns")
 
-		# check if rows has all keys from columns if not add them
+		visible_columns = []
 		for column in columns:
-			if column.get("key") not in rows:
-				rows.append(column.get("key"))
+			key = column.get("key")
+			# hidden fields are dropped unless the doctype lists them in its own defaults
+			column_meta = meta.get_field(key)
+			if column_meta and column_meta.get("hidden") and key not in default_column_keys:
+				continue
+
+			if key not in rows:
+				rows.append(key)
 			column["label"] = _(column.get("label"))
 
-			if column.get("key") == "_liked_by" and column.get("width") == "10rem":
+			if key == "_liked_by" and column.get("width") == "10rem":
 				column["width"] = "50px"
 
-			# remove column if column.hidden is True
-			column_meta = meta.get_field(column.get("key"))
-			if column_meta and column_meta.get("hidden"):
-				columns.remove(column)
+			visible_columns.append(column)
+		columns = visible_columns
 
 		# check if rows has group_by_field if not add it
 		if group_by_field and group_by_field not in rows:
 			rows.append(group_by_field)
+
+		if meta.track_seen and "_seen" not in rows:
+			rows.append("_seen")
 
 		data = (
 			frappe.get_list(
@@ -416,11 +426,12 @@ def get_data(
 			if kc.get("delete"):
 				column_data = []
 			else:
-				page_length = kc.get("page_length", 20)
+				# don't shadow the top-level page_length echoed in the response
+				column_page_length = kc.get("page_length", 20)
 
 				if order:
 					column_data = get_records_based_on_order(
-						doctype, rows, column_filters, page_length, order
+						doctype, rows, column_filters, column_page_length, order
 					)
 				else:
 					column_data = frappe.get_list(
@@ -428,7 +439,7 @@ def get_data(
 						fields=rows,
 						filters=column_filters,
 						order_by=order_by,
-						page_length=page_length,
+						page_length=column_page_length,
 					)
 
 				all_count = frappe.get_list(
@@ -606,6 +617,13 @@ def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_pe
 
 
 @frappe.whitelist()
+def add_seen(doctype: str, name: str):
+	doc = frappe.get_doc(doctype, name)
+	doc.check_permission("read")
+	doc.add_seen()
+
+
+@frappe.whitelist()
 def get_assigned_users(doctype: str, name: str | int, default_assigned_to: str | None = None):
 	assigned_users = frappe.get_all(
 		"ToDo",
@@ -752,6 +770,9 @@ def remove_doc_link(doctype, docname):
 
 
 def remove_contact_link(doctype, docname):
+	# crm.api.whatsapp imports this module at load time
+	from crm.api.whatsapp import WhatsAppRecipientChangeError
+
 	if not doctype or not docname:
 		return
 
@@ -764,12 +785,17 @@ def remove_contact_link(doctype, docname):
 			}
 		)
 		linked_doc_data.save(ignore_permissions=True)
+	except WhatsAppRecipientChangeError:
+		raise
 	except (frappe.DoesNotExistError, frappe.ValidationError):
 		pass
 
 
 @frappe.whitelist()
 def remove_linked_doc_reference(items: str | list, remove_contact: bool = False, delete: bool = False):
+	# crm.api.whatsapp imports this module at load time
+	from crm.api.whatsapp import WhatsAppRecipientChangeError
+
 	if isinstance(items, str):
 		items = frappe.parse_json(items)
 
@@ -788,6 +814,8 @@ def remove_linked_doc_reference(items: str | list, remove_contact: bool = False,
 
 			if delete:
 				frappe.delete_doc(item["doctype"], item["docname"])
+		except WhatsAppRecipientChangeError:
+			raise
 		except (frappe.DoesNotExistError, frappe.ValidationError):
 			# Skip if document doesn't exist or has validation errors
 			continue

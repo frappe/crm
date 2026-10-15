@@ -52,6 +52,7 @@
 <script setup>
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { findMissingMandatory } from '@/utils/fieldTransforms'
+import { spriteIcon } from '@/utils/spriteIcon'
 import { getMeta } from '@/stores/meta'
 import { Dialog, ErrorMessage, createResource } from 'frappe-ui'
 import { ref, reactive, computed, watch } from 'vue'
@@ -233,7 +234,7 @@ const resolvedActions = computed(() => {
       label: action.label || '',
       variant: action.variant,
       theme: action.theme,
-      icon: action.icon,
+      icon: spriteIcon(action.icon),
       loading: actionLoadingMap[idx] || false,
       onClick: async () => {
         if (action.onClick) {

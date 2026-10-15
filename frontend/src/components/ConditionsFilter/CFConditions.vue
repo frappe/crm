@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rounded-lg border border-outline-gray-2 p-3 flex flex-col gap-4 w-full"
+    class="condition-group flex w-full flex-col gap-4 rounded-6 border border-outline-gray-2 p-3"
   >
     <template v-for="(condition, i) in conditions" :key="condition.field">
       <CFCondition
@@ -13,6 +13,7 @@
         :conjunction="getConjunction()"
         :disableAddCondition="props.disableAddCondition"
         :doctype="props.doctype"
+        :variant="props.variant"
         @remove="removeCondition(condition)"
         @unGroupConditions="unGroupConditions(condition)"
         @toggleConjunction="toggleConjunction"
@@ -25,7 +26,7 @@
           :disabled="props.disableAddCondition"
           :label="__('Add Condition')"
           icon-left="lucide-plus"
-          :icon-right="open ? 'chevron-up' : 'chevron-down'"
+          :icon-right="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
         />
       </Dropdown>
     </div>
@@ -44,6 +45,7 @@ const props = defineProps({
   level: { type: Number, default: 0 },
   disableAddCondition: { type: Boolean, default: false },
   doctype: { type: String, required: true },
+  variant: { type: String, default: 'subtle' },
 })
 
 const conditions = reactive(props.conditions)
@@ -126,3 +128,9 @@ watch(
   { immediate: true },
 )
 </script>
+
+<style scoped>
+.condition-group {
+  container-type: inline-size;
+}
+</style>

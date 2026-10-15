@@ -256,6 +256,7 @@
       (function () {
         var ROUTE = {{ form_route | tojson }};
         var WEB_FORM = {{ web_form_name | tojson }};
+        var DOCTYPE = {{ form_doctype | tojson }};
         var FIELDS = {{ fields | tojson }};
         var CSRF = {{ csrf_token | tojson }};
         var DRAFT = {{ draft_preview | tojson }};
@@ -568,9 +569,11 @@
           var endpoint = DRAFT
             ? "/api/method/crm.api.form.test_submit_form"
             : "/api/method/frappe.website.doctype.web_form.web_form.accept";
+          // stamp the server-provided target doctype so accept() can resolve it
+          var submitData = DRAFT ? values : Object.assign({}, values, { doctype: DOCTYPE });
           var payload = DRAFT
-            ? { name: WEB_FORM, values: JSON.stringify(values) }
-            : { web_form: WEB_FORM, data: JSON.stringify(values) };
+            ? { name: WEB_FORM, values: JSON.stringify(submitData) }
+            : { web_form: WEB_FORM, data: JSON.stringify(submitData) };
 
           fetch(endpoint, {
             method: "POST",

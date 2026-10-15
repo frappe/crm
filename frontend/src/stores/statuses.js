@@ -1,7 +1,7 @@
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import { parseColor, isTranslatable } from '@/utils'
 import { defineStore } from 'pinia'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { createListResource } from 'frappe-ui'
 import { reactive, h } from 'vue'
 

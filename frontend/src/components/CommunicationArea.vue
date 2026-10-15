@@ -1,5 +1,18 @@
 <template>
-  <div class="flex justify-between gap-3 border-t px-4 py-2.5">
+  <div class="relative flex justify-between gap-3 border-t px-4 py-2.5">
+    <div
+      v-if="showEmailBox || showCommentBox"
+      class="group absolute inset-x-0 -top-1 z-10 flex h-2 cursor-row-resize touch-none items-center"
+      @pointerdown="startResize"
+      @pointermove="resize"
+      @pointerup="stopResize"
+      @pointercancel="stopResize"
+    >
+      <div
+        class="h-0.5 w-full bg-surface-gray-4 opacity-0 transition-opacity group-hover:opacity-100"
+        :class="{ 'opacity-100': resizing }"
+      />
+    </div>
     <div class="flex gap-1.5">
       <Button
         variant="ghost"
@@ -23,6 +36,7 @@
   </div>
   <div
     v-show="showEmailBox"
+    ref="emailPanel"
     @keydown.ctrl.enter.capture.stop="submitEmail"
     @keydown.meta.enter.capture.stop="submitEmail"
   >
@@ -50,6 +64,7 @@
         },
       }"
       :editable="showEmailBox"
+      :height="clampedEditorHeight"
       :doctype="doctype"
       :subject="subject"
       :placeholder="
@@ -59,6 +74,7 @@
   </div>
   <div
     v-show="showCommentBox"
+    ref="commentPanel"
     @keydown.ctrl.enter.capture.stop="submitComment"
     @keydown.meta.enter.capture.stop="submitComment"
   >
@@ -80,6 +96,7 @@
         },
       }"
       :editable="showCommentBox"
+      :height="clampedEditorHeight"
       :doctype="doctype"
       :placeholder="__('@John, can you please check this?')"
     />
@@ -92,9 +109,14 @@ import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
+import {
+  getEmailSubject,
+  loadUserEmailSubjects,
+} from '@/composables/emailSubject'
 import { usersStore } from '@/stores/users'
-import { useStorage } from '@vueuse/core'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useStorage, useWindowSize } from '@vueuse/core'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
 
@@ -130,6 +152,47 @@ const newComment = useStorage(
 const newEmailEditor = ref(null)
 const newCommentEditor = ref(null)
 
+const MIN_EDITOR_HEIGHT = 112
+const MAX_EDITOR_HEIGHT_RATIO = 0.6
+
+const emailPanel = ref(null)
+const commentPanel = ref(null)
+const editorHeight = useStorage('communicationEditorHeight', 0)
+const { height: windowHeight } = useWindowSize()
+const resizing = ref(false)
+let dragStart = null
+
+const clampedEditorHeight = computed(
+  () => editorHeight.value && clampEditorHeight(editorHeight.value),
+)
+
+function clampEditorHeight(height) {
+  const max = windowHeight.value * MAX_EDITOR_HEIGHT_RATIO
+  return Math.round(Math.min(Math.max(height, MIN_EDITOR_HEIGHT), max))
+}
+
+function startResize(event) {
+  const panel = showEmailBox.value ? emailPanel.value : commentPanel.value
+  const editor = panel?.querySelector('[data-resizable-editor]')
+  if (!editor) return
+  event.preventDefault()
+  event.currentTarget.setPointerCapture(event.pointerId)
+  dragStart = { y: event.clientY, height: editor.offsetHeight }
+  resizing.value = true
+}
+
+function resize(event) {
+  if (!dragStart) return
+  editorHeight.value = clampEditorHeight(
+    dragStart.height + dragStart.y - event.clientY,
+  )
+}
+
+function stopResize() {
+  dragStart = null
+  resizing.value = false
+}
+
 const attachments = useStorage(
   `attachments-${getUser().email}-${props.doctype}-${doc.value.name}`,
   [],
@@ -142,14 +205,14 @@ const attachments = useStorage(
   },
 )
 
-const subject = computed(() => {
-  let prefix = ''
-  if (doc.value?.lead_name) {
-    prefix = doc.value.lead_name
-  } else if (doc.value?.organization) {
-    prefix = doc.value.organization
-  }
-  return `${prefix} (#${doc.value.name})`
+loadUserEmailSubjects()
+
+const subject = computed(() => getEmailSubject(props.doctype, doc.value))
+
+// Subject format may load after mount; update it unless the user already typed one
+watch(subject, (value, oldValue) => {
+  const editor = newEmailEditor.value
+  if (editor && editor.subject === oldValue) editor.subject = value
 })
 
 const signature = createResource({
@@ -325,9 +388,23 @@ function toggleCommentBox() {
   showCommentBox.value = !showCommentBox.value
 }
 
+// Callable from outside (e.g. the command palette); setting the exposed ref
+// from a parent doesn't write through to .value, so open via a method.
+function openCommentBox() {
+  if (showEmailBox.value) showEmailBox.value = false
+  showCommentBox.value = true
+}
+
+function openEmailBox() {
+  if (showCommentBox.value) showCommentBox.value = false
+  showEmailBox.value = true
+}
+
 defineExpose({
   show: showEmailBox,
   showComment: showCommentBox,
   editor: newEmailEditor,
+  openCommentBox,
+  openEmailBox,
 })
 </script>

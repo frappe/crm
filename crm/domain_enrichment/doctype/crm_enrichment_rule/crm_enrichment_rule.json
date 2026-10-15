@@ -26,8 +26,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Rule Name",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "rule_type",
@@ -92,7 +91,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-19 14:45:44.721670",
+ "modified": "2026-10-05 14:58:03.677829",
  "modified_by": "Administrator",
  "module": "Domain Enrichment",
  "name": "CRM Enrichment Rule",

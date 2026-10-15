@@ -39,7 +39,7 @@
             <Badge
               v-if="isDirty"
               :variant="'subtle'"
-              :theme="'orange'"
+              :theme="'amber'"
               size="sm"
               :label="__('Not Saved')"
             />

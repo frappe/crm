@@ -1,22 +1,30 @@
 <template>
-  <Dialog v-model:open="show" :size="'xl'">
-    <template #body>
+  <Dialog v-model:open="show" :size="'xl'" bare>
+    <template #default>
       <div
         v-if="!confirmDeleteInfo.show"
         class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6"
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{
-                linkedDocs?.length == 0
-                  ? __('Delete')
-                  : __('Delete or unlink linked documents')
-              }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{
+                  linkedDocs?.length == 0
+                    ? __('Delete')
+                    : __('Delete or unlink linked documents')
+                }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="lucide-x" @click="show = false" />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                variant="ghost"
+                icon="lucide-x"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div>
@@ -71,7 +79,7 @@
             "
             theme="red"
             variant="solid"
-            icon-left="trash-2"
+            icon-left="lucide-trash-2"
             @click="confirmDelete()"
           />
           <Button
@@ -83,7 +91,7 @@
             "
             variant="subtle"
             theme="gray"
-            icon-left="unlock"
+            icon-left="lucide-unlock"
             @click="confirmUnlink()"
           />
           <Button
@@ -103,12 +111,20 @@
       >
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ confirmDeleteInfo.title }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ confirmDeleteInfo.title }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
-            <Button variant="ghost" icon="lucide-x" @click="show = false" />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                variant="ghost"
+                icon="lucide-x"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div class="text-ink-gray-5 text-base">
@@ -131,9 +147,15 @@
 </template>
 
 <script setup>
-import { createResource, call } from 'frappe-ui'
+import { Dialog, createResource, call, toast } from 'frappe-ui'
 import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
+import {
+  markDocumentAsDeleted,
+  unmarkDocumentAsDeleted,
+  expireDeletionMarker,
+} from '@/data/document'
 
 const show = defineModel({ type: Boolean })
 const router = useRouter()
@@ -141,6 +163,7 @@ const props = defineProps({
   name: { type: String, required: true },
   doctype: { type: String, required: true },
   docname: { type: String, required: true },
+  title: { type: String, default: null },
   reload: { type: Function, default: null },
 })
 const viewControls = ref({
@@ -200,11 +223,15 @@ const unlinkLinkedDoc = (doc) => {
     }))
   }
 
-  call('crm.api.doc.remove_linked_doc_reference', {
-    items: selectedDocs,
-    remove_contact: props.doctype == 'Contact',
-    delete: doc.delete,
-  }).then(() => {
+  withRecipientConfirmation((confirm) =>
+    call('crm.api.doc.remove_linked_doc_reference', {
+      items: selectedDocs,
+      remove_contact: props.doctype == 'Contact',
+      delete: doc.delete,
+      ...confirm,
+    }),
+  ).then((removed) => {
+    if (!removed) return
     linkedDocsResource.reload()
     confirmDeleteInfo.value = {
       show: false,
@@ -249,10 +276,25 @@ const removeDocLinks = () => {
 }
 
 const deleteDoc = async () => {
-  await call('frappe.client.delete', {
-    doctype: props.doctype,
-    name: props.docname,
-  })
+  // Mark before the request starts: the backend's delete_doc fires a
+  // realtime doc_update event that can reach the still-mounted document
+  // resource before this awaited call resolves on the frontend.
+  markDocumentAsDeleted(props.doctype, props.docname)
+  try {
+    await call('frappe.client.delete', {
+      doctype: props.doctype,
+      name: props.docname,
+    })
+  } catch (err) {
+    unmarkDocumentAsDeleted(props.doctype, props.docname)
+    throw err
+  }
+  expireDeletionMarker(props.doctype, props.docname)
+  const label = props.title
+    ? `${props.docname} (${props.title})`
+    : props.docname
+  toast.success(__('{0} deleted successfully', [label]))
+  show.value = false
   router.push({ name: props.name })
   props?.reload?.()
 }

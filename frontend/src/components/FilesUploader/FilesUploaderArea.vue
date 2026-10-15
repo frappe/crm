@@ -3,18 +3,18 @@
     <TextInput v-model="webLink" placeholder="https://example.com" />
   </div>
   <div v-else-if="showCamera">
-    <video v-show="!cameraImage" ref="video" class="rounded" autoplay></video>
+    <video v-show="!cameraImage" ref="video" class="rounded-4" autoplay></video>
     <canvas
       v-show="cameraImage"
       ref="canvas"
-      class="rounded"
+      class="rounded-4"
       style="width: -webkit-fill-available"
     />
   </div>
   <div v-else>
     <div
       v-show="files.length === 0"
-      class="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-outline-elevation-2 min-h-64 text-ink-gray-5"
+      class="flex flex-col items-center justify-center gap-4 rounded-6 border border-dashed border-outline-elevation-2 min-h-64 text-ink-gray-5"
       @dragover.prevent="dragover"
       @dragleave.prevent="dragleave"
       @drop.prevent="dropfiles"
@@ -68,7 +68,7 @@
       >
         <div class="flex items-center gap-4 truncate">
           <div
-            class="size-11 rounded overflow-hidden flex-shrink-0 flex justify-center items-center"
+            class="size-11 rounded-4 overflow-hidden flex-shrink-0 flex justify-center items-center"
             :class="{ border: !file.type?.startsWith('image') }"
           >
             <img
@@ -100,20 +100,12 @@
           </div>
         </div>
         <div>
-          <CircularProgressBar
+          <Progress
             v-if="file.uploading || file.uploaded == file.total"
-            :class="{
-              'text-ink-green-5': file.uploaded == file.total,
-            }"
-            :theme="{
-              primary: '#22C55E',
-              secondary: 'lightgray',
-            }"
-            :step="file.uploaded || 1"
-            :totalSteps="file.total || 100"
-            size="xs"
-            variant="outline"
-            :showPercentage="file.uploading"
+            class="w-24"
+            size="sm"
+            :value="uploadPercent(file)"
+            :hint="file.uploading"
           />
           <Button
             v-else
@@ -131,13 +123,8 @@ import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import FileAudioIcon from '@/components/Icons/FileAudioIcon.vue'
 import FileVideoIcon from '@/components/Icons/FileVideoIcon.vue'
 import { formatDate, convertSize } from '@/utils'
-import {
-  FormControl,
-  CircularProgressBar,
-  createResource,
-  toast,
-} from 'frappe-ui'
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { FormControl, Progress, toast, useCall } from 'frappe-ui'
+import { ref, computed, watch, onUnmounted } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -161,28 +148,32 @@ const allowWebLink = ref(props.options.allowWebLink == false ? false : true)
 const allowTakePhoto = ref(
   props.options.allowTakePhoto || window.navigator.mediaDevices || false,
 )
-const restrictions = ref(props.options.restrictions || {})
-const makeAttachmentsPublic = ref(props.options.makeAttachmentsPublic || false)
 
-onMounted(() => {
-  createResource({
-    url: 'crm.api.get_file_uploader_defaults',
-    params: { doctype: props.doctype },
-    cache: ['file_uploader_defaults', props.doctype],
-    auto: true,
-    transform: (data) => {
-      const propRestrictions = props.options.restrictions || {}
-      restrictions.value = {
-        allowedFileTypes: data.allowed_file_types
-          ? data.allowed_file_types.split('\n').map((ext) => `.${ext}`)
-          : [],
-        maxFileSize: data.max_file_size,
-        maxNumberOfFiles: data.max_number_of_files,
-        ...propRestrictions,
-      }
-      makeAttachmentsPublic.value = Boolean(data.make_attachments_public)
-    },
-  })
+const uploaderDefaults = useCall({
+  url: '/api/v2/method/crm.api.get_file_uploader_defaults',
+  params: { doctype: props.doctype },
+  cacheKey: ['file_uploader_defaults', props.doctype],
+})
+
+const restrictions = computed(() => {
+  const data = uploaderDefaults.data
+  const propRestrictions = props.options.restrictions || {}
+  if (!data) return propRestrictions
+
+  return {
+    allowedFileTypes: data.allowed_file_types
+      ? data.allowed_file_types.split('\n').map((ext) => `.${ext}`)
+      : [],
+    maxFileSize: data.max_file_size,
+    maxNumberOfFiles: data.max_number_of_files,
+    ...propRestrictions,
+  }
+})
+
+const makeAttachmentsPublic = computed(() => {
+  const data = uploaderDefaults.data
+  if (!data) return Boolean(props.options.makeAttachmentsPublic)
+  return Boolean(data.make_attachments_public)
 })
 
 function dragover() {
@@ -368,6 +359,11 @@ function showMaxFilesNumberWarning(file, maxNumberOfFiles) {
 
 function removeFile(name) {
   files.value = files.value.filter((file) => file.name !== name)
+}
+
+function uploadPercent(file) {
+  if (!file.total) return 0
+  return Math.round((file.uploaded / file.total) * 100)
 }
 
 function fileIcon(type) {

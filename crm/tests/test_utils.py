@@ -638,6 +638,25 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 		source = frappe.db.get_value("CRM Lead", {"email": "leadsource@example.com"}, "source")
 		self.assertEqual(source, "Email")
 
+	def test_lead_not_created_for_automated_sender(self):
+		"""no-reply, mailer-daemon and postmaster must not become leads."""
+		email_account = self._make_email_account()
+		senders = [
+			"no-reply@dokeos.com",
+			"sc-noreply@google.com",
+			"noreply+notify@example.com",
+			"mailer-daemon@example.com",
+			"postmaster@example.com",
+			"donotreply@example.com",
+			"Notifications <no-reply@example.com>",
+			'"Mailer" <mailer-daemon@example.com>',
+		]
+		for sender in senders:
+			with self.subTest(sender=sender):
+				doc = self._incoming_comm(sender, email_account.name)
+				create_lead_from_incoming_email(doc)
+				self.assertFalse(frappe.db.exists("CRM Lead", {"email": sender}))
+
 	def test_lead_created_for_sent_communication_with_communication_type(self):
 		"""A sent communication with communication_type='Communication' should still create a lead.
 
@@ -660,3 +679,31 @@ class TestCreateLeadFromIncomingEmail(IntegrationTestCase):
 		create_lead_from_incoming_email(doc)
 
 		self.assertTrue(frappe.db.exists("CRM Lead", {"email": "sentcomm@example.com"}))
+
+
+class TestNormalizePhone(IntegrationTestCase):
+	def test_every_spelling_of_a_number_normalizes_the_same(self):
+		from crm.utils import normalize_phone
+
+		for spelling in ("919876543210", "+91 98765 43210", "9876543210", "+91-98765-43210", "0 98765 43210"):
+			self.assertEqual(normalize_phone(spelling, region="IN"), "+919876543210", spelling)
+
+	def test_foreign_number_without_plus_normalizes(self):
+		from crm.utils import normalize_phone
+
+		self.assertEqual(normalize_phone("14155552671", region="IN"), "+14155552671")
+		self.assertEqual(normalize_phone("447911123456", region="IN"), "+447911123456")
+
+	def test_unparseable_number_keeps_its_digits(self):
+		from crm.utils import normalize_phone
+
+		self.assertEqual(normalize_phone("+9999999999"), "+9999999999")
+		self.assertEqual(normalize_phone("12-34"), "+1234")
+		self.assertEqual(normalize_phone(""), "")
+		self.assertEqual(normalize_phone(None), "")
+
+	def test_search_digits(self):
+		from crm.utils import phone_search_digits
+
+		self.assertEqual(phone_search_digits("+91 98765 43210", region="IN"), "9876543210")
+		self.assertEqual(phone_search_digits("+9999999999", region="IN"), "9999999999")

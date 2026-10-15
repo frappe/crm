@@ -20,7 +20,7 @@
         <Button
           v-if="editing"
           :label="__('Chart')"
-          iconLeft="plus"
+          iconLeft="lucide-plus"
           @click="showAddChartModal = true"
         />
         <Button
@@ -53,15 +53,15 @@
           class:
             '!w-full justify-start [&>span]:mr-auto [&>svg]:text-ink-gray-5',
           variant: 'outline',
-          iconRight: 'chevron-down',
-          iconLeft: 'calendar',
+          iconRight: 'lucide-chevron-down',
+          iconLeft: 'lucide-calendar',
         }"
       />
       <DateRangePicker
         v-else
         ref="datePickerRef"
         class="!w-48"
-        :value="filters.period"
+        :model-value="filters.period ? parseDateRange(filters.period) : []"
         variant="outline"
         :placeholder="__('Period')"
         :formatter="formatRange"
@@ -144,6 +144,7 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
+import { getSettings } from '@/stores/settings'
 import { copy } from '@/utils'
 import {
   getLastXDays,
@@ -161,6 +162,7 @@ import {
 import { ref, reactive, computed, provide } from 'vue'
 
 const { users, getUser, isManager, isAdmin } = usersStore()
+const { brand } = getSettings()
 
 const editing = ref(false)
 
@@ -192,7 +194,7 @@ const options = computed(() => [
   {
     group: 'Presets',
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Last 7 Days'),
         onClick: () => {
@@ -307,6 +309,6 @@ function resetToDefault() {
 }
 
 usePageMeta(() => {
-  return { title: __('CRM Dashboard') }
+  return { title: __('CRM Dashboard'), icon: brand.favicon }
 })
 </script>

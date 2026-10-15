@@ -1,17 +1,7 @@
-<template>
-  <EventModal
-    v-if="showEventModal"
-    v-model="showEventModal"
-    :event="activeEvent"
-    :doctype="doctype"
-    :docname="doc?.name"
-  />
-</template>
 <script setup>
-import EventModal from '@/components/Modals/EventModal.vue'
-import { showEventModal, activeEvent } from '@/composables/event'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { call } from 'frappe-ui'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -25,12 +15,6 @@ const activities = defineModel({ type: Object })
 const { showModal } = useDoctypeModal()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
-
-// Event
-function showEvent(e) {
-  showEventModal.value = true
-  activeEvent.value = e
-}
 
 // Tasks
 function showTask(task) {
@@ -141,7 +125,6 @@ function redirect(tabName) {
 }
 
 defineExpose({
-  showEvent,
   showTask,
   deleteTask,
   updateTaskStatus,

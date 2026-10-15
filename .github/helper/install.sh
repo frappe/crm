@@ -43,6 +43,7 @@ sed -i 's/schedule:/# schedule:/g' Procfile
 sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
+bench get-app whatsapp
 bench get-app crm "${GITHUB_WORKSPACE}"
 
 # Only pull erpnext when the integration is under test, to keep other runs fast.

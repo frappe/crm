@@ -98,10 +98,13 @@
         </div>
       </div>
       <EditorContent
+        data-resizable-editor
         :class="[
           'prose-sm max-w-none [&_p.reply-to-content]:hidden',
-          editable && 'mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          editable && 'mx-4 overflow-y-auto border-t py-3',
+          editable && !height && 'max-h-[35vh]',
         ]"
+        :style="editable && height ? { height: `${height}px` } : null"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
@@ -131,11 +134,9 @@
               @click="showEmailTemplateSelectorModal = true"
             />
             <FileUploader
-              :upload-args="{
-                doctype: doctype,
-                docname: modelValue.name,
-                private: true,
-              }"
+              :doctype="doctype"
+              :docname="modelValue.name"
+              private
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
@@ -149,7 +150,6 @@
             </FileUploader>
             <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
-              v-slot="{ togglePopover }"
               v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
@@ -157,7 +157,6 @@
                 :tooltip="__('Insert Emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
-                @click="togglePopover()"
               />
             </IconPicker>
           </div>
@@ -200,7 +199,7 @@ import {
   EditorFixedMenu,
   EditorTableMenu,
 } from 'frappe-ui/editor'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { useDocument } from '@/data/document'
 import { validateEmail, submitShortcutLabel } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -214,6 +213,7 @@ const props = defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  height: { type: Number, default: 0 },
 })
 
 const CustomParagraph = Paragraph.extend({
@@ -277,10 +277,16 @@ const from = computed(() => {
   return emails
 })
 
+const replyAddresses = ref([])
+
 watch(
-  from,
-  (fromOptions) => {
-    if (!fromOptions.find((f) => f.value === fromEmail.value)) {
+  [from, replyAddresses],
+  ([fromOptions, addresses]) => {
+    let match = addresses.find((a) => fromOptions.some((f) => f.value === a))
+    if (match) {
+      fromEmail.value = match
+      replyAddresses.value = []
+    } else if (!fromOptions.find((f) => f.value === fromEmail.value)) {
       fromEmail.value = fromOptions.length ? fromOptions[0].value : ''
     }
   },
@@ -296,19 +302,22 @@ function removeAttachment(attachment) {
 const showEmailTemplateSelectorModal = ref(false)
 
 async function applyEmailTemplate(template) {
+  let doc = modelValue.value
+
   let data = await call(
     'frappe.email.doctype.email_template.email_template.get_email_template',
     {
       template_name: template.name,
-      doc: modelValue.value,
+      // fields are the template context, so nesting doc lets {{ doc.field }} work too
+      doc: { ...doc, doc },
     },
   )
 
-  if (template.subject) {
+  if (data.subject) {
     subject.value = data.subject
   }
 
-  if (template.response) {
+  if (data.message) {
     content.value = data.message
   }
   showEmailTemplateSelectorModal.value = false
@@ -320,6 +329,12 @@ function appendEmoji() {
   editor.value.commands.focus()
   emoji.value = ''
   capture('emoji_inserted_in_email', { emoji: emoji.value })
+}
+
+// Callable from outside (e.g. the command palette); setting the exposed ref
+// from a parent doesn't write through to .value, so open via a method.
+function openTemplateSelector() {
+  showEmailTemplateSelectorModal.value = true
 }
 
 function toggleCC() {
@@ -334,10 +349,13 @@ function toggleBCC() {
 
 defineExpose({
   editor,
+  showEmailTemplateSelectorModal,
+  openTemplateSelector,
   subject,
   cc,
   bcc,
   fromEmail,
+  replyAddresses,
   toEmails,
   ccEmails,
   bccEmails,

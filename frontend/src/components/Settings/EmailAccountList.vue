@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails.',
+              'Connect email accounts to send and receive emails from CRM. Set one as the default for incoming and outgoing emails.',
             )
           }}
         </p>
@@ -78,6 +78,9 @@ const emailAccounts = createListResource({
       account.enable_outgoing = Boolean(account.enable_outgoing)
       account.default_incoming = Boolean(account.default_incoming)
       account.default_outgoing = Boolean(account.default_outgoing)
+      account.create_lead_from_incoming_email = Boolean(
+        account.create_lead_from_incoming_email,
+      )
     })
   },
 })
