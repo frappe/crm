@@ -25,6 +25,8 @@
     doctype="CRM Deal"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
+      groupSummary: true,
+      groupByExclude: ['naming_series', 'docstatus'],
     }"
   />
   <KanbanView
@@ -206,6 +208,13 @@
       </div>
     </template>
   </KanbanView>
+  <GroupSummaryTable
+    v-else-if="viewControls?.groupSummary"
+    doctype="CRM Deal"
+    :settings="viewControls.groupSummary"
+    :filters="viewControls.currentFilters"
+    @update:settings="(s) => viewControls.updateGroupSummary(s)"
+  />
   <DealsListView
     v-else-if="deals.data && rows.length"
     ref="dealsListView"
@@ -253,6 +262,7 @@
 
 <script setup>
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
+import GroupSummaryTable from '@/components/GroupSummaryTable.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
