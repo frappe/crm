@@ -61,7 +61,7 @@ import { Button, Spinner, Tooltip, call, toast } from 'frappe-ui'
 import Icon from '@/components/Icon.vue'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useDocument } from '@/data/document'
-import { reloadEnrichedFields } from '@/data/enrichedFields'
+import { editedToReplace, reloadEnrichedFields } from '@/data/enrichedFields'
 import { createDialog } from '@/utils/dialogs'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -270,19 +270,9 @@ function onProgress(data) {
   }
 }
 
-// Labels of fields the user edited since the last run that re-enriching would
-// overwrite. "Fill if empty" fields keep the user's value, so they aren't listed.
-async function overwrittenEdits() {
-  const fields = await call('crm.domain_enrichment.api.get_enriched_fields', {
-    reference_doctype: props.doctype,
-    reference_name: props.docname,
-  })
-  return fields.filter((f) => f.edited && f.refreshes).map((f) => f.label)
-}
-
 async function enrich() {
   // Keyboard activation still reaches here while running; `checking` stops a
-  // second click during the edit check from opening a second dialog.
+  // second click during the fetch from opening a second dialog.
   if (running.value || undoing.value || checking || !hasWebsite.value) return
   // The record reloads when the run finishes, which would drop unsaved edits.
   if (document.isDirty) {
@@ -290,26 +280,35 @@ async function enrich() {
     return
   }
 
-  let edited
+  let enriched
   checking = true
   try {
-    edited = await overwrittenEdits()
+    enriched = await call('crm.domain_enrichment.api.get_enriched_fields', {
+      reference_doctype: props.doctype,
+      reference_name: props.docname,
+    })
   } catch (error) {
     toast.error(error.messages?.[0] || __('Could not start enrichment.'))
     return
   } finally {
     checking = false
   }
-  // The user may have left the page while the edit check was in flight.
+  // The user may have left the page while the fetch was in flight.
   if (unmounted) return
-  if (!edited.length) return start()
+  if (!enriched.length) return start()
 
+  const edited = editedToReplace(enriched)
+  let message = __(
+    'This record was already enriched. Enriching again may update those fields with newer values from the website.',
+  )
+  if (edited.length) {
+    message +=
+      ' ' +
+      __('These fields you edited will be replaced: {0}', [edited.join(', ')])
+  }
   createDialog({
-    title: __('Overwrite your edits?'),
-    message: __(
-      'You edited these fields after the last enrichment. Enriching again will replace them with values from the website: {0}',
-      [edited.join(', ')],
-    ),
+    title: __('Re-enrich this record?'),
+    message,
     size: 'sm',
     actions: [
       { label: __('Cancel'), onClick: ({ close }) => close() },
