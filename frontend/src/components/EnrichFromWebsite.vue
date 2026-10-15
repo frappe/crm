@@ -246,11 +246,8 @@ async function poll() {
   }
   stop()
   fill.value = 100
-  // No payload to report from here, so finish without a toast.
-  finishTimer = setTimeout(() => {
-    reset()
-    afterChange()
-  }, TICK_MS + HOLD_MS)
+  // No payload here, so the toast has no list of filled fields.
+  finishTimer = setTimeout(() => finish(null), TICK_MS + HOLD_MS)
 }
 
 function onProgress(data) {
