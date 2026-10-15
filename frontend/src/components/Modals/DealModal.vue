@@ -127,6 +127,10 @@ async function enrichFromWebsite() {
     toast.warning(__('Enter a Website first.'))
     return
   }
+  capture('enrichment_quick_triggered', {
+    doctype: 'CRM Deal',
+    source: 'create_modal',
+  })
   isEnriching.value = true
   try {
     const { fields, notes } = await call(
