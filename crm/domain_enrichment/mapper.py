@@ -16,6 +16,7 @@ The mapping itself is data: each ``CRM Enrichment Field Mapping`` record names a
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from urllib.parse import urlparse
 
 import frappe
@@ -45,6 +46,26 @@ def _source_key_labels() -> dict:
 		"instagram": _("Instagram"),
 		"youtube": _("YouTube"),
 	}
+
+
+@dataclass
+class FieldChange:
+	"""One field ``apply_to_document`` actually changed on a document."""
+
+	fieldname: str
+	old_value: object
+	new_value: object
+	label: str
+
+
+def filled_labels(changes: list[FieldChange]) -> list[str]:
+	"""Human labels of the changed fields, de-duplicated in order -- the shape the
+	realtime "filled: ..." toast and the link-time copy callers expect."""
+	labels: list[str] = []
+	for change in changes:
+		if change.label not in labels:
+			labels.append(change.label)
+	return labels
 
 
 # source_keys backed by a social_profiles[<network>] entry on the result.
@@ -180,7 +201,7 @@ def _overridable_defaults(mapping) -> set:
 	return defaults
 
 
-def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[str]:
+def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[FieldChange]:
 	"""Populate mappable fields on a Lead / Deal / Organization from ``result``.
 
 	Driven by ``cfg.mappings_by_doctype[doc.doctype]`` (the enabled Field Mapping
@@ -199,10 +220,19 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[s
 	which must never overwrite or clear user-entered data.
 
 	Never overwrites real user-entered data except per the policies above. Does NOT
-	save the document -- the caller controls persistence/permissions. Returns the
-	human labels of the fields that were changed.
+	save the document -- the caller controls persistence/permissions. Returns one
+	``FieldChange`` per field whose value was changed (old and new value);
+	``filled_labels`` turns it into human labels. When several mappings write the
+	same field, they collapse into one change from the original value to the final
+	one, so undo restores the value the field had before the run.
 	"""
-	filled: list[str] = []
+	changes: dict[str, FieldChange] = {}
+
+	def record(fieldname, old_value, new_value, label):
+		if fieldname in changes:
+			old_value = changes[fieldname].old_value
+		changes[fieldname] = FieldChange(fieldname, old_value, new_value, label)
+
 	mappings = cfg.mappings_by_doctype.get(doc.doctype, [])
 
 	for mapping in mappings:
@@ -224,8 +254,7 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[s
 				if value is None:
 					continue
 			doc.set(fieldname, value)
-			if label not in filled:
-				filled.append(label)
+			record(fieldname, current, value, label)
 			continue
 
 		# Fill-if-empty / Override-defaults both require a non-empty fresh value.
@@ -249,7 +278,6 @@ def apply_to_document(doc, result, cfg, fill_empty_only: bool = False) -> list[s
 				continue
 
 		doc.set(fieldname, value)
-		if label not in filled:
-			filled.append(label)
+		record(fieldname, current, value, label)
 
-	return filled
+	return list(changes.values())

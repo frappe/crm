@@ -18,10 +18,10 @@ from unittest import mock
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from crm.domain_enrichment import config, install, tasks
+from crm.domain_enrichment import api, config, install, tasks
 from crm.domain_enrichment.config import get_config
 from crm.domain_enrichment.cross_record import copy_enrichment_from_organization
-from crm.domain_enrichment.mapper import apply_to_document
+from crm.domain_enrichment.mapper import FieldChange, apply_to_document
 from crm.domain_enrichment.result import EnrichmentResult, Field, SocialProfile
 from crm.domain_enrichment.tests import fixtures
 
@@ -85,6 +85,27 @@ class MapperWritePolicyTest(IntegrationTestCase):
 		apply_to_document(org, self.result, self.cfg)
 		self.assertEqual(org.company_description, "Hand-written by sales.")
 
+	def test_mappings_writing_same_field_collapse_into_one_change(self):
+		# Two mappings on one field (O -> A -> B) must record a single O -> B change,
+		# else undo restores the intermediate A instead of the original value.
+		cfg = config.EnrichmentConfig(
+			mappings_by_doctype={
+				"CRM Organization": [
+					config.Mapping(
+						"company_name", "CRM Organization", "company_description", "Always refresh"
+					),
+					config.Mapping(
+						"description", "CRM Organization", "company_description", "Always refresh"
+					),
+				]
+			}
+		)
+		org = self._new_org(company_description="Original")
+		changes = apply_to_document(org, self.result, cfg)
+		self.assertEqual(len(changes), 1)
+		self.assertEqual(changes[0].old_value, "Original")
+		self.assertEqual(changes[0].new_value, "AI powered analytics SaaS for product teams.")
+
 	def test_create_missing_link_creates_industry(self):
 		industry = "Quantum Widgets " + frappe.generate_hash(length=6)
 		self.assertFalse(frappe.db.exists("CRM Industry", industry))
@@ -142,6 +163,78 @@ class RunWriterTest(IntegrationTestCase):
 		self.assertIn("Acme Analytics", run.raw_json)
 
 
+class RunChangeLogTest(IntegrationTestCase):
+	"""run_enrichment records each field it changed as a CRM Enrichment Run Change row."""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _new_org(self, **kwargs):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Change Log Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		for k, v in kwargs.items():
+			org.set(k, v)
+		org.insert()
+		return org
+
+	def _enrich(self, org, result):
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=result),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		run_name = frappe.db.get_value(
+			"CRM Enrichment Run",
+			{"reference_doctype": "CRM Organization", "reference_name": org.name},
+			"name",
+			order_by="creation desc",
+		)
+		run = frappe.get_doc("CRM Enrichment Run", run_name)
+		self.assertEqual(run.status, "Completed")
+		return {c.fieldname: c for c in run.changes}
+
+	def test_records_old_and_new_values(self):
+		org = self._new_org(company_description="", twitter="https://twitter.com/old")
+		changes = self._enrich(org, canned_result())
+
+		description = changes["company_description"]
+		self.assertFalse(description.old_value)
+		self.assertEqual(description.new_value, "AI powered analytics SaaS for product teams.")
+		self.assertEqual(changes["linkedin"].new_value, "https://www.linkedin.com/company/acme")
+		# Fill-if-empty left the user's twitter alone, so it is not recorded.
+		self.assertNotIn("twitter", changes)
+
+	def test_unchanged_field_creates_no_row(self):
+		org = self._new_org(linkedin="https://www.linkedin.com/company/acme")
+		changes = self._enrich(org, canned_result())
+		self.assertNotIn("linkedin", changes)
+
+	def test_change_with_equal_values_is_not_recorded_or_reported(self):
+		from crm.domain_enrichment.mapper import FieldChange
+
+		org = self._new_org()
+		equal = FieldChange("annual_revenue", 9000, "9000", "Annual Revenue")
+		with (
+			mock.patch.object(tasks, "apply_to_document", return_value=[equal]),
+			mock.patch.object(tasks, "_publish") as publish,
+		):
+			changes = self._enrich(org, canned_result())
+
+		self.assertEqual(changes, {})
+		self.assertEqual(publish.call_args.kwargs["payload"]["filled_fields"], [])
+
+	def test_records_created_industry(self):
+		industry = "Quantum Widgets " + frappe.generate_hash(length=6)
+		result = canned_result()
+		result.industry = Field(industry, "https://x.example", "Keyword Classifier")
+		org = self._new_org(industry="")
+		changes = self._enrich(org, result)
+
+		self.assertTrue(frappe.db.exists("CRM Industry", industry))
+		self.assertEqual(changes["industry"].new_value, industry)
+
+
 class ApiPermissionTest(IntegrationTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
@@ -168,10 +261,10 @@ class ApiPermissionTest(IntegrationTestCase):
 			enrich("CRM Organization", org.name)
 
 	def test_enrich_routes_are_rate_limited(self):
-		# enrich / retry each carry rate_limit(limit=ENRICH_RATE_LIMIT).
+		# enrich / retry / undo each carry rate_limit(limit=ENRICH_RATE_LIMIT).
 		from crm.domain_enrichment import api
 
-		for fn in (api.enrich, api.retry):
+		for fn in (api.enrich, api.retry, api.undo):
 			self.assertTrue(hasattr(fn, "__wrapped__"), fn.__name__)
 
 
@@ -246,10 +339,22 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 		with (
 			mock.patch.object(config, "get_settings", return_value=settings),
 			mock.patch.object(tasks, "get_settings", return_value=settings),
+			mock.patch.object(tasks, "is_job_enqueued", return_value=False),
 			mock.patch.object(tasks.frappe, "enqueue") as enq,
 		):
 			tasks.auto_enrich_on_create(doc)
 		return enq
+
+	def test_reports_not_queued_when_job_already_in_flight(self):
+		settings = self._settings()
+		with (
+			mock.patch.object(tasks, "get_settings", return_value=settings),
+			mock.patch.object(tasks, "is_job_enqueued", return_value=True),
+			mock.patch.object(tasks.frappe, "enqueue") as enq,
+		):
+			out = tasks.enqueue_enrichment("CRM Lead", "L1", "https://acme.example", "Administrator")
+		enq.assert_not_called()
+		self.assertFalse(out["queued"])
 
 	def test_enqueues_for_new_lead(self):
 		enq = self._run(self._doc("CRM Lead", name="L1"), self._settings())
@@ -286,6 +391,441 @@ class AutoEnrichOnCreateTest(IntegrationTestCase):
 	def test_skips_without_website(self):
 		enq = self._run(self._doc("CRM Deal", website=""), self._settings())
 		enq.assert_not_called()
+
+
+class UndoTest(IntegrationTestCase):
+	"""api.undo reverts the newest run that changed fields on the record;
+	api.get_status and api.get_enriched_fields report the state around it."""
+
+	def setUp(self):
+		# Run as if enrichment were enabled and no job were in flight, whatever the
+		# test site's Settings / queue hold.
+		enabled = mock.patch.object(api, "_enabled_doctypes", return_value=list(config.ENRICHABLE_DOCTYPES))
+		enqueued = mock.patch.object(api, "is_job_enqueued", return_value=False)
+		enabled.start()
+		self.job_enqueued = enqueued.start()
+		self.addCleanup(mock.patch.stopall)
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def _enriched_org(self, **kwargs):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Undo Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		for k, v in kwargs.items():
+			org.set(k, v)
+		org.insert()
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		return frappe.get_doc("CRM Organization", org.name)
+
+	def _latest_run(self, org):
+		name = frappe.db.get_value(
+			"CRM Enrichment Run",
+			{"reference_doctype": "CRM Organization", "reference_name": org.name},
+			"name",
+			order_by="creation desc",
+		)
+		return frappe.get_doc("CRM Enrichment Run", name)
+
+	def _reenrich(self, org):
+		"""Run the canned enrichment again; it finds the values already there."""
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		return self._latest_run(org)
+
+	def _reenrich_description(self, org, value):
+		"""A Completed re-enrich that changed only ``company_description``."""
+		old = org.company_description
+		org.company_description = value
+		org.save()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			org.website,
+			status="Completed",
+			changes=[FieldChange("company_description", old, value, "Description")],
+		)
+		return self._latest_run(org)
+
+	def test_undo_reverts_changed_fields(self):
+		org = self._enriched_org(company_description="", twitter="https://twitter.com/old")
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/acme")
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertIn("company_description", out["reverted"])
+		self.assertIn("linkedin", out["reverted"])
+		self.assertFalse(org.company_description)
+		self.assertFalse(org.linkedin)
+		# Never written by the run, so untouched by the undo.
+		self.assertEqual(org.twitter, "https://twitter.com/old")
+
+	def test_undo_skips_field_edited_after_enrichment(self):
+		org = self._enriched_org()
+		org.linkedin = "https://www.linkedin.com/company/edited-by-user"
+		org.save()
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertIn("linkedin", out["skipped"])
+		self.assertNotIn("linkedin", out["reverted"])
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/edited-by-user")
+		self.assertFalse(org.company_description)
+
+	def test_undo_restores_non_text_field(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Undo Revenue Org " + frappe.generate_hash(length=4)
+		org.annual_revenue = 9000
+		org.insert()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			"https://acme.example",
+			status="Completed",
+			changes=[FieldChange("annual_revenue", 5000, 9000, "Annual Revenue")],
+		)
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertEqual(out["reverted"], ["annual_revenue"])
+		self.assertEqual(org.annual_revenue, 5000.0)
+		self.assertIsInstance(org.annual_revenue, float)
+
+	def test_undo_run_without_changes_throws(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Undo No Changes Org " + frappe.generate_hash(length=4)
+		org.insert()
+		run_name = tasks.write_run("CRM Organization", org.name, "https://acme.example", status="Completed")
+
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+		with self.assertRaises(frappe.ValidationError):
+			frappe.get_doc("CRM Enrichment Run", run_name).undo()
+
+	def test_undo_blocked_while_job_is_queued(self):
+		org = self._enriched_org()
+		self.job_enqueued.return_value = True
+
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+		self.job_enqueued.assert_called_with(tasks.enrichment_job_id("CRM Organization", org.name))
+		org.reload()
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/acme")
+
+	def test_undo_requires_write_permission(self):
+		org = self._enriched_org()
+		frappe.set_user(_make_minimal_user())
+
+		with self.assertRaises(frappe.PermissionError):
+			api.undo("CRM Organization", org.name)
+
+	def test_undo_marks_run_reverted(self):
+		org = self._enriched_org()
+		api.undo("CRM Organization", org.name)
+
+		run = self._latest_run(org)
+		self.assertEqual(run.status, "Reverted")
+		self.assertEqual(run.undone_by, "Administrator")
+		self.assertTrue(run.undone_on)
+		# Nothing left to undo.
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+
+	def test_undo_with_every_field_edited_reverts_nothing(self):
+		org = self._enriched_org()
+		changed = [c.fieldname for c in self._latest_run(org).changes]
+		self.assertTrue(changed)
+		edited = {fieldname: f"https://edited.example/{fieldname}" for fieldname in changed}
+		if "industry" in edited:
+			# A Link field: the user's value must be an existing CRM Industry.
+			edited["industry"] = "Edited Industry " + frappe.generate_hash(length=6)
+			frappe.get_doc({"doctype": "CRM Industry", "industry": edited["industry"]}).insert()
+		org.update(edited)
+		org.save()
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertEqual(out["reverted"], [])
+		self.assertCountEqual(out["skipped"], changed)
+		for fieldname, value in edited.items():
+			self.assertEqual(org.get(fieldname), value)
+		self.assertEqual(self._latest_run(org).status, "Reverted")
+
+	def test_status_reports_running_job(self):
+		org = self._enriched_org()
+		self.assertFalse(api.get_status("CRM Organization", org.name)["running"])
+
+		self.job_enqueued.return_value = True
+		self.assertTrue(api.get_status("CRM Organization", org.name)["running"])
+		self.job_enqueued.assert_called_with(tasks.enrichment_job_id("CRM Organization", org.name))
+
+	def test_status_has_no_undo_state(self):
+		# Undo is session-only on the client, so the server never offers it.
+		org = self._enriched_org()
+
+		status = api.get_status("CRM Organization", org.name)
+
+		self.assertCountEqual(status.keys(), ["running", "last_run_status", "filled_fields", "notes"])
+
+	def test_status_reports_newest_completed_run_toast_data(self):
+		org = self._enriched_org()
+		run = self._latest_run(org)
+		meta = frappe.get_meta("CRM Organization")
+		labels = []
+		for change in run.changes:
+			label = meta.get_field(change.fieldname).label
+			if label not in labels:
+				labels.append(label)
+
+		status = api.get_status("CRM Organization", org.name)
+
+		self.assertTrue(labels)
+		self.assertEqual(status["filled_fields"], labels)
+		self.assertEqual(status["notes"], (run.notes or "").splitlines())
+
+	def test_status_has_no_toast_data_for_failed_run(self):
+		org = self._enriched_org()
+		tasks.write_run("CRM Organization", org.name, org.website, status="Failed", notes="boom")
+
+		status = api.get_status("CRM Organization", org.name)
+
+		self.assertEqual(status["filled_fields"], [])
+		self.assertEqual(status["notes"], [])
+
+	def test_status_last_run_status_reports_newest_run(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Last Run Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		org.insert()
+		self.assertIsNone(api.get_status("CRM Organization", org.name)["last_run_status"])
+
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Completed")
+
+		# The first run's values still stand, but the newest run is the failed one.
+		# Written directly: the real failure path rolls back the transaction, which
+		# would drop this test's data.
+		tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
+		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Failed")
+
+	def test_status_completed_for_run_without_changes(self):
+		# A run that changed nothing still succeeded, so a poll must not report it as failed.
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "No Changes Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		org.insert()
+		tasks.write_run("CRM Organization", org.name, org.website, status="Completed")
+
+		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Completed")
+
+	def test_status_requires_read_permission(self):
+		org = self._enriched_org()
+		frappe.set_user(_make_minimal_user())
+
+		with self.assertRaises(frappe.PermissionError):
+			api.get_status("CRM Organization", org.name)
+
+	def test_enriched_fields_lists_latest_run_changes(self):
+		org = self._enriched_org()
+		changed = [c.fieldname for c in self._latest_run(org).changes]
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertCountEqual([f["fieldname"] for f in fields], changed)
+		linkedin = next(f for f in fields if f["fieldname"] == "linkedin")
+		self.assertEqual(linkedin["value"], "https://www.linkedin.com/company/acme")
+		self.assertTrue(linkedin["label"])
+		self.assertFalse(any(f["edited"] for f in fields))
+
+	def test_enriched_fields_flags_field_edited_after_enrichment(self):
+		org = self._enriched_org()
+		org.linkedin = "https://www.linkedin.com/company/edited-by-user"
+		org.save()
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertEqual([f["fieldname"] for f in fields if f["edited"]], ["linkedin"])
+
+	def test_enriched_fields_skips_unchanged_field(self):
+		# The run found the value already there, so it wrote nothing and gets no icon.
+		org = self._enriched_org(linkedin="https://www.linkedin.com/company/acme")
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertNotIn("linkedin", [f["fieldname"] for f in fields])
+
+	def test_enriched_fields_casts_value_to_field_type(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Enriched Revenue Org " + frappe.generate_hash(length=4)
+		org.insert()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			"https://acme.example",
+			status="Completed",
+			changes=[FieldChange("annual_revenue", None, 9000, "Annual Revenue")],
+		)
+
+		(field,) = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertEqual(field["value"], 9000.0)
+		self.assertIsInstance(field["value"], float)
+		# write_run alone never saved the value onto the record.
+		self.assertTrue(field["edited"])
+
+	def test_enriched_fields_flags_always_refresh_mappings(self):
+		org = self._enriched_org()
+		fieldname = self._latest_run(org).changes[0].fieldname
+		cfg = get_config()
+		for mapping in cfg.mappings_by_doctype["CRM Organization"]:
+			mapping.write_policy = (
+				"Always refresh" if mapping.target_fieldname == fieldname else "Fill if empty"
+			)
+
+		with mock.patch.object(api, "get_config", return_value=cfg):
+			fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertEqual([f["fieldname"] for f in fields if f["refreshes"]], [fieldname])
+
+	def test_enriched_fields_empty_after_undo(self):
+		org = self._enriched_org()
+		api.undo("CRM Organization", org.name)
+
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+	def test_reenrich_with_same_values_keeps_fields_and_undo(self):
+		org = self._enriched_org()
+		first = self._latest_run(org)
+		changed = [c.fieldname for c in first.changes]
+
+		second = self._reenrich(org)
+		self.assertEqual(second.status, "Completed")
+		self.assertFalse(second.changes)
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+		self.assertCountEqual([f["fieldname"] for f in fields], changed)
+
+		# Undo skips the no-change re-enrich and reverts the first run.
+		out = api.undo("CRM Organization", org.name)
+		self.assertCountEqual(out["reverted"], changed)
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", first.name, "status"), "Reverted")
+		# The no-change re-enrich only confirmed the reverted values, so it is Reverted too.
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", second.name, "status"), "Reverted")
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+	def test_undo_reenrich_reverts_only_its_field(self):
+		org = self._enriched_org()
+		first = self._latest_run(org)
+		first_description = org.company_description
+		self.assertIn("company_description", [c.fieldname for c in first.changes])
+
+		second = self._reenrich_description(org, "Re-enriched description")
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+		description = next(f for f in fields if f["fieldname"] == "company_description")
+		# The newest run's value wins for a field both runs wrote.
+		self.assertEqual(description["value"], "Re-enriched description")
+		self.assertFalse(description["edited"])
+
+		out = api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertEqual(out["reverted"], ["company_description"])
+		self.assertEqual(org.company_description, first_description)
+		self.assertEqual(org.linkedin, "https://www.linkedin.com/company/acme")
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", second.name, "status"), "Reverted")
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+		self.assertCountEqual([f["fieldname"] for f in fields], [c.fieldname for c in first.changes])
+		description = next(f for f in fields if f["fieldname"] == "company_description")
+		self.assertEqual(description["value"], first_description)
+		self.assertFalse(any(f["edited"] for f in fields))
+
+	def test_undo_every_run_clears_enriched_fields(self):
+		org = self._enriched_org()
+		self._reenrich_description(org, "Re-enriched description")
+
+		api.undo("CRM Organization", org.name)
+		api.undo("CRM Organization", org.name)
+
+		org.reload()
+		self.assertFalse(org.company_description)
+		self.assertFalse(org.linkedin)
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+		with self.assertRaises(frappe.ValidationError):
+			api.undo("CRM Organization", org.name)
+
+	def test_enriched_fields_detects_enriched_record(self):
+		# The client asks before re-enriching only when this list is non-empty.
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Detect Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		org.insert()
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+		# Failed runs and runs that changed nothing don't make it enriched.
+		tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
+		tasks.write_run("CRM Organization", org.name, org.website, status="Completed")
+		self.assertEqual(api.get_enriched_fields("CRM Organization", org.name), [])
+
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		self.assertTrue(api.get_enriched_fields("CRM Organization", org.name))
+
+	def test_enriched_fields_covers_every_completed_run(self):
+		org = self._enriched_org()
+		first = [c.fieldname for c in self._latest_run(org).changes]
+		self.assertNotIn("annual_revenue", first)
+		org.annual_revenue = 9000
+		org.save()
+		tasks.write_run(
+			"CRM Organization",
+			org.name,
+			org.website,
+			status="Completed",
+			changes=[FieldChange("annual_revenue", None, 9000, "Annual Revenue")],
+		)
+
+		fields = api.get_enriched_fields("CRM Organization", org.name)
+
+		self.assertCountEqual([f["fieldname"] for f in fields], [*first, "annual_revenue"])
+
+	def test_undo_targets_completed_run_past_failed_one(self):
+		org = self._enriched_org()
+		first = self._latest_run(org)
+		failed = tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
+
+		out = api.undo("CRM Organization", org.name)
+
+		self.assertCountEqual(out["reverted"], [c.fieldname for c in first.changes])
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", first.name, "status"), "Reverted")
+		self.assertEqual(frappe.db.get_value("CRM Enrichment Run", failed, "status"), "Failed")
+
+	def test_enriched_fields_requires_read_permission(self):
+		org = self._enriched_org()
+		frappe.set_user(_make_minimal_user())
+
+		with self.assertRaises(frappe.PermissionError):
+			api.get_enriched_fields("CRM Organization", org.name)
 
 
 def _make_minimal_user():
