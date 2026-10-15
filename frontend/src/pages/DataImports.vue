@@ -25,7 +25,7 @@
     doctype="Data Import"
     :filters="queryFilters"
     :filtersLabel="queryFiltersLabel"
-    @clearFilters="router.replace({ name: 'Data Imports' })"
+    @clearFilters="clearQueryFilters"
   />
   <DataImportsListView
     v-if="dataImports.data && rows.length"
@@ -102,6 +102,13 @@ const queryFilters = computed(() => {
     ...(status && { status }),
   }
 })
+
+function clearQueryFilters() {
+  const query = { ...route.query }
+  delete query.doctype
+  delete query.status
+  router.replace({ query })
+}
 
 const queryFiltersLabel = computed(() =>
   [route.query.status, route.query.doctype]
