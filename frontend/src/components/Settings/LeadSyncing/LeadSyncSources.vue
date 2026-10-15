@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 items-center">
           {{ __('Lead Sources') }}
-          <Badge theme="orange" size="sm">Beta</Badge>
+          <Badge theme="amber" size="sm">Beta</Badge>
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
@@ -60,7 +60,7 @@
       <ul class="overflow-y-auto px-2">
         <template v-for="(source, i) in sourcesList" :key="source.name">
           <li
-            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded-4"
             @click="() => emit('updateStep', 'edit-source', { ...source })"
           >
             <div class="flex flex-col w-4/6 pr-5">
@@ -85,9 +85,9 @@
               <Dropdown
                 class=""
                 :options="getDropdownOptions(source)"
-                placement="right"
+                align="end"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   variant: 'ghost',
                   onblur: (e) => {
                     e.stopPropagation()
@@ -184,7 +184,7 @@ function getDropdownOptions(source) {
   let options = [
     {
       label: __('Duplicate'),
-      icon: 'copy',
+      icon: 'lucide-copy',
       onClick: () => emit('updateStep', 'new-source', { ...source }),
     },
     ...ConfirmDelete({

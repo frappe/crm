@@ -110,14 +110,9 @@ import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
 import { usersStore } from '@/stores/users'
-<<<<<<< HEAD
-import { useStorage } from '@vueuse/core'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-=======
 import { useStorage, useWindowSize } from '@vueuse/core'
 import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
->>>>>>> 1b947d0 (feat: resizable email and comment editor)
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
 

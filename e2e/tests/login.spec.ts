@@ -14,7 +14,7 @@ test.describe('Login', () => {
 		// Uses the shared authenticated storage state from auth.setup.
 		await page.goto('/crm')
 		await expect(page).toHaveURL(/\/crm/)
-		await expect(page.locator('#app > *').first()).toBeVisible()
+		await expect(page.getByRole('link', { name: 'Leads' }).first()).toBeVisible()
 	})
 
 	test.describe('as a guest', () => {

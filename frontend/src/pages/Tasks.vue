@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createTask"
       />
     </template>
@@ -184,6 +184,15 @@
     v-else-if="tasks.data && !rows.length"
     name="Tasks"
     :icon="Email2Icon"
+    :title="__('No tasks yet')"
+    :description="
+      __(
+        'Tasks are to-dos for you and your team, like a follow-up call or sending a quote. Add them here or from a lead or deal.',
+      )
+    "
+    :filtered="!!Object.keys(tasks.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/task"
+    @create="createTask()"
   />
   <DeleteLinkedDocModal
     v-if="showDeleteTaskModal"
@@ -213,8 +222,9 @@ import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, sanitizeHTML } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { Tooltip, Avatar, Dropdown, call } from 'frappe-ui'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -377,12 +387,12 @@ function actions(name) {
   return [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => showTask(name),
     },
     {
       label: __('Delete'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => {
         taskToDelete.value = name
         showDeleteTaskModal.value = true

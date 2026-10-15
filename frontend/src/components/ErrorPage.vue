@@ -4,7 +4,7 @@
   >
     <div class="flex flex-col justify-between items-center gap-3">
       <span
-        class="lucide-x-octagon h-12 w-12 text-ink-red-6"
+        class="lucide-x-octagon h-12 w-12 text-ink-red-5"
         aria-hidden="true"
       />
       <div class="text-3xl-semibold">{{ errorTitle }}</div>

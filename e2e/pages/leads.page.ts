@@ -17,7 +17,11 @@ export class LeadsPage {
 	}
 
 	async openCreateModal() {
-		await this.page.getByRole('button', { name: 'Create', exact: true }).click()
+		// The empty list state has its own Create button, so use the header one
+		await this.page
+			.locator('#app-header')
+			.getByRole('button', { name: 'Create', exact: true })
+			.click()
 		await expect(
 			this.page.getByRole('heading', { name: 'Create Lead' }),
 		).toBeVisible()

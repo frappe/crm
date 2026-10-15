@@ -39,11 +39,9 @@
         >
           <div class="flex gap-1 items-center overflow-x-auto">
             <FileUploader
-              :upload-args="{
-                doctype: doctype,
-                docname: modelValue.name,
-                private: true,
-              }"
+              :doctype="doctype"
+              :docname="modelValue.name"
+              private
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
@@ -57,7 +55,6 @@
             </FileUploader>
             <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
-              v-slot="{ togglePopover }"
               v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
@@ -65,7 +62,6 @@
                 :tooltip="__('Insert Emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
-                @click="togglePopover()"
               />
             </IconPicker>
           </div>
@@ -94,7 +90,7 @@ import {
 } from '@/components/editor/config'
 import { submitShortcutLabel } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { FileUploader } from 'frappe-ui'
 import {
   Editor,
@@ -134,7 +130,7 @@ const users = computed(
     usersList.data?.crmUsers
       ?.filter((user) => user.enabled)
       .map((user) => ({
-        id: user.name,
+        value: user.name,
         label: user.full_name?.trim() || user.name,
       })) || [],
 )

@@ -11,27 +11,24 @@
     </template>
     <template #suffix>
       <Tooltip>
-        <template #body>
-          <div
-            class="rounded bg-surface-gray-10 py-1.5 px-2 text-xs text-ink-base shadow-xl"
-          >
-            <span class="flex items-center gap-1">
-              {{ show ? __('Hide Password') : __('Show Password') }}
-              <KeyboardShortcut
-                bg
-                ctrl
-                class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
-              >
-                <span class="font-mono leading-none tracking-widest">+I</span>
-              </KeyboardShortcut>
-            </span>
-          </div>
+        <template #content>
+          <span class="flex items-center gap-1">
+            {{ show ? __('Hide Password') : __('Show Password') }}
+            <KeyboardShortcut
+              bg
+              ctrl
+              class="!bg-surface-gray-8 !text-ink-gray-2 px-1"
+            >
+              <span class="font-mono leading-none tracking-widest">+I</span>
+            </KeyboardShortcut>
+          </span>
         </template>
         <div>
-          <FeatherIcon
+          <span
             v-show="showEye"
-            :name="show ? 'eye-off' : 'eye'"
+            :class="show ? 'lucide-eye-off' : 'lucide-eye'"
             class="h-3 cursor-pointer mr-1"
+            aria-hidden="true"
             @click="show = !show"
           />
         </div>

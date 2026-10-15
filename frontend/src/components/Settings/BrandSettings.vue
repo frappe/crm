@@ -48,13 +48,13 @@
       <div class="flex flex-col justify-between gap-4">
         <div class="flex items-center flex-1 gap-5">
           <div
-            class="flex items-center justify-center rounded border border-outline-elevation-2 size-20"
+            class="flex items-center justify-center rounded-4 border border-outline-elevation-2 size-20"
           >
             <img
               v-if="settings.doc?.brand_logo"
               :src="settings.doc?.brand_logo"
               alt="Logo"
-              class="size-8 rounded"
+              class="size-8 rounded-4"
             />
             <ImageIcon v-else class="size-5 text-ink-gray-4" />
           </div>
@@ -83,13 +83,13 @@
       <div class="flex flex-col justify-between gap-4">
         <div class="flex items-center flex-1 gap-5">
           <div
-            class="flex items-center justify-center rounded border border-outline-elevation-2 size-20"
+            class="flex items-center justify-center rounded-4 border border-outline-elevation-2 size-20"
           >
             <img
               v-if="settings.doc?.favicon"
               :src="settings.doc?.favicon"
               alt="Favicon"
-              class="size-8 rounded"
+              class="size-8 rounded-4"
             />
             <ImageIcon v-else class="size-5 text-ink-gray-4" />
           </div>

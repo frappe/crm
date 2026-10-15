@@ -1,48 +1,52 @@
 <template>
-  <div
-    class="my-3 flex items-center justify-between text-lg-medium sm:mb-4 sm:mt-8"
-  >
-    <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
-      {{ __('Data') }}
-      <Badge
-        v-if="document.isDirty"
-        class="ml-3"
-        :label="__('Not Saved')"
-        theme="orange"
-      />
+  <div class="flex h-full min-h-0 flex-col">
+    <div
+      class="flex shrink-0 items-center justify-between py-3 text-lg-medium sm:pb-4 sm:pt-8"
+    >
+      <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
+        {{ __('Data') }}
+        <Badge
+          v-if="document.isDirty"
+          class="ml-3"
+          :label="__('Not Saved')"
+          theme="amber"
+        />
+      </div>
+      <div class="flex gap-1">
+        <Button
+          v-if="isManager() && !isMobileView"
+          :tooltip="__('Edit Fields Layout')"
+          :icon="EditIcon"
+          @click="showDataFieldsModal = true"
+        />
+        <Button
+          label="Save"
+          :disabled="!document.isDirty || document.enriching"
+          variant="solid"
+          :loading="document.save.loading"
+          @click="saveChanges"
+        />
+      </div>
     </div>
-    <div class="flex gap-1">
-      <Button
-        v-if="isManager() && !isMobileView"
-        :tooltip="__('Edit Fields Layout')"
-        :icon="EditIcon"
-        @click="showDataFieldsModal = true"
-      />
-      <Button
-        label="Save"
-        :disabled="!document.isDirty"
-        variant="solid"
-        :loading="document.save.loading"
-        @click="saveChanges"
-      />
-    </div>
-  </div>
-  <div
-    v-if="document.get.loading"
-    class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-6"
-  >
-    <LoadingIndicator class="h-6 w-6" />
-    <span>{{ __('Loading...') }}</span>
-  </div>
-  <div v-else class="pb-8">
-    <FieldLayout
-      v-if="tabs.data"
-      v-model:tabIndex="fieldLayoutTabIndex"
-      v-model:tabName="fieldLayoutTabName"
-      :tabs="tabs.data"
-      :data="document.doc"
-      :doctype="doctype"
-    />
+    <FadedScrollableDiv class="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div
+        v-if="document.get.loading"
+        class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-6"
+      >
+        <LoadingIndicator class="h-6 w-6" />
+        <span>{{ __('Loading...') }}</span>
+      </div>
+      <div v-else class="pb-8">
+        <FieldLayout
+          v-if="tabs.data"
+          v-model:tabIndex="fieldLayoutTabIndex"
+          v-model:tabName="fieldLayoutTabName"
+          :tabs="tabs.data"
+          :data="document.doc"
+          :doctype="doctype"
+        />
+      </div>
+    </FadedScrollableDiv>
   </div>
   <DataFieldsModal
     v-if="showDataFieldsModal"
@@ -61,10 +65,12 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DataFieldsModal from '@/components/Modals/DataFieldsModal.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
+import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import { Badge, createResource } from 'frappe-ui'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+import { provideEnrichedFieldnames } from '@/data/enrichedFields'
 import { isMobileView } from '@/composables/settings'
 import { ref, watch, getCurrentInstance, computed } from 'vue'
 
@@ -91,6 +97,10 @@ const attrs = instance?.vnode?.props ?? {}
 const showDataFieldsModal = ref(false)
 
 const { document } = useDocument(props.doctype, props.docname)
+
+// For the enriched-field icon on each field below.
+provideEnrichedFieldnames(props.doctype, props.docname)
+
 const fieldLayoutTabStorageKey = computed(
   () => `fieldLayoutTab:${props.doctype}:${props.docname}`,
 )
@@ -122,7 +132,8 @@ const tabs = createResource({
 })
 
 function saveChanges() {
-  if (!document.isDirty) return
+  // An enrichment run saves this doc itself; saving now would collide.
+  if (!document.isDirty || document.enriching) return
 
   const updatedDoc = { ...document.doc }
   const oldDoc = { ...document.originalDoc }

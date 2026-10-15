@@ -78,6 +78,9 @@ const emailAccounts = createListResource({
       account.enable_outgoing = Boolean(account.enable_outgoing)
       account.default_incoming = Boolean(account.default_incoming)
       account.default_outgoing = Boolean(account.default_outgoing)
+      account.create_lead_from_incoming_email = Boolean(
+        account.create_lead_from_incoming_email,
+      )
     })
   },
 })
