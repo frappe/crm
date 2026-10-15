@@ -4,8 +4,8 @@ import { computed, inject, provide, unref } from 'vue'
 
 const cacheKey = (doctype, docname) => ['enrichedFields', doctype, docname]
 
-// Fields the record's latest enrichment run wrote, as returned by
-// api.get_enriched_fields. Fields the run found unchanged aren't listed.
+// Fields the record's Completed enrichment runs wrote (newest run per field),
+// as returned by api.get_enriched_fields.
 export function useEnrichedFields(doctype, docname) {
   return createResource({
     url: 'crm.domain_enrichment.api.get_enriched_fields',

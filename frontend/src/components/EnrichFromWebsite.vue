@@ -1,5 +1,4 @@
 <template>
-  <!-- Hidden while enriching; the run being undone is the one in progress. -->
   <Button
     v-if="canUndo && !running"
     :label="__('Undo')"
@@ -15,10 +14,8 @@
       <Button :label="__('Enrich')" iconLeft="lucide-zap" disabled />
     </div>
   </Tooltip>
-  <!-- No `loading` prop: it changes the button's look. While running, the
-       same Spinner it renders replaces iconLeft through the prefix slot, a
-       grey fill tracks the real progress, and pointer-events-none + the guard
-       in enrich() block repeat clicks. -->
+  <!-- No `loading` prop: it restyles the button. The prefix slot swaps in the
+       same Spinner instead. -->
   <Button
     v-else
     :label="label"
@@ -33,12 +30,10 @@
     <template v-if="running" #prefix>
       <Spinner class="size-4" aria-hidden="true" />
     </template>
-    <!-- In the suffix only so it doesn't displace iconLeft; it's absolutely
-         positioned, so where it sits in the button doesn't matter. -->
+    <!-- Like frappe-ui's Progress.vue: a full-width fill slid left so only
+         `fill`% shows. z-[-1] in the isolated button keeps it under the label.
+         In the suffix so it doesn't displace iconLeft. -->
     <template #suffix>
-      <!-- Same technique as frappe-ui's Progress.vue: a full-width fill slid
-           left so only `fill`% shows. z-[-1] inside the isolated button keeps
-           it above the button background but under the icon and label. -->
       <span
         aria-hidden="true"
         class="absolute inset-0 z-[-1] bg-surface-gray-4"
@@ -95,8 +90,11 @@ const fill = ref(0)
 let creepTimer = null
 let checking = false
 let finishTimer = null
-// Only set when the page opened mid-run (see resume()).
+// Set for every run (see begin()), as a fallback for a missed socket event.
 let pollTimer = null
+// True while api.enrich is in flight: the job isn't queued yet, so a poll
+// would read it as finished.
+let enqueuing = false
 let startedHere = false
 let unmounted = false
 
@@ -108,8 +106,9 @@ const MAX_RUNNING_FILL = 90
 const TICK_MS = 660
 // How long the full fill stays visible before the button goes back to normal.
 const HOLD_MS = 500
-// How often to re-check a run this tab didn't start, whose socket events
-// only reach the user who started it.
+// How often to re-check a run's status. Socket events only reach the user who
+// started the job and can be missed (e.g. a dropped connection), so every run
+// is also polled.
 const POLL_MS = 3000
 // Ceiling the fill may creep up to while waiting on the current step: just
 // short of where the next step would put it.
@@ -190,7 +189,7 @@ function finish(payload) {
     // Nothing extracted — explain why (blocked / JS-only site).
     toast.warning(notes[0])
   } else {
-    // Lightning icon as in the Figma toast, passed the way scriptToast does.
+    // Lightning icon as in the Figma toast.
     toast.success(__('Enrichment successful'), {
       icon: () => h(Icon, { icon: 'lucide-zap', class: 'size-4' }),
       description: filled.length
@@ -213,11 +212,10 @@ function afterChange() {
 
 async function loadStatus() {
   try {
-    const status = await call('crm.domain_enrichment.api.get_status', {
+    return await call('crm.domain_enrichment.api.get_status', {
       reference_doctype: props.doctype,
       reference_name: props.docname,
     })
-    return status
   } catch {
     // Status only resumes a run in progress; the button works without it.
     return null
@@ -229,10 +227,10 @@ async function loadStatus() {
 // polling covers everyone else.
 function resume() {
   begin(false)
-  pollTimer = setInterval(poll, POLL_MS)
 }
 
 async function poll() {
+  if (enqueuing) return
   const status = await loadStatus()
   // pollTimer is cleared on reset/unmount; finishTimer means the socket's
   // 'completed' event already got here.
@@ -246,8 +244,8 @@ async function poll() {
   }
   stop()
   fill.value = 100
-  // No payload here, so the toast has no list of filled fields.
-  finishTimer = setTimeout(() => finish(null), TICK_MS + HOLD_MS)
+  // status carries the same filled_fields / notes as the socket's payload.
+  finishTimer = setTimeout(() => finish(status), TICK_MS + HOLD_MS)
 }
 
 function onProgress(data) {
@@ -258,8 +256,7 @@ function onProgress(data) {
   } else if (data.status === 'completed') {
     stop()
     fill.value = 100
-    // Let the fill reach 100%, hold it there with the "Enriching…" label, then
-    // finish. Cleared on unmount, so nothing fires on a dead component.
+    // Let the fill reach 100% and hold briefly before finishing.
     finishTimer = setTimeout(() => finish(data.payload), TICK_MS + HOLD_MS)
   } else if (data.status === 'error') {
     reset()
@@ -322,21 +319,29 @@ async function enrich() {
 }
 
 async function start() {
+  // resume() may have picked up a run while get_enriched_fields was loading.
+  if (running.value) return
   capture('enrichment_triggered', { doctype: props.doctype })
   begin(true)
 
+  enqueuing = true
   try {
-    await call('crm.domain_enrichment.api.enrich', {
+    const { queued } = await call('crm.domain_enrichment.api.enrich', {
       reference_doctype: props.doctype,
       reference_name: props.docname,
     })
+    // A job for this record was already in flight (maybe another user's), so
+    // this click didn't start a run: show it until it ends, but offer no Undo.
+    // Polling finishes it if its socket events never reach us.
+    if (!queued) startedHere = false
   } catch (error) {
     reset()
     toast.error(error.messages?.[0] || __('Could not start enrichment.'))
+  } finally {
+    enqueuing = false
   }
 }
 
-// Enter the Enriching state and start listening for progress.
 function begin(fromClick) {
   clearTimers()
   startedHere = fromClick
@@ -349,6 +354,7 @@ function begin(fromClick) {
   startCreep()
   // Subscribe before enqueueing so we never miss the completion event.
   $socket.on(EVENT, onProgress)
+  pollTimer = setInterval(poll, POLL_MS)
 }
 
 function confirmUndo() {
@@ -371,7 +377,7 @@ function confirmUndo() {
         variant: 'solid',
         onClick: ({ close }) => {
           close()
-          undo()
+          if (!unmounted) undo()
         },
       },
     ],

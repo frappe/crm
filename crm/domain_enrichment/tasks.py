@@ -16,6 +16,7 @@ reported over realtime.
 from __future__ import annotations
 
 import frappe
+from frappe.utils.background_jobs import is_job_enqueued
 from frappe.utils.telemetry import capture
 
 from .config import _setting, auto_enrich_enabled_for, get_config, get_settings
@@ -131,6 +132,10 @@ def enqueue_enrichment(
 	s = get_settings()
 	timeout = int(_setting(s, "request_timeout")) * int(_setting(s, "max_pages")) + 60
 	job_id = enrichment_job_id(reference_doctype, reference_name)
+	# A job for this record is already in flight (maybe another user's), so the
+	# dedup would skip ours: report it as not queued.
+	if is_job_enqueued(job_id):
+		return {"queued": False, "job_id": job_id, "website": website}
 	frappe.enqueue(
 		"crm.domain_enrichment.tasks.run_enrichment",
 		queue="long",

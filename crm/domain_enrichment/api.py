@@ -179,20 +179,37 @@ def undo(reference_doctype: str, reference_name: str) -> dict:
 def get_status(reference_doctype: str, reference_name: str) -> dict:
 	"""Whether an enrichment job for the record is queued or running, and the
 	newest run's status (``None`` before any run), so a page opened mid-run can
-	show it and tell whether it succeeded once it ends.
+	show it and tell whether it succeeded once it ends. When that run Completed,
+	also the labels of the fields it filled and its notes, the same toast data the
+	'completed' socket event carries, for a run finished by polling.
 
-	Returns ``{running: bool, last_run_status: str | None}``.
+	Returns ``{running: bool, last_run_status: str | None, filled_fields: [label,
+	...], notes: [str, ...]}``.
 	"""
-	frappe.get_doc(reference_doctype, reference_name).check_permission("read")
+	doc = frappe.get_doc(reference_doctype, reference_name)
+	doc.check_permission("read")
+
+	last_run = frappe.db.get_value(
+		"CRM Enrichment Run",
+		{"reference_doctype": reference_doctype, "reference_name": reference_name},
+		["name", "status", "notes"],
+		as_dict=True,
+		order_by="creation desc",
+	)
+	filled_fields, notes = [], []
+	if last_run and last_run.status == "Completed":
+		for change in _run_changes([last_run.name]).get(last_run.name, []):
+			df = doc.meta.get_field(change.fieldname)
+			label = _(df.label) if df and df.label else change.fieldname
+			if label not in filled_fields:
+				filled_fields.append(label)
+		notes = (last_run.notes or "").splitlines()
 
 	return {
 		"running": is_job_enqueued(enrichment_job_id(reference_doctype, reference_name)),
-		"last_run_status": frappe.db.get_value(
-			"CRM Enrichment Run",
-			{"reference_doctype": reference_doctype, "reference_name": reference_name},
-			"status",
-			order_by="creation desc",
-		),
+		"last_run_status": last_run.status if last_run else None,
+		"filled_fields": filled_fields,
+		"notes": notes,
 	}
 
 
