@@ -1,21 +1,24 @@
 <template>
-  <SettingsLayoutBase
-    :description="
-      __('Set up enrichment availability and match website data to CRM fields.')
-    "
-  >
-    <template #title>
-      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-        {{ __('Enrichment Settings') }}
-        <Badge
-          v-if="hasUnsavedChanges"
-          :label="__('Not Saved')"
-          variant="subtle"
-          theme="amber"
-        />
-      </h2>
-    </template>
-    <template #header-actions>
+  <div class="enrichment-tabs flex h-full flex-col text-ink-gray-8">
+    <div class="flex items-start justify-between px-8 pt-8 pb-4">
+      <div class="flex flex-col gap-1">
+        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
+          {{ __('Enrichment Settings') }}
+          <Badge
+            v-if="hasUnsavedChanges"
+            :label="__('Not Saved')"
+            variant="subtle"
+            theme="amber"
+          />
+        </h2>
+        <p class="text-p-base text-ink-gray-6">
+          {{
+            __(
+              'Set up enrichment availability and match website data to CRM fields.',
+            )
+          }}
+        </p>
+      </div>
       <Button
         :label="__('Update')"
         variant="solid"
@@ -23,18 +26,17 @@
         :disabled="!hasUnsavedChanges"
         @click="save"
       />
-    </template>
-    <template #content>
-      <!-- frappe-ui's tab list has px-5 and no prop for it; pl-0 aligns
-           "General" with the title. -->
-      <Tabs
-        v-if="settings.doc"
-        v-model="activeTab"
-        as="div"
-        :tabs="tabOptions"
-        class="h-full [&_[role='tablist']]:pl-0"
-      >
-        <template #tab-panel="{ tab }">
+    </div>
+
+    <Tabs
+      v-if="settings.doc"
+      v-model="activeTab"
+      as="div"
+      :tabs="tabOptions"
+      class="flex-1 overflow-hidden [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-1"
+    >
+      <template #tab-panel="{ tab }">
+        <div class="flex h-full flex-col overflow-y-auto px-8 py-5">
           <GeneralTab
             v-if="tab.value === 'general'"
             v-model:max-pages="maxPages"
@@ -50,16 +52,16 @@
             :social="social"
             :industry="industry"
           />
-        </template>
-      </Tabs>
-      <div
-        v-else-if="settings.get.loading"
-        class="flex items-center justify-center mt-[35%]"
-      >
-        <LoadingIndicator class="size-6" />
-      </div>
-    </template>
-  </SettingsLayoutBase>
+        </div>
+      </template>
+    </Tabs>
+    <div
+      v-else-if="settings.get.loading"
+      class="flex items-center justify-center mt-[35%]"
+    >
+      <LoadingIndicator class="size-6" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -72,7 +74,6 @@ import {
   toast,
   type FrappeResourceError,
 } from 'frappe-ui'
-import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import GeneralTab from './GeneralTab.vue'
 import RulesTab from './RulesTab.vue'
 import { useIndustryRules } from './useIndustryRules'
@@ -247,3 +248,13 @@ async function save() {
   }
 }
 </script>
+
+<style scoped>
+/* Same tab list alignment as WhatsAppSettings: frappe-ui bakes px-5 into it. */
+.enrichment-tabs :deep([role='tablist']) {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+</style>
