@@ -18,6 +18,37 @@
         :website="organization.doc?.website"
         @done="onEnriched"
       />
+      <Button
+        v-if="activeTab === 'deals'"
+        :label="__('New Deal')"
+        iconLeft="lucide-plus"
+        @click="showDealModal = true"
+      />
+      <Link
+        v-if="activeTab === 'contacts'"
+        value=""
+        doctype="Contact"
+        :filters="{ company_name: ['!=', props.organizationId] }"
+        :onCreate="
+          (value, close) => {
+            _contact = {
+              first_name: value,
+              company_name: props.organizationId,
+            }
+            showContactModal = true
+            close()
+          }
+        "
+        @change="(contact) => addContact(contact)"
+      >
+        <template #target="{ togglePopover }">
+          <Button
+            :label="__('Add Contact')"
+            iconLeft="lucide-plus"
+            @click="togglePopover()"
+          />
+        </template>
+      </Link>
     </template>
   </LayoutHeader>
   <div v-if="organization.doc" ref="parentRef" class="flex h-full">
@@ -158,6 +189,11 @@
           v-if="!rows.length"
           :icon="tab.iconLeft"
           :name="__(tab.label)"
+          :description="
+            tab.value === 'deals'
+              ? __('Use New Deal to create a deal for this organization.')
+              : ''
+          "
         />
       </template>
     </Tabs>
@@ -174,6 +210,17 @@
     :docname="props.organizationId"
     name="Organizations"
   />
+  <ContactModal
+    v-if="showContactModal"
+    v-model="showContactModal"
+    :contact="_contact"
+    :options="{ redirect: false, afterInsert: () => contacts.reload() }"
+  />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="{ organization: props.organizationId }"
+  />
 </template>
 
 <script setup>
@@ -189,6 +236,9 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
+import ContactModal from '@/components/Modals/ContactModal.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
+import Link from '@/components/Controls/Link.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import { useDocument } from '@/data/document'
@@ -239,6 +289,10 @@ const errorTitle = ref('')
 const errorMessage = ref('')
 
 const showDeleteLinkedDocModal = ref(false)
+
+const showContactModal = ref(false)
+const showDealModal = ref(false)
+const _contact = ref({})
 
 const {
   document: organization,

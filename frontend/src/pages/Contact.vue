@@ -12,6 +12,11 @@
         v-if="contact._actions?.length"
         :actions="contact._actions"
       />
+      <Button
+        :label="__('New Deal')"
+        iconLeft="lucide-plus"
+        @click="openDealModal"
+      />
     </template>
   </LayoutHeader>
   <div v-if="contact.doc" ref="parentRef" class="flex h-full">
@@ -144,7 +149,13 @@
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
-        <EmptyState v-if="!rows.length" :icon="tab.iconLeft" name="Deals" />
+
+        <EmptyState
+          v-if="!rows.length"
+          :icon="tab.iconLeft"
+          name="Deals"
+          :description="__('Use New Deal to create a deal for this contact.')"
+        />
       </template>
     </Tabs>
   </div>
@@ -160,6 +171,11 @@
     :docname="contact.doc.name"
     name="Contacts"
   />
+  <DealModal
+    v-if="showDealModal"
+    v-model="showDealModal"
+    :defaults="dealDefaults"
+  />
 </template>
 
 <script setup>
@@ -172,6 +188,7 @@ import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
+import DealModal from '@/components/Modals/DealModal.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { validateIsImageFile, setupCustomizations } from '@/utils'
 import { useContactFields } from '@/composables/useContactFields'
@@ -277,6 +294,26 @@ usePageMeta(() => {
   }
 })
 const showDeleteLinkedDocModal = ref(false)
+const showDealModal = ref(false)
+const dealDefaults = ref({})
+
+// company_name is free text, so only pick an existing organization; otherwise the deal creates one
+async function openDealModal() {
+  const company = contact.doc.company_name
+  const isOrganization =
+    company &&
+    (await call('frappe.client.get_count', {
+      doctype: 'CRM Organization',
+      filters: { name: company },
+    }))
+  dealDefaults.value = {
+    contact: contact.doc.name,
+    ...(isOrganization
+      ? { organization: company }
+      : { organization_name: company }),
+  }
+  showDealModal.value = true
+}
 
 async function deleteContact() {
   showDeleteLinkedDocModal.value = true
