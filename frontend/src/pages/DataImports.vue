@@ -1,7 +1,7 @@
 <template>
   <LayoutHeader>
     <template #left-header>
-      <ViewBreadcrumbs v-model="viewControls" routeName="Data Import" />
+      <ViewBreadcrumbs v-model="viewControls" routeName="Data Imports" />
     </template>
     <template #right-header>
       <CustomActions
@@ -25,7 +25,7 @@
     doctype="Data Import"
     :filters="queryFilters"
     :filtersLabel="queryFiltersLabel"
-    @clearFilters="router.replace({ name: 'Data Import' })"
+    @clearFilters="router.replace({ name: 'Data Imports' })"
   />
   <DataImportsListView
     v-if="dataImports.data && rows.length"

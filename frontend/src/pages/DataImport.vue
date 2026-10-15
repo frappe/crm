@@ -87,7 +87,7 @@ const breadcrumbs = computed(() => {
   const title = page?.title || doctype
   return [
     page && { label: __(page.title), route: { name: page.list } },
-    { label: __('Data Import'), route: { name: 'Data Import' } },
+    { label: __('Data Imports'), route: { name: 'Data Imports' } },
     title && { label: __('Importing {0}', [__(title)]) },
   ].filter(Boolean) as BreadcrumbsProps['items']
 })
@@ -110,7 +110,7 @@ function openRecord(doctype: string, docname: string) {
 }
 
 function openImports(doctype: string) {
-  router.push({ name: 'Data Import', query: { doctype, status: 'Pending' } })
+  router.push({ name: 'Data Imports', query: { doctype, status: 'Pending' } })
 }
 
 function newImport(doctype: string) {
