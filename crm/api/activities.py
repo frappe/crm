@@ -53,6 +53,7 @@ def get_deal_activities(name: str):
 		# skip the lead's history instead of failing the whole timeline
 		if frappe.has_permission("CRM Lead", "read", lead):
 			activities, calls, notes, tasks, attachments = get_lead_activities(lead)
+			activities = ungroup_note_activities(activities)
 
 	activities.append(
 		{
@@ -403,6 +404,15 @@ def group_note_activities(activities: list):
 		else:
 			grouped.append(activity)
 	return grouped
+
+
+def ungroup_note_activities(activities: list):
+	"""Undo `group_note_activities` so the lead's notes can regroup with the deal's."""
+	ungrouped = []
+	for activity in activities:
+		ungrouped.append(activity)
+		ungrouped.extend(activity.pop("other_notes", []))
+	return ungrouped
 
 
 def parse_grouped_versions(versions: list):
