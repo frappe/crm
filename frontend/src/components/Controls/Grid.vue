@@ -74,7 +74,7 @@
         >
           <template #item="{ element: row, index }">
             <div
-              class="grid-row flex cursor-pointer items-center border-b border-outline-elevation-2 bg-surface-modals last:rounded-b-4 last:border-b-0"
+              class="grid-row flex cursor-pointer items-center border-b border-outline-elevation-2 bg-surface-elevation-2 last:rounded-b-4 last:border-b-0"
               @click.stop="
                 () => {
                   if (!gridSettings.editable_grid) {
