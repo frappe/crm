@@ -4,7 +4,7 @@
     class="mx-3 my-3 flex items-center justify-between text-lg-medium sm:mx-10 sm:mb-4 sm:mt-8"
   >
     <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
-      {{ __(title) }}
+      {{ label || __(title) }}
     </div>
     <template v-if="!customPane">
       <Button
@@ -83,6 +83,8 @@ import { computed, h } from 'vue'
 
 const props = defineProps({
   title: { type: String, default: '' },
+  // already translated; a script can relabel a tab without renaming it
+  label: { type: String, default: '' },
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
   tabs: { type: Array, default: () => [] },

@@ -4,6 +4,7 @@
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
     :title="title"
+    :label="currentTab?.label"
     :doc="doc"
     :modalRef="modalRef"
     :tabs="tabs"
