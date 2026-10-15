@@ -18,6 +18,14 @@ describe('mergeFormTabs', () => {
     expect(result.map((t) => t.name)).toEqual(['Activity', 'Emails', 'Excom'])
   })
 
+  it('gives an appended tab a value from its name unless it sets one', () => {
+    const result = mergeFormTabs(base, [
+      { name: 'Excom', label: 'Excom' },
+      { name: 'Shipping', value: 'ship' },
+    ])
+    expect(result.slice(2).map((t) => t.value)).toEqual(['excom', 'ship'])
+  })
+
   it('patches a built-in tab in place when names match', () => {
     const result = mergeFormTabs(base, [{ name: 'Emails', label: 'Inbox' }])
     expect(result).toHaveLength(2)

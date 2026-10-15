@@ -4,6 +4,8 @@
  * Built-in tabs always keep their order and identity. A script tab whose `name`
  * matches a built-in tab patches that tab in place (so a script can relabel,
  * re-icon or `hide` `Emails` without redefining it); anything else is appended.
+ * An appended tab without a `value` gets its lowercased `name`, the key the tab
+ * bar and the URL hash select tabs by.
  *
  * Returns a NEW array — never mutates either input.
  *
@@ -29,7 +31,7 @@ export function mergeFormTabs(baseTabs = [], scriptTabs = []) {
     }
 
     seen.set(tab.name, merged.length)
-    merged.push({ ...tab })
+    merged.push({ value: tab.name.toLowerCase(), ...tab })
   }
 
   return merged
