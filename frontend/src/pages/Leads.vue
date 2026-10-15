@@ -259,6 +259,16 @@
     v-else-if="leads.data && !rows.length"
     name="Leads"
     :icon="LeadsIcon"
+    :title="__('No leads yet')"
+    :description="
+      __(
+        'A lead is someone who might buy from you. Add one yourself, import a list, or capture them from a web form.',
+      )
+    "
+    :filtered="!!Object.keys(leads.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/lead"
+    importDoctype="CRM Lead"
+    @create="showLeadModal = true"
   />
   <LeadModal
     v-if="showLeadModal"
