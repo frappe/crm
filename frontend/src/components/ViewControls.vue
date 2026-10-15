@@ -46,6 +46,7 @@
             v-if="canGroup"
             :modelValue="groupSummary"
             :doctype="doctype"
+            :exclude="options.groupByExclude"
             hideLabel
             @update:modelValue="updateGroupSummary"
           />
@@ -205,6 +206,7 @@
           v-if="canGroup"
           :modelValue="groupSummary"
           :doctype="doctype"
+          :exclude="options.groupByExclude"
           @update:modelValue="updateGroupSummary"
         />
         <Filter
