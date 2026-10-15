@@ -55,6 +55,9 @@
             class="lucide-check size-4 text-ink-gray-7"
             aria-hidden="true"
           />
+          <span v-if="item.isDefault" class="text-sm text-ink-gray-5">
+            {{ __('Default') }}
+          </span>
         </div>
       </template>
     </Dropdown>

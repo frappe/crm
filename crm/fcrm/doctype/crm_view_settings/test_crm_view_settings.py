@@ -3,7 +3,10 @@
 
 import frappe
 
-from crm.fcrm.doctype.crm_view_settings.crm_view_settings import set_as_default
+from crm.fcrm.doctype.crm_view_settings.crm_view_settings import (
+	create_or_update_standard_view,
+	set_as_default,
+)
 from crm.tests import CRMTestCase as FrappeTestCase
 
 
@@ -44,3 +47,17 @@ class TestCRMViewSettings(FrappeTestCase):
 		set_as_default(name=leads.name)
 
 		self.assertEqual(frappe.db.get_value("CRM View Settings", deals.name, "is_default"), 1)
+
+	def test_saving_standard_view_keeps_it_default(self):
+		set_as_default(type="kanban", doctype="CRM Lead")
+		kanban = create_or_update_standard_view({"type": "kanban", "doctype": "CRM Lead"})
+
+		self.assertEqual(frappe.db.get_value("CRM View Settings", kanban.name, "is_default"), 1)
+
+	def test_saving_another_standard_view_keeps_chosen_default(self):
+		set_as_default(type="kanban", doctype="CRM Lead")
+		kanban = create_or_update_standard_view({"type": "kanban", "doctype": "CRM Lead"})
+		list_view = create_or_update_standard_view({"type": "list", "doctype": "CRM Lead"})
+
+		self.assertEqual(frappe.db.get_value("CRM View Settings", kanban.name, "is_default"), 1)
+		self.assertEqual(frappe.db.get_value("CRM View Settings", list_view.name, "is_default"), 0)
