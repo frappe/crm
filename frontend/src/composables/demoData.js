@@ -26,7 +26,7 @@ export function useDemoData() {
           label: __('Confirm'),
           theme: 'red',
           variant: 'solid',
-          onClick: (close) => {
+          onClick: ({ close }) => {
             _clearDemoData.submit()
             close()
           },

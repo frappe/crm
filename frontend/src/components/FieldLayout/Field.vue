@@ -14,7 +14,7 @@
           field.reqd ||
           (field.mandatory_depends_on && field.mandatory_via_depends_on)
         "
-        class="text-ink-red-5"
+        class="text-ink-red-4"
         >*</span
       >
     </div>
@@ -77,28 +77,32 @@
         <IndicatorIcon :class="field.prefix" />
       </template>
     </FormControl>
-    <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
-      <FormControl
-        v-model="data[field.fieldname]"
-        class="form-control"
-        type="checkbox"
-        :disabled="Boolean(field.disabled)"
-        :description="field.description"
-        @change="(e) => fieldChange(e.target.checked, field)"
-      />
-      <label
-        class="text-sm text-ink-gray-5"
-        @click="
-          () => {
-            if (!Boolean(field.disabled)) {
-              data[field.fieldname] = !data[field.fieldname]
+    <div v-else-if="field.fieldtype == 'Check'">
+      <div class="flex items-center gap-2">
+        <FormControl
+          v-model="data[field.fieldname]"
+          class="form-control"
+          type="checkbox"
+          :disabled="Boolean(field.disabled)"
+          @change="(e) => fieldChange(e.target.checked, field)"
+        />
+        <label
+          class="text-sm text-ink-gray-5"
+          @click="
+            () => {
+              if (!Boolean(field.disabled)) {
+                data[field.fieldname] = !data[field.fieldname]
+              }
             }
-          }
-        "
-      >
-        {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
-      </label>
+          "
+        >
+          {{ __(field.label) }}
+          <span v-if="field.mandatory" class="text-ink-red-5">*</span>
+        </label>
+      </div>
+      <p v-if="field.description" class="mt-1.5 text-p-sm text-ink-gray-5">
+        {{ __(field.description) }}
+      </p>
     </div>
     <div
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
@@ -171,29 +175,29 @@
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl

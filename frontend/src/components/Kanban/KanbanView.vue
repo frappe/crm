@@ -11,24 +11,23 @@
       <template #item="{ element: column }">
         <div
           v-if="!column.column.delete"
-          class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-surface-gray-2 rounded-lg p-2.5"
+          class="flex flex-col gap-2.5 min-w-72 w-72 hover:bg-surface-gray-2 rounded-6 p-2.5"
         >
           <div class="flex gap-2 items-center group justify-between">
             <div class="flex items-center text-base">
-              <Popover>
-                <template #target="{ togglePopover }">
+              <Popover bare>
+                <template #trigger>
                   <Button
                     variant="ghost"
                     size="sm"
                     class="hover:!bg-surface-gray-2"
-                    @click="togglePopover"
                   >
                     <IndicatorIcon :class="parseColor(column.column.color)" />
                   </Button>
                 </template>
-                <template #body>
+                <template #default>
                   <div
-                    class="flex flex-col gap-3 px-3 py-2.5 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    class="flex flex-col gap-3 px-3 py-2.5 min-w-40 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
                     <div class="flex gap-1">
                       <Button
@@ -82,7 +81,7 @@
               <template #item="{ element: fields }">
                 <component
                   :is="options.getRoute ? 'router-link' : 'div'"
-                  class="pt-3 px-3.5 pb-2.5 rounded-lg border bg-surface-base text-base flex flex-col text-ink-gray-9"
+                  class="pt-3 px-3.5 pb-2.5 rounded-6 border bg-surface-base text-base flex flex-col text-ink-gray-9"
                   :data-name="fields.name"
                   v-bind="{
                     to: options.getRoute ? options.getRoute(fields) : undefined,
@@ -159,7 +158,7 @@
           <Button
             class="w-full mt-2.5 mb-1 mr-5"
             :label="__('Add Column')"
-            iconLeft="plus"
+            iconLeft="lucide-plus"
             @click="setOpen(!open)"
           />
         </template>
@@ -230,10 +229,10 @@ function actions(column) {
     {
       group: __('Options'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => {
             column.column['delete'] = true
             updateColumn()

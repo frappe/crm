@@ -20,15 +20,17 @@
       </div>
       <div
         v-if="filteredTemplates.length"
-        class="mt-4 grid max-h-[560px] sm:grid-cols-3 gris-cols-1 gap-2 overflow-y-auto"
+        class="mt-4 grid max-h-[560px] sm:grid-cols-3 grid-cols-1 gap-2 overflow-y-auto"
       >
         <div
           v-for="template in filteredTemplates"
           :key="template.name"
-          class="flex h-56 cursor-pointer flex-col gap-2 rounded-lg border p-3 hover:bg-surface-gray-2"
+          class="flex h-56 cursor-pointer flex-col gap-2 rounded-6 border border-outline-gray-2 p-3 hover:bg-surface-gray-2"
           @click="emit('apply', template)"
         >
-          <div class="border-b pb-2 text-base-semibold">
+          <div
+            class="border-b border-outline-gray-2 pb-2 text-base-semibold text-ink-gray-8"
+          >
             {{ template.name }}
           </div>
           <div v-if="template.subject" class="text-sm text-ink-gray-5">
@@ -130,5 +132,5 @@ const filteredTemplates = computed(() => {
   )
 })
 
-watch(show, (value) => value && nextTick(() => searchInput.value?.el?.focus()))
+watch(show, (value) => value && nextTick(() => searchInput.value?.focus()))
 </script>

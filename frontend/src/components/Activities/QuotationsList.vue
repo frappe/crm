@@ -21,7 +21,7 @@
           :href="quotation.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="group -mx-3 flex cursor-pointer items-center gap-4 rounded px-3 py-3 duration-300 ease-in-out hover:bg-surface-gray-1"
+          class="group -mx-3 flex cursor-pointer items-center gap-4 rounded-4 px-3 py-3 duration-300 ease-in-out hover:bg-surface-gray-1"
         >
           <div class="flex min-w-0 flex-1 flex-col gap-2 truncate text-base">
             <div class="flex items-center gap-2">
@@ -92,7 +92,7 @@ onBeforeUnmount(() => $socket.off('crm_quotation_update', onQuotationUpdate))
 // ERPNext Quotation statuses → frappe-ui Badge themes
 const STATUS_THEME = {
   Draft: 'gray',
-  Open: 'orange',
+  Open: 'amber',
   Ordered: 'green',
   Lost: 'red',
   Expired: 'gray',

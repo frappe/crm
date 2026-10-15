@@ -5,7 +5,7 @@
     class="flex items-center justify-around gap-2 px-3 pt-2 sm:px-10"
   >
     <div
-      class="mb-1 ml-13 flex-1 cursor-pointer rounded border-0 border-l-4 border-green-500 bg-surface-gray-2 p-2 text-base text-ink-gray-5"
+      class="mb-1 ml-13 flex-1 cursor-pointer rounded-4 border-0 border-l-4 border-green-500 bg-surface-gray-2 p-2 text-base text-ink-gray-5"
       :class="reply.type == 'Incoming' ? 'border-green-500' : 'border-blue-400'"
     >
       <div
@@ -50,7 +50,7 @@
         "
       >
         <SmileIcon
-          class="flex size-4.5 cursor-pointer rounded-sm text-2xl leading-none text-ink-gray-4"
+          class="flex size-4.5 cursor-pointer rounded-1 text-xl leading-none text-ink-gray-4"
           @click="togglePopover"
         />
       </IconPicker>
@@ -73,7 +73,7 @@
 import IconPicker from '@/components/IconPicker.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import { sanitizeHTML } from '@/utils'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import {
   createResource,
   Textarea,
@@ -150,7 +150,7 @@ function uploadOptions(openFileSelector) {
   return [
     {
       label: __('Upload Document'),
-      icon: 'file',
+      icon: 'lucide-file',
       onClick: () => {
         fileType.value = 'document'
         openFileSelector()
@@ -158,7 +158,7 @@ function uploadOptions(openFileSelector) {
     },
     {
       label: __('Upload Image'),
-      icon: 'image',
+      icon: 'lucide-image',
       onClick: () => {
         fileType.value = 'image'
         openFileSelector('image/*')
@@ -166,7 +166,7 @@ function uploadOptions(openFileSelector) {
     },
     {
       label: __('Upload Video'),
-      icon: 'video',
+      icon: 'lucide-video',
       onClick: () => {
         fileType.value = 'video'
         openFileSelector('video/*')
