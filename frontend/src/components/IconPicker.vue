@@ -35,7 +35,7 @@
               <FormControl
                 v-model="search"
                 type="text"
-                placeholder="Search by keyword"
+                :placeholder="__('Search by keyword')"
                 :debounce="300"
               />
             </div>
