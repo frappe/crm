@@ -356,6 +356,11 @@ function begin(fromClick) {
 
 function confirmUndo() {
   if (running.value || undoing.value || checking) return
+  // The record reloads after the undo, which would drop unsaved edits.
+  if (document.isDirty) {
+    toast.warning(__('Save your changes before undoing'))
+    return
+  }
   createDialog({
     title: __('Undo enrichment?'),
     message: __(
