@@ -83,7 +83,7 @@ export function getCallStatusLabel(status, type) {
 
 export const statusColorMap = {
   Completed: 'green',
-  Busy: 'orange',
+  Busy: 'amber',
   Failed: 'red',
   Initiated: 'gray',
   Queued: 'gray',

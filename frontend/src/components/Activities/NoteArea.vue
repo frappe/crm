@@ -1,6 +1,6 @@
 <template>
   <div
-    class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-md bg-surface-gray-1 px-4 py-3 hover:bg-surface-gray-2"
+    class="activity group flex h-48 cursor-pointer flex-col justify-between gap-2 rounded-5 bg-surface-gray-1 px-4 py-3 hover:bg-surface-gray-2"
   >
     <div class="flex items-center justify-between">
       <div class="flex min-w-0 items-center gap-1.5">
@@ -33,7 +33,7 @@
           {
 >>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
             label: __('Delete'),
-            icon: 'trash-2',
+            icon: 'lucide-trash-2',
             onClick: () => deleteNote(note.name),
           },
         ]"

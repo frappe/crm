@@ -27,10 +27,10 @@ import type { Extension } from '@tiptap/core'
 import { markRaw, type MaybeRefOrGetter } from 'vue'
 import EditorMoreMenu from '@/components/editor/EditorMoreMenu.vue'
 
-/** A mentionable user as the editor expects it. `id` is the email — `extract_mentions`
- *  (crm/api/comment.py) reads it back off `data-id`. */
+/** A mentionable user as the editor expects it. `value` is the email; the editor
+ *  stores it as `data-id`, which `extract_mentions` (crm/api/comment.py) reads. */
 export interface MentionItem {
-  id: string
+  value: string
   label: string
 }
 

@@ -187,10 +187,10 @@ function tabChildren(context, flat) {
     title: flat ? __('Go to {0}', [tab.label]) : tab.label,
     translate: false,
     group: flat ? context.group : undefined,
-    icon: tab.icon,
+    icon: tab.iconLeft,
     hideWhenEmpty: flat,
     keywords: tab.name,
-    perform: () => context.changeTabTo(tab.name.toLowerCase()),
+    perform: () => context.changeTabTo(tab.value),
   }))
 }
 

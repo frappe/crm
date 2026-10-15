@@ -1,18 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <Dialog v-model:open="show" :size="'xl'">
-    <template #body>
-      <div class="bg-surface-elevation-1 px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div class="flex gap-2 items-center">
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{
-                editMode
-                  ? __('Edit ' + (doctypeTitle || doctype))
-                  : __('Create ' + (doctypeTitle || doctype))
-              }}
-            </h3>
-=======
   <Dialog
     v-model:open="show"
     :size="doctype === 'FCRM Note' ? '2xl' : 'xl'"
@@ -36,7 +22,6 @@
                 }}
               </h3>
             </Dialog.Title>
->>>>>>> 2d726da (feat: mention teammates in notes and simplify the note editor)
           </div>
           <div class="flex items-center gap-1">
             <CustomActions
@@ -52,12 +37,14 @@
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                variant="ghost"
+                class="w-7"
+                icon="lucide-x"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div>
@@ -95,11 +82,8 @@ import { usersStore } from '@/stores/users'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { isMobileView } from '@/composables/settings'
 import { setupCustomizations } from '@/utils'
-<<<<<<< HEAD
-import { call, createResource, toast } from 'frappe-ui'
-=======
+
 import { Dialog, call, createResource, toast } from 'frappe-ui'
->>>>>>> 75394a3 (fix: say nothing to update when a dialog is saved without changes)
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -208,7 +192,6 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         call,
       })
     }

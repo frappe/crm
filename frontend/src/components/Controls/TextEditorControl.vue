@@ -10,13 +10,8 @@
   >
     <EditorFixedMenu
       v-if="fixedMenu && !disabled"
-<<<<<<< HEAD
-      :items="fullToolbar"
-      class="w-full overflow-x-auto rounded-t-lg border border-outline-gray-2 p-1"
-=======
       :items="toolbar"
       class="w-full overflow-x-auto rounded-t-6 border border-outline-gray-2 p-1"
->>>>>>> 2d726da (feat: mention teammates in notes and simplify the note editor)
     />
     <EditorBubbleMenu v-if="bubbleMenu" :items="bubbleToolbar" />
     <EditorContent :class="editorClasses" />
@@ -68,11 +63,11 @@ const editorClasses = computed(() => {
 
   const variantMap = {
     outline: props.disabled
-      ? 'border border-t rounded-lg bg-surface-base'
-      : 'border border-t-0 rounded-b-lg bg-surface-base',
+      ? 'border border-t rounded-6 bg-surface-base'
+      : 'border border-t-0 rounded-b-6 bg-surface-base',
     subtle: props.disabled
-      ? 'border border-t rounded-lg bg-surface-gray-2'
-      : 'border border-t-0 rounded-b-lg bg-surface-gray-2',
+      ? 'border border-t rounded-6 bg-surface-gray-2'
+      : 'border border-t-0 rounded-b-6 bg-surface-gray-2',
     ghost: 'bg-transparent',
   }
   const variantClass = variantMap[props.variant]

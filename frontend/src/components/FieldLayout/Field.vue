@@ -6,17 +6,25 @@
         field.fieldtype != 'Button' &&
         field.fieldtype != 'HTML'
       "
-      class="mb-2 text-sm text-ink-gray-5"
+      class="mb-2 flex items-center justify-between gap-2 text-sm text-ink-gray-5"
     >
-      {{ __(field.label) }}
-      <span
-        v-if="
-          field.reqd ||
-          (field.mandatory_depends_on && field.mandatory_via_depends_on)
-        "
-        class="text-ink-red-5"
-        >*</span
-      >
+      <span>
+        {{ __(field.label) }}
+        <span
+          v-if="
+            field.reqd ||
+            (field.mandatory_depends_on && field.mandatory_via_depends_on)
+          "
+          class="text-ink-red-4"
+          >*</span
+        >
+      </span>
+      <Tooltip v-if="isEnriched" :text="__('Enriched from website')">
+        <span
+          class="lucide-zap size-3 shrink-0 text-ink-blue-5"
+          :aria-label="__('Enriched from website')"
+        />
+      </Tooltip>
     </div>
     <FormControl
       v-if="
@@ -77,28 +85,32 @@
         <IndicatorIcon :class="field.prefix" />
       </template>
     </FormControl>
-    <div v-else-if="field.fieldtype == 'Check'" class="flex items-center gap-2">
-      <FormControl
-        v-model="data[field.fieldname]"
-        class="form-control"
-        type="checkbox"
-        :disabled="Boolean(field.disabled)"
-        :description="field.description"
-        @change="(e) => fieldChange(e.target.checked, field)"
-      />
-      <label
-        class="text-sm text-ink-gray-5"
-        @click="
-          () => {
-            if (!Boolean(field.disabled)) {
-              data[field.fieldname] = !data[field.fieldname]
+    <div v-else-if="field.fieldtype == 'Check'">
+      <div class="flex items-center gap-2">
+        <FormControl
+          v-model="data[field.fieldname]"
+          class="form-control"
+          type="checkbox"
+          :disabled="Boolean(field.disabled)"
+          @change="(e) => fieldChange(e.target.checked, field)"
+        />
+        <label
+          class="text-sm text-ink-gray-5"
+          @click="
+            () => {
+              if (!Boolean(field.disabled)) {
+                data[field.fieldname] = !data[field.fieldname]
+              }
             }
-          }
-        "
-      >
-        {{ __(field.label) }}
-        <span v-if="field.mandatory" class="text-ink-red-6">*</span>
-      </label>
+          "
+        >
+          {{ __(field.label) }}
+          <span v-if="field.mandatory" class="text-ink-red-5">*</span>
+        </label>
+      </div>
+      <p v-if="field.description" class="mt-1.5 text-p-sm text-ink-gray-5">
+        {{ __(field.description) }}
+      </p>
     </div>
     <div
       v-else-if="['Link', 'Dynamic Link'].includes(field.fieldtype)"
@@ -171,29 +183,29 @@
     />
     <TimePicker
       v-else-if="field.fieldtype === 'Time'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', false, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DateTimePicker
       v-else-if="field.fieldtype === 'Datetime'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, true, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <DatePicker
       v-else-if="field.fieldtype === 'Date'"
-      :value="data[field.fieldname]"
+      :model-value="data[field.fieldname]"
       :format="getFormat('', '', true, false, false)"
       :placeholder="getPlaceholder(field)"
       :disabled="Boolean(field.disabled)"
-      input-class="border-none"
+      class="border-none"
       @change="(v) => fieldChange(v, field)"
     />
     <FormControl
@@ -372,6 +384,8 @@ import {
 import { isFetchedFromLink } from '@/utils/fetchFrom'
 import { usersStore } from '@/stores/users'
 import { useDocument } from '@/data/document'
+import { injectEnrichedFieldnames } from '@/data/enrichedFields'
+
 import {
   Combobox,
   Select,
@@ -392,6 +406,15 @@ const isNote = computed(() => unref(doctype) === 'FCRM Note')
 const docname = inject('docname', null)
 const preview = inject('preview')
 const isGridRow = inject('isGridRow')
+// Provided by the Data tab, and empty for any other record, so the icon
+// never shows in a modal's fields (Quick Entry, layout preview).
+const enrichedFieldnames = injectEnrichedFieldnames(doctype, docname)
+const isEnriched = computed(
+  () =>
+    !preview &&
+    !isGridRow &&
+    enrichedFieldnames.value.has(props.field.fieldname),
+)
 
 // Guard getMeta — skip when doctype is empty (inline/standalone mode)
 let getFormattedPercent, getFormattedFloat, getFormattedCurrency

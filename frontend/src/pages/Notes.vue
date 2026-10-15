@@ -7,7 +7,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createNote"
       />
     </template>
@@ -31,13 +31,8 @@
       <div
         v-for="note in notes.data.data"
         :key="note.name"
-<<<<<<< HEAD
-        class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-lg border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
-        @click="editNote(note.name)"
-=======
         class="group flex h-56 cursor-pointer flex-col justify-between gap-2 rounded-6 border px-5 py-4 shadow-sm hover:bg-surface-sidebar"
         @click="openNote(note, { edit: () => editNote(note.name) })"
->>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
       >
         <div class="flex items-center justify-between gap-2">
           <div class="flex min-w-0 flex-col gap-1">
@@ -56,8 +51,6 @@
           <Dropdown
             :options="[
               {
-<<<<<<< HEAD
-=======
                 label: __('Edit'),
                 icon: 'lucide-edit-2',
                 onClick: () => editNote(note.name),
@@ -68,9 +61,8 @@
                 onClick: () => copyNoteLink(note.name),
               },
               {
->>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
                 label: __('Delete'),
-                icon: 'trash-2',
+                icon: 'lucide-trash-2',
                 onClick: () => deleteNote(note.name),
               },
             ]"
@@ -143,19 +135,12 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useNoteView } from '@/composables/noteView'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
-<<<<<<< HEAD
-import { timeAgo, formatDate, sanitizeHTML } from '@/utils'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { call, Dropdown, Tooltip, ListFooter } from 'frappe-ui'
-import { ref, watch } from 'vue'
-=======
 import { timeAgo, formatDate, sanitizeHTML, copyToClipboard } from '@/utils'
 import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, Dropdown, Tooltip } from 'frappe-ui'
 import { ListFooter } from 'frappe-ui/experimental'
 import { ref, watch, onMounted } from 'vue'
->>>>>>> 143e423 (feat: read-only note view, linked lead or deal, and copy link for notes)
 
 const { getUser } = usersStore()
 const { updateOnboardingStep } = useOnboarding('frappecrm')
