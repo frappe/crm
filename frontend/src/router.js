@@ -105,7 +105,7 @@ const routes = [
   {
     alias: '/data-import',
     path: '/data-import/view/:viewType?',
-    name: 'Data Import',
+    name: 'Data Imports',
     component: () => import('@/pages/DataImports.vue'),
   },
   // one page across these routes, so an import stays open when its URL changes
@@ -244,6 +244,7 @@ router.beforeEach(async (to, from, next) => {
       'Notes',
       'Tasks',
       'Call Logs',
+      'Data Imports',
     ].includes(to.name) &&
     !to.query?.view
   ) {
@@ -262,6 +263,7 @@ router.beforeEach(async (to, from, next) => {
         Notes: 'FCRM Note',
         Tasks: 'CRM Task',
         'Call Logs': 'CRM Call Log',
+        'Data Imports': 'Data Import',
       }
 
       const doctype = doctypeMap[to.name]
