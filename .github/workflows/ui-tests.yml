@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FRAPPE_BRANCH: develop
+  FRAPPE_BRANCH: version-16
 
 jobs:
   ui-tests:
