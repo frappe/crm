@@ -712,8 +712,8 @@ async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
   const userId = getUser()?.name
   let filters = {
-    ...defaultFilters.value,
     ...list.value.params.filters,
+    ...defaultFilters.value,
   }
 
   // Only resolve @me placeholders when we know the current user; otherwise
