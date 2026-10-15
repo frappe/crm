@@ -26,6 +26,12 @@ export function holdsEnrichedValue(doc, field) {
   return String(doc?.[field.fieldname] ?? '') === String(field.value ?? '')
 }
 
+// Labels of fields the user edited that re-enriching would overwrite. "Fill if
+// empty" fields keep the user's value, so they aren't listed.
+export function editedToReplace(fields) {
+  return fields.filter((f) => f.edited && f.refreshes).map((f) => f.label)
+}
+
 // Provided once by the Data tab so all its fields share one fetch: frappe-ui
 // reloads a cached `auto` resource each time it's created.
 // The set holds the fieldnames that still hold the value enrichment wrote,
