@@ -26,6 +26,7 @@
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
       groupSummary: true,
+      groupByExclude: ['naming_series', 'docstatus'],
     }"
   />
   <KanbanView
