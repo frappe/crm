@@ -52,6 +52,15 @@
     v-else-if="callLogs.data && !rows.length"
     name="Call Logs"
     :icon="PhoneIcon"
+    :title="__('No call logs yet')"
+    :description="
+      __(
+        'Calls made through Twilio or Exotel are logged here, along with calls you log by hand on a lead or deal.',
+      )
+    "
+    :filtered="!!Object.keys(callLogs.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/call-log"
+    @create="createCallLog()"
   />
   <CallLogDetailModal
     v-model="showCallLogDetailModal"
