@@ -183,9 +183,6 @@
   <EmptyState
     v-else-if="tasks.data && !rows.length"
     name="Tasks"
-<<<<<<< HEAD
-    :icon="Email2Icon"
-=======
     :icon="TaskIcon"
     :title="__('No tasks yet')"
     :description="
@@ -196,7 +193,6 @@
     :filtered="!!Object.keys(tasks.params?.filters || {}).length"
     docsLink="https://docs.frappe.io/crm/task"
     @create="createTask()"
->>>>>>> 698d516 (fix: use the tasks icon on the empty Tasks list)
   />
   <DeleteLinkedDocModal
     v-if="showDeleteTaskModal"
