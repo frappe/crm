@@ -179,12 +179,16 @@ def undo(reference_doctype: str, reference_name: str) -> dict:
 def get_status(reference_doctype: str, reference_name: str) -> dict:
 	"""The Enrich button's state for one record.
 
-	Returns ``{has_website: bool, state: "idle" | "running" | "done", can_undo: bool}``.
+	Returns ``{has_website: bool, state: "idle" | "running" | "done", can_undo: bool,
+	last_run_status: str | None}``.
 	``running`` while a job is queued/running; otherwise ``done`` while enriched
 	values stand -- some Completed run changed fields, the same run ``undo``
 	targets -- else ``idle``. Completed runs with no Change rows (a re-enrich that
 	found nothing new, or a run from before the change log existed) do not count.
 	Outside ``running``, ``done`` and ``can_undo`` are the same condition.
+	``last_run_status`` is the newest run's own status (``Completed``, ``Failed``,
+	``Reverted``), or ``None`` before any run: whether the run that just finished
+	succeeded, which ``state`` cannot tell once older runs' values stand.
 	"""
 	doc = frappe.get_doc(reference_doctype, reference_name)
 	doc.check_permission("read")
@@ -201,6 +205,12 @@ def get_status(reference_doctype: str, reference_name: str) -> dict:
 		"has_website": bool((doc.get("website") or "").strip()),
 		"state": state,
 		"can_undo": can_undo,
+		"last_run_status": frappe.db.get_value(
+			"CRM Enrichment Run",
+			{"reference_doctype": reference_doctype, "reference_name": reference_name},
+			"status",
+			order_by="creation desc",
+		),
 	}
 
 

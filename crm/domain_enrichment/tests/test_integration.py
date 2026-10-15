@@ -589,6 +589,30 @@ class UndoTest(IntegrationTestCase):
 		status = api.get_status("CRM Organization", org.name)
 		self.assertEqual(status["state"], "idle")
 		self.assertFalse(status["can_undo"])
+		# The run itself succeeded, so a poll must not report it as failed.
+		self.assertEqual(status["last_run_status"], "Completed")
+
+	def test_status_last_run_status_reports_newest_run(self):
+		org = frappe.new_doc("CRM Organization")
+		org.organization_name = "Last Run Org " + frappe.generate_hash(length=4)
+		org.website = "https://acme.example"
+		org.insert()
+		self.assertIsNone(api.get_status("CRM Organization", org.name)["last_run_status"])
+
+		with (
+			mock.patch.object(tasks, "run_pipeline", return_value=canned_result()),
+			mock.patch.object(tasks, "capture"),
+		):
+			tasks.run_enrichment("CRM Organization", org.name, org.website)
+		self.assertEqual(api.get_status("CRM Organization", org.name)["last_run_status"], "Completed")
+
+		# A failed re-enrich leaves the first run's values standing (state stays
+		# 'done'), but the newest run is the failed one. Written directly: the real
+		# failure path rolls back the transaction, which would drop this test's data.
+		tasks.write_run("CRM Organization", org.name, org.website, status="Failed")
+		status = api.get_status("CRM Organization", org.name)
+		self.assertEqual(status["state"], "done")
+		self.assertEqual(status["last_run_status"], "Failed")
 
 	def test_status_has_website_false_without_website(self):
 		org = frappe.new_doc("CRM Organization")
