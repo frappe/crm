@@ -1,9 +1,10 @@
 import { expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 
-const mocks = vi.hoisted(() => ({ call: vi.fn(), disable: vi.fn() }))
+const mocks = vi.hoisted(() => ({ call: vi.fn(), disable: vi.fn(), install: vi.fn() }))
 vi.mock('@framework/ui/telemetry', () => ({
   useTelemetry: () => ({ disable: mocks.disable }),
+  telemetryPlugin: { install: mocks.install },
 }))
 vi.mock('frappe-ui', () => ({
   call: mocks.call,
@@ -22,6 +23,7 @@ import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 async function mountConsent(enabled = 1) {
   mocks.call.mockReset().mockResolvedValue(enabled)
   mocks.disable.mockClear()
+  mocks.install.mockReset().mockResolvedValue()
   const root = document.createElement('div')
   const accepted = vi.fn()
   const declined = vi.fn()
@@ -33,6 +35,8 @@ async function mountConsent(enabled = 1) {
 }
 
 async function settle() {
+  await Promise.resolve()
+  await Promise.resolve()
   await Promise.resolve()
   await nextTick()
 }
@@ -63,12 +67,28 @@ it('persists opt-out before disabling telemetry and leaving', async () => {
   } finally { app.unmount() }
 })
 
-it('respects a site that already opted out', async () => {
-  const { app, declined } = await mountConsent(0)
+it('shows the choice even when telemetry is off', async () => {
+  const { root, app, declined, accepted } = await mountConsent(0)
   try {
-    expect(declined).toHaveBeenCalledOnce()
-    expect(mocks.disable).toHaveBeenCalledOnce()
+    expect(declined).not.toHaveBeenCalled()
+    expect(accepted).not.toHaveBeenCalled()
+    expect(root.textContent).toContain('Share usage data')
+    expect(mocks.disable).not.toHaveBeenCalled()
     expect(mocks.call).toHaveBeenCalledTimes(1)
+  } finally { app.unmount() }
+})
+
+it('enables telemetry when an opted-out site explicitly agrees', async () => {
+  const { root, app, accepted } = await mountConsent(0)
+  try {
+    root.querySelectorAll('button')[1].click()
+    await settle()
+    expect(mocks.call).toHaveBeenLastCalledWith('frappe.client.set_value', {
+      doctype: 'System Settings', name: 'System Settings',
+      fieldname: 'enable_telemetry', value: 1,
+    })
+    expect(mocks.install).toHaveBeenCalledOnce()
+    expect(accepted).toHaveBeenCalledOnce()
   } finally { app.unmount() }
 })
 
