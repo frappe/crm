@@ -181,9 +181,7 @@
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
-              :disabled="
-                submitButtonProps?.disabled || !!unsubscribedEmails.length
-              "
+              :disabled="submitButtonProps?.disabled || sendBlocked"
               :label="`${__('Send')} (${submitShortcutLabel})`"
             />
           </div>
@@ -315,6 +313,10 @@ watch(
 const editor = computed(() => textEditor.value?.editor)
 
 const unsubscribedEmails = ref([])
+const checkingRecipients = ref(false)
+const sendBlocked = computed(
+  () => checkingRecipients.value || !!unsubscribedEmails.value.length,
+)
 
 const allRecipients = computed(() => [
   ...new Set([...toEmails.value, ...ccEmails.value, ...bccEmails.value]),
@@ -325,15 +327,22 @@ watch(
   async ([emails, name], _, onCleanup) => {
     let stale = false
     onCleanup(() => (stale = true))
-    const unsubscribed =
-      emails.length && name
-        ? await call('crm.api.get_unsubscribed_emails', {
-            emails,
-            doctype: props.doctype,
-            name,
-          })
-        : []
-    if (!stale) unsubscribedEmails.value = unsubscribed
+    if (!emails.length || !name) {
+      unsubscribedEmails.value = []
+      checkingRecipients.value = false
+      return
+    }
+    checkingRecipients.value = true
+    // Fail open: frappe drops unsubscribed recipients on its own, so a failed
+    // check should not stop every email from being sent.
+    const unsubscribed = await call('crm.api.get_unsubscribed_emails', {
+      emails,
+      doctype: props.doctype,
+      name,
+    }).catch(() => [])
+    if (stale) return
+    unsubscribedEmails.value = unsubscribed
+    checkingRecipients.value = false
   },
   { immediate: true },
 )
@@ -407,6 +416,6 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
-  unsubscribedEmails,
+  sendBlocked,
 })
 </script>

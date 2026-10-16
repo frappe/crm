@@ -263,7 +263,7 @@ const emailEmpty = computed(
 )
 
 const emailBlocked = computed(
-  () => emailEmpty.value || !!newEmailEditor.value?.unsubscribedEmails?.length,
+  () => emailEmpty.value || newEmailEditor.value?.sendBlocked,
 )
 
 async function sendMail() {
