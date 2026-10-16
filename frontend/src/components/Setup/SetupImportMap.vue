@@ -30,7 +30,12 @@
             :placeholder="__('Search fields')"
             open-on-click
             :aria-label="__('Lead field for {0}', [mapping.header])"
-          />
+          >
+            <template #item-label="{ item }">
+              {{ item.label }}
+              <span v-if="item.mandatory" class="text-ink-red-4">*</span>
+            </template>
+          </Combobox>
         </div>
       </div>
     </div>
@@ -102,8 +107,9 @@ const isMandatory = (f) =>
 const fieldOptions = computed(() => [
   { label: __("Don't import"), value: '' },
   ...leadFields.value.filter(isMandatory).map((f) => ({
-    label: `${__(f.label)} *`,
+    label: __(f.label),
     value: f.fieldname,
+    mandatory: true,
   })),
   ...leadFields.value
     .filter((f) => !isMandatory(f))
