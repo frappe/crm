@@ -75,6 +75,8 @@ const tabs = [
   { value: 'tasks', label: __('Tasks'), iconLeft: TaskIcon },
   { value: 'notes', label: __('Notes'), iconLeft: NoteIcon },
 ]
+// Email content lives in an iframe; use the same theme surface as its card.
+const emailSurface = '<div><style>html, body, .email-content { background: var(--surface-base) !important; }</style></div>'
 const emails = [
   {
     subject: __('Re: Pricing for 40 seats'),
@@ -83,7 +85,7 @@ const emails = [
     data: {
       sender: 'marcus@example.com',
       to: 'you@example.com',
-      content: '<p>Thanks, the annual plan works for us. Can we start the pilot next week?</p>',
+      content: emailSurface + '<p>Thanks, the annual plan works for us. Can we start the pilot next week?</p>',
     },
   },
   {
@@ -93,7 +95,7 @@ const emails = [
     data: {
       sender: 'priya@example.com',
       to: 'marcus@example.com',
-      content: '<p>Sharing the recording and the rollout plan we discussed.</p>',
+      content: emailSurface + '<p>Sharing the recording and the rollout plan we discussed.</p>',
     },
   },
 ]
