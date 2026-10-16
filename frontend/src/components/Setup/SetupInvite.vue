@@ -6,6 +6,10 @@
     <p class="mt-2 text-p-base text-ink-gray-6">
       {{ __('The CRM works best when your whole sales team is in it.') }}
     </p>
+    <p class="mt-3 text-p-sm text-ink-gray-6">
+      <strong class="font-semibold text-ink-gray-9">{{ __('No per-user pricing.') }}</strong>
+      {{ __('Invite your whole team.') }}
+    </p>
 
     <div class="mt-8 flex flex-col gap-2">
       <div
