@@ -3,7 +3,7 @@
     <p class="text-p-base text-ink-gray-6">
       {{ __('Match each column in your file to a lead field.') }}
     </p>
-    <div class="rounded-md border border-outline-gray-2">
+    <div class="rounded-5 border border-outline-gray-2">
       <div
         class="grid grid-cols-2 gap-4 border-b border-outline-gray-2 px-4 py-2 text-sm text-ink-gray-5"
       >
@@ -39,7 +39,7 @@
     />
     <p
       v-else-if="unmappedRequired.length"
-      class="rounded-md bg-surface-amber-2 p-2 text-sm text-ink-amber-6"
+      class="rounded-5 bg-surface-amber-2 p-2 text-sm text-ink-amber-6"
     >
       {{
         __('Required fields not mapped: {0}. Rows without them may fail.', [

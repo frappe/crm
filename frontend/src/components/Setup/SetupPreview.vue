@@ -7,13 +7,13 @@
       <li
         v-for="highlight in highlights"
         :key="highlight.label"
-        class="flex items-center gap-2 rounded-lg bg-surface-white px-3 py-2 text-base text-ink-gray-7 shadow-sm"
+        class="flex items-center gap-2 rounded-6 bg-surface-base px-3 py-2 text-base text-ink-gray-7 shadow-sm"
       >
         <component :is="highlight.icon" class="size-4 text-ink-gray-5" />
         {{ highlight.label }}
       </li>
     </ul>
-    <div class="rounded-xl bg-surface-white p-4 shadow-sm">
+    <div class="rounded-7 bg-surface-base p-4 shadow-sm">
       <div class="mb-4 h-3 w-24 rounded-full bg-surface-gray-3" />
       <div
         v-for="row in 6"

@@ -1,13 +1,13 @@
 <template>
   <div class="flex flex-col gap-4">
     <div
-      class="flex h-[260px] items-center justify-center rounded-md border border-dashed border-outline-gray-3 bg-surface-gray-1"
+      class="flex h-[260px] items-center justify-center rounded-5 border border-dashed border-outline-gray-3 bg-surface-gray-1"
       :class="{ 'border-outline-gray-5 bg-surface-gray-2': dragging }"
       @dragover.prevent="dragging = true"
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
     >
-      <div v-if="uploading" class="w-4/5 rounded-md border bg-surface-base p-3">
+      <div v-if="uploading" class="w-4/5 rounded-5 border bg-surface-base p-3">
         <div class="font-medium text-ink-gray-9">{{ fileName }}</div>
         <div class="mt-3 h-1 w-full rounded-full bg-surface-gray-2">
           <div

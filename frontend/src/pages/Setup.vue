@@ -50,7 +50,7 @@
 
     <main class="flex flex-1 justify-center px-4 pb-10 sm:items-center">
       <div
-        class="grid w-full max-w-5xl overflow-hidden rounded-2xl bg-surface-white shadow-sm lg:grid-cols-2"
+        class="grid w-full max-w-5xl overflow-hidden rounded-8 bg-surface-base shadow-sm lg:grid-cols-2"
       >
         <section class="flex min-h-[600px] flex-col p-8 sm:p-10">
           <Button
@@ -116,9 +116,9 @@ watch(activeStep, (step) => capture('setup_step_viewed', { step: step.name }), {
 })
 
 function stepBadgeClass(step, index) {
-  if (index === current.value) return 'bg-surface-gray-9 text-ink-white'
+  if (index === current.value) return 'bg-surface-gray-9 text-ink-base'
   if (stepStatus[step.name] === 'completed') {
-    return 'bg-surface-gray-7 text-ink-white'
+    return 'bg-surface-gray-7 text-ink-base'
   }
   return 'bg-surface-gray-3 text-ink-gray-6'
 }

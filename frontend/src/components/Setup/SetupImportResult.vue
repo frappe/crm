@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col gap-3" role="status">
-    <div class="rounded-md p-3 text-base" :class="banner.class">
+    <div class="rounded-5 p-3 text-base" :class="banner.class">
       {{ banner.message }}
     </div>
     <ul
       v-if="details.length"
-      class="max-h-[240px] divide-y divide-outline-gray-1 overflow-y-auto rounded-md border border-outline-gray-2 text-sm"
+      class="max-h-[240px] divide-y divide-outline-gray-1 overflow-y-auto rounded-5 border border-outline-gray-2 text-sm"
     >
       <li
         v-for="(detail, i) in details"
