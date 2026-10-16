@@ -20,7 +20,7 @@
         v-for="option in options"
         :key="option.name"
         type="button"
-        class="flex flex-col items-start gap-2 rounded-xl border border-outline-gray-2 p-4 text-left transition-colors hover:bg-surface-gray-1 disabled:opacity-60"
+        class="flex flex-col items-start gap-2 rounded-7 border border-outline-gray-2 p-4 text-left transition-colors hover:bg-surface-gray-1 disabled:opacity-60"
         :disabled="loadingSample"
         @click="option.onClick"
       >

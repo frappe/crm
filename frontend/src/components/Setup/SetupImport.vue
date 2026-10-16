@@ -13,7 +13,7 @@
         class="rounded-full px-2 py-0.5"
         :class="
           stage === key
-            ? 'bg-surface-gray-9 text-ink-white'
+            ? 'bg-surface-gray-9 text-ink-base'
             : 'bg-surface-gray-2 text-ink-gray-6'
         "
         :aria-current="stage === key ? 'step' : undefined"

@@ -32,7 +32,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{ __('Without a connected email account you will miss out on:') }}
         </p>
-        <ul class="mt-3 flex flex-col gap-2 rounded-lg bg-surface-gray-1 p-3">
+        <ul class="mt-3 flex flex-col gap-2 rounded-6 bg-surface-gray-1 p-3">
           <li
             v-for="feature in missedFeatures"
             :key="feature.label"

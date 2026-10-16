@@ -10,14 +10,14 @@
 
     <ul
       v-if="!result && warnings.length"
-      class="flex flex-col gap-1 rounded-md bg-surface-amber-2 p-2 text-sm text-ink-amber-6"
+      class="flex flex-col gap-1 rounded-5 bg-surface-amber-2 p-2 text-sm text-ink-amber-6"
     >
       <li v-for="(warning, i) in warnings" :key="i">{{ warning }}</li>
     </ul>
 
     <div
       v-if="!result"
-      class="max-h-[280px] overflow-auto rounded-md border border-outline-gray-2"
+      class="max-h-[280px] overflow-auto rounded-5 border border-outline-gray-2"
     >
       <table class="w-full text-sm">
         <thead class="bg-surface-gray-1 text-left text-ink-gray-5">

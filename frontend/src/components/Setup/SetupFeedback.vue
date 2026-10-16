@@ -7,7 +7,7 @@
       {{ __('Before you dive in, tell us how setup went.') }}
     </p>
 
-    <fieldset class="mt-8 rounded-xl border border-outline-gray-2 p-5">
+    <fieldset class="mt-8 rounded-7 border border-outline-gray-2 p-5">
       <legend class="px-1 text-base font-medium text-ink-gray-9">
         {{ __('How easy was the setup?') }}
       </legend>
@@ -23,7 +23,7 @@
             :key="value"
             type="button"
             role="radio"
-            class="rounded p-1 transition-colors hover:text-ink-amber-5"
+            class="rounded-4 p-1 transition-colors hover:text-ink-amber-5"
             :class="value <= rating ? 'text-ink-amber-5' : 'text-ink-gray-4'"
             :aria-checked="value === rating"
             :aria-label="__('{0} out of 5', [value])"
