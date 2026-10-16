@@ -10,12 +10,14 @@
     <fieldset class="mt-8 rounded-7 border border-outline-gray-2 p-5">
       <legend class="px-1 text-base font-medium text-ink-gray-9">
         {{ __('How easy was the setup?') }}
+        <span v-if="telemetry.isEnabled" class="text-ink-red-4">*</span>
       </legend>
       <div class="mt-2 flex items-center justify-center gap-3">
         <span class="text-sm text-ink-gray-5">{{ __('Difficult') }}</span>
         <div
           class="flex gap-1"
           role="radiogroup"
+          :aria-required="telemetry.isEnabled"
           :aria-label="__('Setup rating')"
         >
           <button
@@ -53,6 +55,7 @@
       class="mt-auto"
       :label="__('Go to CRM')"
       :loading="finishing"
+      :disabled="ratingRequired"
       @click="finish"
     />
   </div>
@@ -61,15 +64,19 @@
 <script setup>
 import LucideStar from '~icons/lucide/star'
 import { Button, FormControl } from 'frappe-ui'
-import { ref } from 'vue'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { computed, ref } from 'vue'
 
 const emit = defineEmits(['finish'])
+const telemetry = useTelemetry()
 
 const rating = ref(0)
 const comment = ref('')
 const finishing = ref(false)
+const ratingRequired = computed(() => telemetry.isEnabled && !rating.value)
 
 function finish() {
+  if (ratingRequired.value || finishing.value) return
   finishing.value = true
   emit('finish', {
     rating: rating.value || null,
