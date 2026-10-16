@@ -20,7 +20,7 @@
         :label="__('Yes, share usage data')"
         :disabled="!ready || saving"
         :loading="loading"
-        @click="emit('accepted')"
+        @click="accept"
       />
     </div>
   </div>
@@ -28,11 +28,13 @@
 
 <script setup>
 import { Button, ErrorMessage, call } from 'frappe-ui'
-import { useTelemetry } from '@framework/ui/telemetry'
-import { onMounted, ref } from 'vue'
+import { telemetryPlugin, useTelemetry } from '@framework/ui/telemetry'
+import { getCurrentInstance, onMounted, ref } from 'vue'
 
 const emit = defineEmits(['accepted', 'declined'])
 const telemetry = useTelemetry()
+const app = getCurrentInstance().appContext.app
+const enabled = ref(false)
 const loading = ref(true)
 const ready = ref(false)
 const saving = ref(false)
@@ -40,12 +42,12 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    const enabled = await call('frappe.client.get_single_value', {
+    const value = await call('frappe.client.get_single_value', {
       doctype: 'System Settings',
       field: 'enable_telemetry',
     })
     ready.value = true
-    if (!Number(enabled)) completeDecline()
+    enabled.value = Boolean(Number(value))
   } catch (err) {
     error.value = __('Could not load usage data preferences. Please reload to try again.')
     console.error('Failed to load telemetry preference', err)
@@ -54,7 +56,17 @@ onMounted(async () => {
   }
 })
 
-async function decline() {
+async function accept() {
+  if (!ready.value || saving.value) return
+  if (enabled.value) return emit('accepted')
+  await savePreference(true)
+}
+
+function decline() {
+  return savePreference(false)
+}
+
+async function savePreference(share) {
   if (loading.value || saving.value) return
   saving.value = true
   error.value = ''
@@ -63,19 +75,20 @@ async function decline() {
       doctype: 'System Settings',
       name: 'System Settings',
       fieldname: 'enable_telemetry',
-      value: 0,
+      value: share ? 1 : 0,
     })
-    completeDecline()
+    await applyPreference(share)
   } catch (err) {
     error.value = __('Could not save your preference. Please try again.')
-    console.error('Failed to disable telemetry', err)
+    console.error('Failed to save telemetry preference', err)
   } finally {
     saving.value = false
   }
 }
 
-function completeDecline() {
-  telemetry.disable()
-  emit('declined')
+async function applyPreference(share) {
+  if (share) await telemetryPlugin.install(app, { app_name: 'crm' })
+  else telemetry.disable()
+  emit(share ? 'accepted' : 'declined')
 }
 </script>
