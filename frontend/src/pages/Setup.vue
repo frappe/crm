@@ -87,7 +87,7 @@ import SetupInvite from '@/components/Setup/SetupInvite.vue'
 import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { SETUP_DONE_KEY } from '@/router'
 import { Button, call, usePageMeta } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, markRaw, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 

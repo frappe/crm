@@ -1,4 +1,5 @@
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useOnboarding } from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 
 const pendingSteps = new Set()
 
