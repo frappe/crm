@@ -60,7 +60,7 @@ import SetupImportReview from '@/components/Setup/SetupImportReview.vue'
 import { useLeadImport } from '@/composables/leadImport'
 import { toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { ref } from 'vue'
+import { inject, onUnmounted, ref, watchEffect } from 'vue'
 
 const emit = defineEmits(['imported', 'cancel'])
 
@@ -77,6 +77,22 @@ const { preview, progress, createImport, saveMapping, runImport } =
 const stage = ref('upload')
 const busy = ref(false)
 const result = ref(null)
+const fileName = ref('')
+
+const previewState = inject('setupPreview', null)
+watchEffect(() => {
+  if (!previewState) return
+  const importing = busy.value && stage.value === 'review' && !result.value
+  previewState.importStage = importing ? 'importing' : stage.value
+  previewState.importFile = fileName.value
+  previewState.importRows = preview.value?.total_number_of_rows || 0
+  previewState.importProgress = progress.value
+  previewState.importResult = result.value && {
+    imported: result.value.imported,
+    failed: result.value.failedRows.length,
+  }
+})
+onUnmounted(() => previewState && (previewState.importStage = null))
 
 async function withBusy(action) {
   busy.value = true
@@ -93,6 +109,7 @@ async function withBusy(action) {
 }
 
 function onUploaded(fileUrl) {
+  fileName.value = decodeURIComponent(fileUrl.split('/').pop())
   withBusy(async () => {
     await createImport(fileUrl)
     stage.value = 'map'
@@ -123,6 +140,7 @@ function onImport() {
 
 function restart() {
   result.value = null
+  fileName.value = ''
   stage.value = 'upload'
 }
 </script>

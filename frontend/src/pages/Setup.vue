@@ -70,7 +70,12 @@
             @finish="finishSetup"
           />
         </section>
-        <SetupPreview class="hidden lg:flex" :step="activeStep.name" />
+        <SetupPreview
+          class="hidden lg:flex"
+          :step="activeStep.name"
+          :state="previewState"
+          :status="stepStatus"
+        />
       </div>
     </main>
   </div>
@@ -89,7 +94,7 @@ import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { SETUP_DONE_KEY } from '@/router'
 import { Button, call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { computed, markRaw, reactive, ref, watch } from 'vue'
+import { computed, markRaw, provide, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -113,6 +118,15 @@ const steps = [
 
 const current = ref(0)
 const stepStatus = reactive({})
+const previewState = reactive({
+  provider: null,
+  importStage: null,
+  importFile: '',
+  importRows: 0,
+  importProgress: null,
+  importResult: null,
+})
+provide('setupPreview', previewState)
 
 const activeStep = computed(() => steps[current.value])
 const isLastStep = computed(() => current.value === steps.length - 1)
