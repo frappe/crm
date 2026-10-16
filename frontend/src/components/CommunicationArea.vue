@@ -262,6 +262,10 @@ const emailEmpty = computed(
     isContentEmpty(newEmail.value) || !newEmailEditor.value?.toEmails?.length,
 )
 
+const emailBlocked = computed(
+  () => emailEmpty.value || newEmailEditor.value?.sendBlocked,
+)
+
 async function sendMail() {
   let fromEmail = newEmailEditor.value.fromEmail || getUser().email
   let recipients = newEmailEditor.value.toEmails
@@ -324,7 +328,7 @@ async function deleteAttachedFiles() {
 }
 
 async function submitEmail() {
-  if (emailEmpty.value) return
+  if (emailBlocked.value) return
   showEmailBox.value = false
   // toast.promise returns the toast id (not the promise), so await the send
   // itself — otherwise the reload below fires before the email is committed and
