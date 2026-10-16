@@ -43,7 +43,7 @@
     <ErrorMessage v-if="error" :message="error" />
     <div class="flex items-center justify-between">
       <Button variant="ghost" :label="__('Cancel')" @click="emit('cancel')" />
-      <Button variant="ghost" :link="templateUrl">
+      <Button variant="ghost" :href="templateUrl">
         <template #prefix><LucideDownload class="size-4" /></template>
         {{ __('Download CSV template') }}
       </Button>
