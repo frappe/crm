@@ -1,98 +1,100 @@
 <template>
   <div class="absolute inset-0">
     <SetupPreviewWindow :sidebar="false" :top="40">
-      <div class="flex items-center justify-between border-b border-outline-gray-1 px-5 py-3">
-        <div class="flex items-center gap-2 text-sm text-ink-gray-5">
-          <LeadsIcon class="size-3.5" />
-          {{ __('Leads') }}
-          <span class="text-ink-gray-3">/</span>
-          <span class="text-ink-gray-8">Marcus Lee</span>
-        </div>
-        <div class="flex items-center gap-1.5 text-xs text-ink-gray-6">
-          <img v-if="provider" :src="provider.icon" class="size-3.5" alt="" />
-          <LucideMail v-else class="size-3.5" />
-          {{ provider?.name || __('Email') }}
-        </div>
+      <div class="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-outline-gray-1 px-4">
+        <Breadcrumbs :items="[{ label: __('Leads') }, { label: 'Marcus Lee' }]" />
+        <Button :label="__('Contacted')" icon-right="lucide-chevron-down">
+          <template #prefix><span class="size-2 rounded-full bg-surface-amber-6" /></template>
+        </Button>
       </div>
-
-      <div class="px-5 pb-4 pt-6">
-        <div class="flex items-center gap-3">
-          <Avatar label="Marcus Lee" size="lg" />
-          <div>
-            <div class="text-xl font-semibold tracking-tight text-ink-gray-9">Marcus Lee</div>
-            <div class="mt-1 text-sm text-ink-gray-5">{{ __('Globex · Sales Director') }}</div>
-          </div>
-          <span class="ml-auto rounded-full border border-outline-gray-2 px-2 py-1 text-xs text-ink-gray-6">
-            {{ __('Contacted') }}
-          </span>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-5 border-b border-outline-gray-1 px-5 text-sm">
-        <span class="flex items-center gap-1.5 border-b border-ink-gray-9 pb-3 font-medium text-ink-gray-9">
-          <LucideMail class="size-3.5" />
-          {{ __('Emails') }}
-          <span class="rounded bg-surface-gray-2 px-1.5 text-xs text-ink-gray-5">3</span>
-        </span>
-        <span class="pb-3 text-ink-gray-5">{{ __('Activity') }}</span>
-        <span class="pb-3 text-ink-gray-5">{{ __('Notes') }}</span>
-      </div>
-
-      <div class="flex min-h-0 flex-1 flex-col px-5 py-4">
-        <div class="flex items-center justify-between text-xs text-ink-gray-5">
-          <span>{{ __('Conversation') }}</span>
-          <span>{{ __('3 messages') }}</span>
-        </div>
-        <div class="mt-3 rounded-6 border border-outline-gray-2 bg-surface-gray-1">
-          <div class="flex items-center gap-2.5 border-b border-outline-gray-1 px-4 py-3">
-            <Avatar label="Marcus Lee" size="sm" />
-            <div class="flex-1 text-sm font-medium text-ink-gray-8">Marcus Lee</div>
-            <span class="text-xs text-ink-gray-5">{{ __('Today, 9:42 AM') }}</span>
-          </div>
-          <div class="px-4 py-4">
-            <h3 class="text-base font-medium text-ink-gray-9">{{ __('Re: Pricing for 40 seats') }}</h3>
-            <p class="mt-3 text-sm leading-6 text-ink-gray-6">
-              {{ __('Thanks, the annual plan works for us. Can we start the pilot next week?') }}
-            </p>
-            <p class="mt-3 text-sm leading-6 text-ink-gray-6">{{ __('Looking forward to getting the team onboard.') }}</p>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-ink-gray-5">
-              <LucideCornerDownRight class="size-3" />
-              {{ __('2 earlier messages') }}
+      <Tabs
+        v-model="activeTab"
+        :tabs="tabs"
+        class="flex min-h-0 flex-1 flex-col overflow-hidden [&_[role='tab']]:shrink-0 [&_[role='tab']]:px-1 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&_[role='tablist']]:px-5 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-1"
+      >
+        <template #tab-panel>
+          <div class="flex h-full flex-col">
+            <div class="mx-6 mb-5 mt-6 flex items-center justify-between">
+              <span class="text-2xl-semibold text-ink-gray-8">{{ __('Emails') }}</span>
+              <Button variant="solid" :label="__('New Email')" icon-left="lucide-plus" />
+            </div>
+            <div class="mx-6 flex flex-col gap-5">
+              <div v-for="email in emails" :key="email.subject" class="flex items-start gap-3">
+                <Avatar :label="email.author.fullname" size="md" class="mt-1 shrink-0" />
+                <div class="min-w-0 flex-1">
+                  <div class="mb-2 text-sm font-medium text-ink-gray-8">{{ email.subject }}</div>
+                  <EmailItem :email="email">
+                    <template #header>
+                      <div class="flex items-center justify-between gap-2 px-3 py-2.5 text-sm">
+                        <span class="font-medium text-ink-gray-6">{{ email.author.fullname }}</span>
+                        <span class="text-xs text-ink-gray-5">{{ email.time }}</span>
+                      </div>
+                      <div class="px-3 pb-2 text-xs text-ink-gray-5">{{ __('To:') }} {{ email.data.to }}</div>
+                    </template>
+                    <template #footer>
+                      <div class="mt-2 flex items-center gap-1 border-t border-outline-gray-1 pt-2">
+                        <Button variant="ghost" :label="__('Reply')" :icon-left="ReplyIcon" />
+                        <Button variant="ghost" :label="__('Reply All')" :icon-left="ReplyAllIcon" />
+                      </div>
+                    </template>
+                  </EmailItem>
+                </div>
+              </div>
+            </div>
+            <div class="mt-auto flex items-center gap-1.5 border-t border-outline-gray-1 px-5 py-3 text-xs text-ink-gray-5">
+              <img v-if="provider" :src="provider.icon" class="size-3.5" alt="" />
+              <EmailIcon v-else class="size-3.5" />
+              {{ provider?.name || __('Email') }}
             </div>
           </div>
-        </div>
-        <div class="mt-4 rounded-6 border border-outline-gray-2 p-3">
-          <div class="flex items-center gap-2 text-xs text-ink-gray-5">
-            <LucideReply class="size-3.5" />
-            {{ __('Reply to Marcus') }}
-          </div>
-          <div class="pb-7 pt-3 text-sm text-ink-gray-4">{{ __('Write a reply…') }}</div>
-          <div class="flex items-center justify-between border-t border-outline-gray-1 pt-3">
-            <LucidePaperclip class="size-3.5 text-ink-gray-5" />
-            <span class="flex items-center gap-1.5 rounded-4 bg-surface-gray-7 px-2.5 py-1.5 text-xs font-medium text-ink-white">
-              {{ __('Send') }} <LucideArrowUp class="size-3" />
-            </span>
-          </div>
-        </div>
-        <div class="mt-auto flex items-center justify-center gap-1.5 pt-4 text-xs text-ink-gray-5">
-          <LucideCheck class="size-3" />
-          {{ __('Every conversation, linked to your lead') }}
-        </div>
-      </div>
+        </template>
+      </Tabs>
     </SetupPreviewWindow>
   </div>
 </template>
 
 <script setup>
 import SetupPreviewWindow from '@/components/Setup/SetupPreviewWindow.vue'
-import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import { Avatar } from 'frappe-ui'
-import LucideMail from '~icons/lucide/mail'
-import LucideReply from '~icons/lucide/reply'
-import LucidePaperclip from '~icons/lucide/paperclip'
-import LucideArrowUp from '~icons/lucide/arrow-up'
-import LucideCheck from '~icons/lucide/check'
-import LucideCornerDownRight from '~icons/lucide/corner-down-right'
+import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
+import CommentIcon from '@/components/Icons/CommentIcon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import NoteIcon from '@/components/Icons/NoteIcon.vue'
+import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
+import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
+import { EmailItem } from '@framework/ui/components/ActivityTimeline'
+import { Avatar, Breadcrumbs, Button, Tabs } from 'frappe-ui'
+import { ref } from 'vue'
 
 defineProps({ provider: { type: Object, default: null } })
+const activeTab = ref('emails')
+const tabs = [
+  { value: 'activity', label: __('Activity'), iconLeft: ActivityIcon },
+  { value: 'emails', label: __('Emails'), iconLeft: EmailIcon },
+  { value: 'comments', label: __('Comments'), iconLeft: CommentIcon },
+  { value: 'tasks', label: __('Tasks'), iconLeft: TaskIcon },
+  { value: 'notes', label: __('Notes'), iconLeft: NoteIcon },
+]
+const emails = [
+  {
+    subject: __('Re: Pricing for 40 seats'),
+    author: { fullname: 'Marcus Lee' },
+    time: __('Today, 9:42 AM'),
+    data: {
+      sender: 'marcus@example.com',
+      to: 'you@example.com',
+      content: '<p>Thanks, the annual plan works for us. Can we start the pilot next week?</p>',
+    },
+  },
+  {
+    subject: __('Demo follow-up'),
+    author: { fullname: 'Priya Raman' },
+    time: __('Yesterday'),
+    data: {
+      sender: 'priya@example.com',
+      to: 'marcus@example.com',
+      content: '<p>Sharing the recording and the rollout plan we discussed.</p>',
+    },
+  },
+]
 </script>
