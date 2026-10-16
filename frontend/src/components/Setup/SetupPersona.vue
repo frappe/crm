@@ -61,6 +61,7 @@ import { Button } from 'frappe-ui'
 import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, reactive, ref } from 'vue'
+import shuffle from 'lodash/shuffle'
 
 const emit = defineEmits(['done'])
 const usagePreference = ref(null)
@@ -79,7 +80,6 @@ const questions = [
       { label: __('Zoho CRM'), value: 'zoho' },
       { label: __('Pipedrive'), value: 'pipedrive' },
       { label: __('Another CRM'), value: 'other_crm' },
-      { label: __('Other'), value: 'other' },
     ],
   },
   {
@@ -149,7 +149,10 @@ const questions = [
 const current = ref(0)
 const answers = reactive({})
 
-const question = computed(() => questions[current.value])
+const question = computed(() => {
+  const question = questions[current.value]
+  return { ...question, options: shuffle(question.options) }
+})
 const isLast = computed(() => current.value === questions.length - 1)
 
 const canProceed = computed(() => {
