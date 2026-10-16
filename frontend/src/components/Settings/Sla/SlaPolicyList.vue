@@ -3,6 +3,21 @@
     :title="__('SLA Policies')"
     :description="__('Manage your service level agreement policies.')"
   >
+    <template #title>
+      <div class="flex gap-2 items-center">
+        <h2 class="flex text-2xl-semibold leading-none h-5">
+          {{ __('SLA Policies') }}
+        </h2>
+        <Tooltip :text="__('View documentation')">
+          <a
+            href="https://docs.frappe.io/crm/service-level-agreement"
+            target="_blank"
+          >
+            <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+          </a>
+        </Tooltip>
+      </div>
+    </template>
     <template #header-actions>
       <Button
         :label="__('New')"
@@ -160,7 +175,9 @@ import {
   LoadingIndicator,
   Switch,
   toast,
+  Tooltip,
 } from 'frappe-ui'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import { ConfirmDelete } from '@/utils'
 import { resetSlaData } from './utils'
 import { inject, ref, watch } from 'vue'
