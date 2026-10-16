@@ -115,7 +115,6 @@ import {
 } from '@/composables/emailSubject'
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'

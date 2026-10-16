@@ -412,7 +412,6 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import {
   ref,
   computed,
