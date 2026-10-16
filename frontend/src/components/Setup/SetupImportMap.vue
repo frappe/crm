@@ -24,10 +24,11 @@
               {{ sampleValue(mapping.index) }}
             </div>
           </div>
-          <FormControl
+          <Combobox
             v-model="mapping.fieldname"
-            type="select"
             :options="fieldOptions"
+            :placeholder="__('Search fields')"
+            open-on-click
             :aria-label="__('Lead field for {0}', [mapping.header])"
           />
         </div>
@@ -67,7 +68,7 @@ import {
   getUnmappedRequiredFields,
   isLeadNameMapped,
 } from '@/utils/setup'
-import { Button, ErrorMessage, FormControl } from 'frappe-ui'
+import { Button, Combobox, ErrorMessage } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const props = defineProps({
@@ -95,18 +96,25 @@ const leadFields = computed(() =>
   ),
 )
 
+const isMandatory = (f) =>
+  f.reqd && !f.default && !CONTROLLER_SET_FIELDS.includes(f.fieldname)
+
 const fieldOptions = computed(() => [
   { label: __("Don't import"), value: '' },
-  ...leadFields.value.map((f) => ({ label: __(f.label), value: f.fieldname })),
+  ...leadFields.value.filter(isMandatory).map((f) => ({
+    label: `${__(f.label)} *`,
+    value: f.fieldname,
+  })),
+  ...leadFields.value
+    .filter((f) => !isMandatory(f))
+    .map((f) => ({ label: __(f.label), value: f.fieldname })),
 ])
 
 const nameMapped = computed(() => isLeadNameMapped(mappings.value))
 
 const unmappedRequired = computed(() =>
   getUnmappedRequiredFields(
-    leadFields.value.filter(
-      (f) => !CONTROLLER_SET_FIELDS.includes(f.fieldname),
-    ),
+    leadFields.value.filter(isMandatory),
     mappings.value,
   ),
 )
