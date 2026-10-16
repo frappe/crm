@@ -316,8 +316,12 @@ const editor = computed(() => textEditor.value?.editor)
 
 const unsubscribedEmails = ref([])
 
+const allRecipients = computed(() => [
+  ...new Set([...toEmails.value, ...ccEmails.value, ...bccEmails.value]),
+])
+
 watch(
-  [toEmails, () => modelValue.value.name],
+  [allRecipients, () => modelValue.value.name],
   async ([emails, name], _, onCleanup) => {
     let stale = false
     onCleanup(() => (stale = true))
@@ -331,8 +335,13 @@ watch(
         : []
     if (!stale) unsubscribedEmails.value = unsubscribed
   },
-  { immediate: true, deep: true },
+  { immediate: true },
 )
+
+watch(unsubscribedEmails, (emails) => {
+  if (emails.some((e) => ccEmails.value.includes(e))) cc.value = true
+  if (emails.some((e) => bccEmails.value.includes(e))) bcc.value = true
+})
 
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
