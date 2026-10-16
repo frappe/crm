@@ -3,6 +3,13 @@
     <h1 class="text-2xl-semibold text-ink-gray-9">
       {{ __('Connect your email') }}
     </h1>
+    <p class="mt-2 text-p-base text-ink-gray-6">
+      {{
+        __(
+          'Send and receive email from the CRM, and keep every conversation on the right lead or deal.',
+        )
+      }}
+    </p>
 
     <RadioGroup
       v-if="!editing"
@@ -15,7 +22,6 @@
         v-for="service in services"
         :key="service.name"
         :value="service.name"
-        :description="HINTS[service.name]"
       >
         <template #label>
           <span class="flex items-center gap-2">
@@ -179,16 +185,6 @@ const emit = defineEmits(['done', 'skip'])
 
 const { capture } = useTelemetry()
 const { completeStep } = useCrmOnboarding()
-
-const HINTS = {
-  GMail: __('Google Workspace or Gmail'),
-  Outlook: __('Microsoft 365 or Outlook.com'),
-  Sendgrid: __('SMTP with an API key'),
-  SparkPost: __('SMTP with an API key'),
-  Yahoo: __('IMAP with an app password'),
-  Yandex: __('IMAP with an app password'),
-  'Frappe Mail': __('Site, API key and secret'),
-}
 
 const state = reactive({
   service: undefined,
