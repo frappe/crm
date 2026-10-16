@@ -177,7 +177,6 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { Avatar, call, createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
