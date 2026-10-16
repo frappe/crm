@@ -5,76 +5,11 @@
     inert
   >
     <Transition name="preview-swap" mode="out-in">
-      <div v-if="step === 'connect_email'" key="email" class="absolute inset-0">
-        <div class="preview-in absolute left-8 top-10 z-10 flex items-center">
-          <span
-            class="preview-lift flex h-8 items-center gap-2 rounded-full px-3 text-base text-ink-gray-8"
-          >
-            <img v-if="provider" :src="provider.icon" class="size-4" alt="" />
-            <LucideInbox v-else class="size-4 text-ink-gray-6" />
-            {{ provider ? provider.name : __('Your inbox') }}
-          </span>
-          <span class="h-px w-8 bg-outline-gray-4" />
-          <span class="size-1.5 rounded-full bg-surface-gray-6" />
-          <span class="h-px w-8 bg-outline-gray-4" />
-          <span
-            class="preview-lift flex h-8 items-center gap-2 rounded-full px-3 text-base text-ink-gray-8"
-          >
-            <LeadsIcon class="size-4 text-ink-gray-6" />
-            {{ __('Every lead and deal') }}
-          </span>
-        </div>
-        <SetupPreviewWindow :sidebar="false" :top="88">
-          <div
-            class="flex items-center gap-1.5 border-b border-outline-gray-1 px-4 py-3 text-lg"
-          >
-            <span class="text-ink-gray-5">{{ __('Leads') }}</span>
-            <span class="text-ink-gray-4">/</span>
-            <span class="font-medium text-ink-gray-9">Marcus Lee</span>
-          </div>
-          <div class="flex gap-5 border-b border-outline-gray-1 px-4 text-base">
-            <span
-              v-for="tab in TABS"
-              :key="tab.label"
-              class="flex items-center gap-1.5 py-2.5"
-              :class="
-                tab.active
-                  ? 'preview-tab-active text-ink-gray-9'
-                  : 'text-ink-gray-5'
-              "
-            >
-              <component :is="tab.icon" class="size-4" />
-              {{ tab.label }}
-            </span>
-          </div>
-          <div
-            class="flex flex-col gap-3 p-4 transition-opacity"
-            :class="{ 'opacity-40': !provider }"
-          >
-            <div
-              v-for="(mail, i) in MAILS"
-              :key="mail.subject"
-              class="preview-in rounded-5 border border-outline-gray-1 px-4 py-3"
-              :style="{ animationDelay: `${120 + i * 60}ms` }"
-            >
-              <div class="flex items-center gap-2 text-base">
-                <Avatar :label="mail.from" size="sm" />
-                <span class="font-medium text-ink-gray-9">{{ mail.from }}</span>
-                <span class="text-ink-gray-5">{{ mail.to }}</span>
-                <span class="ml-auto text-sm tabular-nums text-ink-gray-5">
-                  {{ mail.time }}
-                </span>
-              </div>
-              <div class="mt-2 text-base font-medium text-ink-gray-8">
-                {{ mail.subject }}
-              </div>
-              <div class="mt-1 truncate text-base text-ink-gray-6">
-                {{ mail.body }}
-              </div>
-            </div>
-          </div>
-        </SetupPreviewWindow>
-      </div>
+      <SetupEmailPreview
+        v-if="step === 'connect_email'"
+        key="email"
+        :provider="provider"
+      />
 
       <div
         v-else-if="step === 'bring_leads'"
@@ -242,20 +177,15 @@
 import LucideCheck from '~icons/lucide/check'
 import LucideCircle from '~icons/lucide/circle'
 import LucideCircleCheck from '~icons/lucide/circle-check'
-import LucideInbox from '~icons/lucide/inbox'
 import LucideAlarmClock from '~icons/lucide/alarm-clock'
 import LucideGlobe from '~icons/lucide/globe'
 import LucideUsers from '~icons/lucide/users'
 import LucideHandshake from '~icons/lucide/handshake'
-import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import FileSpreadsheetIcon from '@/components/Icons/FileSpreadsheetIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
-import NoteIcon from '@/components/Icons/NoteIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import SetupPreviewList from '@/components/Setup/SetupPreviewList.vue'
 import SetupPreviewWindow from '@/components/Setup/SetupPreviewWindow.vue'
+import SetupEmailPreview from '@/components/Setup/SetupEmailPreview.vue'
 import { services } from '@/components/Settings/emailConfig'
 import { Avatar, Progress, SidebarItem, SidebarLabel } from 'frappe-ui'
 import { computed } from 'vue'
@@ -297,38 +227,6 @@ const doneCount = computed(
 function isDone(step) {
   return props.status[step] === 'completed'
 }
-
-const TABS = [
-  { label: __('Activity'), icon: ActivityIcon },
-  { label: __('Emails'), icon: EmailIcon, active: true },
-  { label: __('Comments'), icon: CommentIcon },
-  { label: __('Tasks'), icon: TaskIcon },
-  { label: __('Notes'), icon: NoteIcon },
-]
-
-const MAILS = [
-  {
-    from: 'Marcus Lee',
-    to: __('to you'),
-    time: '9:42 AM',
-    subject: 'Re: Pricing for 40 seats',
-    body: 'Thanks, the annual plan works for us. Can we start the pilot next week?',
-  },
-  {
-    from: 'Priya Raman',
-    to: __('to Marcus'),
-    time: 'Tue',
-    subject: 'Demo follow-up',
-    body: 'Sharing the recording and the rollout plan we discussed.',
-  },
-  {
-    from: 'Marcus Lee',
-    to: __('to you'),
-    time: 'Mon',
-    subject: 'Intro: Globex x Northwind',
-    body: 'Looping you in on our search for a CRM for the sales team.',
-  },
-]
 
 const LEADS = [
   { name: 'Priya Raman', status: 'New', when: 'now' },
@@ -373,10 +271,6 @@ const VIEWS = [
   box-shadow:
     0 1px 2px rgb(0 0 0 / 0.08),
     0 12px 32px -8px rgb(0 0 0 / 0.28);
-}
-
-.preview-tab-active {
-  box-shadow: inset 0 -1px 0 var(--ink-gray-9);
 }
 
 .preview-in {
