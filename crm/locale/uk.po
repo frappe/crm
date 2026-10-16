@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-11 15:53+0000\n"
-"PO-Revision-Date: 2026-10-12 04:52\n"
+"PO-Revision-Date: 2026-10-16 05:57\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -2567,7 +2567,7 @@ msgstr ""
 #: frontend/src/components/Layouts/AppSidebar.vue:750
 #: frontend/src/components/Settings/Settings.vue:226
 msgid "Customization"
-msgstr ""
+msgstr "Кастомізація"
 
 #: frontend/src/components/ViewControls.vue:236
 msgid "Customize Quick Filters"
@@ -4367,7 +4367,7 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
 #: frontend/src/components/Settings/Settings.vue:213
 msgid "Forms"
-msgstr ""
+msgstr "Форми"
 
 #: crm/api/form.py:246 crm/api/form.py:255 crm/api/form.py:440
 msgid "Forms can only map to: {0}"
@@ -5141,7 +5141,7 @@ msgstr ""
 #: frontend/src/components/ViewControls.vue:434
 #: frontend/src/components/ViewControls.vue:728 frontend/src/utils/view.js:20
 msgid "Kanban"
-msgstr ""
+msgstr "Канбан"
 
 #. Label of the kanban_columns (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
@@ -8569,7 +8569,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:284
 msgid "Set as default"
-msgstr ""
+msgstr "Встановити за замовчуванням"
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:114
 msgid "Set as default SLA"
@@ -10659,7 +10659,7 @@ msgstr ""
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "exchangerate.host"
-msgstr ""
+msgstr "exchangerate.host"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
