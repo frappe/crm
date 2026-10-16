@@ -3,13 +3,6 @@
     <h1 class="text-2xl-semibold text-ink-gray-9">
       {{ __('Connect your email') }}
     </h1>
-    <p class="mt-2 text-p-base text-ink-gray-6">
-      {{
-        __(
-          'Send and receive email from the CRM, and keep every conversation on the right lead or deal.',
-        )
-      }}
-    </p>
 
     <RadioGroup
       v-if="!editing"
