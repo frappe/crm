@@ -172,7 +172,7 @@ import {
   toast,
 } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { computed, reactive, ref } from 'vue'
+import { computed, inject, reactive, ref, watch } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
 
@@ -203,6 +203,12 @@ const editing = ref(false)
 const showSyncOptions = ref(false)
 const confirmSkip = ref(false)
 const error = ref('')
+
+const preview = inject('setupPreview', null)
+watch(
+  () => state.service,
+  (service) => preview && (preview.provider = service),
+)
 
 const selected = computed(() =>
   services.find((service) => service.name === state.service),
