@@ -5,8 +5,11 @@ let steps
 let onboardingCompleted
 let updateOnboardingStep
 
-vi.mock('frappe-ui/frappe', () => ({
+vi.mock('@framework/ui/telemetry', () => ({
   useTelemetry: () => ({ capture }),
+}))
+
+vi.mock('@framework/ui/components/Onboarding', () => ({
   useOnboarding: () => ({
     stepsCompleted: computed(() => steps.filter((s) => s.completed).length),
     totalSteps: computed(() => steps.length),
