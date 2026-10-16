@@ -59,7 +59,7 @@ import SetupImportMap from '@/components/Setup/SetupImportMap.vue'
 import SetupImportReview from '@/components/Setup/SetupImportReview.vue'
 import { useLeadImport } from '@/composables/leadImport'
 import { toast } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref } from 'vue'
 
 const emit = defineEmits(['imported', 'cancel'])

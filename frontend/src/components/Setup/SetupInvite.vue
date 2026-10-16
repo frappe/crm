@@ -73,7 +73,7 @@ import { usersStore } from '@/stores/users'
 import { validateEmail } from '@/utils'
 import { groupInvitesByRole } from '@/utils/setup'
 import { Button, ErrorMessage, FormControl, call } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, ref } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
