@@ -23,14 +23,24 @@
         class="grid w-full max-w-5xl overflow-hidden rounded-8 bg-surface-base shadow-sm lg:grid-cols-2"
       >
         <section class="flex min-h-[600px] flex-col p-8 sm:p-10">
-          <Button
+          <div
             v-if="current > 0 && !isLastStep"
-            variant="ghost"
-            class="mb-4 self-start"
-            icon-left="lucide-arrow-left"
-            :label="__('Back')"
-            @click="goBack"
-          />
+            class="mb-4 flex items-center justify-between"
+          >
+            <Button
+              variant="ghost"
+              icon-left="lucide-arrow-left"
+              :label="__('Back')"
+              @click="goBack"
+            />
+            <Button
+              v-if="activeStep.name === 'about_you'"
+              variant="ghost"
+              class="!text-ink-gray-5"
+              :label="__('Skip')"
+              @click="activeStepView?.skipQuestion()"
+            />
+          </div>
           <KeepAlive include="SetupLeads">
             <component
               ref="activeStepView"
