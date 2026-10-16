@@ -23,8 +23,11 @@
           <div class="text-base-medium leading-none text-ink-gray-9 truncate">
             {{ __(brand.name || 'CRM') }}
           </div>
-          <div class="mt-1 text-sm leading-none text-ink-gray-7 truncate">
-            {{ user.full_name }}
+          <div
+            class="mt-1 flex items-center gap-1.5 text-sm leading-none text-ink-gray-7"
+          >
+            <span class="truncate">{{ user.full_name }}</span>
+            <AvailabilityDot />
           </div>
         </div>
         <div
@@ -46,11 +49,13 @@
 </template>
 
 <script setup>
+import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import FrappeCloudIcon from '@/components/Icons/FrappeCloudIcon.vue'
 import AppsIcon from '@/components/Icons/AppsIcon.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
+import { availabilityStore } from '@/stores/availability'
 import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
@@ -66,6 +71,7 @@ defineProps({
 const { settings, brand } = getSettings()
 const { logout } = sessionStore()
 const { getUser } = usersStore()
+const availability = availabilityStore()
 
 const user = computed(() => getUser() || {})
 
@@ -82,6 +88,11 @@ const dropdownItems = computed(() => {
   let items = settings.value.dropdown_items
 
   let _dropdownItems = [
+    {
+      group: 'Availability',
+      hideLabel: true,
+      options: [availabilityItem()],
+    },
     {
       group: 'Dropdown Items',
       hideLabel: true,
@@ -161,6 +172,19 @@ function getStandardItem(item) {
         label: __(item.label),
         onClick: () => logout.submit(),
       }
+  }
+}
+
+function availabilityItem() {
+  const dot = (status) => () => h(AvailabilityDot, { status, class: 'mx-1' })
+  return {
+    label: __(availability.myStatus || 'Set status'),
+    slots: { prefix: dot(availability.myStatus) },
+    submenu: availability.enabledStatuses.map((status) => ({
+      label: __(status.name),
+      onClick: () => availability.setMyStatus(status.name),
+      slots: { prefix: dot(status.name) },
+    })),
   }
 }
 

@@ -40,3 +40,4 @@ crm.patches.v1_0.drop_enrichment_headers_scope
 crm.patches.v1_0.add_user_email_subject_fields
 crm.patches.v1_0.add_data_import_quick_filters
 crm.patches.v1_0.set_setup_completed_for_existing_sites
+crm.patches.v1_0.add_availability_statuses
