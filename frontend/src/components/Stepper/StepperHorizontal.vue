@@ -11,8 +11,8 @@
         :aria-current="isCurrent(step) ? 'step' : undefined"
         class="min-w-0"
       >
-        <component
-          :is="isButton(step) ? 'button' : 'div'"
+        <NativeTag
+          :as="isButton(step) ? 'button' : 'div'"
           :type="isButton(step) ? 'button' : undefined"
           class="flex w-full min-w-0 items-center gap-1.5 text-start"
           :class="isButton(step) && BUTTON"
@@ -35,7 +35,7 @@
               {{ step.item.label }}
             </span>
           </slot>
-        </component>
+        </NativeTag>
       </li>
     </ol>
   </div>
@@ -44,6 +44,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Progress } from 'frappe-ui'
+import NativeTag from './NativeTag'
 import StepIndicator from './StepIndicator.vue'
 import { isPassed } from './resolve'
 import type { ResolvedStep, StepState, StepValue, StepperSize } from './types'

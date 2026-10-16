@@ -8,8 +8,8 @@
       :aria-current="isCurrent(step) ? 'step' : undefined"
     >
       <!-- Only phrasing content inside, so the row is valid as a <button>. -->
-      <component
-        :is="isButton(step) ? 'button' : 'div'"
+      <NativeTag
+        :as="isButton(step) ? 'button' : 'div'"
         :type="isButton(step) ? 'button' : undefined"
         class="flex items-stretch text-start"
         :class="[rowDirection, headClass(step)]"
@@ -68,7 +68,7 @@
             v-bind="segAttrs(i, 'bottom')"
           />
         </span>
-      </component>
+      </NativeTag>
 
       <div
         v-if="showChildren(step)"
@@ -129,6 +129,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import NativeTag from './NativeTag'
 import StepIndicator from './StepIndicator.vue'
 import { isPassed } from './resolve'
 import type {
