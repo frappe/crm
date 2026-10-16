@@ -3,24 +3,14 @@
     <h1 class="text-2xl-semibold text-ink-gray-9">
       {{ __('Import leads from CSV') }}
     </h1>
-    <ol
-      class="mt-3 flex items-center gap-2 text-sm"
+    <Stepper
+      v-model="stage"
+      class="mt-3"
+      :steps="stages"
+      :loading="busy"
+      :completed="['Success', 'Partial Success'].includes(result?.status)"
       :aria-label="__('Import steps')"
-    >
-      <li
-        v-for="(label, key) in stages"
-        :key="key"
-        class="rounded-full px-2 py-0.5"
-        :class="
-          stage === key
-            ? 'bg-surface-gray-9 text-ink-base'
-            : 'bg-surface-gray-2 text-ink-gray-6'
-        "
-        :aria-current="stage === key ? 'step' : undefined"
-      >
-        {{ label }}
-      </li>
-    </ol>
+    />
 
     <div class="mt-6 flex flex-1 flex-col">
       <SetupImportUpload
@@ -57,6 +47,7 @@
 import SetupImportUpload from '@/components/Setup/SetupImportUpload.vue'
 import SetupImportMap from '@/components/Setup/SetupImportMap.vue'
 import SetupImportReview from '@/components/Setup/SetupImportReview.vue'
+import Stepper from '@/components/Stepper/Stepper.vue'
 import { useLeadImport } from '@/composables/leadImport'
 import { toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
@@ -64,11 +55,11 @@ import { inject, onUnmounted, ref, watchEffect } from 'vue'
 
 const emit = defineEmits(['imported', 'cancel'])
 
-const stages = {
-  upload: __('Upload'),
-  map: __('Map columns'),
-  review: __('Review'),
-}
+const stages = [
+  { value: 'upload', label: __('Upload') },
+  { value: 'map', label: __('Map columns') },
+  { value: 'review', label: __('Review') },
+]
 
 const { capture } = useTelemetry()
 const { preview, progress, createImport, saveMapping, runImport } =
