@@ -84,6 +84,7 @@ import SetupPreview from '@/components/Setup/SetupPreview.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
 import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
+import SetupPersona from '@/components/Setup/SetupPersona.vue'
 import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { SETUP_DONE_KEY } from '@/router'
 import { Button, call, usePageMeta } from 'frappe-ui'
@@ -98,6 +99,11 @@ const steps = [
   { name: 'connect_email', label: __('Email'), component: markRaw(SetupEmail) },
   { name: 'bring_leads', label: __('Leads'), component: markRaw(SetupLeads) },
   { name: 'invite_team', label: __('Team'), component: markRaw(SetupInvite) },
+  {
+    name: 'about_you',
+    label: __('About you'),
+    component: markRaw(SetupPersona),
+  },
   {
     name: 'feedback',
     label: __('Feedback'),
