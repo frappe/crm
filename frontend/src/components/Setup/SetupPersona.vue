@@ -1,10 +1,5 @@
 <template>
-  <SetupTelemetryConsent
-    v-if="!consentAccepted"
-    @accepted="consentAccepted = true"
-    @declined="emit('finish', { rating: null, comment: null })"
-  />
-  <div v-else class="flex flex-col">
+  <div class="flex flex-col">
     <fieldset :key="question.key" class="mx-0 min-w-0 border-0 p-0">
       <legend class="p-0 text-xl font-semibold text-ink-gray-9">
         {{ question.title }}
@@ -26,10 +21,13 @@
       </div>
     </fieldset>
 
-    <div class="mt-auto flex items-center justify-between pt-8">
-      <span class="text-sm font-medium text-ink-gray-5">
-        {{ __('Step {0} of {1}', [current + 1, questions.length]) }}
-      </span>
+    <div class="mt-auto flex items-end justify-between gap-3 pt-8">
+      <div class="flex flex-col gap-3">
+        <SetupTelemetryConsent ref="usagePreference" />
+        <span class="text-sm font-medium text-ink-gray-5">
+          {{ __('Step {0} of {1}', [current + 1, questions.length]) }}
+        </span>
+      </div>
       <div class="flex items-center gap-2">
         <Button
           variant="subtle"
@@ -64,8 +62,8 @@ import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, reactive, ref } from 'vue'
 
-const emit = defineEmits(['done', 'finish'])
-const consentAccepted = ref(false)
+const emit = defineEmits(['done'])
+const usagePreference = ref(null)
 
 const { capture } = useTelemetry()
 
@@ -179,15 +177,15 @@ function select(option) {
 }
 
 function skipQuestion() {
-  if (!consentAccepted.value) return
   delete answers[question.value.key]
   if (isLast.value) finish()
   else current.value++
 }
 
-defineExpose({ skipQuestion, canSkipQuestion: consentAccepted })
+defineExpose({ skipQuestion, canSkipQuestion: true })
 
-function finish() {
+async function finish() {
+  if (!(await usagePreference.value.confirm())) return
   capture('onboarding_persona', { ...answers })
   emit('done')
 }
