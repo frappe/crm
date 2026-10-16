@@ -20,8 +20,15 @@
         v-for="option in options"
         :key="option.name"
         type="button"
-        class="flex flex-col items-start gap-2 rounded-7 border border-outline-gray-2 p-4 text-left transition-colors hover:bg-surface-gray-1 disabled:opacity-60"
-        :disabled="loadingSample"
+        class="flex flex-col items-start gap-2 rounded-7 border p-4 text-left transition-colors hover:bg-surface-gray-1"
+        :class="
+          selected === option.name
+            ? 'border-outline-gray-4 bg-surface-gray-1'
+            : 'border-outline-gray-2'
+        "
+        :aria-pressed="
+          option.name === 'sample' ? selected === 'sample' : undefined
+        "
         @click="option.onClick"
       >
         <component :is="option.icon" class="size-5 text-ink-gray-7" />
@@ -29,19 +36,21 @@
           {{ option.title }}
         </span>
         <span class="text-p-sm text-ink-gray-6">{{ option.description }}</span>
-        <LoadingIndicator
-          v-if="option.name === 'sample' && loadingSample"
-          class="size-4"
-        />
       </button>
     </div>
-    <Button
-      variant="ghost"
-      class="mt-auto self-center"
-      :label="__('I\'ll add leads later')"
-      :disabled="loadingSample"
-      @click="emit('skip')"
-    />
+    <div class="mt-auto flex items-center justify-between pt-8">
+      <Button
+        variant="ghost"
+        :label="__('I\'ll add leads later')"
+        @click="emit('skip')"
+      />
+      <Button
+        variant="solid"
+        :label="__('Continue')"
+        :disabled="selected !== 'sample'"
+        @click="continueWithSample"
+      />
+    </div>
   </div>
 </template>
 
@@ -51,7 +60,7 @@ import LucideSparkles from '~icons/lucide/sparkles'
 import SetupImport from '@/components/Setup/SetupImport.vue'
 import { useCrmOnboarding } from '@/composables/onboarding'
 import { useDemoData } from '@/composables/demoData'
-import { Button, LoadingIndicator, call, toast } from 'frappe-ui'
+import { Button, call, toast } from 'frappe-ui'
 import { ref } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
@@ -60,7 +69,7 @@ const { completeStep } = useCrmOnboarding()
 const { isDemoDataCreated } = useDemoData()
 
 const importing = ref(false)
-const loadingSample = ref(false)
+const selected = ref(null)
 
 const options = [
   {
@@ -77,12 +86,18 @@ const options = [
     description: __(
       'Explore with sample leads, deals and tasks. Clear them anytime.',
     ),
-    onClick: loadSampleData,
+    onClick: () =>
+      (selected.value = selected.value === 'sample' ? null : 'sample'),
   },
 ]
 
+function continueWithSample() {
+  loadSampleData()
+  emit('done', { source: 'sample_data' })
+}
+
+// Runs in the background so the user isn't held on this step.
 async function loadSampleData() {
-  loadingSample.value = true
   try {
     await call('run_doc_method', {
       dt: 'FCRM Settings',
@@ -90,11 +105,8 @@ async function loadSampleData() {
       method: 'restore_demo_data',
     })
     isDemoDataCreated.value = true
-    emit('done', { source: 'sample_data' })
   } catch (error) {
     toast.error(error.messages?.[0] || __('Could not load sample data'))
-  } finally {
-    loadingSample.value = false
   }
 }
 
