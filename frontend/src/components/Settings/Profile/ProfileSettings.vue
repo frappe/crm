@@ -86,6 +86,21 @@
           </template>
         </FileUploader>
       </div>
+      <div class="flex items-center justify-between gap-4 pb-8">
+        <div class="flex flex-col gap-1">
+          <span class="text-base-medium text-ink-gray-8">
+            {{ __('Availability') }}
+          </span>
+          <span class="text-p-sm text-ink-gray-6">
+            {{
+              __(
+                'Let your team know if you are reachable. Assignment rules give new leads and deals to Active users first.',
+              )
+            }}
+          </span>
+        </div>
+        <AvailabilitySelect class="w-40 shrink-0" />
+      </div>
       <div>
         <div class="text-base-semibold text-ink-gray-9">
           {{ __('Account Info & Security') }}
@@ -135,6 +150,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
+import AvailabilitySelect from './AvailabilitySelect.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { validateIsImageFile } from '@/utils'
 import {
