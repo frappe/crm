@@ -1,8 +1,18 @@
 <template>
   <div class="flex flex-col">
     <fieldset :key="question.key" class="mx-0 min-w-0 border-0 p-0">
-      <legend class="p-0 text-xl font-semibold text-ink-gray-9">
-        {{ question.title }}
+      <legend class="w-full p-0">
+        <span class="flex items-start justify-between gap-4">
+          <span class="text-xl font-semibold text-ink-gray-9">
+            {{ question.title }}
+          </span>
+          <Button
+            variant="ghost"
+            class="shrink-0 !text-ink-gray-5"
+            :label="__('Skip')"
+            @click="skipQuestion"
+          />
+        </span>
       </legend>
       <p class="mt-1 h-5 text-sm text-ink-gray-5">
         {{ question.multiple ? __('Select all that apply') : '' }}
@@ -169,6 +179,12 @@ function select(option) {
   answers[key] = value.includes(option.value)
     ? value.filter((v) => v !== option.value)
     : [...value, option.value]
+}
+
+function skipQuestion() {
+  delete answers[question.value.key]
+  if (isLast.value) finish()
+  else current.value++
 }
 
 function finish() {
