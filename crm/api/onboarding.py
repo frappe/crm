@@ -35,6 +35,7 @@ def get_prefilled_setup_args():
 		"country": settings.country,
 		"timezone": settings.time_zone,
 		"currency": settings.currency,
+		"enable_telemetry": settings.enable_telemetry,
 	}
 
 
