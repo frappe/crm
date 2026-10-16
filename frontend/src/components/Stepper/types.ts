@@ -28,6 +28,9 @@ export interface StepItem {
   /** The flow passed this step without doing it. */
   skipped?: boolean
 
+  /** Allows revisiting a reached step even when it follows the current step. */
+  selectable?: boolean
+
   /** One level of sub-steps. Deeper nesting is ignored. */
   children?: StepItem[]
 }
@@ -61,14 +64,14 @@ export interface StepperProps {
   substeps?: 'all' | 'current'
 
   /**
-   * Finished steps become buttons that set `v-model`. Off while `completed`
+   * Finished or explicitly selectable steps become buttons that set `v-model`. Off while `completed`
    * is set, since `completed` would override the value a click sets.
    */
   clickable?: boolean
 }
 
 export interface StepperEmits {
-  /** Fired when a finished step is clicked (`clickable` only). */
+  /** Fired when an available step is clicked (`clickable` only). */
   'update:modelValue': [value: StepValue]
 }
 

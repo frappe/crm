@@ -103,6 +103,14 @@ const steps = [
 ]
 
 const current = ref(0)
+const furthestStep = ref(0)
+watch(
+  current,
+  (index) => {
+    furthestStep.value = Math.max(furthestStep.value, index)
+  },
+  { flush: 'sync' },
+)
 const activeStepView = ref(null)
 const stepStatus = reactive({})
 const previewState = reactive({
@@ -123,10 +131,11 @@ const activeStepName = computed({
 })
 
 const stepperSteps = computed(() =>
-  steps.map((step) => ({
+  steps.map((step, index) => ({
     value: step.name,
     label: step.label,
     skipped: stepStatus[step.name] === 'skipped',
+    selectable: index <= furthestStep.value,
   })),
 )
 const isLastStep = computed(() => current.value === steps.length - 1)

@@ -228,7 +228,8 @@ const bleed = computed(() =>
 
 const isCurrent = (step: ResolvedStep) =>
   step.state === 'current' || step.state === 'failed'
-const isButton = (step: ResolvedStep) => props.clickable && isPassed(step.state)
+const isButton = (step: ResolvedStep) =>
+  props.clickable && (isPassed(step.state) || step.item.selectable === true)
 const slotProps = (step: ResolvedStep) => ({
   item: step.item,
   index: step.index,
