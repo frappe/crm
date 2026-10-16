@@ -1,12 +1,7 @@
 <template>
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
-    <div
-      v-if="!hideHeader"
-      role="heading"
-      aria-level="1"
-      class="flex flex-col gap-1"
-    >
+    <div role="heading" aria-level="1" class="flex flex-col gap-1">
       <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
         {{ __('Setup Email') }}
       </h2>
@@ -112,10 +107,7 @@ import {
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
 
-defineProps({
-  hideHeader: { type: Boolean, default: false },
-})
-const emit = defineEmits(['update:step', 'created'])
+const emit = defineEmits(['update:step'])
 
 const state = reactive({
   service: '',
@@ -154,7 +146,6 @@ const addEmailRes = createResource({
   onSuccess: () => {
     toast.success(__('Email account created successfully'))
     completeStep('connect_your_email')
-    emit('created')
     emit('update:step', 'email-list')
   },
   onError: () => {
