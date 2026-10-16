@@ -1,6 +1,6 @@
 <template>
   <aside
-    class="relative overflow-hidden bg-surface-gray-2 dark:bg-surface-gray-1"
+    class="relative overflow-hidden bg-surface-gray-2"
     aria-hidden="true"
     inert
   >
