@@ -14,17 +14,16 @@
 
     <div class="mt-6 flex flex-1 flex-col">
       <SetupImportUpload
+        ref="uploadView"
         v-if="stage === 'upload'"
         :class="{ 'pointer-events-none opacity-60': busy }"
         @uploaded="onUploaded"
-        @cancel="emit('cancel')"
       />
       <SetupImportMap
         v-else-if="stage === 'map'"
         class="flex-1"
         :preview="preview"
         :saving="busy"
-        @back="restart"
         @continue="onMapped"
       />
       <SetupImportReview
@@ -34,7 +33,6 @@
         :importing="busy"
         :progress="progress"
         :result="result"
-        @back="stage = 'map'"
         @import="onImport"
         @restart="restart"
         @continue="emit('imported', result)"
@@ -66,6 +64,7 @@ const { preview, progress, createImport, saveMapping, runImport } =
   useLeadImport()
 
 const stage = ref('upload')
+const uploadView = ref(null)
 const busy = ref(false)
 const result = ref(null)
 const fileName = ref('')
@@ -128,6 +127,15 @@ function onImport() {
     })
   })
 }
+
+function back() {
+  if (busy.value || uploadView.value?.uploading) return
+  if (stage.value === 'review') stage.value = 'map'
+  else if (stage.value === 'map') restart()
+  else emit('cancel')
+}
+
+defineExpose({ back })
 
 function restart() {
   result.value = null

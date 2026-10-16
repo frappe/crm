@@ -1,6 +1,7 @@
 <template>
   <SetupImport
     v-if="importing"
+    ref="importView"
     @imported="onImported"
     @cancel="importing = false"
   />
@@ -69,7 +70,16 @@ const { completeStep } = useCrmOnboarding()
 const { isDemoDataCreated } = useDemoData()
 
 const importing = ref(false)
+const importView = ref(null)
 const selected = ref(null)
+
+function back() {
+  if (!importing.value) return false
+  importView.value?.back()
+  return true
+}
+
+defineExpose({ back })
 
 const options = [
   {

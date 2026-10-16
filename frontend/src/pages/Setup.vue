@@ -29,10 +29,11 @@
             class="mb-4 self-start"
             icon-left="lucide-arrow-left"
             :label="__('Back')"
-            @click="current--"
+            @click="goBack"
           />
           <KeepAlive include="SetupLeads">
             <component
+              ref="activeStepView"
               :is="activeStep.component"
               :key="activeStep.name"
               class="flex-1"
@@ -90,6 +91,7 @@ const steps = [
 ]
 
 const current = ref(0)
+const activeStepView = ref(null)
 const stepStatus = reactive({})
 const previewState = reactive({
   provider: null,
@@ -120,6 +122,10 @@ const isLastStep = computed(() => current.value === steps.length - 1)
 watch(activeStep, (step) => capture('setup_step_viewed', { step: step.name }), {
   immediate: true,
 })
+
+function goBack() {
+  if (!activeStepView.value?.back?.()) current.value--
+}
 
 function completeStep(details = {}) {
   const step = activeStep.value.name
