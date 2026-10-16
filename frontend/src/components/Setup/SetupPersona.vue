@@ -1,5 +1,10 @@
 <template>
-  <div class="flex flex-col">
+  <SetupTelemetryConsent
+    v-if="!consentAccepted"
+    @accepted="consentAccepted = true"
+    @declined="emit('finish', { rating: null, comment: null })"
+  />
+  <div v-else class="flex flex-col">
     <fieldset :key="question.key" class="mx-0 min-w-0 border-0 p-0">
       <legend class="p-0 text-xl font-semibold text-ink-gray-9">
         {{ question.title }}
@@ -55,10 +60,12 @@
 
 <script setup>
 import { Button } from 'frappe-ui'
+import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, reactive, ref } from 'vue'
 
-const emit = defineEmits(['done'])
+const emit = defineEmits(['done', 'finish'])
+const consentAccepted = ref(false)
 
 const { capture } = useTelemetry()
 
@@ -172,12 +179,13 @@ function select(option) {
 }
 
 function skipQuestion() {
+  if (!consentAccepted.value) return
   delete answers[question.value.key]
   if (isLast.value) finish()
   else current.value++
 }
 
-defineExpose({ skipQuestion })
+defineExpose({ skipQuestion, canSkipQuestion: consentAccepted })
 
 function finish() {
   capture('onboarding_persona', { ...answers })

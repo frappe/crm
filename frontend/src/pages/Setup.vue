@@ -34,14 +34,16 @@
               @click="goBack"
             />
             <Button
-              v-if="activeStep.name === 'about_you'"
+              v-if="
+                activeStep.name === 'about_you' && activeStepView?.canSkipQuestion
+              "
               variant="ghost"
               class="!text-ink-gray-5"
               :label="__('Skip')"
               @click="activeStepView?.skipQuestion()"
             />
           </div>
-          <KeepAlive include="SetupLeads">
+          <KeepAlive include="SetupLeads,SetupPersona">
             <component
               ref="activeStepView"
               :is="activeStep.component"
