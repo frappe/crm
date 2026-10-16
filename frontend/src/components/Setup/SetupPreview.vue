@@ -40,6 +40,8 @@ import LucideSparkles from '~icons/lucide/sparkles'
 import LucideUsers from '~icons/lucide/users'
 import LucideAtSign from '~icons/lucide/at-sign'
 import LucideHeart from '~icons/lucide/heart'
+import LucideLayoutList from '~icons/lucide/layout-list'
+import LucideLightbulb from '~icons/lucide/lightbulb'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -59,6 +61,10 @@ const highlightsByStep = {
   invite_team: [
     { icon: LucideUsers, label: __('Assign leads to teammates') },
     { icon: LucideAtSign, label: __('Mention and comment together') },
+  ],
+  about_you: [
+    { icon: LucideLayoutList, label: __('Views tuned to how you sell') },
+    { icon: LucideLightbulb, label: __('Suggestions for your first steps') },
   ],
   feedback: [{ icon: LucideHeart, label: __('Thanks for setting up') }],
 }
