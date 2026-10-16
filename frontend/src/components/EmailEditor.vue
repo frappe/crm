@@ -119,7 +119,7 @@
           />
           {{
             __(
-              '{0} unsubscribed from emails for this record. Remove them to send.',
+              "{0} unsubscribed from emails for this record, so they won't receive this email.",
               [unsubscribedEmails.join(', ')],
             )
           }}
