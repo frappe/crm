@@ -110,47 +110,55 @@
       <ErrorMessage :message="error" />
     </div>
 
-    <div v-if="confirmSkip" class="mt-auto pt-8">
-      <Alert
-        :title="__('Skip email for now?')"
-        :description="
-          __(
-            'Emails won\'t show on leads and deals, you can\'t reply from the CRM, and incoming mail won\'t create leads. Connect it later from Settings.',
-          )
-        "
-        :icon="false"
-        :primary-action="{
-          label: __('Connect email'),
-          variant: 'solid',
-          onClick: () => (confirmSkip = false),
-        }"
-        :secondary-action="{
-          label: __('Skip anyway'),
-          onClick: () => emit('skip'),
-        }"
-      />
-    </div>
-    <div v-else class="mt-auto flex items-center justify-between pt-8">
-      <Button
-        variant="ghost"
-        :label="__('Set up later')"
-        :disabled="account.loading"
-        @click="confirmSkip = true"
-      />
-      <Button
-        v-if="editing"
-        variant="solid"
-        :label="__('Connect account')"
-        :loading="account.loading"
-        @click="connect"
-      />
-      <Button
-        v-else
-        variant="solid"
-        :label="__('Continue')"
-        :disabled="!state.service"
-        @click="editing = true"
-      />
+    <div class="relative mt-auto pt-8">
+      <div
+        class="flex items-center justify-between"
+        :class="{ invisible: confirmSkip }"
+      >
+        <Button
+          variant="ghost"
+          :label="__('Set up later')"
+          :disabled="account.loading"
+          @click="confirmSkip = true"
+        />
+        <Button
+          v-if="editing"
+          variant="solid"
+          :label="__('Connect account')"
+          :loading="account.loading"
+          @click="connect"
+        />
+        <Button
+          v-else
+          variant="solid"
+          :label="__('Continue')"
+          :disabled="!state.service"
+          @click="editing = true"
+        />
+      </div>
+      <div
+        v-if="confirmSkip"
+        class="absolute inset-x-0 bottom-0 bg-surface-base pt-4"
+      >
+        <Alert
+          :title="__('Skip email for now?')"
+          :description="
+            __(
+              'Emails won\'t show on leads and deals, you can\'t reply from the CRM, and incoming mail won\'t create leads. Connect it later from Settings.',
+            )
+          "
+          :icon="false"
+          :primary-action="{
+            label: __('Connect email'),
+            variant: 'solid',
+            onClick: () => (confirmSkip = false),
+          }"
+          :secondary-action="{
+            label: __('Skip anyway'),
+            onClick: () => emit('skip'),
+          }"
+        />
+      </div>
     </div>
   </div>
 </template>
