@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute inset-0">
+  <div class="email-preview pointer-events-none absolute inset-0 select-none" inert>
     <SetupPreviewWindow :sidebar="false" :top="40">
       <div class="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-outline-gray-1 px-4">
         <Breadcrumbs :items="[{ label: __('Leads') }, { label: 'Marcus Lee' }]" />
@@ -100,3 +100,16 @@ const emails = [
   },
 ]
 </script>
+
+<style scoped>
+.email-preview {
+  mask-image: linear-gradient(to bottom, black 68%, transparent 98%);
+}
+
+.email-preview :deep(.preview-window) {
+  left: 48px !important;
+  top: 88px !important;
+  transform: scale(1.08);
+  transform-origin: top left;
+}
+</style>
