@@ -2,43 +2,13 @@
   <div class="flex min-h-screen flex-col bg-surface-gray-1">
     <header class="flex items-center justify-between gap-4 px-6 py-4">
       <CRMLogo class="size-8 shrink-0" />
-      <ol
-        class="hidden items-center gap-2 sm:flex"
+      <Stepper
+        v-model="activeStepName"
+        class="hidden w-full max-w-xl sm:block"
+        :steps="stepperSteps"
         :aria-label="__('Setup progress')"
-      >
-        <li
-          v-for="(step, index) in steps"
-          :key="step.name"
-          class="flex items-center gap-2"
-          :aria-current="index === current ? 'step' : undefined"
-        >
-          <span
-            class="flex size-6 items-center justify-center rounded-full text-sm"
-            :class="stepBadgeClass(step, index)"
-          >
-            <LucideCheck
-              v-if="stepStatus[step.name] === 'completed'"
-              class="size-3.5"
-            />
-            <template v-else>{{ index + 1 }}</template>
-          </span>
-          <span
-            class="text-base"
-            :class="
-              index === current
-                ? 'font-medium text-ink-gray-9'
-                : 'text-ink-gray-5'
-            "
-          >
-            {{ step.label }}
-          </span>
-          <LucideChevronRight
-            v-if="index < steps.length - 1"
-            class="size-4 text-ink-gray-4"
-            aria-hidden="true"
-          />
-        </li>
-      </ol>
+        clickable
+      />
       <Button
         v-if="!isLastStep"
         variant="ghost"
@@ -82,8 +52,6 @@
 </template>
 
 <script setup>
-import LucideCheck from '~icons/lucide/check'
-import LucideChevronRight from '~icons/lucide/chevron-right'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import SetupPreview from '@/components/Setup/SetupPreview.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
@@ -92,6 +60,7 @@ import SetupInvite from '@/components/Setup/SetupInvite.vue'
 import SetupPersona from '@/components/Setup/SetupPersona.vue'
 import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { SETUP_DONE_KEY } from '@/router'
+import Stepper from '@/components/Stepper/Stepper.vue'
 import { Button, call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, markRaw, provide, reactive, ref, watch } from 'vue'
@@ -129,19 +98,24 @@ const previewState = reactive({
 provide('setupPreview', previewState)
 
 const activeStep = computed(() => steps[current.value])
+
+const activeStepName = computed({
+  get: () => activeStep.value.name,
+  set: (name) => (current.value = steps.findIndex((s) => s.name === name)),
+})
+
+const stepperSteps = computed(() =>
+  steps.map((step) => ({
+    value: step.name,
+    label: step.label,
+    skipped: stepStatus[step.name] === 'skipped',
+  })),
+)
 const isLastStep = computed(() => current.value === steps.length - 1)
 
 watch(activeStep, (step) => capture('setup_step_viewed', { step: step.name }), {
   immediate: true,
 })
-
-function stepBadgeClass(step, index) {
-  if (index === current.value) return 'bg-surface-gray-9 text-ink-base'
-  if (stepStatus[step.name] === 'completed') {
-    return 'bg-surface-gray-7 text-ink-base'
-  }
-  return 'bg-surface-gray-3 text-ink-gray-6'
-}
 
 function completeStep(details = {}) {
   const step = activeStep.value.name
