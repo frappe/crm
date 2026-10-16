@@ -13,7 +13,7 @@
         v-if="!isLastStep"
         variant="ghost"
         :label="__('Skip setup')"
-        @click="skipSetup"
+        @click="confirmSkipSetup"
       />
       <span v-else class="w-20" />
     </header>
@@ -60,6 +60,7 @@ import SetupInvite from '@/components/Setup/SetupInvite.vue'
 import SetupPersona from '@/components/Setup/SetupPersona.vue'
 import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { SETUP_DONE_KEY } from '@/router'
+import { globalStore } from '@/stores/global'
 import Stepper from '@/components/Stepper/Stepper.vue'
 import { Button, call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
@@ -68,6 +69,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const { capture } = useTelemetry()
+const { $dialog } = globalStore()
 
 const steps = [
   { name: 'connect_email', label: __('Email'), component: markRaw(SetupEmail) },
@@ -144,6 +146,26 @@ async function finishSetup({ rating, comment }) {
 
 function stepsWithStatus(status) {
   return Object.keys(stepStatus).filter((name) => stepStatus[name] === status)
+}
+
+function confirmSkipSetup() {
+  $dialog({
+    title: __('Skip setup?'),
+    message: __(
+      "You won't see this guided setup again. You can still connect email, import leads and invite your team from Settings.",
+    ),
+    actions: [
+      { label: __('Cancel'), onClick: ({ close }) => close() },
+      {
+        label: __('Skip setup'),
+        variant: 'solid',
+        onClick: ({ close }) => {
+          close()
+          skipSetup()
+        },
+      },
+    ],
+  })
 }
 
 async function skipSetup() {
