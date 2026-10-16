@@ -51,17 +51,11 @@
 
     <div class="mt-auto flex justify-between">
       <Button
-        v-if="!result"
-        :label="__('Back')"
-        :disabled="importing"
-        @click="emit('back')"
-      />
-      <Button
         v-if="result && !succeeded"
         :label="__('Start over')"
         @click="emit('restart')"
       />
-      <span v-else-if="result" />
+      <span v-else />
       <Button
         v-if="!result"
         variant="solid"
@@ -92,7 +86,7 @@ const props = defineProps({
   result: { type: Object, default: null },
 })
 
-const emit = defineEmits(['back', 'import', 'restart', 'continue'])
+const emit = defineEmits(['import', 'restart', 'continue'])
 
 const PREVIEW_ROWS = 10
 

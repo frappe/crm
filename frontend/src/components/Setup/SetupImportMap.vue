@@ -53,8 +53,7 @@
         ])
       }}
     </p>
-    <div class="mt-auto flex justify-between">
-      <Button :label="__('Back')" @click="emit('back')" />
+    <div class="mt-auto flex justify-end">
       <Button
         variant="solid"
         :label="__('Continue')"
@@ -81,7 +80,7 @@ const props = defineProps({
   saving: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['back', 'continue'])
+const emit = defineEmits(['continue'])
 
 const UNSUPPORTED_TYPES = [
   'Table',

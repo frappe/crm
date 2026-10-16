@@ -41,8 +41,7 @@
       </div>
     </div>
     <ErrorMessage v-if="error" :message="error" />
-    <div class="flex items-center justify-between">
-      <Button variant="ghost" :label="__('Cancel')" @click="emit('cancel')" />
+    <div class="flex items-center justify-end">
       <Button variant="ghost" :href="templateUrl">
         <template #prefix><LucideDownload class="size-4" /></template>
         {{ __('Download CSV template') }}
@@ -57,7 +56,7 @@ import LucideDownload from '~icons/lucide/download'
 import { Button, ErrorMessage, FileUploadHandler } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
-const emit = defineEmits(['uploaded', 'cancel'])
+const emit = defineEmits(['uploaded'])
 
 const TEMPLATE_FIELDS = [
   'first_name',
@@ -73,6 +72,7 @@ const TEMPLATE_FIELDS = [
 const fileInput = ref(null)
 const dragging = ref(false)
 const uploading = ref(false)
+defineExpose({ uploading })
 const progress = ref(0)
 const fileName = ref('')
 const error = ref('')
