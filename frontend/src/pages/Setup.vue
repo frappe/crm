@@ -31,14 +31,16 @@
             :label="__('Back')"
             @click="current--"
           />
-          <component
-            :is="activeStep.component"
-            :key="activeStep.name"
-            class="flex-1"
-            @done="completeStep"
-            @skip="skipStep"
-            @finish="finishSetup"
-          />
+          <KeepAlive include="SetupLeads">
+            <component
+              :is="activeStep.component"
+              :key="activeStep.name"
+              class="flex-1"
+              @done="completeStep"
+              @skip="skipStep"
+              @finish="finishSetup"
+            />
+          </KeepAlive>
         </section>
         <SetupPreview
           class="hidden lg:flex"

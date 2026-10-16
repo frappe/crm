@@ -51,7 +51,6 @@
 
     <div class="mt-auto flex justify-between">
       <Button
-        v-if="!result"
         :label="__('Back')"
         :disabled="importing"
         @click="emit('back')"
@@ -61,7 +60,6 @@
         :label="__('Start over')"
         @click="emit('restart')"
       />
-      <span v-else-if="result" />
       <Button
         v-if="!result"
         variant="solid"
