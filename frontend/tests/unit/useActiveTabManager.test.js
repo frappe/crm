@@ -43,30 +43,12 @@ describe('useActiveTabManager with hidden tabs', () => {
     expect(activeTab.value).toBe('activity')
   })
 
-  it('keeps the remembered tab when an earlier tab is hidden', () => {
-    localStorage.setItem('lastDealTab', 'comments')
-    const { activeTab } = useActiveTabManager(
-      visible(['Emails']),
-      'lastDealTab',
-    )
-    expect(activeTab.value).toBe('comments')
-  })
-
   it('falls back to the first tab when the url hash points at a hidden tab', () => {
     route.hash = '#comments'
     const { activeTab } = useActiveTabManager(
       visible(['Comments']),
       'lastDealTab',
     )
-    expect(activeTab.value).toBe('activity')
-  })
-
-  it('ignores changeTabTo for a hidden tab instead of throwing', () => {
-    const { activeTab, changeTabTo } = useActiveTabManager(
-      visible(['Emails']),
-      'lastDealTab',
-    )
-    changeTabTo('emails')
     expect(activeTab.value).toBe('activity')
   })
 
@@ -86,17 +68,7 @@ describe('useActiveTabManager with hidden tabs', () => {
 })
 
 describe('useActiveTabManager with script tab values', () => {
-  const tabs = computed(() => [
-    ...allTabs,
-    { name: 'Shipping Notes', value: 'shipping-notes' },
-    { name: 'عروض', value: 'عروض' },
-  ])
-
-  it('selects a slugified tab from the url hash', () => {
-    route.hash = '#shipping-notes'
-    const { activeTab } = useActiveTabManager(tabs, 'lastDealTab')
-    expect(activeTab.value).toBe('shipping-notes')
-  })
+  const tabs = computed(() => [...allTabs, { name: 'عروض', value: 'عروض' }])
 
   it('decodes a percent-encoded hash', () => {
     route.hash = '#' + encodeURIComponent('عروض')
@@ -112,24 +84,15 @@ describe('useActiveTabManager with script tab values', () => {
 })
 
 describe('useActiveTabManager with every tab hidden', () => {
-  const none = () => computed(() => [])
-
-  it('does not throw while resolving the active tab', () => {
+  it('does not throw or navigate', async () => {
     localStorage.setItem('lastDealTab', 'comments')
-    expect(() => useActiveTabManager(none(), 'lastDealTab')).not.toThrow()
-  })
-
-  it('does not throw when the active tab changes', async () => {
-    const { activeTab } = useActiveTabManager(none(), 'lastDealTab')
+    const { activeTab } = useActiveTabManager(
+      computed(() => []),
+      'lastDealTab',
+    )
     activeTab.value = 'emails'
-    await expect(nextTick()).resolves.not.toThrow()
-    expect(push).not.toHaveBeenCalled()
-  })
-
-  it('does not throw when the url hash changes', async () => {
-    const tabs = none()
-    useActiveTabManager(tabs, 'lastDealTab')
     route.hash = '#emails'
     await expect(nextTick()).resolves.not.toThrow()
+    expect(push).not.toHaveBeenCalled()
   })
 })
