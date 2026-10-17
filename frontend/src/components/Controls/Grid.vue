@@ -585,7 +585,7 @@ function getRowFieldObj(field, row) {
   return merged
 }
 
-const showRowList = ref(new Array(rows.value?.length || []).fill(false))
+const showRowList = ref(Array(rows.value?.length ?? 0).fill(false))
 const selectedRows = reactive(new Set())
 
 const showGridFieldsEditorModal = ref(false)
@@ -730,10 +730,11 @@ const addRow = () => {
 }
 
 const deleteRows = () => {
-  rows.value = rows.value.filter((row) => !selectedRows.has(row.name))
+  const remainingRows = rows.value.filter((row) => !selectedRows.has(row.name))
+  rows.value = remainingRows
   triggerOnRowRemove(selectedRows, rows.value)
 
-  showRowList.value.pop()
+  showRowList.value = remainingRows.map(() => false)
   selectedRows.clear()
 }
 
