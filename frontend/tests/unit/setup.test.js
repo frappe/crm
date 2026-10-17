@@ -5,6 +5,7 @@ import {
   getUnmappedRequiredFields,
   groupInvitesByRole,
   isLeadNameMapped,
+  nameFromEmail,
   toColumnToFieldMap,
 } from '@/utils/setup'
 
@@ -95,5 +96,16 @@ describe('describeFailedRow', () => {
       row: null,
       message: 'Failed to import',
     })
+  })
+})
+
+describe('nameFromEmail', () => {
+  it('title-cases the local part split on separators', () => {
+    expect(nameFromEmail('ria.kapoor@acme.com')).toBe('Ria Kapoor')
+    expect(nameFromEmail('joe_mills-2@acme.com')).toBe('Joe Mills 2')
+  })
+
+  it('falls back to the input when there is no local part', () => {
+    expect(nameFromEmail('@acme.com')).toBe('@acme.com')
   })
 })
