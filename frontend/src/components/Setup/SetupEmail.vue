@@ -110,10 +110,7 @@
     </div>
 
     <div class="relative mt-auto pt-8">
-      <div
-        class="flex items-center justify-between"
-        :class="{ invisible: confirmSkip }"
-      >
+      <div class="flex items-center gap-2" :class="{ invisible: confirmSkip }">
         <Button
           variant="ghost"
           :label="__('Set up later')"
@@ -122,6 +119,7 @@
         />
         <Button
           v-if="editing"
+          class="flex-1"
           variant="solid"
           :label="__('Connect account')"
           :loading="account.loading"
@@ -129,6 +127,7 @@
         />
         <Button
           v-else
+          class="flex-1"
           variant="solid"
           :label="__('Continue')"
           :disabled="!state.service"
@@ -203,8 +202,12 @@ const error = ref('')
 
 const preview = inject('setupPreview', null)
 watch(
-  () => state.service,
-  (service) => preview && (preview.provider = service),
+  () => [state.service, state.email_id],
+  ([service, email]) => {
+    if (!preview) return
+    preview.provider = service
+    preview.email = email.trim()
+  },
 )
 
 const selected = computed(() =>
