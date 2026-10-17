@@ -6,64 +6,64 @@
     <div class="flex h-8 items-center text-2xl-semibold text-ink-gray-8">
       {{ label || __(title) }}
     </div>
-    <template v-if="!customPane">
-      <Button
-        v-if="title == 'Emails'"
-        variant="solid"
-        :label="__('New Email')"
-        iconLeft="lucide-plus"
-        @click="emailBox.openEmailBox()"
-      />
-      <Button
-        v-else-if="title == 'Comments'"
-        variant="solid"
-        :label="__('New Comment')"
-        iconLeft="lucide-plus"
-        @click="emailBox.openCommentBox()"
-      />
-      <MultiActionButton
-        v-else-if="title == 'Calls'"
-        variant="solid"
-        :options="callActions"
-      />
-      <Button
-        v-else-if="title == 'Notes'"
-        variant="solid"
-        :label="__('New Note')"
-        iconLeft="lucide-plus"
-        @click="modalRef.showNote()"
-      />
-      <Button
-        v-else-if="title == 'Tasks'"
-        variant="solid"
-        :label="__('New Task')"
-        iconLeft="lucide-plus"
-        @click="modalRef.showTask()"
-      />
-      <Button
-        v-else-if="title == 'Attachments'"
-        variant="solid"
-        :label="__('Upload Attachment')"
-        iconLeft="lucide-plus"
-        @click="showFilesUploader = true"
-      />
-      <!-- WhatsApp composes from the input; Quotations is read-only — no header action -->
-      <Dropdown
-        v-else-if="title != 'WhatsApp' && title != 'Quotations'"
-        :options="defaultActions"
-        @click.stop
-      >
-        <template #default="{ open }">
-          <Button
-            variant="solid"
-            class="flex items-center gap-1"
-            :label="__('New')"
-            iconLeft="lucide-plus"
-            :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
-          />
-        </template>
-      </Dropdown>
-    </template>
+    <!-- a script tab's component owns its pane — no header action -->
+    <template v-if="customPane" />
+    <Button
+      v-else-if="title == 'Emails'"
+      variant="solid"
+      :label="__('New Email')"
+      iconLeft="lucide-plus"
+      @click="emailBox.openEmailBox()"
+    />
+    <Button
+      v-else-if="title == 'Comments'"
+      variant="solid"
+      :label="__('New Comment')"
+      iconLeft="lucide-plus"
+      @click="emailBox.openCommentBox()"
+    />
+    <MultiActionButton
+      v-else-if="title == 'Calls'"
+      variant="solid"
+      :options="callActions"
+    />
+    <Button
+      v-else-if="title == 'Notes'"
+      variant="solid"
+      :label="__('New Note')"
+      iconLeft="lucide-plus"
+      @click="modalRef.showNote()"
+    />
+    <Button
+      v-else-if="title == 'Tasks'"
+      variant="solid"
+      :label="__('New Task')"
+      iconLeft="lucide-plus"
+      @click="modalRef.showTask()"
+    />
+    <Button
+      v-else-if="title == 'Attachments'"
+      variant="solid"
+      :label="__('Upload Attachment')"
+      iconLeft="lucide-plus"
+      @click="showFilesUploader = true"
+    />
+    <!-- WhatsApp composes from the input; Quotations is read-only — no header action -->
+    <Dropdown
+      v-else-if="title != 'WhatsApp' && title != 'Quotations'"
+      :options="defaultActions"
+      @click.stop
+    >
+      <template #default="{ open }">
+        <Button
+          variant="solid"
+          class="flex items-center gap-1"
+          :label="__('New')"
+          iconLeft="lucide-plus"
+          :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
+        />
+      </template>
+    </Dropdown>
   </div>
 </template>
 <script setup>
@@ -87,9 +87,6 @@ const props = defineProps({
   label: { type: String, default: '' },
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
-  tabs: { type: Array, default: () => [] },
-  // A tab that brings its own component owns its whole pane, so none of the
-  // built-in, title-driven actions below apply to it.
   customPane: { type: Boolean, default: false },
 })
 
@@ -141,10 +138,7 @@ const defaultActions = computed(() => {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('WhatsApp Message'),
       onClick: () => (activeTab.value = 'whatsapp'),
-      // a form script can hide the WhatsApp tab
-      condition: () =>
-        whatsappEnabled.value &&
-        props.tabs.some((tab) => tab.value === 'whatsapp'),
+      condition: () => whatsappEnabled.value,
     },
   ]
   return actions.filter((action) =>

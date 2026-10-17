@@ -7,7 +7,6 @@
     :label="currentTab?.label"
     :doc="doc"
     :modalRef="modalRef"
-    :tabs="tabs"
     :customPane="Boolean(tabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
