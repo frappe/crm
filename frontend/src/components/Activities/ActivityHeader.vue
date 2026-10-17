@@ -87,6 +87,7 @@ const props = defineProps({
   label: { type: String, default: '' },
   doc: { type: Object, default: () => ({}) },
   modalRef: { type: Object, default: () => ({}) },
+  tabs: { type: Array, default: () => [] },
   customPane: { type: Boolean, default: false },
 })
 
@@ -138,7 +139,10 @@ const defaultActions = computed(() => {
       icon: h(WhatsAppIcon, { class: 'h-4 w-4' }),
       label: __('WhatsApp Message'),
       onClick: () => (activeTab.value = 'whatsapp'),
-      condition: () => whatsappEnabled.value,
+      // a form script can hide the tab
+      condition: () =>
+        whatsappEnabled.value &&
+        props.tabs.some((tab) => tab.value === 'whatsapp'),
     },
   ]
   return actions.filter((action) =>

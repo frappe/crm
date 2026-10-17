@@ -63,6 +63,21 @@ describe('mergeFormTabs', () => {
     ).toBe('Shipping')
   })
 
+  it('hides only the tab whose condition throws', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const result = mergeFormTabs(base, [
+      {
+        name: 'Emails',
+        condition: () => {
+          throw new Error('boom')
+        },
+      },
+    ])
+    expect(result.map((t) => t.name)).toEqual(['Activity'])
+    expect(error).toHaveBeenCalledOnce()
+    error.mockRestore()
+  })
+
   it('does not let a reactive tab list proxy the component', () => {
     const result = mergeFormTabs(base, reactive([{ name: 'X', component }]))
     expect(isProxy(result[2].component)).toBe(false)

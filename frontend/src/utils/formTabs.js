@@ -49,7 +49,16 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
     merged.push({ label: tab.name, ...patch, value })
   }
 
-  return merged.filter((tab) => (tab.condition ? tab.condition() : true))
+  return merged.filter((tab) => {
+    if (!tab.condition) return true
+    // a broken script condition hides its own tab, not the whole tab bar
+    try {
+      return tab.condition()
+    } catch (error) {
+      console.error(`CRM: tab "${tab.name}" condition failed`, error)
+      return false
+    }
+  })
 }
 
 function both(a, b) {
