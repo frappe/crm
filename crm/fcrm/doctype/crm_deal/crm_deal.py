@@ -99,6 +99,10 @@ class CRMDeal(Document):
 			add_status_change_log(self)
 			if frappe.db.get_value("CRM Deal Status", self.status, "type") == "Won":
 				self.closed_date = frappe.utils.nowdate()
+			elif self.closed_date and (old_status := self.db_get("status")) and frappe.db.get_value(
+				"CRM Deal Status", old_status, "type"
+			) == "Won":
+				self.closed_date = None
 		self.validate_forecasting_fields()
 		self.validate_lost_reason()
 		self.update_exchange_rate()

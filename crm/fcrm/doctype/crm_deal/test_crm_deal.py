@@ -451,6 +451,70 @@ class TestCRMDeal(IntegrationTestCase):
 		deal.reload()
 		self.assertTrue(deal.closed_date)
 
+	def test_closed_date_cleared_when_status_changes_from_won(self):
+		"""Test that closed_date is cleared when status changes from Won to an open status"""
+		# Disable forecasting so deal creation doesn't require forecasting fields
+		settings = frappe.get_single("FCRM Settings")
+		original_value = settings.enable_forecasting
+		settings.enable_forecasting = 0
+		settings.save()
+
+		try:
+			if not frappe.db.exists("CRM Deal Status", "Won"):
+				frappe.get_doc({"doctype": "CRM Deal Status", "name": "Won", "type": "Won"}).insert()
+			if not frappe.db.exists("CRM Deal Status", "Negotiation"):
+				frappe.get_doc(
+					{"doctype": "CRM Deal Status", "name": "Negotiation", "type": "Open"}
+				).insert()
+
+			deal = create_test_deal(organization="Reopened Deal Org")
+
+			deal.status = "Won"
+			deal.save()
+
+			deal.reload()
+			self.assertTrue(deal.closed_date)
+
+			deal.status = "Negotiation"
+			deal.save()
+
+			deal.reload()
+			self.assertFalse(deal.closed_date)
+		finally:
+			# Restore original setting
+			settings.enable_forecasting = original_value
+			settings.save()
+
+	def test_closed_date_kept_when_status_changes_between_open_statuses(self):
+		"""Test that a manually set closed_date is not cleared when status changes between open statuses"""
+		# Disable forecasting so deal creation doesn't require forecasting fields
+		settings = frappe.get_single("FCRM Settings")
+		original_value = settings.enable_forecasting
+		settings.enable_forecasting = 0
+		settings.save()
+
+		try:
+			if not frappe.db.exists("CRM Deal Status", "Negotiation"):
+				frappe.get_doc(
+					{"doctype": "CRM Deal Status", "name": "Negotiation", "type": "Open"}
+				).insert()
+			if not frappe.db.exists("CRM Deal Status", "Qualification"):
+				frappe.get_doc(
+					{"doctype": "CRM Deal Status", "name": "Qualification", "type": "Open"}
+				).insert()
+
+			deal = create_test_deal(organization="Manual Closed Date Org", closed_date="2026-09-15")
+
+			deal.status = "Negotiation"
+			deal.save()
+
+			deal.reload()
+			self.assertEqual(str(deal.closed_date), "2026-09-15")
+		finally:
+			# Restore original setting
+			settings.enable_forecasting = original_value
+			settings.save()
+
 	def test_forecasting_fields_validation(self):
 		"""Test forecasting fields validation when enabled"""
 		# Enable forecasting
