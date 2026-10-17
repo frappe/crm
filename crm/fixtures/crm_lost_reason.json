@@ -1,0 +1,27 @@
+[
+ {
+  "doctype": "CRM Lost Reason",
+  "name": "Price too high",
+  "lost_reason": "Price too high"
+ },
+ {
+  "doctype": "CRM Lost Reason",
+  "name": "Competition",
+  "lost_reason": "Competition"
+ },
+ {
+  "doctype": "CRM Lost Reason",
+  "name": "Budget Constraints",
+  "lost_reason": "Budget Constraints"
+ },
+ {
+  "doctype": "CRM Lost Reason",
+  "name": "No response",
+  "lost_reason": "No response"
+ },
+ {
+  "doctype": "CRM Lost Reason",
+  "name": "Not interested",
+  "lost_reason": "Not interested"
+ }
+]
