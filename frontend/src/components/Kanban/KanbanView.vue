@@ -79,33 +79,41 @@
               @end="updateColumn"
             >
               <template #item="{ element: fields }">
-                <component
-                  :is="options.getRoute ? 'router-link' : 'div'"
-                  class="pt-3 px-3.5 pb-2.5 rounded-6 border bg-surface-base text-base flex flex-col text-ink-gray-9"
+                <div
+                  class="relative pt-3 px-3.5 pb-2.5 rounded-6 border bg-surface-base text-base flex flex-col text-ink-gray-9"
                   :data-name="fields.name"
-                  v-bind="{
-                    to: options.getRoute ? options.getRoute(fields) : undefined,
-                    onClick: options.onClick
-                      ? () => options.onClick(fields)
-                      : undefined,
-                  }"
+                  @click="options.onClick && options.onClick(fields)"
                 >
-                  <slot
-                    name="title"
-                    v-bind="{ fields, titleField, itemName: fields.name }"
+                  <!-- covers the whole card so the actions row can hold its own buttons outside the link -->
+                  <router-link
+                    v-if="options.getRoute"
+                    :to="options.getRoute(fields)"
+                    class="absolute inset-0 rounded-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4"
+                    :aria-label="fields[titleField] || __('No Title')"
+                  />
+                  <!-- clicks fall through to the card link; only tooltip triggers take hover -->
+                  <div
+                    class="relative pointer-events-none [&_[data-slot=trigger]]:pointer-events-auto"
                   >
-                    <div class="h-5 flex items-center">
-                      <div v-if="fields[titleField]">
-                        {{ fields[titleField] }}
+                    <slot
+                      name="title"
+                      v-bind="{ fields, titleField, itemName: fields.name }"
+                    >
+                      <div class="h-5 flex items-center">
+                        <div v-if="fields[titleField]">
+                          {{ fields[titleField] }}
+                        </div>
+                        <div v-else class="text-ink-gray-4">
+                          {{ __('No Title') }}
+                        </div>
                       </div>
-                      <div v-else class="text-ink-gray-4">
-                        {{ __('No Title') }}
-                      </div>
-                    </div>
-                  </slot>
+                    </slot>
+                  </div>
                   <div class="border-b h-px my-2.5" />
 
-                  <div class="flex flex-col gap-3.5">
+                  <div
+                    class="relative pointer-events-none [&_[data-slot=trigger]]:pointer-events-auto flex flex-col gap-3.5"
+                  >
                     <template v-for="value in column.fields" :key="value">
                       <slot
                         name="fields"
@@ -122,17 +130,21 @@
                     </template>
                   </div>
                   <div class="border-b h-px mt-2.5 mb-2" />
-                  <slot name="actions" v-bind="{ itemName: fields.name }">
-                    <div class="flex gap-2 items-center justify-between">
-                      <div></div>
-                      <Button
-                        icon="lucide-plus"
-                        variant="ghost"
-                        @click.stop.prevent
-                      />
-                    </div>
-                  </slot>
-                </component>
+                  <div
+                    class="relative z-10 pointer-events-none [&_button]:pointer-events-auto"
+                  >
+                    <slot name="actions" v-bind="{ itemName: fields.name }">
+                      <div class="flex gap-2 items-center justify-between">
+                        <div></div>
+                        <Button
+                          icon="lucide-plus"
+                          variant="ghost"
+                          @click.stop.prevent
+                        />
+                      </div>
+                    </slot>
+                  </div>
+                </div>
               </template>
             </Draggable>
             <div
