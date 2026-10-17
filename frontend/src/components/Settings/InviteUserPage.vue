@@ -97,8 +97,8 @@
 <script setup>
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import {
   toast,
   createListResource,
@@ -107,7 +107,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 const { users, isAdmin } = usersStore()
 const { capture } = useTelemetry()
 
@@ -186,7 +186,7 @@ const inviteByEmail = createResource({
     invitees.value = []
     pendingInvitations.reload()
     toast.success(__('Invitations sent successfully'))
-    updateOnboardingStep('invite_your_team')
+    completeStep('invite_your_team')
     capture('user_invited')
   },
   onError(err) {
