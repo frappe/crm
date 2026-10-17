@@ -6,7 +6,9 @@
     @mousemove="onMove"
   >
     <div class="glow pointer-events-none absolute inset-0" />
-    <div class="camera relative h-[640px] w-[540px] shrink-0">
+    <div
+      class="camera relative -ml-[116px] -mt-[152px] h-[640px] w-[540px] shrink-0"
+    >
       <div class="window absolute left-12 top-24 h-[600px] w-[560px]">
         <div class="hair relative flex h-11 items-center gap-3 border-b px-4">
           <div class="flex gap-1.5">
