@@ -52,6 +52,7 @@ export function useActiveTabManager(tabs, storageKey) {
   const activeTab = ref(getActiveTab())
 
   watch(activeTab, (tabName) => {
+    if (!hasTab(tabName)) return
     setActiveTabInUrl(tabName)
     preserveLastVisitedTab(tabName)
   })
@@ -64,7 +65,7 @@ export function useActiveTabManager(tabs, storageKey) {
       let tabName = tabValue.replace('#', '')
       if (!hasTab(tabName)) tabName = firstTab()
 
-      preserveLastVisitedTab(tabName)
+      if (tabName) preserveLastVisitedTab(tabName)
       activeTab.value = tabName
     },
   )
