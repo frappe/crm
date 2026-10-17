@@ -14,6 +14,7 @@
     <div v-if="tabComponent" class="flex flex-col h-full">
       <component
         :is="tabComponent"
+        :key="currentTab.value"
         :doctype="doctype"
         :docname="docname"
         :doc="doc"
