@@ -7,7 +7,9 @@
       {{ __('The CRM works best when your whole sales team is in it.') }}
     </p>
     <p class="mt-3 text-p-sm text-ink-gray-6">
-      <strong class="font-semibold text-ink-gray-9">{{ __('No per-user pricing.') }}</strong>
+      <strong class="font-semibold text-ink-gray-9">{{
+        __('No per-user pricing.')
+      }}</strong>
       {{ __('Invite your whole team.') }}
     </p>
 
@@ -52,20 +54,20 @@
 
     <ErrorMessage v-if="error" class="mt-3" :message="error" />
 
-    <div class="mt-auto flex flex-col gap-2 pt-8">
-      <Button
-        variant="solid"
-        size="md"
-        :label="__('Send invites')"
-        :loading="sending"
-        :disabled="!canSend"
-        @click="sendInvites"
-      />
+    <div class="mt-auto flex items-center gap-2 pt-8">
       <Button
         variant="ghost"
         :label="__('Skip for now')"
         :disabled="sending"
         @click="emit('skip')"
+      />
+      <Button
+        class="flex-1"
+        variant="solid"
+        :label="__('Send invites')"
+        :loading="sending"
+        :disabled="!canSend"
+        @click="sendInvites"
       />
     </div>
   </div>
@@ -78,7 +80,7 @@ import { validateEmail } from '@/utils'
 import { groupInvitesByRole } from '@/utils/setup'
 import { Button, ErrorMessage, FormControl, call } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { computed, ref } from 'vue'
+import { computed, inject, ref, watchEffect } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
 
@@ -101,6 +103,14 @@ const roleOptions = computed(() => [
 ])
 
 const filledRows = computed(() => rows.value.filter((r) => r.email.trim()))
+
+const preview = inject('setupPreview', null)
+watchEffect(() => {
+  if (!preview) return
+  preview.invites = filledRows.value
+    .filter((row) => !isInvalid(row))
+    .map((row) => ({ email: row.email.trim(), role: row.role }))
+})
 
 const canSend = computed(
   () => filledRows.value.length && !filledRows.value.some(isInvalid),
