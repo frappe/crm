@@ -1,86 +1,97 @@
 <template>
-  <div class="flex flex-col">
-    <h1 class="text-2xl-semibold text-ink-gray-9">
-      {{ __("You're all set") }}
-    </h1>
-    <p class="mt-2 text-p-base text-ink-gray-6">
-      {{ __('Before you dive in, tell us how setup went.') }}
-    </p>
-
-    <fieldset class="mt-8 rounded-7 border border-outline-gray-2 p-5">
-      <legend class="px-1 text-base font-medium text-ink-gray-9">
-        {{ __('How easy was the setup?') }}
-        <span v-if="telemetry.isEnabled" class="text-ink-red-4">*</span>
-      </legend>
-      <div class="mt-2 flex items-center justify-center gap-3">
-        <span class="text-sm text-ink-gray-5">{{ __('Difficult') }}</span>
-        <div
-          class="flex gap-1"
-          role="radiogroup"
-          :aria-required="telemetry.isEnabled"
-          :aria-label="__('Setup rating')"
-        >
-          <button
-            v-for="value in 5"
-            :key="value"
-            type="button"
-            role="radio"
-            class="rounded-4 p-1 transition-colors hover:text-ink-amber-5"
-            :class="value <= rating ? 'text-ink-amber-5' : 'text-ink-gray-4'"
-            :aria-checked="value === rating"
-            :aria-label="__('{0} out of 5', [value])"
-            @click="rating = value"
+  <Dialog
+    v-model:open="open"
+    size="md"
+    :title="__('You\'re all set')"
+    :message="__('Before you dive in, tell us how setup went.')"
+  >
+    <template #default>
+      <div class="flex flex-col gap-5">
+        <div class="flex items-center justify-center gap-3">
+          <span class="text-sm text-ink-gray-5">{{ __('Difficult') }}</span>
+          <div
+            class="flex gap-1"
+            role="radiogroup"
+            :aria-label="__('Setup rating')"
           >
-            <LucideStar
-              class="size-6"
-              :class="{ 'fill-current': value <= rating }"
-            />
-          </button>
+            <button
+              v-for="value in 5"
+              :key="value"
+              type="button"
+              role="radio"
+              class="star rounded-4 p-1 transition-colors hover:text-ink-amber-5"
+              :class="value <= rating ? 'text-ink-amber-5' : 'text-ink-gray-4'"
+              :aria-checked="value === rating"
+              :aria-label="__('{0} out of 5', [value])"
+              @click="rating = value"
+            >
+              <LucideStar
+                class="size-6"
+                :class="{ 'fill-current': value <= rating }"
+              />
+            </button>
+          </div>
+          <span class="text-sm text-ink-gray-5">{{ __('Easy') }}</span>
         </div>
-        <span class="text-sm text-ink-gray-5">{{ __('Easy') }}</span>
+        <FormControl
+          v-model="comment"
+          type="textarea"
+          :rows="3"
+          :label="__('Anything we could do better? (optional)')"
+          :placeholder="__('Share what was confusing or missing')"
+        />
       </div>
-      <FormControl
-        v-model="comment"
-        class="mt-5"
-        type="textarea"
-        :rows="3"
-        :label="__('Anything we could do better? (optional)')"
-        :placeholder="__('Share what was confusing or missing')"
-      />
-    </fieldset>
-
-    <Button
-      variant="solid"
-      size="md"
-      class="mt-auto"
-      :label="__('Go to CRM')"
-      :loading="finishing"
-      :disabled="ratingRequired"
-      @click="finish"
-    />
-  </div>
+    </template>
+    <template #actions>
+      <div class="flex justify-end gap-2">
+        <Button variant="ghost" :label="__('Not now')" @click="open = false" />
+        <Button
+          variant="solid"
+          :label="__('Send feedback')"
+          :disabled="!rating"
+          @click="submit"
+        />
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
 import LucideStar from '~icons/lucide/star'
-import { Button, FormControl } from 'frappe-ui'
+import { setupFeedback } from '@/composables/modals'
+import { Button, Dialog, FormControl } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, ref } from 'vue'
 
-const emit = defineEmits(['finish'])
-const telemetry = useTelemetry()
+const { capture } = useTelemetry()
 
 const rating = ref(0)
 const comment = ref('')
-const finishing = ref(false)
-const ratingRequired = computed(() => telemetry.isEnabled && !rating.value)
 
-function finish() {
-  if (ratingRequired.value || finishing.value) return
-  finishing.value = true
-  emit('finish', {
-    rating: rating.value || null,
+const open = computed({
+  get: () => Boolean(setupFeedback.value),
+  set: (value) => !value && (setupFeedback.value = null),
+})
+
+function submit() {
+  if (!rating.value) return
+  capture('onboarding_feedback', {
+    ...setupFeedback.value,
+    rating: rating.value,
     comment: comment.value.trim() || null,
   })
+  open.value = false
 }
 </script>
+
+<style scoped>
+.star:active {
+  transform: scale(0.88);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star:active {
+    transform: none;
+  }
+}
+</style>
