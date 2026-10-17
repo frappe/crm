@@ -3,6 +3,7 @@ import {
   mergeFormTabs,
   filterVisibleTabs,
   slugifyTabName,
+  composerTab,
 } from '@/utils/formTabs'
 
 const base = [
@@ -290,5 +291,40 @@ describe('hiding a built-in tab from a form script', () => {
   it('can hide every tab without throwing', () => {
     const scriptTabs = base.map((tab) => ({ name: tab.name, hide: true }))
     expect(filterVisibleTabs(mergeFormTabs(base, scriptTabs))).toEqual([])
+  })
+})
+
+describe('composerTab', () => {
+  const tabs = [
+    { name: 'Activity', value: 'activity' },
+    { name: 'Emails', value: 'emails' },
+    { name: 'Comments', value: 'comments' },
+    { name: 'Calls', value: 'calls' },
+  ]
+
+  it('keeps the active tab when it has a composer', () => {
+    expect(composerTab(tabs, 'activity')).toBe('activity')
+    expect(composerTab(tabs, 'comments')).toBe('comments')
+  })
+
+  it('opens Emails from a tab without a composer', () => {
+    expect(composerTab(tabs, 'calls')).toBe('emails')
+  })
+
+  it('falls back to another composer tab when Emails is hidden', () => {
+    const visible = tabs.filter((tab) => tab.value !== 'emails')
+    expect(composerTab(visible, 'calls')).toBe('activity')
+  })
+
+  it('skips a composer tab a script replaced with a component', () => {
+    const replaced = tabs.map((tab) =>
+      tab.value === 'emails' ? { ...tab, component: {} } : tab,
+    )
+    expect(composerTab(replaced, 'emails')).toBe('activity')
+  })
+
+  it('returns null when no tab has a composer', () => {
+    expect(composerTab([{ name: 'Calls', value: 'calls' }], 'calls')).toBeNull()
+    expect(composerTab(undefined, 'calls')).toBeNull()
   })
 })

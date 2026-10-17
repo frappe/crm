@@ -93,6 +93,7 @@
 
             <Button
               :tooltip="__('Send an Email')"
+              :disabled="!emailTab"
               :icon="Email2Icon"
               @click="
                 doc.email
@@ -394,7 +395,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { mergeFormTabs, filterVisibleTabs } from '@/utils/formTabs'
+import { mergeFormTabs, filterVisibleTabs, composerTab } from '@/utils/formTabs'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { canViewQuotations } from '@/composables/erpnext'
 import { callEnabled } from '@/composables/telephony'
@@ -1005,12 +1006,11 @@ function deleteDeal() {
 
 const activities = ref(null)
 
+const emailTab = computed(() => composerTab(tabs.value, activeTab.value))
+
 function openEmailBox() {
-  if (!['emails', 'comments', 'activities'].includes(activeTab.value)) {
-    activities.value.changeTabTo('emails')
-  }
-  // The composer only exists on tabs that render it, and a form script can
-  // hide those, in which case there is nothing to open.
+  if (!emailTab.value) return
+  changeTabTo(emailTab.value)
   nextTick(() => activities.value?.emailBox?.openEmailBox())
 }
 

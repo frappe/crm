@@ -120,3 +120,28 @@ function isHidden(tab) {
     return false
   }
 }
+
+// Built-in tabs whose pane renders the email composer, in the order to fall back to.
+const COMPOSER_TABS = ['emails', 'activity', 'comments']
+
+/**
+ * Pick the tab to open the email composer on: the active tab if its pane
+ * renders the composer, else the first visible built-in tab that does.
+ *
+ * A tab a script hid is not in `tabs`, and one a script gave a `component`
+ * renders that component instead of the composer, so neither qualifies.
+ *
+ * @param {Array} tabs        visible tabs, as returned by filterVisibleTabs()
+ * @param {string} activeTab  value of the active tab
+ * @returns {string|null} the tab's value, or null when no tab has a composer
+ */
+export function composerTab(tabs = [], activeTab) {
+  const values = new Set(
+    (Array.isArray(tabs) ? tabs : [])
+      .filter((tab) => tab && !tab.component)
+      .map((tab) => tab.value),
+  )
+  if (COMPOSER_TABS.includes(activeTab) && values.has(activeTab))
+    return activeTab
+  return COMPOSER_TABS.find((value) => values.has(value)) ?? null
+}
