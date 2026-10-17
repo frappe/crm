@@ -99,11 +99,16 @@ def get_filterable_fields(doctype: str):
 		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
 	]
 
+	# nested set doctypes, found the same way frappe's boot builds `nested_set_doctypes`;
+	# Link fields to them can use the "descendants of" filter operators
+	tree_doctypes = set(frappe.get_all("DocField", {"fieldname": "lft"}, pluck="parent"))
+
 	for field in standard_fields + meta.get("fields", []):
 		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
 			field["name"] = field.get("fieldname")
 			field["label"] = _(field.get("label"))
 			field["value"] = field.get("fieldname")
+			field["is_tree"] = field.get("fieldtype") == "Link" and field.get("options") in tree_doctypes
 			fields.append(field)
 
 	return fields

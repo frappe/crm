@@ -231,6 +231,18 @@ export function isMultiValueFilter(field, operator) {
 }
 
 /**
+ * Whether a filter field can use the `descendants of (inclusive)` operator.
+ *
+ * Frappe resolves it through the target's `lft` / `rgt`, so filtering a lead by
+ * a parent territory also matches its child territories. It only applies to a
+ * Link whose target is a tree — `get_filterable_fields` flags those with
+ * `is_tree`. Frappe takes a single node here, not a list.
+ */
+export function supportsTreeFilter(field) {
+  return field?.fieldtype === 'Link' && Boolean(field.is_tree)
+}
+
+/**
  * Coerce a stored `in` / `not in` value into the array a multi-select expects.
  *
  * A filter restored from a saved view or a URL can still hold the legacy
