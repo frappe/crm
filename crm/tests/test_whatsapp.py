@@ -394,6 +394,14 @@ class TestGuardRecipientChange(FrappeTestCase):
 		with patch(COUNT, return_value=3), patch.dict(frappe.flags, {"in_import": True}):
 			guard_recipient_change("CRM Lead", "LEAD-1", OLD, NEW)
 
+	def test_site_without_whatsapp_is_allowed(self):
+		with (
+			patch("crm.api.whatsapp.is_whatsapp_installed", return_value=False),
+			patch(COUNT) as count,
+		):
+			guard_recipient_change("CRM Lead", "LEAD-1", OLD, NEW)
+		count.assert_not_called()
+
 
 class TestRecipientChangePaths(FrappeTestCase):
 	"""Every path that moves a Lead or Deal off its number has to go through the guard."""
