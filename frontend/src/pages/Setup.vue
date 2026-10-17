@@ -1,68 +1,56 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-surface-gray-1">
-    <header class="flex items-center justify-between gap-4 px-6 py-4">
-      <CRMLogo class="size-8 shrink-0" />
-      <Stepper
-        v-model="activeStepName"
-        class="hidden w-full max-w-xl sm:block"
-        :steps="stepperSteps"
-        :aria-label="__('Setup progress')"
-        clickable
-      />
-      <Button
-        v-if="!isLastStep"
-        variant="ghost"
-        :label="__('Skip setup')"
-        @click="confirmSkipSetup"
-      />
-      <span v-else class="w-20" />
-    </header>
-
-    <main class="flex flex-1 justify-center px-4 pb-10 sm:items-center">
-      <div
-        class="grid w-full max-w-5xl overflow-hidden rounded-8 bg-surface-base shadow-sm lg:grid-cols-2"
-      >
-        <section class="flex min-h-[600px] flex-col p-8 sm:p-10">
-          <div
-            v-if="current > 0 && !isLastStep"
-            class="mb-4 flex items-center justify-between"
-          >
-            <Button
-              variant="ghost"
-              icon-left="lucide-arrow-left"
-              :label="__('Back')"
-              @click="goBack"
-            />
-            <Button
-              v-if="
-                activeStep.name === 'about_you' && activeStepView?.canSkipQuestion
-              "
-              variant="ghost"
-              class="!text-ink-gray-5"
-              :label="__('Skip')"
-              @click="activeStepView?.skipQuestion()"
-            />
-          </div>
-          <KeepAlive include="SetupLeads,SetupPersona">
-            <component
-              ref="activeStepView"
-              :is="activeStep.component"
-              :key="activeStep.name"
-              class="flex-1"
-              @done="completeStep"
-              @skip="skipStep"
-              @finish="finishSetup"
-            />
-          </KeepAlive>
-        </section>
-        <SetupPreview
-          class="hidden lg:flex"
-          :step="activeStep.name"
-          :state="previewState"
-          :status="stepStatus"
+  <div class="grid min-h-screen bg-surface-base lg:grid-cols-2">
+    <section class="flex min-h-screen flex-col px-6 py-5">
+      <div class="flex h-8 items-center justify-between">
+        <Button
+          v-if="current > 0"
+          variant="ghost"
+          icon-left="lucide-arrow-left"
+          :label="__('Back')"
+          @click="goBack"
+        />
+        <span v-else />
+        <Button
+          variant="ghost"
+          class="!text-ink-gray-5"
+          :label="__('Skip setup')"
+          @click="confirmSkipSetup"
         />
       </div>
-    </main>
+      <main
+        class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10"
+      >
+        <Progress
+          :value="progress"
+          :intervals="steps.length"
+          size="sm"
+          :aria-label="__('Step {0} of {1}', [current + 1, steps.length])"
+        />
+        <div class="mt-8 flex min-h-[520px] flex-col">
+          <Transition name="step" mode="out-in">
+            <KeepAlive include="SetupLeads">
+              <component
+                :is="activeStep.component"
+                ref="activeStepView"
+                :key="activeStep.name"
+                class="flex-1"
+                @done="completeStep"
+                @skip="skipStep"
+              />
+            </KeepAlive>
+          </Transition>
+        </div>
+      </main>
+      <footer class="flex items-center gap-2 text-sm text-ink-gray-5">
+        <CRMLogo class="size-4" />
+        Frappe CRM
+      </footer>
+    </section>
+    <SetupPreview
+      class="sticky top-0 hidden h-screen lg:block"
+      :step="activeStep.name"
+      :state="previewState"
+    />
   </div>
 </template>
 
@@ -72,12 +60,10 @@ import SetupPreview from '@/components/Setup/SetupPreview.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
 import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
-import SetupPersona from '@/components/Setup/SetupPersona.vue'
-import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
+import { setupFeedback } from '@/composables/modals'
 import { SETUP_DONE_KEY } from '@/router'
 import { globalStore } from '@/stores/global'
-import Stepper from '@/components/Stepper/Stepper.vue'
-import { Button, call, usePageMeta } from 'frappe-ui'
+import { Button, Progress, call, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, markRaw, provide, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -87,57 +73,28 @@ const { capture } = useTelemetry()
 const { $dialog } = globalStore()
 
 const steps = [
-  { name: 'connect_email', label: __('Email'), component: markRaw(SetupEmail) },
-  { name: 'bring_leads', label: __('Leads'), component: markRaw(SetupLeads) },
-  { name: 'invite_team', label: __('Team'), component: markRaw(SetupInvite) },
-  {
-    name: 'about_you',
-    label: __('About you'),
-    component: markRaw(SetupPersona),
-  },
-  {
-    name: 'feedback',
-    label: __('Feedback'),
-    component: markRaw(SetupFeedback),
-  },
+  { name: 'connect_email', component: markRaw(SetupEmail) },
+  { name: 'bring_leads', component: markRaw(SetupLeads) },
+  { name: 'invite_team', component: markRaw(SetupInvite) },
 ]
 
 const current = ref(0)
-const furthestStep = ref(0)
-watch(
-  current,
-  (index) => {
-    furthestStep.value = Math.max(furthestStep.value, index)
-  },
-  { flush: 'sync' },
-)
 const activeStepView = ref(null)
 const stepStatus = reactive({})
 const previewState = reactive({
   provider: null,
+  email: '',
   importStage: null,
   importFile: '',
   importRows: 0,
   importProgress: null,
   importResult: null,
+  invites: [],
 })
 provide('setupPreview', previewState)
 
 const activeStep = computed(() => steps[current.value])
-
-const activeStepName = computed({
-  get: () => activeStep.value.name,
-  set: (name) => (current.value = steps.findIndex((s) => s.name === name)),
-})
-
-const stepperSteps = computed(() =>
-  steps.map((step, index) => ({
-    value: step.name,
-    label: step.label,
-    skipped: stepStatus[step.name] === 'skipped',
-    selectable: index <= furthestStep.value,
-  })),
-)
+const progress = computed(() => ((current.value + 1) / steps.length) * 100)
 const isLastStep = computed(() => current.value === steps.length - 1)
 
 watch(activeStep, (step) => capture('setup_step_viewed', { step: step.name }), {
@@ -152,25 +109,19 @@ function completeStep(details = {}) {
   const step = activeStep.value.name
   stepStatus[step] = 'completed'
   capture('setup_step_completed', { step, ...details })
-  current.value++
+  advance()
 }
 
 function skipStep() {
   const step = activeStep.value.name
   if (stepStatus[step] !== 'completed') stepStatus[step] = 'skipped'
   capture('setup_step_skipped', { step })
-  current.value++
+  advance()
 }
 
-async function finishSetup({ rating, comment }) {
-  capture('onboarding_feedback', {
-    rating,
-    comment,
-    completed_steps: stepsWithStatus('completed'),
-    skipped_steps: stepsWithStatus('skipped'),
-  })
-  await markSetupDone()
-  router.replace({ name: 'Home' })
+function advance() {
+  if (isLastStep.value) finishSetup(false)
+  else current.value++
 }
 
 function stepsWithStatus(status) {
@@ -190,15 +141,20 @@ function confirmSkipSetup() {
         variant: 'solid',
         onClick: ({ close }) => {
           close()
-          skipSetup()
+          capture('setup_skipped', { step: activeStep.value.name })
+          finishSetup(true)
         },
       },
     ],
   })
 }
 
-async function skipSetup() {
-  capture('setup_skipped', { step: activeStep.value.name })
+async function finishSetup(skipped) {
+  setupFeedback.value = {
+    skipped_setup: skipped,
+    completed_steps: stepsWithStatus('completed'),
+    skipped_steps: stepsWithStatus('skipped'),
+  }
   await markSetupDone()
   router.replace({ name: 'Home' })
 }
@@ -219,3 +175,29 @@ async function markSetupDone() {
 
 usePageMeta(() => ({ title: __('Set up Frappe CRM') }))
 </script>
+
+<style scoped>
+.step-enter-active,
+.step-leave-active {
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.step-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.step-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-enter-active,
+  .step-leave-active {
+    transition: none;
+  }
+}
+</style>
