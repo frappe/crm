@@ -8,14 +8,15 @@
       class="mt-3"
       :steps="stages"
       :loading="busy"
+      :clickable="!busy"
       :completed="['Success', 'Partial Success'].includes(result?.status)"
       :aria-label="__('Import steps')"
     />
 
     <div class="mt-6 flex flex-1 flex-col">
       <SetupImportUpload
-        ref="uploadView"
         v-if="stage === 'upload'"
+        ref="uploadView"
         :class="{ 'pointer-events-none opacity-60': busy }"
         @uploaded="onUploaded"
       />
@@ -49,11 +50,11 @@ import Stepper from '@/components/Stepper/Stepper.vue'
 import { useLeadImport } from '@/composables/leadImport'
 import { toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { inject, onUnmounted, ref, watchEffect } from 'vue'
+import { computed, inject, onUnmounted, ref, watch, watchEffect } from 'vue'
 
 const emit = defineEmits(['imported', 'cancel'])
 
-const stages = [
+const STAGES = [
   { value: 'upload', label: __('Upload') },
   { value: 'map', label: __('Map columns') },
   { value: 'review', label: __('Review') },
@@ -68,6 +69,15 @@ const uploadView = ref(null)
 const busy = ref(false)
 const result = ref(null)
 const fileName = ref('')
+const reached = ref(0)
+
+const stages = computed(() =>
+  STAGES.map((item, i) => ({ ...item, selectable: i <= reached.value })),
+)
+watch(stage, (value) => {
+  const index = STAGES.findIndex((item) => item.value === value)
+  reached.value = Math.max(reached.value, index)
+})
 
 const previewState = inject('setupPreview', null)
 watchEffect(() => {
@@ -100,6 +110,7 @@ async function withBusy(action) {
 
 function onUploaded(fileUrl) {
   fileName.value = decodeURIComponent(fileUrl.split('/').pop())
+  reached.value = 0
   withBusy(async () => {
     await createImport(fileUrl)
     stage.value = 'map'
@@ -140,6 +151,7 @@ defineExpose({ back })
 function restart() {
   result.value = null
   fileName.value = ''
+  reached.value = 0
   stage.value = 'upload'
 }
 </script>
