@@ -39,13 +39,14 @@
         <span class="text-p-sm text-ink-gray-6">{{ option.description }}</span>
       </button>
     </div>
-    <div class="mt-auto flex items-center justify-between pt-8">
+    <div class="mt-auto flex items-center gap-2 pt-8">
       <Button
         variant="ghost"
         :label="__('I\'ll add leads later')"
         @click="emit('skip')"
       />
       <Button
+        class="flex-1"
         variant="solid"
         :label="__('Continue')"
         :disabled="selected !== 'sample'"
