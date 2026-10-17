@@ -20,6 +20,7 @@
   <MentionHoverCard />
   <FieldLayoutDialogContainer />
   <CommandPalette />
+  <SetupFeedback />
 </template>
 <script setup>
 import CommandPalette from '@/components/CommandPalette/CommandPalette.vue'
@@ -30,6 +31,7 @@ import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
 import NoteViewModal from '@/components/Modals/NoteViewModal.vue'
 import MentionHoverCard from '@/components/MentionHoverCard.vue'
+import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { useNoteView } from '@/composables/noteView'
 import {
   showCreateDocumentModal,
