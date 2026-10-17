@@ -49,15 +49,15 @@
 
     <SetupImportResult v-if="result" :result="result" />
 
-    <div class="mt-auto flex justify-between">
+    <div class="mt-auto flex items-center gap-2 pt-8">
       <Button
         v-if="result && !succeeded"
         :label="__('Start over')"
         @click="emit('restart')"
       />
-      <span v-else />
       <Button
         v-if="!result"
+        class="flex-1"
         variant="solid"
         :label="__('Import {0} leads', [totalRows])"
         :loading="importing"
@@ -65,6 +65,7 @@
       />
       <Button
         v-else-if="succeeded"
+        class="flex-1"
         variant="solid"
         :label="__('Continue')"
         @click="emit('continue')"
