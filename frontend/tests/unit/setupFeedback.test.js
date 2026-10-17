@@ -1,55 +1,71 @@
 import { expect, it, vi } from 'vitest'
-import { createApp, h, nextTick, reactive } from 'vue'
+import { createApp, h, nextTick } from 'vue'
 
-const state = vi.hoisted(() => ({ telemetry: null }))
+const capture = vi.hoisted(() => vi.fn())
 vi.mock('@framework/ui/telemetry', () => ({
-  useTelemetry: () => state.telemetry,
+  useTelemetry: () => ({ capture }),
 }))
 vi.mock('frappe-ui', () => ({
   Button: {
     props: ['label', 'disabled'],
-    setup: (props, { attrs }) => () =>
-      h('button', { ...attrs, disabled: props.disabled }, props.label),
+    setup:
+      (props, { attrs }) =>
+      () =>
+        h('button', { ...attrs, disabled: props.disabled }, props.label),
+  },
+  Dialog: {
+    props: ['open'],
+    setup:
+      (props, { slots }) =>
+      () =>
+        props.open ? h('div', [slots.default?.(), slots.actions?.()]) : null,
   },
   FormControl: { render: () => null },
 }))
 import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
+import { setupFeedback } from '@/composables/modals'
 
-function mountFeedback(enabled) {
-  state.telemetry = reactive({ isEnabled: enabled })
+function mountFeedback() {
+  setupFeedback.value = {
+    skipped_setup: false,
+    completed_steps: ['invite_team'],
+  }
   const root = document.createElement('div')
-  const finish = vi.fn()
-  const app = createApp(SetupFeedback, { onFinish: finish })
+  const app = createApp(SetupFeedback)
   app.config.globalProperties.__ = (text) => text
   app.mount(root)
-  return { root, finish, app }
+  const button = (label) =>
+    [...root.querySelectorAll('button')].find((b) => b.textContent === label)
+  return { root, app, button }
 }
 
-it('requires a rating only while telemetry is enabled', async () => {
-  const { root, finish, app } = mountFeedback(true)
+it('sends feedback only after a rating is picked', async () => {
+  const { root, app, button } = mountFeedback()
   try {
-    const submit = root.querySelector('button:not([role="radio"])')
-    expect(submit.disabled).toBe(true)
-    expect(root.querySelector('[role="radiogroup"]').getAttribute('aria-required')).toBe('true')
+    expect(button('Send feedback').disabled).toBe(true)
     root.querySelector('[role="radio"]').click()
     await nextTick()
-    expect(submit.disabled).toBe(false)
-    submit.click()
-    expect(finish).toHaveBeenCalledWith({ rating: 1, comment: null })
+    button('Send feedback').click()
+    expect(capture).toHaveBeenCalledWith('onboarding_feedback', {
+      skipped_setup: false,
+      completed_steps: ['invite_team'],
+      rating: 1,
+      comment: null,
+    })
+    expect(setupFeedback.value).toBe(null)
   } finally {
     app.unmount()
   }
 })
 
-it('allows unrated feedback after telemetry is disabled', async () => {
-  const { root, finish, app } = mountFeedback(true)
+it('closes without sending when dismissed', async () => {
+  capture.mockClear()
+  const { app, button } = mountFeedback()
   try {
-    state.telemetry.isEnabled = false
+    button('Not now').click()
     await nextTick()
-    const submit = root.querySelector('button:not([role="radio"])')
-    expect(submit.disabled).toBe(false)
-    submit.click()
-    expect(finish).toHaveBeenCalledWith({ rating: null, comment: null })
+    expect(capture).not.toHaveBeenCalled()
+    expect(setupFeedback.value).toBe(null)
   } finally {
     app.unmount()
   }
