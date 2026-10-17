@@ -53,8 +53,9 @@
         ])
       }}
     </p>
-    <div class="mt-auto flex justify-end">
+    <div class="mt-auto flex pt-8">
       <Button
+        class="flex-1"
         variant="solid"
         :label="__('Continue')"
         :disabled="!nameMapped"
