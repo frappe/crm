@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import { filterVisibleTabs, mergeFormTabs } from '@/utils/formTabs'
+import { mergeFormTabs } from '@/utils/formTabs'
 
 let listResourceOptions = null
 
@@ -62,83 +62,35 @@ async function tabsAfter(script, { renders = 1 } = {}) {
 
   return {
     document,
-    names: filterVisibleTabs(mergeFormTabs(baseTabs, document.tabs)).map(
-      (tab) => tab.name,
-    ),
+    names: mergeFormTabs(baseTabs, document.tabs)
+      .filter((tab) => (tab.condition ? tab.condition() : true))
+      .map((tab) => tab.name),
   }
 }
 
-describe('hiding a tab from a real form script', () => {
-  it('removes the tab the script hid', async () => {
+describe('tabs from a real form script', () => {
+  it('hides a built-in tab with a condition', async () => {
     const { names } = await tabsAfter(`
       class CRMDeal {
         onLoad() {
-          this.tabs.push({ name: 'Comments', hide: true })
-        }
-      }
-    `)
-    expect(names).toEqual(['Activity', 'Emails', 'Tasks'])
-  })
-
-  it('stays correct when onRender fires repeatedly', async () => {
-    const script = `
-      class CRMDeal {
-        onRender() {
-          this.tabs.push({ name: 'Comments', hide: true })
-        }
-      }
-    `
-    const { document, names } = await tabsAfter(script, { renders: 3 })
-    // The script really did push three times...
-    expect(document.tabs).toHaveLength(3)
-    // ...and the tab bar is unchanged by the repeats.
-    expect(names).toEqual(['Activity', 'Emails', 'Tasks'])
-  })
-
-  it('hides conditionally when hide is a function', async () => {
-    const { names } = await tabsAfter(`
-      class CRMDeal {
-        onLoad() {
-          this.tabs.push({ name: 'Tasks', hide: () => this.doc.name === 'CRM-DEAL-0001' })
+          this.tabs.push({ name: 'Tasks', condition: () => this.doc.name !== 'CRM-DEAL-0001' })
         }
       }
     `)
     expect(names).toEqual(['Activity', 'Emails', 'Comments'])
   })
 
-  it('hides and adds in the same script', async () => {
-    const { names } = await tabsAfter(`
+  it('stays correct when onRender pushes repeatedly', async () => {
+    const script = `
       class CRMDeal {
-        onLoad() {
-          this.tabs.push({ name: 'Emails', hide: true })
-          this.tabs.push({ name: 'Excom', label: 'Excom' })
+        onRender() {
+          this.tabs.push({ name: 'Comments', condition: () => false })
+          this.tabs.push({ name: 'Excom', component: { render: () => h('div') } })
         }
       }
-    `)
-    expect(names).toEqual(['Activity', 'Comments', 'Tasks', 'Excom'])
-  })
-
-  it('does nothing when the script misspells the tab name', async () => {
-    const { names } = await tabsAfter(`
-      class CRMDeal {
-        onLoad() {
-          this.tabs.push({ name: 'Comment', hide: true })
-        }
-      }
-    `)
-    expect(names).toEqual(['Activity', 'Emails', 'Comments', 'Tasks'])
-  })
-
-  it('survives a script whose hide guard throws', async () => {
-    const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const { names } = await tabsAfter(`
-      class CRMDeal {
-        onLoad() {
-          this.tabs.push({ name: 'Tasks', hide: () => { throw new Error('boom') } })
-        }
-      }
-    `)
-    expect(names).toEqual(['Activity', 'Emails', 'Comments', 'Tasks'])
-    spy.mockRestore()
+    `
+    const { document, names } = await tabsAfter(script, { renders: 3 })
+    expect(document.tabs).toHaveLength(6)
+    expect(names).toEqual(['Activity', 'Emails', 'Tasks', 'Excom'])
   })
 })

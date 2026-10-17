@@ -311,7 +311,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
-import { mergeFormTabs, filterVisibleTabs } from '@/utils/formTabs'
+import { mergeFormTabs } from '@/utils/formTabs'
 import { isMobileView } from '@/composables/settings'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
@@ -517,7 +517,9 @@ const tabs = computed(() => {
       condition: () => canViewQuotations.value,
     },
   ]
-  return filterVisibleTabs(mergeFormTabs(tabOptions, document.tabs))
+  return mergeFormTabs(tabOptions, document.tabs).filter((tab) =>
+    tab.condition ? tab.condition() : true,
+  )
 })
 const { activeTab } = useActiveTabManager(tabs, 'lastDealTab')
 
