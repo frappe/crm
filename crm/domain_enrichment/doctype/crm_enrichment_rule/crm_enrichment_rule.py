@@ -41,7 +41,7 @@ class CRMEnrichmentRule(Document):
 
 		enabled: DF.Check
 		industry: DF.Link | None
-		match_scope: DF.Literal["Headline", "Full Text", "HTML", "Headers", "URL"]
+		match_scope: DF.Literal["Headline", "Full Text", "HTML", "URL"]
 		patterns: DF.Table[CRMEnrichmentRulePattern]
 		rule_name: DF.Data
 		rule_type: DF.Literal["Industry", "Social"]

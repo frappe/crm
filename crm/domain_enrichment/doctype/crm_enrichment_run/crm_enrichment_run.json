@@ -16,6 +16,9 @@
   "timing_section",
   "started_on",
   "finished_on",
+  "column_break_timing",
+  "undone_on",
+  "undone_by",
   "summary_section",
   "company_name",
   "industry",
@@ -24,6 +27,8 @@
   "emails_found",
   "phones_found",
   "social_profiles",
+  "changes_section",
+  "changes",
   "raw_section",
   "raw_json",
   "notes"
@@ -56,7 +61,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Queued\nRunning\nCompleted\nFailed",
+   "options": "Queued\nRunning\nCompleted\nFailed\nReverted",
    "read_only": 1
   },
   {
@@ -81,6 +86,23 @@
    "fieldname": "finished_on",
    "fieldtype": "Datetime",
    "label": "Finished On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_timing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "undone_on",
+   "fieldtype": "Datetime",
+   "label": "Undone On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "undone_by",
+   "fieldtype": "Link",
+   "label": "Undone By",
+   "options": "User",
    "read_only": 1
   },
   {
@@ -132,6 +154,19 @@
    "read_only": 1
   },
   {
+   "fieldname": "changes_section",
+   "fieldtype": "Section Break",
+   "label": "Changes"
+  },
+  {
+   "description": "Field values this run wrote to the reference record, kept so the run can be undone.",
+   "fieldname": "changes",
+   "fieldtype": "Table",
+   "label": "Changes",
+   "options": "CRM Enrichment Run Change",
+   "read_only": 1
+  },
+  {
    "fieldname": "raw_section",
    "fieldtype": "Section Break",
    "label": "Raw"
@@ -152,7 +187,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-17 00:00:00.000000",
+ "modified": "2026-10-13 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Domain Enrichment",
  "name": "CRM Enrichment Run",

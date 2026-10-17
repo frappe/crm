@@ -530,7 +530,11 @@ class TestExotelCallStatus(IntegrationTestCase):
 
 	def test_normalize_call_status_logs_unknown_status(self):
 		"""An unknown status means the mapping is stale, so leave a trace instead of guessing"""
-		frappe.db.delete("Error Log", {"method": "Unknown Exotel call status"})
+		# Error Log may live outside the main database, so delete through the document API
+		for name in frappe.get_all(
+			"Error Log", filters={"method": "Unknown Exotel call status"}, pluck="name"
+		):
+			frappe.delete_doc("Error Log", name, ignore_permissions=True)
 
 		self.assertIsNone(normalize_call_status("some-new-exotel-status"))
 

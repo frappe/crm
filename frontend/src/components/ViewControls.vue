@@ -23,6 +23,13 @@
         <div class="-ml-2 h-[70%] border-l" />
         <div class="flex shrink-0 gap-2">
           <Button
+            v-if="filterChip"
+            :label="filterChip.label"
+            iconRight="lucide-x"
+            :tooltip="__('Show all records')"
+            @click="filterChip.clear"
+          />
+          <Button
             :tooltip="__('Refresh')"
             icon="lucide-refresh-ccw"
             :loading="isLoading"
@@ -35,14 +42,22 @@
             :hideLabel="isMobileView"
             @update="updateGroupBy"
           />
+          <GroupSummaryButton
+            v-if="canGroup"
+            :modelValue="groupSummary"
+            :doctype="doctype"
+            :exclude="options.groupByExclude"
+            hideLabel
+            @update:modelValue="updateGroupSummary"
+          />
           <Filter
             v-model="list"
             :doctype="doctype"
-            :default_filters="filters"
+            :default_filters="defaultFilters"
             @update="updateFilter"
           />
           <SortBy
-            v-if="route.params.viewType !== 'kanban'"
+            v-if="route.params.viewType !== 'kanban' && !groupSummary"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
@@ -169,6 +184,13 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
+          v-if="filterChip"
+          :label="filterChip.label"
+          iconRight="lucide-x"
+          :tooltip="__('Show all records')"
+          @click="filterChip.clear"
+        />
+        <Button
           :tooltip="__('Refresh')"
           icon="lucide-refresh-ccw"
           :loading="isLoading"
@@ -180,14 +202,22 @@
           :doctype="doctype"
           @update="updateGroupBy"
         />
+        <GroupSummaryButton
+          v-if="canGroup"
+          :modelValue="groupSummary"
+          :doctype="doctype"
+          :exclude="options.groupByExclude"
+          @update:modelValue="updateGroupSummary"
+        />
         <Filter
           v-model="list"
           :doctype="doctype"
-          :default_filters="filters"
+          :default_filters="defaultFilters"
           @update="updateFilter"
         />
+        <!-- a grouped list sorts from its column headers instead -->
         <SortBy
-          v-if="route.params.viewType !== 'kanban'"
+          v-if="route.params.viewType !== 'kanban' && !groupSummary"
           v-model="list"
           :doctype="doctype"
           @update="updateSort"
@@ -222,6 +252,7 @@
                     }),
                   condition: () =>
                     !options.hideColumnsButton &&
+                    doctype !== 'Data Import' &&
                     route.params.viewType !== 'kanban',
                 },
                 {
@@ -302,7 +333,7 @@
         ]"
         :placeholder="__('Excel')"
       />
-      <div class="mt-3">
+      <div v-if="!groupSummary" class="mt-3">
         <FormControl
           v-model="export_all"
           type="checkbox"
@@ -325,6 +356,11 @@ import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
+import {
+  GroupBy as GroupSummaryButton,
+  parseGroupBy,
+  serializeGroupBy,
+} from '@framework/ui/components/GroupBy'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
@@ -378,11 +414,14 @@ import {
 } from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
+import { importListFilters, withoutImportQuery } from '@/utils/dataImport'
 import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
   doctype: { type: String, required: true },
   filters: { type: Object, default: () => ({}) },
+  // names the page's own `filters` in a chip that emits clearFilters
+  filtersLabel: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -392,6 +431,8 @@ const props = defineProps({
     }),
   },
 })
+
+const emit = defineEmits(['clearFilters'])
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
@@ -410,6 +451,24 @@ const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
 const router = useRouter()
+
+const defaultFilters = computed(() => ({
+  ...props.filters,
+  ...importListFilters(route.query),
+}))
+
+const filterChip = computed(() => {
+  if (props.filtersLabel) {
+    return { label: props.filtersLabel, clear: () => emit('clearFilters') }
+  }
+  if (route.query.import) {
+    return {
+      label: __('From import'),
+      clear: () => router.replace({ query: withoutImportQuery(route.query) }),
+    }
+  }
+  return null
+})
 
 const defaultParams = ref('')
 
@@ -463,6 +522,20 @@ usePageMeta(() => {
   }
 })
 
+// a saved view carries its own type; otherwise the route's
+function viewTypeOf(_view) {
+  return _view?.type || route.params.viewType || 'list'
+}
+
+// only list views of a host that renders the grouped table can be grouped
+const canGroup = computed(
+  () =>
+    Boolean(props.options?.groupSummary) &&
+    viewTypeOf(
+      getView(route.query.view, route.params.viewType, props.doctype),
+    ) === 'list',
+)
+
 const view = ref({
   name: '',
   label: '',
@@ -509,7 +582,7 @@ watch(updatedPageCount, (value) => {
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const view_name = _view?.name || ''
-  const view_type = _view?.type || route.params.viewType || 'list'
+  const view_type = viewTypeOf(_view)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const group_by_field = _view?.group_by_field || 'owner'
@@ -544,11 +617,12 @@ function getParams() {
     doctype: props.doctype,
     filters: filters,
     order_by: order_by,
-    default_filters: props.filters,
+    default_filters: defaultFilters.value,
     view: {
       custom_view_name: view_name,
       view_type: view_type,
       group_by_field: group_by_field,
+      group_by_settings: parseGroupBy(_view?.group_by_settings),
     },
     column_field: column_field,
     title_field: title_field,
@@ -563,10 +637,19 @@ function getParams() {
 
 let listResource
 
+const pageFiltersKey = Object.keys(defaultFilters.value).length
+  ? [JSON.stringify(defaultFilters.value)]
+  : []
+
 listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
-  cache: [props.doctype, route.query.view, route.params.viewType],
+  cache: [
+    props.doctype,
+    route.query.view,
+    route.params.viewType,
+    ...pageFiltersKey,
+  ],
   auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
@@ -576,11 +659,12 @@ listResource = createResource({
       doctype: props.doctype,
       filters: params.filters,
       order_by: params.order_by,
-      default_filters: props.filters,
+      default_filters: defaultFilters.value,
       view: {
         custom_view_name: cv?.name || '',
-        view_type: cv?.type || route.params.viewType || 'list',
+        view_type: viewTypeOf(cv),
         group_by_field: params?.view?.group_by_field || 'owner',
+        group_by_settings: params?.view?.group_by_settings || null,
       },
       column_field: data.column_field,
       title_field: data.title_field,
@@ -595,6 +679,12 @@ listResource = createResource({
 })
 
 list.value = listResource
+
+// one summary row per group, like desk's report view; stored on the list params
+const groupSummary = computed(() =>
+  canGroup.value ? listResource.params?.view?.group_by_settings || null : null,
+)
+
 // Keep an unsaved view change on cached re-entry; don't reset to the saved view (frappe/crm#2833).
 // kanban_columns is excluded: pagination (load more) mutates it without being a user edit.
 const dirtySignature = (p) =>
@@ -602,6 +692,7 @@ const dirtySignature = (p) =>
     p.filters || {},
     p.order_by,
     p.view?.group_by_field,
+    parseGroupBy(p.view?.group_by_settings),
     p.column_field,
     p.title_field,
     p.kanban_fields,
@@ -659,34 +750,62 @@ function updateSelections(selections) {
   selectedRows.value = Array.from(selections)
 }
 
-async function exportRows() {
-  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
+function resolveCurrentUser(filters) {
   const userId = getUser()?.name
-  let filters = {
-    ...props.filters,
-    ...list.value.params.filters,
-  }
-
   // Only resolve @me placeholders when we know the current user; otherwise
   // leave filters untouched rather than emitting undefined / "%undefined%".
-  if (userId) {
-    Object.keys(filters).forEach((key) => {
-      const value = filters[key]
+  if (!userId) return filters
+  Object.keys(filters).forEach((key) => {
+    const value = filters[key]
 
-      // Handle direct filter format: { owner: "@me" }
-      if (value === '@me') {
-        filters[key] = userId
-        return
-      }
-      if (!Array.isArray(value)) return
-      // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
-      filters[key] = value.map((entry) =>
-        entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
-      )
-    })
-  }
+    // Handle direct filter format: { owner: "@me" }
+    if (value === '@me') {
+      filters[key] = userId
+      return
+    }
+    if (!Array.isArray(value)) return
+    // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
+    filters[key] = value.map((entry) =>
+      entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
+    )
+  })
+  return filters
+}
 
-  filters = JSON.stringify(filters)
+const currentFilters = computed(() =>
+  resolveCurrentUser({
+    ...(list.value.params?.filters || {}),
+    ...defaultFilters.value,
+  }),
+)
+
+async function exportRows() {
+  let filters = JSON.stringify(currentFilters.value)
+
+  // a grouped list exports what it shows: one row per group, every group
+  window.location.href = groupSummary.value
+    ? groupedExportUrl(filters)
+    : listExportUrl(filters)
+
+  showExportDialog.value = false
+  export_all.value = false
+  export_type.value = 'Excel'
+}
+
+function groupedExportUrl(filters) {
+  const grouped = serializeGroupBy(groupSummary.value)
+  return (
+    `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}` +
+    `&title=${encodeURIComponent(props.doctype)}&doctype=${encodeURIComponent(props.doctype)}` +
+    `&fields=${encodeURIComponent(JSON.stringify(grouped.fields))}` +
+    `&filters=${encodeURIComponent(filters)}` +
+    `&group_by=${encodeURIComponent(grouped.group_by)}` +
+    `&order_by=${encodeURIComponent(grouped.order_by || '')}&view=Report`
+  )
+}
+
+function listExportUrl(filters) {
+  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
@@ -700,12 +819,7 @@ async function exportRows() {
   if (selectedRows.value?.length && !export_all.value) {
     url += `&selected_items=${JSON.stringify(selectedRows.value)}`
   }
-
-  window.location.href = url
-
-  showExportDialog.value = false
-  export_all.value = false
-  export_type.value = 'Excel'
+  return url
 }
 
 let standardViews = []
@@ -1165,6 +1279,20 @@ function updateSort(order_by) {
   }
 }
 
+function updateGroupSummary(settings) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  // set in place: swapping the params object makes the grouped table refetch
+  defaultParams.value.view.group_by_settings = settings
+  getListParams().view.group_by_settings = settings
+
+  if (!route.query.view) {
+    createOrUpdateStandardView()
+  }
+}
+
 function updateGroupBy(group_by_field) {
   viewUpdated.value = true
   if (!defaultParams.value) {
@@ -1216,10 +1344,15 @@ function updateColumns(obj) {
   }
 }
 
+// saves read the grouping from the list params, its only copy
+function groupBySettingsToSave() {
+  return getListParams().view?.group_by_settings || null
+}
+
 function persistCustomView() {
   view.value.doctype = props.doctype
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
-    view: view.value,
+    view: { ...view.value, group_by_settings: groupBySettingsToSave() },
   }).then(() => {
     reloadView()
     viewUpdated.value = false
@@ -1383,7 +1516,7 @@ function createOrUpdateStandardView() {
   call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
-      view: view.value,
+      view: { ...view.value, group_by_settings: groupBySettingsToSave() },
     },
   ).then(() => {
     reloadViewAfterSave()
@@ -1544,7 +1677,10 @@ function createView() {
   view.value.name = ''
   view.value.label = ''
   view.value.icon = ''
-  viewModalObj.value = view.value
+  viewModalObj.value = {
+    ...view.value,
+    group_by_settings: groupBySettingsToSave(),
+  }
   viewModalObj.value.mode = 'create'
   showViewModal.value = true
 }
@@ -1644,6 +1780,7 @@ function saveView() {
     rows: defaultParams.value.rows,
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
+    group_by_settings: groupBySettingsToSave(),
   }
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'edit'
@@ -1702,6 +1839,9 @@ function likeDoc({ name, liked }) {
 }
 
 defineExpose({
+  groupSummary,
+  currentFilters,
+  updateGroupSummary,
   applyFilter,
   applyLikeFilter,
   likeDoc,
