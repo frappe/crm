@@ -1,5 +1,5 @@
 <template>
-  <aside class="border-l border-outline-gray-2" aria-hidden="true" inert>
+  <aside class="border-l border-outline-gray-2" aria-hidden="true">
     <SetupScene :step="scene" :fx="FX" class="h-full w-full" />
   </aside>
 </template>
