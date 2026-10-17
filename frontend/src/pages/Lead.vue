@@ -284,6 +284,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { watchFormCustomizations } from '@/composables/watchFormCustomizations'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
@@ -367,25 +368,21 @@ watch(error, (err) => {
   }
 })
 
-watch(
-  () => document.doc,
-  async (_doc) => {
-    if (scripts.data?.length) {
-      let s = await setupCustomizations(scripts.data, {
-        doc: _doc,
-        $dialog,
-        $socket,
-        router,
-        updateField,
-        deleteDoc: deleteLead,
-        call,
-      })
-      document._actions = s.actions || []
-      document._statuses = s.statuses || []
-    }
-  },
-  { once: true },
-)
+watchFormCustomizations(document, scripts, async (_doc) => {
+  if (scripts.data?.length) {
+    let s = await setupCustomizations(scripts.data, {
+      doc: _doc,
+      $dialog,
+      $socket,
+      router,
+      updateField,
+      deleteDoc: deleteLead,
+      call,
+    })
+    document._actions = s.actions || []
+    document._statuses = s.statuses || []
+  }
+})
 
 const breadcrumbs = computed(() => {
   let items = [{ label: __('Leads'), route: { name: 'Leads' } }]
