@@ -56,3 +56,9 @@ function parseJSON(value) {
     return null
   }
 }
+
+export function nameFromEmail(email) {
+  const local = String(email || '').split('@')[0]
+  const words = local.split(/[._-]+/).filter(Boolean)
+  return words.map((w) => w[0].toUpperCase() + w.slice(1)).join(' ') || email
+}
