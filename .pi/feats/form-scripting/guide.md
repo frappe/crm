@@ -689,7 +689,7 @@ class CRMDeal {
 | Key         | Description                                                                           |
 | ----------- | ------------------------------------------------------------------------------------- |
 | `name`      | **Required.** Matching a built-in tab patches it; it keeps its own `name` and `value` |
-| `label`     | Tab bar and pane heading text — wrap in `__()`                                        |
+| `label`     | Tab bar and pane heading text — wrap in `__()`. Defaults to `name` on a new tab      |
 | `iconLeft`  | Icon component, as built-in tabs use                                                  |
 | `value`     | URL hash / remembered-tab key. Defaults to a slug of `name`; must be unique           |
 | `component` | The pane, built with `h` (no template compiler). Required for a new tab               |

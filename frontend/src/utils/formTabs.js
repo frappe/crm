@@ -2,8 +2,9 @@ import { markRaw, toRaw } from 'vue'
 
 /**
  * Merge a form script's `this.tabs` into a page's built-in tabs, without
- * mutating either. A script tab named like a built-in one (ignoring case)
- * patches it in place; any other tab with a `component` is appended.
+ * mutating either, and return the visible ones. A script tab named like a
+ * built-in one (ignoring case) patches it in place; any other tab with a
+ * `component` is appended.
  */
 export function mergeFormTabs(baseTabs, scriptTabs = []) {
   const merged = baseTabs.map((tab) => ({ ...tab }))
@@ -16,8 +17,10 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
     if (!tab?.name) continue
 
     const patch = { ...tab }
-    // keep a reactive document.tabs from proxying the component
-    if (patch.component) patch.component = markRaw(toRaw(patch.component))
+    // keep a reactive document.tabs from proxying components
+    for (const prop of ['component', 'iconLeft']) {
+      if (patch[prop]) patch[prop] = markRaw(toRaw(patch[prop]))
+    }
 
     const key = tab.name.trim().toLowerCase()
     if (byName.has(key)) {
@@ -43,10 +46,10 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
 
     byName.set(key, merged.length)
     values.add(value)
-    merged.push({ ...patch, value })
+    merged.push({ label: tab.name, ...patch, value })
   }
 
-  return merged
+  return merged.filter((tab) => (tab.condition ? tab.condition() : true))
 }
 
 function both(a, b) {

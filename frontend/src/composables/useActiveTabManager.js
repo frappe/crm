@@ -23,7 +23,7 @@ export function useActiveTabManager(tabs, storageKey) {
   }
 
   function getActiveTabFromUrl() {
-    return decodeHash(route.hash)
+    return route.hash.replace('#', '')
   }
 
   function hasTab(tabName) {
@@ -62,7 +62,7 @@ export function useActiveTabManager(tabs, storageKey) {
     (tabValue) => {
       if (!tabValue) return
 
-      let tabName = decodeHash(tabValue)
+      let tabName = tabValue.replace('#', '')
       if (!hasTab(tabName)) tabName = firstTab()
 
       if (tabName) preserveLastVisitedTab(tabName)
@@ -75,14 +75,4 @@ export function useActiveTabManager(tabs, storageKey) {
   })
 
   return { activeTab, changeTabTo }
-}
-
-// Script tab values can hold non-ASCII letters, which may arrive percent-encoded.
-function decodeHash(hash) {
-  const value = hash.replace('#', '')
-  try {
-    return decodeURIComponent(value)
-  } catch {
-    return value
-  }
 }

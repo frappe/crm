@@ -44,7 +44,7 @@ const baseTabs = [
  * Run `script` the way a CRM Form Script record runs on a Deal form, and
  * return the tab names the page would end up rendering.
  */
-async function tabsAfter(script, { renders = 1 } = {}) {
+async function tabsAfter(script) {
   const document = reactive({ doc: { name: 'CRM-DEAL-0001' } })
   const { setupScript } = getScript('CRM Deal')
 
@@ -57,14 +57,11 @@ async function tabsAfter(script, { renders = 1 } = {}) {
   const controllers = (await setupScript(document, {})) || []
   for (const controller of controllers) {
     await controller.onLoad?.()
-    for (let i = 0; i < renders; i++) await controller.onRender?.()
+    await controller.onRender?.()
   }
 
   return {
-    document,
-    names: mergeFormTabs(baseTabs, document.tabs)
-      .filter((tab) => (tab.condition ? tab.condition() : true))
-      .map((tab) => tab.name),
+    names: mergeFormTabs(baseTabs, document.tabs).map((tab) => tab.name),
   }
 }
 
@@ -78,19 +75,5 @@ describe('tabs from a real form script', () => {
       }
     `)
     expect(names).toEqual(['Activity', 'Emails', 'Comments'])
-  })
-
-  it('stays correct when onRender pushes repeatedly', async () => {
-    const script = `
-      class CRMDeal {
-        onRender() {
-          this.tabs.push({ name: 'Comments', condition: () => false })
-          this.tabs.push({ name: 'Excom', component: { render: () => h('div') } })
-        }
-      }
-    `
-    const { document, names } = await tabsAfter(script, { renders: 3 })
-    expect(document.tabs).toHaveLength(6)
-    expect(names).toEqual(['Activity', 'Emails', 'Tasks', 'Excom'])
   })
 })

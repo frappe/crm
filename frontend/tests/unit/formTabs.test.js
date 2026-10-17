@@ -7,10 +7,6 @@ const base = [
   { name: 'Emails', value: 'emails' },
 ]
 
-function visible(tabs) {
-  return tabs.filter((tab) => (tab.condition ? tab.condition() : true))
-}
-
 describe('mergeFormTabs', () => {
   it('patches a built-in tab by name, ignoring case, keeping name and value', () => {
     const result = mergeFormTabs(base, [
@@ -58,7 +54,13 @@ describe('mergeFormTabs', () => {
       { name: 'WhatsApp', condition: () => true },
       { name: 'Emails', condition: () => false },
     ])
-    expect(visible(result).map((t) => t.name)).toEqual(['Activity'])
+    expect(result.map((t) => t.name)).toEqual(['Activity'])
+  })
+
+  it('labels an appended tab with its name by default', () => {
+    expect(
+      mergeFormTabs(base, [{ name: 'Shipping', component }])[2].label,
+    ).toBe('Shipping')
   })
 
   it('does not let a reactive tab list proxy the component', () => {
@@ -77,11 +79,17 @@ describe('composerTab', () => {
   ]
 
   it('keeps the active tab when it has a composer', () => {
+    expect(composerTab(tabs, 'activity')).toBe('activity')
     expect(composerTab(tabs, 'comments')).toBe('comments')
   })
 
   it('opens Emails from a tab without a composer', () => {
     expect(composerTab(tabs, 'calls')).toBe('emails')
+  })
+
+  it('falls back to Activity when Emails is hidden', () => {
+    const rest = tabs.filter((tab) => tab.value !== 'emails')
+    expect(composerTab(rest, 'calls')).toBe('activity')
   })
 
   it('skips a hidden or component tab', () => {

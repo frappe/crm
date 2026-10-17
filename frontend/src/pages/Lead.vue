@@ -618,9 +618,7 @@ const tabs = computed(() => {
       condition: () => whatsappEnabled.value,
     },
   ]
-  return mergeFormTabs(tabOptions, document.tabs).filter((tab) =>
-    tab.condition ? tab.condition() : true,
-  )
+  return mergeFormTabs(tabOptions, document.tabs)
 })
 
 const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
