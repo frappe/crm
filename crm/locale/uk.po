@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-11 15:53+0000\n"
-"PO-Revision-Date: 2026-10-16 05:57\n"
+"PO-Revision-Date: 2026-10-17 06:21\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "1-10"
-msgstr ""
+msgstr "1-10"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -85,7 +85,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "1000+"
-msgstr ""
+msgstr "1000+"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -95,7 +95,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "11-50"
-msgstr ""
+msgstr "11-50"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -105,7 +105,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "201-500"
-msgstr ""
+msgstr "201-500"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -115,7 +115,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "501-1000"
-msgstr ""
+msgstr "501-1000"
 
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Deal'
 #. Option for the 'No. of Employees' (Select) field in DocType 'CRM Lead'
@@ -125,7 +125,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "51-200"
-msgstr ""
+msgstr "51-200"
 
 #. Paragraph text in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json
@@ -764,7 +764,7 @@ msgstr ""
 #. Label of the app_name (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "App Name"
-msgstr ""
+msgstr "Назва застосунку"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:16
 msgid "Appearance"
@@ -967,7 +967,7 @@ msgstr ""
 
 #: crm/automation/actions.py:299
 msgid "At least one recipient is required"
-msgstr ""
+msgstr "Потрібен принаймні один одержувач"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
@@ -1082,7 +1082,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:105
 msgid "Automation User"
-msgstr ""
+msgstr "Користувач автоматизації"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:413
 msgid "Automation deleted"
@@ -1572,7 +1572,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:785 frontend/src/pages/Lead.vue:590
 #: frontend/src/pages/MobileDeal.vue:482 frontend/src/pages/MobileLead.vue:329
 msgid "Calls"
-msgstr ""
+msgstr "Дзвінки"
 
 #: frontend/src/components/FilesUploader/FilesUploaderArea.vue:55
 msgid "Camera"
@@ -1973,13 +1973,13 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Company Description"
-msgstr ""
+msgstr "Опис організації"
 
 #. Label of the company_name (Data) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 #: frontend/src/components/Settings/ERPNextSettings.vue:152
 msgid "Company Name"
-msgstr ""
+msgstr "Назва організації"
 
 #. Description of the 'Company Description' (Small Text) field in DocType 'CRM
 #. Deal'
@@ -2119,7 +2119,7 @@ msgstr ""
 
 #: frontend/src/utils/index.js:788
 msgid "Confirm {0}"
-msgstr ""
+msgstr "Підтвердити: {0}"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:436
 msgid "Connect ERPNext to Frappe CRM"
@@ -2495,7 +2495,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:30
 msgid "Cron Expression"
-msgstr ""
+msgstr "Cron-вираз"
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -2538,7 +2538,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:68
 msgid "Custom Event"
-msgstr ""
+msgstr "Власна подія"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:753
 msgid "Custom Fields"
@@ -2550,7 +2550,7 @@ msgstr ""
 
 #: frontend/src/pages/Dashboard.vue:233
 msgid "Custom Range"
-msgstr ""
+msgstr "Довільний діапазон"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:755
 msgid "Custom Statuses"
@@ -2630,11 +2630,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:57
 msgid "Date Direction"
-msgstr ""
+msgstr "Напрямок дати"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:41
 msgid "Date Field"
-msgstr ""
+msgstr "Поле дати"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:111
 msgid "Date Format"
@@ -2890,7 +2890,7 @@ msgstr ""
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
 msgid "Delete Attachment"
-msgstr ""
+msgstr "Видалити вкладення"
 
 #: frontend/src/pages/MobileContact.vue:272
 msgid "Delete Contact"
@@ -3742,7 +3742,7 @@ msgstr ""
 
 #: frontend/src/components/FieldLayout/Field.vue:643
 msgid "Enter {0}"
-msgstr ""
+msgstr "Введіть {0}"
 
 #: frontend/src/components/Filter.vue:67 frontend/src/components/Filter.vue:101
 #: frontend/src/components/Filter.vue:308
@@ -5202,7 +5202,7 @@ msgstr ""
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json
 #: frontend/src/components/ColumnSettings.vue:101
 msgid "Label"
-msgstr ""
+msgstr "Мітка"
 
 #: frontend/src/components/Settings/PreferencesSettings.vue:57
 msgid "Language"
@@ -5322,7 +5322,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:197
 #: frontend/src/pages/Tasks.vue:134
 msgid "Lead"
-msgstr ""
+msgstr "Лід"
 
 #. Label of the lead_data (Code) field in DocType 'Failed Lead Sync Log'
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json
@@ -5343,7 +5343,7 @@ msgstr "Ім’я потенційного клієнта"
 #. Label of the lead_owner (Link) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Lead Owner"
-msgstr ""
+msgstr "Відповідальний за лід"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:160
 msgid "Lead Owner cannot be same as the Lead Email Address"
@@ -5872,7 +5872,7 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:774
 msgid "Mobile App Installation"
-msgstr ""
+msgstr "Встановлення мобільного застосунку"
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Contacts'
 #. Label of the mobile_no (Data) field in DocType 'CRM Lead'
@@ -6374,7 +6374,7 @@ msgstr ""
 
 #: crm/automation/actions.py:307
 msgid "No recipients to notify"
-msgstr ""
+msgstr "Немає одержувачів для сповіщення"
 
 #: frontend/src/components/CommandPalette/CommandPalette.vue:173
 msgid "No results for \"{0}\""
@@ -6610,7 +6610,7 @@ msgstr ""
 
 #: crm/automation/actions.py:312
 msgid "Notified {0}"
-msgstr ""
+msgstr "Надіслано сповіщення: {0}"
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
@@ -7412,7 +7412,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json
 msgid "Quick Filters"
-msgstr ""
+msgstr "Швидкі фільтри"
 
 #: frontend/src/components/ViewControls.vue:870
 msgid "Quick filters updated successfully"
@@ -7420,7 +7420,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:816 frontend/src/pages/MobileDeal.vue:514
 msgid "Quotations"
-msgstr ""
+msgstr "Комерційні пропозиції"
 
 #. Label of the rate (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -7572,7 +7572,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:78
 msgid "Refresh Apps"
-msgstr ""
+msgstr "Оновити застосунки"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:181
 msgid "Refresh Companies"
@@ -7580,7 +7580,7 @@ msgstr ""
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:97
 msgid "Reject"
-msgstr ""
+msgstr "Відхилити"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:163
 msgid "Reject Call"
@@ -7719,7 +7719,7 @@ msgstr ""
 #. Label of the reports_to (Link) field in DocType 'CRM Sales Hierarchy'
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 msgid "Reports To"
-msgstr ""
+msgstr "Підпорядковується"
 
 #. Label of the request_timeout (Int) field in DocType 'CRM Enrichment
 #. Settings'
@@ -7965,7 +7965,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:98
 msgid "Run As"
-msgstr ""
+msgstr "Запустити від імені"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
@@ -8338,7 +8338,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:201
 msgid "Select Company"
-msgstr ""
+msgstr "Виберіть організацію"
 
 #: frontend/src/utils/fieldTransforms.js:113
 msgid "Select Country to see state options"
@@ -8378,7 +8378,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:71
 msgid "Select a Twilio app for your CRM"
-msgstr ""
+msgstr "Виберіть застосунок Twilio для вашої CRM"
 
 #: frontend/src/components/Filter.vue:669
 msgid "Select a Value"
@@ -8639,27 +8639,27 @@ msgstr ""
 
 #: frontend/src/components/Settings/emailConfig.js:104
 msgid "Setting up GMail requires you to enable two factor authentication and app specific passwords. Read more"
-msgstr ""
+msgstr "Для налаштування Gmail потрібно ввімкнути двофакторну автентифікацію та паролі для окремих застосунків. Читати далі"
 
 #: frontend/src/components/Settings/emailConfig.js:113
 msgid "Setting up Outlook requires you to enable two factor authentication and app specific passwords. Read more"
-msgstr ""
+msgstr "Для налаштування Outlook потрібно ввімкнути двофакторну автентифікацію та паролі для окремих застосунків. Читати далі"
 
 #: frontend/src/components/Settings/emailConfig.js:122
 msgid "Setting up Sendgrid requires you to enable two factor authentication and app specific passwords. Read more"
-msgstr ""
+msgstr "Для налаштування Sendgrid потрібно ввімкнути двофакторну автентифікацію та паролі для окремих застосунків. Читати далі"
 
 #: frontend/src/components/Settings/emailConfig.js:131
 msgid "Setting up Sparkpost requires you to enable two factor authentication and app specific passwords. Read more"
-msgstr ""
+msgstr "Для налаштування Sparkpost потрібно ввімкнути двофакторну автентифікацію та паролі для окремих застосунків. Читати далі"
 
 #: frontend/src/components/Settings/emailConfig.js:140
 msgid "Setting up Yahoo requires you to enable two factor authentication and app specific passwords. Read more"
-msgstr ""
+msgstr "Для налаштування Yahoo потрібно ввімкнути двофакторну автентифікацію та паролі для окремих застосунків. Читати далі"
 
 #: frontend/src/components/Settings/emailConfig.js:149
 msgid "Setting up Yandex requires you to enable two factor authentication and app specific passwords. Read more"
-msgstr ""
+msgstr "Для налаштування Yandex потрібно ввімкнути двофакторну автентифікацію та паролі для окремих застосунків. Читати далі"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:161
 msgid "Setting updated successfully"
@@ -9037,7 +9037,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:7
 msgid "Step Type"
-msgstr ""
+msgstr "Тип кроку"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
 msgid "Step name"
@@ -9364,7 +9364,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:211
 msgid "Test Run"
-msgstr ""
+msgstr "Тестовий запуск"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:531
 msgid "Thank you!"
@@ -9556,7 +9556,7 @@ msgstr ""
 #. Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
 msgid "Timing"
-msgstr ""
+msgstr "Час проведення"
 
 #. Label of the title (Data) field in DocType 'CRM Task'
 #. Label of the title (Data) field in DocType 'FCRM Note'
@@ -9695,11 +9695,11 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:156
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:52
 msgid "Trigger"
-msgstr ""
+msgstr "Тригер"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:8
 msgid "Trigger Field"
-msgstr ""
+msgstr "Поле тригера"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
 msgid "Trigger record"
@@ -9743,12 +9743,12 @@ msgstr ""
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:68
 msgid "Twilio App Name"
-msgstr ""
+msgstr "Назва застосунку Twilio"
 
 #. Label of the twilio_apps (Data) field in DocType 'CRM Twilio Settings'
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json
 msgid "Twilio Apps"
-msgstr ""
+msgstr "Застосунки Twilio"
 
 #: frontend/src/components/Settings/Telephony/TwilioSettings.vue:115
 msgid "Twilio Integration Disabled"
@@ -9860,7 +9860,7 @@ msgstr "Невідомий зв'язок CRM: {0}"
 
 #: crm/automation/actions.py:227
 msgid "Unknown Email Template"
-msgstr ""
+msgstr "Невідомий шаблон електронного листа"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:140
 msgid "Unlink"
@@ -10458,7 +10458,7 @@ msgstr ""
 
 #: frontend/src/components/Notifications.vue:74
 msgid "You have no new notifications"
-msgstr ""
+msgstr "У вас немає нових сповіщень"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:279
 msgid "You have unsaved changes. Do you wish to exit?"
@@ -10685,7 +10685,7 @@ msgstr ""
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "frankfurter.app"
-msgstr ""
+msgstr "frankfurter.app"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
@@ -10828,7 +10828,7 @@ msgstr ""
 
 #: crm/api/doc.py:47 crm/api/doc.py:157 crm/api/doc.py:494
 msgid "label"
-msgstr ""
+msgstr "мітка"
 
 #: crm/api/whatsapp.py:207
 msgid "lead"
