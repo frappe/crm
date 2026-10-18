@@ -50,12 +50,12 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
   }
 
   return merged.filter((tab) => {
-    if (!tab.condition) return true
-    // a broken script condition hides its own tab, not the whole tab bar
+    // a broken script guard hides its own tab, not the whole tab bar
     try {
-      return tab.condition()
+      const hidden = typeof tab.hide === 'function' ? tab.hide() : tab.hide
+      return !hidden && (!tab.condition || Boolean(tab.condition()))
     } catch (error) {
-      console.error(`CRM: tab "${tab.name}" condition failed`, error)
+      console.error(`CRM: tab "${tab.name}" visibility check failed`, error)
       return false
     }
   })

@@ -57,6 +57,19 @@ describe('mergeFormTabs', () => {
     expect(result.map((t) => t.name)).toEqual(['Activity'])
   })
 
+  it('hides a tab with hide, as a flag or a function', () => {
+    const tabs = [
+      ...base,
+      { name: 'Comments', value: 'comments', condition: () => true },
+    ]
+    const result = mergeFormTabs(tabs, [
+      { name: 'Activity', hide: () => true },
+      { name: 'Emails', hide: false },
+      { name: 'Comments', hide: true },
+    ])
+    expect(result.map((t) => t.name)).toEqual(['Emails'])
+  })
+
   it('labels an appended tab with its name by default', () => {
     expect(
       mergeFormTabs(base, [{ name: 'Shipping', component }])[2].label,

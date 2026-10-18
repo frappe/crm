@@ -681,7 +681,7 @@ class CRMDeal {
 				setup: (props) => () => h("div", { class: "p-5" }, props.doc.name)
 			}
 		});
-		this.tabs.push({ name: "Comments", condition: () => false });
+		this.tabs.push({ name: "Comments", hide: true });
 	}
 }
 ```
@@ -694,10 +694,11 @@ class CRMDeal {
 | `value`     | URL hash / remembered-tab key. Defaults to a slug of `name`; must be unique           |
 | `component` | The pane, built with `h` (no template compiler). Required for a new tab               |
 | `condition` | Function; a falsy return hides the tab. On a built-in tab both conditions must pass   |
+| `hide`      | `true`, or a function returning true, hides the tab                                   |
 
 - The component receives `doctype`, `docname`, `doc` and `tab` props, and owns its whole pane: no built-in header action or composer.
 - Mobile pages have a built-in `Details` tab that desktop lacks.
-- `onRender` runs on every visit, so pushing there accumulates entries; use `condition` functions for dynamic visibility rather than pushing again.
+- `onRender` runs on every visit, so pushing there accumulates entries; use `condition` or `hide` functions for dynamic visibility rather than pushing again.
 
 ---
 
