@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-11 15:53+0000\n"
-"PO-Revision-Date: 2026-10-13 04:47\n"
+"PO-Revision-Date: 2026-10-18 06:25\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -967,7 +967,7 @@ msgstr "Mindestens eine Priorität ist erforderlich"
 
 #: crm/automation/actions.py:299
 msgid "At least one recipient is required"
-msgstr ""
+msgstr "Mindestens ein Empfänger ist erforderlich"
 
 #: frontend/src/components/Settings/Sla/utils.js:204
 msgid "At least one valid workday with a day, start time, and end time is required"
@@ -1082,7 +1082,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:105
 msgid "Automation User"
-msgstr ""
+msgstr "Automatisierungsbenutzer"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:413
 msgid "Automation deleted"
@@ -1603,7 +1603,7 @@ msgstr ""
 #: frontend/src/pages/Dashboard.vue:32
 #: frontend/src/utils/whatsappRecipient.js:20
 msgid "Cancel"
-msgstr ""
+msgstr "Stornieren"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #. Option for the 'Status' (Select) field in DocType 'CRM Task'
@@ -2259,7 +2259,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:452
 msgid "Copy"
-msgstr ""
+msgstr "Kopieren"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:397
 #: frontend/src/components/Settings/Forms/FormsList.vue:275
@@ -2495,7 +2495,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:30
 msgid "Cron Expression"
-msgstr ""
+msgstr "Cron-Ausdruck"
 
 #. Label of the currency (Link) field in DocType 'CRM Deal'
 #. Label of the currency (Link) field in DocType 'CRM Organization'
@@ -2538,7 +2538,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:68
 msgid "Custom Event"
-msgstr ""
+msgstr "Benutzerdefiniertes Ereignis"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:753
 msgid "Custom Fields"
@@ -2630,11 +2630,11 @@ msgstr "Datum"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:57
 msgid "Date Direction"
-msgstr ""
+msgstr "Datumsrichtung"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:41
 msgid "Date Field"
-msgstr ""
+msgstr "Datumsfeld"
 
 #: frontend/src/components/Settings/DefaultsSettings.vue:111
 msgid "Date Format"
@@ -4367,7 +4367,7 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FormsList.vue:7
 #: frontend/src/components/Settings/Settings.vue:213
 msgid "Forms"
-msgstr ""
+msgstr "Formulare"
 
 #: crm/api/form.py:246 crm/api/form.py:255 crm/api/form.py:440
 msgid "Forms can only map to: {0}"
@@ -6374,7 +6374,7 @@ msgstr ""
 
 #: crm/automation/actions.py:307
 msgid "No recipients to notify"
-msgstr ""
+msgstr "Keine Empfänger zum Benachrichtigen vorhanden"
 
 #: frontend/src/components/CommandPalette/CommandPalette.vue:173
 msgid "No results for \"{0}\""
@@ -6610,7 +6610,7 @@ msgstr "Benachrichtigungen"
 
 #: crm/automation/actions.py:312
 msgid "Notified {0}"
-msgstr ""
+msgstr "Benachrichtigt: {0}"
 
 #. Label of the number (Data) field in DocType 'CRM Telephony Phone'
 #: crm/fcrm/doctype/crm_telephony_phone/crm_telephony_phone.json
@@ -7965,7 +7965,7 @@ msgstr "Regeln"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:98
 msgid "Run As"
-msgstr ""
+msgstr "Ausführen als"
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:248
 msgid "Run a manual bi-directional sync between ERPNext Items and CRM Products."
@@ -9037,7 +9037,7 @@ msgstr "Schritt"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:7
 msgid "Step Type"
-msgstr ""
+msgstr "Schritttyp"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:150
 msgid "Step name"
@@ -9364,7 +9364,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:211
 msgid "Test Run"
-msgstr ""
+msgstr "Testlauf"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:531
 msgid "Thank you!"
@@ -9695,11 +9695,11 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationInspector.vue:156
 #: frontend/src/components/Settings/WorkflowAutomations/workflowGraph.js:52
 msgid "Trigger"
-msgstr ""
+msgstr "Auslöser"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:8
 msgid "Trigger Field"
-msgstr ""
+msgstr "Auslösefeld"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:90
 msgid "Trigger record"
@@ -9860,7 +9860,7 @@ msgstr ""
 
 #: crm/automation/actions.py:227
 msgid "Unknown Email Template"
-msgstr ""
+msgstr "Unbekannte E-Mail-Vorlage"
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:140
 msgid "Unlink"
@@ -10458,7 +10458,7 @@ msgstr ""
 
 #: frontend/src/components/Notifications.vue:74
 msgid "You have no new notifications"
-msgstr ""
+msgstr "Sie haben keine neuen Benachrichtigungen"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:279
 msgid "You have unsaved changes. Do you wish to exit?"
