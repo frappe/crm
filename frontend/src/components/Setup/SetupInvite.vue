@@ -139,7 +139,10 @@ async function sendInvites() {
     }
     completeStep('invite_your_team')
     capture('user_invited')
-    emit('done', { invited: filledRows.value.length })
+    emit('done', {
+      invited: filledRows.value.length,
+      roles: Object.keys(groups),
+    })
   } catch (e) {
     error.value = e.messages?.[0] || __('Could not send invites')
   } finally {
