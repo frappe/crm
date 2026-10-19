@@ -9,28 +9,7 @@
       <div class="flex flex-col gap-5">
         <div class="flex items-center justify-center gap-3">
           <span class="text-sm text-ink-gray-5">{{ __('Difficult') }}</span>
-          <div
-            class="flex gap-1"
-            role="radiogroup"
-            :aria-label="__('Setup rating')"
-          >
-            <button
-              v-for="value in 5"
-              :key="value"
-              type="button"
-              role="radio"
-              class="star rounded-4 p-1 transition-colors hover:text-ink-amber-5"
-              :class="value <= rating ? 'text-ink-amber-5' : 'text-ink-gray-4'"
-              :aria-checked="value === rating"
-              :aria-label="__('{0} out of 5', [value])"
-              @click="rating = value"
-            >
-              <LucideStar
-                class="size-6"
-                :class="{ 'fill-current': value <= rating }"
-              />
-            </button>
-          </div>
+          <Rating v-model="rating" size="lg" :aria-label="__('Setup rating')" />
           <span class="text-sm text-ink-gray-5">{{ __('Easy') }}</span>
         </div>
         <FormControl
@@ -57,9 +36,8 @@
 </template>
 
 <script setup>
-import LucideStar from '~icons/lucide/star'
 import { setupFeedback } from '@/composables/modals'
-import { Button, Dialog, FormControl } from 'frappe-ui'
+import { Button, Dialog, FormControl, Rating } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, ref } from 'vue'
 
@@ -83,15 +61,3 @@ function submit() {
   open.value = false
 }
 </script>
-
-<style scoped>
-.star:active {
-  transform: scale(0.88);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .star:active {
-    transform: none;
-  }
-}
-</style>
