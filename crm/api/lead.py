@@ -109,9 +109,15 @@ def merge_leads(target: str, source: str):
 
 	if source_doc.merged_into:
 		frappe.throw(_("Source lead {0} is already merged into {1}").format(source, source_doc.merged_into))
+	if target_doc.merged_into:
+		frappe.throw(_("Target lead {0} is already merged into {1}").format(target, target_doc.merged_into))
 
 	if target == source:
 		frappe.throw(_("Cannot merge a lead into itself"))
+
+	for doc in (source_doc, target_doc):
+		if doc.converted:
+			frappe.throw(_("Lead {0} is converted to a deal and cannot be merged").format(doc.name))
 
 	field_snapshot = _snapshot_doc(target_doc)
 	child_snapshot = _snapshot_child_tables(source_doc, target_doc)
@@ -175,6 +181,8 @@ def split_lead(merge_log_name: str):
 
 	if source_doc.merged_into != target:
 		frappe.throw(_("Source lead {0} is not merged into {1}").format(source, target))
+	if target_doc.merged_into:
+		frappe.throw(_("Split the merge of {0} into {1} first").format(target, target_doc.merged_into))
 
 	_restore_fields(target_doc, field_snapshot)
 
@@ -330,7 +338,7 @@ def _snapshot_references(source_doc: frappe.model.document.Document) -> list:
 def _get_link_references(doctype: str, docname: str) -> list:
 	references = []
 	for field in get_link_fields(doctype):
-		if field.issingle:
+		if field.issingle or (field.parent, field.fieldname) == ("CRM Lead", "merged_into"):
 			continue
 		for name in frappe.get_all(field.parent, filters={field.fieldname: docname}, pluck="name"):
 			references.append(
@@ -343,7 +351,7 @@ def _get_dynamic_link_references(doctype: str, docname: str) -> list:
 	references = []
 	for df in get_dynamic_link_map().get(doctype, []):
 		meta = frappe.get_meta(df.parent)
-		if meta.issingle or meta.is_virtual:
+		if meta.issingle or meta.is_virtual or df.parent == "CRM Merge Log":
 			continue
 		names = frappe.get_all(df.parent, filters={df.options: doctype, df.fieldname: docname}, pluck="name")
 		for name in names:
