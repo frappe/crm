@@ -21,6 +21,16 @@ vi.mock('frappe-ui', () => ({
         props.open ? h('div', [slots.default?.(), slots.actions?.()]) : null,
   },
   FormControl: { render: () => null },
+  Rating: {
+    emits: ['update:modelValue'],
+    setup:
+      (_, { emit }) =>
+      () =>
+        h('button', {
+          role: 'radio',
+          onClick: () => emit('update:modelValue', 1),
+        }),
+  },
 }))
 import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
 import { setupFeedback } from '@/composables/modals'
