@@ -178,7 +178,7 @@ def split_lead(merge_log_name: str):
 	if target_doc.merged_into:
 		frappe.throw(_("Split the merge of {0} into {1} first").format(target, target_doc.merged_into))
 
-	_restore_fields(target_doc, field_snapshot)
+	_restore_fields(target_doc, source_doc, field_snapshot)
 
 	target_doc.save(ignore_permissions=True)
 
@@ -457,10 +457,11 @@ def _auto_merge_fields(
 
 def _restore_fields(
 	target_doc: frappe.model.document.Document,
+	source_doc: frappe.model.document.Document,
 	snapshot: dict,
 ):
 	for fieldname in _COMPARE_FIELDS:
-		if fieldname in snapshot:
+		if fieldname in snapshot and target_doc.get(fieldname) == source_doc.get(fieldname):
 			target_doc.set(fieldname, snapshot[fieldname])
 
 
