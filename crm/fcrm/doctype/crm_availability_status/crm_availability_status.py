@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from crm.api.availability import publish_availability
+from crm.api.availability import publish_availability, publish_statuses_updated
 
 
 class CRMAvailabilityStatus(Document):
@@ -47,10 +47,14 @@ class CRMAvailabilityStatus(Document):
 	def on_update(self):
 		if not self.enabled and self.has_value_changed("enabled") and not self.is_new():
 			self.clear_from_users()
+		publish_statuses_updated()
 
 	def on_trash(self):
 		if self.enabled and self.category == "Active":
 			self.ensure_another_active_status()
+
+	def after_delete(self):
+		publish_statuses_updated()
 
 	def ensure_another_active_status(self):
 		# users with no status count as Active, so one must always be pickable
