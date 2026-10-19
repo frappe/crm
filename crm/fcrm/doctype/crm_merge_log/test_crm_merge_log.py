@@ -45,7 +45,33 @@ class TestCRMMergeLog(IntegrationTestCase):
 				}
 			).insert(ignore_permissions=True)
 
-	def test_merge_log_is_read_only_for_sales_roles(self):
+	def test_merge_log_requires_target_and_source(self):
+		lead = self._create_lead(first_name="Only", email="only_log@test.com")
+
+		for missing in ("target_document_name", "source_document_name"):
+			with self.subTest(missing=missing):
+				values = {"target_document_name": lead.name, "source_document_name": lead.name, missing: None}
+				with self.assertRaises(frappe.MandatoryError):
+					frappe.get_doc(
+						{"doctype": "CRM Merge Log", "reference_doctype": "CRM Lead", **values}
+					).insert(ignore_permissions=True)
+
+	def test_merge_log_cannot_be_renamed(self):
+		lead_a = self._create_lead(first_name="A", email="a_rename_log@test.com")
+		lead_b = self._create_lead(first_name="B", email="b_rename_log@test.com")
+		log = frappe.get_doc(
+			{
+				"doctype": "CRM Merge Log",
+				"reference_doctype": "CRM Lead",
+				"target_document_name": lead_a.name,
+				"source_document_name": lead_b.name,
+			}
+		).insert(ignore_permissions=True)
+
+		with self.assertRaises(frappe.ValidationError):
+			frappe.rename_doc("CRM Merge Log", log.name, "MRG-RENAMED")
+
+	def test_sales_roles_cannot_access_merge_log(self):
 		lead_a = self._create_lead(first_name="A", email="a_ro_log@test.com")
 		lead_b = self._create_lead(first_name="B", email="b_ro_log@test.com")
 		log = frappe.get_doc(
@@ -60,11 +86,8 @@ class TestCRMMergeLog(IntegrationTestCase):
 		for role in ("Sales User", "Sales Manager"):
 			with self.subTest(role=role):
 				frappe.set_user(make_user(f"merge-log-{role.lower().replace(' ', '-')}@example.com", role))
-				self.assertTrue(frappe.has_permission("CRM Merge Log", "read", log.name))
-				doc = frappe.get_doc("CRM Merge Log", log.name)
-				doc.field_snapshot = "{}"
 				with self.assertRaises(frappe.PermissionError):
-					doc.save()
+					frappe.get_doc("CRM Merge Log", log.name).check_permission("read")
 				frappe.set_user("Administrator")
 
 

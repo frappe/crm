@@ -32,11 +32,5 @@ class CRMMergeLog(Document):
 		self.merged_by = frappe.session.user
 
 	def validate(self):
-		if not self.reference_doctype:
-			frappe.throw(_("Reference DocType is required"))
-		if not self.target_document_name:
-			frappe.throw(_("Target Document Name is required"))
-		if not self.source_document_name:
-			frappe.throw(_("Source Document Name is required"))
 		if self.target_document_name == self.source_document_name:
 			frappe.throw(_("Target and Source documents cannot be the same"))
