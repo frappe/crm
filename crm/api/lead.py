@@ -8,24 +8,10 @@ from frappe.model.rename_doc import get_link_fields
 
 
 @frappe.whitelist()
-def create_lead(doc: str | dict):
-	if isinstance(doc, str):
-		doc = json.loads(doc)
-
-	lead = frappe.get_doc({"doctype": "CRM Lead", **doc})
-	lead.insert(ignore_permissions=True)
-
-	duplicates = find_duplicate_leads(lead.name)
-
-	return {
-		"name": lead.name,
-		"duplicate_warning": len(duplicates) > 0,
-		"possible_duplicates": duplicates,
-	}
-
-
-@frappe.whitelist()
 def find_duplicate_leads(lead_name: str):
+	if not frappe.has_permission("CRM Lead", "read", lead_name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	lead = frappe.get_cached_doc("CRM Lead", lead_name)
 	matches = []
 
@@ -50,7 +36,7 @@ def find_duplicate_leads(lead_name: str):
 	for field in match_fields:
 		or_filters.append([field, "=", lead.get(field)])
 
-	possible = frappe.get_all(
+	possible = frappe.get_list(
 		"CRM Lead",
 		filters=filters,
 		or_filters=or_filters,
@@ -215,6 +201,9 @@ def split_lead(merge_log_name: str):
 
 @frappe.whitelist()
 def get_merge_history(lead_name: str):
+	if not frappe.has_permission("CRM Lead", "read", lead_name):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	logs = frappe.get_all(
 		"CRM Merge Log",
 		filters={"reference_doctype": "CRM Lead"},
@@ -233,26 +222,24 @@ def get_merge_history(lead_name: str):
 		],
 		order_by="creation desc",
 	)
+	if not logs:
+		return []
 
-	target_title_map = {}
-	for log in logs:
-		for l, key in [(log, "target_document_name"), (log, "source_document_name")]:
-			if l[key] not in target_title_map:
-				doc = frappe.db.get_value("CRM Lead", l[key], "lead_name")
-				target_title_map[l[key]] = doc
-
-	result = []
-	for log in logs:
-		result.append(
-			{
-				**log,
-				"target_title": target_title_map.get(log.target_document_name),
-				"source_title": target_title_map.get(log.source_document_name),
-				"is_split": bool(log.split_at),
-			}
+	lead_names = {log.target_document_name for log in logs} | {log.source_document_name for log in logs}
+	titles = dict(
+		frappe.get_list(
+			"CRM Lead", filters={"name": ("in", list(lead_names))}, fields=["name", "lead_name"], as_list=True
 		)
-
-	return result
+	)
+	return [
+		{
+			**log,
+			"target_title": titles.get(log.target_document_name),
+			"source_title": titles.get(log.source_document_name),
+			"is_split": bool(log.split_at),
+		}
+		for log in logs
+	]
 
 
 _COMPARE_FIELDS = [
