@@ -77,6 +77,7 @@ const stages = computed(() =>
 watch(stage, (value) => {
   const index = STAGES.findIndex((item) => item.value === value)
   reached.value = Math.max(reached.value, index)
+  capture('setup_import_stage_reached', { stage: value })
 })
 
 const previewState = inject('setupPreview', null)
@@ -118,6 +119,10 @@ function onUploaded(fileUrl) {
 }
 
 function onMapped(mappings) {
+  capture('setup_import_mapped', {
+    columns: mappings.length,
+    unmapped: mappings.filter((m) => !m.fieldname).length,
+  })
   withBusy(async () => {
     await saveMapping(mappings)
     stage.value = 'review'
