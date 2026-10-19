@@ -23,11 +23,8 @@
           <div class="text-base-medium leading-none text-ink-gray-9 truncate">
             {{ __(brand.name || 'CRM') }}
           </div>
-          <div
-            class="mt-1 flex items-center gap-1.5 text-sm leading-none text-ink-gray-7"
-          >
-            <span class="truncate">{{ user.full_name }}</span>
-            <AvailabilityDot />
+          <div class="mt-1 text-sm leading-none text-ink-gray-7 truncate">
+            {{ user.full_name }}
           </div>
         </div>
         <div
