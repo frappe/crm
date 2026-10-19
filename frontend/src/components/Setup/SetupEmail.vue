@@ -26,7 +26,7 @@
         <template #label>
           <span class="flex items-center gap-2">
             <img :src="service.icon" class="size-4" alt="" />
-            {{ service.name }}
+            {{ service.label || service.name }}
           </span>
         </template>
       </Radio>
@@ -36,7 +36,7 @@
       <div class="flex items-center gap-2 border-b border-outline-gray-1 pb-3">
         <img :src="selected.icon" class="size-4" alt="" />
         <span class="text-base font-medium text-ink-gray-9">
-          {{ selected.name }}
+          {{ selected.label || selected.name }}
         </span>
         <Button
           class="ml-auto"
