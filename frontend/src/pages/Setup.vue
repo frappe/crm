@@ -97,25 +97,44 @@ const activeStep = computed(() => steps[current.value])
 const progress = computed(() => ((current.value + 1) / steps.length) * 100)
 const isLastStep = computed(() => current.value === steps.length - 1)
 
-watch(activeStep, (step) => capture('setup_step_viewed', { step: step.name }), {
-  immediate: true,
-})
+const setupStartedAt = Date.now()
+let stepStartedAt = setupStartedAt
+const secondsSince = (start) => Math.round((Date.now() - start) / 1000)
+
+capture('setup_started')
+watch(
+  activeStep,
+  (step) => {
+    stepStartedAt = Date.now()
+    capture('setup_step_viewed', { step: step.name })
+  },
+  { immediate: true },
+)
 
 function goBack() {
-  if (!activeStepView.value?.back?.()) current.value--
+  if (activeStepView.value?.back?.()) return
+  capture('setup_back', { from_step: activeStep.value.name })
+  current.value--
 }
 
 function completeStep(details = {}) {
   const step = activeStep.value.name
   stepStatus[step] = 'completed'
-  capture('setup_step_completed', { step, ...details })
+  capture('setup_step_completed', {
+    step,
+    time_on_step_s: secondsSince(stepStartedAt),
+    ...details,
+  })
   advance()
 }
 
 function skipStep() {
   const step = activeStep.value.name
   if (stepStatus[step] !== 'completed') stepStatus[step] = 'skipped'
-  capture('setup_step_skipped', { step })
+  capture('setup_step_skipped', {
+    step,
+    time_on_step_s: secondsSince(stepStartedAt),
+  })
   advance()
 }
 
@@ -155,6 +174,11 @@ async function finishSetup(skipped) {
     completed_steps: stepsWithStatus('completed'),
     skipped_steps: stepsWithStatus('skipped'),
   }
+  capture('setup_finished', {
+    skipped,
+    duration_s: secondsSince(setupStartedAt),
+    steps_completed: setupFeedback.value.completed_steps.length,
+  })
   await markSetupDone()
   router.replace({ name: 'Home' })
 }
