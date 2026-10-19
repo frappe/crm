@@ -8,15 +8,18 @@
 
 <script setup lang="ts">
 import { availabilityStore } from '@/stores/availability'
+import { usersStore } from '@/stores/users'
 import { computed } from 'vue'
 
 const props = defineProps<{ user?: string; status?: string }>()
 
 const availability = availabilityStore()
+const { isCrmUser, getUser } = usersStore()
 
-const status = computed(() =>
-  props.status
-    ? availability.getStatus(props.status)
-    : availability.userStatus(props.user),
-)
+// contacts and other non-CRM emails also get avatars, they have no status
+const status = computed(() => {
+  if (props.status) return availability.getStatus(props.status)
+  if (props.user && !isCrmUser(getUser(props.user).name)) return undefined
+  return availability.userStatus(props.user)
+})
 </script>

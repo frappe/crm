@@ -30,7 +30,7 @@
               class="flex items-center text-sm p-0.5 text-ink-gray-6 border border-outline-gray-1 bg-surface-elevation-2 rounded-full cursor-pointer"
               @click.stop
             >
-              <AvatarWithAvailability :user="assignee.name" />
+              <UserAvatar :user="assignee.name" size="sm" />
               <div class="ml-1">{{ getUser(assignee.name).full_name }}</div>
               <Button
                 variant="ghost"
@@ -49,7 +49,7 @@
         </div>
       </template>
       <template #item-prefix="{ option }">
-        <AvatarWithAvailability class="mr-2" :user="option.value" />
+        <UserAvatar class="mr-2" :user="option.value" size="sm" />
       </template>
       <template #item-label="{ option }">
         <Tooltip :text="option.value">
@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import AvatarWithAvailability from '@/components/AvatarWithAvailability.vue'
+import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
 import { availabilityStore } from '@/stores/availability'
