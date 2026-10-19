@@ -451,7 +451,7 @@ def _auto_merge_fields(
 ):
 	for field in _COMPARE_FIELDS:
 		source_val = source_doc.get(field)
-		if source_val:
+		if source_val and not target_doc.get(field):
 			target_doc.set(field, source_val)
 
 
