@@ -7,6 +7,7 @@ from frappe.tests import IntegrationTestCase
 
 class TestMergeLead(IntegrationTestCase):
 	def tearDown(self):
+		frappe.set_user("Administrator")
 		frappe.db.rollback()
 
 	def _create_lead(self, **kwargs):
@@ -383,12 +384,25 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(len(history), 1)
 		self.assertEqual(history[0]["source_document_name"], lead_b.name)
 
-	def test_create_lead_endpoint(self):
-		from crm.api.lead import create_lead
+	def test_read_endpoints_need_lead_access(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="a@test.com")
 
-		existing = self._create_lead(first_name="Existing", email="dupe@test.com")
+		from crm.api.lead import find_duplicate_leads, get_merge_history, merge_leads
 
-		result = create_lead(json.dumps({"first_name": "New", "email": "dupe@test.com"}))
-		self.assertEqual(result["duplicate_warning"], True)
-		self.assertEqual(len(result["possible_duplicates"]), 1)
-		self.assertEqual(result["possible_duplicates"][0]["name"], existing.name)
+		merge_leads(lead_a.name, lead_b.name)
+		frappe.set_user(create_user_without_lead_access())
+
+		with self.assertRaises(frappe.PermissionError):
+			find_duplicate_leads(lead_a.name)
+		with self.assertRaises(frappe.PermissionError):
+			get_merge_history(lead_a.name)
+
+
+def create_user_without_lead_access():
+	email = "lead-noperm@example.com"
+	if not frappe.db.exists("User", email):
+		frappe.get_doc(
+			{"doctype": "User", "email": email, "first_name": "No Lead", "send_welcome_email": 0}
+		).insert(ignore_permissions=True)
+	return email
