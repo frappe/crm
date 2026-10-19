@@ -7,8 +7,9 @@ vi.mock('@/stores/global', () => ({
 vi.mock('@/composables/whatsapp', () => ({ whatsappEnabled: ref(false) }))
 vi.mock('@/composables/telephony', () => ({ callEnabled: ref(false) }))
 
-const { default: ActivityHeader } =
-  await import('@/components/Activities/ActivityHeader.vue')
+const { default: ActivityHeader } = await import(
+  '@/components/Activities/ActivityHeader.vue'
+)
 
 function headingFor(props) {
   const root = document.createElement('div')
