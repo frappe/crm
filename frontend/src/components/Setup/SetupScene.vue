@@ -17,7 +17,7 @@
           <div
             class="url mx-auto flex h-6 w-60 items-center justify-center gap-1.5 rounded-full text-xs text-ink-gray-5"
           >
-            <LockIcon class="size-3" />northwind.frappe.cloud
+            <LockIcon class="size-3" />acme.frappe.cloud
           </div>
           <Sk w="14px" /><Sk w="14px" />
           <span class="loadbar absolute -bottom-px left-0 h-0.5" />
@@ -26,7 +26,7 @@
           class="hair flex flex-col items-center gap-2 border-b px-4 pb-2.5 pt-2"
         >
           <span class="inline-flex items-center gap-1 text-xs font-medium text-ink-gray-5">
-            Northwind
+            Acme
             <ChevronDownIcon class="size-3 shrink-0 text-ink-gray-4" aria-hidden="true" />
           </span>
           <div class="flex w-full items-center gap-3 pl-24">
@@ -243,8 +243,8 @@ const props = defineProps({
   run: { type: Number, default: 0 },
 })
 
-const EMAIL = 'alex@northwind.com'
-const FILE = 'northwind-leads.csv'
+const EMAIL = 'alex@acme.com'
+const FILE = 'acme-leads.csv'
 const LEADS = [
   { name: 'Priya Raman' },
   { name: 'Marcus Lee' },
@@ -262,7 +262,7 @@ const TOAST = {
   team: 'Invite sent to Ria',
 }
 const PROVIDERS = ['Gmail', 'Outlook', 'Frappe Mail', 'Yahoo']
-const INVITE = 'ria.kapoor@northwind.com'
+const INVITE = 'ria.kapoor@acme.com'
 
 const journey = computed(() => props.fx.includes('journey'))
 const clickAt = computed(() => {
