@@ -41,6 +41,7 @@
           </Transition>
         </div>
       </main>
+      <SetupTelemetryConsent class="mb-3" />
       <footer class="flex items-center gap-2 text-sm text-ink-gray-5">
         <CRMLogo class="size-4" />
         Frappe CRM
@@ -60,6 +61,7 @@ import SetupPreview from '@/components/Setup/SetupPreview.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
 import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
+import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 import { setupFeedback } from '@/composables/modals'
 import { SETUP_DONE_KEY } from '@/router'
 import { globalStore } from '@/stores/global'
