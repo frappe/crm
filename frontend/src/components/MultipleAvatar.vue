@@ -30,15 +30,15 @@
       :text="avatar.name"
     >
       <span
-        class="relative -mr-1.5 inline-flex transform transition hover:z-10 hover:scale-110"
+        class="user-avatar relative -mr-1.5 inline-flex transform transition hover:z-10 hover:scale-110"
+        :data-name="avatar.name"
       >
         <Avatar
-          class="user-avatar ring-2 ring-outline-base"
+          class="ring-2 ring-outline-base"
           shape="circle"
           :image="avatar.image"
           :label="avatar.label"
           :size="size"
-          :data-name="avatar.name"
         />
         <AvailabilityDot
           :user="avatar.name"

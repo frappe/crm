@@ -34,6 +34,10 @@ def publish_availability(user):
 	)
 
 
+def publish_statuses_updated():
+	frappe.publish_realtime("crm_availability_statuses_updated", after_commit=True)
+
+
 def get_user_categories(users):
 	"""Map each user to the category of their status; users with no status count as Active."""
 	categories = dict(frappe.get_all("CRM Availability Status", fields=["name", "category"], as_list=True))

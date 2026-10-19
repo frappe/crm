@@ -40,7 +40,7 @@ const dotColors: Record<string, string> = {
 
 export const availabilityStore = defineStore('crm-availability', () => {
   const session = sessionStore()
-  const { getUser } = usersStore()
+  const { users, getUser } = usersStore()
   const { $socket } = globalStore()
 
   const statuses = createListResource({
@@ -102,6 +102,15 @@ export const availabilityStore = defineStore('crm-availability', () => {
       },
     )
   }
+
+  // statuses can be renamed, recategorised or disabled while a tab is open
+  $socket.on('crm_availability_statuses_updated', () => statuses.reload())
+
+  // events sent while the tab was offline are lost, so refetch after reconnecting
+  $socket.io.on('reconnect', () => {
+    statuses.reload()
+    users.reload()
+  })
 
   $socket.on('crm_availability_updated', (data: AvailabilityEvent) => {
     const user = getUser(data.user)
