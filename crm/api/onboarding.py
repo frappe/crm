@@ -14,16 +14,24 @@ def complete_setup_for_fc_site(login_manager=None):
 		frappe.log_error("Frappe Cloud setup auto-complete failed")
 
 
+CRM_SITE_APPS = {"frappe", "crm", "whatsapp"}
+
+
 def should_auto_complete_setup():
 	from frappe.core.doctype.installed_applications.installed_applications import has_non_admin_user
 	from frappe.integrations.frappe_providers.frappecloud_billing import is_fc_site
 
 	if frappe.is_setup_complete() or frappe.conf.skip_setup_wizard:
 		return False
-	# apps with their own wizard stages (e.g. ERPNext) still need user input
-	if frappe.get_hooks("setup_wizard_stages"):
+	# other apps may need their own wizard input
+	if not set(frappe.get_installed_apps()) <= CRM_SITE_APPS:
 		return False
-	return has_non_admin_user() and is_fc_site()
+	return has_prefilled_settings() and has_non_admin_user() and is_fc_site()
+
+
+def has_prefilled_settings():
+	settings = frappe.get_single("System Settings")
+	return bool(settings.country and settings.time_zone and settings.currency)
 
 
 def get_prefilled_setup_args():
@@ -35,6 +43,7 @@ def get_prefilled_setup_args():
 		"country": settings.country,
 		"timezone": settings.time_zone,
 		"currency": settings.currency,
+		"enable_telemetry": settings.enable_telemetry,
 	}
 
 
