@@ -85,12 +85,11 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a.reload()
 		lead_b.reload()
 
-		# source non-empty values overwrite target
-		self.assertEqual(lead_a.first_name, "Source")
-		self.assertEqual(lead_a.status, "Contacted")
-		self.assertEqual(lead_a.phone, "+333")
-		# source empty mobile_no does NOT overwrite target's value
+		# existing target values are kept, empty ones are filled from the source
+		self.assertEqual(lead_a.first_name, "Target")
+		self.assertEqual(lead_a.status, "New")
 		self.assertEqual(lead_a.mobile_no, "+111")
+		self.assertEqual(lead_a.phone, "+333")
 
 		self.assertEqual(lead_b.merged_into, lead_a.name)
 		self.assertEqual(lead_b.is_duplicate, 1)
@@ -282,7 +281,7 @@ class TestMergeLead(IntegrationTestCase):
 		lead_b = self._create_lead(
 			first_name="Source",
 			email="source@test.com",
-			mobile_no="",
+			phone="+333",
 			status="Contacted",
 		)
 
@@ -291,15 +290,16 @@ class TestMergeLead(IntegrationTestCase):
 		result = merge_leads(lead_a.name, lead_b.name)
 
 		lead_a.reload()
-		# source "Contacted" overwrote target "New"
-		self.assertEqual(lead_a.status, "Contacted")
+		self.assertEqual(lead_a.status, "New")
+		self.assertEqual(lead_a.phone, "+333")
 
 		split_lead(result["merge_log"])
 
 		lead_a.reload()
 		lead_b.reload()
 
-		# target fields restored to pre-merge snapshot
+		# fields filled by the merge are emptied again
+		self.assertFalse(lead_a.phone)
 		self.assertEqual(lead_a.status, "New")
 		self.assertEqual(lead_a.mobile_no, "+111")
 		self.assertIsNone(lead_b.merged_into)
