@@ -500,6 +500,16 @@ class TestMergeLead(IntegrationTestCase):
 		split_lead(first["merge_log"])
 		self.assertEqual(frappe.db.get_value("ToDo", todo.name, "reference_name"), lead_b.name)
 
+	def test_search_mergeable_leads_finds_older_leads(self):
+		older = self._create_lead(first_name="Zebulon", email="zebulon@test.com")
+		for i in range(55):
+			self._create_lead(first_name=f"Newer {i}")
+
+		from crm.api.lead import search_mergeable_leads
+
+		results = search_mergeable_leads(txt="zebulon", limit=1)
+		self.assertEqual([r["value"] for r in results], [older.name])
+
 
 def create_user_without_lead_access():
 	email = "lead-noperm@example.com"
