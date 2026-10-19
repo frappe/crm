@@ -1,7 +1,11 @@
 import { expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 
-const mocks = vi.hoisted(() => ({ call: vi.fn(), disable: vi.fn(), install: vi.fn() }))
+const mocks = vi.hoisted(() => ({
+  call: vi.fn(),
+  disable: vi.fn(),
+  install: vi.fn(),
+}))
 vi.mock('@framework/ui/telemetry', () => ({
   useTelemetry: () => ({ disable: mocks.disable }),
   telemetryPlugin: { install: mocks.install },
@@ -11,12 +15,24 @@ vi.mock('frappe-ui', () => ({
   Checkbox: {
     props: ['modelValue', 'disabled', 'label'],
     emits: ['update:modelValue'],
-    setup: (props, { emit }) => () => h('label', [
-      h('input', { type: 'checkbox', checked: props.modelValue, disabled: props.disabled,
-        onChange: (event) => emit('update:modelValue', event.target.checked) }), props.label,
-    ]),
+    setup:
+      (props, { emit }) =>
+      () =>
+        h('label', [
+          h('input', {
+            type: 'checkbox',
+            checked: props.modelValue,
+            disabled: props.disabled,
+            onChange: (event) =>
+              emit('update:modelValue', event.target.checked),
+          }),
+          props.label,
+        ]),
   },
-  ErrorMessage: { props: ['message'], setup: (props) => () => h('p', props.message) },
+  ErrorMessage: {
+    props: ['message'],
+    setup: (props) => () => h('p', props.message),
+  },
 }))
 import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 
@@ -44,7 +60,9 @@ it('shows a checked usage-data checkbox without a separate consent screen', () =
     expect(checkbox.checked).toBe(true)
     expect(root.textContent).toContain('Share usage data')
     expect(mocks.call).not.toHaveBeenCalled()
-  } finally { app.unmount() }
+  } finally {
+    app.unmount()
+  }
 })
 
 it('saves opt-out and stops telemetry without navigating away', async () => {
@@ -54,8 +72,10 @@ it('saves opt-out and stops telemetry without navigating away', async () => {
     checkbox.dispatchEvent(new Event('change'))
     await settle()
     expect(mocks.call).toHaveBeenCalledWith('frappe.client.set_value', {
-      doctype: 'System Settings', name: 'System Settings',
-      fieldname: 'enable_telemetry', value: 0,
+      doctype: 'System Settings',
+      name: 'System Settings',
+      fieldname: 'enable_telemetry',
+      value: 0,
     })
     expect(mocks.disable).toHaveBeenCalledOnce()
     expect(checkbox.checked).toBe(false)
@@ -64,7 +84,9 @@ it('saves opt-out and stops telemetry without navigating away', async () => {
     await settle()
     expect(mocks.install).toHaveBeenCalledOnce()
     expect(checkbox.checked).toBe(true)
-  } finally { app.unmount() }
+  } finally {
+    app.unmount()
+  }
 })
 
 it('keeps the saved preference when updating fails', async () => {
@@ -77,5 +99,8 @@ it('keeps the saved preference when updating fails', async () => {
     await settle()
     expect(root.textContent).toContain('Could not save your preference')
     expect(mocks.disable).not.toHaveBeenCalled()
-  } finally { app.unmount(); log.mockRestore() }
+  } finally {
+    app.unmount()
+    log.mockRestore()
+  }
 })
