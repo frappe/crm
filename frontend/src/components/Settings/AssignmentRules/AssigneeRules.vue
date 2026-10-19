@@ -91,7 +91,7 @@
         :key="user.name"
         class="flex items-center gap-2 text-sm bg-surface-gray-2 rounded-5 p-1 w-max px-2 select-none"
       >
-        <Avatar :image="user.user_image" :label="user.full_name" size="sm" />
+        <UserAvatar :user="user.email" size="sm" />
         <div class="text-ink-gray-7">
           {{ user.full_name }}
         </div>
@@ -118,7 +118,8 @@
 </template>
 
 <script setup>
-import { Avatar, Button, ErrorMessage, Popover, Tooltip } from 'frappe-ui'
+import UserAvatar from '@/components/UserAvatar.vue'
+import { Button, ErrorMessage, Popover, Tooltip } from 'frappe-ui'
 import AssigneeSearch from './AssigneeSearch.vue'
 import { computed, inject } from 'vue'
 import { usersStore } from '@/stores/users'

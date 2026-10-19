@@ -46,11 +46,10 @@
           <TaskPriorityIcon :priority="getRow(itemName, titleField).label" />
         </div>
         <div v-else-if="titleField === 'assigned_to'">
-          <Avatar
+          <UserAvatar
             v-if="getRow(itemName, titleField).full_name"
             class="flex items-center"
-            :image="getRow(itemName, titleField).user_image"
-            :label="getRow(itemName, titleField).full_name"
+            :user="getRow(itemName, titleField).name"
             size="sm"
           />
         </div>
@@ -86,11 +85,10 @@
           <TaskPriorityIcon :priority="getRow(itemName, fieldName).label" />
         </div>
         <div v-else-if="fieldName === 'assigned_to'">
-          <Avatar
+          <UserAvatar
             v-if="getRow(itemName, fieldName).full_name"
             class="flex items-center"
-            :image="getRow(itemName, fieldName).user_image"
-            :label="getRow(itemName, fieldName).full_name"
+            :user="getRow(itemName, fieldName).name"
             size="sm"
           />
         </div>
@@ -205,6 +203,7 @@
 </template>
 
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
@@ -224,7 +223,7 @@ import { formatDate, sanitizeHTML } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
-import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
+import { Tooltip, Dropdown } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
