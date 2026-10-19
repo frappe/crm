@@ -25,9 +25,14 @@
         <div
           class="hair flex flex-col items-center gap-2 border-b px-4 pb-2.5 pt-2"
         >
-          <span class="inline-flex items-center gap-1 text-xs font-medium text-ink-gray-5">
+          <span
+            class="inline-flex items-center gap-1 text-xs font-medium text-ink-gray-5"
+          >
             Acme
-            <ChevronDownIcon class="size-3 shrink-0 text-ink-gray-4" aria-hidden="true" />
+            <ChevronDownIcon
+              class="size-3 shrink-0 text-ink-gray-4"
+              aria-hidden="true"
+            />
           </span>
           <div class="flex w-full items-center gap-3 pl-24">
             <span class="hair-strong h-4 w-20 rounded-4 border" />
@@ -186,8 +191,9 @@
             <div class="mt-2 flex items-center gap-2">
               <span
                 class="hair-strong inline-flex items-center gap-1 rounded-5 border px-2.5 py-1 text-sm text-ink-gray-6"
-                >{{ role }}<ChevronDownIcon class="size-3.5 shrink-0" aria-hidden="true" /></span
-              >
+                >{{ role
+                }}<ChevronDownIcon class="size-3.5 shrink-0" aria-hidden="true"
+              /></span>
               <span
                 class="press ml-auto rounded-5 px-2.5 py-1 text-sm font-medium text-ink-gray-8"
                 >Send invites</span
@@ -335,8 +341,14 @@ function onMove(event) {
   const card = event.target.closest('.frag')
   if (!card) return
   const bounds = card.getBoundingClientRect()
-  card.style.setProperty('--hover-x', `${((event.clientX - bounds.left) / bounds.width) * 100}%`)
-  card.style.setProperty('--hover-y', `${((event.clientY - bounds.top) / bounds.height) * 100}%`)
+  card.style.setProperty(
+    '--hover-x',
+    `${((event.clientX - bounds.left) / bounds.width) * 100}%`,
+  )
+  card.style.setProperty(
+    '--hover-y',
+    `${((event.clientY - bounds.top) / bounds.height) * 100}%`,
+  )
 }
 </script>
 
@@ -352,7 +364,11 @@ function onMove(event) {
   --st-hair-strong: var(--outline-gray-3);
   --st-frag: var(--surface-gray-1);
   --st-blank: var(--surface-base);
-  --st-skel: color-mix(in srgb, var(--surface-gray-3) 65%, var(--surface-gray-4));
+  --st-skel: color-mix(
+    in srgb,
+    var(--surface-gray-3) 65%,
+    var(--surface-gray-4)
+  );
   --st-skel-hi: var(--surface-gray-2);
   --st-halo: color-mix(in oklch, var(--surface-gray-2) 70%, transparent);
   --st-hi: rgb(255 255 255 / 0.7);
@@ -449,7 +465,10 @@ function onMove(event) {
 
 @media (hover: hover) and (pointer: fine) {
   .frag:not(.toast):not(.dragfile):not(.menu) {
-    transition: translate 180ms ease, scale 180ms ease, box-shadow 180ms ease,
+    transition:
+      translate 180ms ease,
+      scale 180ms ease,
+      box-shadow 180ms ease,
       border-color 180ms ease;
   }
   .frag:not(.toast):not(.dragfile):not(.menu)::after {
@@ -470,7 +489,9 @@ function onMove(event) {
     translate: 0 -4px;
     scale: 1.015;
     border-color: var(--outline-gray-4);
-    box-shadow: inset 0 1px 0 var(--st-hi), var(--elevation-md);
+    box-shadow:
+      inset 0 1px 0 var(--st-hi),
+      var(--elevation-md);
   }
   .frag:hover::after {
     opacity: 1;
