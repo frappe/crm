@@ -1,5 +1,6 @@
 import frappe
 from frappe import _
+from frappe.realtime import get_site_room
 
 
 def validate_user(doc, method=None):
@@ -27,15 +28,17 @@ def publish_availability(user):
 		["crm_availability", "crm_availability_changed_on", "crm_availability_changed_by"],
 		as_dict=True,
 	)
+	# every desk user sees these dots, so this goes to the whole desk room
 	frappe.publish_realtime(
 		"crm_availability_updated",
 		{"user": user, **values},
+		room=get_site_room(),
 		after_commit=True,
 	)
 
 
 def publish_statuses_updated():
-	frappe.publish_realtime("crm_availability_statuses_updated", after_commit=True)
+	frappe.publish_realtime("crm_availability_statuses_updated", room=get_site_room(), after_commit=True)
 
 
 def get_user_categories(users):
