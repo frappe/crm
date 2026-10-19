@@ -4,6 +4,7 @@ from frappe.tests import IntegrationTestCase
 
 class TestCRMMergeLog(IntegrationTestCase):
 	def tearDown(self):
+		frappe.set_user("Administrator")
 		frappe.db.rollback()
 
 	def _create_lead(self, **kwargs):
@@ -43,3 +44,34 @@ class TestCRMMergeLog(IntegrationTestCase):
 					"source_document_name": lead.name,
 				}
 			).insert(ignore_permissions=True)
+
+	def test_merge_log_is_read_only_for_sales_roles(self):
+		lead_a = self._create_lead(first_name="A", email="a_ro_log@test.com")
+		lead_b = self._create_lead(first_name="B", email="b_ro_log@test.com")
+		log = frappe.get_doc(
+			{
+				"doctype": "CRM Merge Log",
+				"reference_doctype": "CRM Lead",
+				"target_document_name": lead_a.name,
+				"source_document_name": lead_b.name,
+			}
+		).insert(ignore_permissions=True)
+
+		for role in ("Sales User", "Sales Manager"):
+			with self.subTest(role=role):
+				frappe.set_user(make_user(f"merge-log-{role.lower().replace(' ', '-')}@example.com", role))
+				self.assertTrue(frappe.has_permission("CRM Merge Log", "read", log.name))
+				doc = frappe.get_doc("CRM Merge Log", log.name)
+				doc.field_snapshot = "{}"
+				with self.assertRaises(frappe.PermissionError):
+					doc.save()
+				frappe.set_user("Administrator")
+
+
+def make_user(email, role):
+	if not frappe.db.exists("User", email):
+		user = frappe.get_doc(
+			{"doctype": "User", "email": email, "first_name": email.split("@")[0], "send_welcome_email": 0}
+		).insert(ignore_permissions=True)
+		user.add_roles(role)
+	return email
