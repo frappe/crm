@@ -4,6 +4,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.dynamic_links import get_dynamic_link_map
+from frappe.model.rename_doc import get_link_fields
 
 
 @frappe.whitelist()
@@ -134,9 +135,10 @@ def merge_leads(target: str, source: str):
 
 	_move_child_tables(source_doc, target_doc)
 
-	_update_references(source_doc.name, target_doc.name)
+	_update_references(ref_snapshot, target_doc.name)
 
 	target_doc.save(ignore_permissions=True)
+	_sync_assignments(source, target)
 
 	source_doc.db_set({"merged_into": target, "is_duplicate": 1})
 
@@ -195,6 +197,7 @@ def split_lead(merge_log_name: str):
 	_move_child_tables_back(source_doc, target_doc, child_data)
 
 	_restore_references(source, target, ref_data)
+	_sync_assignments(source, target)
 
 	source_doc.db_set({"merged_into": None, "is_duplicate": 0})
 	merge_log.db_set({"split_at": frappe.utils.now(), "split_by": frappe.session.user})
@@ -332,128 +335,84 @@ def _snapshot_references(source_doc: frappe.model.document.Document) -> list:
 
 	refs.extend(_get_link_references("CRM Lead", source_name))
 	refs.extend(_get_dynamic_link_references("CRM Lead", source_name))
+	refs.extend(_get_file_references("CRM Lead", source_name))
 
 	return refs
 
 
 def _get_link_references(doctype: str, docname: str) -> list:
 	references = []
-	fields = frappe.db.get_all(
-		"DocField",
-		filters={"fieldtype": "Link", "options": doctype},
-		fields=["parent", "fieldname"],
-	)
-
-	seen = set()
-	for f in fields:
-		parent = f.get("parent")
-		if not parent:
+	for field in get_link_fields(doctype):
+		if field.issingle:
 			continue
-		key = (parent, f["fieldname"])
-		if key in seen:
-			continue
-		seen.add(key)
-		try:
-			names = frappe.get_all(
-				parent,
-				filters={f["fieldname"]: docname},
-				pluck="name",
-				limit=50,
+		for name in frappe.get_all(field.parent, filters={field.fieldname: docname}, pluck="name"):
+			references.append(
+				{"doctype": field.parent, "docname": name, "fieldname": field.fieldname, "old_value": docname}
 			)
-			for name in names:
-				references.append(
-					{
-						"doctype": parent,
-						"docname": name,
-						"fieldname": f["fieldname"],
-						"old_value": docname,
-					}
-				)
-		except Exception:
-			continue
-
 	return references
 
 
 def _get_dynamic_link_references(doctype: str, docname: str) -> list:
 	references = []
-	dynamic_link_map = get_dynamic_link_map()
-
-	for df in dynamic_link_map.get(doctype, []):
-		df_doctype = df.get("parent")
-		df_fieldname = df.get("fieldname")
-		if not df_doctype or not df_fieldname:
+	for df in get_dynamic_link_map().get(doctype, []):
+		meta = frappe.get_meta(df.parent)
+		if meta.issingle or meta.is_virtual:
 			continue
-		try:
-			names = frappe.get_all(
-				df_doctype,
-				filters={df_fieldname: docname},
-				pluck="name",
-				limit=50,
+		names = frappe.get_all(df.parent, filters={df.options: doctype, df.fieldname: docname}, pluck="name")
+		for name in names:
+			references.append(
+				{"doctype": df.parent, "docname": name, "fieldname": df.fieldname, "old_value": docname}
 			)
-			for name in names:
-				ref = None
-				if df.get("parentfield"):
-					parent_doc = frappe.db.get_value(df_doctype, name, "parent")
-					parent_doctype = frappe.db.get_value(df_doctype, name, "parenttype")
-					if parent_doc and parent_doctype:
-						ref = {
-							"child_doctype": df_doctype,
-							"parent_doctype": parent_doctype,
-							"parent_docname": parent_doc,
-							"child_name": name,
-							"fieldname": df_fieldname,
-							"old_value": docname,
-						}
-				if not ref:
-					ref = {
-						"doctype": df_doctype,
-						"docname": name,
-						"fieldname": df_fieldname,
-						"old_value": docname,
-					}
-				references.append(ref)
-		except Exception:
-			continue
-
 	return references
 
 
-def _update_references(old_name: str, new_name: str):
-	for ref in _get_link_references("CRM Lead", old_name):
-		try:
-			frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], new_name)
-		except Exception:
-			continue
+def _get_file_references(doctype: str, docname: str) -> list:
+	names = frappe.get_all(
+		"File", filters={"attached_to_doctype": doctype, "attached_to_name": docname}, pluck="name"
+	)
+	return [
+		{"doctype": "File", "docname": name, "fieldname": "attached_to_name", "old_value": docname}
+		for name in names
+	]
 
-	for ref in _get_dynamic_link_references("CRM Lead", old_name):
-		try:
-			if "child_doctype" in ref:
-				frappe.db.set_value(
-					ref["child_doctype"],
-					ref["child_name"],
-					ref["fieldname"],
-					new_name,
-				)
-			else:
-				frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], new_name)
-		except Exception:
-			continue
+
+def _update_references(refs: list, new_name: str):
+	for ref in refs:
+		frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], new_name, update_modified=False)
 
 
 def _restore_references(source_name: str, target_name: str, ref_data: list):
 	for ref in ref_data:
 		if ref.get("old_value") != source_name:
 			continue
-		doctype = ref.get("child_doctype") or ref.get("doctype")
-		docname = ref.get("child_name") or ref.get("docname")
-		fieldname = ref.get("fieldname")
-		try:
-			if frappe.db.get_value(doctype, docname, fieldname) != target_name:
-				continue
-			frappe.db.set_value(doctype, docname, fieldname, source_name)
-		except Exception:
+		if frappe.db.get_value(ref["doctype"], ref["docname"], ref["fieldname"]) != target_name:
 			continue
+		frappe.db.set_value(
+			ref["doctype"], ref["docname"], ref["fieldname"], source_name, update_modified=False
+		)
+
+
+def _sync_assignments(*lead_names: str):
+	for lead_name in lead_names:
+		assignees = frappe.get_all(
+			"ToDo",
+			filters={
+				"reference_type": "CRM Lead",
+				"reference_name": lead_name,
+				"status": ("not in", ("Cancelled", "Closed")),
+				"allocated_to": ("is", "set"),
+			},
+			pluck="allocated_to",
+			order_by="creation",
+		)
+		assignees = list(dict.fromkeys(assignees))
+		frappe.db.set_value(
+			"CRM Lead",
+			lead_name,
+			"_assign",
+			json.dumps(assignees) if assignees else "",
+			update_modified=False,
+		)
 
 
 def _move_child_tables(

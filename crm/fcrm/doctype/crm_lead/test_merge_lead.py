@@ -1,6 +1,7 @@
 import json
 
 import frappe
+from frappe.desk.form.assign_to import add as assign_add
 from frappe.tests import IntegrationTestCase
 
 
@@ -150,6 +151,67 @@ class TestMergeLead(IntegrationTestCase):
 
 		self.assertEqual(comm.reference_name, lead_a.name)
 		self.assertEqual(todo.reference_name, lead_a.name)
+
+	def test_merge_moves_every_reference(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="b@test.com")
+		for i in range(55):
+			frappe.get_doc(
+				{
+					"doctype": "Comment",
+					"comment_type": "Comment",
+					"reference_doctype": "CRM Lead",
+					"reference_name": lead_b.name,
+					"content": f"Comment {i}",
+				}
+			).insert(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads
+
+		merge_leads(lead_a.name, lead_b.name)
+
+		comments = {"reference_doctype": "CRM Lead", "comment_type": "Comment"}
+		self.assertEqual(frappe.db.count("Comment", {**comments, "reference_name": lead_b.name}), 0)
+		self.assertEqual(frappe.db.count("Comment", {**comments, "reference_name": lead_a.name}), 55)
+
+	def test_merge_and_split_move_attachments(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="b@test.com")
+		file = frappe.get_doc(
+			{
+				"doctype": "File",
+				"file_url": "https://example.com/brochure.pdf",
+				"attached_to_doctype": "CRM Lead",
+				"attached_to_name": lead_b.name,
+			}
+		).insert(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		self.assertEqual(frappe.db.get_value("File", file.name, "attached_to_name"), lead_a.name)
+
+		split_lead(result["merge_log"])
+		self.assertEqual(frappe.db.get_value("File", file.name, "attached_to_name"), lead_b.name)
+
+	def test_merge_and_split_update_assignees(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="b@test.com")
+		assign_add({"assign_to": ["Administrator"], "doctype": "CRM Lead", "name": lead_b.name})
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		self.assertEqual(
+			json.loads(frappe.db.get_value("CRM Lead", lead_a.name, "_assign")), ["Administrator"]
+		)
+		self.assertFalse(frappe.db.get_value("CRM Lead", lead_b.name, "_assign"))
+
+		split_lead(result["merge_log"])
+		self.assertFalse(frappe.db.get_value("CRM Lead", lead_a.name, "_assign"))
+		self.assertEqual(
+			json.loads(frappe.db.get_value("CRM Lead", lead_b.name, "_assign")), ["Administrator"]
+		)
 
 	def test_merge_cannot_merge_already_merged(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
