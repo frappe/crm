@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-11 15:53+0000\n"
-"PO-Revision-Date: 2026-10-17 06:21\n"
+"PO-Revision-Date: 2026-10-18 06:26\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Ukrainian\n"
 "MIME-Version: 1.0\n"
@@ -157,7 +157,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:143
 msgid "A Lead requires either a person's name or an organization's name"
-msgstr ""
+msgstr "Для ліда потрібно вказати ім'я особи або назву організації"
 
 #: crm/lead_syncing/doctype/lead_sync_source/lead_sync_source.py:49
 msgid "A lead sync source is already enabled for this Facebook Lead Form!"
@@ -260,11 +260,11 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/DashboardSettings.vue:135
 msgid "Access Key"
-msgstr ""
+msgstr "Ключ доступу"
 
 #: crm/api/exchange_rate.py:98 crm/api/exchange_rate.py:114
 msgid "Access Key is required for Service Provider: {0}"
-msgstr ""
+msgstr "Для постачальника послуги {0} потрібен ключ доступу"
 
 #. Label of the access_token (Small Text) field in DocType 'Facebook Page'
 #. Label of the access_token (Password) field in DocType 'Lead Sync Source'
@@ -487,7 +487,7 @@ msgstr ""
 #. 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add Weekly Holidays"
-msgstr ""
+msgstr "Додати щотижневі вихідні"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesSection.vue:20
 msgid "Add a Condition"
@@ -500,7 +500,7 @@ msgstr ""
 #: frontend/src/components/Telephony/ExotelCallUI.vue:180
 #: frontend/src/components/Telephony/TwilioCallUI.vue:57
 msgid "Add a Note"
-msgstr ""
+msgstr "Додати примітку"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:188
 msgid "Add a Task"
@@ -600,7 +600,7 @@ msgstr ""
 #. Label of the add_to_holidays (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Add to Holidays"
-msgstr ""
+msgstr "Додати до святкових днів"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:594
 msgid "Add your first comment"
@@ -691,7 +691,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:512
 #: frontend/src/pages/Organization.vue:552
 msgid "Amount"
-msgstr ""
+msgstr "Сума"
 
 #. Description of the 'Net Amount' (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
@@ -742,7 +742,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Annual Revenue"
-msgstr ""
+msgstr "Річний дохід"
 
 #: frontend/src/components/Modals/DealModal.vue:197
 #: frontend/src/components/Modals/LeadModal.vue:141
@@ -789,7 +789,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:65
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:71
 msgid "Apply On"
-msgstr ""
+msgstr "Застосувати до"
 
 #. Label of the view (Select) field in DocType 'CRM Form Script'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json
@@ -1257,7 +1257,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/BrandSettings.vue:30
 msgid "Brand Name"
-msgstr ""
+msgstr "Назва бренду"
 
 #: frontend/src/components/Settings/BrandSettings.vue:7
 msgid "Brand Settings"
@@ -1279,7 +1279,7 @@ msgstr ""
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Busy"
-msgstr ""
+msgstr "Зайнято"
 
 #: frontend/src/components/EmailEditor.vue:43
 #: frontend/src/components/EmailEditor.vue:65
@@ -1531,16 +1531,16 @@ msgstr ""
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:10
 msgid "Call Details"
-msgstr ""
+msgstr "Деталі дзвінка"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:719
 msgid "Call Log"
-msgstr ""
+msgstr "Журнал дзвінків"
 
 #. Label of the receiver (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 msgid "Call Received By"
-msgstr ""
+msgstr "Дзвінок прийняв"
 
 #: frontend/src/components/Telephony/ExotelCallUI.vue:401
 msgid "Call connected, but the call log could not be saved. Please contact your administrator."
@@ -1843,7 +1843,7 @@ msgstr ""
 #. Label of the clear_table (Button) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Clear Table"
-msgstr ""
+msgstr "Очистити таблицю"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:112
 msgid "Clear to pick a record instead"
@@ -2026,7 +2026,7 @@ msgstr ""
 #. Option for the 'Device' (Select) field in DocType 'CRM Telephony Agent'
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json
 msgid "Computer"
-msgstr ""
+msgstr "Комп’ютер"
 
 #. Label of the condition (Code) field in DocType 'CRM Service Level Agreement'
 #. Label of the condition_json (Code) field in DocType 'CRM Service Level
@@ -2666,7 +2666,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:533
 #: frontend/src/pages/Organization.vue:573
 msgid "Deal Owner"
-msgstr ""
+msgstr "Відповідальний за угоду"
 
 #. Label of the deal_status (Link) field in DocType 'ERPNext CRM Settings'
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json
@@ -2797,7 +2797,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_service_level_priority/crm_service_level_priority.json
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:181
 msgid "Default Priority"
-msgstr ""
+msgstr "Пріоритет за замовчуванням"
 
 #: frontend/src/components/Settings/EmailAccountCard.vue:40
 msgid "Default Sending"
@@ -3057,7 +3057,7 @@ msgstr ""
 #. Label of the discount_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Discount Amount"
-msgstr ""
+msgstr "Сума знижки"
 
 #: frontend/src/components/Activities/Activities.vue:459
 msgid "Dismiss reply"
@@ -3244,7 +3244,7 @@ msgstr ""
 #: frontend/src/components/Settings/ERPNextSettings.vue:3
 #: frontend/src/components/Settings/ERPNextSettings.vue:9
 msgid "ERPNext Settings"
-msgstr ""
+msgstr "Налаштування ERPNext"
 
 #. Label of the section_break_oubd (Section Break) field in DocType 'ERPNext
 #. CRM Settings'
@@ -3350,7 +3350,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/CallLogDetailModal.vue:22
 msgid "Edit Note"
-msgstr ""
+msgstr "Редагувати примітку"
 
 #: frontend/src/components/Modals/QuickEntryModal.vue:7
 msgid "Edit Quick Entry Layout"
@@ -3610,11 +3610,11 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:45
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:46
 msgid "End Time"
-msgstr ""
+msgstr "Час закінчення"
 
 #: frontend/src/components/Settings/Sla/utils.js:172
 msgid "End date cannot be before start date"
-msgstr ""
+msgstr "Дата завершення не може бути раніше дати початку"
 
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:189
 msgid "End time is required"
@@ -3762,7 +3762,7 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:471 frontend/src/pages/MobileLead.vue:221
 msgid "Error Occurred"
-msgstr ""
+msgstr "Сталася помилка"
 
 #: frontend/src/components/FilesUploader/FilesUploader.vue:192
 #: frontend/src/components/FilesUploader/FilesUploader.vue:215
@@ -3846,7 +3846,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Exchange Rate"
-msgstr ""
+msgstr "Курс валюти"
 
 #. Label of the exchange_rate_provider_section (Section Break) field in DocType
 #. 'FCRM Settings'
@@ -4227,7 +4227,7 @@ msgstr ""
 
 #: frontend/src/components/Questionnaire.vue:104
 msgid "Finish"
-msgstr ""
+msgstr "Завершити"
 
 #. Label of the finished_on (Datetime) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -4253,14 +4253,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "First Responded On"
-msgstr ""
+msgstr "Перша відповідь"
 
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Deal'
 #. Option for the 'SLA Status' (Select) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "First Response Due"
-msgstr ""
+msgstr "Термін першої відповіді"
 
 #. Label of the first_response_time (Duration) field in DocType 'CRM Service
 #. Level Priority'
@@ -4275,7 +4275,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/EditResponseResolutionModal.vue:17
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:176
 msgid "First Response Time"
-msgstr ""
+msgstr "Час першої відповіді"
 
 #. Label of the first_name (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -4306,7 +4306,7 @@ msgstr ""
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:83
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:49
 msgid "For"
-msgstr ""
+msgstr "Для"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFlow.vue:137
 msgid "Forced"
@@ -4432,7 +4432,7 @@ msgstr "Від значення"
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json
 msgid "Fulfilled"
-msgstr ""
+msgstr "Виконано"
 
 #. Label of the full_name (Data) field in DocType 'CRM Contacts'
 #. Label of the lead_name (Data) field in DocType 'CRM Lead'
@@ -4475,7 +4475,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:5
 msgid "General Settings"
-msgstr ""
+msgstr "Загальні налаштування"
 
 #: crm/api/dashboard.py:1186
 msgid "Geographic distribution of deals and revenue"
@@ -4635,19 +4635,19 @@ msgstr ""
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Holiday List"
-msgstr ""
+msgstr "Календар святкових днів"
 
 #. Label of the holiday_list_name (Data) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Holiday List Name"
-msgstr ""
+msgstr "Назва календаря святкових днів"
 
 #. Label of the holidays_section (Section Break) field in DocType 'CRM Holiday
 #. List'
 #. Label of the holidays (Table) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Holidays"
-msgstr ""
+msgstr "Святкові дні"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:705
 #: frontend/src/components/Settings/HomeActions.vue:7
@@ -4823,7 +4823,7 @@ msgstr ""
 #: frontend/src/components/Settings/Enrichment/RulesTab.vue:109
 #: frontend/src/components/Settings/Enrichment/RulesTab.vue:140
 msgid "Industry"
-msgstr ""
+msgstr "Галузь"
 
 #. Label of the industry_confidence (Float) field in DocType 'CRM Enrichment
 #. Run'
@@ -4839,7 +4839,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:65
 msgid "Initiated"
-msgstr ""
+msgstr "Ініційовано"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:36
 msgid "Initiating call..."
@@ -5347,7 +5347,7 @@ msgstr "Відповідальний за лід"
 
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:160
 msgid "Lead Owner cannot be same as the Lead Email Address"
-msgstr ""
+msgstr "Відповідальний за лід не може збігатися з адресою пошти ліда"
 
 #. Label of the lead_score (Int) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
@@ -5428,7 +5428,7 @@ msgstr ""
 #: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:391
 #: frontend/src/pages/MobileLead.vue:253
 msgid "Leads"
-msgstr ""
+msgstr "Ліди"
 
 #: crm/api/dashboard.py:105
 msgid "Leads by Source"
@@ -5570,7 +5570,7 @@ msgstr ""
 #: crm/domain_enrichment/mapper.py:36
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Logo"
-msgstr ""
+msgstr "Логотип"
 
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:116
 msgid "Logs"
@@ -5581,7 +5581,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json
 msgid "Lost"
-msgstr ""
+msgstr "Втрачено"
 
 #: crm/api/dashboard.py:99
 msgid "Lost Deal Reasons"
@@ -5618,7 +5618,7 @@ msgstr ""
 #: frontend/src/components/Modals/LostReasonModal.vue:2
 #: frontend/src/components/Modals/LostReasonModal.vue:14
 msgid "Lost Reason"
-msgstr ""
+msgstr "Причина втрати"
 
 #: frontend/src/components/Modals/EditValueModal.vue:172
 #: frontend/src/components/Modals/LostReasonModal.vue:85
@@ -5708,7 +5708,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:193
 #: frontend/src/components/Settings/Users.vue:235
 msgid "Manager"
-msgstr ""
+msgstr "Керівник"
 
 #: frontend/src/pages/PersonaForm.vue:104
 msgid "Managing contacts and companies"
@@ -6020,14 +6020,14 @@ msgstr ""
 #. Label of the net_amount (Currency) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Net Amount"
-msgstr ""
+msgstr "Чиста сума"
 
 #. Label of the net_total (Currency) field in DocType 'CRM Deal'
 #. Label of the net_total (Currency) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Net Total"
-msgstr ""
+msgstr "Чистий підсумок"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:59
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRules.vue:19
@@ -6071,7 +6071,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:31
 #: frontend/src/pages/Deals.vue:516 frontend/src/pages/Leads.vue:544
 msgid "New Note"
-msgstr ""
+msgstr "Нова нотатка"
 
 #: frontend/src/components/Modals/OrganizationModal.vue:9
 msgid "New Organization"
@@ -6101,7 +6101,7 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:38
 #: frontend/src/pages/Deals.vue:521 frontend/src/pages/Leads.vue:549
 msgid "New Task"
-msgstr ""
+msgstr "Нове завдання"
 
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:10
 #: frontend/src/components/Settings/WhatsAppSettings.vue:36
@@ -6195,7 +6195,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:71
 msgid "No Answer"
-msgstr ""
+msgstr "Немає відповіді"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:10
 msgid "No Assignment Rules Found"
@@ -6438,7 +6438,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "No. of Employees"
-msgstr ""
+msgstr "Кількість працівників"
 
 #: frontend/src/components/Activities/AudioPlayer.vue:146
 msgid "Normal"
@@ -6561,7 +6561,7 @@ msgstr ""
 #: frontend/src/pages/Deal.vue:797 frontend/src/pages/Lead.vue:602
 #: frontend/src/pages/MobileDeal.vue:495 frontend/src/pages/MobileLead.vue:341
 msgid "Notes"
-msgstr ""
+msgstr "Нотатки"
 
 #: frontend/src/pages/Notes.vue:23
 msgid "Notes View"
@@ -6661,7 +6661,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Old Parent"
-msgstr ""
+msgstr "Попередній батьківський запис"
 
 #. Option for the 'Timeline Sort Order' (Select) field in DocType 'FCRM
 #. Settings'
@@ -6771,7 +6771,7 @@ msgstr ""
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:53
 msgid "Operator"
-msgstr ""
+msgstr "Оператор"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:105
 msgid "Optional"
@@ -6791,7 +6791,7 @@ msgstr ""
 #. Label of the order_by (Code) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json
 msgid "Order By"
-msgstr ""
+msgstr "Сортувати за"
 
 #: frontend/src/components/Settings/GeneralSettings.vue:111
 msgid "Order of activities, emails, comments and calls in the timeline"
@@ -6817,7 +6817,7 @@ msgstr ""
 #: frontend/src/pages/Organization.vue:547
 #: frontend/src/pages/Organization.vue:601
 msgid "Organization"
-msgstr ""
+msgstr "Організація"
 
 #. Label of the organization_details_section (Section Break) field in DocType
 #. 'CRM Deal'
@@ -6841,7 +6841,7 @@ msgstr ""
 #: crm/domain_enrichment/mapper.py:34 crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Organization Name"
-msgstr ""
+msgstr "Назва організації"
 
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:664
 msgid "Organization or a primary Contact is required to create a customer"
@@ -7171,7 +7171,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:55
 msgid "Please select weekly off day"
-msgstr ""
+msgstr "Виберіть вихідний день тижня"
 
 #: frontend/src/pages/Lead.vue:144
 msgid "Please set a mobile number to make calls"
@@ -7262,7 +7262,7 @@ msgstr ""
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Priorities"
-msgstr ""
+msgstr "Пріоритети"
 
 #: frontend/src/components/Settings/Sla/utils.js:145
 msgid "Priorities must be unique"
@@ -7298,14 +7298,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json
 msgid "Probability"
-msgstr ""
+msgstr "Ймовірність"
 
 #. Label of the product (Link) field in DocType 'CRM Product Sync Issue'
 #. Label of the product_code (Link) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_product_sync_issue/crm_product_sync_issue.json
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Product"
-msgstr ""
+msgstr "Продукт"
 
 #. Label of the product_code (Data) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
@@ -7335,7 +7335,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Products"
-msgstr ""
+msgstr "Товари"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:703
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
@@ -7380,7 +7380,7 @@ msgstr "Python, обчислюється щодо doc, target і context."
 #. Label of the qty (Float) field in DocType 'CRM Products'
 #: crm/fcrm/doctype/crm_products/crm_products.json
 msgid "Quantity"
-msgstr ""
+msgstr "Кількість"
 
 #. Label of the questions (Table) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json
@@ -7710,7 +7710,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/AboutModal.vue:68
 msgid "Report an Issue"
-msgstr ""
+msgstr "Повідомити про проблему"
 
 #: frontend/src/pages/PersonaForm.vue:108
 msgid "Reporting & forecasting"
@@ -7779,7 +7779,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Response By"
-msgstr ""
+msgstr "Відповісти до"
 
 #. Label of the response_details_section (Section Break) field in DocType 'CRM
 #. Deal'
@@ -7788,7 +7788,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 msgid "Response Details"
-msgstr ""
+msgstr "Деталі відповіді"
 
 #. Label of the response_time (Duration) field in DocType 'CRM Rolling Response
 #. Time'
@@ -7866,7 +7866,7 @@ msgstr "Повторно використано угоду {0}"
 
 #: crm/api/dashboard.py:845
 msgid "Revenue"
-msgstr ""
+msgstr "Дохід"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -7884,7 +7884,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
 #: frontend/src/utils/callLog.js:70
 msgid "Ringing"
-msgstr ""
+msgstr "Дзвонить"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:38
 #: frontend/src/components/Telephony/TwilioCallUI.vue:140
@@ -8489,12 +8489,12 @@ msgstr ""
 
 #: frontend/src/components/Layouts/AppSidebar.vue:744
 msgid "Service Level Agreement"
-msgstr ""
+msgstr "Угода про рівень обслуговування"
 
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 msgid "Service Provider"
-msgstr ""
+msgstr "Постачальник послуг"
 
 #: frontend/src/components/Filter.vue:420
 #: frontend/src/components/Filter.vue:659
@@ -8877,7 +8877,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:61
 msgid "Source Type"
-msgstr ""
+msgstr "Тип джерела"
 
 #. Label of the source_website (Data) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json
@@ -8917,7 +8917,7 @@ msgstr ""
 #. Label of the standard_rate (Currency) field in DocType 'CRM Product'
 #: crm/fcrm/doctype/crm_product/crm_product.json
 msgid "Standard Selling Rate"
-msgstr ""
+msgstr "Стандартна ціна продажу"
 
 #: frontend/src/components/ViewControls.vue:767
 msgid "Standard Views"
@@ -9139,7 +9139,7 @@ msgstr ""
 #: frontend/src/components/Settings/ERPNextSettings.vue:263
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:23
 msgid "Sync Now"
-msgstr ""
+msgstr "Синхронізувати зараз"
 
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:16
 msgid "Sync Successful, CRM Lead: {0}!"
@@ -9346,12 +9346,12 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json
 #: crm/fcrm/doctype/crm_organization/crm_organization.json
 msgid "Territory"
-msgstr ""
+msgstr "Територія"
 
 #. Label of the territory_manager (Link) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
 msgid "Territory Manager"
-msgstr ""
+msgstr "Регіональний менеджер"
 
 #. Label of the territory_name (Data) field in DocType 'CRM Territory'
 #: crm/fcrm/doctype/crm_territory/crm_territory.json
@@ -9392,7 +9392,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:64
 msgid "The holiday on {0} is not between From Date and To Date"
-msgstr ""
+msgstr "Святковий день {0} не входить у період між «Від дати» і «До дати»"
 
 #. Description of the 'Exchange Rate' (Float) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json
@@ -9590,7 +9590,7 @@ msgstr ""
 
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.py:59
 msgid "To Date cannot be before From Date"
-msgstr ""
+msgstr "Дата «До» не може бути раніше дати «Від»"
 
 #. Label of the to (Data) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json
@@ -9651,7 +9651,7 @@ msgstr ""
 #. Label of the total_holidays (Int) field in DocType 'CRM Holiday List'
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Total Holidays"
-msgstr ""
+msgstr "Усього святкових днів"
 
 #: crm/api/dashboard.py:85
 msgid "Total Leads"
@@ -9847,7 +9847,7 @@ msgstr ""
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:43
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:91
 msgid "Unit"
-msgstr ""
+msgstr "Одиниця"
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:24
 #: frontend/src/components/Telephony/TwilioCallUI.vue:123
@@ -9977,7 +9977,7 @@ msgstr ""
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json
 #: frontend/src/components/Settings/GeneralSettings.vue:16
 msgid "Update timestamp on new communication"
-msgstr ""
+msgstr "Оновлювати час при новій комунікації"
 
 #: frontend/src/components/Modals/EditValueModal.vue:60
 msgid "Update {0} Records"
@@ -10100,7 +10100,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:169
 msgid "Valid From"
-msgstr ""
+msgstr "Діє з"
 
 #: frontend/src/components/Settings/Sla/utils.js:187
 msgid "Valid conditions are required"
@@ -10241,7 +10241,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_holiday/crm_holiday.json
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json
 msgid "Weekly Off"
-msgstr ""
+msgstr "Щотижневий вихідний"
 
 #. Label of the weight (Float) field in DocType 'CRM Enrichment Link Priority'
 #. Label of the weight (Float) field in DocType 'CRM Enrichment Rule'
@@ -10279,7 +10279,7 @@ msgstr ""
 #: frontend/src/pages/MobileDeal.vue:507 frontend/src/pages/MobileLead.vue:353
 #: frontend/src/pages/PersonaForm.vue:83
 msgid "WhatsApp"
-msgstr ""
+msgstr "WhatsApp"
 
 #: frontend/src/components/Activities/ActivityHeader.vue:134
 msgid "WhatsApp Message"
@@ -10332,7 +10332,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_service_day/crm_service_day.json
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:16
 msgid "Workday"
-msgstr ""
+msgstr "Робочий день"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationBuilder.vue:216
 msgid "Workflow Automation"
@@ -10350,7 +10350,7 @@ msgstr "Автоматизації процесів"
 #. Agreement'
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json
 msgid "Working Hours"
-msgstr ""
+msgstr "Робочі години"
 
 #. Label of the policy_section (Section Break) field in DocType 'CRM Enrichment
 #. Field Mapping'
@@ -10628,7 +10628,7 @@ msgstr ""
 #. Mapping'
 #: crm/domain_enrichment/doctype/crm_enrichment_field_mapping/crm_enrichment_field_mapping.json
 msgid "description"
-msgstr ""
+msgstr "опис"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:189
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:273
@@ -10961,7 +10961,7 @@ msgstr ""
 #: frontend/src/components/Activities/Activities.vue:316
 #: frontend/src/components/Activities/Activities.vue:379
 msgid "to"
-msgstr ""
+msgstr "до"
 
 #: frontend/src/utils/index.js:137 frontend/src/utils/index.js:184
 msgid "tomorrow"
@@ -11158,7 +11158,7 @@ msgstr "Виконано кроків: {0} з {1}"
 
 #: frontend/src/components/CommandPalette/useCRMCommands.js:244
 msgid "{0} overdue"
-msgstr ""
+msgstr "Прострочено: {0}"
 
 #: frontend/src/components/Settings/WhatsAppAccountList.vue:176
 msgid "{0} set as default account"
