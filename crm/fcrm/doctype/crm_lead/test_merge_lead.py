@@ -220,6 +220,48 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertIsNone(lead_b.merged_into)
 		self.assertEqual(lead_b.is_duplicate, 0)
 
+	def test_split_moves_references_back(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="b@test.com")
+
+		deal = frappe.get_doc({"doctype": "CRM Deal", "lead": lead_b.name})
+		deal.flags.ignore_links = True
+		deal.insert(ignore_permissions=True)
+		todo = frappe.get_doc(
+			{
+				"doctype": "ToDo",
+				"description": "Test task",
+				"reference_type": "CRM Lead",
+				"reference_name": lead_b.name,
+			}
+		).insert(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		split_lead(result["merge_log"])
+
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "lead"), lead_b.name)
+		self.assertEqual(frappe.db.get_value("ToDo", todo.name, "reference_name"), lead_b.name)
+
+	def test_split_moves_child_rows_back(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="b@test.com")
+
+		lead_b.append("products", {"product_name": "Test Product", "rate": 100})
+		lead_b.flags.ignore_links = True
+		lead_b.save(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		split_lead(result["merge_log"])
+
+		lead_a.reload()
+		lead_b.reload()
+		self.assertEqual(len(lead_a.products), 0)
+		self.assertEqual([p.product_name for p in lead_b.products], ["Test Product"])
+
 	def test_split_merges_twice_fails(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")

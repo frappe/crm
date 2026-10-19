@@ -194,7 +194,7 @@ def split_lead(merge_log_name: str):
 
 	_move_child_tables_back(source_doc, target_doc, child_data)
 
-	_restore_references(source, target, ref_data)
+	_restore_references(source, ref_data)
 
 	source_doc.db_set({"merged_into": None, "is_duplicate": 0})
 	merge_log.db_set({"split_at": frappe.utils.now(), "split_by": frappe.session.user})
@@ -441,9 +441,9 @@ def _update_references(old_name: str, new_name: str):
 			continue
 
 
-def _restore_references(target_name: str, source_name: str, ref_data: list):
+def _restore_references(source_name: str, ref_data: list):
 	for ref in ref_data:
-		if ref.get("old_value") != target_name:
+		if ref.get("old_value") != source_name:
 			continue
 		try:
 			if "child_doctype" in ref:
@@ -484,15 +484,16 @@ def _move_child_tables_back(
 	child_tables = ["products", "status_change_log", "rolling_responses"]
 
 	for ct in child_tables:
+		child_doctype = target_doc.meta.get_field(ct).options
 		source_rows = child_data.get(ct) or []
 		for row_data in source_rows:
 			row_name = row_data.get("name")
 			if not row_name:
 				continue
-			if not frappe.db.exists(ct, row_name):
+			if not frappe.db.exists(child_doctype, row_name):
 				continue
 			frappe.db.set_value(
-				ct,
+				child_doctype,
 				row_name,
 				{"parent": source_doc.name, "parenttype": source_doc.doctype},
 			)
