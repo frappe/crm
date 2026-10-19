@@ -38,6 +38,28 @@ class TestMergeLead(IntegrationTestCase):
 		names = [d["name"] for d in dups]
 		self.assertIn(lead1.name, names)
 
+	def test_find_duplicates_by_differently_formatted_phone(self):
+		lead1 = self._create_lead(first_name="Ravi", mobile_no="+91 98765 43210")
+		lead2 = self._create_lead(first_name="Ravi K", phone="+91-98765-43210")
+
+		from crm.api.lead import find_duplicate_leads
+
+		dups = {d["name"]: d for d in find_duplicate_leads(lead2.name)}
+		self.assertIn(lead1.name, dups)
+		self.assertEqual(dups[lead1.name]["matched_fields"], ["mobile_no"])
+
+	def test_find_duplicates_skips_converted_and_merged_leads(self):
+		lead = self._create_lead(first_name="Lead", email="same@test.com")
+		converted = self._create_lead(first_name="Converted", email="same@test.com")
+		converted.db_set("converted", 1)
+		target = self._create_lead(first_name="Target", email="target@test.com")
+		merged = self._create_lead(first_name="Merged", email="same@test.com")
+		merged.db_set({"is_duplicate": 1, "merged_into": target.name})
+
+		from crm.api.lead import find_duplicate_leads
+
+		self.assertEqual(find_duplicate_leads(lead.name), [])
+
 	def test_no_self_duplicate(self):
 		lead = self._create_lead(first_name="Self", email="self@test.com")
 

@@ -6,6 +6,9 @@ from frappe import _
 from frappe.model.dynamic_links import get_dynamic_link_map
 from frappe.model.rename_doc import get_link_fields
 
+from crm.integrations.api import find_by_phone
+from crm.utils import normalize_phone
+
 
 @frappe.whitelist()
 def find_duplicate_leads(lead_name: str):
@@ -13,45 +16,36 @@ def find_duplicate_leads(lead_name: str):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 	lead = frappe.get_cached_doc("CRM Lead", lead_name)
-	matches = []
 
-	filters = [
-		["name", "!=", lead_name],
-		["merged_into", "is", "not set"],
-		["is_duplicate", "=", 0],
-	]
-
-	match_fields = []
+	candidates = set()
 	if lead.email:
-		match_fields.append("email")
-	if lead.mobile_no:
-		match_fields.append("mobile_no")
-	if lead.phone:
-		match_fields.append("phone")
-
-	if not match_fields:
+		candidates.update(frappe.get_all("CRM Lead", filters={"email": lead.email}, pluck="name"))
+	for number in (lead.mobile_no, lead.phone):
+		if number:
+			candidates.update(m["docname"] for m in find_by_phone(number) if m["doctype"] == "CRM Lead")
+	candidates.discard(lead_name)
+	if not candidates:
 		return []
-
-	or_filters = []
-	for field in match_fields:
-		or_filters.append([field, "=", lead.get(field)])
 
 	possible = frappe.get_list(
 		"CRM Lead",
-		filters=filters,
-		or_filters=or_filters,
+		filters={"name": ("in", list(candidates)), "converted": 0, "is_duplicate": 0},
 		fields=["name", "lead_name", "email", "mobile_no", "phone", "organization"],
 		limit=20,
 	)
 
-	for p in possible:
-		matched = []
-		for field in match_fields:
-			if p.get(field) and p[field] == lead.get(field):
-				matched.append(field)
-		matches.append({**p, "matched_fields": matched})
+	numbers = {normalize_phone(n) for n in (lead.mobile_no, lead.phone)} - {""}
+	return [{**p, "matched_fields": _matched_fields(lead, p, numbers)} for p in possible]
 
-	return matches
+
+def _matched_fields(lead, candidate, numbers: set) -> list:
+	matched = []
+	if lead.email and (candidate.email or "").lower() == lead.email.lower():
+		matched.append("email")
+	for field in ("mobile_no", "phone"):
+		if normalize_phone(candidate.get(field)) in numbers:
+			matched.append(field)
+	return matched
 
 
 @frappe.whitelist()
