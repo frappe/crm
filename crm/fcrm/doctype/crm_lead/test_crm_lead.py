@@ -555,6 +555,19 @@ class TestCRMLead(FrappeTestCase):
 		self.assertIn("Administrator", deal_assignees)
 		self.assertIn("crm.user1@example.com", deal_assignees)
 
+	def test_deal_owner_kept_on_conversion_with_co_assignees(self):
+		"""Transferring co-assignees must not take ownership of the converted deal."""
+		lead = create_lead(first_name="KeepOwner", lead_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
+		lead.reload()
+		self.assertEqual(lead.lead_owner, "crm.user2@example.com")
+
+		deal_name = lead.convert_to_deal()
+
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal_name, "deal_owner"), "crm.user2@example.com")
+		deal = frappe.get_doc("CRM Deal", deal_name)
+		self.assertEqual(set(deal.get_assigned_users()), {"crm.user1@example.com", "crm.user2@example.com"})
+
 	def test_owner_cleared_on_unassign(self):
 		"""Unassigning the current owner clears lead_owner"""
 		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")
