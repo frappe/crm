@@ -194,7 +194,7 @@ def split_lead(merge_log_name: str):
 
 	_move_child_tables_back(source_doc, target_doc, child_data)
 
-	_restore_references(source, ref_data)
+	_restore_references(source, target, ref_data)
 
 	source_doc.db_set({"merged_into": None, "is_duplicate": 0})
 	merge_log.db_set({"split_at": frappe.utils.now(), "split_by": frappe.session.user})
@@ -441,20 +441,17 @@ def _update_references(old_name: str, new_name: str):
 			continue
 
 
-def _restore_references(source_name: str, ref_data: list):
+def _restore_references(source_name: str, target_name: str, ref_data: list):
 	for ref in ref_data:
 		if ref.get("old_value") != source_name:
 			continue
+		doctype = ref.get("child_doctype") or ref.get("doctype")
+		docname = ref.get("child_name") or ref.get("docname")
+		fieldname = ref.get("fieldname")
 		try:
-			if "child_doctype" in ref:
-				frappe.db.set_value(
-					ref["child_doctype"],
-					ref["child_name"],
-					ref["fieldname"],
-					source_name,
-				)
-			else:
-				frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], source_name)
+			if frappe.db.get_value(doctype, docname, fieldname) != target_name:
+				continue
+			frappe.db.set_value(doctype, docname, fieldname, source_name)
 		except Exception:
 			continue
 
@@ -490,7 +487,8 @@ def _move_child_tables_back(
 			row_name = row_data.get("name")
 			if not row_name:
 				continue
-			if not frappe.db.exists(child_doctype, row_name):
+			parent = frappe.db.get_value(child_doctype, row_name, ["parent", "parenttype"])
+			if parent != (target_doc.name, target_doc.doctype):
 				continue
 			frappe.db.set_value(
 				child_doctype,
@@ -513,8 +511,9 @@ def _restore_fields(
 	target_doc: frappe.model.document.Document,
 	snapshot: dict,
 ):
-	for fieldname, value in snapshot.items():
-		target_doc.set(fieldname, value)
+	for fieldname in _COMPARE_FIELDS:
+		if fieldname in snapshot:
+			target_doc.set(fieldname, snapshot[fieldname])
 
 
 def _update_timeline(

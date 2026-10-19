@@ -262,6 +262,42 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(len(lead_a.products), 0)
 		self.assertEqual([p.product_name for p in lead_b.products], ["Test Product"])
 
+	def test_split_ignores_tampered_snapshot(self):
+		lead_a = self._create_lead(first_name="A", email="a@test.com")
+		lead_b = self._create_lead(first_name="B", email="b@test.com")
+		other = self._create_lead(first_name="Other", email="other@test.com")
+		other.append("products", {"product_name": "Other Product", "rate": 10})
+		other.flags.ignore_links = True
+		other.save(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		log = frappe.get_doc("CRM Merge Log", result["merge_log"])
+		log.db_set(
+			{
+				"field_snapshot": json.dumps({"lead_score": 99}),
+				"child_table_snapshot": json.dumps({"products": [{"name": other.products[0].name}]}),
+				"reference_snapshot": json.dumps(
+					[
+						{
+							"doctype": "CRM Lead",
+							"docname": other.name,
+							"fieldname": "first_name",
+							"old_value": lead_b.name,
+						}
+					]
+				),
+			}
+		)
+
+		split_lead(log.name)
+
+		other.reload()
+		self.assertEqual(other.first_name, "Other")
+		self.assertEqual([p.product_name for p in other.products], ["Other Product"])
+		self.assertNotEqual(frappe.db.get_value("CRM Lead", lead_a.name, "lead_score"), 99)
+
 	def test_split_merges_twice_fails(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
