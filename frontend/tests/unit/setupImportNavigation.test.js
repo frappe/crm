@@ -14,12 +14,15 @@ vi.mock('@/composables/leadImport', () => ({
     runImport: vi.fn(),
   }),
 }))
-vi.mock('@/components/Stepper/Stepper.vue', () => ({ default: { render: () => null } }))
+vi.mock('@/components/Stepper/Stepper.vue', () => ({
+  default: { render: () => null },
+}))
 vi.mock('@/components/Setup/SetupImportUpload.vue', () => ({
   default: {
     emits: ['uploaded'],
     setup(_, { emit }) {
-      return () => h('button', { onClick: () => emit('uploaded', '/test.csv') }, 'Upload')
+      return () =>
+        h('button', { onClick: () => emit('uploaded', '/test.csv') }, 'Upload')
     },
   },
 }))
