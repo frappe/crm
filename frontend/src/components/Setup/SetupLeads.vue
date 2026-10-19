@@ -63,10 +63,12 @@ import SetupImport from '@/components/Setup/SetupImport.vue'
 import { useCrmOnboarding } from '@/composables/onboarding'
 import { useDemoData } from '@/composables/demoData'
 import { Button, call, toast } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
 
+const { capture } = useTelemetry()
 const { completeStep } = useCrmOnboarding()
 const { isDemoDataCreated } = useDemoData()
 
@@ -88,7 +90,10 @@ const options = [
     icon: LucideFileUp,
     title: __('Import from CSV'),
     description: __('Upload a spreadsheet of your existing leads.'),
-    onClick: () => (importing.value = true),
+    onClick: () => {
+      importing.value = true
+      capture('setup_leads_option', { option: 'csv' })
+    },
   },
   {
     name: 'sample',
@@ -103,6 +108,7 @@ const options = [
 ]
 
 function continueWithSample() {
+  capture('setup_leads_option', { option: 'sample' })
   loadSampleData()
   emit('done', { source: 'sample_data' })
 }
@@ -117,6 +123,7 @@ async function loadSampleData() {
     })
     isDemoDataCreated.value = true
   } catch (error) {
+    capture('setup_sample_data_failed')
     toast.error(error.messages?.[0] || __('Could not load sample data'))
   }
 }
