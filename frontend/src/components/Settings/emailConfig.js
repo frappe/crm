@@ -109,6 +109,7 @@ export const services = [
   },
   {
     name: 'GMail',
+    label: 'Gmail',
     icon: LogoGmail,
     info: __(
       'Setting up GMail requires you to enable two factor authentication and app specific passwords. Read more',
