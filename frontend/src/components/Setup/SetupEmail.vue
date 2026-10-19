@@ -210,6 +210,12 @@ watch(
   },
 )
 
+watch(
+  () => state.service,
+  (provider) =>
+    provider && capture('setup_email_provider_selected', { provider }),
+)
+
 const selected = computed(() =>
   services.find((service) => service.name === state.service),
 )
@@ -223,6 +229,10 @@ const account = createResource({
     emit('done', { provider: state.service })
   },
   onError(err) {
+    capture('setup_email_failed', {
+      provider: state.service,
+      reason: err.exc_type || 'unknown',
+    })
     error.value =
       err.messages?.[0] || __('Could not connect: check your credentials')
   },
@@ -236,7 +246,13 @@ function connect() {
     default_outgoing: state.enable_outgoing,
   }
   error.value = validateInputs(data, selected.value.custom)
-  if (error.value) return
+  if (error.value) {
+    capture('setup_email_failed', {
+      provider: state.service,
+      reason: 'invalid_input',
+    })
+    return
+  }
   account.submit({ data })
 }
 </script>
