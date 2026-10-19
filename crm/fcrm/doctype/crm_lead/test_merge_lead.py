@@ -305,6 +305,24 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertIsNone(lead_b.merged_into)
 		self.assertEqual(lead_b.is_duplicate, 0)
 
+	def test_split_keeps_values_changed_after_the_merge(self):
+		lead_a = self._create_lead(first_name="A", status="New")
+		lead_b = self._create_lead(first_name="B", phone="+333", job_title="CTO")
+		lead_d = self._create_lead(first_name="D", email="d@test.com")
+
+		from crm.api.lead import merge_leads, split_lead
+
+		first = merge_leads(lead_a.name, lead_b.name)
+		merge_leads(lead_a.name, lead_d.name)
+		frappe.db.set_value("CRM Lead", lead_a.name, "job_title", "CEO")
+
+		split_lead(first["merge_log"])
+
+		lead_a.reload()
+		self.assertFalse(lead_a.phone)
+		self.assertEqual(lead_a.job_title, "CEO")
+		self.assertEqual(lead_a.email, "d@test.com")
+
 	def test_split_moves_references_back(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
