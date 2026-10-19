@@ -282,12 +282,15 @@ const extensions = buildEditorExtensions({
 
 const from = computed(() => {
   if (!user.doc || !user.doc.user_emails?.length) return []
-  let emails = user.doc.user_emails.map((e) => {
-    return {
-      label: e.email_account + ' <' + e.email_id + '>',
-      value: e.email_id,
-    }
-  })
+  // accounts without outgoing can't send; the backend would fall back to the default account
+  let emails = user.doc.user_emails
+    .filter((e) => e.enable_outgoing)
+    .map((e) => {
+      return {
+        label: e.email_account + ' <' + e.email_id + '>',
+        value: e.email_id,
+      }
+    })
 
   if (emails.length == 1 && emails[0].email_id === sessionUser) return []
 
