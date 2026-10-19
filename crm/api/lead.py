@@ -51,35 +51,27 @@ def _matched_fields(lead, candidate, numbers: set) -> list:
 @frappe.whitelist()
 def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 20):
 	user = frappe.session.user
+	limit = int(limit)
 
 	filters = [["is_duplicate", "=", 0]]
 	if current_lead:
 		filters.append(["name", "!=", current_lead])
 
-	or_filters = [
-		["_assign", "like", f"%{user}%"],
-		["_assign", "is", "not set"],
-	]
-
-	candidates = frappe.get_list(
-		"CRM Lead",
-		filters=filters,
-		or_filters=or_filters,
-		fields=["name", "lead_name", "email", "organization"],
-		order_by="modified desc",
-		limit_page_length=max(int(limit) * 5, 50),
-	)
-
+	or_filters = None
 	if txt:
-		needle = txt.lower()
-		candidates = [
-			r
-			for r in candidates
-			if any(
-				(r.get(f) or "").lower().find(needle) != -1
-				for f in ("name", "lead_name", "email", "organization")
-			)
-		]
+		or_filters = [[field, "like", f"%{txt}%"] for field in ("name", "lead_name", "email", "organization")]
+
+	candidates = []
+	for assignment in (["_assign", "like", f"%{user}%"], ["_assign", "is", "not set"]):
+		candidates += frappe.get_list(
+			"CRM Lead",
+			filters=[*filters, assignment],
+			or_filters=or_filters,
+			fields=["name", "lead_name", "email", "organization", "modified"],
+			order_by="modified desc",
+			limit_page_length=limit,
+		)
+	candidates.sort(key=lambda r: r.modified, reverse=True)
 
 	return [
 		{
@@ -87,7 +79,7 @@ def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 2
 			"label": r.get("lead_name") or r["name"],
 			"description": r.get("email") or r.get("organization") or "",
 		}
-		for r in candidates[: int(limit)]
+		for r in candidates[:limit]
 	]
 
 
