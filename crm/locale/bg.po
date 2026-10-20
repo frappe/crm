@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Bulgarian\n"
 "MIME-Version: 1.0\n"
@@ -176,7 +176,7 @@ msgstr ""
 #: crm/templates/emails/helpdesk_invitation.html:5
 #, python-brace-format
 msgid "A new account has been created for you at {0}"
-msgstr ""
+msgstr "За вас на {0} е създадена нова сметка."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1092
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1234
@@ -468,7 +468,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
-msgstr ""
+msgstr "Добавяне на ред"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add Sample Data"
@@ -1104,7 +1104,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:37
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
 msgid "Automation"
-msgstr ""
+msgstr "Автоматизация"
 
 #: frontend/src/components/Settings/Settings.vue:195
 msgid "Automation & Rules"
@@ -1918,7 +1918,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr ""
+msgstr "Щракнете върху връзката по-долу, за да завършите регистрацията си и да зададете нова парола."
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
@@ -2176,7 +2176,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:30
 msgid "Confirm Password"
-msgstr ""
+msgstr "Потвърдете паролата"
 
 #: frontend/src/utils/index.js:788
 #, python-brace-format
@@ -2984,7 +2984,7 @@ msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Delete All"
-msgstr ""
+msgstr "Изтриване на всички"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
@@ -3545,7 +3545,7 @@ msgstr ""
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
 msgid "Email Sent At"
-msgstr ""
+msgstr "Имейлът е изпратен на"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
@@ -3930,7 +3930,7 @@ msgstr ""
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Известия за събития"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -4654,7 +4654,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:564
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1031
 msgid "Go Back"
-msgstr ""
+msgstr "Назад"
 
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:157
 msgid "Go to Invite Page"
@@ -4737,7 +4737,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
-msgstr ""
+msgstr "Здравейте"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:133
 msgid "Help"
@@ -5038,7 +5038,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:46
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:761
 msgid "Integration"
@@ -5642,7 +5642,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:68
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:44
 msgid "Left"
-msgstr ""
+msgstr "Ляво"
 
 #: frontend/src/components/Filter.vue:402
 msgid "Less than"
@@ -6659,7 +6659,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:164
 #, python-brace-format
 msgid "No {0} Found"
-msgstr ""
+msgstr "Не са намерени {0}"
 
 #: frontend/src/components/PrimaryDropdown.vue:41
 #, python-brace-format
@@ -7178,7 +7178,7 @@ msgstr ""
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json:64
 msgid "Owner"
-msgstr ""
+msgstr "Собственик"
 
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json:21
@@ -7954,7 +7954,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:487
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1138
 msgid "Remove Section"
-msgstr ""
+msgstr "Премахване на секция"
 
 #: frontend/src/components/FieldLayoutEditor.vue:419
 #: frontend/src/components/FieldLayoutEditor.vue:427
@@ -8184,7 +8184,7 @@ msgstr "Приходи"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:64
 msgid "Reverted"
-msgstr ""
+msgstr "Върнато"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -8196,7 +8196,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:76
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:52
 msgid "Right"
-msgstr ""
+msgstr "Дясно"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:54
@@ -8274,7 +8274,7 @@ msgstr ""
 #. Label of the rule_name (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:28
 msgid "Rule Name"
-msgstr ""
+msgstr "Име на правило"
 
 #. Label of the rule_type (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:36
@@ -8622,7 +8622,7 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowFieldToken.vue:6
 msgid "Search fields"
-msgstr ""
+msgstr "Полета за търсене"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:194
 msgid "Search fields…"
@@ -9735,7 +9735,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:16
 msgid "Thanks"
-msgstr ""
+msgstr "Благодаря"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:72
 #, python-brace-format
@@ -10002,7 +10002,7 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "До потребител"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -10861,7 +10861,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "Можете също да копирате следната връзка и да я поставите във вашия браузър."
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
@@ -10934,7 +10934,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:47
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: crm/integrations/twilio/api.py:71
 msgid "Your account is not configured with a phone number. Please contact your administrator."
@@ -10952,7 +10952,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
-msgstr ""
+msgstr "Вашият ID за вход е"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:621
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
@@ -11039,7 +11039,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:11
 msgid "comment"
-msgstr ""
+msgstr "Коментар"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
@@ -11316,7 +11316,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:134
 msgid "list"
-msgstr ""
+msgstr "Списък"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
