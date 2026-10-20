@@ -12,16 +12,46 @@
       />
     </template>
   </LayoutHeader>
+  <div class="flex flex-col gap-3 px-3 pt-4 sm:flex-row sm:px-5">
+    <FormControl
+      type="select"
+      class="sm:w-48"
+      :label="__('Linked to')"
+      :model-value="referenceFilters.reference_doctype || ''"
+      :options="referenceTypeOptions"
+      @update:modelValue="(doctype) => setReferenceFilter(doctype)"
+    />
+    <Link
+      v-if="referenceFilters.reference_doctype"
+      :key="referenceFilters.reference_doctype"
+      class="sm:w-64"
+      :label="
+        referenceFilters.reference_doctype === 'CRM Lead'
+          ? __('Lead')
+          : __('Deal')
+      "
+      :doctype="referenceFilters.reference_doctype"
+      :value="referenceFilters.reference_docname || ''"
+      :placeholder="__('All records')"
+      @change="
+        (name) => setReferenceFilter(referenceFilters.reference_doctype, name)
+      "
+    />
+  </div>
   <ViewControls
+    :key="JSON.stringify(referenceFilters)"
     ref="viewControls"
     v-model="notes"
     v-model:loadMore="loadMore"
     v-model:updatedPageCount="updatedPageCount"
     doctype="FCRM Note"
+    :filters="referenceFilters"
+    :filtersLabel="referenceFiltersLabel"
     :options="{
       hideColumnsButton: true,
       defaultViewName: __('Notes View'),
     }"
+    @clearFilters="setReferenceFilter('')"
   />
   <div class="flex-1 overflow-y-auto">
     <div
@@ -119,7 +149,9 @@
         'Notes keep what you learned on a call or in a meeting next to the lead or deal it belongs to.',
       )
     "
-    :filtered="!!Object.keys(notes.params?.filters || {}).length"
+    :filtered="
+      !!Object.keys({ ...referenceFilters, ...notes.params?.filters }).length
+    "
     docsLink="https://docs.frappe.io/crm/note"
     @create="createNote"
   />
@@ -131,15 +163,18 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import Link from '@/components/Controls/Link.vue'
+import { noteReferenceFilters, noteReferenceQuery } from '@/utils/noteFilters'
+import { useRoute, useRouter } from 'vue-router'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useNoteView } from '@/composables/noteView'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { usersStore } from '@/stores/users'
 import { timeAgo, formatDate, sanitizeHTML, copyToClipboard } from '@/utils'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { call, Dropdown, Tooltip } from 'frappe-ui'
+import { call, Dropdown, Tooltip, FormControl } from 'frappe-ui'
 import { ListFooter } from 'frappe-ui/experimental'
-import { ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 
 const { getUser } = usersStore()
 const { capture } = useTelemetry()
@@ -152,6 +187,26 @@ const notes = ref({})
 const loadMore = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+const route = useRoute()
+const router = useRouter()
+
+const referenceTypeOptions = [
+  { label: __('All notes'), value: '' },
+  { label: __('Lead notes'), value: 'CRM Lead' },
+  { label: __('Deal notes'), value: 'CRM Deal' },
+]
+const referenceFilters = computed(() => noteReferenceFilters(route.query))
+const referenceFiltersLabel = computed(() => {
+  const { reference_doctype, reference_docname } = referenceFilters.value
+  if (!reference_doctype) return ''
+  const label =
+    reference_doctype === 'CRM Lead' ? __('Lead notes') : __('Deal notes')
+  return reference_docname ? `${label} · ${reference_docname}` : label
+})
+
+function setReferenceFilter(doctype, name = '') {
+  router.replace({ query: noteReferenceQuery(route.query, doctype, name) })
+}
 
 watch(
   () => notes.value?.data?.page_length_count,
@@ -208,11 +263,11 @@ async function deleteNote(name) {
 
 // open a shared note link, even when the note is not on the loaded page
 onMounted(() => {
-  const searchParams = new URLSearchParams(window.location.search)
-  const noteName = searchParams.get('open')
-  if (!noteName) return
+  const noteName = route.query.open
+  if (typeof noteName !== 'string' || !noteName) return
   openNote({ name: noteName }, { edit: () => editNote(noteName) })
-  searchParams.delete('open')
-  window.history.replaceState(null, '', window.location.pathname)
+  const query = { ...route.query }
+  delete query.open
+  router.replace({ query })
 })
 </script>
