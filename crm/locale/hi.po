@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:55\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Hindi\n"
 "MIME-Version: 1.0\n"
@@ -176,7 +176,7 @@ msgstr ""
 #: crm/templates/emails/helpdesk_invitation.html:5
 #, python-brace-format
 msgid "A new account has been created for you at {0}"
-msgstr ""
+msgstr "आपके लिए {0} पर एक नया खाता बनाया गया है।"
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1092
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1234
@@ -468,7 +468,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
-msgstr ""
+msgstr "पंक्ति जोड़ें"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add Sample Data"
@@ -1104,7 +1104,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:37
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
 msgid "Automation"
-msgstr ""
+msgstr "स्वचालन"
 
 #: frontend/src/components/Settings/Settings.vue:195
 msgid "Automation & Rules"
@@ -1918,7 +1918,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr ""
+msgstr "अपना पंजीकरण पूरा करने और नया पासवर्ड सेट करने के लिए नीचे दिए गए लिंक पर क्लिक करें।"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
@@ -2176,7 +2176,7 @@ msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:30
 msgid "Confirm Password"
-msgstr ""
+msgstr "पासवर्ड की पुष्टि करें"
 
 #: frontend/src/utils/index.js:788
 #, python-brace-format
@@ -3930,7 +3930,7 @@ msgstr "आयोजन"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "इवेंट सूचनाएं"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -4737,7 +4737,7 @@ msgstr "शीर्षक"
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
-msgstr ""
+msgstr "नमस्ते"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:133
 msgid "Help"
@@ -5038,7 +5038,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:46
 msgid "Instagram"
-msgstr ""
+msgstr "इंस्टाग्राम"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:761
 msgid "Integration"
@@ -5642,7 +5642,7 @@ msgstr "स्थितियों के बारे में जाने�
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:68
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:44
 msgid "Left"
-msgstr ""
+msgstr "बाएँ"
 
 #: frontend/src/components/Filter.vue:402
 msgid "Less than"
@@ -7954,7 +7954,7 @@ msgstr "फ़ोटो हटाएँ"
 #: frontend/src/components/FieldLayoutEditor.vue:487
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1138
 msgid "Remove Section"
-msgstr ""
+msgstr "अनुभाग हटाएँ"
 
 #: frontend/src/components/FieldLayoutEditor.vue:419
 #: frontend/src/components/FieldLayoutEditor.vue:427
@@ -10002,7 +10002,7 @@ msgstr "टाइप करने के लिए"
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "उपयोगकर्ता को"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -10861,7 +10861,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "आप निम्नलिखित लिंक को कॉपी करके अपने ब्राउज़र में भी पेस्ट कर सकते हैं।"
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
@@ -10934,7 +10934,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:47
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: crm/integrations/twilio/api.py:71
 msgid "Your account is not configured with a phone number. Please contact your administrator."
@@ -10952,7 +10952,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:6
 msgid "Your login id is"
-msgstr ""
+msgstr "आपकी लॉगिन आईडी है"
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:621
 msgid "Your old condition will be overwritten. Are you sure you want to save?"
