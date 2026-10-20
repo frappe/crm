@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:55\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Vietnamese\n"
 "MIME-Version: 1.0\n"
@@ -468,7 +468,7 @@ msgstr "Thêm Tổ Chức..."
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
-msgstr ""
+msgstr "Thêm hàng"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add Sample Data"
@@ -2984,7 +2984,7 @@ msgstr "Xóa & Khôi phục"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Delete All"
-msgstr ""
+msgstr "Xóa tất cả"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
@@ -3545,7 +3545,7 @@ msgstr "ID Email là bắt buộc"
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
 msgid "Email Sent At"
-msgstr ""
+msgstr "Đã gửi email lúc"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
@@ -6659,7 +6659,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:164
 #, python-brace-format
 msgid "No {0} Found"
-msgstr ""
+msgstr "Không tìm thấy {0}"
 
 #: frontend/src/components/PrimaryDropdown.vue:41
 #, python-brace-format
@@ -8184,7 +8184,7 @@ msgstr "Doanh thu"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:64
 msgid "Reverted"
-msgstr ""
+msgstr "Đã hoàn tác"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -10002,7 +10002,7 @@ msgstr "Loại Đến"
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "Đến người dùng"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -10861,7 +10861,7 @@ msgstr "Bạn không được phép cập nhật nhật ký cuộc gọi này."
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "Quý vị cũng có thể sao chép và dán liên kết sau vào trình duyệt của mình."
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
