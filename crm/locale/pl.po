@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:21\n"
+"PO-Revision-Date: 2026-10-20 07:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Polish\n"
 "MIME-Version: 1.0\n"
@@ -3545,7 +3545,7 @@ msgstr ""
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
 msgid "Email Sent At"
-msgstr ""
+msgstr "Data wysłania e-maila"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
@@ -3930,7 +3930,7 @@ msgstr "Zdarzenie"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Powiadomienia o zdarzeniach"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -6659,7 +6659,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:164
 #, python-brace-format
 msgid "No {0} Found"
-msgstr ""
+msgstr "Nie znaleziono {0}"
 
 #: frontend/src/components/PrimaryDropdown.vue:41
 #, python-brace-format
