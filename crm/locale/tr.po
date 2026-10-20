@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:55\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
@@ -1918,7 +1918,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr ""
+msgstr "Kaydınızı tamamlamak ve yeni bir şifre belirlemek için aşağıdaki bağlantıya tıklayın"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
@@ -3930,7 +3930,7 @@ msgstr "Etkinlik"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Etkinlik Bildirimleri"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -4737,7 +4737,7 @@ msgstr "Başlık"
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
-msgstr ""
+msgstr "Merhaba"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:133
 msgid "Help"
@@ -5038,7 +5038,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:46
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:761
 msgid "Integration"
@@ -8196,7 +8196,7 @@ msgstr "Zengin Metin"
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:76
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:52
 msgid "Right"
-msgstr ""
+msgstr "Sağ"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:54
@@ -10002,7 +10002,7 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "Kullanıcıya"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -10861,7 +10861,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "Ayrıca aşağıdaki bağlantıyı kopyalayıp tarayıcınıza yapıştırabilirsiniz."
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
