@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:55\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Indonesian\n"
 "MIME-Version: 1.0\n"
@@ -2984,7 +2984,7 @@ msgstr "Hapus & Pulihkan"
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Delete All"
-msgstr ""
+msgstr "Hapus Semua"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
@@ -3930,7 +3930,7 @@ msgstr "Acara"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Notifikasi Acara"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -5038,7 +5038,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:46
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:761
 msgid "Integration"
@@ -8184,7 +8184,7 @@ msgstr "Pendapatan"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:64
 msgid "Reverted"
-msgstr ""
+msgstr "Dikembalikan"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -8274,7 +8274,7 @@ msgstr "Baris"
 #. Label of the rule_name (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:28
 msgid "Rule Name"
-msgstr ""
+msgstr "Nama aturan"
 
 #. Label of the rule_type (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:36
@@ -10934,7 +10934,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:47
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: crm/integrations/twilio/api.py:71
 msgid "Your account is not configured with a phone number. Please contact your administrator."
