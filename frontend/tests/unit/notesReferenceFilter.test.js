@@ -1,14 +1,11 @@
+/* eslint-disable vue/one-component-per-file -- Test harnesses and component stubs share this file. */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createApp, h, nextTick, reactive } from 'vue'
+import { createApp, h, nextTick } from 'vue'
+import { createRouter, createMemoryHistory, RouterView } from 'vue-router'
 
 const state = vi.hoisted(() => ({
-  route: { query: {} },
-  replace: vi.fn(),
+  controlsMounted: vi.fn(),
   openNote: vi.fn(),
-}))
-vi.mock('vue-router', () => ({
-  useRoute: () => reactive(state.route),
-  useRouter: () => ({ replace: state.replace }),
 }))
 vi.mock('@/components/LayoutHeader.vue', () => ({
   default: {
@@ -34,9 +31,9 @@ vi.mock('@/components/ViewControls.vue', () => ({
   default: {
     props: ['filters', 'filtersLabel'],
     emits: ['clearFilters'],
-    setup:
-      (props, { emit }) =>
-      () =>
+    setup(props, { emit }) {
+      state.controlsMounted()
+      return () =>
         h('div', [
           h(
             'output',
@@ -50,7 +47,8 @@ vi.mock('@/components/ViewControls.vue', () => ({
                 props.filtersLabel,
               )
             : null,
-        ]),
+        ])
+    },
   },
 }))
 vi.mock('@/components/Controls/Link.vue', () => ({
@@ -80,6 +78,10 @@ vi.mock('@/composables/noteView', () => ({
     linkedLabel: vi.fn(),
   }),
 }))
+vi.mock('@/stores/session', () => ({
+  sessionStore: () => ({ isLoggedIn: true }),
+}))
+vi.mock('@/stores/views', () => ({ viewsStore: () => ({}) }))
 vi.mock('@/stores/users', () => ({
   usersStore: () => ({ getUser: () => ({ full_name: 'Test User' }) }),
 }))
@@ -97,7 +99,7 @@ vi.mock('frappe-ui', () => ({
   Dropdown: { render: () => null },
   Tooltip: { render: () => null },
   FormControl: {
-    props: ['modelValue', 'options', 'label'],
+    props: ['modelValue', 'options', 'label', 'type'],
     emits: ['update:modelValue'],
     setup:
       (props, { emit }) =>
@@ -120,32 +122,54 @@ vi.mock('frappe-ui/experimental', () => ({
 }))
 
 import Notes from '@/pages/Notes.vue'
-import { useRoute } from 'vue-router'
 
-let app, root
-const route = useRoute()
+let app, root, router
 beforeEach(() => {
-  route.query = {}
   state.openNote.mockClear()
-  state.replace.mockReset().mockImplementation(({ query }) => {
-    route.query = query
-    return Promise.resolve()
-  })
+  state.controlsMounted.mockClear()
 })
 afterEach(() => {
   app?.unmount()
   root?.remove()
 })
-function mountNotes(query = {}) {
-  route.query = query
+async function mountNotes(query = {}) {
+  // Use the production route's metadata and App's keyed router-view behavior.
+  const { default: appRouter } = await import('@/router')
+  const route = appRouter.getRoutes().find((route) => route.name === 'Notes')
+  router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      {
+        path: route.path,
+        name: route.name,
+        meta: route.meta,
+        component: Notes,
+      },
+    ],
+  })
+  await router.push({ name: 'Notes', params: { viewType: 'list' }, query })
   root = document.createElement('div')
   document.body.append(root)
-  app = createApp(Notes)
+  app = createApp({
+    render: () =>
+      h(RouterView, {
+        key:
+          router.currentRoute.value.meta.viewKey ||
+          router.currentRoute.value.fullPath.split('#')[0],
+      }),
+  })
+  app.use(router)
   app.config.globalProperties.__ = (text) => text
   // Match the application's globally registered Button component.
   // eslint-disable-next-line vue/no-reserved-component-names
   app.component('Button', { render: () => null })
   app.mount(root)
+  await settle()
+}
+async function settle() {
+  // Wait for both router navigation and Vue's queued render.
+  await new Promise((resolve) => setTimeout(resolve, 0))
+  await nextTick()
 }
 const filters = () =>
   JSON.parse(root.querySelector('[data-filters]').textContent)
@@ -153,18 +177,18 @@ async function chooseType(doctype) {
   const control = root.querySelector('select')
   control.value = doctype
   control.dispatchEvent(new Event('change'))
-  await nextTick()
+  await settle()
 }
 async function chooseRecord(name) {
   const control = root.querySelector('input')
   control.value = name
   control.dispatchEvent(new Event('input'))
-  await nextTick()
+  await settle()
 }
 
 describe('Notes reference filters', () => {
   it('filters the server-side list by type and record, clearing the record when its type changes', async () => {
-    mountNotes({ view: 'saved-view' })
+    await mountNotes({ view: 'saved-view' })
     expect(filters()).toEqual({})
     await chooseType('CRM Lead')
     expect(filters()).toEqual({ reference_doctype: 'CRM Lead' })
@@ -178,11 +202,11 @@ describe('Notes reference filters', () => {
     expect(filters()).toEqual({ reference_doctype: 'CRM Deal' })
     expect(root.querySelector('input').dataset.doctype).toBe('CRM Deal')
     expect(root.querySelector('input').value).toBe('')
-    expect(route.query.view).toBe('saved-view')
+    expect(router.currentRoute.value.query.view).toBe('saved-view')
   })
 
   it('restores a specific deal filter from the URL and clears only its own query keys', async () => {
-    mountNotes({
+    await mountNotes({
       view: 'saved-view',
       reference_doctype: 'CRM Deal',
       reference_docname: 'DEAL-0001',
@@ -194,14 +218,14 @@ describe('Notes reference filters', () => {
       reference_docname: 'DEAL-0001',
     })
     root.querySelector('button').click()
-    await nextTick()
+    await settle()
     expect(filters()).toEqual({})
     expect(root.querySelector('input')).toBeNull()
-    expect(route.query).toEqual({ view: 'saved-view' })
+    expect(router.currentRoute.value.query).toEqual({ view: 'saved-view' })
   })
 
   it('opens a shared note without removing the saved view or reference scope', async () => {
-    mountNotes({
+    await mountNotes({
       open: 'NOTE-0001',
       view: 'saved-view',
       reference_doctype: 'CRM Lead',
@@ -212,7 +236,15 @@ describe('Notes reference filters', () => {
       { name: 'NOTE-0001' },
       expect.any(Object),
     )
-    expect(route.query).toEqual({
+    await router.push({
+      query: { ...router.currentRoute.value.query, open: 'NOTE-0002' },
+    })
+    await settle()
+    expect(state.openNote).toHaveBeenLastCalledWith(
+      { name: 'NOTE-0002' },
+      expect.any(Object),
+    )
+    expect(router.currentRoute.value.query).toEqual({
       view: 'saved-view',
       reference_doctype: 'CRM Lead',
       reference_docname: 'LEAD-0001',
@@ -223,9 +255,45 @@ describe('Notes reference filters', () => {
     })
   })
 
-  it('ignores an incomplete or unsupported reference scope', () => {
-    mountNotes({ reference_docname: 'SAME-NAME', reference_doctype: 'User' })
+  it('ignores an incomplete or unsupported reference scope', async () => {
+    await mountNotes({
+      reference_docname: 'SAME-NAME',
+      reference_doctype: 'User',
+    })
     expect(filters()).toEqual({})
     expect(root.querySelector('input')).toBeNull()
+  })
+
+  it('keeps the current controls while changing scope on a saved view', async () => {
+    await mountNotes({ view: 'saved-view' })
+    await chooseType('CRM Lead')
+    await chooseRecord('LEAD-0001')
+    await chooseType('CRM Deal')
+    expect(state.controlsMounted).toHaveBeenCalledTimes(1)
+    expect(router.currentRoute.value.query.view).toBe('saved-view')
+  })
+
+  it('retains the record scope when selecting a saved view and returning to the standard view', async () => {
+    const scope = {
+      reference_doctype: 'CRM Lead',
+      reference_docname: 'LEAD-0001',
+    }
+    await mountNotes(scope)
+    await router.push({
+      name: 'Notes',
+      params: { viewType: 'list' },
+      query: { view: 'saved-view' },
+    })
+    expect(router.currentRoute.value.query).toEqual({
+      ...scope,
+      view: 'saved-view',
+    })
+    expect(filters()).toEqual(scope)
+    await router.push({ name: 'Notes', params: { viewType: 'list' } })
+    expect(router.currentRoute.value.query).toEqual(scope)
+    expect(filters()).toEqual(scope)
+    // Explicitly clearing the scope must still work.
+    await chooseType('')
+    expect(filters()).toEqual({})
   })
 })

@@ -39,7 +39,7 @@
     />
   </div>
   <ViewControls
-    :key="JSON.stringify(referenceFilters)"
+    :key="route.query.view || route.params.viewType || 'list'"
     ref="viewControls"
     v-model="notes"
     v-model:loadMore="loadMore"
@@ -50,6 +50,7 @@
     :options="{
       hideColumnsButton: true,
       defaultViewName: __('Notes View'),
+      cache: false,
     }"
     @clearFilters="setReferenceFilter('')"
   />
@@ -165,7 +166,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import Link from '@/components/Controls/Link.vue'
 import { noteReferenceFilters, noteReferenceQuery } from '@/utils/noteFilters'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useNoteView } from '@/composables/noteView'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
@@ -174,7 +175,7 @@ import { timeAgo, formatDate, sanitizeHTML, copyToClipboard } from '@/utils'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, Dropdown, Tooltip, FormControl } from 'frappe-ui'
 import { ListFooter } from 'frappe-ui/experimental'
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const { getUser } = usersStore()
 const { capture } = useTelemetry()
@@ -207,6 +208,17 @@ const referenceFiltersLabel = computed(() => {
 function setReferenceFilter(doctype, name = '') {
   router.replace({ query: noteReferenceQuery(route.query, doctype, name) })
 }
+
+// ViewControls' saved/standard view links only specify the view query.
+onBeforeRouteUpdate((to, from) => {
+  const viewChanged =
+    to.query.view !== from.query.view ||
+    to.params.viewType !== from.params.viewType
+  const scope = noteReferenceFilters(from.query)
+  if (viewChanged && !to.query.reference_doctype && scope.reference_doctype) {
+    return { ...to, query: { ...to.query, ...scope } }
+  }
+})
 
 watch(
   () => notes.value?.data?.page_length_count,
@@ -262,12 +274,15 @@ async function deleteNote(name) {
 }
 
 // open a shared note link, even when the note is not on the loaded page
-onMounted(() => {
-  const noteName = route.query.open
-  if (typeof noteName !== 'string' || !noteName) return
-  openNote({ name: noteName }, { edit: () => editNote(noteName) })
-  const query = { ...route.query }
-  delete query.open
-  router.replace({ query })
-})
+watch(
+  () => route.query.open,
+  (noteName) => {
+    if (typeof noteName !== 'string' || !noteName) return
+    openNote({ name: noteName }, { edit: () => editNote(noteName) })
+    const query = { ...route.query }
+    delete query.open
+    router.replace({ query })
+  },
+  { immediate: true },
+)
 </script>
