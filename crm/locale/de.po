@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -3930,7 +3930,7 @@ msgstr "Ereignis"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Ereignisbenachrichtigungen"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
