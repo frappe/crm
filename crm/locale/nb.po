@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:23\n"
+"PO-Revision-Date: 2026-10-20 07:55\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Norwegian Bokmal\n"
 "MIME-Version: 1.0\n"
@@ -3545,7 +3545,7 @@ msgstr ""
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
 msgid "Email Sent At"
-msgstr ""
+msgstr "E-post sendt kl."
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
@@ -3930,7 +3930,7 @@ msgstr "Event"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Hendelsesvarsler"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -7178,7 +7178,7 @@ msgstr ""
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json:64
 msgid "Owner"
-msgstr ""
+msgstr "Eier"
 
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json:21
@@ -8184,7 +8184,7 @@ msgstr "Inntekt"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:64
 msgid "Reverted"
-msgstr ""
+msgstr "Tilbakeført"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -8274,7 +8274,7 @@ msgstr ""
 #. Label of the rule_name (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:28
 msgid "Rule Name"
-msgstr ""
+msgstr "Regelnavn"
 
 #. Label of the rule_type (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:36
@@ -10002,7 +10002,7 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "Til bruker"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -11039,7 +11039,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:11
 msgid "comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
@@ -11316,7 +11316,7 @@ msgstr "LinkedIn"
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:134
 msgid "list"
-msgstr ""
+msgstr "Liste"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
