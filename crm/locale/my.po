@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:55\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Burmese\n"
 "MIME-Version: 1.0\n"
@@ -468,7 +468,7 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:163
 #: frontend/src/components/Settings/Sla/SlaPriorityList.vue:101
 msgid "Add Row"
-msgstr ""
+msgstr "အတန်း ထည့်သွင်းရန်"
 
 #: frontend/src/pages/Welcome.vue:24
 msgid "Add Sample Data"
@@ -1104,7 +1104,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:37
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
 msgid "Automation"
-msgstr ""
+msgstr "အလိုအလျောက်လုပ်ဆောင်ခြင်း"
 
 #: frontend/src/components/Settings/Settings.vue:195
 msgid "Automation & Rules"
@@ -2984,7 +2984,7 @@ msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Delete All"
-msgstr ""
+msgstr "အားလုံးဖျက်ရန်"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
@@ -3545,7 +3545,7 @@ msgstr ""
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
 msgid "Email Sent At"
-msgstr ""
+msgstr "အီးမေးလ် ပို့ပြီးချိန်"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
@@ -3930,7 +3930,7 @@ msgstr "ဖြစ်ရပ်"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "ဖြစ်ရပ်အသိပေးချက်များ"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -5038,7 +5038,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:46
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:761
 msgid "Integration"
@@ -6659,7 +6659,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:164
 #, python-brace-format
 msgid "No {0} Found"
-msgstr ""
+msgstr "{0} မတွေ့ပါ"
 
 #: frontend/src/components/PrimaryDropdown.vue:41
 #, python-brace-format
@@ -7178,7 +7178,7 @@ msgstr ""
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json:64
 msgid "Owner"
-msgstr ""
+msgstr "ပိုင်ရှင်"
 
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json:21
@@ -8184,7 +8184,7 @@ msgstr "ဝင်ငွေ"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:64
 msgid "Reverted"
-msgstr ""
+msgstr "ပြန်လှည့်ထားသည်"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -8274,7 +8274,7 @@ msgstr ""
 #. Label of the rule_name (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:28
 msgid "Rule Name"
-msgstr ""
+msgstr "စည်းမျဉ်းအမည်"
 
 #. Label of the rule_type (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:36
@@ -10002,7 +10002,7 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "အသုံးပြုသူသို့"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -10934,7 +10934,7 @@ msgstr ""
 
 #: crm/domain_enrichment/mapper.py:47
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: crm/integrations/twilio/api.py:71
 msgid "Your account is not configured with a phone number. Please contact your administrator."
@@ -11039,7 +11039,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:11
 msgid "comment"
-msgstr ""
+msgstr "မှတ်ချက်"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
@@ -11316,7 +11316,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:134
 msgid "list"
-msgstr ""
+msgstr "စာရင်း"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
