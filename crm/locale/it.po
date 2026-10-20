@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: frappe\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
 "POT-Creation-Date: 2026-10-18 13:26+0000\n"
-"PO-Revision-Date: 2026-10-19 06:22\n"
+"PO-Revision-Date: 2026-10-20 07:54\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: Italian\n"
 "MIME-Version: 1.0\n"
@@ -176,7 +176,7 @@ msgstr ""
 #: crm/templates/emails/helpdesk_invitation.html:5
 #, python-brace-format
 msgid "A new account has been created for you at {0}"
-msgstr ""
+msgstr "È stato creato un nuovo conto per Lei presso {0}."
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1092
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1234
@@ -1104,7 +1104,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:37
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationDetail.vue:16
 msgid "Automation"
-msgstr ""
+msgstr "Automazione"
 
 #: frontend/src/components/Settings/Settings.vue:195
 msgid "Automation & Rules"
@@ -1918,7 +1918,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:7
 msgid "Click on the link below to complete your registration and set a new password"
-msgstr ""
+msgstr "Fai clic sul collegamento sottostante per completare la registrazione e impostare una nuova password"
 
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
@@ -2984,7 +2984,7 @@ msgstr ""
 
 #: frontend/src/components/DeleteLinkedDocModal.vue:77
 msgid "Delete All"
-msgstr ""
+msgstr "Elimina tutto"
 
 #: frontend/src/components/Activities/AttachmentArea.vue:57
 #: frontend/src/components/Activities/AttachmentArea.vue:130
@@ -3545,7 +3545,7 @@ msgstr ""
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
 msgid "Email Sent At"
-msgstr ""
+msgstr "Email inviata il"
 
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:8
 msgid "Email Settings"
@@ -3930,7 +3930,7 @@ msgstr "Evento"
 #. Label of the event_notifications (Table) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
 msgid "Event Notifications"
-msgstr ""
+msgstr "Notifiche evento"
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowSteps.js:29
 msgid "Event happened"
@@ -4737,7 +4737,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:2
 msgid "Hello"
-msgstr ""
+msgstr "Salve"
 
 #: frontend/src/components/Layouts/AppSidebar.vue:133
 msgid "Help"
@@ -5642,7 +5642,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:68
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:44
 msgid "Left"
-msgstr ""
+msgstr "Sinistra"
 
 #: frontend/src/components/Filter.vue:402
 msgid "Less than"
@@ -6659,7 +6659,7 @@ msgstr ""
 #: frontend/src/pages/MobileOrganization.vue:164
 #, python-brace-format
 msgid "No {0} Found"
-msgstr ""
+msgstr "Nessun {0} trovato"
 
 #: frontend/src/components/PrimaryDropdown.vue:41
 #, python-brace-format
@@ -7178,7 +7178,7 @@ msgstr ""
 #. Label of the log_owner (Link) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json:64
 msgid "Owner"
-msgstr ""
+msgstr "Proprietario"
 
 #. Label of the page (Link) field in DocType 'Facebook Lead Form'
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json:21
@@ -7954,7 +7954,7 @@ msgstr ""
 #: frontend/src/components/FieldLayoutEditor.vue:487
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1138
 msgid "Remove Section"
-msgstr ""
+msgstr "Rimuovi sezione"
 
 #: frontend/src/components/FieldLayoutEditor.vue:419
 #: frontend/src/components/FieldLayoutEditor.vue:427
@@ -8184,7 +8184,7 @@ msgstr "Ricavi"
 #. Option for the 'Status' (Select) field in DocType 'CRM Enrichment Run'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:64
 msgid "Reverted"
-msgstr ""
+msgstr "Ripristinato"
 
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:82
 #: frontend/src/components/Settings/EmailTemplate/NewEmailTemplate.vue:83
@@ -8196,7 +8196,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:76
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:52
 msgid "Right"
-msgstr ""
+msgstr "Destra"
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:54
@@ -8274,7 +8274,7 @@ msgstr ""
 #. Label of the rule_name (Data) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:28
 msgid "Rule Name"
-msgstr ""
+msgstr "Nome regola"
 
 #. Label of the rule_type (Select) field in DocType 'CRM Enrichment Rule'
 #: crm/domain_enrichment/doctype/crm_enrichment_rule/crm_enrichment_rule.json:36
@@ -9735,7 +9735,7 @@ msgstr "Grazie!"
 
 #: crm/templates/emails/helpdesk_invitation.html:16
 msgid "Thanks"
-msgstr ""
+msgstr "Grazie"
 
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.py:72
 #, python-brace-format
@@ -10002,7 +10002,7 @@ msgstr ""
 #. Label of the to_user (Link) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:48
 msgid "To User"
-msgstr ""
+msgstr "All'utente"
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:22
 msgid "To Value"
@@ -10861,7 +10861,7 @@ msgstr ""
 
 #: crm/templates/emails/helpdesk_invitation.html:22
 msgid "You can also copy-paste following link in your browser"
-msgstr ""
+msgstr "Può anche copiare e incollare il seguente collegamento nel suo browser."
 
 #: frontend/src/components/Telephony/CallUI.vue:37
 msgid "You can change the default calling medium from the settings"
@@ -11039,7 +11039,7 @@ msgstr ""
 
 #: frontend/src/components/Activities/CommentArea.vue:11
 msgid "comment"
-msgstr ""
+msgstr "Commento"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
@@ -11316,7 +11316,7 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:134
 msgid "list"
-msgstr ""
+msgstr "Elenco"
 
 #. Option for the 'Source Key' (Select) field in DocType 'CRM Enrichment Field
 #. Mapping'
