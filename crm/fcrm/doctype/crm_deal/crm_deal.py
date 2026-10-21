@@ -475,6 +475,11 @@ def create_contact(doc):
 
 @frappe.whitelist()
 def create_deal(doc: dict):
+<<<<<<< HEAD
+=======
+	"""Create a Deal from `doc`, creating its Contact and Organization from the given details when they do not exist."""
+
+>>>>>>> fa802d9 (fix: restore indentation in create_deal after merge)
 	frappe.has_permission("CRM Deal", "create", throw=True)
 	deal = frappe.new_doc("CRM Deal")
 
