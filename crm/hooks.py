@@ -29,6 +29,7 @@ flow_tools = [
 	"crm.flow_tools.setup_status",
 	"crm.flow_tools.publish_web_form",
 	"crm.flow_tools.add_lead_fields",
+	"crm.flow_tools.show_lead_fields",
 	"crm.flow_tools.connect_email",
 	"crm.flow_tools.invite_team",
 	"crm.flow_tools.assign_new_leads",

@@ -206,6 +206,57 @@ def add_lead_fields(fields: list[NewField], *, ctx: ToolContext) -> dict[str, An
 	return {"added": added}
 
 
+LEAD_LAYOUTS = {"side panel": "Side Panel", "data tab": "Data Fields", "new lead form": "Quick Entry"}
+
+
+def _show_prompt(args: dict) -> str:
+	meta = frappe.get_meta("CRM Lead")
+	labels = [meta.get_label(f) for f in args.get("fields") or []]
+	places = " and ".join(args.get("places") or ["side panel"])
+	section = args.get("section") or "More details"
+	return f'Show these fields on leads, in a "{section}" section of the {places}:\n{_bullets(labels)}'
+
+
+@tool(requires_confirmation=True, confirm_prompt=_show_prompt)
+def show_lead_fields(
+	fields: list[str],
+	places: list[Literal["side panel", "data tab", "new lead form"]] | None = None,
+	section: str = "More details",
+	*,
+	ctx: ToolContext,
+) -> dict[str, list[str]]:
+	"""Show lead fields (fieldnames, such as ones add_lead_fields returned) on the lead page: in a
+	new section of the side panel, the Data tab or the new lead form. A field already shown in a
+	place is left where it is. Returns the places changed."""
+	from frappe.utils import random_string
+
+	changed = []
+	for place in places or ["side panel"]:
+		name = frappe.db.exists("CRM Fields Layout", {"dt": "CRM Lead", "type": LEAD_LAYOUTS[place]})
+		if not name:
+			continue
+		doc = frappe.get_doc("CRM Fields Layout", name)
+		layout = json.loads(doc.layout or "[]")
+		# Data Fields may be tabs of sections; the others are a list of sections
+		sections = layout[0]["sections"] if layout and "sections" in layout[0] else layout
+		shown = {f for sec in sections for col in sec.get("columns", []) for f in col.get("fields", [])}
+		new = [f for f in fields if f not in shown]
+		if not new:
+			continue
+		sections.append(
+			{
+				"label": section,
+				"name": f"section_{random_string(4)}",
+				"opened": True,
+				"columns": [{"name": f"column_{random_string(4)}", "fields": new}],
+			}
+		)
+		doc.layout = json.dumps(layout)
+		doc.save()
+		changed.append(place)
+	return {"shown_in": changed}
+
+
 @tool(
 	requires_confirmation=True,
 	confirm_prompt=lambda args: (
