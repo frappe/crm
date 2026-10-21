@@ -549,6 +549,45 @@ class TestMergeLead(IntegrationTestCase):
 
 		self.assertIn(resolve_merged_lead(lead_a.name), (lead_a.name, lead_b.name))
 
+	def test_merged_source_email_does_not_create_new_lead(self):
+		# Regression lock: an incoming email from a sender that only a merged source lead
+		# has already matches that lead and creates nothing. It guards existing behaviour,
+		# so it passes without a red phase.
+		target = self._create_lead(first_name="Target", email="target-mail@test.com")
+		source = self._create_lead(first_name="Source", email="source-mail@test.com")
+
+		from crm.api.lead import merge_leads
+
+		merge_leads(target.name, source.name)
+
+		email_account = frappe.get_doc(
+			{
+				"doctype": "Email Account",
+				"email_account_name": "Test Merge Incoming",
+				"email_id": "test-merge-incoming@example.com",
+				"enable_incoming": 1,
+				"create_lead_from_incoming_email": 1,
+			}
+		)
+		email_account.flags.ignore_mandatory = True
+		email_account.flags.ignore_validate = True
+		email_account.insert(ignore_permissions=True)
+
+		leads_before = frappe.db.count("CRM Lead")
+		frappe.get_doc(
+			{
+				"doctype": "Communication",
+				"communication_type": "Communication",
+				"communication_medium": "Email",
+				"sent_or_received": "Received",
+				"subject": "Hello again",
+				"sender": "source-mail@test.com",
+				"email_account": email_account.name,
+			}
+		).insert(ignore_permissions=True)
+
+		self.assertEqual(frappe.db.count("CRM Lead"), leads_before)
+
 
 def create_user_without_lead_access():
 	email = "lead-noperm@example.com"
