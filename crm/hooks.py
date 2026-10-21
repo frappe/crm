@@ -31,6 +31,7 @@ flow_tools = [
 	"crm.flow_tools.add_lead_fields",
 	"crm.flow_tools.show_lead_fields",
 	"crm.flow_tools.connect_email",
+	"crm.flow_tools.convert_lead",
 	"crm.flow_tools.invite_team",
 	"crm.flow_tools.assign_new_leads",
 	"crm.flow_tools.set_currency",

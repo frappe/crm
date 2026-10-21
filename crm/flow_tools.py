@@ -288,6 +288,30 @@ def connect_email(
 	return f"Connected {email}."
 
 
+def _convert_prompt(args: dict) -> str:
+	name = frappe.db.get_value("CRM Lead", args.get("lead"), "lead_name") or args.get("lead")
+	value = f" worth {args['deal_value']}" if args.get("deal_value") else ""
+	return (
+		f"Convert {name} ({args.get('lead')}) to a deal{value}. Their contact and organization come "
+		"along, with the lead's notes, emails and tasks."
+	)
+
+
+@tool(requires_confirmation=True, confirm_prompt=_convert_prompt)
+def convert_lead(lead: str, deal_value: float | None = None, *, ctx: ToolContext) -> dict[str, str]:
+	"""Convert a lead to a deal the way the CRM's Convert to Deal button does: it creates or links the
+	contact and organization and carries the lead's notes, emails and tasks over. Returns the deal's
+	name and link. A lead already converted returns its existing deal."""
+	from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
+
+	deal = convert_to_deal(
+		lead=lead,
+		deal={"deal_value": deal_value} if deal_value else None,
+		if_converted="Return Existing",
+	)
+	return {"deal": deal, "link": f"/crm/deals/{deal}"}
+
+
 def _invite_prompt(args: dict) -> str:
 	return f"Invite these people to the CRM as {args.get('role')}s:\n{_bullets(args.get('emails') or [])}"
 
