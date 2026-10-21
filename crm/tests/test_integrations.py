@@ -8,6 +8,8 @@ import frappe
 from crm.integrations.api import (
 	add_note_to_call_log,
 	add_task_to_call_log,
+	find_contact_by_phone_number,
+	find_contact_lead_or_deal_from_number,
 	get_contact_by_phone_number,
 	get_contact_lead_or_deal_from_number,
 	get_user_default_calling_medium,
@@ -662,3 +664,164 @@ def create_test_call_log(**kwargs):
 	call_log = frappe.get_doc(data)
 	call_log.insert()
 	return call_log
+<<<<<<< HEAD
+=======
+
+
+class TestFindByPhone(IntegrationTestCase):
+	"""find_by_phone matches a number however it was stored or received."""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _lead(self, mobile_no: str, **fields):
+		return frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Find",
+				"last_name": frappe.generate_hash(length=5),
+				"mobile_no": mobile_no,
+				"lead_owner": "Administrator",
+				**fields,
+			}
+		).insert()
+
+	def _contact(self, mobile_no: str):
+		contact = frappe.get_doc(
+			{"doctype": "Contact", "first_name": "Find", "last_name": frappe.generate_hash(length=5)}
+		)
+		contact.append("phone_nos", {"phone": mobile_no, "is_primary_mobile_no": 1})
+		return contact.insert()
+
+	def _names(self, matches):
+		return [(match["doctype"], match["docname"]) for match in matches]
+
+	def test_lead_is_found_from_every_spelling(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("+91 98765 43210")
+		for spelling in ("919876543210", "+919876543210", "9876543210", "+91-98765-43210"):
+			self.assertEqual(self._names(find_by_phone(spelling)), [("CRM Lead", lead.name)], spelling)
+
+	def test_lead_stored_without_country_code_is_found_from_meta_id(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("9876543211")
+		self.assertEqual(self._names(find_by_phone("919876543211")), [("CRM Lead", lead.name)])
+
+	def test_foreign_number_is_found(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("+1 415 555 2671")
+		self.assertEqual(self._names(find_by_phone("14155552671")), [("CRM Lead", lead.name)])
+
+	def test_lead_phone_field_counts_too(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("", phone="+91 98765 43212")
+		self.assertEqual(self._names(find_by_phone("919876543212")), [("CRM Lead", lead.name)])
+
+	def test_converted_lead_is_skipped(self):
+		from crm.integrations.api import find_by_phone
+
+		self._lead("+91 98765 43213", converted=1)
+		self.assertEqual(find_by_phone("919876543213"), [])
+
+	def test_deal_comes_before_lead_before_contact(self):
+		from crm.integrations.api import find_by_phone
+
+		contact = self._contact("+91 98765 43214")
+		lead = self._lead("+91 98765 43214")
+		org = frappe.get_doc(
+			{"doctype": "CRM Organization", "organization_name": frappe.generate_hash(length=6)}
+		).insert()
+		deal = frappe.get_doc(
+			{"doctype": "CRM Deal", "organization": org.name, "deal_owner": "Administrator"}
+		)
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.insert()
+
+		matches = find_by_phone("919876543214")
+
+		self.assertEqual(
+			self._names(matches),
+			[("CRM Deal", deal.name), ("CRM Lead", lead.name), ("Contact", contact.name)],
+		)
+		self.assertEqual(matches[0]["contact"], contact.name)
+
+	def test_a_different_number_that_shares_digits_does_not_match(self):
+		from crm.integrations.api import find_by_phone
+
+		self._lead("+91 98765 43215")
+		self.assertEqual(find_by_phone("+1 987 654 3215"), [])
+
+	def test_resolver_wrappers_keep_their_shape(self):
+		from crm.integrations.api import get_contact_by_phone_number, get_contact_lead_or_deal_from_number
+
+		lead = self._lead("+91 98765 43216")
+		self.assertEqual(get_contact_lead_or_deal_from_number("919876543216"), (lead.name, "CRM Lead"))
+		found = get_contact_by_phone_number("919876543216")
+		self.assertEqual(found["lead"], lead.name)
+		self.assertEqual(found["name"], lead.name)
+		self.assertEqual(found["full_name"], lead.lead_name)
+		self.assertEqual(get_contact_by_phone_number("+9999999999"), {"mobile_no": "+9999999999"})
+
+
+SALES_USER = "phone-lookup-rep@example.com"
+
+
+class TestPhoneLookupPermissions(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		if not frappe.db.exists("User", SALES_USER):
+			user = frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": SALES_USER,
+					"first_name": "Phone Lookup Rep",
+					"send_welcome_email": 0,
+				}
+			).insert(ignore_permissions=True)
+			user.add_roles("Sales User")
+
+	def setUp(self):
+		frappe.db.savepoint("test_phone_lookup")
+		self.lead = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Hidden",
+				"mobile_no": "+91 98765 11111",
+				"lead_owner": "Administrator",
+			}
+		).insert()
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback(save_point="test_phone_lookup")
+		super().tearDown()
+
+	def test_lookups_hide_a_lead_the_user_cannot_read(self):
+		frappe.set_user(SALES_USER)
+		self.assertFalse(frappe.has_permission("CRM Lead", "read", self.lead.name))
+
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111"), {"mobile_no": "+91 98765 11111"})
+		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (None, None))
+
+	def test_server_side_lookups_still_find_the_lead(self):
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(
+			find_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
+		)
+
+	def test_lookups_find_a_lead_the_user_can_read(self):
+		frappe.db.set_value("CRM Lead", self.lead.name, "lead_owner", SALES_USER)
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(
+			get_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
+		)
+>>>>>>> 1536b90 (fix: split phone number lookup for server side linking)

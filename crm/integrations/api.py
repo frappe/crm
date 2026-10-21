@@ -139,6 +139,7 @@ def add_task_to_call_log(call_sid: str, task: dict):
 
 @frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number: str):
+<<<<<<< HEAD
 	"""Get contact, lead or deal from the given number."""
 	contact = get_contact_by_phone_number(number)
 	if contact.get("name"):
@@ -163,6 +164,152 @@ def get_contact_by_phone_number(phone_number: str):
 		return get_contact(number.get("national_number"), number.get("country"))
 	else:
 		return get_contact(phone_number, number.get("country"), exact_match=True)
+=======
+	"""Name and doctype of the best match the user can read, or (None, None)."""
+	return _name_and_doctype(_first_match(number, readable_only=True))
+
+
+def find_contact_lead_or_deal_from_number(number: str):
+	"""Name and doctype of the best match whatever the user can read, or (None, None).
+	For server-side linking only, never return it to the user."""
+	return _name_and_doctype(_first_match(number))
+
+
+@frappe.whitelist()
+def get_contact_by_phone_number(phone_number: str):
+	"""Contact-shaped dict for the best match the user can read, carrying `lead` or `deal`
+	when the match is one, so telephony callers can pick the record to link."""
+	return _contact_shape(_first_match(phone_number, readable_only=True), phone_number)
+
+
+def find_contact_by_phone_number(phone_number: str):
+	"""Like get_contact_by_phone_number, but whatever the user can read.
+	For server-side linking only, never return it to the user."""
+	return _contact_shape(_first_match(phone_number), phone_number)
+
+
+def _name_and_doctype(match: dict | None):
+	if not match:
+		return None, None
+	return match["docname"], match["doctype"]
+
+
+def _contact_shape(match: dict | None, phone_number: str) -> dict:
+	if not match:
+		return {"mobile_no": phone_number}
+
+	result = {
+		"name": match["contact"] or match["docname"],
+		"full_name": match["title"],
+		"image": match["image"],
+		"mobile_no": match["matching_phone"],
+	}
+	if match["doctype"] == "CRM Lead":
+		result["lead"] = match["docname"]
+	elif match["doctype"] == "CRM Deal":
+		result["deal"] = match["docname"]
+	return result
+
+
+def _first_match(phone_number: str, readable_only: bool = False) -> dict | None:
+	matches = find_by_phone(phone_number)
+	if readable_only:
+		matches = (m for m in matches if frappe.has_permission(m["doctype"], "read", m["docname"]))
+	return next(iter(matches), None)
+
+
+def find_by_phone(phone_number: str) -> list[dict]:
+	"""Every Deal, open Lead and Contact whose phone is the given number in any format:
+	deals first, then leads, then contacts, most recently modified first within each.
+
+	Each match carries doctype, docname, title, image and matching_phone. A deal is
+	found through its primary contact, and the match names that contact too.
+
+	Not permission-filtered: a caller exposing this over HTTP must check access itself.
+	"""
+	target = normalize_phone(phone_number)
+	digits = phone_search_digits(phone_number)
+	if not target or not digits:
+		return []
+
+	deals, leads, contacts = [], [], []
+	seen = set()
+
+	def add(bucket: list, doctype: str, docname: str, **fields):
+		if (doctype, docname) in seen:
+			return
+		seen.add((doctype, docname))
+		bucket.append({"doctype": doctype, "docname": docname, "contact": None, "image": None, **fields})
+
+	for contact in _contacts_with_digits(digits):
+		if normalize_phone(contact.matched_phone) != target:
+			continue
+		fields = dict(title=contact.full_name, image=contact.image, matching_phone=contact.matched_phone)
+		deal = frappe.db.get_value("CRM Contacts", {"contact": contact.name, "is_primary": 1}, "parent")
+		if deal:
+			add(deals, "CRM Deal", deal, contact=contact.name, **fields)
+		add(contacts, "Contact", contact.name, **fields)
+
+	for lead in _leads_with_digits(digits):
+		matching_phone = next(
+			(number for number in (lead.mobile_no, lead.phone) if normalize_phone(number) == target),
+			None,
+		)
+		if matching_phone:
+			add(
+				leads,
+				"CRM Lead",
+				lead.name,
+				title=lead.lead_name,
+				image=lead.image,
+				matching_phone=matching_phone,
+			)
+
+	return deals + leads + contacts
+
+
+def _digits_only(column):
+	return Replace(Replace(Replace(Replace(Replace(column, " ", ""), "-", ""), "(", ""), ")", ""), "+", "")
+
+
+def _contacts_with_digits(digits: str) -> list:
+	"""Contacts whose primary mobile or any listed phone contains the digits. A contact's
+	extra numbers live in the Contact Phone rows, so a secondary number still resolves."""
+	Contact = frappe.qb.DocType("Contact")
+	ContactPhone = frappe.qb.DocType("Contact Phone")
+	pattern = f"%{digits}%"
+
+	by_row = (
+		frappe.qb.from_(ContactPhone)
+		.join(Contact)
+		.on(ContactPhone.parent == Contact.name)
+		.select(Contact.name, Contact.full_name, Contact.image, ContactPhone.phone.as_("matched_phone"))
+		.where(ContactPhone.parenttype == "Contact")
+		.where(_digits_only(ContactPhone.phone).like(pattern))
+		.orderby(Contact.modified, order=Order.desc)
+	).run(as_dict=True)
+
+	by_mobile = (
+		frappe.qb.from_(Contact)
+		.select(Contact.name, Contact.full_name, Contact.image, Contact.mobile_no.as_("matched_phone"))
+		.where(_digits_only(Contact.mobile_no).like(pattern))
+		.orderby(Contact.modified, order=Order.desc)
+	).run(as_dict=True)
+
+	return by_row + by_mobile
+
+
+def _leads_with_digits(digits: str) -> list:
+	Lead = frappe.qb.DocType("CRM Lead")
+	pattern = f"%{digits}%"
+	return (
+		frappe.qb.from_(Lead)
+		.select(Lead.name, Lead.lead_name, Lead.image, Lead.mobile_no, Lead.phone)
+		.where(Lead.converted == 0)
+		.where(_digits_only(Lead.mobile_no).like(pattern) | _digits_only(Lead.phone).like(pattern))
+		.orderby(Lead.modified, order=Order.desc)
+	).run(as_dict=True)
+>>>>>>> 1536b90 (fix: split phone number lookup for server side linking)
 
 
 def _resolve_validated_ip(hostname: str, port: int) -> str:

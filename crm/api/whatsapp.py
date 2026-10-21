@@ -6,7 +6,12 @@ from frappe.permissions import add_permission, update_permission_property
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
+<<<<<<< HEAD
 from crm.integrations.api import get_contact_lead_or_deal_from_number
+=======
+from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
+from crm.utils import normalize_phone
+>>>>>>> 1536b90 (fix: split phone number lookup for server side linking)
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 
@@ -31,6 +36,46 @@ def validate_access(reference_doctype=None, reference_name=None, permtype="read"
 			)
 		return reference_doc
 
+<<<<<<< HEAD
+=======
+def validate(doc, method):
+	# preserve the user's chosen reference for outgoing messages
+	if doc.direction == "Outgoing" and doc.reference_doctype and doc.reference_docname:
+		pass
+	else:
+		phone_number = _get_phone_number_from_profile(doc)
+		if phone_number:
+			_resolve_reference(doc, phone_number)
+
+	_link_profile_to_crm_entities(doc)
+
+
+def _resolve_reference(doc, phone_number: str) -> None:
+	try:
+		name, doctype = find_contact_lead_or_deal_from_number(phone_number)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
+		return
+
+	if not name and doc.direction == "Incoming":
+		action = _lead_append_action(doc.whatsapp_account)
+		if action:
+			name, doctype = _create_lead(doc, action), "CRM Lead"
+
+	if name:
+		doc.reference_doctype = doctype
+		doc.reference_docname = name
+
+
+def _lead_append_action(account: str | None):
+	"""An account that appends incoming messages to CRM Lead has asked for leads from new
+	senders; that configuration is the opt-in, there is no separate switch."""
+	if not account:
+		return None
+	for action in frappe.get_cached_doc("WA Account", account).get("append_actions", []):
+		if action.append_to == "CRM Lead" and action.trigger_on in ("Incoming", "Both"):
+			return action
+>>>>>>> 1536b90 (fix: split phone number lookup for server side linking)
 	return None
 
 
