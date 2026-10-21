@@ -23,7 +23,7 @@ from crm.api.whatsapp import (
 	is_whatsapp_enabled,
 	is_whatsapp_installed,
 	notify_agent,
-	touch_reference,
+	update_reference_modified,
 	validate,
 	validate_access,
 )
@@ -235,7 +235,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		mock_log.assert_called_once()
 
 
-class TestTouchReference(FrappeTestCase):
+class TestUpdateReferenceModified(FrappeTestCase):
 	def setUp(self):
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 1)
 		self.lead = frappe.get_doc(
@@ -262,28 +262,28 @@ class TestTouchReference(FrappeTestCase):
 		)
 
 	def test_received_message_bumps_the_lead(self):
-		touch_reference(self._message())
+		update_reference_modified(self._message())
 		self.assertNotEqual(self._modified(), "2026-01-01 00:00:00")
 
 	def test_sent_message_bumps_the_lead(self):
-		touch_reference(self._message(direction="Outgoing"))
+		update_reference_modified(self._message(direction="Outgoing"))
 		self.assertNotEqual(self._modified(), "2026-01-01 00:00:00")
 
 	def test_message_on_another_doctype_is_ignored(self):
 		with patch("frappe.db.set_value") as mock_set:
-			touch_reference(self._message(reference_doctype="Contact"))
+			update_reference_modified(self._message(reference_doctype="Contact"))
 		mock_set.assert_not_called()
 
 	def test_setting_off_leaves_the_lead(self):
 		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
-		touch_reference(self._message())
+		update_reference_modified(self._message())
 		self.assertEqual(self._modified(), "2026-01-01 00:00:00")
 
 	def test_reply_submitted_from_the_webhook_bumps_the_lead(self):
 		account = frappe.get_doc(
 			{
 				"doctype": "WA Account",
-				"account_name": f"_Test Touch {frappe.generate_hash(length=5)}",
+				"account_name": f"_Test Modified {frappe.generate_hash(length=5)}",
 				"status": "Active",
 				"phone_id": frappe.generate_hash(length=8),
 			}

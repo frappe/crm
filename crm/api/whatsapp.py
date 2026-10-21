@@ -184,7 +184,7 @@ def notify_agent(doc, method=None):
 			)
 
 
-def touch_reference(doc, method=None):
+def update_reference_modified(doc, method=None):
 	"""A sent or received message bumps its lead or deal's modified time, as an email does."""
 	if doc.reference_doctype not in ("CRM Lead", "CRM Deal") or not doc.reference_docname:
 		return
