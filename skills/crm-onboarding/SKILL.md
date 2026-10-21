@@ -73,7 +73,7 @@ Right after question 3, work out the setup steps that apply and aren't done yet,
 2. **The team**, unless it's just them: Invite your team, then Assign new leads automatically.
 3. **Currency and pipeline:** Currency, then Deal stages.
 
-Don't show them as a list or checklist. Ask "What would you like to start with?" and offer the steps that are left as the options, in that order, so the first is the suggestion. If some steps are already done, say so in one short line before the question, such as "Your currency is already set to INR." Each section below says how to do a step.
+Don't show them as a list or checklist. Ask "What would you like to start with?" and offer the steps that are left as the options, in that order, so the first is the suggestion. If some steps are already done, say so in one short line before the question, such as "Your currency is already set to <their currency>." Each section below says how to do a step.
 
 When a step is done or skipped, say so in one line, give its link, and ask "What's next?" with the steps still left as the options, plus "That's all for now" after the --- line. If that's all, go to Finish.
 
@@ -131,18 +131,18 @@ Each automation is one "when" and a list of steps in order. Match what they ask 
 |---|---|---|
 | Remind me when a lead replies | `replied` | `notify` me |
 | Tell me about every new lead | `created` | `notify` me |
-| Welcome new leads from the website | `created`, only if source is Website | `email them` |
+| Welcome new leads from the website | `created`, only if source is their website source | `email them` |
 | Follow up if they don't reply in 2 days | `emailed` | `wait` 2 days, `stop if they replied`, `email them` or `create task` |
 | Give big deals to a senior rep | `created` on deals, only if deal value is more than an amount | `assign` |
-| When a lead is qualified, make it a deal | `changed` to Qualified, or `qualified` | `convert to deal` |
+| When a lead is qualified, make it a deal | `qualified`, or `changed` to the lead status they name | `convert to deal` |
 | Celebrate or follow up a won deal | `won` | `email the team`, `create task` |
 | Ask why a deal was lost | `lost` | `create task` for the owner |
 | Remind me before a deal's closing date | `date`: days before expected closure date | `notify` or `create task` |
 | Chase overdue tasks | `task overdue` | `notify` whoever it's assigned to |
 | Score leads: -5 for a Gmail address, +10 for a company one | `created` | `add to score` -5, only if email ends with gmail.com; `add to score` 10, only if email does not contain gmail.com |
-| Mark big leads hot | `created` | `set temperature` Hot, only if annual revenue is more than an amount |
+| Mark big leads hot | `created` | `set temperature` to the hottest choice, only if annual revenue is more than an amount |
 
-When there's more than one way to do it, ask one question at a time, with options: who to tell (Me, Whoever it's assigned to, Someone else), how (A bell notification in the CRM, An email), and how long to wait. If they want an email sent to the lead, offer a template from `setup_status`, or draft the subject and message and show it first. Check field names and status names with `describe` and `read_records` before you use them.
+When there's more than one way to do it, ask one question at a time, with options: who to tell (Me, Whoever it's assigned to, Someone else), how (A bell notification in the CRM, An email), and how long to wait. If they want an email sent to the lead, offer a template from `setup_status`, or draft the subject and message and show it first. Never assume a name: read the fields, dropdown choices (such as a lead's temperature) and status names on their site with `describe` and `read_records` before you use them, and use them exactly as they are.
 
 Put `only_if` on the automation when the whole thing is for some records, and on a step when just that step is, as in scoring. For scores, ask what each rule is worth, and whether an existing automation already scores leads (`setup_status` lists them), so scores don't add up twice.
 
@@ -182,15 +182,15 @@ Deal values use the CRM's currency, and **it can only be set once**. Offer the l
 
 ### Pipeline
 
-The default deal stages are Qualification → Demo/Making → Proposal/Quotation → Negotiation → Ready to Close → Won / Lost. Always list the stages in the same message as the question, as a numbered list, then ask whether they fit. If their business needs something different, suggest a pipeline that fits it. Options: Looks good, Change it.
+Their current stages are in `deal_stages` from `setup_status`, in order. Always list them in the same message as the question, as a numbered list, then ask whether they fit. If their business needs something different, suggest a pipeline that fits it. Options: Looks good, Change it.
 
 Each CRM Deal Status has:
 
 - `deal_status`: the name, which is also the record name.
-- `type`: one of Open, Ongoing, On Hold, Won, Lost. Keep exactly one Won and at least one Lost stage, because reports and conversion rely on them.
+- `type`: one of the choices `describe("CRM Deal Status")` lists. Keep exactly one Won and at least one Lost stage, because reports and conversion rely on them.
 - `position`: the order on the kanban board, starting at 1.
 - `probability`: the chance of winning at this stage, 0 to 100. It feeds the forecast.
-- `color`: one of gray, blue, green, red, pink, orange, amber, yellow, cyan, teal, violet, purple.
+- `color`: one of the choices `describe("CRM Deal Status")` lists.
 
 Show the full new list before you write. Then:
 
@@ -199,7 +199,7 @@ Show the full new list before you write. Then:
 - Reorder with `update` on `position`.
 - Delete a stage only when no deal uses it (`read_records("CRM Deal", {"status": name}, limit=1)` is empty). Otherwise offer to move those deals to another stage first.
 
-Then suggest lead sources that match their answer to question 3 (CRM Lead Source, `source_name`), such as Website, Referral, Trade show or Facebook. Then suggest lost reasons that fit their business (CRM Lost Reason, `lost_reason`), such as Price, Went with a competitor, No budget or No response. Let them pick several from each list. Create only the ones they pick that don't exist yet.
+Then suggest lead sources that match their answer to question 3 (CRM Lead Source, `source_name`), such as Website, Referral, Trade show or Facebook, leaving out the ones in `lead_sources`. Then suggest lost reasons that fit their business (CRM Lost Reason, `lost_reason`), such as Price, Went with a competitor, No budget or No response, leaving out the ones in `lost_reasons`. Let them pick several from each list. Create only the ones they pick that don't exist yet.
 
 Lead stages (CRM Lead Status, `lead_status`) suit most teams as they are. Change them only if they ask.
 

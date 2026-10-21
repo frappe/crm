@@ -52,6 +52,7 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 	"""Everything the CRM setup checklist needs, in one read: currency, stages, email, forms, team,
 	lead assignment, data, and which sample records are left (None once cleared). Needs no approval."""
 	from crm.demo.api import get_demo_state
+	from crm.demo.users import DEMO_USER_EMAILS
 
 	users = frappe.get_list(
 		"User",
@@ -87,7 +88,7 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 			)
 		],
 		"ad_lead_syncing": frappe.db.count("Lead Sync Source", {"enabled": 1}),
-		"users": [u for u in users if not u.endswith(".demo@example.com")],
+		"users": [u for u in users if u not in DEMO_USER_EMAILS],
 		"invitations": frappe.get_list("CRM Invitation", fields=["email", "role", "status"]),
 		"lead_assignment_rules": frappe.get_list(
 			"Assignment Rule", filters={"document_type": "CRM Lead", "disabled": 0}, pluck="name"
@@ -433,6 +434,10 @@ def assign_new_leads(
 	users: list[str], rule: Literal["Round Robin", "Load Balancing"] = "Round Robin", *, ctx: ToolContext
 ) -> str:
 	"""Assign each new lead automatically to one of `users` (their user emails)."""
+	from crm.api.form import _default_status
+
+	# new leads are the ones still at the status a lead starts with on this site
+	status = _default_status("CRM Lead")
 	name, n = "New leads", 2
 	while frappe.db.exists("Assignment Rule", name):
 		name, n = f"New leads {n}", n + 1
@@ -445,8 +450,8 @@ def assign_new_leads(
 			"rule": rule,
 			"priority": 1,
 			"users": [{"user": user} for user in users],
-			"assign_condition": 'status == "New"',
-			"assign_condition_json": '[["status","==","New"]]',
+			"assign_condition": f"status == {json.dumps(status)}",
+			"assign_condition_json": json.dumps([["status", "==", status]]),
 			"description": "Hands out new leads to the sales team.",
 			"assignment_days": [
 				{"day": day}
@@ -672,8 +677,8 @@ def add_automation(
 	`email_template`, or `text` as subject and `message`); "create task" (`text` as the title, due
 	in `amount` days, for the record's owner); "assign" to `people`; "set field" (`field`,
 	`value`); "wait" (`amount` `unit`); "stop if they replied"; "convert to deal", "add to score"
-	(`amount`, negative to take away, `text` as the reason) or "set temperature" (`value` Hot, Warm
-	or Cold), all three for leads. A step's own `only_if` makes just that step conditional, such
+	(`amount`, negative to take away, `text` as the reason) or "set temperature" (`value`, one of
+	the lead's temperature choices), all three for leads. A step's own `only_if` makes just that step conditional, such
 	as -5 when the email ends with gmail.com and +10 when it doesn't.
 	`people` are user emails, "assigned" (whoever the record is assigned to) or "created by".
 	Text can use the record's fields, such as {{ doc.lead_name }} or {{ doc.organization }}.
@@ -710,6 +715,9 @@ def add_automation(
 		flow.update(trigger_type="Custom Event", custom_event=RECORD_EVENTS[when])
 	for c in [*(only_if or []), *(c for s in steps for c in s.only_if)]:
 		_check_field(meta, c.field)
+	for s in steps:
+		if s.do == "set temperature":
+			_check_temperature(s.value)
 	if only_if:
 		flow["filters"] = json.dumps(
 			[[c.field, OPERATORS[c.op], LIKE_VALUES.get(c.op, "{}").format(c.value)] for c in only_if]
@@ -720,6 +728,14 @@ def add_automation(
 		"name": saved.name,
 		"link": f"/crm/leads?settings=Workflow%20Automations&record={saved.name}",
 	}
+
+
+def _check_temperature(value: str | None) -> None:
+	from crm.automation.scoring import temperature_options
+
+	choices = temperature_options()
+	if value not in choices:
+		frappe.throw(_("A lead's temperature can be {0}.").format(", ".join(choices)))
 
 
 def _check_field(meta, fieldname: str) -> None:

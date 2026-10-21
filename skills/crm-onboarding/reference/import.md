@@ -15,9 +15,9 @@ If you can't tell, ask. A list of names and emails is usually leads. A list with
 
 ## 2. Map the columns
 
-Run `describe` on the target DocType to get its fields. Match each column by meaning, not by spelling:
+Run `describe` on the target DocType to get its fields, including any their site added, and the choices of each dropdown. Match each column by meaning, not by spelling. These are the usual ones:
 
-- **CRM Lead:** `first_name`, `last_name`, `email`, `mobile_no`, `phone`, `organization` (company name as text), `job_title`, `website`, `source` (CRM Lead Source), `status` (CRM Lead Status), `industry` (CRM Industry), `territory` (CRM Territory), `no_of_employees` (1-10, 11-50, 51-200, 201-500, 501-1000, 1000+), `annual_revenue`, `lead_owner` (a User email).
+- **CRM Lead:** `first_name`, `last_name`, `email`, `mobile_no`, `phone`, `organization` (company name as text), `job_title`, `website`, `source` (CRM Lead Source), `status` (CRM Lead Status), `industry` (CRM Industry), `territory` (CRM Territory), `no_of_employees` (one of its choices from `describe`), `annual_revenue`, `lead_owner` (a User email).
 - **CRM Deal:** `organization` (a CRM Organization name), `status`, `deal_value`, `currency`, `expected_closure_date`, `probability`, `deal_owner`, `source`, `territory`, plus the main contact's `first_name`, `last_name`, `email` and `mobile_no`.
 - **CRM Organization:** `organization_name`, `website`, `industry`, `territory`, `no_of_employees`, `annual_revenue`.
 - **Contact:** `first_name`, `last_name`, `company_name` (a CRM Organization name), `designation`, with emails in `email_ids` (`[{"email_id": ..., "is_primary": 1}]`) and numbers in `phone_nos` (`[{"phone": ..., "is_primary_mobile_no": 1}]`).
