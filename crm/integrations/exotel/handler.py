@@ -3,8 +3,12 @@ import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
+<<<<<<< HEAD
 from crm.integrations.api import get_contact_by_phone_number
 from crm.utils import sales_user_only
+=======
+from crm.integrations.api import find_contact_by_phone_number
+>>>>>>> 1536b90 (fix: split phone number lookup for server side linking)
 
 # Endpoints for webhook
 
@@ -231,7 +235,7 @@ def create_call_log(
 
 
 def link(contact_number, call_log):
-	contact = get_contact_by_phone_number(contact_number)
+	contact = find_contact_by_phone_number(contact_number)
 	if contact.get("name"):
 		doctype = "Contact"
 		docname = contact.get("name")
