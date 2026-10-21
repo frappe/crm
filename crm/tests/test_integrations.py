@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import frappe
 from frappe.tests import IntegrationTestCase
+from frappe.utils import add_to_date
 
 from crm.integrations.api import (
 	add_note_to_call_log,
@@ -822,3 +823,25 @@ class TestPhoneLookupPermissions(IntegrationTestCase):
 		self.assertEqual(
 			get_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
 		)
+
+	def test_lookups_skip_a_newer_hidden_lead_for_an_older_readable_one(self):
+		readable = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Visible",
+				"mobile_no": "+91 98765 11111",
+				"lead_owner": SALES_USER,
+			}
+		).insert()
+		frappe.db.set_value(
+			"CRM Lead",
+			self.lead.name,
+			"modified",
+			add_to_date(readable.modified, hours=1),
+			update_modified=False,
+		)
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], readable.name)
+		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (readable.name, "CRM Lead"))
