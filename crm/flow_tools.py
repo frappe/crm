@@ -34,7 +34,9 @@ DEFAULT_FORM_FIELDS = [
 
 
 class FormField(BaseModel):
-	field: str
+	# a lead field, or a layout break where the form starts a new column or section
+	field: str | None = None
+	layout: Literal["column break", "section break"] | None = None
 	label: str | None = None
 	required: bool = False
 
@@ -115,15 +117,24 @@ def _bullets(lines: list[str]) -> str:
 
 
 def _form_prompt(args: dict) -> str:
+	verb = "Update" if args.get("form") else "Publish"
 	fields = args.get("fields") or []
 	if not fields:
 		return (
-			f'Publish "{args.get("title")}" with the standard contact fields: name, email, phone and company.'
+			f'{verb} "{args.get("title")}" with the standard contact fields: name, email, phone and company.'
 		)
-	lines = [
-		f"{f.get('label') or f.get('field')}{' (required)' if f.get('required') else ''}" for f in fields
-	]
-	return f'Publish "{args.get("title")}" with these {len(fields)} fields:\n{_bullets(lines)}'
+	lines = []
+	for f in fields:
+		if f.get("layout") == "column break":
+			lines.append("— next column —")
+		elif f.get("layout") == "section break":
+			lines.append(f"— new section{': ' + f['label'] if f.get('label') else ''} —")
+		else:
+			lines.append(f"{f.get('label') or f.get('field')}{' (required)' if f.get('required') else ''}")
+	count = sum(1 for f in fields if not f.get("layout"))
+	return f'{verb} "{args.get("title")}" with these {count} fields:\n' + "\n".join(
+		line if line.startswith("—") else f"• {line}" for line in lines
+	)
 
 
 @tool(requires_confirmation=True, confirm_prompt=_form_prompt)
@@ -132,34 +143,49 @@ def publish_web_form(
 	fields: list[FormField] | None = None,
 	description: str = "",
 	success_message: str = "Thanks, we'll be in touch soon.",
+	form: str | None = None,
 	*,
 	ctx: ToolContext,
 ) -> dict[str, Any]:
-	"""Create and publish a website form whose submissions become CRM leads. `fields` are lead
-	fieldnames in the order visitors see them, with the label to show; leave it out for the
-	standard contact fields. Returns the form's link."""
-	from crm.api.form import save_form
+	"""Create and publish a website form whose submissions become CRM leads, or update one: pass
+	its name as `form` to change it in place, keeping its link. `fields` are in the order visitors
+	see them: each a lead `field` with the `label` to show and whether it's `required`, or a
+	`layout` break ("column break" starts the next column, "section break" a new block of fields).
+	Use breaks only where the form changes layout. Leave `fields` out for the standard contact
+	fields. Returns the form's link."""
+	from crm.api.form import get_form_config, save_form
 
-	route = _free_route(frappe.scrub(title).replace("_", "-") or "contact-us")
-	form = {
+	current = get_form_config(form) if form else None
+	data = {
 		"title": title,
-		"route": route,
+		"route": current["route"]
+		if current
+		else _free_route(frappe.scrub(title).replace("_", "-") or "contact-us"),
 		"document_type": "CRM Lead",
 		"description": description,
 		"success_message": success_message,
 		"published": 1,
+		"fields": [_form_row(f, i) for i, f in enumerate(fields or DEFAULT_FORM_FIELDS)],
 	}
-	form["fields"] = [
-		{
-			"fieldname": (f.field if isinstance(f, FormField) else f["field"]),
-			"label": (f.label if isinstance(f, FormField) else f.get("label")),
-			"reqd": int(bool(f.required if isinstance(f, FormField) else f.get("required"))),
+	if current:
+		# an update keeps the form's hidden defaults, which a save without them would clear
+		data["hidden_fields"] = current["hidden_fields"]
+	saved = save_form(form, data)
+	return {"form": saved["name"], "link": f"/crm-form/{saved['route']}"}
+
+
+def _form_row(f: FormField | dict, i: int) -> dict[str, Any]:
+	f = f if isinstance(f, FormField) else FormField(**f)
+	if f.layout:
+		kind = "Column Break" if f.layout == "column break" else "Section Break"
+		return {
+			"fieldname": f"{frappe.scrub(kind)}_{i}",
+			"fieldtype": kind,
+			"label": f.label or "",
+			"reqd": 0,
 			"placeholder": "",
 		}
-		for f in fields or DEFAULT_FORM_FIELDS
-	]
-	saved = save_form(None, form)
-	return {"form": saved["name"], "link": f"/crm-form/{saved['route']}"}
+	return {"fieldname": f.field, "label": f.label, "reqd": int(f.required), "placeholder": ""}
 
 
 def _free_route(route: str) -> str:
