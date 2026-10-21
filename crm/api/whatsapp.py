@@ -2,6 +2,7 @@ import frappe
 from frappe import _
 from frappe.permissions import add_permission, update_permission_property
 from frappe.query_builder.functions import Count
+from frappe.utils import now
 from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
@@ -181,6 +182,17 @@ def notify_agent(doc, method=None):
 					"redirect_to_docname": doc.reference_docname,
 				}
 			)
+
+
+def update_reference_modified(doc, method=None):
+	"""A sent or received message bumps its lead or deal's modified time, as an email does."""
+	if doc.reference_doctype not in ("CRM Lead", "CRM Deal") or not doc.reference_docname:
+		return
+	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
+		return
+	frappe.db.set_value(
+		doc.reference_doctype, doc.reference_docname, "modified", now(), update_modified=False
+	)
 
 
 def get_record_title(doctype: str, name: str) -> str:

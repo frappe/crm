@@ -234,8 +234,10 @@ override_doctype_class = {
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
+# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
 extend_doctype_class = {
 	"Data Import": ["crm.overrides.data_import.DataImportListView"],
+	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
 }
 
 # Document Events
@@ -267,6 +269,7 @@ doc_events = {
 	},
 	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
+		"on_submit": ["crm.api.whatsapp.update_reference_modified"],
 		"on_update": [
 			"crm.api.whatsapp.notify_agent",
 			"crm.automation.events.on_whatsapp_message",
@@ -318,6 +321,8 @@ doc_events = {
 	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
+		"validate": ["crm.api.availability.validate_user"],
+		"on_update": ["crm.api.availability.on_user_update"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
 }

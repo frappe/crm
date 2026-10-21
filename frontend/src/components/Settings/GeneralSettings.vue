@@ -18,7 +18,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                'Update the modified timestamp on new email communication & comments for leads & deals',
+                'Update the modified timestamp on new emails, messages & comments for leads & deals',
               )
             }}
           </div>
