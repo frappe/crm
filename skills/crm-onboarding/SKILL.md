@@ -1,7 +1,7 @@
 ---
 name: crm-onboarding
 starter: Set up my CRM
-description: Set up Frappe CRM for a new team through a short conversation, then bring in their data. Use when someone wants to set up, configure or get started with their CRM, connect email, add a website form, set up lead assignment, change their sales pipeline or lead stages, import leads, deals, contacts or organizations from a CSV or spreadsheet, or invite their team.
+description: Set up Frappe CRM for a new team through a short conversation, then bring in their data. Use when someone wants to set up, configure or get started with their CRM, connect email, add a website form, set up lead assignment, change their sales pipeline or lead stages, import leads, deals, contacts or organizations from a CSV or spreadsheet, invite their team, or set up automations such as reminders, notifications, follow-ups, lead scoring, assigning or converting leads.
 ---
 
 # Set up Frappe CRM
@@ -123,7 +123,7 @@ Any time they want a new field, during setup or later, on leads, deals, contacts
 
 ### Automations
 
-Any time they want something to happen on its own, during setup or later, set it up as a CRM workflow automation with `add_automation`. That covers reminders, notifications, follow-ups, welcome emails, tasks, assigning, changing a status and converting. Never build a Flow agent, Flow trigger or Notification for it, and never write Automation Flow records yourself.
+Any time they want something to happen on its own, during setup or later, set it up as a CRM workflow automation with `add_automation`. That covers reminders, notifications, follow-ups, welcome emails, tasks, assigning, changing a status, lead scoring and converting. Never build a Flow agent, Flow trigger or Notification for it, and never write Automation Flow records yourself.
 
 Each automation is one "when" and a list of steps in order. Match what they ask for:
 
@@ -139,14 +139,18 @@ Each automation is one "when" and a list of steps in order. Match what they ask 
 | Ask why a deal was lost | `lost` | `create task` for the owner |
 | Remind me before a deal's closing date | `date`: days before expected closure date | `notify` or `create task` |
 | Chase overdue tasks | `task overdue` | `notify` whoever it's assigned to |
+| Score leads: -5 for a Gmail address, +10 for a company one | `created` | `add to score` -5, only if email ends with gmail.com; `add to score` 10, only if email does not contain gmail.com |
+| Mark big leads hot | `created` | `set temperature` Hot, only if annual revenue is more than an amount |
 
 When there's more than one way to do it, ask one question at a time, with options: who to tell (Me, Whoever it's assigned to, Someone else), how (A bell notification in the CRM, An email), and how long to wait. If they want an email sent to the lead, offer a template from `setup_status`, or draft the subject and message and show it first. Check field names and status names with `describe` and `read_records` before you use them.
+
+Put `only_if` on the automation when the whole thing is for some records, and on a step when just that step is, as in scoring. For scores, ask what each rule is worth, and whether an existing automation already scores leads (`setup_status` lists them), so scores don't add up twice.
 
 `people` are user emails, or "me", "assigned" or "created by". Notification text and emails can use the record's fields, such as `{{ doc.lead_name }}`, `{{ doc.organization }}` or `{{ doc.status }}`. Name the automation in their words, such as "Lead reply reminder".
 
 Replies and email follow-ups only start once their email is connected. If it isn't, say so in one line, set up the automation anyway, and offer to connect email next. Only a System Manager can add automations. If it fails with a permission error, tell them to ask their CRM admin.
 
-Once it's added, give the link: [Workflow automations](/crm/leads?settings=Workflow%20Automations). They can turn it off or change it there.
+Once it's added, the CRM opens it beside the chat. Give its `link` too, and say they can turn it off or change it there. It only acts on records from now on. If they want the same done to existing records, offer it as a separate step and use `update`.
 
 ### Facebook or Instagram ads
 

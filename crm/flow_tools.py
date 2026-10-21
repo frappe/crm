@@ -496,9 +496,19 @@ RECORD_EVENTS = {
 	"task overdue": "crm.task_overdue",
 }
 LEAD_ONLY = {"qualified", "converted"}
+LEAD_STEPS = {"convert to deal", "add to score", "set temperature"}
 DEAL_ONLY = {"won", "lost"}
 RECORDS = {"lead": "CRM Lead", "deal": "CRM Deal"}
-OPERATORS = {"is": "=", "is not": "!=", "is more than": ">", "is less than": "<", "contains": "like"}
+OPERATORS = {
+	"is": "=",
+	"is not": "!=",
+	"is more than": ">",
+	"is less than": "<",
+	"contains": "like",
+	"does not contain": "not like",
+	"ends with": "like",
+}
+LIKE_VALUES = {"contains": "%{}%", "does not contain": "%{}%", "ends with": "%{}"}
 WAIT_UNITS = {"minutes": "Minutes", "hours": "Hours", "days": "Days"}
 # people to tell or hand work to; anyone else is named by their user email
 PEOPLE = {"assigned": "@assignees", "created by": "@owner"}
@@ -506,7 +516,9 @@ PEOPLE = {"assigned": "@assignees", "created by": "@owner"}
 
 class Condition(BaseModel):
 	field: str
-	op: Literal["is", "is not", "is more than", "is less than", "contains"] = "is"
+	op: Literal[
+		"is", "is not", "is more than", "is less than", "contains", "does not contain", "ends with"
+	] = "is"
 	value: str
 
 
@@ -523,7 +535,11 @@ class AutomationStep(BaseModel):
 		"wait",
 		"stop if they replied",
 		"convert to deal",
+		"add to score",
+		"set temperature",
 	]
+	# this step happens only for records that match, such as -5 when the email ends with gmail.com
+	only_if: list[Condition] = []
 	people: list[str] = []
 	text: str = ""
 	message: str = ""
@@ -567,13 +583,21 @@ def _describe_automation(args: dict) -> list[str]:
 		f"{label(args.get('date_field'))}",
 	}
 	lines = [f"When {starts.get(args.get('when'), args.get('when'))}"]
-	for c in args.get("only_if") or []:
-		c = c if isinstance(c, dict) else c.model_dump()
-		lines.append(f"Only if its {label(c['field'])} {c.get('op') or 'is'} {c['value']}")
+	if args.get("only_if"):
+		conditions = [c if isinstance(c, dict) else c.model_dump() for c in args["only_if"]]
+		lines.append(f"Only if its {_describe_conditions(conditions, label)}")
 	for s in args.get("steps") or []:
 		s = s if isinstance(s, dict) else s.model_dump()
-		lines.append(_describe_step(s, label))
+		conditions = [c if isinstance(c, dict) else c.model_dump() for c in s.get("only_if") or []]
+		step = _describe_step(s, label)
+		if conditions:
+			step = f"If its {_describe_conditions(conditions, label)}: {step[0].lower()}{step[1:]}"
+		lines.append(step)
 	return lines
+
+
+def _describe_conditions(conditions: list[dict], label) -> str:
+	return " and ".join(f"{label(c['field'])} {c.get('op') or 'is'} {c['value']}" for c in conditions)
 
 
 def _days(n) -> str:
@@ -601,7 +625,15 @@ def _describe_step(s: dict, label) -> str:
 		"wait": f"Wait {s.get('amount')} {s.get('unit') or 'days'}",
 		"stop if they replied": "Stop here if they've replied",
 		"convert to deal": "Convert the lead to a deal",
+		"add to score": _describe_score(s),
+		"set temperature": f"Mark it {s.get('value')}",
 	}[s["do"]]
+
+
+def _describe_score(s: dict) -> str:
+	amount = s.get("amount") or 0
+	change = f"Add {amount} to its score" if amount >= 0 else f"Take {-amount} off its score"
+	return change + (f' ("{s["text"]}")' if s.get("text") else "")
 
 
 @tool(requires_confirmation=True, confirm_prompt=_automation_prompt)
@@ -639,12 +671,15 @@ def add_automation(
 	(`people`, `text` as subject, `message`); "email them" (the lead or deal, with an
 	`email_template`, or `text` as subject and `message`); "create task" (`text` as the title, due
 	in `amount` days, for the record's owner); "assign" to `people`; "set field" (`field`,
-	`value`); "wait" (`amount` `unit`); "stop if they replied"; "convert to deal" (leads).
+	`value`); "wait" (`amount` `unit`); "stop if they replied"; "convert to deal", "add to score"
+	(`amount`, negative to take away, `text` as the reason) or "set temperature" (`value` Hot, Warm
+	or Cold), all three for leads. A step's own `only_if` makes just that step conditional, such
+	as -5 when the email ends with gmail.com and +10 when it doesn't.
 	`people` are user emails, "assigned" (whoever the record is assigned to) or "created by".
 	Text can use the record's fields, such as {{ doc.lead_name }} or {{ doc.organization }}.
-	Returns the automation's name and where to see it."""
+	Returns the automation and its link."""
 	doctype = RECORDS[record]
-	if (when in LEAD_ONLY or any(s.do == "convert to deal" for s in steps)) and record != "lead":
+	if (when in LEAD_ONLY or any(s.do in LEAD_STEPS for s in steps)) and record != "lead":
 		frappe.throw(_("That only works on leads."))
 	if when in DEAL_ONLY and record != "deal":
 		frappe.throw(_("That only works on deals."))
@@ -673,14 +708,18 @@ def add_automation(
 		)
 	else:
 		flow.update(trigger_type="Custom Event", custom_event=RECORD_EVENTS[when])
+	for c in [*(only_if or []), *(c for s in steps for c in s.only_if)]:
+		_check_field(meta, c.field)
 	if only_if:
-		for c in only_if:
-			_check_field(meta, c.field)
 		flow["filters"] = json.dumps(
-			[[c.field, OPERATORS[c.op], f"%{c.value}%" if c.op == "contains" else c.value] for c in only_if]
+			[[c.field, OPERATORS[c.op], LIKE_VALUES.get(c.op, "{}").format(c.value)] for c in only_if]
 		)
 	saved = frappe.get_doc(flow).insert()
-	return {"automation": saved.title, "link": "/crm/leads?settings=Workflow%20Automations"}
+	return {
+		"automation": saved.title,
+		"name": saved.name,
+		"link": f"/crm/leads?settings=Workflow%20Automations&record={saved.name}",
+	}
 
 
 def _check_field(meta, fieldname: str) -> None:
@@ -702,22 +741,58 @@ def _people(people: list[str], me: str) -> list[str]:
 
 def _automation_rows(steps: list[AutomationStep], record: str, me: str) -> list[dict[str, Any]]:
 	rows, branch_of = [], 0
-	for idx, s in enumerate(steps, start=1):
-		row = {"idx": idx, "step_key": f"step_{idx}", "target": "trigger", "step_type": "Action"}
+
+	def add(row: dict[str, Any], parent: int) -> int:
+		idx = len(rows) + 1
+		if parent:
+			row.update(parent_step=parent, branch="If")
+		rows.append(
+			{
+				"idx": idx,
+				"step_key": f"step_{idx}",
+				"target": "trigger",
+				**row,
+				"params": json.dumps(row.get("params") or {}),
+			}
+		)
+		return idx
+
+	for s in steps:
+		parent = branch_of
+		if s.only_if:
+			# the step sits in the If arm of its own condition, so other records skip just this step
+			parent = add({"step_type": "If", "step_condition": _condition_expression(s.only_if)}, parent)
 		if s.do == "stop if they replied":
 			# the If arm holds every later step, so they only run when nothing came back
-			row.update(step_type="If", step_condition="True", related_condition=_no_reply_since_start())
+			branch_of = add(
+				{"step_type": "If", "step_condition": "True", "related_condition": _no_reply_since_start()},
+				parent,
+			)
 		elif s.do == "wait":
-			row.update(step_type="Wait", params={"value": s.amount, "unit": WAIT_UNITS[s.unit]})
+			add({"step_type": "Wait", "params": {"value": s.amount, "unit": WAIT_UNITS[s.unit]}}, parent)
 		else:
 			action_type, params = _automation_action(s, record, me)
-			row.update(action_type=action_type, params=params)
-		if branch_of:
-			row.update(parent_step=branch_of, branch="If")
-		if s.do == "stop if they replied":
-			branch_of = idx
-		rows.append({**row, "params": json.dumps(row.get("params") or {})})
+			add({"step_type": "Action", "action_type": action_type, "params": params}, parent)
 	return rows
+
+
+def _condition_expression(conditions: list[Condition]) -> str:
+	"""A step's conditions as the expression its If step checks, with text compared case-insensitively."""
+	return " and ".join(_condition_part(c) for c in conditions)
+
+
+def _condition_part(c: Condition) -> str:
+	if c.op in ("is more than", "is less than"):
+		sign = ">" if c.op == "is more than" else "<"
+		return f"float(doc.{c.field} or 0) {sign} {frappe.utils.flt(c.value)}"
+	text, value = f"(doc.{c.field} or '').lower()", repr(c.value.lower())
+	return {
+		"is": f"{text} == {value}",
+		"is not": f"{text} != {value}",
+		"contains": f"{value} in {text}",
+		"does not contain": f"{value} not in {text}",
+		"ends with": f"{text}.endswith({value})",
+	}[c.op]
 
 
 def _no_reply_since_start() -> str:
@@ -769,6 +844,10 @@ def _automation_action(s: AutomationStep, record: str, me: str) -> tuple[str, di
 		return "AssignToUser", {"assign_to": _people(s.people, me), "description": s.text}
 	if s.do == "set field":
 		return "SetFieldValue", {"field": s.field, "value": s.value}
+	if s.do == "add to score":
+		return "AdjustLeadScore", {"amount": s.amount, "reason": s.text}
+	if s.do == "set temperature":
+		return "SetLeadTemperature", {"temperature": s.value}
 	# convert to deal: a retry returns the same deal instead of making another, and sites with
 	# forecasting get the placeholder value and closing date the rep then corrects
 	from crm.automation.reference_flows import forecast_defaults
