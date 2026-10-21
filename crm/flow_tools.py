@@ -251,6 +251,10 @@ def _show_prompt(args: dict) -> str:
 	doctype = args.get("doctype")
 	meta = frappe.get_meta(doctype)
 	labels = [meta.get_label(f) for f in args.get("fields") or []]
+	if args.get("after"):
+		places = " and ".join(args.get("places") or ["places they show"])
+		after = meta.get_label(args["after"])
+		return f"On {_(doctype)} records, put these fields right after {after} in the {places}:\n{_bullets(labels)}"
 	places = " and ".join(args.get("places") or ["side panel"])
 	section = args.get("section") or "More details"
 	return f'Show these fields on {_(doctype)} records, in a "{section}" section of the {places}:\n{_bullets(labels)}'
@@ -262,18 +266,22 @@ def show_fields(
 	fields: list[str],
 	places: list[Literal["side panel", "data tab", "new record form"]] | None = None,
 	section: str = "More details",
+	after: str | None = None,
 	*,
 	ctx: ToolContext,
 ) -> dict[str, list[str]]:
-	"""Show fields (fieldnames, such as ones add_fields returned) on a CRM record's page: in a new
-	section of the side panel, the Data tab or the form for a new record. Not every record type has
-	every place; `not_available` lists the ones it lacks. A field already shown in a place is left
-	where it is. Returns the places changed."""
+	"""Show fields (fieldnames, such as ones add_fields returned) on a CRM record's page, or move
+	them: the side panel, the Data tab or the form for a new record. Without `after`, they go in the
+	section called `section`, made if missing, and a field already shown stays where it is. With
+	`after` (a fieldname), they go right after that field, moved from wherever they were; leave out
+	`places` to move them only where they already show. Not every record type has every place:
+	`not_available` lists the ones it lacks, and `after_missing` those where `after` isn't shown.
+	Returns the places changed."""
 	from frappe.utils import random_string
 
 	_check_doctype(doctype)
-	changed, not_available = [], []
-	for place in places or ["side panel"]:
+	changed, not_available, after_missing = [], [], []
+	for place in places or (list(LAYOUT_PLACES) if after else ["side panel"]):
 		name = frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": LAYOUT_PLACES[place]})
 		if not name:
 			not_available.append(place)
@@ -282,29 +290,54 @@ def show_fields(
 		layout = json.loads(doc.layout or "[]")
 		# Data Fields may be tabs of sections; the others are a list of sections
 		tabs = layout if layout and "sections" in layout[0] else [{"sections": layout}]
-		sections = tabs[0]["sections"]
-		shown = {
-			f
-			for tab in tabs
-			for sec in tab.get("sections", [])
-			for col in sec.get("columns", [])
-			for f in col.get("fields", [])
-		}
-		new = [f for f in fields if f not in shown]
-		if not new:
-			continue
-		sections.append(
-			{
-				"label": section,
-				"name": f"section_{random_string(4)}",
-				"opened": True,
-				"columns": [{"name": f"column_{random_string(4)}", "fields": new}],
-			}
-		)
+		columns = [col for tab in tabs for sec in tab.get("sections", []) for col in sec.get("columns", [])]
+		shown = {f for col in columns for f in col.get("fields", [])}
+		if after:
+			fields_before = {id(col): list(col.get("fields", [])) for col in columns}
+			# without `places`, a field moves only where it already shows
+			moving = [f for f in fields if f != after and (places or f in shown)]
+			if not moving:
+				continue
+			target = next((col for col in columns if after in col.get("fields", [])), None)
+			if not target:
+				after_missing.append(place)
+				continue
+			for col in columns:
+				col["fields"] = [f for f in col.get("fields", []) if f not in moving]
+			i = target["fields"].index(after) + 1
+			target["fields"][i:i] = moving
+			# drop the sections the move left empty, but not ones that were empty before
+			for tab in tabs:
+				tab["sections"][:] = [
+					sec
+					for sec in tab.get("sections", [])
+					if not sec.get("columns")
+					or any(col.get("fields") for col in sec["columns"])
+					or not any(set(fields_before[id(col)]) & set(moving) for col in sec["columns"])
+				]
+		else:
+			new = [f for f in fields if f not in shown]
+			if not new:
+				continue
+			sections = tabs[0]["sections"]
+			existing = next(
+				(sec for sec in sections if sec.get("label") == section and sec.get("columns")), None
+			)
+			if existing:
+				existing["columns"][0].setdefault("fields", []).extend(new)
+			else:
+				sections.append(
+					{
+						"label": section,
+						"name": f"section_{random_string(4)}",
+						"opened": True,
+						"columns": [{"name": f"column_{random_string(4)}", "fields": new}],
+					}
+				)
 		doc.layout = json.dumps(layout)
 		doc.save()
 		changed.append(place)
-	return {"shown_in": changed, "not_available": not_available}
+	return {"shown_in": changed, "not_available": not_available, "after_missing": after_missing}
 
 
 @tool(

@@ -118,6 +118,7 @@ Any time they want a new field, during setup or later, on leads, deals, contacts
 2. List each new field in plain words and ask them to confirm: its name, what kind of answer it takes, and for a dropdown every choice. Options: Looks good, Change something.
 3. Create them with `add_fields`, passing the record type as `doctype`. Never create Custom Field records yourself.
 4. Say the fields are saved but don't show on the page yet, and ask where to show them. Let them pick several: Side panel (first, as the suggestion), Data tab, The form for a new record, then "Not now" after the --- line. Show them with `show_fields`, passing the same `doctype`, the fieldnames and the places. If `not_available` lists a place, say that record has no such place. They can move fields later with the page's layout editor.
+5. To move a field next to another one, such as "put Partner type after Industry", use `show_fields` with `after` set to that field's fieldname. Leave out `places` to move it everywhere it already shows.
 
 ### Facebook or Instagram ads
 
