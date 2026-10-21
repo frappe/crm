@@ -52,12 +52,13 @@ const TOOL_PAGES: Record<string, Destination> = {
   invite_team: { settings: 'Invite User' },
   assign_new_leads: { settings: 'Assignment Rules' },
   set_currency: { settings: 'Defaults' },
-  add_lead_fields: { path: '/leads' },
-  show_lead_fields: { path: '/leads' },
   clear_sample_data: { path: '/leads' },
 }
 
 const RECORD_TOOLS = new Set(['create', 'update', 'delete', 'run_action'])
+
+// tools that add fields to a record type (`doctype`) or show them on its page
+const FIELD_TOOLS = new Set(['add_fields', 'show_fields'])
 
 // One record opens that record, several in one place open the place, and changes in
 // different places open nothing, since the chat links to each.
@@ -76,7 +77,6 @@ export function whereToGo(changes: FlowChange[]): Destination | null {
 }
 
 // changes made along the way to the main one: fields for a form, a deal's contact and organization
-const SUPPORTING_TOOLS = new Set(['add_lead_fields', 'show_lead_fields'])
 const SUPPORTING_DOCTYPES = new Set([
   'Contact',
   'CRM Organization',
@@ -87,7 +87,7 @@ const SUPPORTING_DOCTYPES = new Set([
 function mainChanges(changes: FlowChange[]): FlowChange[] {
   const main = changes.filter(
     (change) =>
-      !SUPPORTING_TOOLS.has(change.tool) &&
+      !FIELD_TOOLS.has(change.tool) &&
       !SUPPORTING_DOCTYPES.has(change.args?.doctype),
   )
   // a new deal is the point; marking its lead converted is part of making it
@@ -110,6 +110,14 @@ function touchesOf(change: FlowChange): Touch[] {
     const record =
       RECORD_PAGES['CRM Deal'] + encodeURIComponent(change.result.deal)
     return [{ place: '/deals', destination: { path: '/deals' }, record }]
+  }
+  if (FIELD_TOOLS.has(change.tool)) {
+    // fields show on the record's page, and its list is the way there
+    const destination = destinationOf(change.args?.doctype ?? '')
+    const place = destination
+      ? placeKey(destination)
+      : `doctype:${change.args?.doctype}`
+    return [{ place, destination }]
   }
   if (TOOL_PAGES[change.tool]) {
     const destination = TOOL_PAGES[change.tool]
@@ -168,8 +176,6 @@ const TOOL_DOCTYPES: Record<string, string[]> = {
     'CRM Task',
     'FCRM Note',
   ],
-  add_lead_fields: ['CRM Lead'],
-  show_lead_fields: ['CRM Lead'],
 }
 
 export interface ChangedRecords {
@@ -190,6 +196,8 @@ export function changedRecords(changes: FlowChange[]): ChangedRecords {
       for (const name of namesOf(change)) {
         if (name) records.push({ doctype, name })
       }
+    } else if (FIELD_TOOLS.has(change.tool)) {
+      if (change.args?.doctype) doctypes.add(change.args.doctype)
     } else if (TOOL_DOCTYPES[change.tool]) {
       TOOL_DOCTYPES[change.tool].forEach((doctype) => doctypes.add(doctype))
       if (change.tool === 'convert_lead' && change.args?.lead) {

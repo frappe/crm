@@ -83,11 +83,36 @@ describe('whereToGo', () => {
   it('opens the form, not the fields it needed', () => {
     expect(
       whereToGo([
-        { tool: 'add_lead_fields', args: {}, result: { added: {} } },
-        { tool: 'show_lead_fields', args: {}, result: { shown_in: [] } },
+        {
+          tool: 'add_fields',
+          args: { doctype: 'CRM Lead' },
+          result: { added: {} },
+        },
+        {
+          tool: 'show_fields',
+          args: { doctype: 'CRM Lead' },
+          result: { shown_in: [] },
+        },
         { tool: 'publish_web_form', args: {}, result: { form: 'contact-us' } },
       ]),
     ).toEqual({ settings: 'Forms' })
+  })
+
+  it('opens the list of the records that got new fields', () => {
+    expect(
+      whereToGo([
+        {
+          tool: 'add_fields',
+          args: { doctype: 'CRM Deal' },
+          result: { added: { 'Partner type': 'partner_type' } },
+        },
+        {
+          tool: 'show_fields',
+          args: { doctype: 'CRM Deal' },
+          result: { shown_in: ['side panel'], not_available: [] },
+        },
+      ]),
+    ).toEqual({ path: '/deals' })
   })
 
   it('opens a new deal, not its contact, organization or lead', () => {
@@ -128,6 +153,18 @@ describe('whereToGo', () => {
 })
 
 describe('changedRecords', () => {
+  it('reloads the records that got new fields', () => {
+    expect(
+      changedRecords([
+        {
+          tool: 'add_fields',
+          args: { doctype: 'Contact' },
+          result: { added: { Birthday: 'birthday' } },
+        },
+      ]),
+    ).toEqual({ doctypes: ['Contact'], records: [] })
+  })
+
   it('lists the doctypes and records a reply changed', () => {
     expect(
       changedRecords([

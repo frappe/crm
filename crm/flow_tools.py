@@ -195,6 +195,17 @@ def _free_route(route: str) -> str:
 	return candidate
 
 
+# where a field can show on a record's page, and the CRM Fields Layout type behind each place
+LAYOUT_PLACES = {"side panel": "Side Panel", "data tab": "Data Fields", "new record form": "Quick Entry"}
+
+
+def _check_doctype(doctype: str) -> None:
+	"""Fields go only on CRM records, which are the doctypes with a page layout."""
+	if not frappe.db.exists("CRM Fields Layout", {"dt": doctype}):
+		doctypes = frappe.get_all("CRM Fields Layout", pluck="dt", distinct=True, order_by="dt")
+		frappe.throw(_("{0} has no page in the CRM. Pick one of: {1}").format(doctype, ", ".join(doctypes)))
+
+
 def _fields_prompt(args: dict) -> str:
 	lines = []
 	for f in args.get("fields") or []:
@@ -202,14 +213,18 @@ def _fields_prompt(args: dict) -> str:
 		if kind == "dropdown":
 			kind = f"dropdown with {', '.join(f.get('choices') or [])}"
 		lines.append(f"{f.get('label')}: {kind}")
-	return f"Add {len(lines)} new field{'s' if len(lines) != 1 else ''} to leads:\n{_bullets(lines)}"
+	count = f"{len(lines)} new field{'s' if len(lines) != 1 else ''}"
+	return f"Add {count} to {_(args.get('doctype'))} records:\n{_bullets(lines)}"
 
 
 @tool(requires_confirmation=True, confirm_prompt=_fields_prompt)
-def add_lead_fields(fields: list[NewField], *, ctx: ToolContext) -> dict[str, Any]:
-	"""Add new fields to leads, such as answers a website form collects that leads don't have yet.
-	A dropdown needs its choices. Returns each new field's fieldname."""
-	meta = frappe.get_meta("CRM Lead")
+def add_fields(doctype: str, fields: list[NewField], *, ctx: ToolContext) -> dict[str, Any]:
+	"""Add new fields to a CRM record type (`doctype`, such as CRM Lead, CRM Deal, Contact or CRM
+	Organization), for example answers a website form collects. Use this, not a Custom Field record.
+	A dropdown needs its choices. Returns each new field's fieldname. New fields show on no page
+	until show_fields puts them there, so ask the user where to show them."""
+	_check_doctype(doctype)
+	meta = frappe.get_meta(doctype)
 	added = {}
 	for f in fields:
 		f = f if isinstance(f, NewField) else NewField(**f)
@@ -217,11 +232,11 @@ def add_lead_fields(fields: list[NewField], *, ctx: ToolContext) -> dict[str, An
 			re.sub(r"_+", "_", re.sub(r"[^a-z0-9_]", "", frappe.scrub(f.label)))[:40].strip("_") or "field"
 		)
 		if meta.has_field(fieldname) or meta.has_field(f"custom_{fieldname}"):
-			frappe.throw(_("Leads already have a field called {0}.").format(f.label))
+			frappe.throw(_("{0} already has a field called {1}.").format(_(doctype), f.label))
 		doc = frappe.get_doc(
 			{
 				"doctype": "Custom Field",
-				"dt": "CRM Lead",
+				"dt": doctype,
 				"fieldname": fieldname,
 				"label": f.label,
 				"fieldtype": FIELD_TYPES[f.kind],
@@ -232,34 +247,36 @@ def add_lead_fields(fields: list[NewField], *, ctx: ToolContext) -> dict[str, An
 	return {"added": added}
 
 
-LEAD_LAYOUTS = {"side panel": "Side Panel", "data tab": "Data Fields", "new lead form": "Quick Entry"}
-
-
 def _show_prompt(args: dict) -> str:
-	meta = frappe.get_meta("CRM Lead")
+	doctype = args.get("doctype")
+	meta = frappe.get_meta(doctype)
 	labels = [meta.get_label(f) for f in args.get("fields") or []]
 	places = " and ".join(args.get("places") or ["side panel"])
 	section = args.get("section") or "More details"
-	return f'Show these fields on leads, in a "{section}" section of the {places}:\n{_bullets(labels)}'
+	return f'Show these fields on {_(doctype)} records, in a "{section}" section of the {places}:\n{_bullets(labels)}'
 
 
 @tool(requires_confirmation=True, confirm_prompt=_show_prompt)
-def show_lead_fields(
+def show_fields(
+	doctype: str,
 	fields: list[str],
-	places: list[Literal["side panel", "data tab", "new lead form"]] | None = None,
+	places: list[Literal["side panel", "data tab", "new record form"]] | None = None,
 	section: str = "More details",
 	*,
 	ctx: ToolContext,
 ) -> dict[str, list[str]]:
-	"""Show lead fields (fieldnames, such as ones add_lead_fields returned) on the lead page: in a
-	new section of the side panel, the Data tab or the new lead form. A field already shown in a
-	place is left where it is. Returns the places changed."""
+	"""Show fields (fieldnames, such as ones add_fields returned) on a CRM record's page: in a new
+	section of the side panel, the Data tab or the form for a new record. Not every record type has
+	every place; `not_available` lists the ones it lacks. A field already shown in a place is left
+	where it is. Returns the places changed."""
 	from frappe.utils import random_string
 
-	changed = []
+	_check_doctype(doctype)
+	changed, not_available = [], []
 	for place in places or ["side panel"]:
-		name = frappe.db.exists("CRM Fields Layout", {"dt": "CRM Lead", "type": LEAD_LAYOUTS[place]})
+		name = frappe.db.exists("CRM Fields Layout", {"dt": doctype, "type": LAYOUT_PLACES[place]})
 		if not name:
+			not_available.append(place)
 			continue
 		doc = frappe.get_doc("CRM Fields Layout", name)
 		layout = json.loads(doc.layout or "[]")
@@ -287,7 +304,7 @@ def show_lead_fields(
 		doc.layout = json.dumps(layout)
 		doc.save()
 		changed.append(place)
-	return {"shown_in": changed}
+	return {"shown_in": changed, "not_available": not_available}
 
 
 @tool(
