@@ -1,0 +1,305 @@
+# Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
+# For license information, please see license.txt
+
+"""CRM setup actions for Flow's assistant; loaded only when Flow is installed (see hooks.flow_tools)."""
+
+import json
+import re
+from typing import Any, Literal
+
+import frappe
+from flow import ToolContext, tool
+from frappe import _
+from pydantic import BaseModel
+
+FIELD_TYPES = {
+	"short text": "Data",
+	"long text": "Small Text",
+	"number": "Int",
+	"amount": "Currency",
+	"date": "Date",
+	"dropdown": "Select",
+	"yes/no": "Check",
+}
+
+
+class FormField(BaseModel):
+	field: str
+	label: str | None = None
+	required: bool = False
+
+
+class NewField(BaseModel):
+	label: str
+	kind: Literal["short text", "long text", "number", "amount", "date", "dropdown", "yes/no"]
+	choices: list[str] = []
+
+
+@tool
+def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
+	"""Everything the CRM setup checklist needs, in one read: currency, stages, email, forms, team,
+	lead assignment, data, and which sample records are left (None once cleared). Needs no approval."""
+	from crm.demo.api import get_demo_state
+
+	users = frappe.get_list(
+		"User",
+		filters={"user_type": "System User", "enabled": 1, "name": ["not in", ["Administrator", "Guest"]]},
+		pluck="name",
+	)
+	return {
+		"currency": frappe.db.get_single_value("FCRM Settings", "currency"),
+		"deal_stages": frappe.get_list(
+			"CRM Deal Status", fields=["name", "type", "probability"], order_by="position asc"
+		),
+		"lead_sources": frappe.get_list("CRM Lead Source", pluck="name"),
+		"lost_reasons": frappe.get_list("CRM Lost Reason", pluck="name"),
+		"email_accounts": frappe.get_list(
+			"Email Account",
+			fields=[
+				"email_id",
+				"enable_incoming",
+				"enable_outgoing",
+				"default_incoming",
+				"default_outgoing",
+				"create_lead_from_incoming_email",
+			],
+		),
+		"email_templates": frappe.db.count("Email Template"),
+		"web_forms": [
+			{"title": f.title, "link": f"/crm-form/{f.route}", "published": f.published}
+			for f in frappe.get_list(
+				"Web Form",
+				filters={"doc_type": ["in", ["CRM Lead", "CRM Deal"]]},
+				fields=["title", "route", "published"],
+				ignore_permissions=True,
+			)
+		],
+		"ad_lead_syncing": frappe.db.count("Lead Sync Source", {"enabled": 1}),
+		"users": [u for u in users if not u.endswith(".demo@example.com")],
+		"invitations": frappe.get_list("CRM Invitation", fields=["email", "role", "status"]),
+		"lead_assignment_rules": frappe.get_list(
+			"Assignment Rule", filters={"document_type": "CRM Lead", "disabled": 0}, pluck="name"
+		),
+		"leads": frappe.db.count("CRM Lead"),
+		"deals": frappe.db.count("CRM Deal"),
+		"sample_data": _sample_data_left() if get_demo_state()["demo_data_created"] else None,
+	}
+
+
+def _sample_data_left() -> dict[str, Any]:
+	"""The sample records the CRM made that still exist, by name, so nothing else is taken for one."""
+	from crm.demo.api import DEMO_DEALS_KEY, DEMO_LEADS_KEY
+	from crm.demo.users import DEMO_USER_EMAILS
+
+	leads = json.loads(frappe.db.get_default(DEMO_LEADS_KEY) or "[]")
+	deals = json.loads(frappe.db.get_default(DEMO_DEALS_KEY) or "{}").get("deals", [])
+	return {
+		"leads": frappe.get_all("CRM Lead", filters={"name": ["in", leads or [""]]}, pluck="name"),
+		"deals": frappe.get_all("CRM Deal", filters={"name": ["in", deals or [""]]}, pluck="name"),
+		"users": frappe.get_all("User", filters={"name": ["in", DEMO_USER_EMAILS]}, pluck="name"),
+	}
+
+
+def _bullets(lines: list[str]) -> str:
+	return "\n".join(f"• {line}" for line in lines)
+
+
+def _form_prompt(args: dict) -> str:
+	fields = args.get("fields") or []
+	if not fields:
+		return (
+			f'Publish "{args.get("title")}" with the standard contact fields: name, email, phone and company.'
+		)
+	lines = [
+		f"{f.get('label') or f.get('field')}{' (required)' if f.get('required') else ''}" for f in fields
+	]
+	return f'Publish "{args.get("title")}" with these {len(fields)} fields:\n{_bullets(lines)}'
+
+
+@tool(requires_confirmation=True, confirm_prompt=_form_prompt)
+def publish_web_form(
+	title: str,
+	fields: list[FormField] | None = None,
+	description: str = "",
+	success_message: str = "Thanks, we'll be in touch soon.",
+	*,
+	ctx: ToolContext,
+) -> dict[str, Any]:
+	"""Create and publish a website form whose submissions become CRM leads. `fields` are lead
+	fieldnames in the order visitors see them, with the label to show; leave it out for the
+	standard contact fields. Returns the form's link."""
+	from crm.api.form import save_form
+
+	route = _free_route(frappe.scrub(title).replace("_", "-") or "contact-us")
+	form = {
+		"title": title,
+		"route": route,
+		"document_type": "CRM Lead",
+		"description": description,
+		"success_message": success_message,
+		"published": 1,
+	}
+	if fields:
+		form["fields"] = [
+			{
+				"fieldname": (f.field if isinstance(f, FormField) else f["field"]),
+				"label": (f.label if isinstance(f, FormField) else f.get("label")),
+				"reqd": int(bool(f.required if isinstance(f, FormField) else f.get("required"))),
+				"placeholder": "",
+			}
+			for f in fields
+		]
+	saved = save_form(None, form)
+	return {"form": saved["name"], "link": f"/crm-form/{saved['route']}"}
+
+
+def _free_route(route: str) -> str:
+	candidate, n = route, 2
+	while frappe.db.exists("Web Form", {"route": candidate}):
+		candidate, n = f"{route}-{n}", n + 1
+	return candidate
+
+
+def _fields_prompt(args: dict) -> str:
+	lines = []
+	for f in args.get("fields") or []:
+		kind = f.get("kind")
+		if kind == "dropdown":
+			kind = f"dropdown with {', '.join(f.get('choices') or [])}"
+		lines.append(f"{f.get('label')}: {kind}")
+	return f"Add {len(lines)} new field{'s' if len(lines) != 1 else ''} to leads:\n{_bullets(lines)}"
+
+
+@tool(requires_confirmation=True, confirm_prompt=_fields_prompt)
+def add_lead_fields(fields: list[NewField], *, ctx: ToolContext) -> dict[str, Any]:
+	"""Add new fields to leads, such as answers a website form collects that leads don't have yet.
+	A dropdown needs its choices. Returns each new field's fieldname."""
+	meta = frappe.get_meta("CRM Lead")
+	added = {}
+	for f in fields:
+		f = f if isinstance(f, NewField) else NewField(**f)
+		fieldname = (
+			re.sub(r"_+", "_", re.sub(r"[^a-z0-9_]", "", frappe.scrub(f.label)))[:40].strip("_") or "field"
+		)
+		if meta.has_field(fieldname) or meta.has_field(f"custom_{fieldname}"):
+			frappe.throw(_("Leads already have a field called {0}.").format(f.label))
+		doc = frappe.get_doc(
+			{
+				"doctype": "Custom Field",
+				"dt": "CRM Lead",
+				"fieldname": fieldname,
+				"label": f.label,
+				"fieldtype": FIELD_TYPES[f.kind],
+				"options": "\n".join(f.choices) if f.kind == "dropdown" else None,
+			}
+		).insert()
+		added[f.label] = doc.fieldname
+	return {"added": added}
+
+
+@tool(
+	requires_confirmation=True,
+	confirm_prompt=lambda args: (
+		f"Connect {args.get('email')} ({args.get('provider')}) to the CRM, for sending and receiving, "
+		"and make it the default. The password stays on your site."
+	),
+)
+def connect_email(
+	provider: Literal["GMail", "Outlook", "Yahoo", "Yandex"], email: str, password: str, *, ctx: ToolContext
+) -> str:
+	"""Connect a mailbox for sending and receiving. `password` is the secret: reference the chat's
+	password box returned, never the password itself."""
+	from flow.lib.secrets import reveal
+
+	from crm.api.settings import create_email_account
+
+	create_email_account(
+		{
+			"service": provider,
+			"email_id": email,
+			"email_account_name": email,
+			"password": reveal(password),
+			"enable_incoming": 1,
+			"enable_outgoing": 1,
+			"default_incoming": 1,
+			"default_outgoing": 1,
+		}
+	)
+	return f"Connected {email}."
+
+
+def _invite_prompt(args: dict) -> str:
+	return f"Invite these people to the CRM as {args.get('role')}s:\n{_bullets(args.get('emails') or [])}"
+
+
+@tool(requires_confirmation=True, confirm_prompt=_invite_prompt)
+def invite_team(
+	emails: list[str], role: Literal["Sales User", "Sales Manager", "System Manager"], *, ctx: ToolContext
+) -> str:
+	"""Email an invitation to join the CRM to each address, all with the same role."""
+	from crm.api import invite_by_email
+
+	invite_by_email(",".join(emails), role)
+	return f"Invited {len(emails)} as {role}."
+
+
+def _assign_prompt(args: dict) -> str:
+	how = "taking turns" if args.get("rule") == "Round Robin" else "to whoever has the fewest"
+	return f"Hand out new leads to these people, {how}:\n{_bullets(args.get('users') or [])}"
+
+
+@tool(requires_confirmation=True, confirm_prompt=_assign_prompt)
+def assign_new_leads(
+	users: list[str], rule: Literal["Round Robin", "Load Balancing"] = "Round Robin", *, ctx: ToolContext
+) -> str:
+	"""Assign each new lead automatically to one of `users` (their user emails)."""
+	name, n = "New leads", 2
+	while frappe.db.exists("Assignment Rule", name):
+		name, n = f"New leads {n}", n + 1
+	frappe.get_doc(
+		{
+			"doctype": "Assignment Rule",
+			"name": name,
+			"assignment_rule_name": name,
+			"document_type": "CRM Lead",
+			"rule": rule,
+			"priority": 1,
+			"users": [{"user": user} for user in users],
+			"assign_condition": 'status == "New"',
+			"assign_condition_json": '[["status","==","New"]]',
+			"description": "Hands out new leads to the sales team.",
+			"assignment_days": [
+				{"day": day}
+				for day in ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+			],
+		}
+	).insert()
+	return f"Created the assignment rule {name}."
+
+
+@tool(
+	requires_confirmation=True,
+	confirm_prompt=lambda args: f"Set the CRM currency to {args.get('currency')}. It can't be changed later.",
+)
+def set_currency(currency: str, *, ctx: ToolContext) -> str:
+	"""Set the currency deal values are in, such as INR or USD. It can only be set once."""
+	if not frappe.db.exists("Currency", currency):
+		frappe.throw(_("There's no currency {0}.").format(currency))
+	settings = frappe.get_single("FCRM Settings")
+	if settings.currency:
+		frappe.throw(_("The currency is already set to {0}.").format(settings.currency))
+	settings.currency = currency
+	settings.save()
+	return f"Currency set to {currency}."
+
+
+@tool(
+	requires_confirmation=True,
+	confirm_prompt=lambda args: "Remove the sample leads, deals, notes, tasks and demo users that came with the CRM. Anything you added stays.",
+)
+def clear_sample_data(*, ctx: ToolContext) -> str:
+	"""Remove the sample data a new CRM starts with."""
+	from crm.demo.api import clear_demo_data
+
+	clear_demo_data()
+	return "Sample data removed."

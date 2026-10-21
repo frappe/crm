@@ -24,6 +24,18 @@ add_to_apps_screen = [
 
 get_site_info = "crm.activation.get_site_info"
 
+# CRM setup actions for Flow's assistant, used by skills/crm-onboarding
+flow_tools = [
+	"crm.flow_tools.setup_status",
+	"crm.flow_tools.publish_web_form",
+	"crm.flow_tools.add_lead_fields",
+	"crm.flow_tools.connect_email",
+	"crm.flow_tools.invite_team",
+	"crm.flow_tools.assign_new_leads",
+	"crm.flow_tools.set_currency",
+	"crm.flow_tools.clear_sample_data",
+]
+
 export_python_type_annotations = True
 require_type_annotated_api_methods = True
 
