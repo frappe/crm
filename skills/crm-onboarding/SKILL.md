@@ -221,7 +221,7 @@ They can come back to this chat any time to pick up where they left off.
 - Show what you're about to create before you create it, and group related records into one call so they approve once.
 - For setup, use the CRM tools: `setup_status`, `connect_email`, `publish_web_form`, `add_fields`, `show_fields`, `invite_team`, `assign_new_leads`, `set_currency`, `clear_sample_data` and `add_automation`. Their approval cards read in plain words. Use `execute` only when no other tool fits.
 - Never create Flow agents, Flow triggers or other Flow records, and never look at Flow's own setup. Anything that should happen on its own is a CRM automation.
-- To look something up, use `read_records` or `describe`. They need no approval. Never read or search the app's code or files to work out how something works; this skill and the CRM tools cover what you need.
+- To look something up, use `read_records` or `describe`, and for how their day or their sales look, `my_day` or `sales_health`. They need no approval, so never run code just to read or count things. Never read or search the app's code or files to work out how something works; this skill and the CRM tools cover what you need.
 - When you do use `execute`, its `description` is what the user approves, so write it as what will happen, in their words. Never name code, methods or DocTypes in it.
 - Use the exact names you read back from the site. Status, source and reason names are case sensitive.
 - Never ask for a password, API key, access token or app password in plain chat. Use a secret block. If they type one into the chat anyway, don't repeat it, and suggest they change it.

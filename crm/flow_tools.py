@@ -872,3 +872,205 @@ def _automation_action(s: AutomationStep, record: str, me: str) -> tuple[str, di
 	from crm.automation.reference_flows import forecast_defaults
 
 	return "ConvertLeadToDeal", {"if_converted": "Return Existing", "deal": forecast_defaults()}
+
+
+# what a day and a pipeline look like, read with the user's own permissions and never changed
+OPEN_TASK = ["not in", ["Done", "Canceled"]]
+QUIET_DAYS = 14
+
+
+@tool
+def my_day(*, ctx: ToolContext) -> dict[str, Any]:
+	"""What the signed-in user has on today: their tasks due today or overdue, leads and deals of
+	theirs waiting on a reply, their deals closing in the next 7 days or gone quiet for 2 weeks,
+	and leads they got since yesterday. Each item has a `link`. Needs no approval."""
+	user, today = ctx.user, frappe.utils.getdate()
+	tomorrow = frappe.utils.add_days(today, 1)
+	leads = frappe.get_list(
+		"CRM Lead",
+		filters={"lead_owner": user, "converted": 0},
+		fields=["name", "lead_name", "organization", "creation"],
+		limit=500,
+	)
+	deals = _open_deals({"deal_owner": user})
+	return {
+		"tasks": [
+			{**_record(t.reference_doctype, t.reference_docname), "task": t.title, "due": str(t.due_date)}
+			for t in frappe.get_list(
+				"CRM Task",
+				filters={"assigned_to": user, "status": OPEN_TASK, "due_date": ["<", tomorrow]},
+				fields=["title", "due_date", "reference_doctype", "reference_docname"],
+				order_by="due_date asc",
+				limit=20,
+			)
+		],
+		"waiting_on_reply": _waiting_on_reply(
+			[("CRM Lead", lead.name) for lead in leads] + [("CRM Deal", deal.name) for deal in deals]
+		),
+		"deals_closing_this_week": [
+			{**_deal(d), "closes": str(d.expected_closure_date)}
+			for d in deals
+			if d.expected_closure_date and today <= d.expected_closure_date <= frappe.utils.add_days(today, 7)
+		],
+		"quiet_deals": [
+			_deal(d)
+			for d in deals
+			if frappe.utils.getdate(d.modified) < frappe.utils.add_days(today, -QUIET_DAYS)
+		][:10],
+		"new_leads": [
+			_lead(lead)
+			for lead in leads
+			if frappe.utils.getdate(lead.creation) >= frappe.utils.add_days(today, -1)
+		],
+	}
+
+
+@tool
+def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
+	"""How sales are going, for everything the user can see: open deals by stage with their value,
+	this month against last month (new leads, leads turned into deals, deals won and lost),
+	deals gone quiet for 2 weeks and overdue tasks. Values are in the CRM's currency. Needs no
+	approval."""
+	today = frappe.utils.getdate()
+	this_month = frappe.utils.get_first_day(today)
+	last_month = frappe.utils.add_months(this_month, -1)
+	stages = frappe.get_all("CRM Deal Status", fields=["name", "type"], order_by="position asc")
+	deals = _open_deals({})
+	pipeline = []
+	for stage in stages:
+		if stage.type in ("Won", "Lost"):
+			continue
+		rows = [d for d in deals if d.status == stage.name]
+		pipeline.append({"stage": stage.name, "deals": len(rows), "value": sum(_value(d) for d in rows)})
+	return {
+		"currency": frappe.db.get_single_value("FCRM Settings", "currency"),
+		"open_pipeline": pipeline,
+		"this_month": _month(this_month, today, stages),
+		"last_month": _month(last_month, frappe.utils.add_days(this_month, -1), stages),
+		"quiet_deals": len(
+			[d for d in deals if frappe.utils.getdate(d.modified) < frappe.utils.add_days(today, -QUIET_DAYS)]
+		),
+		"overdue_tasks": len(
+			frappe.get_list(
+				"CRM Task",
+				filters={"status": OPEN_TASK, "due_date": ["<", today]},
+				pluck="name",
+				limit=1000,
+			)
+		),
+	}
+
+
+def _open_deals(filters: dict[str, Any]) -> list:
+	closed = frappe.get_all("CRM Deal Status", filters={"type": ["in", ["Won", "Lost"]]}, pluck="name")
+	return frappe.get_list(
+		"CRM Deal",
+		filters={**filters, "status": ["not in", closed or [""]]},
+		fields=[
+			"name",
+			"organization",
+			"lead_name",
+			"status",
+			"deal_value",
+			"expected_deal_value",
+			"exchange_rate",
+			"expected_closure_date",
+			"modified",
+		],
+		limit=1000,
+	)
+
+
+def _month(start, end, stages) -> dict[str, Any]:
+	"""New leads, conversions, and deals won and lost between two dates."""
+	won = [s.name for s in stages if s.type == "Won"] or [""]
+	lost = [s.name for s in stages if s.type == "Lost"] or [""]
+	between = ["between", [start, end]]
+	won_deals = frappe.get_list(
+		"CRM Deal",
+		filters={"status": ["in", won], "closed_date": between},
+		fields=["deal_value", "expected_deal_value", "exchange_rate"],
+		limit=1000,
+	)
+	return {
+		"new_leads": frappe.db.count("CRM Lead", {"creation": between}) if _can_read("CRM Lead") else None,
+		"leads_turned_into_deals": len(
+			frappe.get_list("CRM Deal", filters={"lead": ["is", "set"], "creation": between}, pluck="name")
+		),
+		"deals_won": len(won_deals),
+		"won_value": sum(_value(d) for d in won_deals),
+		"deals_lost": len(
+			frappe.get_list(
+				"CRM Deal", filters={"status": ["in", lost], "closed_date": between}, pluck="name"
+			)
+		),
+	}
+
+
+def _can_read(doctype: str) -> bool:
+	return frappe.has_permission(doctype, "read")
+
+
+def _value(deal) -> float:
+	return (deal.deal_value or deal.expected_deal_value or 0) * (deal.exchange_rate or 1)
+
+
+def _waiting_on_reply(records: list[tuple[str, str]]) -> list[dict[str, Any]]:
+	"""Leads and deals whose latest email came from them, so the next move is ours."""
+	waiting = []
+	for doctype in ("CRM Lead", "CRM Deal"):
+		names = [name for dt, name in records if dt == doctype]
+		if not names:
+			continue
+		latest = {}
+		for c in frappe.get_all(
+			"Communication",
+			filters={
+				"reference_doctype": doctype,
+				"reference_name": ["in", names],
+				"communication_type": "Communication",
+			},
+			fields=["reference_name", "sent_or_received", "subject", "communication_date"],
+			order_by="communication_date desc",
+		):
+			latest.setdefault(c.reference_name, c)
+		waiting += [
+			{**_record(doctype, name), "subject": c.subject, "since": str(c.communication_date)}
+			for name, c in latest.items()
+			if c.sent_or_received == "Received"
+		]
+	return waiting[:20]
+
+
+def _record(doctype: str | None, name: str | None) -> dict[str, Any]:
+	if doctype == "CRM Deal" and name:
+		return _deal(
+			frappe.db.get_value(
+				"CRM Deal", name, ["name", "organization", "lead_name", "status"], as_dict=True
+			)
+		)
+	if doctype == "CRM Lead" and name:
+		return _lead(
+			frappe.db.get_value("CRM Lead", name, ["name", "lead_name", "organization"], as_dict=True)
+		)
+	return {"link": "/crm/tasks"}
+
+
+def _deal(d) -> dict[str, Any]:
+	if not d:
+		return {}
+	return {
+		"deal": d.organization or d.lead_name or d.name,
+		"stage": d.get("status"),
+		"link": f"/crm/deals/{d.name}",
+	}
+
+
+def _lead(lead) -> dict[str, Any]:
+	if not lead:
+		return {}
+	return {
+		"lead": lead.lead_name or lead.name,
+		"company": lead.organization,
+		"link": f"/crm/leads/{lead.name}",
+	}

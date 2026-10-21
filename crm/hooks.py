@@ -37,6 +37,8 @@ flow_tools = [
 	"crm.flow_tools.set_currency",
 	"crm.flow_tools.clear_sample_data",
 	"crm.flow_tools.add_automation",
+	"crm.flow_tools.my_day",
+	"crm.flow_tools.sales_health",
 ]
 
 export_python_type_annotations = True
