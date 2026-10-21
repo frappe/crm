@@ -482,7 +482,7 @@ def create_contact(doc):
 def create_deal(doc: dict):
 	"""Create a Deal from `doc`, creating its Contact and Organization from the given details when they do not exist."""
 
-  frappe.has_permission("CRM Deal", "create", throw=True)
+	frappe.has_permission("CRM Deal", "create", throw=True)
 	deal = frappe.new_doc("CRM Deal")
 
 	contact = doc.get("contact")
