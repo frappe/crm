@@ -219,6 +219,7 @@ import {
   showSettings,
   activeSettingsPage,
   settingsRecord,
+  settingsOpenCount,
   mobileSidebarOpened,
 } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast.js'
@@ -261,6 +262,7 @@ watch(
     showSettings.value = true
     activeSettingsPage.value = __(page)
     settingsRecord.value = route.query.record || ''
+    settingsOpenCount.value++
     const { settings, record, ...query } = route.query
     router.replace({ query })
   },

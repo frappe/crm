@@ -475,6 +475,9 @@ def set_currency(currency: str, *, ctx: ToolContext) -> str:
 		frappe.throw(_("The currency is already set to {0}.").format(settings.currency))
 	settings.currency = currency
 	settings.save()
+	# the site-wide default too, which Settings > Defaults shows, unless someone already chose one
+	if not frappe.db.get_single_value("System Settings", "currency"):
+		frappe.db.set_single_value("System Settings", "currency", currency)
 	return f"Currency set to {currency}."
 
 

@@ -12,3 +12,6 @@ export const activeSettingsPage = ref('')
 
 // a record to open on the Settings page, such as the automation the assistant just added
 export const settingsRecord = ref('')
+
+// bumped when a link opens Settings, so the page reloads what something else just changed
+export const settingsOpenCount = ref(0)
