@@ -235,6 +235,19 @@ const props = defineProps({
 
 const route = useRoute()
 
+// ?settings=<English page label> opens Settings on that page, e.g. ?settings=Accounts
+watch(
+  () => route.query.settings,
+  (page) => {
+    if (!page) return
+    showSettings.value = true
+    activeSettingsPage.value = __(page)
+    const { settings, ...query } = route.query
+    router.replace({ query })
+  },
+  { immediate: true },
+)
+
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
