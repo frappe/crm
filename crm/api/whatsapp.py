@@ -223,7 +223,7 @@ def guard_recipient_change(
 	showing on the record after the change, so the user has to know before it happens."""
 	if not old_number or normalize_phone(old_number) == normalize_phone(new_number):
 		return
-	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended():
+	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended() or not is_whatsapp_installed():
 		return
 
 	count = count_conversation(doctype, docname, old_number)
