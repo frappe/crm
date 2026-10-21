@@ -93,7 +93,7 @@ import {
   type FlowChange,
 } from '@/utils/assistantChanges'
 import { reloadDocument } from '@/data/document'
-import { Button } from 'frappe-ui'
+import { Button, toast } from 'frappe-ui'
 import { FloatingWindow } from 'frappe-ui/experimental'
 import type { WindowMode } from 'frappe-ui/experimental'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -161,7 +161,7 @@ function keepCrmLinksHere(): void {
   )
 }
 
-// after each turn, show what the assistant changed: the record, its list or its Settings page
+// after each turn, show what the assistant changed: the record or its list, or offer its Settings page
 function showChanges(event: MessageEvent): void {
   if (event.source !== frame.value?.contentWindow) return
   if (event.data?.type !== 'flow:changes') return
@@ -172,7 +172,15 @@ function showChanges(event: MessageEvent): void {
   const destination = whereToGo(changes)
   if (!destination) return
   if ('settings' in destination) {
-    router.push({ query: { ...route.query, settings: destination.settings } })
+    // Settings is a dialog, and opening it on its own would cover the chat mid-conversation
+    const page = destination.settings
+    toast.success(__('Updated {0} in Settings', [__(page)]), {
+      action: {
+        label: __('Open'),
+        onClick: () =>
+          router.push({ query: { ...route.query, settings: page } }),
+      },
+    })
   } else {
     router.push(destination.path)
   }
