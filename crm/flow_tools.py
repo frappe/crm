@@ -880,12 +880,13 @@ QUIET_DAYS = 14
 
 
 @tool
-def my_day(*, ctx: ToolContext) -> dict[str, Any]:
+def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 	"""What the signed-in user has on today: their tasks due today or overdue, leads and deals of
 	theirs waiting on a reply, their deals closing in the next 7 days or gone quiet for 2 weeks,
-	and leads they got since yesterday. Each item has a `link`. Needs no approval."""
+	and leads they got since yesterday. `days` widens the tasks to those due in that many days
+	from today, such as 7 for the week. Each item has a `link`. Needs no approval."""
 	user, today = ctx.user, frappe.utils.getdate()
-	tomorrow = frappe.utils.add_days(today, 1)
+	until = frappe.utils.add_days(today, min(max(days, 1), 31))
 	leads = frappe.get_list(
 		"CRM Lead",
 		filters={"lead_owner": user, "converted": 0},
@@ -898,10 +899,10 @@ def my_day(*, ctx: ToolContext) -> dict[str, Any]:
 			{**_record(t.reference_doctype, t.reference_docname), "task": t.title, "due": str(t.due_date)}
 			for t in frappe.get_list(
 				"CRM Task",
-				filters={"assigned_to": user, "status": OPEN_TASK, "due_date": ["<", tomorrow]},
+				filters={"assigned_to": user, "status": OPEN_TASK, "due_date": ["<", until]},
 				fields=["title", "due_date", "reference_doctype", "reference_docname"],
 				order_by="due_date asc",
-				limit=20,
+				limit=50,
 			)
 		],
 		"waiting_on_reply": _waiting_on_reply(
@@ -929,8 +930,8 @@ def my_day(*, ctx: ToolContext) -> dict[str, Any]:
 def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 	"""How sales are going, for everything the user can see: open deals by stage with their value,
 	this month against last month (new leads, leads turned into deals, deals won and lost),
-	deals gone quiet for 2 weeks and overdue tasks. Values are in the CRM's currency. Needs no
-	approval."""
+	deals closing in the next 30 days, deals gone quiet for 2 weeks and overdue tasks. Values are
+	in the CRM's currency. Needs no approval."""
 	today = frappe.utils.getdate()
 	this_month = frappe.utils.get_first_day(today)
 	last_month = frappe.utils.add_months(this_month, -1)
@@ -947,6 +948,14 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 		"open_pipeline": pipeline,
 		"this_month": _month(this_month, today, stages),
 		"last_month": _month(last_month, frappe.utils.add_days(this_month, -1), stages),
+		"closing_soon": [
+			{**_deal(d), "closes": str(d.expected_closure_date), "value": _value(d)}
+			for d in sorted(
+				(d for d in deals if d.expected_closure_date),
+				key=lambda d: d.expected_closure_date,
+			)
+			if today <= d.expected_closure_date <= frappe.utils.add_days(today, 30)
+		][:10],
 		"quiet_deals": len(
 			[d for d in deals if frappe.utils.getdate(d.modified) < frappe.utils.add_days(today, -QUIET_DAYS)]
 		),

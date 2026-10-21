@@ -1,6 +1,11 @@
 ---
 name: crm-onboarding
 starter: Set up my CRM
+prompts:
+  - "Connect my email"
+  - "Add a form to my website"
+  - "Invite my team"
+  - "Set up a reminder"
 description: Set up Frappe CRM for a new team through a short conversation, then bring in their data. Use when someone wants to set up, configure or get started with their CRM, connect email, add a website form, set up lead assignment, change their sales pipeline or lead stages, import leads, deals, contacts or organizations from a CSV or spreadsheet, invite their team, or set up automations such as reminders, notifications, follow-ups, lead scoring, assigning or converting leads.
 ---
 
@@ -57,7 +62,9 @@ Setup changes are site-wide. They need the Sales Manager or System Manager role.
 
 ## 2. A few questions first
 
-One per message, with the options shown:
+If they ask for one step, such as "Connect my email", "Add a form to my website", "Invite my team" or "Set up a reminder", skip these questions and go straight to that step: Connect your email, Website form, Invite your team or Automations. When it's done, ask if they'd like to set up anything else, with the steps left as options.
+
+Otherwise ask these, one per message, with the options shown:
 
 1. **What do you sell?** Options: Software or SaaS, Services or consulting, Physical products, Real estate. Then, if it isn't clear, who they sell to: Businesses, Consumers, Both. Use this to suggest stages, sources and lost reasons that fit. Don't save it anywhere.
 2. **Is it just you, or a team?** Options: Just me, A small team (2–10), A bigger team (10+).
