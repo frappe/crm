@@ -182,6 +182,8 @@ def split_lead(merge_log_name: str):
 		frappe.throw(_("Source lead {0} is not merged into {1}").format(source, target))
 	if target_doc.merged_into:
 		frappe.throw(_("Split the merge of {0} into {1} first").format(target, target_doc.merged_into))
+	if target_doc.converted:
+		frappe.throw(_("Lead {0} is converted to a deal, so this merge cannot be split").format(target))
 
 	_restore_fields(target_doc, source_doc, field_snapshot)
 
