@@ -167,7 +167,7 @@
   },
   {
    "default": "1",
-   "description": "Update the modified timestamp on new email communication & comment for leads & deals",
+   "description": "Update the modified timestamp on new emails, WhatsApp messages & comments for leads & deals",
    "fieldname": "update_timestamp_on_new_communication",
    "fieldtype": "Check",
    "label": "Update timestamp on new communication"
@@ -224,7 +224,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-28 07:10:34.454744",
+ "modified": "2026-10-21 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

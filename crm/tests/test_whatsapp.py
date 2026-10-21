@@ -23,6 +23,7 @@ from crm.api.whatsapp import (
 	is_whatsapp_enabled,
 	is_whatsapp_installed,
 	notify_agent,
+	touch_reference,
 	validate,
 	validate_access,
 )
@@ -232,6 +233,79 @@ class TestWhatsAppHooks(FrappeTestCase):
 			_link_profile_to_crm_entities(frappe._dict(to="PROFILE-1"))
 
 		mock_log.assert_called_once()
+
+
+class TestTouchReference(FrappeTestCase):
+	def setUp(self):
+		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 1)
+		self.lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Touch", "mobile_no": "+91 98765 43299"}
+		).insert(ignore_permissions=True)
+		frappe.db.set_value(
+			"CRM Lead", self.lead.name, "modified", "2026-01-01 00:00:00", update_modified=False
+		)
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _modified(self):
+		return str(frappe.db.get_value("CRM Lead", self.lead.name, "modified"))
+
+	def _message(self, **values):
+		return frappe._dict(
+			{
+				"direction": "Incoming",
+				"reference_doctype": "CRM Lead",
+				"reference_docname": self.lead.name,
+				**values,
+			}
+		)
+
+	def test_received_message_bumps_the_lead(self):
+		touch_reference(self._message())
+		self.assertNotEqual(self._modified(), "2026-01-01 00:00:00")
+
+	def test_sent_message_bumps_the_lead(self):
+		touch_reference(self._message(direction="Outgoing"))
+		self.assertNotEqual(self._modified(), "2026-01-01 00:00:00")
+
+	def test_message_on_another_doctype_is_ignored(self):
+		with patch("frappe.db.set_value") as mock_set:
+			touch_reference(self._message(reference_doctype="Contact"))
+		mock_set.assert_not_called()
+
+	def test_setting_off_leaves_the_lead(self):
+		frappe.db.set_single_value("FCRM Settings", "update_timestamp_on_new_communication", 0)
+		touch_reference(self._message())
+		self.assertEqual(self._modified(), "2026-01-01 00:00:00")
+
+	def test_reply_submitted_from_the_webhook_bumps_the_lead(self):
+		account = frappe.get_doc(
+			{
+				"doctype": "WA Account",
+				"account_name": f"_Test Touch {frappe.generate_hash(length=5)}",
+				"status": "Active",
+				"phone_id": frappe.generate_hash(length=8),
+			}
+		).insert()
+		profile = frappe.get_doc(
+			{"doctype": "WA Profile", "whatsapp_account": account.name, "phone_number": self.lead.mobile_no}
+		).insert()
+		message = frappe.get_doc(
+			{
+				"doctype": "WA Message",
+				"direction": "Incoming",
+				"status": "Sent",
+				"whatsapp_account": account.name,
+				"to": profile.name,
+				"message": "Hi",
+			}
+		)
+		message.flags.ignore_permissions = True
+		message.submit()
+
+		self.assertEqual(message.reference_docname, self.lead.name)
+		self.assertNotEqual(self._modified(), "2026-01-01 00:00:00")
 
 
 class TestIsWhatsAppEnabled(FrappeTestCase):

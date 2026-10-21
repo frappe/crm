@@ -269,6 +269,7 @@ doc_events = {
 	},
 	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
+		"on_submit": ["crm.api.whatsapp.touch_reference"],
 		"on_update": [
 			"crm.api.whatsapp.notify_agent",
 			"crm.automation.events.on_whatsapp_message",
