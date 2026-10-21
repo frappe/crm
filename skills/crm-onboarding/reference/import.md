@@ -68,10 +68,10 @@ Use `create` in batches of up to 50 records. A batch is all or nothing: if one r
 
 ### An attached file, or more than about 200 rows
 
-Use Frappe's Data Import, the same importer the CRM's own setup page uses. It runs in the background and logs each row.
+Use Frappe's Data Import, the same importer the CRM's own setup page uses. It runs in the background and logs each row. It works for leads (CRM Lead), contacts (Contact) and organizations (CRM Organization). Deals need their contact linked, which Data Import can't do, so for deals ask them to paste the rows instead and create them with `create_deal` as above, a batch at a time.
 
 1. Find the uploaded file: `read_records("File", {"file_name": "<their file name>"}, fields=["name", "file_url"], order_by="creation desc", limit=1)`.
-2. Create the import: `create("Data Import", [{"reference_doctype": "CRM Lead", "import_type": "Insert New Records", "mute_emails": 1, "import_file": "<file_url>"}])`.
+2. Create the import for the record type they chose: `create("Data Import", [{"reference_doctype": "<CRM Lead, Contact or CRM Organization>", "import_type": "Insert New Records", "mute_emails": 1, "import_file": "<file_url>"}])`.
 3. Check the importer's column matching with `execute`:
    ```python
    result = frappe.call("frappe.core.doctype.data_import.data_import.get_preview_from_template", data_import="<name>", import_file="<file_url>")

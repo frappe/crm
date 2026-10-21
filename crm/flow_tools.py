@@ -23,6 +23,16 @@ FIELD_TYPES = {
 }
 
 
+# a simple form's fields when none are given: name, email, phone and company
+DEFAULT_FORM_FIELDS = [
+	{"field": "first_name", "label": "First name", "required": True},
+	{"field": "last_name", "label": "Last name", "required": False},
+	{"field": "email", "label": "Email", "required": True},
+	{"field": "mobile_no", "label": "Phone", "required": False},
+	{"field": "organization", "label": "Company", "required": False},
+]
+
+
 class FormField(BaseModel):
 	field: str
 	label: str | None = None
@@ -139,16 +149,15 @@ def publish_web_form(
 		"success_message": success_message,
 		"published": 1,
 	}
-	if fields:
-		form["fields"] = [
-			{
-				"fieldname": (f.field if isinstance(f, FormField) else f["field"]),
-				"label": (f.label if isinstance(f, FormField) else f.get("label")),
-				"reqd": int(bool(f.required if isinstance(f, FormField) else f.get("required"))),
-				"placeholder": "",
-			}
-			for f in fields
-		]
+	form["fields"] = [
+		{
+			"fieldname": (f.field if isinstance(f, FormField) else f["field"]),
+			"label": (f.label if isinstance(f, FormField) else f.get("label")),
+			"reqd": int(bool(f.required if isinstance(f, FormField) else f.get("required"))),
+			"placeholder": "",
+		}
+		for f in fields or DEFAULT_FORM_FIELDS
+	]
 	saved = save_form(None, form)
 	return {"form": saved["name"], "link": f"/crm-form/{saved['route']}"}
 
@@ -235,12 +244,18 @@ def _invite_prompt(args: dict) -> str:
 @tool(requires_confirmation=True, confirm_prompt=_invite_prompt)
 def invite_team(
 	emails: list[str], role: Literal["Sales User", "Sales Manager", "System Manager"], *, ctx: ToolContext
-) -> str:
-	"""Email an invitation to join the CRM to each address, all with the same role."""
+) -> dict[str, list[str]]:
+	"""Email an invitation to join the CRM to each address, all with the same role. Returns who was
+	invited, and who was skipped because they're already on the CRM or already invited."""
 	from crm.api import invite_by_email
 
-	invite_by_email(",".join(emails), role)
-	return f"Invited {len(emails)} as {role}."
+	result = invite_by_email(",".join(emails), role) or {}
+	# people already on the CRM or already invited are skipped, so say who actually got one
+	return {
+		"invited": result.get("to_invite", []),
+		"already_on_the_crm": result.get("existing_members", []),
+		"already_invited": result.get("existing_invites", []),
+	}
 
 
 def _assign_prompt(args: dict) -> str:

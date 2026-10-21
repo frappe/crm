@@ -299,8 +299,13 @@ function scrollActiveIntoView() {
   })
 }
 
-watch(activeSettingsPage, (activePage) => {
-  setActiveTab(activePage)
-  scrollActiveIntoView()
-})
+// immediate: a page asked for before Settings mounted, e.g. a ?settings= link, still opens
+watch(
+  activeSettingsPage,
+  (activePage) => {
+    setActiveTab(activePage)
+    scrollActiveIntoView()
+  },
+  { immediate: true },
+)
 </script>
