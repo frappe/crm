@@ -105,6 +105,7 @@
 // Generic multi-source (users / contacts / free) multi-select email-like input
 import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
+import { storeToRefs } from 'pinia'
 import { createResource } from 'frappe-ui'
 import {
   ComboboxRoot,
@@ -157,10 +158,9 @@ const query = ref('')
 const showOptions = ref(false)
 const tempSelection = ref(null)
 
-// Users data — use the store's `allUsers` computed so we get the full
-// list once the background fetch lands, falling back to the smaller
-// crm-users-only payload during initial load.
-const { users, allUsers } = usersStore()
+// storeToRefs keeps `allUsers` reactive, so the full list shows up once the
+// background fetch lands; plain destructuring would unwrap it to a stale array.
+const { allUsers } = storeToRefs(usersStore())
 
 // Contacts resource (only if needed)
 const filterOptions = ref(null)

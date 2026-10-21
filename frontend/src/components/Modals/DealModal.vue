@@ -110,25 +110,6 @@ const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
 
-watch(
-  [chooseExistingOrganization, chooseExistingContact],
-  ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        if (section.name === 'organization_section') {
-          section.hidden = !organization
-        } else if (section.name === 'organization_details_section') {
-          section.hidden = organization
-        } else if (section.name === 'contact_section') {
-          section.hidden = !contact
-        } else if (section.name === 'contact_details_section') {
-          section.hidden = contact
-        }
-      })
-    })
-  },
-)
-
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
   cache: ['QuickEntry', 'CRM Deal'],
@@ -168,6 +149,26 @@ const tabs = createResource({
     })
   },
 })
+
+watch(
+  [chooseExistingOrganization, chooseExistingContact, () => tabs.data],
+  ([organization, contact]) => {
+    tabs.data?.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        if (section.name === 'organization_section') {
+          section.hidden = !organization
+        } else if (section.name === 'organization_details_section') {
+          section.hidden = organization
+        } else if (section.name === 'contact_section') {
+          section.hidden = !contact
+        } else if (section.name === 'contact_details_section') {
+          section.hidden = contact
+        }
+      })
+    })
+  },
+  { immediate: true },
+)
 
 const dealStatuses = computed(() => statusOptions('deal'))
 
@@ -241,6 +242,8 @@ function openQuickEntryModal() {
 onMounted(() => {
   deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
+  chooseExistingOrganization.value = Boolean(props.defaults.organization)
+  chooseExistingContact.value = Boolean(props.defaults.contact)
 
   if (!deal.doc.deal_owner) {
     deal.doc.deal_owner = getUser().name

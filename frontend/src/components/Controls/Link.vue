@@ -124,29 +124,20 @@ const value = computed({
 const autocomplete = ref(null)
 const text = ref('')
 
-watchDebounced(
-  () => autocomplete.value?.query,
-  (val) => {
-    val = val || ''
-    if (text.value === val) return
-    text.value = val
-    reload(val)
-  },
-  { debounce: 300, immediate: true },
-)
-
-watchDebounced(
-  () => props.doctype,
-  () => reload(''),
-  { debounce: 300, immediate: true },
-)
-
 // Compared by content: callers often pass inline objects, which are new on
 // every parent render and would otherwise force a reload each time.
+const searchSource = computed(() =>
+  JSON.stringify([props.doctype, props.filters, props.grouping]),
+)
+
+// One watcher, so a field sends one search when it mounts instead of one per
+// watched value. A new doctype or filter always searches again; new text only
+// searches if it differs from the last search.
 watchDebounced(
-  () => JSON.stringify([props.filters, props.grouping]),
-  () => {
-    reload('', true)
+  () => [autocomplete.value?.query || '', searchSource.value],
+  ([query, source], [, previousSource] = []) => {
+    text.value = query
+    reload(query, source !== previousSource)
   },
   { debounce: 300, immediate: true },
 )
@@ -182,12 +173,9 @@ function toOptions(data) {
 const options = createResource({
   url: 'frappe.desk.search.search_link',
   cache: [props.doctype, text.value, props.hideMe, props.filters],
-  method: 'POST',
-  params: {
-    txt: text.value,
-    doctype: props.doctype,
-    filters: props.filters,
-  },
+  // GET so the browser can reuse a search for the 60s the endpoint allows
+  method: 'GET',
+  params: searchParams(text.value, props.filters),
   transform: (data) => {
     let allData = toOptions(data)
     // When grouped this resource only holds the second group, so retaining the
@@ -210,12 +198,8 @@ const options = createResource({
 // different organizations would share one resource and show each other's data.
 const groupedOptions = createResource({
   url: 'frappe.desk.search.search_link',
-  method: 'POST',
-  params: {
-    txt: text.value,
-    doctype: props.doctype,
-    filters: props.filters,
-  },
+  method: 'GET',
+  params: searchParams(text.value, props.filters),
   transform: toOptions,
 })
 
@@ -270,13 +254,7 @@ function reload(val, force = false) {
     return
 
   if (!isGrouped.value) {
-    options.update({
-      params: {
-        txt: val,
-        doctype: props.doctype,
-        filters: props.filters,
-      },
-    })
+    options.update({ params: searchParams(val, props.filters) })
     options.reload()
     return
   }
@@ -284,25 +262,31 @@ function reload(val, force = false) {
   const baseFilters = objectFilters()
   const groupFilters = props.grouping.filters
 
+  // `!=` is null-safe in frappe (it wraps the column in ifnull), so
+  // records with the field unset land in this group rather than nowhere.
   options.update({
-    params: {
-      txt: val,
-      doctype: props.doctype,
-      // `!=` is null-safe in frappe (it wraps the column in ifnull), so
-      // records with the field unset land in this group rather than nowhere.
-      filters: { ...baseFilters, ...negateFilters(groupFilters) },
-    },
+    params: searchParams(val, {
+      ...baseFilters,
+      ...negateFilters(groupFilters),
+    }),
   })
   options.reload()
 
   groupedOptions.update({
-    params: {
-      txt: val,
-      doctype: props.doctype,
-      filters: { ...baseFilters, ...groupFilters },
-    },
+    params: searchParams(val, { ...baseFilters, ...groupFilters }),
   })
   groupedOptions.reload()
+}
+
+// A GET request sends every param as text, so filters go as JSON; without
+// this an object filter would arrive as "[object Object]".
+function searchParams(txt, filters) {
+  const params = { txt, doctype: props.doctype }
+  if (filters) {
+    params.filters =
+      typeof filters === 'string' ? filters : JSON.stringify(filters)
+  }
+  return params
 }
 
 function negateFilters(filters) {

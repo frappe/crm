@@ -228,6 +228,7 @@ def get_reference_contact(doctype, name):
 
 @frappe.whitelist()
 def get_call_log(name: str):
+	"""Return a Call Log with its caller, receiver, linked Lead or Deal, notes and tasks."""
 	if not frappe.has_permission("CRM Call Log", "read", name):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
@@ -292,6 +293,7 @@ def get_permitted_docs(doctype: str, names: list[str]) -> list[dict]:
 
 @frappe.whitelist()
 def create_lead_from_call_log(call_log: str | dict, lead_details: str | dict | None = None):
+	"""Create a Lead from a Call Log and link the call to it. `lead_details` sets Lead fields."""
 	call_log_data = frappe.parse_json(call_log or {})
 
 	if isinstance(call_log_data, str):

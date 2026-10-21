@@ -49,12 +49,7 @@
                 :class="{ 'bg-surface-gray-1': active }"
               >
                 <div class="flex gap-2 items-center w-full select-none">
-                  <Avatar
-                    :shape="'circle'"
-                    :image="user.user_image"
-                    :label="user.full_name"
-                    size="lg"
-                  />
+                  <UserAvatar :shape="'circle'" :user="user.email" size="lg" />
                   <div class="flex flex-col gap-1">
                     <div class="font-semibold text-ink-gray-7">
                       {{ user.full_name }}
@@ -92,6 +87,7 @@
 </template>
 
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import {
   Combobox,
   ComboboxInput,
@@ -99,7 +95,7 @@ import {
   ComboboxOptions,
 } from '@headlessui/vue'
 import { useDebounceFn } from '@vueuse/core'
-import { Avatar, Popover } from 'frappe-ui'
+import { Popover } from 'frappe-ui'
 import { computed, inject, ref } from 'vue'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'

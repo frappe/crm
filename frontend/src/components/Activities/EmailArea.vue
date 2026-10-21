@@ -1,84 +1,34 @@
 <template>
-  <div
-    class="cursor-pointer flex flex-col rounded-5 shadow-sm bg-surface-elevation-1 px-3 py-1.5 text-base transition-all duration-300 ease-in-out"
-  >
-    <div
-      class="-mb-0.5 flex items-center justify-between gap-2 truncate text-ink-gray-9"
-    >
-      <div class="flex items-center gap-2 truncate">
-        <span>{{ activity.data.sender_full_name }}</span>
-        <span class="sm:flex hidden text-sm text-ink-gray-5">
-          {{ '<' + activity.data.sender + '>' }}
-        </span>
-        <Badge
-          v-if="activity.communication_type == 'Automated Message'"
-          :label="__('Notification')"
-          variant="subtle"
-          theme="green"
-        />
-      </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <Badge
-          v-if="status.label"
-          :label="__(status.label)"
-          variant="subtle"
-          :theme="status.color"
-        />
-        <TimelineTimestamp :date="activity.communication_date" />
-        <div class="flex gap-0.5">
-          <Button
-            :tooltip="__('Reply')"
-            variant="ghost"
-            class="text-ink-gray-7"
-            :icon="ReplyIcon"
-            @click="reply(activity.data)"
-          />
-          <Button
-            :tooltip="__('Reply All')"
-            variant="ghost"
-            :icon="ReplyAllIcon"
-            class="text-ink-gray-7"
-            @click="reply(activity.data, true)"
-          />
-        </div>
-      </div>
-    </div>
-    <div class="flex flex-col gap-1 text-base leading-5 text-ink-gray-8">
-      <div>{{ activity.data.subject }}</div>
-      <div>
-        <span class="mr-1 text-ink-gray-5"> {{ __('To') }}: </span>
-        <span>{{ activity.data.recipients }}</span>
-        <span v-if="activity.data.cc">, </span>
-        <span v-if="activity.data.cc" class="mr-1 text-ink-gray-5">
-          {{ __('CC') }}:
-        </span>
-        <span v-if="activity.data.cc">{{ activity.data.cc }}</span>
-        <span v-if="activity.data.bcc">, </span>
-        <span v-if="activity.data.bcc" class="mr-1 text-ink-gray-5">
-          {{ __('BCC') }}:
-        </span>
-        <span v-if="activity.data.bcc">{{ activity.data.bcc }}</span>
-      </div>
-    </div>
-    <div class="border-0 border-t mt-3 mb-1 border-outline-elevation-2" />
-    <EmailContent :content="activity.data.content" />
-    <div v-if="activity.data?.attachments?.length" class="flex flex-wrap gap-2">
-      <AttachmentItem
-        v-for="a in activity.data.attachments"
-        :key="a.file_url"
-        :label="a.file_name"
-        :url="a.file_url"
+  <EmailItem :email="email">
+    <template #actions>
+      <Badge
+        v-if="activity.communication_type == 'Automated Message'"
+        :label="__('Notification')"
+        variant="subtle"
+        theme="green"
       />
-    </div>
-  </div>
+      <Button
+        :tooltip="__('Reply')"
+        variant="ghost"
+        class="text-ink-gray-7"
+        :icon="ReplyIcon"
+        @click="reply(activity.data)"
+      />
+      <Button
+        :tooltip="__('Reply All')"
+        variant="ghost"
+        :icon="ReplyAllIcon"
+        class="text-ink-gray-7"
+        @click="reply(activity.data, true)"
+      />
+    </template>
+  </EmailItem>
 </template>
 <script setup>
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
-import AttachmentItem from '@/components/AttachmentItem.vue'
-import EmailContent from '@/components/Activities/EmailContent.vue'
+import { EmailItem } from '@framework/ui/components/ActivityTimeline'
 import { Badge } from 'frappe-ui'
-import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { reactive, computed } from 'vue'
 
 const props = defineProps({
@@ -143,18 +93,23 @@ function reply(email, reply_all = false) {
     .run()
 }
 
-const status = computed(() => {
-  let _status = props.activity?.data?.delivery_status
-  let indicator_color = 'red'
-  if (['Sent', 'Clicked'].includes(_status)) {
-    indicator_color = 'green'
-  } else if (['Sending', 'Scheduled'].includes(_status)) {
-    indicator_color = 'amber'
-  } else if (['Opened', 'Read'].includes(_status)) {
-    indicator_color = 'blue'
-  } else if (_status == 'Error') {
-    indicator_color = 'red'
+const email = computed(() => {
+  const { data } = props.activity
+  return {
+    type: 'email',
+    key: props.activity.communication_date,
+    timestamp: props.activity.communication_date,
+    author: { fullname: data.sender_full_name, email: data.sender },
+    data: {
+      subject: data.subject,
+      sender: data.sender,
+      to: data.recipients,
+      cc: data.cc,
+      bcc: data.bcc,
+      content: data.content,
+      deliveryStatus: data.delivery_status,
+      attachments: data.attachments,
+    },
   }
-  return { label: _status, color: indicator_color }
 })
 </script>

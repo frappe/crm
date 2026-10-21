@@ -1,9 +1,11 @@
 <template>
   <FrappeUIProvider>
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
-    <router-view v-else-if="$route.name === 'Onboarding'" />
+    <router-view v-else-if="$route.name === 'Setup'" />
     <Layout v-else-if="session.isLoggedIn" class="isolate">
-      <router-view :key="$route.fullPath" />
+      <router-view
+        :key="$route.meta.viewKey || $route.fullPath.split('#')[0]"
+      />
     </Layout>
     <Dialogs />
     <DoctypeModals />

@@ -27,7 +27,11 @@
       />
     </template>
     <template #content>
-      <div class="flex flex-col gap-4">
+      <EmailSubjectSettings
+        :doc="user.doc"
+        @change="(field, val) => (user.doc[field] = val)"
+      />
+      <div class="flex flex-col gap-4 mt-16">
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
             {{ __('Signature') }}
@@ -44,7 +48,7 @@
           @change="(val) => (user.doc.email_signature = val)"
         />
       </div>
-      <div class="flex flex-col gap-4 mt-6">
+      <div class="flex flex-col gap-4 mt-16">
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
             {{ __('Emails') }}
@@ -118,6 +122,8 @@
 <script setup>
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import RichTextField from '@/components/RichTextField.vue'
+import EmailSubjectSettings from '@/components/Settings/Profile/EmailSubjectSettings.vue'
+import { userEmailSubjects } from '@/composables/emailSubject'
 import {
   Badge,
   Button,
@@ -177,6 +183,7 @@ function removeEmail(email) {
 function update() {
   user.save.submit(null, {
     onSuccess: () => {
+      userEmailSubjects.reload()
       toast.success(__('Email settings updated successfully'))
     },
   })

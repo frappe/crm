@@ -109,9 +109,12 @@ import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
+import {
+  getEmailSubject,
+  loadUserEmailSubjects,
+} from '@/composables/emailSubject'
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
@@ -126,7 +129,6 @@ const reload = defineModel('reload', { type: Boolean })
 const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
@@ -201,14 +203,14 @@ const attachments = useStorage(
   },
 )
 
-const subject = computed(() => {
-  let prefix = ''
-  if (doc.value?.lead_name) {
-    prefix = doc.value.lead_name
-  } else if (doc.value?.organization) {
-    prefix = doc.value.organization
-  }
-  return `${prefix} (#${doc.value.name})`
+loadUserEmailSubjects()
+
+const subject = computed(() => getEmailSubject(props.doctype, doc.value))
+
+// Subject format may load after mount; update it unless the user already typed one
+watch(subject, (value, oldValue) => {
+  const editor = newEmailEditor.value
+  if (editor && editor.subject === oldValue) editor.subject = value
 })
 
 const signature = createResource({
@@ -260,6 +262,10 @@ const commentEmpty = computed(() => isContentEmpty(newComment.value))
 const emailEmpty = computed(
   () =>
     isContentEmpty(newEmail.value) || !newEmailEditor.value?.toEmails?.length,
+)
+
+const emailBlocked = computed(
+  () => emailEmpty.value || newEmailEditor.value?.sendBlocked,
 )
 
 async function sendMail() {
@@ -324,7 +330,7 @@ async function deleteAttachedFiles() {
 }
 
 async function submitEmail() {
-  if (emailEmpty.value) return
+  if (emailBlocked.value) return
   showEmailBox.value = false
   // toast.promise returns the toast id (not the promise), so await the send
   // itself — otherwise the reload below fires before the email is committed and
@@ -345,7 +351,6 @@ async function submitEmail() {
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
-  updateOnboardingStep('send_first_email')
 }
 
 async function submitComment() {
@@ -367,7 +372,6 @@ async function submitComment() {
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })
-  updateOnboardingStep('add_first_comment')
 }
 
 function toggleEmailBox() {

@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex justify-between gap-1">
-      <h2 class="text-2xl-semibold text-ink-gray-8">
+      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
         {{ __('Edit Email') }}
       </h2>
     </div>
@@ -184,6 +184,8 @@ const isDirty = computed(() => {
     state.enable_outgoing !== props.accountData.enable_outgoing ||
     state.default_outgoing !== props.accountData.default_outgoing ||
     state.default_incoming !== props.accountData.default_incoming ||
+    state.create_lead_from_incoming_email !==
+      props.accountData.create_lead_from_incoming_email ||
     state.frappe_mail_site !== props.accountData.frappe_mail_site
   )
 })

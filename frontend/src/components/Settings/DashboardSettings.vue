@@ -7,9 +7,7 @@
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
-            __(
-              'Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings',
-            )
+            __('Choose how the dashboard forecasts deals and shows currency.')
           }}
         </p>
       </div>
@@ -72,7 +70,7 @@
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited.',
+                "Currency for dashboard cards and charts. Can't be changed once set.",
               )
             }}
           </div>

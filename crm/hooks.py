@@ -94,7 +94,6 @@ website_route_rules = [
 # Setup wizard
 # setup_wizard_requires = "assets/crm/js/setup_wizard.js"
 # setup_wizard_stages = "crm.setup.setup_wizard.setup_wizard.get_setup_stages"
-setup_wizard_complete = "crm.demo.api.create_demo_data"
 # setup_wizard_test = "crm.setup.setup_wizard.test_setup_wizard.run_setup_wizard_test"
 
 # Installation
@@ -139,12 +138,14 @@ permission_query_conditions = {
 	"CRM Lead": "crm.permissions.org_hierarchy.get_lead_permission_query_conditions",
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
+	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
 }
 
 has_permission = {
 	"CRM Lead": "crm.permissions.org_hierarchy.has_lead_permission",
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
+	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.has_permission",
 }
 
 # Automation Engine
@@ -233,6 +234,12 @@ override_doctype_class = {
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
+# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
+extend_doctype_class = {
+	"Data Import": ["crm.overrides.data_import.DataImportListView"],
+	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events
@@ -262,6 +269,7 @@ doc_events = {
 	},
 	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
+		"on_submit": ["crm.api.whatsapp.update_reference_modified"],
 		"on_update": [
 			"crm.api.whatsapp.notify_agent",
 			"crm.automation.events.on_whatsapp_message",
@@ -313,6 +321,8 @@ doc_events = {
 	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
+		"validate": ["crm.api.availability.validate_user"],
+		"on_update": ["crm.api.availability.on_user_update"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
 }
@@ -415,6 +425,8 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # auth_hooks = [
 # "crm.auth.validate"
 # ]
+
+on_session_creation = ["crm.api.onboarding.complete_setup_for_fc_site"]
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",

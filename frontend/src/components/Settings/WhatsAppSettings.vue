@@ -16,7 +16,7 @@
     @created="showHome"
   />
   <div v-else class="wa-tabs flex h-full flex-col text-ink-gray-8">
-    <div class="flex items-start justify-between px-6 pt-8 pb-4">
+    <div class="flex items-start justify-between px-8 pt-8 pb-4">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('WhatsApp') }}
@@ -61,7 +61,7 @@
       class="flex-1 overflow-hidden [&>[data-slot=tab-panel]]:flex [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel="{ tab }">
-        <div class="flex h-full flex-col px-6 py-5">
+        <div class="flex h-full flex-col px-8 py-5">
           <WhatsAppTemplateList
             v-if="tab.value === 'templates'"
             @edit="editTemplate"
@@ -153,8 +153,8 @@ on('whatsapp_template_page', (data) => {
 .wa-tabs :deep([role='tablist']) {
   padding-left: 0;
   padding-right: 0;
-  margin-left: 1.5rem;
-  margin-right: 1.5rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 
 /* reka-ui force-mounts every panel and marks the inactive ones `hidden`, but the

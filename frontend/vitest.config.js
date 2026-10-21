@@ -34,6 +34,13 @@ export default defineConfig({
         find: /^~icons\/.*/,
         replacement: path.resolve(import.meta.dirname, 'tests/stubs/icon.js'),
       },
+      {
+        find: /^@framework\/ui\/(.*)$/,
+        replacement: path.resolve(
+          import.meta.dirname,
+          'tests/stubs/framework/$1',
+        ),
+      },
     ],
   },
 })

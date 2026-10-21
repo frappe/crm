@@ -108,6 +108,22 @@
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
+        <div
+          v-if="unsubscribedEmails.length"
+          role="status"
+          class="mx-4 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7"
+        >
+          <span
+            class="lucide-info size-4 shrink-0 text-ink-amber-5"
+            aria-hidden="true"
+          />
+          {{
+            __(
+              "{0} unsubscribed from emails for this record, so they won't receive this email.",
+              [unsubscribedEmails.join(', ')],
+            )
+          }}
+        </div>
         <div class="flex flex-wrap gap-2 px-4">
           <AttachmentItem
             v-for="a in attachments"
@@ -165,6 +181,7 @@
             <Button
               variant="solid"
               v-bind="submitButtonProps || {}"
+              :disabled="submitButtonProps?.disabled || sendBlocked"
               :label="`${__('Send')} (${submitShortcutLabel})`"
             />
           </div>
@@ -265,12 +282,15 @@ const extensions = buildEditorExtensions({
 
 const from = computed(() => {
   if (!user.doc || !user.doc.user_emails?.length) return []
-  let emails = user.doc.user_emails.map((e) => {
-    return {
-      label: e.email_account + ' <' + e.email_id + '>',
-      value: e.email_id,
-    }
-  })
+  // accounts without outgoing can't send; the backend would fall back to the default account
+  let emails = user.doc.user_emails
+    .filter((e) => e.enable_outgoing)
+    .map((e) => {
+      return {
+        label: e.email_account + ' <' + e.email_id + '>',
+        value: e.email_id,
+      }
+    })
 
   if (emails.length == 1 && emails[0].email_id === sessionUser) return []
 
@@ -294,6 +314,46 @@ watch(
 )
 
 const editor = computed(() => textEditor.value?.editor)
+
+const unsubscribedEmails = ref([])
+const checkingRecipients = ref(false)
+const sendBlocked = computed(
+  () => checkingRecipients.value || !!unsubscribedEmails.value.length,
+)
+
+const allRecipients = computed(() => [
+  ...new Set([...toEmails.value, ...ccEmails.value, ...bccEmails.value]),
+])
+
+watch(
+  [allRecipients, () => modelValue.value.name],
+  async ([emails, name], _, onCleanup) => {
+    let stale = false
+    onCleanup(() => (stale = true))
+    if (!emails.length || !name) {
+      unsubscribedEmails.value = []
+      checkingRecipients.value = false
+      return
+    }
+    checkingRecipients.value = true
+    // Fail open: frappe drops unsubscribed recipients on its own, so a failed
+    // check should not stop every email from being sent.
+    const unsubscribed = await call('crm.api.get_unsubscribed_emails', {
+      emails,
+      doctype: props.doctype,
+      name,
+    }).catch(() => [])
+    if (stale) return
+    unsubscribedEmails.value = unsubscribed
+    checkingRecipients.value = false
+  },
+  { immediate: true },
+)
+
+watch(unsubscribedEmails, (emails) => {
+  if (emails.some((e) => ccEmails.value.includes(e))) cc.value = true
+  if (emails.some((e) => bccEmails.value.includes(e))) bcc.value = true
+})
 
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
@@ -359,5 +419,6 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  sendBlocked,
 })
 </script>

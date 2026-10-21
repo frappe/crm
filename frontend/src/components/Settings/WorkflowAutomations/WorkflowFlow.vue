@@ -505,9 +505,9 @@ function nodeClasses(id, data) {
 function nodeSurface(id, data) {
   if (data.empty) return 'border-dashed border-outline-gray-3 shadow-none'
   if (data.status === 'Failed')
-    return 'border-outline-red-2 bg-surface-modal shadow-sm'
+    return 'border-outline-red-2 bg-surface-elevation-2 shadow-sm'
   if (data.status === 'running') return 'border-outline-gray-5 shadow-md'
-  if (data.error) return 'border-outline-red-2 bg-surface-modal shadow-sm'
+  if (data.error) return 'border-outline-red-2 bg-surface-elevation-2 shadow-sm'
   if (isOn(id)) return 'border-outline-gray-8 shadow-sm shadow-surface-base'
   if (data.incomplete)
     return 'border-outline-amber-2 shadow-md hover:border-outline-gray-8'

@@ -2,10 +2,10 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
-      <h2 class="text-2xl-semibold text-ink-gray-8">
+      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
         {{ __('Setup Email') }}
       </h2>
-      <p class="text-sm text-ink-gray-5">
+      <p class="text-p-base text-ink-gray-6">
         {{ __('Choose the email service provider you want to configure.') }}
       </p>
     </div>
@@ -96,6 +96,7 @@
 import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,
@@ -123,6 +124,7 @@ const state = reactive({
   create_lead_from_incoming_email: false,
 })
 const { capture } = useTelemetry()
+const { completeStep } = useCrmOnboarding()
 
 const selectedService = ref(null)
 const fields = computed(() =>
@@ -143,6 +145,7 @@ const addEmailRes = createResource({
   },
   onSuccess: () => {
     toast.success(__('Email account created successfully'))
+    completeStep('connect_your_email')
     emit('update:step', 'email-list')
   },
   onError: () => {

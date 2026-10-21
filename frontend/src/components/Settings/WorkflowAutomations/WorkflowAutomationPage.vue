@@ -2,7 +2,7 @@
   <SettingsLayoutBase
     v-if="screen === 'list'"
     :title="__('Workflow Automations')"
-    :description="__('Create workflow automations for CRM documents')"
+    :description="__('Create workflow automations for CRM documents.')"
   >
     <template #title>
       <div class="flex items-center gap-2">
@@ -11,7 +11,7 @@
         </h2>
         <Tooltip :text="__('View documentation')">
           <a
-            href="https://docs.frappe.io/wiki-app/spaces/22qcan55rk/page/36r50jmgu2"
+            href="https://docs.frappe.io/crm/automations/introduction"
             target="_blank"
           >
             <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />

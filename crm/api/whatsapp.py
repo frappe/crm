@@ -2,11 +2,12 @@ import frappe
 from frappe import _
 from frappe.permissions import add_permission, update_permission_property
 from frappe.query_builder.functions import Count
+from frappe.utils import now
 from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
-from crm.integrations.api import find_by_phone, get_contact_lead_or_deal_from_number
+from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
 from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
@@ -40,7 +41,7 @@ def validate(doc, method):
 
 def _resolve_reference(doc, phone_number: str) -> None:
 	try:
-		name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+		name, doctype = find_contact_lead_or_deal_from_number(phone_number)
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
 		return
@@ -156,12 +157,14 @@ def notify_agent(doc, method=None):
 		doctype = doc.reference_doctype
 		if doctype and doctype.startswith("CRM "):
 			doctype = doctype[4:].lower()
-		safe_reference_docname = frappe.utils.escape_html(doc.reference_docname)
+		safe_reference_title = frappe.utils.escape_html(
+			get_record_title(doc.reference_doctype, doc.reference_docname)
+		)
 		notification_text = f"""
             <div class="mb-2 leading-5 text-ink-gray-5">
                 <span class="font-medium text-ink-gray-9">{_("You")}</span>
                 <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
-                <span class="font-medium text-ink-gray-9">{safe_reference_docname}</span>
+                <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
             </div>
         """
 		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_docname)
@@ -179,6 +182,29 @@ def notify_agent(doc, method=None):
 					"redirect_to_docname": doc.reference_docname,
 				}
 			)
+
+
+def update_reference_modified(doc, method=None):
+	"""A sent or received message bumps its lead or deal's modified time, as an email does."""
+	if doc.reference_doctype not in ("CRM Lead", "CRM Deal") or not doc.reference_docname:
+		return
+	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
+		return
+	frappe.db.set_value(
+		doc.reference_doctype, doc.reference_docname, "modified", now(), update_modified=False
+	)
+
+
+def get_record_title(doctype: str, name: str) -> str:
+	"""The name people know a lead or deal by, as mention notifications show it."""
+	if doctype == "CRM Lead":
+		title = frappe.db.get_value(doctype, name, "lead_name")
+	elif doctype == "CRM Deal":
+		deal = frappe.db.get_value(doctype, name, ["organization", "lead_name"], as_dict=True)
+		title = deal and (deal.organization or deal.lead_name)
+	else:
+		title = None
+	return title or name
 
 
 def guard_doc_recipient_change(doc) -> None:

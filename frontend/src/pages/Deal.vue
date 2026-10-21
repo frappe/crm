@@ -412,7 +412,6 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import {
   ref,
   computed,
@@ -432,9 +431,6 @@ const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
-
-const { updateOnboardingStep, isOnboardingStepsCompleted } =
-  useOnboarding('frappecrm')
 
 const route = useRoute()
 const router = useRouter()
@@ -871,13 +867,21 @@ const showContactModal = ref(false)
 const _contact = ref({})
 
 function contactOptions(contact) {
-  let options = [
-    {
-      label: __('Remove'),
-      icon: 'lucide-trash-2',
-      onClick: () => removeContact(contact.name),
-    },
-  ]
+  let options = []
+
+  if (callEnabled.value && contact.mobile_no) {
+    options.push({
+      label: __('Make a Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(contact.mobile_no),
+    })
+  }
+
+  options.push({
+    label: __('Remove'),
+    icon: 'lucide-trash-2',
+    onClick: () => removeContact(contact.name),
+  })
 
   if (!contact.is_primary) {
     options.push({
@@ -973,10 +977,6 @@ async function triggerStatusChange(value) {
 }
 
 function updateField(name, value) {
-  if (name == 'status' && !isOnboardingStepsCompleted.value) {
-    updateOnboardingStep('change_deal_status')
-  }
-
   value = Array.isArray(name) ? '' : value
   let oldValues = Array.isArray(name) ? {} : doc.value[name]
 
