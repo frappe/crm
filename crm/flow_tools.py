@@ -238,8 +238,15 @@ def show_lead_fields(
 		doc = frappe.get_doc("CRM Fields Layout", name)
 		layout = json.loads(doc.layout or "[]")
 		# Data Fields may be tabs of sections; the others are a list of sections
-		sections = layout[0]["sections"] if layout and "sections" in layout[0] else layout
-		shown = {f for sec in sections for col in sec.get("columns", []) for f in col.get("fields", [])}
+		tabs = layout if layout and "sections" in layout[0] else [{"sections": layout}]
+		sections = tabs[0]["sections"]
+		shown = {
+			f
+			for tab in tabs
+			for sec in tab.get("sections", [])
+			for col in sec.get("columns", [])
+			for f in col.get("fields", [])
+		}
 		new = [f for f in fields if f not in shown]
 		if not new:
 			continue
