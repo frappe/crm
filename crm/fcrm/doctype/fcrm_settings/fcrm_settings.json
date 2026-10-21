@@ -167,7 +167,7 @@
   },
   {
    "default": "1",
-   "description": "Update the modified timestamp on new emails, WhatsApp messages & comments for leads & deals",
+   "description": "Update the modified timestamp on new emails, messages & comments for leads & deals",
    "fieldname": "update_timestamp_on_new_communication",
    "fieldtype": "Check",
    "label": "Update timestamp on new communication"
