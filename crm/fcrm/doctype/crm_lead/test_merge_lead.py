@@ -549,6 +549,33 @@ class TestMergeLead(IntegrationTestCase):
 
 		self.assertIn(resolve_merged_lead(lead_a.name), (lead_a.name, lead_b.name))
 
+	def test_phone_match_on_merged_lead_with_converted_target_returns_deal(self):
+		target = self._create_lead(first_name="Target", mobile_no="+91 98777 77777")
+		source = self._create_lead(first_name="Source", mobile_no="+91 98888 88888")
+
+		from crm.api.lead import merge_leads
+		from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
+		from crm.integrations.api import find_by_phone
+
+		merge_leads(target.name, source.name)
+		deal = convert_to_deal(lead=target.name)
+
+		matches = find_by_phone("+91 98888 88888")
+		self.assertEqual([(m["doctype"], m["docname"]) for m in matches], [("CRM Deal", deal)])
+
+	def test_phone_match_on_merged_lead_with_converted_target_and_no_deal(self):
+		target = self._create_lead(first_name="Target", mobile_no="+91 98999 99999")
+		source = self._create_lead(first_name="Source", mobile_no="+91 97111 11111")
+
+		from crm.api.lead import merge_leads
+		from crm.integrations.api import find_by_phone
+
+		merge_leads(target.name, source.name)
+		target.db_set("converted", 1)
+
+		matches = find_by_phone("+91 97111 11111")
+		self.assertEqual([(m["doctype"], m["docname"]) for m in matches], [("CRM Lead", target.name)])
+
 	def test_merged_source_email_does_not_create_new_lead(self):
 		# Regression lock: an incoming email from a sender that only a merged source lead
 		# has already matches that lead and creates nothing. It guards existing behaviour,

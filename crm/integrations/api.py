@@ -232,12 +232,26 @@ def find_by_phone(phone_number: str) -> list[dict]:
 			None,
 		)
 		if matching_phone:
-			# A merged lead's number belongs to the lead it was merged into.
+			# A merged lead's number belongs to the lead it was merged into, or to the
+			# deal that lead became once converted.
 			live_name = resolve_merged_lead(lead.name)
 			if live_name != lead.name:
 				lead = frappe.db.get_value(
-					"CRM Lead", live_name, ["name", "lead_name", "image"], as_dict=True
+					"CRM Lead", live_name, ["name", "lead_name", "image", "converted"], as_dict=True
 				)
+				deal = lead.converted and frappe.db.get_value(
+					"CRM Deal", {"lead": lead.name}, "name", order_by="creation desc"
+				)
+				if deal:
+					add(
+						deals,
+						"CRM Deal",
+						deal,
+						title=lead.lead_name,
+						image=lead.image,
+						matching_phone=matching_phone,
+					)
+					continue
 			add(
 				leads,
 				"CRM Lead",
