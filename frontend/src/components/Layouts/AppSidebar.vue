@@ -129,6 +129,16 @@
             </template>
           </SidebarItem>
           <SidebarItem
+            v-if="!mobile && flowInstalled"
+            :label="__('Ask AI')"
+            :active="assistantOpen"
+            @click="assistantOpen = !assistantOpen"
+          >
+            <template #prefix>
+              <LucideSparkles class="size-4 text-ink-gray-7" />
+            </template>
+          </SidebarItem>
+          <SidebarItem
             v-if="isOnboardingStepsCompleted"
             :label="__('Help')"
             @click="toggleHelpModal"
@@ -176,6 +186,7 @@
 
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
+import LucideSparkles from '~icons/lucide/sparkles'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -225,6 +236,11 @@ import { useTelemetry } from '@framework/ui/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
+import {
+  assistantOpen,
+  checkFlowInstalled,
+  flowInstalled,
+} from '@/composables/assistant'
 import { useCrmOnboarding } from '@/composables/onboarding'
 import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -249,6 +265,7 @@ watch(
 )
 
 const { getPinnedViews, getPublicViews } = viewsStore()
+checkFlowInstalled()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
@@ -374,6 +391,11 @@ function onNotificationsClick(event) {
     toggleNotificationPanel()
   }
 }
+
+// the assistant and the getting-started panel share the right edge
+watch(assistantOpen, (open) => {
+  if (open) showHelpModal.value = false
+})
 
 function toggleHelpModal() {
   showHelpModal.value = minimize.value ? true : !showHelpModal.value
