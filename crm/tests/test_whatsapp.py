@@ -61,7 +61,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 			),
 			patch("crm.api.whatsapp._link_profile_to_crm_entities"),
 			patch(
-				"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
+				"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 				return_value=("LEAD-0001", "CRM Lead"),
 			),
 		):
@@ -85,7 +85,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 			patch("crm.api.whatsapp._link_profile_to_crm_entities"),
 			patch("crm.api.whatsapp._lead_append_action", return_value=None),
 			patch(
-				"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
+				"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 				return_value=(None, None),
 			),
 		):
@@ -106,7 +106,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 			),
 			patch("crm.api.whatsapp._link_profile_to_crm_entities"),
 			patch(
-				"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
+				"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 				side_effect=Exception("parse error"),
 			),
 			patch("frappe.log_error") as mock_log,

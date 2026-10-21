@@ -139,18 +139,36 @@ def add_task_to_call_log(call_sid: str, task: dict):
 
 @frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number: str):
-	"""Name and doctype of the best match for a number, or (None, None)."""
-	match = _first_match(number)
+	"""Name and doctype of the best match the user can read, or (None, None)."""
+	return _name_and_doctype(_first_match(number, readable_only=True))
+
+
+def find_contact_lead_or_deal_from_number(number: str):
+	"""Name and doctype of the best match whatever the user can read, or (None, None).
+	For server-side linking only, never return it to the user."""
+	return _name_and_doctype(_first_match(number))
+
+
+@frappe.whitelist()
+def get_contact_by_phone_number(phone_number: str):
+	"""Contact-shaped dict for the best match the user can read, carrying `lead` or `deal`
+	when the match is one, so telephony callers can pick the record to link."""
+	return _contact_shape(_first_match(phone_number, readable_only=True), phone_number)
+
+
+def find_contact_by_phone_number(phone_number: str):
+	"""Like get_contact_by_phone_number, but whatever the user can read.
+	For server-side linking only, never return it to the user."""
+	return _contact_shape(_first_match(phone_number), phone_number)
+
+
+def _name_and_doctype(match: dict | None):
 	if not match:
 		return None, None
 	return match["docname"], match["doctype"]
 
 
-@frappe.whitelist()
-def get_contact_by_phone_number(phone_number: str):
-	"""Contact-shaped dict for the best match for a number, carrying `lead` or `deal`
-	when the match is one, so telephony callers can pick the record to link."""
-	match = _first_match(phone_number)
+def _contact_shape(match: dict | None, phone_number: str) -> dict:
 	if not match:
 		return {"mobile_no": phone_number}
 
@@ -167,9 +185,11 @@ def get_contact_by_phone_number(phone_number: str):
 	return result
 
 
-def _first_match(phone_number: str) -> dict | None:
+def _first_match(phone_number: str, readable_only: bool = False) -> dict | None:
 	matches = find_by_phone(phone_number)
-	return matches[0] if matches else None
+	if readable_only:
+		matches = (m for m in matches if frappe.has_permission(m["doctype"], "read", m["docname"]))
+	return next(iter(matches), None)
 
 
 def find_by_phone(phone_number: str) -> list[dict]:

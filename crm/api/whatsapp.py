@@ -7,7 +7,7 @@ from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
-from crm.integrations.api import find_by_phone, get_contact_lead_or_deal_from_number
+from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
 from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
@@ -41,7 +41,7 @@ def validate(doc, method):
 
 def _resolve_reference(doc, phone_number: str) -> None:
 	try:
-		name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+		name, doctype = find_contact_lead_or_deal_from_number(phone_number)
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
 		return
