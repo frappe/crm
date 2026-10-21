@@ -95,6 +95,13 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 		"leads": frappe.db.count("CRM Lead"),
 		"deals": frappe.db.count("CRM Deal"),
 		"sample_data": _sample_data_left() if get_demo_state()["demo_data_created"] else None,
+		"automations": frappe.get_list(
+			"Automation Flow",
+			filters={"document_type": ["in", ["CRM Lead", "CRM Deal"]]},
+			fields=["title", "enabled"],
+		)
+		if frappe.has_permission("Automation Flow")
+		else None,
 	}
 
 
@@ -476,3 +483,294 @@ def clear_sample_data(*, ctx: ToolContext) -> str:
 
 	clear_demo_data()
 	return "Sample data removed."
+
+
+# what an automation starts on: a change to the record, or a CRM event about it
+RECORD_EVENTS = {
+	"replied": "crm.prospect_message_received",
+	"emailed": "crm.prospect_message_sent",
+	"qualified": "crm.lead_qualified",
+	"converted": "crm.lead_converted",
+	"won": "crm.deal_won",
+	"lost": "crm.deal_lost",
+	"task overdue": "crm.task_overdue",
+}
+LEAD_ONLY = {"qualified", "converted"}
+DEAL_ONLY = {"won", "lost"}
+RECORDS = {"lead": "CRM Lead", "deal": "CRM Deal"}
+OPERATORS = {"is": "=", "is not": "!=", "is more than": ">", "is less than": "<", "contains": "like"}
+WAIT_UNITS = {"minutes": "Minutes", "hours": "Hours", "days": "Days"}
+# people to tell or hand work to; anyone else is named by their user email
+PEOPLE = {"assigned": "@assignees", "created by": "@owner"}
+
+
+class Condition(BaseModel):
+	field: str
+	op: Literal["is", "is not", "is more than", "is less than", "contains"] = "is"
+	value: str
+
+
+class AutomationStep(BaseModel):
+	# "stop if they replied" ends the run when the lead or deal sent an email since it started,
+	# so the steps after it only happen when nobody replied
+	do: Literal[
+		"notify",
+		"email the team",
+		"email them",
+		"create task",
+		"assign",
+		"set field",
+		"wait",
+		"stop if they replied",
+		"convert to deal",
+	]
+	people: list[str] = []
+	text: str = ""
+	message: str = ""
+	email_template: str | None = None
+	field: str | None = None
+	value: str | None = None
+	amount: int = 0
+	unit: Literal["minutes", "hours", "days"] = "days"
+
+
+def _automation_prompt(args: dict) -> str:
+	lines = [_plain_placeholders(line) for line in _describe_automation(args)]
+	return f'Add the automation "{args.get("name")}":\n' + _bullets(lines)
+
+
+def _plain_placeholders(text: str) -> str:
+	"""{{ doc.lead_name }} reads as [lead name] on the approval card."""
+	return re.sub(r"\{\{\s*doc\.(\w+)[^}]*\}\}", lambda m: f"[{m[1].replace('_', ' ')}]", text)
+
+
+def _describe_automation(args: dict) -> list[str]:
+	record = args.get("record") or "lead"
+	meta = frappe.get_meta(RECORDS.get(record, "CRM Lead"))
+
+	def label(fieldname):
+		field = meta.get_field(fieldname or "")
+		return (field.label if field else fieldname or "").lower()
+
+	starts = {
+		"created": f"a new {record} is added",
+		"changed": f"a {record}'s {label(args.get('field') or 'status')} changes"
+		+ (f" to {args['to_value']}" if args.get("to_value") else ""),
+		"replied": f"a {record} replies to an email",
+		"emailed": f"someone on the team emails a {record}",
+		"qualified": "a lead is qualified",
+		"converted": "a lead becomes a deal",
+		"won": "a deal is won",
+		"lost": "a deal is lost",
+		"task overdue": f"a task on a {record} goes overdue",
+		"date": f"it's {_days(args.get('days'))} {args.get('direction') or 'before'} a {record}'s "
+		f"{label(args.get('date_field'))}",
+	}
+	lines = [f"When {starts.get(args.get('when'), args.get('when'))}"]
+	for c in args.get("only_if") or []:
+		c = c if isinstance(c, dict) else c.model_dump()
+		lines.append(f"Only if its {label(c['field'])} {c.get('op') or 'is'} {c['value']}")
+	for s in args.get("steps") or []:
+		s = s if isinstance(s, dict) else s.model_dump()
+		lines.append(_describe_step(s, label))
+	return lines
+
+
+def _days(n) -> str:
+	return f"{n or 0} day" + ("" if n == 1 else "s")
+
+
+def _describe_people(people: list[str]) -> str:
+	names = {"me": "you", "assigned": "whoever it's assigned to", "created by": "whoever added it"}
+	return (
+		", ".join(names.get(p) or frappe.db.get_value("User", p, "full_name") or p for p in people)
+		or "nobody"
+	)
+
+
+def _describe_step(s: dict, label) -> str:
+	people = _describe_people(s.get("people") or [])
+	due = "today" if not s.get("amount") else f"in {_days(s.get('amount'))}"
+	return {
+		"notify": f'Notify {people} in the CRM: "{s.get("text")}"',
+		"email the team": f'Email {people}: "{s.get("text")}"',
+		"email them": f'Email them: "{s.get("email_template") or s.get("text")}"',
+		"create task": f'Add the task "{s.get("text")}", due {due}',
+		"assign": f"Assign it to {people}",
+		"set field": f"Set its {label(s.get('field'))} to {s.get('value')}",
+		"wait": f"Wait {s.get('amount')} {s.get('unit') or 'days'}",
+		"stop if they replied": "Stop here if they've replied",
+		"convert to deal": "Convert the lead to a deal",
+	}[s["do"]]
+
+
+@tool(requires_confirmation=True, confirm_prompt=_automation_prompt)
+def add_automation(
+	name: str,
+	record: Literal["lead", "deal"],
+	when: Literal[
+		"created",
+		"changed",
+		"replied",
+		"emailed",
+		"qualified",
+		"converted",
+		"won",
+		"lost",
+		"task overdue",
+		"date",
+	],
+	steps: list[AutomationStep],
+	field: str = "status",
+	to_value: str | None = None,
+	date_field: str | None = None,
+	days: int = 0,
+	direction: Literal["before", "after"] = "before",
+	only_if: list[Condition] | None = None,
+	*,
+	ctx: ToolContext,
+) -> dict[str, Any]:
+	"""Add a CRM workflow automation: when something happens to a lead or deal, run `steps` in
+	order. `when`: "created"; "changed" (`field`, default status, optionally changing `to_value`);
+	"replied" (they emailed back); "emailed" (someone on the team emailed them); "qualified" or
+	"converted" (leads); "won" or "lost" (deals); "task overdue"; or "date" (`days` before or
+	after the record's `date_field`). `only_if` limits it to records whose fields match.
+	Steps: "notify" `people` in the CRM with `text` (and an optional `message`); "email the team"
+	(`people`, `text` as subject, `message`); "email them" (the lead or deal, with an
+	`email_template`, or `text` as subject and `message`); "create task" (`text` as the title, due
+	in `amount` days, for the record's owner); "assign" to `people`; "set field" (`field`,
+	`value`); "wait" (`amount` `unit`); "stop if they replied"; "convert to deal" (leads).
+	`people` are user emails, "assigned" (whoever the record is assigned to) or "created by".
+	Text can use the record's fields, such as {{ doc.lead_name }} or {{ doc.organization }}.
+	Returns the automation's name and where to see it."""
+	doctype = RECORDS[record]
+	if (when in LEAD_ONLY or any(s.do == "convert to deal" for s in steps)) and record != "lead":
+		frappe.throw(_("That only works on leads."))
+	if when in DEAL_ONLY and record != "deal":
+		frappe.throw(_("That only works on deals."))
+	meta = frappe.get_meta(doctype)
+	flow = {
+		"doctype": "Automation Flow",
+		"title": _free_automation_title(name),
+		"document_type": doctype,
+		"enabled": 1,
+		"stop_on_error": 1,
+		"actions": _automation_rows(steps, record, ctx.user),
+	}
+	if when == "created":
+		flow["trigger_type"] = "Doc Created"
+	elif when == "changed":
+		_check_field(meta, field)
+		flow.update(trigger_type="Field Value Changed", trigger_field=field, to_value=to_value)
+	elif when == "date":
+		if not date_field or meta.get_field(date_field) is None:
+			frappe.throw(_("Pick a date field on the {0}.").format(record))
+		flow.update(
+			trigger_type="Date Based",
+			date_field=date_field,
+			date_offset=days,
+			date_direction=direction.title(),
+		)
+	else:
+		flow.update(trigger_type="Custom Event", custom_event=RECORD_EVENTS[when])
+	if only_if:
+		for c in only_if:
+			_check_field(meta, c.field)
+		flow["filters"] = json.dumps(
+			[[c.field, OPERATORS[c.op], f"%{c.value}%" if c.op == "contains" else c.value] for c in only_if]
+		)
+	saved = frappe.get_doc(flow).insert()
+	return {"automation": saved.title, "link": "/crm/leads?settings=Workflow%20Automations"}
+
+
+def _check_field(meta, fieldname: str) -> None:
+	if meta.get_field(fieldname) is None and fieldname not in ("name", "owner"):
+		record = "deal" if meta.name == "CRM Deal" else "lead"
+		frappe.throw(_("There's no {0} field on the {1}.").format(fieldname, record))
+
+
+def _free_automation_title(title: str) -> str:
+	candidate, n = title, 2
+	while frappe.db.exists("Automation Flow", {"title": candidate}):
+		candidate, n = f"{title} {n}", n + 1
+	return candidate
+
+
+def _people(people: list[str], me: str) -> list[str]:
+	return [me if p == "me" else PEOPLE.get(p, p) for p in people]
+
+
+def _automation_rows(steps: list[AutomationStep], record: str, me: str) -> list[dict[str, Any]]:
+	rows, branch_of = [], 0
+	for idx, s in enumerate(steps, start=1):
+		row = {"idx": idx, "step_key": f"step_{idx}", "target": "trigger", "step_type": "Action"}
+		if s.do == "stop if they replied":
+			# the If arm holds every later step, so they only run when nothing came back
+			row.update(step_type="If", step_condition="True", related_condition=_no_reply_since_start())
+		elif s.do == "wait":
+			row.update(step_type="Wait", params={"value": s.amount, "unit": WAIT_UNITS[s.unit]})
+		else:
+			action_type, params = _automation_action(s, record, me)
+			row.update(action_type=action_type, params=params)
+		if branch_of:
+			row.update(parent_step=branch_of, branch="If")
+		if s.do == "stop if they replied":
+			branch_of = idx
+		rows.append({**row, "params": json.dumps(row.get("params") or {})})
+	return rows
+
+
+def _no_reply_since_start() -> str:
+	return json.dumps(
+		{
+			"type": "RelatedNotExists",
+			"source": "trigger",
+			"relationship": "communications",
+			"filters": [
+				["sent_or_received", "=", "Received"],
+				["creation", ">", "{{ context.run.creation }}"],
+			],
+		}
+	)
+
+
+def _automation_action(s: AutomationStep, record: str, me: str) -> tuple[str, dict[str, Any]]:
+	if s.do == "notify":
+		return "SendCRMNotification", {
+			"recipients": _people(s.people, me),
+			"notification_text": s.text,
+			"message": s.message,
+		}
+	if s.do == "email the team":
+		return "SendNotification", {
+			"channel": "Email",
+			"recipients": _people(s.people, me),
+			"subject": s.text,
+			"message": s.message,
+		}
+	if s.do == "email them":
+		if s.email_template:
+			return "SendCRMEmail", {"email_template": s.email_template}
+		return "SendCRMEmail", {"subject": s.text, "message": s.message}
+	if s.do == "create task":
+		doctype = RECORDS[record]
+		return "CreateDocument", {
+			"doctype": "CRM Task",
+			"values": {
+				"title": s.text,
+				"status": "Todo",
+				"assigned_to": f"{{{{ doc.{record}_owner or '' }}}}",
+				"reference_doctype": doctype,
+				"reference_docname": "{{ doc.name }}",
+				"due_date": f"{{{{ frappe.utils.add_days(frappe.utils.nowdate(), {s.amount}) }}}}",
+			},
+		}
+	if s.do == "assign":
+		return "AssignToUser", {"assign_to": _people(s.people, me), "description": s.text}
+	if s.do == "set field":
+		return "SetFieldValue", {"field": s.field, "value": s.value}
+	# convert to deal: a retry returns the same deal instead of making another, and sites with
+	# forecasting get the placeholder value and closing date the rep then corrects
+	from crm.automation.reference_flows import forecast_defaults
+
+	return "ConvertLeadToDeal", {"if_converted": "Return Existing", "deal": forecast_defaults()}

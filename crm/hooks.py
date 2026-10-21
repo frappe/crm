@@ -36,6 +36,7 @@ flow_tools = [
 	"crm.flow_tools.assign_new_leads",
 	"crm.flow_tools.set_currency",
 	"crm.flow_tools.clear_sample_data",
+	"crm.flow_tools.add_automation",
 ]
 
 export_python_type_annotations = True

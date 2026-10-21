@@ -53,6 +53,7 @@ const TOOL_PAGES: Record<string, Destination> = {
   assign_new_leads: { settings: 'Assignment Rules' },
   set_currency: { settings: 'Defaults' },
   clear_sample_data: { path: '/leads' },
+  add_automation: { settings: 'Workflow Automations' },
 }
 
 const RECORD_TOOLS = new Set(['create', 'update', 'delete', 'run_action'])
