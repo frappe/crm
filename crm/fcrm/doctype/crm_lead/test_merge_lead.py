@@ -510,6 +510,20 @@ class TestMergeLead(IntegrationTestCase):
 		results = search_mergeable_leads(txt="zebulon", limit=1)
 		self.assertEqual([r["value"] for r in results], [older.name])
 
+	def test_cannot_split_when_target_is_converted(self):
+		target = self._create_lead(first_name="Target", mobile_no="+91 97222 22222")
+		source = self._create_lead(first_name="Source", email="source-split@test.com")
+
+		from crm.api.lead import merge_leads, split_lead
+		from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
+
+		result = merge_leads(target.name, source.name)
+		convert_to_deal(lead=target.name)
+
+		with self.assertRaisesRegex(frappe.ValidationError, "converted"):
+			split_lead(result["merge_log"])
+		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "merged_into"), target.name)
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
