@@ -7,7 +7,7 @@ export interface FlowChange {
 }
 
 // a route path in the CRM, or a Settings page opened over the current page
-export type Destination = { path: string } | { settings: string }
+export type Destination = { path: string } | { settings: string; record?: string }
 
 interface Touch {
   place: string
@@ -43,7 +43,11 @@ const SETTINGS_PAGES: Record<string, string> = {
   'CRM Invitation': 'Invite User',
   'FCRM Settings': 'Defaults',
   'CRM Service Level Agreement': 'SLA Policies',
+  'Automation Flow': 'Workflow Automations',
 }
+
+// Settings pages that open one record given its name
+const SETTINGS_RECORD_PAGES = new Set(['Workflow Automations'])
 
 // the CRM's own setup tools for Flow (crm/flow_tools.py)
 const TOOL_PAGES: Record<string, Destination> = {
@@ -120,6 +124,13 @@ function touchesOf(change: FlowChange): Touch[] {
       : `doctype:${change.args?.doctype}`
     return [{ place, destination }]
   }
+  if (change.tool === 'add_automation' && change.result?.name) {
+    const destination = {
+      settings: 'Workflow Automations',
+      record: change.result.name,
+    }
+    return [{ place: placeKey(destination), destination }]
+  }
   if (TOOL_PAGES[change.tool]) {
     const destination = TOOL_PAGES[change.tool]
     return [{ place: placeKey(destination), destination }]
@@ -133,9 +144,17 @@ function touchesOf(change: FlowChange): Touch[] {
   const place = destination ? placeKey(destination) : `doctype:${doctype}`
   const deleted = change.tool === 'delete'
   const recordPage = !deleted && RECORD_PAGES[doctype]
-  return namesOf(change).map((name) => ({
+  const names = namesOf(change)
+  // one record on a Settings page that can show it opens there, such as a single automation
+  const opensRecord =
+    destination &&
+    'settings' in destination &&
+    SETTINGS_RECORD_PAGES.has(destination.settings) &&
+    !deleted &&
+    names.length === 1
+  return names.map((name) => ({
     place,
-    destination,
+    destination: opensRecord && name ? { ...destination, record: name } : destination,
     record: recordPage ? recordPage + encodeURIComponent(name) : undefined,
     deleted,
   }))

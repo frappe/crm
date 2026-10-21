@@ -51,6 +51,25 @@ describe('whereToGo', () => {
     })
   })
 
+  it('opens a new automation on its Settings page', () => {
+    expect(
+      whereToGo([
+        {
+          tool: 'add_automation',
+          args: { name: 'Lead reply reminder' },
+          result: { automation: 'Lead reply reminder', name: 'AUTO-00001' },
+        },
+      ]),
+    ).toEqual({ settings: 'Workflow Automations', record: 'AUTO-00001' })
+    expect(whereToGo([create('Automation Flow', ['AUTO-00002'])])).toEqual({
+      settings: 'Workflow Automations',
+      record: 'AUTO-00002',
+    })
+    expect(
+      whereToGo([create('Automation Flow', ['AUTO-00002', 'AUTO-00003'])]),
+    ).toEqual({ settings: 'Workflow Automations' })
+  })
+
   it('opens the board after stages change', () => {
     expect(
       whereToGo([

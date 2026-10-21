@@ -218,6 +218,7 @@ import { sessionStore } from '@/stores/session'
 import {
   showSettings,
   activeSettingsPage,
+  settingsRecord,
   mobileSidebarOpened,
 } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast.js'
@@ -251,14 +252,16 @@ const props = defineProps({
 
 const route = useRoute()
 
-// ?settings=<English page label> opens Settings on that page, e.g. ?settings=Accounts
+// ?settings=<English page label> opens Settings on that page, e.g. ?settings=Accounts, and
+// &record=<name> opens that record on it
 watch(
   () => route.query.settings,
   (page) => {
     if (!page) return
     showSettings.value = true
     activeSettingsPage.value = __(page)
-    const { settings, ...query } = route.query
+    settingsRecord.value = route.query.record || ''
+    const { settings, record, ...query } = route.query
     router.replace({ query })
   },
   { immediate: true },

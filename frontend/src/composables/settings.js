@@ -9,3 +9,6 @@ export const showSettings = ref(false)
 export const disableSettingModalOutsideClick = ref(false)
 
 export const activeSettingsPage = ref('')
+
+// a record to open on the Settings page, such as the automation the assistant just added
+export const settingsRecord = ref('')

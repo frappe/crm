@@ -4,11 +4,14 @@
     v-if="flowInstalled && src"
     v-model:mode="mode"
     storage-key="crm-assistant-window"
+    data-editor-floating
     :class="[
       assistantOpen ? '' : 'hidden',
+      // above Settings and other dialogs, and still clickable while one is open
+      '!pointer-events-auto',
       mode === 'docked'
-        ? 'h-full w-[420px] shrink-0 !rounded-none border-l border-outline-gray-2'
-        : '',
+        ? 'relative z-[60] h-full w-[420px] shrink-0 !rounded-none border-l border-outline-gray-2'
+        : '!z-[60]',
     ]"
     @pointerdown.capture="moving = true"
   >
@@ -93,7 +96,7 @@ import {
   type FlowChange,
 } from '@/utils/assistantChanges'
 import { reloadDocument } from '@/data/document'
-import { Button, toast } from 'frappe-ui'
+import { Button } from 'frappe-ui'
 import { FloatingWindow } from 'frappe-ui/experimental'
 import type { WindowMode } from 'frappe-ui/experimental'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -161,7 +164,7 @@ function keepCrmLinksHere(): void {
   )
 }
 
-// after each turn, show what the assistant changed: the record or its list, or offer its Settings page
+// after each turn, open what the assistant changed: the record, its list or its Settings page
 function showChanges(event: MessageEvent): void {
   if (event.source !== frame.value?.contentWindow) return
   if (event.data?.type !== 'flow:changes') return
@@ -172,14 +175,10 @@ function showChanges(event: MessageEvent): void {
   const destination = whereToGo(changes)
   if (!destination) return
   if ('settings' in destination) {
-    // Settings is a dialog, and opening it on its own would cover the chat mid-conversation
-    const page = destination.settings
-    toast.success(__('Updated {0} in Settings', [__(page)]), {
-      action: {
-        label: __('Open'),
-        onClick: () =>
-          router.push({ query: { ...route.query, settings: page } }),
-      },
+    // the chat window sits above the Settings dialog, so the conversation carries on beside it
+    const { settings, record } = destination
+    router.push({
+      query: { ...route.query, settings, ...(record ? { record } : {}) },
     })
   } else {
     router.push(destination.path)

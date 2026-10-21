@@ -170,7 +170,10 @@ import WorkflowIcon from '~icons/lucide/workflow'
 import { ConfirmDelete } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
 import { usersStore } from '@/stores/users'
-import { disableSettingModalOutsideClick } from '@/composables/settings'
+import {
+  disableSettingModalOutsideClick,
+  settingsRecord,
+} from '@/composables/settings'
 import {
   List,
   ListCell,
@@ -270,6 +273,18 @@ function openAutomation(automation) {
   selectedAutomation.value = automation.name
   screen.value = 'detail'
 }
+
+// Settings opened on one automation, such as one the assistant just added
+watch(
+  settingsRecord,
+  (name) => {
+    if (!name) return
+    automations.reload()
+    openAutomation({ name })
+    settingsRecord.value = ''
+  },
+  { immediate: true },
+)
 
 /** Closing the builder always lands back on the list, warning first about unsaved edits. */
 function requestClose() {
