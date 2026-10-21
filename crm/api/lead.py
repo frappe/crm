@@ -9,6 +9,19 @@ from frappe.model.rename_doc import get_link_fields
 from crm.integrations.api import find_by_phone
 from crm.utils import normalize_phone
 
+MAX_MERGE_DEPTH = 10
+
+
+def resolve_merged_lead(name: str) -> str:
+	"""The live lead a merged lead now lives in: follows merged_into until a lead with
+	none. Stops after MAX_MERGE_DEPTH hops so a corrupt cycle can't loop forever."""
+	for _depth in range(MAX_MERGE_DEPTH):
+		merged_into = frappe.db.get_value("CRM Lead", name, "merged_into")
+		if not merged_into:
+			break
+		name = merged_into
+	return name
+
 
 @frappe.whitelist()
 def find_duplicate_leads(lead_name: str):

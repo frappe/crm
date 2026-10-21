@@ -201,6 +201,8 @@ def find_by_phone(phone_number: str) -> list[dict]:
 
 	Not permission-filtered: a caller exposing this over HTTP must check access itself.
 	"""
+	from crm.api.lead import resolve_merged_lead
+
 	target = normalize_phone(phone_number)
 	digits = phone_search_digits(phone_number)
 	if not target or not digits:
@@ -230,6 +232,12 @@ def find_by_phone(phone_number: str) -> list[dict]:
 			None,
 		)
 		if matching_phone:
+			# A merged lead's number belongs to the lead it was merged into.
+			live_name = resolve_merged_lead(lead.name)
+			if live_name != lead.name:
+				lead = frappe.db.get_value(
+					"CRM Lead", live_name, ["name", "lead_name", "image"], as_dict=True
+				)
 			add(
 				leads,
 				"CRM Lead",

@@ -510,6 +510,45 @@ class TestMergeLead(IntegrationTestCase):
 		results = search_mergeable_leads(txt="zebulon", limit=1)
 		self.assertEqual([r["value"] for r in results], [older.name])
 
+	def test_phone_match_on_merged_lead_resolves_to_target(self):
+		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
+		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
+
+		from crm.api.lead import merge_leads
+		from crm.integrations.api import find_by_phone
+
+		merge_leads(target.name, source.name)
+
+		matches = find_by_phone("+91 98111 11111")
+		self.assertEqual([(m["doctype"], m["docname"]) for m in matches], [("CRM Lead", target.name)])
+		self.assertEqual(matches[0]["title"], "Target")
+
+	def test_chained_merge_resolves_to_last_target(self):
+		lead_a = self._create_lead(first_name="A", mobile_no="+91 98444 44444")
+		lead_b = self._create_lead(first_name="B", mobile_no="+91 98555 55555")
+		lead_c = self._create_lead(first_name="C", mobile_no="+91 98666 66666")
+
+		from crm.api.lead import merge_leads, resolve_merged_lead
+		from crm.integrations.api import find_by_phone
+
+		merge_leads(lead_b.name, lead_a.name)
+		merge_leads(lead_c.name, lead_b.name)
+
+		self.assertEqual(resolve_merged_lead(lead_a.name), lead_c.name)
+		self.assertEqual(resolve_merged_lead(lead_c.name), lead_c.name)
+		matches = find_by_phone("+91 98444 44444")
+		self.assertEqual([m["docname"] for m in matches], [lead_c.name])
+
+	def test_resolve_merged_lead_stops_on_a_cycle(self):
+		lead_a = self._create_lead(first_name="A")
+		lead_b = self._create_lead(first_name="B")
+		lead_a.db_set("merged_into", lead_b.name)
+		lead_b.db_set("merged_into", lead_a.name)
+
+		from crm.api.lead import resolve_merged_lead
+
+		self.assertIn(resolve_merged_lead(lead_a.name), (lead_a.name, lead_b.name))
+
 
 def create_user_without_lead_access():
 	email = "lead-noperm@example.com"
