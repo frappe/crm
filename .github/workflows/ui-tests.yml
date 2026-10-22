@@ -17,6 +17,7 @@ concurrency:
 
 env:
   FRAPPE_BRANCH: develop
+  BENCH_USE_UV: "1"
 
 jobs:
   ui-tests:
