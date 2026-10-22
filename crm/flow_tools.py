@@ -127,6 +127,8 @@ def _bullets(lines: list[str]) -> str:
 def _form_prompt(args: dict) -> str:
 	verb = "Update" if args.get("form") else "Publish"
 	fields = args.get("fields") or []
+	if not fields and args.get("form"):
+		return f'Update "{args.get("title")}". Its fields and other settings stay as they are.'
 	if not fields:
 		return (
 			f'{verb} "{args.get("title")}" with the standard contact fields: name, email, phone and company.'
@@ -149,8 +151,8 @@ def _form_prompt(args: dict) -> str:
 def publish_web_form(
 	title: str,
 	fields: list[FormField] | None = None,
-	description: str = "",
-	success_message: str = "Thanks, we'll be in touch soon.",
+	description: str | None = None,
+	success_message: str | None = None,
 	form: str | None = None,
 	*,
 	ctx: ToolContext,
@@ -160,24 +162,29 @@ def publish_web_form(
 	see them: each a lead `field` with the `label` to show and whether it's `required`, or a
 	`layout` break ("column break" starts the next column, "section break" a new block of fields).
 	Use breaks only where the form changes layout. Leave `fields` out for the standard contact
-	fields. Returns the form's link."""
+	fields on a new form; on an update, anything left out stays as it is. Returns the form's link."""
 	from crm.api.form import get_form_config, save_form
 
-	current = get_form_config(form) if form else None
-	data = {
-		"title": title,
-		"route": current["route"]
-		if current
-		else _free_route(frappe.scrub(title).replace("_", "-") or "contact-us"),
-		"document_type": "CRM Lead",
-		"description": description,
-		"success_message": success_message,
-		"published": 1,
-		"fields": [_form_row(f, i) for i, f in enumerate(fields or DEFAULT_FORM_FIELDS)],
-	}
-	if current:
-		# an update keeps the form's hidden defaults, which a save without them would clear
-		data["hidden_fields"] = current["hidden_fields"]
+	if form:
+		# an update starts from the saved form, so its layout and settings stay unless replaced
+		data = {k: v for k, v in get_form_config(form).items() if k not in ("name", "fields")}
+		data.update(title=title, published=1)
+	else:
+		data = {
+			"title": title,
+			"route": _free_route(frappe.scrub(title).replace("_", "-") or "contact-us"),
+			"document_type": "CRM Lead",
+			"description": "",
+			"success_message": "Thanks, we'll be in touch soon.",
+			"published": 1,
+		}
+		fields = fields or DEFAULT_FORM_FIELDS
+	if description is not None:
+		data["description"] = description
+	if success_message is not None:
+		data["success_message"] = success_message
+	if fields:
+		data["fields"] = [_form_row(f, i) for i, f in enumerate(fields)]
 	saved = save_form(form, data)
 	return {"form": saved["name"], "link": f"/crm-form/{saved['route']}"}
 
