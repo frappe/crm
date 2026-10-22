@@ -17,13 +17,14 @@ on:
     workflow_dispatch:
 
 concurrency:
-    group: frontend-${{ github.event.number || github.ref }}
-    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-    lint:
-        name: Lint
+    frontend:
+        name: Lint, Build & Test
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         steps:
             - uses: actions/checkout@v4
@@ -34,7 +35,7 @@ jobs:
             # workspace, and only the `ui` package is needed.
             - name: Clone frappe for @framework/ui
               run: |
-                  git clone --depth 1 --branch version-16 --filter=blob:none --sparse \
+                  git clone --depth 1 --branch "$(bash .github/helper/frappe_ref.sh version-16)" --filter=blob:none --sparse \
                       https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
                   git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
 
@@ -51,78 +52,21 @@ jobs:
               run: cd frontend && npx eslint src --ext .js,.ts,.vue
 
             - name: Oxlint
+              if: success() || failure()
               run: cd frontend && npx oxlint src
 
-    build:
-        name: Production Build
-        runs-on: ubuntu-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            # frontend/package.json links `@framework/ui` to a sibling frappe checkout
-            # (link:../../frappe/ui); without it, anything importing from @framework/ui
-            # fails to resolve. actions/checkout cannot place a repo outside the
-            # workspace, and only the `ui` package is needed.
-            - name: Clone frappe for @framework/ui
-              run: |
-                  git clone --depth 1 --branch version-16 --filter=blob:none --sparse \
-                      https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
-                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
-
-            - name: Install dependencies
-              run: cd frontend && yarn install --frozen-lockfile
-
             - name: Build frontend
+              if: success() || failure()
               run: cd frontend && yarn build
 
-    test:
-        name: Unit Tests & Coverage
-        runs-on: ubuntu-latest
-        needs: lint
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
-
             - name: Run frontend tests
-              uses: ./.github/actions/frontend-tests
-              with:
-                  node-version: "24"
-                  enable-coverage: "true"
-
-            - name: Upload coverage artifact
-              if: github.base_ref == 'develop' || github.ref_name == 'develop'
-              uses: ./.github/actions/upload-coverage
-              with:
-                  artifact-name: coverage-frontend
-                  coverage-path: frontend/coverage/lcov.info
-
-    coverage:
-        name: Coverage Wrap Up
-        needs: test
-        if: github.base_ref == 'develop' || github.ref_name == 'develop'
-        runs-on: ubuntu-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
+              if: success() || failure()
+              run: cd frontend && yarn test:coverage
 
             - name: Publish coverage to Codecov
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/publish-codecov
               with:
                   name: Frontend
+                  fail-ci-if-error: "false"
                   token: ${{ secrets.CODECOV_TOKEN }}
