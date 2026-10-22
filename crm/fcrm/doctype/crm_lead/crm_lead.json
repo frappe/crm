@@ -69,6 +69,11 @@
   "last_response_time",
   "column_break_tcqb",
   "last_responded_on",
+  "interactions_section",
+  "last_inbound_at",
+  "last_outbound_at",
+  "column_break_interactions",
+  "awaiting_reply_since",
   "log_tab",
   "status_change_log",
   "syncing_tab",
@@ -418,6 +423,34 @@
    "read_only": 1
   },
   {
+   "fieldname": "interactions_section",
+   "fieldtype": "Section Break",
+   "label": "Interactions"
+  },
+  {
+   "fieldname": "last_inbound_at",
+   "fieldtype": "Datetime",
+   "label": "Last Inbound At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_outbound_at",
+   "fieldtype": "Datetime",
+   "label": "Last Outbound At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_interactions",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "awaiting_reply_since",
+   "fieldtype": "Datetime",
+   "label": "Awaiting Reply Since",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
    "fieldname": "column_break_ygds",
    "fieldtype": "Column Break",
    "read_only": 1
@@ -483,7 +516,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-10 05:00:00.000000",
+ "modified": "2026-10-22 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",
