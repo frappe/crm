@@ -92,11 +92,18 @@
         <template v-for="user in usersList" :key="user.name">
           <li class="flex items-center justify-between py-2">
             <div class="flex items-center">
-              <Avatar
-                :image="user.user_image"
-                :label="user.full_name"
-                size="xl"
-              />
+              <div class="relative shrink-0">
+                <Avatar
+                  :image="user.user_image"
+                  :label="user.full_name"
+                  size="xl"
+                />
+                <div
+                  class="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-elevation-2 p-0.5"
+                >
+                  <AvailabilityDot :user="user.name" class="!size-2.5" />
+                </div>
+              </div>
               <div class="flex flex-col ml-3">
                 <div class="flex items-center text-p-base text-ink-gray-8">
                   {{ user.full_name }}
@@ -166,6 +173,7 @@
 
 <script setup>
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
+import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'

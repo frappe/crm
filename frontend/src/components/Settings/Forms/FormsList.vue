@@ -3,9 +3,19 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-          {{ __('Forms') }}
-        </h2>
+        <div class="flex gap-2 items-center">
+          <h2 class="flex text-2xl-semibold leading-none h-5">
+            {{ __('Forms') }}
+          </h2>
+          <Tooltip :text="__('View documentation')">
+            <a
+              href="https://docs.frappe.io/crm/capturing-leads/web-form"
+              target="_blank"
+            >
+              <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+            </a>
+          </Tooltip>
+        </div>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
@@ -148,16 +158,16 @@ import {
   createResource,
   call,
   toast,
+  Tooltip,
 } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import { ref, reactive, h } from 'vue'
 import { ConfirmDelete, copyToClipboard } from '../../../utils'
 
 const emit = defineEmits(['open'])
 const { capture } = useTelemetry()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const isConfirmingDelete = ref(false)
 
@@ -221,7 +231,6 @@ async function createForm() {
       form: { title: draft.title, route, document_type: draft.document_type },
     })
     capture('form_created', { doctype: draft.document_type })
-    updateOnboardingStep('create_first_web_form', true)
     showCreate.value = false
     emit('open', doc.name)
     forms.reload()

@@ -3,9 +3,19 @@
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
-        <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
-          {{ __('Assignment Rules') }}
-        </h2>
+        <div class="flex gap-2 items-center">
+          <h2 class="flex text-2xl-semibold leading-none h-5">
+            {{ __('Assignment Rules') }}
+          </h2>
+          <Tooltip :text="__('View documentation')">
+            <a
+              href="https://docs.frappe.io/crm/assignment-rule"
+              target="_blank"
+            >
+              <LucideCircleQuestionMark class="h-4 w-4 text-ink-gray-6" />
+            </a>
+          </Tooltip>
+        </div>
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
@@ -33,7 +43,8 @@
 
 <script setup>
 import AssignmentRulesList from './AssignmentRulesList.vue'
-import { createResource } from 'frappe-ui'
+import { createResource, Tooltip } from 'frappe-ui'
+import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import { inject, provide } from 'vue'
 
 const updateStep = inject('updateStep')

@@ -111,7 +111,6 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
@@ -126,7 +125,6 @@ const reload = defineModel('reload', { type: Boolean })
 const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
@@ -262,6 +260,10 @@ const emailEmpty = computed(
     isContentEmpty(newEmail.value) || !newEmailEditor.value?.toEmails?.length,
 )
 
+const emailBlocked = computed(
+  () => emailEmpty.value || newEmailEditor.value?.sendBlocked,
+)
+
 async function sendMail() {
   let fromEmail = newEmailEditor.value.fromEmail || getUser().email
   let recipients = newEmailEditor.value.toEmails
@@ -324,7 +326,7 @@ async function deleteAttachedFiles() {
 }
 
 async function submitEmail() {
-  if (emailEmpty.value) return
+  if (emailBlocked.value) return
   showEmailBox.value = false
   // toast.promise returns the toast id (not the promise), so await the send
   // itself — otherwise the reload below fires before the email is committed and
@@ -345,7 +347,6 @@ async function submitEmail() {
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
-  updateOnboardingStep('send_first_email')
 }
 
 async function submitComment() {
@@ -367,7 +368,6 @@ async function submitComment() {
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })
-  updateOnboardingStep('add_first_comment')
 }
 
 function toggleEmailBox() {
