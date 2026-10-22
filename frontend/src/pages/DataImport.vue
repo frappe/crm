@@ -1,17 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <DataImport
-    :doctype="route.params.doctype"
-    :importName="route.params.importName"
-    :doctypeMap="doctypeMap"
-  />
-</template>
-
-<script setup>
-import { usePageMeta } from 'frappe-ui'
-import { DataImport } from '@framework/ui/components/DataImport'
-import { useRoute } from 'vue-router'
-=======
   <LegacyDataImport v-if="!dataImport" />
   <template v-else>
     <LayoutHeader>
@@ -38,51 +25,47 @@ import { importListQuery } from '@/utils/dataImport'
 // Frappe v15 ships only the older DataImport, so these may be missing; a named
 // import would fail the build there
 import * as dataImportUi from '@framework/ui/components/DataImport'
->>>>>>> b52b5e1 (fix: keep data import and availability assignment working on Frappe v15)
 import { getSettings } from '@/stores/settings'
+import { Breadcrumbs, usePageMeta, type BreadcrumbsProps } from 'frappe-ui'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const route = useRoute()
-const { brand } = getSettings()
+interface CrmPage {
+  title: string
+  list: string
+  page?: string
+  param?: string
+}
 
-const doctypeMap = {
-  'CRM Lead': {
-    title: 'Leads',
-    listRoute: '/crm/leads',
-    pageRoute: `/crm/leads/docname`,
-  },
-  'CRM Deal': {
-    title: 'Deals',
-    listRoute: '/crm/deals',
-    pageRoute: `/crm/deals/docname`,
-  },
+const crmPages: Record<string, CrmPage> = {
+  'CRM Lead': { title: 'Leads', list: 'Leads', page: 'Lead', param: 'leadId' },
+  'CRM Deal': { title: 'Deals', list: 'Deals', page: 'Deal', param: 'dealId' },
   Contact: {
     title: 'Contacts',
-    listRoute: '/crm/contacts',
-    pageRoute: `/crm/contacts/docname`,
-  },
-  'CRM Task': {
-    title: 'Tasks',
-    listRoute: '/crm/tasks',
+    list: 'Contacts',
+    page: 'Contact',
+    param: 'contactId',
   },
   'CRM Organization': {
     title: 'Organizations',
-    listRoute: '/crm/organizations',
-    pageRoute: `/crm/organizations/docname`,
+    list: 'Organizations',
+    page: 'Organization',
+    param: 'organizationId',
   },
-  'CRM Call Log': {
-    title: 'Call Log',
-    listRoute: '/crm/call-logs',
-  },
+  'CRM Task': { title: 'Tasks', list: 'Tasks' },
+  'CRM Call Log': { title: 'Call Logs', list: 'Call Logs' },
 }
+
+const route = useRoute()
+const router = useRouter()
+const { brand } = getSettings()
 
 usePageMeta(() => {
   return {
     title: __('Data Import'),
-    icon: brand.favicon,
+    icon: (brand as { favicon?: string }).favicon,
   }
 })
-<<<<<<< HEAD
-=======
 
 const name = ref<string | null>((route.params.importName as string) || null)
 const { DataImportWizard, useDataImport } = dataImportUi as Partial<
@@ -139,5 +122,4 @@ function openImports(doctype: string) {
 function newImport(doctype: string) {
   router.push({ name: 'NewDataImport', params: { doctype } })
 }
->>>>>>> b52b5e1 (fix: keep data import and availability assignment working on Frappe v15)
 </script>
