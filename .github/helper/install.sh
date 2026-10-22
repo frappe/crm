@@ -6,10 +6,6 @@ cd ~ || ex
 
 export BENCH_USE_UV=1
 
-# Installing mariadb-client also removes the runner's preinstalled mysql packages.
-sudo apt update
-sudo apt install -y --no-install-recommends redis-server mariadb-client libmariadb-dev
-
 # Frappe (and erpnext) branch to test against; set by CI matrix, defaults to develop.
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
 FRAPPE_REF=$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}")
