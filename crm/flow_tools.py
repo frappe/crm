@@ -1005,7 +1005,11 @@ def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 	deals = _open_deals({"deal_owner": user})
 	return {
 		"tasks": [
-			{**_record(t.reference_doctype, t.reference_docname), "task": t.title, "due": str(t.due_date)}
+			{
+				**_record(t.reference_doctype, t.reference_docname, "tasks"),
+				"task": t.title,
+				"due": str(t.due_date),
+			}
 			for t in frappe.get_list(
 				"CRM Task",
 				filters={"assigned_to": user, "status": OPEN_TASK, "due_date": ["<", until]},
@@ -1302,17 +1306,25 @@ def _waiting_on_reply(records: list[tuple[str, str]]) -> list[dict[str, Any]]:
 		):
 			latest.setdefault(c.reference_name, c)
 		waiting += [
-			{**_record(doctype, name), "subject": c.subject, "since": str(c.communication_date)}
+			{**_record(doctype, name, "emails"), "subject": c.subject, "since": str(c.communication_date)}
 			for name, c in latest.items()
 			if c.sent_or_received == "Received"
 		]
 	return waiting[:20]
 
 
-def _record(doctype: str | None, name: str | None) -> dict[str, Any]:
+def _record(doctype: str | None, name: str | None, tab: str | None = None) -> dict[str, Any]:
+	"""A lead or deal by name, linked to its page, on `tab` (emails, notes, tasks) when given."""
 	# a task can be theirs on a record they can't open; then it names only the task
 	if not (doctype and name and frappe.has_permission(doctype, "read", name)):
 		return {"link": "/crm/tasks"}
+	record = _record_details(doctype, name)
+	if tab and record.get("link", "").startswith(("/crm/leads/", "/crm/deals/")):
+		record["link"] += f"#{tab}"
+	return record
+
+
+def _record_details(doctype: str, name: str) -> dict[str, Any]:
 	if doctype == "CRM Deal" and name:
 		return _deal(
 			frappe.db.get_value(
@@ -1428,7 +1440,7 @@ def send_email(
 		"sent_to": recipients,
 		"email": sent.get("name"),
 		"on": _record_title(doctype, record),
-		"link": _record_link(doctype, record),
+		"link": _record_link(doctype, record, "emails"),
 	}
 
 
@@ -1455,7 +1467,11 @@ def add_note(
 			"reference_docname": record,
 		}
 	).insert()
-	return {"note": note.title, "on": _record_title(doctype, record), "link": _record_link(doctype, record)}
+	return {
+		"note": note.title,
+		"on": _record_title(doctype, record),
+		"link": _record_link(doctype, record, "notes"),
+	}
 
 
 def _when(due: str) -> str:
@@ -1517,7 +1533,7 @@ def add_task(
 		"title": title,
 		"due": _when(str(task.due_date)) if task.due_date else None,
 		"on": _record_title(doctype, record),
-		"link": _record_link(doctype, record),
+		"link": _record_link(doctype, record, "tasks"),
 	}
 
 
@@ -1565,7 +1581,7 @@ def update_task(
 		"title": doc.title,
 		"due": _when(str(doc.due_date)) if doc.due_date else None,
 		"status": doc.status,
-		"link": _record_link(doc.reference_doctype, doc.reference_docname)
+		"link": _record_link(doc.reference_doctype, doc.reference_docname, "tasks")
 		if doc.reference_docname
 		else "/crm/tasks",
 	}
@@ -1602,5 +1618,6 @@ def find_records(text: str, *, ctx: ToolContext) -> list[dict[str, Any]]:
 	return found
 
 
-def _record_link(doctype: str, record: str) -> str:
-	return f"/crm/{'deals' if doctype == 'CRM Deal' else 'leads'}/{record}"
+def _record_link(doctype: str, record: str, tab: str | None = None) -> str:
+	"""A lead's or deal's page, on one of its tabs (emails, notes, tasks) when given."""
+	return f"/crm/{'deals' if doctype == 'CRM Deal' else 'leads'}/{record}" + (f"#{tab}" if tab else "")

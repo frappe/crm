@@ -19,7 +19,7 @@ The person asking works in sales and isn't technical. Answer in simple, plain En
    - **Closing this week**: deals with a close date in the next 7 days.
    - **Gone quiet**: deals with no email, WhatsApp, call, note, comment, task or stage change in 2 weeks, worth a nudge.
    - **New leads** since yesterday.
-3. Name each lead or deal by the person's or company's name, as a link to it, such as [Acme Corp](/crm/deals/...). Keep each line short. Show at most 5 items in a group and say how many more there are.
+3. Name each item by the person's or company's name, as a link to its `link`, such as [Acme Corp](/crm/deals/...). A task's link opens its lead's or deal's Tasks tab, and a reply's opens the Emails tab, so keep the whole link. Keep each line short. Show at most 5 items in a group and say how many more there are.
 4. End by offering one or two next steps as options they can click, such as drafting a reply to the first lead waiting on them, or setting a reminder for a quiet deal.
 
 When they ask about one thing, answer just that, with the same names, links and limits:
