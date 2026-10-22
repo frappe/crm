@@ -70,12 +70,13 @@ sed -i 's/schedule:/# schedule:/g' Procfile
 sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
-bench get-app whatsapp
-bench get-app crm "${GITHUB_WORKSPACE}"
+# Server tests never load the built frontend, so skip its yarn install and builds.
+bench get-app --skip-assets whatsapp
+YARN_IGNORE_SCRIPTS=true bench get-app --skip-assets crm "${GITHUB_WORKSPACE}"
 
 # Only pull erpnext when the integration is under test, to keep other runs fast.
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-    bench get-app erpnext --branch "${FRAPPE_BRANCH}"
+    bench get-app --skip-assets erpnext --branch "${FRAPPE_BRANCH}"
 fi
 
 bench setup requirements --dev
