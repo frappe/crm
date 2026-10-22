@@ -83,26 +83,10 @@ jobs:
                   type: "server"
                   ci-build-id: ${{ github.run_id }}
 
-            - name: Persist coverage artifact
-              if: github.base_ref == 'develop' || github.ref_name == 'develop'
-              uses: ./.github/actions/upload-coverage
-              with:
-                  artifact-name: coverage-${{ matrix.frappe-branch }}
-                  coverage-path: /home/runner/frappe-bench/sites/coverage.xml
-
-    coverage:
-        name: Coverage Wrap Up
-        needs: test
-        if: github.base_ref == 'develop' || github.ref_name == 'develop'
-        runs-on: ubuntu-latest
-        steps:
-            - name: Clone
-              uses: actions/checkout@v6
-
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
-
             - name: Publish coverage
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/publish-codecov
               with:
+                  files: /home/runner/frappe-bench/sites/coverage.xml
+                  fail-ci-if-error: "false"
                   token: ${{ secrets.CODECOV_TOKEN }}
