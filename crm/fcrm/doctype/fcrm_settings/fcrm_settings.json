@@ -140,11 +140,11 @@
    "options": "frankfurter.app\nfawazahmed-exchange-api\nexchangerate.host\nexchangerate-api\nallratestoday"
   },
   {
-   "depends_on": "eval:doc.service_provider == 'exchangerate.host';",
+   "depends_on": "eval:['exchangerate.host', 'allratestoday'].includes(doc.service_provider);",
    "fieldname": "access_key",
    "fieldtype": "Data",
    "label": "Access Key",
-   "mandatory_depends_on": "eval:doc.service_provider == 'exchangerate.host';"
+   "mandatory_depends_on": "eval:['exchangerate.host', 'allratestoday'].includes(doc.service_provider);"
   },
   {
    "fieldname": "column_break_vqck",
