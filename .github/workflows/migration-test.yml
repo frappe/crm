@@ -16,8 +16,8 @@ on:
     workflow_dispatch:
 
 concurrency:
-    group: migration-${{ github.event.number || github.ref }}
-    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
     migrate:
@@ -37,6 +37,7 @@ jobs:
         env:
             BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
             BENCH_PATH: /home/runner/frappe-bench
+            BENCH_USE_UV: "1"
 
         steps:
             - name: Checkout PR code
@@ -63,11 +64,13 @@ jobs:
               with:
                   node-version: "24"
 
-            - name: Install system dependencies
-              run: |
-                  sudo apt update
-                  sudo apt install -y libcups2-dev redis-server mariadb-client libmariadb-dev
-                  npm install -g yarn
+            - name: Install system packages
+              uses: ./pr-crm/.github/actions/apt-install
+              with:
+                  packages: redis-server mariadb-client libmariadb-dev
+
+            - name: Install yarn
+              run: npm install -g yarn
 
             - name: Configure database
               run: |

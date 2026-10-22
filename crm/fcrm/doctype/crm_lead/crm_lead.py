@@ -94,6 +94,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_unique_fields()
 		self.validate_lost_reason()
 		guard_doc_recipient_change(self)
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
@@ -158,6 +159,16 @@ class CRMLead(Document):
 
 			if self.email == self.lead_owner:
 				frappe.throw(_("Lead Owner cannot be same as the Lead Email Address"))
+
+	def validate_unique_fields(self):
+		# DB may keep a non-unique index when Unique is set via Customize Form
+		for df in self.meta.get("fields", {"unique": 1}):
+			value = self.get(df.fieldname)
+			if value and frappe.db.exists(self.doctype, {df.fieldname: value, "name": ("!=", self.name)}):
+				frappe.throw(
+					_("{0} {1} already exists").format(_(df.label), frappe.bold(value)),
+					frappe.UniqueValidationError,
+				)
 
 	def validate_lost_reason(self):
 		"""

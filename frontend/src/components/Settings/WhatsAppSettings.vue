@@ -65,6 +65,7 @@
           <WhatsAppTemplateList
             v-if="tab.value === 'templates'"
             @edit="editTemplate"
+            @create="newTemplate()"
           />
           <WhatsAppAccountList
             v-else-if="tab.value === 'accounts'"

@@ -17,13 +17,14 @@ on:
     workflow_dispatch:
 
 concurrency:
-    group: frontend-${{ github.event.number || github.ref }}
-    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-    lint:
-        name: Lint
+    frontend:
+        name: Lint, Build & Test
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         steps:
             - uses: actions/checkout@v4
@@ -41,8 +42,15 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
+
+            # The lockfile rarely changes, so restoring node_modules beats a fresh yarn install.
+            - name: Cache node_modules
+              uses: actions/cache@v4
+              with:
+                  path: frontend/node_modules
+                  key: node-modules-${{ runner.os }}-node24-${{ hashFiles('frontend/yarn.lock') }}
+                  restore-keys: |
+                      node-modules-${{ runner.os }}-node24-
 
             # @whatsapp/ui is linked from the sibling app dir that bench creates;
             # this job only checks out crm, so clone it there.
@@ -56,85 +64,21 @@ jobs:
               run: cd frontend && npx eslint src --ext .js,.ts,.vue
 
             - name: Oxlint
+              if: success() || failure()
               run: cd frontend && npx oxlint src
 
-    build:
-        name: Production Build
-        runs-on: ubuntu-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            # see the lint job: @framework/ui links to a sibling frappe checkout
-            - name: Clone frappe for @framework/ui
-              run: |
-                  git clone --depth 1 --branch develop --filter=blob:none --sparse \
-                      https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
-                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
-
-            # @whatsapp/ui is linked from the sibling app dir that bench creates;
-            # this job only checks out crm, so clone it there.
-            - name: Clone WhatsApp app
-              run: git clone --depth 1 https://github.com/frappe/whatsapp.git ../whatsapp
-
-            - name: Install dependencies
-              run: cd frontend && yarn install --frozen-lockfile
-
             - name: Build frontend
+              if: success() || failure()
               run: cd frontend && yarn build
 
-    test:
-        name: Unit Tests & Coverage
-        runs-on: ubuntu-latest
-        needs: lint
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
-
-            # @whatsapp/ui is linked from the sibling app dir that bench creates;
-            # this job only checks out crm, so clone it there.
-            - name: Clone WhatsApp app
-              run: git clone --depth 1 https://github.com/frappe/whatsapp.git ../whatsapp
-
             - name: Run frontend tests
-              uses: ./.github/actions/frontend-tests
-              with:
-                  node-version: "24"
-                  enable-coverage: "true"
-
-            - name: Upload coverage artifact
-              if: github.base_ref == 'develop' || github.ref_name == 'develop'
-              uses: ./.github/actions/upload-coverage
-              with:
-                  artifact-name: coverage-frontend
-                  coverage-path: frontend/coverage/lcov.info
-
-    coverage:
-        name: Coverage Wrap Up
-        needs: test
-        if: github.base_ref == 'develop' || github.ref_name == 'develop'
-        runs-on: ubuntu-latest
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
+              if: success() || failure()
+              run: cd frontend && yarn test:coverage
 
             - name: Publish coverage to Codecov
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/publish-codecov
               with:
                   name: Frontend
+                  fail-ci-if-error: "false"
                   token: ${{ secrets.CODECOV_TOKEN }}

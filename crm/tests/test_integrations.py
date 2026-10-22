@@ -5,10 +5,13 @@ from unittest.mock import patch
 
 import frappe
 from frappe.tests import IntegrationTestCase
+from frappe.utils import add_to_date
 
 from crm.integrations.api import (
 	add_note_to_call_log,
 	add_task_to_call_log,
+	find_contact_by_phone_number,
+	find_contact_lead_or_deal_from_number,
 	get_contact_by_phone_number,
 	get_contact_lead_or_deal_from_number,
 	get_user_default_calling_medium,
@@ -761,3 +764,84 @@ class TestFindByPhone(IntegrationTestCase):
 		self.assertEqual(found["name"], lead.name)
 		self.assertEqual(found["full_name"], lead.lead_name)
 		self.assertEqual(get_contact_by_phone_number("+9999999999"), {"mobile_no": "+9999999999"})
+
+
+SALES_USER = "phone-lookup-rep@example.com"
+
+
+class TestPhoneLookupPermissions(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		if not frappe.db.exists("User", SALES_USER):
+			user = frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": SALES_USER,
+					"first_name": "Phone Lookup Rep",
+					"send_welcome_email": 0,
+				}
+			).insert(ignore_permissions=True)
+			user.add_roles("Sales User")
+
+	def setUp(self):
+		frappe.db.savepoint("test_phone_lookup")
+		self.lead = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Hidden",
+				"mobile_no": "+91 98765 11111",
+				"lead_owner": "Administrator",
+			}
+		).insert()
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback(save_point="test_phone_lookup")
+		super().tearDown()
+
+	def test_lookups_hide_a_lead_the_user_cannot_read(self):
+		frappe.set_user(SALES_USER)
+		self.assertFalse(frappe.has_permission("CRM Lead", "read", self.lead.name))
+
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111"), {"mobile_no": "+91 98765 11111"})
+		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (None, None))
+
+	def test_server_side_lookups_still_find_the_lead(self):
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(
+			find_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
+		)
+
+	def test_lookups_find_a_lead_the_user_can_read(self):
+		frappe.db.set_value("CRM Lead", self.lead.name, "lead_owner", SALES_USER)
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(
+			get_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
+		)
+
+	def test_lookups_skip_a_newer_hidden_lead_for_an_older_readable_one(self):
+		readable = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Visible",
+				"mobile_no": "+91 98765 11111",
+				"lead_owner": SALES_USER,
+			}
+		).insert()
+		frappe.db.set_value(
+			"CRM Lead",
+			self.lead.name,
+			"modified",
+			add_to_date(readable.modified, hours=1),
+			update_modified=False,
+		)
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], readable.name)
+		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (readable.name, "CRM Lead"))

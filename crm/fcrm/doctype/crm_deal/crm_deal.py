@@ -378,6 +378,7 @@ class CRMDeal(Document):
 
 @frappe.whitelist()
 def add_contact(deal: str, contact: str):
+	"""Link an existing Contact to a Deal."""
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to add contact to Deal"), frappe.PermissionError)
 
@@ -389,6 +390,7 @@ def add_contact(deal: str, contact: str):
 
 @frappe.whitelist()
 def remove_contact(deal: str, contact: str):
+	"""Unlink a Contact from a Deal."""
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to remove contact from Deal"), frappe.PermissionError)
 
@@ -400,6 +402,7 @@ def remove_contact(deal: str, contact: str):
 
 @frappe.whitelist()
 def set_primary_contact(deal: str, contact: str):
+	"""Make one of a Deal's linked Contacts its primary contact."""
 	if not frappe.has_permission("CRM Deal", "write", deal):
 		frappe.throw(_("Not allowed to set primary contact for Deal"), frappe.PermissionError)
 
@@ -477,17 +480,32 @@ def create_contact(doc):
 
 @frappe.whitelist()
 def create_deal(doc: dict):
+	"""Create a Deal from `doc`, creating its Contact and Organization from the given details when they do not exist."""
+
+	frappe.has_permission("CRM Deal", "create", throw=True)
 	deal = frappe.new_doc("CRM Deal")
 
 	contact = doc.get("contact")
 	if not contact and (
 		doc.get("first_name") or doc.get("last_name") or doc.get("email") or doc.get("mobile_no")
 	):
-		contact = create_contact(doc)
+		contact = contact_exists(doc)
+		if not contact:
+			frappe.has_permission("Contact", "create", throw=True)
+			contact = create_contact(doc)
+
+	organization = doc.get("organization")
+	if not organization and doc.get("organization_name"):
+		organization = frappe.db.exists(
+			"CRM Organization", {"organization_name": doc.get("organization_name")}
+		)
+		if not organization:
+			frappe.has_permission("CRM Organization", "create", throw=True)
+			organization = create_organization(doc)
 
 	deal.update(
 		{
-			"organization": doc.get("organization") or create_organization(doc),
+			"organization": organization,
 			"contacts": [{"contact": contact, "is_primary": 1}] if contact else [],
 		}
 	)

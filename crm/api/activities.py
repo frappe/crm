@@ -13,6 +13,7 @@ from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_a
 
 @frappe.whitelist()
 def get_activities(name: str):
+	"""Return the timeline of a Lead or Deal: field changes, emails, comments, calls, notes, tasks and attachments."""
 	if frappe.db.exists("CRM Deal", name):
 		return get_deal_activities(name)
 	elif frappe.db.exists("CRM Lead", name):

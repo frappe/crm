@@ -726,6 +726,7 @@ const senderName = computed(
 const messages = useMessages({
   references,
   to: () => doc.value?.mobile_no,
+  enabled: whatsappEnabled,
 })
 
 watch(

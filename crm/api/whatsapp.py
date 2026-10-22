@@ -2,11 +2,12 @@ import frappe
 from frappe import _
 from frappe.permissions import add_permission, update_permission_property
 from frappe.query_builder.functions import Count
+from frappe.utils import now
 from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
-from crm.integrations.api import find_by_phone, get_contact_lead_or_deal_from_number
+from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
 from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
@@ -40,7 +41,7 @@ def validate(doc, method):
 
 def _resolve_reference(doc, phone_number: str) -> None:
 	try:
-		name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+		name, doctype = find_contact_lead_or_deal_from_number(phone_number)
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to resolve contact from number")
 		return
@@ -183,6 +184,17 @@ def notify_agent(doc, method=None):
 			)
 
 
+def update_reference_modified(doc, method=None):
+	"""A sent or received message bumps its lead or deal's modified time, as an email does."""
+	if doc.reference_doctype not in ("CRM Lead", "CRM Deal") or not doc.reference_docname:
+		return
+	if not frappe.db.get_single_value("FCRM Settings", "update_timestamp_on_new_communication"):
+		return
+	frappe.db.set_value(
+		doc.reference_doctype, doc.reference_docname, "modified", now(), update_modified=False
+	)
+
+
 def get_record_title(doctype: str, name: str) -> str:
 	"""The name people know a lead or deal by, as mention notifications show it."""
 	if doctype == "CRM Lead":
@@ -211,7 +223,7 @@ def guard_recipient_change(
 	showing on the record after the change, so the user has to know before it happens."""
 	if not old_number or normalize_phone(old_number) == normalize_phone(new_number):
 		return
-	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended():
+	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended() or not is_whatsapp_installed():
 		return
 
 	count = count_conversation(doctype, docname, old_number)
