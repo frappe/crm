@@ -217,6 +217,7 @@ describe('changedRecords', () => {
     expect(
       changedRecords([
         { tool: 'my_day', args: {}, result: {} },
+        { tool: 'save_prompt', args: { prompt: 'x' }, result: {} },
         { tool: 'update_task', args: { task: '12' }, result: { task: '12' } },
       ]),
     ).toEqual({ doctypes: ['CRM Task'], records: [] })

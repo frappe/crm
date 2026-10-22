@@ -121,6 +121,8 @@ const READ_TOOLS = new Set([
   'my_day',
   'sales_health',
   'find_records',
+  // Flow's: a saved prompt changes nothing in the CRM
+  'save_prompt',
 ])
 
 // One record opens that record, several in one place open the place, and changes in
