@@ -1,3 +1,5 @@
+from frappe.automation.doctype.assignment_rule.assignment_rule import AssignmentRule
+
 from crm.api.availability import get_user_categories
 
 CRM_DOCTYPES = ("CRM Lead", "CRM Deal")
@@ -26,3 +28,7 @@ class CRMAssignmentRule:
 			return super().get_user(doc)
 		finally:
 			setattr(self, fieldname, pool)
+
+
+class CRMAssignmentRuleV15(CRMAssignmentRule, AssignmentRule):
+	pass
