@@ -12,4 +12,8 @@
 import MobileSidebar from '@/components/Mobile/MobileSidebar.vue'
 import MobileAppHeader from '@/components/Mobile/MobileAppHeader.vue'
 import GlobalModals from '@/components/Modals/GlobalModals.vue'
+import { availabilityStore } from '@/stores/availability'
+
+// listen for status changes from the start, not only once a picker opens
+availabilityStore()
 </script>

@@ -75,7 +75,8 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip, Switch, createResource } from 'frappe-ui'
+import { availabilityStore } from '@/stores/availability'
+import { Tooltip, Switch, createResource, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, watch } from 'vue'
 
@@ -95,6 +96,7 @@ const assignToMe = ref(false)
 const error = ref('')
 
 const { users, getUser } = usersStore()
+const availability = availabilityStore()
 
 const removeValue = (value) => {
   if (value === getUser('').name) {
@@ -119,6 +121,18 @@ const addValue = (value) => {
   }
   if (!assignees.value.find((assignee) => assignee.name === value)) {
     assignees.value.push(obj)
+    warnIfUnreachable(value)
+  }
+}
+
+function warnIfUnreachable(user) {
+  if (user === getUser('').name) return
+  const category = availability.userStatus(user)?.category
+  const name = getUser(user).full_name
+  if (category === 'Away') {
+    toast.warning(__('{0} is away right now', [name]))
+  } else if (category === 'Unavailable') {
+    toast.warning(__('{0} is unavailable right now', [name]))
   }
 }
 

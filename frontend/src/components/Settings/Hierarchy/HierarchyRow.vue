@@ -32,12 +32,7 @@
       @drop.prevent="canEdit && handlers.onDrop(node)"
       @click="hasChildren && emit('toggle', $event)"
     >
-      <Avatar
-        :image="node.user_image"
-        :label="node.full_name"
-        size="lg"
-        class="shrink-0"
-      />
+      <UserAvatar :user="node.user" size="lg" class="shrink-0" />
 
       <span class="text-ink-gray-8 truncate">
         {{ node.full_name }}
@@ -109,8 +104,9 @@
 </template>
 
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import UserMultiSelect from './UserMultiSelect.vue'
-import { Avatar, Badge, Button, Dropdown, Popover } from 'frappe-ui'
+import { Badge, Button, Dropdown, Popover } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
