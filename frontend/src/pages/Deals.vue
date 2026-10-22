@@ -31,11 +31,7 @@
     v-if="route.params.viewType == 'kanban'"
     v-model="deals"
     :options="{
-      getRoute: (row) => ({
-        name: 'Deal',
-        params: { dealId: row.name },
-        query: { view: route.query.view, viewType: route.params.viewType },
-      }),
+      getRoute: (row) => getRoute(row.name),
       onNewClick: (column) => onNewClick(column),
     }"
     @update="(data) => viewControls.updateKanbanSettings(data)"
@@ -172,27 +168,15 @@
 
     <template #actions="{ itemName }">
       <div class="flex gap-2 items-center justify-between">
-        <div class="text-ink-gray-5 flex items-center gap-1.5">
-          <EmailAtIcon class="h-4 w-4" />
-          <span v-if="getRow(itemName, '_email_count').label">
-            {{ getRow(itemName, '_email_count').label }}
-          </span>
-          <span class="text-4xl leading-[0]"> &middot; </span>
-          <NoteIcon class="h-4 w-4" />
-          <span v-if="getRow(itemName, '_note_count').label">
-            {{ getRow(itemName, '_note_count').label }}
-          </span>
-          <span class="text-4xl leading-[0]"> &middot; </span>
-          <TaskIcon class="h-4 w-4" />
-          <span v-if="getRow(itemName, '_task_count').label">
-            {{ getRow(itemName, '_task_count').label }}
-          </span>
-          <span class="text-4xl leading-[0]"> &middot; </span>
-          <CommentIcon class="h-4 w-4" />
-          <span v-if="getRow(itemName, '_comment_count').label">
-            {{ getRow(itemName, '_comment_count').label }}
-          </span>
-        </div>
+        <KanbanActivityCounts
+          :route="getRoute(itemName)"
+          :counts="{
+            emails: getRow(itemName, '_email_count').label,
+            notes: getRow(itemName, '_note_count').label,
+            tasks: getRow(itemName, '_task_count').label,
+            comments: getRow(itemName, '_comment_count').label,
+          }"
+        />
         <Dropdown
           class="flex items-center gap-2"
           :options="actions(itemName)"
@@ -254,17 +238,16 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
-import EmailAtIcon from '@/components/Icons/EmailAtIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
+import KanbanActivityCounts from '@/components/Kanban/KanbanActivityCounts.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
@@ -276,9 +259,9 @@ import { statusesStore } from '@/stores/statuses'
 import { callEnabled } from '@/composables/telephony'
 import { formatDate, timeAgo, website, formatTime } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useBroadcast } from '@/composables/useBroadcast'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 import { ref, reactive, computed, h } from 'vue'
@@ -289,12 +272,20 @@ const { makeCall } = globalStore()
 const { getUser } = usersStore()
 const { getOrganization } = organizationsStore()
 const { getDealStatus } = statusesStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 const { on } = useBroadcast()
 
 const route = useRoute()
+
+function getRoute(name) {
+  return {
+    name: 'Deal',
+    params: { dealId: name },
+    query: { view: route.query.view, viewType: route.params.viewType },
+  }
+}
 
 const dealsListView = ref(null)
 const showDealModal = ref(false)
@@ -569,7 +560,7 @@ function showTask(name) {
 function after(d, isNew = false) {
   let a = d.doctype == 'CRM Task' ? 'task' : 'note'
   if (isNew) {
-    updateOnboardingStep('create_first_' + a)
+    completeStep('create_first_' + a)
     capture(a + '_created')
   } else {
     capture(a + '_updated')

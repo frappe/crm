@@ -161,7 +161,6 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import { ref, reactive, h } from 'vue'
@@ -169,7 +168,6 @@ import { ConfirmDelete, copyToClipboard } from '../../../utils'
 
 const emit = defineEmits(['open'])
 const { capture } = useTelemetry()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 
 const isConfirmingDelete = ref(false)
 
@@ -233,7 +231,6 @@ async function createForm() {
       form: { title: draft.title, route, document_type: draft.document_type },
     })
     capture('form_created', { doctype: draft.document_type })
-    updateOnboardingStep('create_first_web_form', true)
     showCreate.value = false
     emit('open', doc.name)
     forms.reload()
