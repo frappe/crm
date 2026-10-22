@@ -436,12 +436,7 @@ def get_data(
 				kc["all_count"] = all_count
 				kc["count"] = len(column_data)
 
-<<<<<<< HEAD
-				for d in column_data:
-					getCounts(d, doctype)
-=======
 				set_activity_counts(column_data, doctype)
->>>>>>> 954c40b (fix: restore activity counts on kanban cards)
 
 			if order:
 				column_data = sorted(
