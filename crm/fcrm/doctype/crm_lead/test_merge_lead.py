@@ -684,6 +684,32 @@ class TestMergeLead(IntegrationTestCase):
 				# The load the merged_into/converted checks read must be a locking read
 				self.assertIn("for update", loads[0].lower())
 
+	def test_cannot_convert_a_merged_lead(self):
+		lead_a = self._create_lead(first_name="A", email="convert-a@test.com")
+		lead_b = self._create_lead(first_name="B", email="convert-b@test.com")
+		lead_c = self._create_lead(first_name="C", email="convert-c@test.com")
+
+		from crm.api.lead import merge_leads
+		from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
+
+		merge_leads(lead_b.name, lead_a.name)
+		merge_leads(lead_c.name, lead_b.name)
+
+		for merged in (lead_a, lead_b):
+			with self.assertRaisesRegex(frappe.ValidationError, lead_c.name):
+				convert_to_deal(lead=merged.name)
+			self.assertFalse(frappe.db.get_value("CRM Lead", merged.name, "converted"))
+		self.assertFalse(frappe.db.exists("CRM Deal", {"lead": ("in", [lead_a.name, lead_b.name])}))
+
+	def test_cannot_convert_a_lead_marked_duplicate(self):
+		lead = self._create_lead(first_name="Dup", email="convert-dup@test.com")
+		lead.db_set("is_duplicate", 1)
+
+		from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
+
+		with self.assertRaises(frappe.ValidationError):
+			convert_to_deal(lead=lead.name)
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")

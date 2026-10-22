@@ -9,6 +9,7 @@ from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
+from crm.api.lead import resolve_merged_lead
 from crm.api.whatsapp import guard_doc_recipient_change
 from crm.automation.events import emit_lead_converted
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
@@ -561,6 +562,7 @@ def convert_to_deal(
 	"""
 	validate_conversion_access(lead, doc)
 	lead = lock_lead(lead)
+	validate_not_merged(lead)
 	existing = existing_deal(lead.name)
 	if existing and if_converted != "Create":
 		return settle_converted(lead, existing, if_converted)
@@ -580,6 +582,17 @@ def validate_conversion_access(lead: str, doc: Document | None = None):
 		return
 	if not frappe.has_permission("CRM Lead", "write", lead):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
+
+
+def validate_not_merged(lead):
+	if lead.merged_into:
+		frappe.throw(
+			_("Lead {0} was merged into {1}. Convert {1} instead.").format(
+				lead.name, resolve_merged_lead(lead.name)
+			)
+		)
+	if lead.is_duplicate:
+		frappe.throw(_("Lead {0} is marked as a duplicate and cannot be converted").format(lead.name))
 
 
 def lock_lead(lead: str):
