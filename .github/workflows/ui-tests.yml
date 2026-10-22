@@ -16,12 +16,8 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-<<<<<<< HEAD
   FRAPPE_BRANCH: version-16
-=======
-  FRAPPE_BRANCH: develop
   BENCH_USE_UV: "1"
->>>>>>> 3b897b1 (ci: install ui test deps with uv)
 
 jobs:
   ui-tests:
@@ -112,16 +108,13 @@ jobs:
       - name: Setup Bench
         run: |
           pip install frappe-bench
-<<<<<<< HEAD
-          bench init --skip-redis-config-generation --skip-assets --frappe-branch "$(bash "$GITHUB_WORKSPACE/.github/helper/frappe_ref.sh" "$FRAPPE_BRANCH")" --python "$(which python)" ~/frappe-bench
-=======
+          FRAPPE_REF=$(bash "$GITHUB_WORKSPACE/.github/helper/frappe_ref.sh" "$FRAPPE_BRANCH")
           if [ -d ~/frappe-bench/apps/frappe ]; then
-            git -C ~/frappe-bench/apps/frappe fetch --depth 1 https://github.com/frappe/frappe "$FRAPPE_BRANCH"
+            git -C ~/frappe-bench/apps/frappe fetch --depth 1 https://github.com/frappe/frappe "$FRAPPE_REF"
             git -C ~/frappe-bench/apps/frappe reset --hard FETCH_HEAD
           else
-            bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_BRANCH" --python "$(which python)" ~/frappe-bench
+            bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_REF" --python "$(which python)" ~/frappe-bench
           fi
->>>>>>> 1cce4f1 (ci: cache bench weekly in ui tests)
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 

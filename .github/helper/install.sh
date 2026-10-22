@@ -18,11 +18,7 @@ FRAPPE_REF=$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_B
 DB_SNAPSHOT="${DB_SNAPSHOT:-$HOME/db-snapshot}"
 
 pip install frappe-bench
-<<<<<<< HEAD
-git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_REF}" --depth 1
-=======
-[ -d ~/frappe ] || git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_BRANCH}" --depth 1
->>>>>>> 2bf08b2 (ci: install server test deps with uv and restore a cached database)
+[ -d ~/frappe ] || git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_REF}" --depth 1
 bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
 
 mkdir ~/frappe-bench/sites/test_site

@@ -55,58 +55,10 @@ jobs:
               if: success() || failure()
               run: cd frontend && npx oxlint src
 
-<<<<<<< HEAD
-    build:
-        name: Production Build
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-
-        steps:
-            - uses: actions/checkout@v4
-
-            # frontend/package.json links `@framework/ui` to a sibling frappe checkout
-            # (link:../../frappe/ui); without it, anything importing from @framework/ui
-            # fails to resolve. actions/checkout cannot place a repo outside the
-            # workspace, and only the `ui` package is needed.
-            - name: Clone frappe for @framework/ui
-              run: |
-                  git clone --depth 1 --branch "$(bash .github/helper/frappe_ref.sh version-16)" --filter=blob:none --sparse \
-                      https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
-                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
-
-            - name: Install dependencies
-              run: cd frontend && yarn install --frozen-lockfile
-
-=======
->>>>>>> a967137 (ci: run frontend lint, build and tests in one job)
             - name: Build frontend
               if: success() || failure()
               run: cd frontend && yarn build
 
-<<<<<<< HEAD
-    test:
-        name: Unit Tests & Coverage
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        needs: lint
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - uses: actions/setup-node@v4
-              with:
-                  node-version: "24"
-                  cache: yarn
-                  cache-dependency-path: frontend/yarn.lock
-
-=======
->>>>>>> a967137 (ci: run frontend lint, build and tests in one job)
             - name: Run frontend tests
               if: success() || failure()
               run: cd frontend && yarn test:coverage
