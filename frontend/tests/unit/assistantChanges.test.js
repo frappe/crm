@@ -70,6 +70,20 @@ describe('whereToGo', () => {
     ).toEqual({ settings: 'Workflow Automations' })
   })
 
+  it('opens the automation list when a reply added several', () => {
+    const added = (name) => ({
+      tool: 'add_automation',
+      args: { name },
+      result: { automation: name, name },
+    })
+    expect(whereToGo([added('AUTO-00001'), added('AUTO-00002')])).toEqual({
+      settings: 'Workflow Automations',
+    })
+    expect(
+      whereToGo([added('AUTO-00001'), create('Automation Flow', ['AUTO-00002'])]),
+    ).toEqual({ settings: 'Workflow Automations' })
+  })
+
   it('opens the board after stages change', () => {
     expect(
       whereToGo([

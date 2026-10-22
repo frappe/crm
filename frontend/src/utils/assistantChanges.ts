@@ -78,6 +78,17 @@ export function whereToGo(changes: FlowChange[]): Destination | null {
   if (records.size === 1 && record && !touches.some((touch) => touch.deleted)) {
     return { path: record }
   }
+  if ('settings' in destination && destination.record) {
+    // several Settings records, even from separate steps, open their list
+    const settingsRecords = new Set(
+      touches.map((touch) =>
+        touch.destination && 'record' in touch.destination
+          ? touch.destination.record
+          : undefined,
+      ),
+    )
+    if (settingsRecords.size > 1) return { settings: destination.settings }
+  }
   return destination
 }
 
