@@ -77,7 +77,10 @@
       ref="frame"
       :src="src"
       class="size-full border-0"
-      :class="{ 'pointer-events-none': moving }"
+      :class="{
+        'pointer-events-none': moving,
+        'rounded-b-6': mode !== 'docked',
+      }"
       :title="__('Assistant')"
       @load="keepCrmLinksHere"
     />
