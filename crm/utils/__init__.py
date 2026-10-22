@@ -355,6 +355,8 @@ def on_communication_update(doc: Communication, method: str | None = None):
 	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
 		return
 
+	_record_email_interaction(doc)
+
 	should_update_modified = _should_update_modified(doc)
 	status = _get_communication_status(doc)
 
@@ -380,3 +382,12 @@ def on_communication_update(doc: Communication, method: str | None = None):
 		values,
 		update_modified=False,
 	)
+
+
+def _record_email_interaction(doc: Communication):
+	# Circular import: crm.api imports crm.utils.
+	from crm.api.interactions import record
+
+	direction = {"Received": "Inbound", "Sent": "Outbound"}.get(doc.sent_or_received)
+	if doc.communication_type == "Communication" and direction:
+		record(doc.reference_doctype, doc.reference_name, direction, doc.communication_date or doc.creation)
