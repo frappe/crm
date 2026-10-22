@@ -21,6 +21,8 @@ class TestAvailability(CRMTestCase):
 					}
 				).insert(ignore_permissions=True)
 				user.add_roles("Sales User")
+			# on frappe v15 the assignment email is sent synchronously in tests and commits
+			frappe.db.set_value("Notification Settings", email, "enable_email_notifications", 0)
 		frappe.db.delete("Assignment Rule", {"document_type": "CRM Lead"})
 		self.rule = frappe.get_doc(
 			{
@@ -36,6 +38,9 @@ class TestAvailability(CRMTestCase):
 				],
 			}
 		).insert(ignore_permissions=True)
+
+	def tearDown(self):
+		frappe.db.rollback()
 
 	def set_status(self, user, status):
 		doc = frappe.get_doc("User", user)
