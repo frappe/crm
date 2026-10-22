@@ -55,19 +55,19 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 	from crm.demo.api import get_demo_state
 	from crm.demo.users import DEMO_USER_EMAILS
 
-	users = frappe.get_list(
+	users = _listed(
 		"User",
 		filters={"user_type": "System User", "enabled": 1, "name": ["not in", ["Administrator", "Guest"]]},
 		pluck="name",
 	)
 	return {
 		"currency": frappe.db.get_single_value("FCRM Settings", "currency"),
-		"deal_stages": frappe.get_list(
+		"deal_stages": _listed(
 			"CRM Deal Status", fields=["name", "type", "probability"], order_by="position asc"
 		),
-		"lead_sources": frappe.get_list("CRM Lead Source", pluck="name"),
-		"lost_reasons": frappe.get_list("CRM Lost Reason", pluck="name"),
-		"email_accounts": frappe.get_list(
+		"lead_sources": _listed("CRM Lead Source", pluck="name"),
+		"lost_reasons": _listed("CRM Lost Reason", pluck="name"),
+		"email_accounts": _listed(
 			"Email Account",
 			fields=[
 				"email_id",
@@ -78,7 +78,8 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 				"create_lead_from_incoming_email",
 			],
 		),
-		"email_templates": frappe.db.count("Email Template"),
+		"email_templates": _count("Email Template", {}) if _can_read("Email Template") else None,
+		# CRM managers run the forms, through the CRM's own check rather than Web Form's roles
 		"web_forms": [
 			{"title": f.title, "link": f"/crm-form/{f.route}", "published": f.published}
 			for f in frappe.get_list(
@@ -87,24 +88,26 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 				fields=["title", "route", "published"],
 				ignore_permissions=True,
 			)
-		],
-		"ad_lead_syncing": frappe.db.count("Lead Sync Source", {"enabled": 1}),
-		"users": [u for u in users if u not in DEMO_USER_EMAILS],
-		"invitations": frappe.get_list("CRM Invitation", fields=["email", "role", "status"]),
-		"lead_assignment_rules": frappe.get_list(
+		]
+		if _is_crm_manager()
+		else None,
+		"ad_lead_syncing": _count("Lead Sync Source", {"enabled": 1})
+		if _can_read("Lead Sync Source")
+		else None,
+		"users": None if users is None else [u for u in users if u not in DEMO_USER_EMAILS],
+		"invitations": _listed("CRM Invitation", fields=["email", "role", "status"]),
+		"lead_assignment_rules": _listed(
 			"Assignment Rule", filters={"document_type": "CRM Lead", "disabled": 0}, pluck="name"
 		),
-		"leads": frappe.db.count("CRM Lead"),
-		"deals": frappe.db.count("CRM Deal"),
+		"leads": _count("CRM Lead", {}) if _can_read("CRM Lead") else None,
+		"deals": _count("CRM Deal", {}) if _can_read("CRM Deal") else None,
 		"sample_data": _sample_data_left() if get_demo_state()["demo_data_created"] else None,
 		"quotes": _quote_setup(),
-		"automations": frappe.get_list(
+		"automations": _listed(
 			"Automation Flow",
 			filters={"document_type": ["in", ["CRM Lead", "CRM Deal"]]},
 			fields=["title", "enabled"],
-		)
-		if frappe.has_permission("Automation Flow")
-		else None,
+		),
 	}
 
 
@@ -135,10 +138,27 @@ def _sample_data_left() -> dict[str, Any]:
 	leads = json.loads(frappe.db.get_default(DEMO_LEADS_KEY) or "[]")
 	deals = json.loads(frappe.db.get_default(DEMO_DEALS_KEY) or "{}").get("deals", [])
 	return {
-		"leads": frappe.get_all("CRM Lead", filters={"name": ["in", leads or [""]]}, pluck="name"),
-		"deals": frappe.get_all("CRM Deal", filters={"name": ["in", deals or [""]]}, pluck="name"),
+		"leads": frappe.get_list("CRM Lead", filters={"name": ["in", leads or [""]]}, pluck="name"),
+		"deals": frappe.get_list("CRM Deal", filters={"name": ["in", deals or [""]]}, pluck="name"),
 		"users": frappe.get_all("User", filters={"name": ["in", DEMO_USER_EMAILS]}, pluck="name"),
 	}
+
+
+def _listed(doctype: str, **kwargs) -> list | None:
+	"""get_list, or None when the user can't read the doctype, so one part they can't see
+	doesn't stop the rest."""
+	return frappe.get_list(doctype, **kwargs) if _can_read(doctype) else None
+
+
+def _is_crm_manager() -> bool:
+	return bool(set(frappe.get_roles()) & {"System Manager", "Sales Manager"})
+
+
+def _readable(doctype: str | None, name: str | None, field: str):
+	"""A record's field for an approval card, only if the user may read the record."""
+	if not (doctype and name and frappe.has_permission(doctype, "read", name)):
+		return None
+	return frappe.db.get_value(doctype, name, field)
 
 
 def _bullets(lines: list[str]) -> str:
@@ -468,7 +488,7 @@ def connect_email(
 
 
 def _convert_prompt(args: dict) -> str:
-	name = frappe.db.get_value("CRM Lead", args.get("lead"), "lead_name") or args.get("lead")
+	name = _readable("CRM Lead", args.get("lead"), "lead_name") or args.get("lead")
 	value = f" worth {args['deal_value']}" if args.get("deal_value") else ""
 	return (
 		f"Convert {name} ({args.get('lead')}) to a deal{value}. Their contact and organization come "
@@ -564,7 +584,9 @@ def set_currency(currency: str, *, ctx: ToolContext) -> str:
 	settings.currency = currency
 	settings.save()
 	# the site-wide default too, which Settings > Defaults shows, unless someone already chose one
-	if not frappe.db.get_single_value("System Settings", "currency"):
+	if not frappe.db.get_single_value("System Settings", "currency") and frappe.has_permission(
+		"System Settings", "write"
+	):
 		frappe.db.set_single_value("System Settings", "currency", currency)
 	return f"Currency set to {currency}."
 
@@ -1468,6 +1490,8 @@ def _work_on(doctype: str, record: str):
 
 
 def _record_title(doctype: str, record: str) -> str:
+	if not (doctype and record and frappe.has_permission(doctype, "read", record)):
+		return record or ""
 	doc = frappe.db.get_value(doctype, record, ["lead_name", "organization"], as_dict=True) or {}
 	return doc.get("organization") or doc.get("lead_name") or record
 
@@ -1488,7 +1512,7 @@ def _sender(user: str) -> str | None:
 
 
 def _email_prompt(args: dict) -> str:
-	record_email = frappe.db.get_value(args.get("doctype"), args.get("record"), "email")
+	record_email = _readable(args.get("doctype"), args.get("record"), "email")
 	to = ", ".join(args.get("to") or []) or record_email or "their email on the record"
 	cc = f"\nCopy to: {', '.join(args['cc'])}" if args.get("cc") else ""
 	return f"Send this email to {to}{cc}\nSubject: {args.get('subject')}\n\n{args.get('message')}"
@@ -1637,7 +1661,7 @@ def add_task(
 
 
 def _update_task_prompt(args: dict) -> str:
-	task = frappe.db.get_value("CRM Task", args.get("task"), ["title"], as_dict=True) or {}
+	task = {"title": _readable("CRM Task", args.get("task"), "title") or ""}
 	changes = []
 	if args.get("title"):
 		changes.append(f"call it \"{args['title']}\"")
