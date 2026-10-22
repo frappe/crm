@@ -437,6 +437,38 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(len(lead_a.products), 0)
 		self.assertEqual([p.product_name for p in lead_b.products], ["Test Product"])
 
+	def test_merge_log_keeps_only_moved_child_row_names(self):
+		lead_a = self._create_lead(first_name="A", email="rows-a@test.com")
+		lead_b = self._create_lead(first_name="B", email="rows-b@test.com")
+		lead_b.append("products", {"product_name": "Test Product", "rate": 100})
+		lead_b.flags.ignore_links = True
+		lead_b.save(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		snapshot = frappe.db.get_value("CRM Merge Log", result["merge_log"], "child_table_snapshot")
+		self.assertEqual(json.loads(snapshot), {"products": [lead_b.products[0].name]})
+
+	def test_split_reads_child_rows_from_an_older_full_row_log(self):
+		lead_a = self._create_lead(first_name="A", email="oldlog-a@test.com")
+		lead_b = self._create_lead(first_name="B", email="oldlog-b@test.com")
+		lead_b.append("products", {"product_name": "Test Product", "rate": 100})
+		lead_b.flags.ignore_links = True
+		lead_b.save(ignore_permissions=True)
+		row = lead_b.products[0]
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		old_format = {"products": [{"name": row.name, "product_name": row.product_name, "rate": row.rate}]}
+		frappe.db.set_value(
+			"CRM Merge Log", result["merge_log"], "child_table_snapshot", json.dumps(old_format)
+		)
+		split_lead(result["merge_log"])
+
+		self.assertEqual(frappe.db.get_value("CRM Products", row.name, "parent"), lead_b.name)
+
 	def test_split_ignores_tampered_snapshot(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
@@ -1105,7 +1137,7 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(frappe.db.count("CRM Lead"), leads_before)
 
 
-MERGE_TEST_FIELDS = ("merge_test_note", "merge_test_secret")
+MERGE_TEST_FIELDS = ("merge_test_note", "merge_test_secret", "merge_test_time")
 MERGE_TEST_REP = "merge-rep@example.com"
 MERGE_TEST_MANAGER = "merge-manager@example.com"
 
@@ -1129,6 +1161,12 @@ class TestMergeLeadCustomField(IntegrationTestCase):
 						"label": "Merge Test Secret",
 						"insert_after": "source",
 						"permlevel": 1,
+					},
+					{
+						"fieldname": "merge_test_time",
+						"fieldtype": "Time",
+						"label": "Merge Test Time",
+						"insert_after": "source",
 					},
 				]
 			},
@@ -1188,6 +1226,20 @@ class TestMergeLeadCustomField(IntegrationTestCase):
 
 			value = frappe.db.get_value("CRM Lead", target.name, "merge_test_secret")
 			self.assertEqual(value == "hidden", copied, user)
+
+	def test_merge_snapshots_a_time_field_on_the_target(self):
+		target = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Target", "merge_test_time": "09:00:00"}
+		).insert(ignore_permissions=True)
+		source = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Source", "merge_test_time": "10:30:00"}
+		).insert(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		split_lead(result["merge_log"])
+		self.assertEqual(str(frappe.db.get_value("CRM Lead", target.name, "merge_test_time")), "9:00:00")
 
 	def test_custom_field_merges_into_empty_target_and_restores_on_split(self):
 		target = frappe.get_doc({"doctype": "CRM Lead", "first_name": "Target"}).insert(

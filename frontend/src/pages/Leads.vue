@@ -8,7 +8,6 @@
         v-if="leadsListView?.customListActions"
         :actions="leadsListView.customListActions"
       />
-
       <Button
         variant="solid"
         :label="__('Create')"
