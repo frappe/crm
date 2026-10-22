@@ -80,7 +80,10 @@ describe('whereToGo', () => {
       settings: 'Workflow Automations',
     })
     expect(
-      whereToGo([added('AUTO-00001'), create('Automation Flow', ['AUTO-00002'])]),
+      whereToGo([
+        added('AUTO-00001'),
+        create('Automation Flow', ['AUTO-00002']),
+      ]),
     ).toEqual({ settings: 'Workflow Automations' })
   })
 
@@ -183,9 +186,50 @@ describe('whereToGo', () => {
     expect(whereToGo([{ tool: 'execute', args: {}, result: null }])).toBeNull()
     expect(whereToGo([])).toBeNull()
   })
+  it('opens the lead or deal an email, note or task was added to', () => {
+    expect(
+      whereToGo([
+        { tool: 'find_records', args: { text: 'Nina' }, result: [] },
+        {
+          tool: 'send_email',
+          args: { doctype: 'CRM Deal', record: 'CRM-DEAL-0001' },
+          result: { sent_to: ['nina@corvid.ai'] },
+        },
+        {
+          tool: 'add_task',
+          args: { doctype: 'CRM Deal', record: 'CRM-DEAL-0001' },
+          result: { task: '12' },
+        },
+      ]),
+    ).toEqual({ path: '/deals/CRM-DEAL-0001' })
+  })
 })
 
 describe('changedRecords', () => {
+  it('leaves out lookups and reloads tasks after a task changes', () => {
+    expect(
+      changedRecords([
+        { tool: 'my_day', args: {}, result: {} },
+        { tool: 'update_task', args: { task: '12' }, result: { task: '12' } },
+      ]),
+    ).toEqual({ doctypes: ['CRM Task'], records: [] })
+  })
+
+  it('reloads the lead or deal an email, note or task was added to', () => {
+    expect(
+      changedRecords([
+        {
+          tool: 'add_note',
+          args: { doctype: 'CRM Lead', record: 'CRM-LEAD-0001' },
+          result: { note: 'n1' },
+        },
+      ]),
+    ).toEqual({
+      doctypes: [],
+      records: [{ doctype: 'CRM Lead', name: 'CRM-LEAD-0001' }],
+    })
+  })
+
   it('reloads the records that got new fields', () => {
     expect(
       changedRecords([

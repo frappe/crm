@@ -7,7 +7,8 @@ export interface FlowChange {
 }
 
 // a route path in the CRM, or a Settings page opened over the current page
-export type Destination = { path: string } | { settings: string; record?: string }
+export type Destination =
+  { path: string } | { settings: string; record?: string }
 
 interface Touch {
   place: string
@@ -65,10 +66,21 @@ const RECORD_TOOLS = new Set(['create', 'update', 'delete', 'run_action'])
 // tools that add fields to a record type (`doctype`) or show them on its page
 const FIELD_TOOLS = new Set(['add_fields', 'show_fields'])
 
+// tools that work on one lead or deal (`doctype`, `record`): an email, a note or a task on it
+const WORK_TOOLS = new Set(['send_email', 'add_note', 'add_task'])
+
+// the CRM's tools that only read; Flow reports every tool but its own lookups
+const READ_TOOLS = new Set([
+  'setup_status',
+  'my_day',
+  'sales_health',
+  'find_records',
+])
+
 // One record opens that record, several in one place open the place, and changes in
 // different places open nothing, since the chat links to each.
 export function whereToGo(changes: FlowChange[]): Destination | null {
-  const touches = mainChanges(changes).flatMap(touchesOf)
+  const touches = mainChanges(writes(changes)).flatMap(touchesOf)
   const places = new Set(touches.map((touch) => touch.place))
   if (places.size !== 1) return null
   const { destination } = touches[0]
@@ -100,6 +112,10 @@ const SUPPORTING_DOCTYPES = new Set([
   'CRM Fields Layout',
 ])
 
+function writes(changes: FlowChange[]): FlowChange[] {
+  return changes.filter((change) => !READ_TOOLS.has(change.tool))
+}
+
 function mainChanges(changes: FlowChange[]): FlowChange[] {
   const main = changes.filter(
     (change) =>
@@ -126,6 +142,21 @@ function touchesOf(change: FlowChange): Touch[] {
     const record =
       RECORD_PAGES['CRM Deal'] + encodeURIComponent(change.result.deal)
     return [{ place: '/deals', destination: { path: '/deals' }, record }]
+  }
+  if (WORK_TOOLS.has(change.tool)) {
+    const doctype = change.args?.doctype ?? ''
+    const destination = destinationOf(doctype)
+    const page = RECORD_PAGES[doctype]
+    return [
+      {
+        place: destination ? placeKey(destination) : `doctype:${doctype}`,
+        destination,
+        record:
+          page && change.args?.record
+            ? page + encodeURIComponent(change.args.record)
+            : undefined,
+      },
+    ]
   }
   if (FIELD_TOOLS.has(change.tool)) {
     // fields show on the record's page, and its list is the way there
@@ -165,7 +196,8 @@ function touchesOf(change: FlowChange): Touch[] {
     names.length === 1
   return names.map((name) => ({
     place,
-    destination: opensRecord && name ? { ...destination, record: name } : destination,
+    destination:
+      opensRecord && name ? { ...destination, record: name } : destination,
     record: recordPage ? recordPage + encodeURIComponent(name) : undefined,
     deleted,
   }))
@@ -199,6 +231,7 @@ function placeKey(destination: Destination): string {
 // what a CRM tool can change, so the lists showing it reload
 const TOOL_DOCTYPES: Record<string, string[]> = {
   convert_lead: ['CRM Lead', 'CRM Deal', 'Contact', 'CRM Organization'],
+  update_task: ['CRM Task'],
   clear_sample_data: [
     'CRM Lead',
     'CRM Deal',
@@ -219,13 +252,17 @@ export interface ChangedRecords {
 export function changedRecords(changes: FlowChange[]): ChangedRecords {
   const doctypes = new Set<string>()
   const records: { doctype: string; name: string }[] = []
-  for (const change of changes) {
+  for (const change of writes(changes)) {
     if (RECORD_TOOLS.has(change.tool)) {
       const doctype = change.args?.doctype
       if (!doctype) continue
       doctypes.add(doctype)
       for (const name of namesOf(change)) {
         if (name) records.push({ doctype, name })
+      }
+    } else if (WORK_TOOLS.has(change.tool)) {
+      if (change.args?.doctype && change.args?.record) {
+        records.push({ doctype: change.args.doctype, name: change.args.record })
       }
     } else if (FIELD_TOOLS.has(change.tool)) {
       if (change.args?.doctype) doctypes.add(change.args.doctype)

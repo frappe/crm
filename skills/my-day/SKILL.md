@@ -32,4 +32,4 @@ If what they asked about is empty, say so in one line and offer the full rundown
 
 If everything is empty, say their day looks clear, and offer "How are my sales doing?" instead.
 
-Only read here. If they want something changed, such as a task marked done or an email sent, say what you'll do and do it the usual way, with their approval. Never run code to look things up; `my_day` and `read_records` cover it.
+Only read here. If they want to act on something, such as replying to a lead waiting on them or setting a reminder for a quiet deal, do it the way the sales-work skill says: draft the email and show it before sending with `send_email`, and add reminders with `add_task`. Never run code to look things up; `my_day` and `read_records` cover it.

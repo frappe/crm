@@ -39,6 +39,11 @@ flow_tools = [
 	"crm.flow_tools.add_automation",
 	"crm.flow_tools.my_day",
 	"crm.flow_tools.sales_health",
+	"crm.flow_tools.send_email",
+	"crm.flow_tools.add_note",
+	"crm.flow_tools.add_task",
+	"crm.flow_tools.update_task",
+	"crm.flow_tools.find_records",
 ]
 
 export_python_type_annotations = True

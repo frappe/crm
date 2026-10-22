@@ -1344,3 +1344,257 @@ def _lead(lead) -> dict[str, Any]:
 		"company": lead.organization,
 		"link": f"/crm/leads/{lead.name}",
 	}
+
+
+# day-to-day work on a lead or deal, the two records with an activity timeline
+WorkRecord = Literal["CRM Lead", "CRM Deal"]
+
+
+def _work_on(doctype: str, record: str):
+	doc = frappe.get_doc(doctype, record)
+	doc.check_permission("read")
+	return doc
+
+
+def _record_title(doctype: str, record: str) -> str:
+	doc = frappe.db.get_value(doctype, record, ["lead_name", "organization"], as_dict=True) or {}
+	return doc.get("organization") or doc.get("lead_name") or record
+
+
+def _html(text: str) -> str:
+	"""Plain text as paragraphs, the way the CRM's editor writes them."""
+	paragraphs = [p.strip() for p in text.strip().split("\n\n") if p.strip()]
+	return "".join(
+		f"<p>{'<br>'.join(frappe.utils.escape_html(line) for line in p.splitlines())}</p>" for p in paragraphs
+	)
+
+
+def _sender(user: str) -> str | None:
+	"""The user's own email account that can send, else None for the CRM's default outgoing one."""
+	return frappe.db.get_value(
+		"User Email", {"parent": user, "enable_outgoing": 1}, "email_id", order_by="idx asc"
+	)
+
+
+def _email_prompt(args: dict) -> str:
+	to = ", ".join(args.get("to") or []) or "their email on the record"
+	cc = f"\nCopy to: {', '.join(args['cc'])}" if args.get("cc") else ""
+	return f"Send this email to {to}{cc}\nSubject: {args.get('subject')}\n\n{args.get('message')}"
+
+
+@tool(requires_confirmation=True, confirm_prompt=_email_prompt)
+def send_email(
+	doctype: WorkRecord,
+	record: str,
+	subject: str,
+	message: str,
+	to: list[str] | None = None,
+	cc: list[str] | None = None,
+	*,
+	ctx: ToolContext,
+) -> dict[str, Any]:
+	"""Send an email from a lead or deal, as the CRM's email box does: from the user's email account,
+	shown on the record's timeline, where their reply also lands. `message` is plain text, with a
+	blank line between paragraphs. `to` defaults to the record's email. Show the user the whole
+	email and get their yes before sending. Find the lead or deal with find_records first."""
+	from frappe.core.doctype.communication.email import make
+
+	from crm.api import get_unsubscribed_emails
+
+	doc = _work_on(doctype, record)
+	recipients = to or ([doc.email] if doc.get("email") else [])
+	if not recipients:
+		frappe.throw(_("{0} has no email address. Add one, or say who to send it to.").format(record))
+	if not frappe.db.exists("Email Account", {"enable_outgoing": 1}):
+		frappe.throw(_("No email account can send yet. Connect email first."))
+	unsubscribed = get_unsubscribed_emails(recipients + (cc or []), doctype, record)
+	if unsubscribed:
+		frappe.throw(_("{0} unsubscribed from emails, so it can't be sent.").format(", ".join(unsubscribed)))
+	sent = make(
+		doctype=doctype,
+		name=record,
+		recipients=", ".join(recipients),
+		cc=", ".join(cc or []),
+		subject=subject,
+		content=_html(message),
+		send_email=1,
+		sender=_sender(ctx.user),
+		sender_full_name=frappe.utils.get_fullname(ctx.user),
+	)
+	return {
+		"sent_to": recipients,
+		"email": sent.get("name"),
+		"on": _record_title(doctype, record),
+		"link": _record_link(doctype, record),
+	}
+
+
+def _note_prompt(args: dict) -> str:
+	title = args.get("title") or "Note"
+	return f'Add a note "{title}" to {_record_title(args.get("doctype"), args.get("record"))}:\n{args.get("text")}'
+
+
+@tool(requires_confirmation=True, confirm_prompt=_note_prompt)
+def add_note(
+	doctype: WorkRecord, record: str, text: str, title: str = "", *, ctx: ToolContext
+) -> dict[str, str]:
+	"""Add a note to a lead or deal, such as what was said on a call or in a meeting. For a call, title
+	it like "Call with Nina" and put what was said in `text`. `text` is plain text. Find the lead or
+	deal with find_records first."""
+	_work_on(doctype, record)
+	note = frappe.get_doc(
+		{
+			"doctype": "FCRM Note",
+			"title": title or text.strip().splitlines()[0][:80],
+			"content": _html(text),
+			"reference_doctype": doctype,
+			"reference_docname": record,
+		}
+	).insert()
+	return {"note": note.title, "on": _record_title(doctype, record), "link": _record_link(doctype, record)}
+
+
+def _when(due: str) -> str:
+	"""A due date as people say it, such as "Friday 23 October, 10:00 am"."""
+	at = frappe.utils.get_datetime(due)
+	day = f"{at:%A} {at.day} {at:%B}"
+	if not (at.hour or at.minute):
+		return day
+	return f"{day}, {at.hour % 12 or 12}:{at.minute:02d} {'am' if at.hour < 12 else 'pm'}"
+
+
+def _who(user: str | None) -> str:
+	return "you" if not user or user == frappe.session.user else frappe.utils.get_fullname(user)
+
+
+def _task_prompt(args: dict) -> str:
+	who = _who(args.get("assigned_to"))
+	due = f", due {_when(args['due'])}" if args.get("due") else ""
+	return f'Add a task for {who} on {_record_title(args.get("doctype"), args.get("record"))}{due}:\n• {args.get("title")}'
+
+
+@tool(requires_confirmation=True, confirm_prompt=_task_prompt)
+def add_task(
+	doctype: WorkRecord,
+	record: str,
+	title: str,
+	due: str | None = None,
+	assigned_to: str | None = None,
+	priority: Literal["Low", "Medium", "High"] = "Medium",
+	description: str = "",
+	*,
+	ctx: ToolContext,
+) -> dict[str, str]:
+	"""Add a task or reminder on a lead or deal, such as "Call Nina back". Whenever they say when, pass
+	`due` as a date and time like "2026-10-24 10:00", using 10:00 if they gave a day but no time. It
+	goes to the user unless `assigned_to` names another CRM user by email; they get notified.
+	Returns the task's id for update_task. Find the lead or deal with find_records first."""
+	_work_on(doctype, record)
+	user = assigned_to or ctx.user
+	if not frappe.db.get_value("User", {"name": user, "enabled": 1, "user_type": "System User"}):
+		frappe.throw(_("{0} isn't a user in this CRM.").format(user))
+	task = frappe.get_doc(
+		{
+			"doctype": "CRM Task",
+			"title": title,
+			"description": _html(description) if description else "",
+			"assigned_to": user,
+			"due_date": frappe.utils.get_datetime(due) if due else None,
+			"priority": priority,
+			"status": "Todo",
+			"reference_doctype": doctype,
+			"reference_docname": record,
+		}
+	).insert()
+	return {
+		"task": task.name,
+		"title": title,
+		"due": _when(str(task.due_date)) if task.due_date else None,
+		"on": _record_title(doctype, record),
+		"link": _record_link(doctype, record),
+	}
+
+
+def _update_task_prompt(args: dict) -> str:
+	task = frappe.db.get_value("CRM Task", args.get("task"), ["title"], as_dict=True) or {}
+	changes = []
+	if args.get("title"):
+		changes.append(f"call it \"{args['title']}\"")
+	if args.get("due"):
+		changes.append(f"move it to {_when(args['due'])}")
+	if args.get("assigned_to"):
+		changes.append(f"give it to {_who(args['assigned_to'])}")
+	if args.get("status"):
+		changes.append("mark it done" if args["status"] == "Done" else f"set it to {args['status']}")
+	return f'For the task "{task.get("title", "")}": {", ".join(changes) or "no change"}.'
+
+
+@tool(requires_confirmation=True, confirm_prompt=_update_task_prompt)
+def update_task(
+	task: str,
+	due: str | None = None,
+	status: Literal["Backlog", "Todo", "In Progress", "Done", "Canceled"] | None = None,
+	assigned_to: str | None = None,
+	title: str | None = None,
+	*,
+	ctx: ToolContext,
+) -> dict[str, Any]:
+	"""Change a task: move its `due` date and time (like "2026-10-24 10:00"), mark it Done, give
+	it to another CRM user by email, or rename it. `task` is the id add_task, my_day or
+	read_records("CRM Task", ...) gave. Leave out what stays the same."""
+	doc = frappe.get_doc("CRM Task", task)
+	doc.check_permission("write")
+	if assigned_to and not frappe.db.get_value(
+		"User", {"name": assigned_to, "enabled": 1, "user_type": "System User"}
+	):
+		frappe.throw(_("{0} isn't a user in this CRM.").format(assigned_to))
+	if due:
+		doc.due_date = frappe.utils.get_datetime(due)
+	for field, value in (("status", status), ("assigned_to", assigned_to), ("title", title)):
+		if value:
+			doc.set(field, value)
+	doc.save()
+	return {
+		"task": doc.name,
+		"title": doc.title,
+		"due": _when(str(doc.due_date)) if doc.due_date else None,
+		"status": doc.status,
+		"link": _record_link(doc.reference_doctype, doc.reference_docname)
+		if doc.reference_docname
+		else "/crm/tasks",
+	}
+
+
+@tool
+def find_records(text: str, *, ctx: ToolContext) -> list[dict[str, Any]]:
+	"""Find the leads and deals the user can see whose person, company or email matches `text`,
+	such as "Nina", "Corvid" or "nina@corvid.ai", one name at a time. Use it, never code, to work
+	out which lead or deal they mean before an email, note or task. Leads already turned into deals
+	are left out. Needs no approval."""
+	like = f"%{text.strip()}%"
+	found = []
+	for doctype, extra in (("CRM Lead", {"converted": 0}), ("CRM Deal", {})):
+		for r in frappe.get_list(
+			doctype,
+			filters=extra,
+			or_filters={"lead_name": ["like", like], "organization": ["like", like], "email": ["like", like]},
+			fields=["name", "lead_name", "organization", "email", "status"],
+			order_by="modified desc",
+			limit=10,
+		):
+			found.append(
+				{
+					"doctype": doctype,
+					"record": r.name,
+					"person": r.lead_name,
+					"company": r.organization,
+					"email": r.email,
+					"stage": r.status,
+					"link": _record_link(doctype, r.name),
+				}
+			)
+	return found
+
+
+def _record_link(doctype: str, record: str) -> str:
+	return f"/crm/{'deals' if doctype == 'CRM Deal' else 'leads'}/{record}"
