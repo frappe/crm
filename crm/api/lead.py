@@ -38,6 +38,10 @@ MERGE_CONFIG = {
 			# automation scoring state, not contact data
 			"lead_score",
 			"lead_temperature",
+			# Facebook sync dedupes a campaign on it
+			"facebook_form_id",
+			# belongs with lost_reason
+			"lost_notes",
 		},
 		"match_keys": {"email": ["email"], "phone": ["mobile_no", "phone"]},
 	},
@@ -478,6 +482,9 @@ def _auto_merge_fields(
 	source_doc: frappe.model.document.Document,
 ):
 	for field in _mergeable_fields(target_doc.doctype):
+		df = target_doc.meta.get_field(field)
+		if df.permlevel and not target_doc.has_permlevel_access_to(field, df, "write"):
+			continue
 		source_val = source_doc.get(field)
 		if source_val and not target_doc.get(field):
 			target_doc.set(field, source_val)
