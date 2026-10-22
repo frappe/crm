@@ -12,6 +12,20 @@ on:
             - "**.csv"
             - "**.po"
             - "**.pot"
+    # Seeds main-hotfix caches; scheduled runs only ever run on develop.
+    push:
+        branches:
+            - main-hotfix
+        paths-ignore:
+            - "**.css"
+            - "**.js"
+            - "**.ts"
+            - "**.vue"
+            - "**.md"
+            - "**.html"
+            - "**.csv"
+            - "**.po"
+            - "**.pot"
     schedule:
         # Run everday at midnight UTC / 5:30 IST
         - cron: "0 0 * * *"
@@ -70,7 +84,7 @@ jobs:
                   node-version: "24"
                   type: "server"
                   # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
-                  install-erpnext: ${{ (github.base_ref == 'main-hotfix' || github.base_ref == 'main') && matrix.frappe-branch != 'version-16' }}
+                  install-erpnext: ${{ (env.CRM_BRANCH == 'main-hotfix' || env.CRM_BRANCH == 'main') && matrix.frappe-branch != 'version-16' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
