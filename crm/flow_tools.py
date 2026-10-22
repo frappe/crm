@@ -144,6 +144,27 @@ def _sample_data_left() -> dict[str, Any]:
 	}
 
 
+def setup_unfinished() -> bool:
+	"""Whether a CRM manager still has setup left: no email connected, or no teammate in or
+	invited. Not a tool; Flow asks it before suggesting "Set up my CRM"."""
+	from crm.demo.users import DEMO_USER_EMAILS
+
+	if not _is_crm_manager():
+		return False
+	if not frappe.db.exists("Email Account", {"enable_outgoing": 1}):
+		return True
+	team = frappe.get_all(
+		"User",
+		filters={
+			"user_type": "System User",
+			"enabled": 1,
+			"name": ["not in", ["Administrator", "Guest", frappe.session.user, *DEMO_USER_EMAILS]],
+		},
+		limit=1,
+	)
+	return not team and not frappe.db.exists("CRM Invitation", {})
+
+
 def _listed(doctype: str, **kwargs) -> list | None:
 	"""get_list, or None when the user can't read the doctype, so one part they can't see
 	doesn't stop the rest."""

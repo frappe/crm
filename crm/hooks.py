@@ -46,6 +46,9 @@ flow_tools = [
 	"crm.flow_tools.find_records",
 ]
 
+# Flow leads a new chat with "Set up my CRM" only while setup is unfinished
+flow_starter_conditions = {"crm-onboarding": "crm.flow_tools.setup_unfinished"}
+
 export_python_type_annotations = True
 require_type_annotated_api_methods = True
 
