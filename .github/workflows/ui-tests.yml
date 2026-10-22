@@ -16,7 +16,12 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
+<<<<<<< HEAD
   FRAPPE_BRANCH: version-16
+=======
+  FRAPPE_BRANCH: develop
+  BENCH_USE_UV: "1"
+>>>>>>> 3b897b1 (ci: install ui test deps with uv)
 
 jobs:
   ui-tests:
