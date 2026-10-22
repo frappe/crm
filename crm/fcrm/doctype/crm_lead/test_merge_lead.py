@@ -1,7 +1,9 @@
 import json
+from contextlib import contextmanager
 from unittest.mock import patch
 
 import frappe
+from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.tests import IntegrationTestCase
 
@@ -109,6 +111,26 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertTrue(log.merged_at)
 		self.assertTrue(log.merged_by)
 
+	def test_merge_and_split_leave_an_info_comment_on_both_leads(self):
+		target = self._create_lead(first_name="Target", email="info-target@test.com")
+		source = self._create_lead(first_name="Source", email="info-source@test.com")
+
+		from crm.api.lead import merge_leads, split_lead
+
+		def info_comments(lead):
+			return frappe.get_all(
+				"Comment",
+				{"reference_doctype": "CRM Lead", "reference_name": lead, "comment_type": "Info"},
+				pluck="content",
+				order_by="creation",
+			)
+
+		result = merge_leads(target.name, source.name)
+		split_lead(result["merge_log"])
+
+		for lead in (target.name, source.name):
+			self.assertEqual(info_comments(lead), ["Source merged into Target", "Source split from Target"])
+
 	def test_merge_with_child_tables(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
@@ -124,6 +146,37 @@ class TestMergeLead(IntegrationTestCase):
 		lead_a.reload()
 		self.assertEqual(len(lead_a.products), 1)
 		self.assertEqual(lead_a.products[0].product_name, "Test Product")
+
+	def test_merge_keeps_status_and_sla_history_per_lead(self):
+		target = self._create_lead(first_name="Target", email="status-target@test.com", status="New")
+		source = self._create_lead(first_name="Source", email="status-source@test.com", status="New")
+		source.status = "Contacted"
+		source.save(ignore_permissions=True)
+		source.append("rolling_responses", {"response_time": 60, "responded_on": "2026-01-01 10:00:00"})
+		source.save(ignore_permissions=True)
+		target_open_row = target.status_change_log[-1].name
+
+		def rows(lead, table):
+			child = frappe.get_meta("CRM Lead").get_field(table).options
+			return frappe.get_all(child, {"parent": lead, "parenttype": "CRM Lead"}, ["*"], order_by="idx")
+
+		source_rows = {t: rows(source.name, t) for t in ("status_change_log", "rolling_responses")}
+
+		from crm.api.lead import merge_leads
+
+		merge_leads(target.name, source.name)
+		target.reload()
+		target.status = "Contacted"
+		target.save(ignore_permissions=True)
+
+		closed = frappe.db.get_value(
+			"CRM Status Change Log", target_open_row, ["to", "to_date"], as_dict=True
+		)
+		self.assertEqual(closed.to, "Contacted")
+		self.assertTrue(closed.to_date)
+		for table, before in source_rows.items():
+			self.assertEqual(rows(source.name, table), before)
+		self.assertFalse(rows(target.name, "rolling_responses"))
 
 	def test_merge_updates_references(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
@@ -651,6 +704,47 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(values(target.name), (0, None))
 		self.assertEqual(frappe.db.get_value("CRM Lead", merged.name, "modified"), modified)
 
+	def test_merge_checks_access_and_self_merge_before_locking(self):
+		lead_a = self._create_lead(first_name="A", email="lock-perm-a@test.com")
+		lead_b = self._create_lead(first_name="B", email="lock-perm-b@test.com")
+
+		from crm.api.lead import merge_leads
+
+		cases = (
+			(create_user_without_lead_access(), (lead_a.name, lead_b.name), frappe.PermissionError),
+			("Administrator", (lead_a.name, lead_a.name), frappe.ValidationError),
+		)
+		for user, args, error in cases:
+			with self.subTest(user=user):
+				frappe.set_user(user)
+				with capture_queries() as queries, self.assertRaises(error):
+					merge_leads(*args)
+				frappe.set_user("Administrator")
+				self.assertFalse([q for q in queries if "for update" in q.lower()])
+
+	def test_convert_sees_a_merge_committed_after_its_snapshot(self):
+		target = self._create_lead(first_name="Target", email="snapshot-target@test.com")
+		source = self._create_lead(first_name="Source", email="snapshot-source@test.com")
+		# The other connection only sees committed rows
+		frappe.db.commit()  # nosemgrep
+		self.addCleanup(delete_committed_leads, source.name, target.name)
+
+		# A read before the lock, like a non-Administrator's permission check, fixes this
+		# transaction's REPEATABLE READ snapshot before the other request commits.
+		frappe.db.get_value("CRM Lead", source.name, "merged_into")
+		lead = frappe.qb.DocType("CRM Lead")
+		commit_from_another_connection(
+			frappe.qb.update(lead)
+			.set(lead.merged_into, target.name)
+			.set(lead.is_duplicate, 1)
+			.where(lead.name == source.name)
+		)
+
+		from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal
+
+		with self.assertRaisesRegex(frappe.ValidationError, "was merged into"):
+			convert_to_deal(lead=source.name)
+
 	def test_merge_and_split_lock_both_leads_in_name_order_first(self):
 		source = self._create_lead(first_name="Source", email="lock-source@test.com")
 		target = self._create_lead(first_name="Target", email="lock-target@test.com")
@@ -710,6 +804,18 @@ class TestMergeLead(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			convert_to_deal(lead=lead.name)
 
+	def test_merge_does_not_copy_unique_fields(self):
+		target = self._create_lead(first_name="Target", email="unique-target@test.com")
+		source = self._create_lead(
+			first_name="Source", email="unique-source@test.com", facebook_lead_id="fb-merge-1"
+		)
+
+		from crm.api.lead import merge_leads
+
+		merge_leads(target.name, source.name)
+		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "facebook_lead_id"))
+		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "facebook_lead_id"), "fb-merge-1")
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
@@ -728,7 +834,8 @@ class TestMergeLead(IntegrationTestCase):
 		lead_b = self._create_lead(first_name="B", mobile_no="+91 98555 55555")
 		lead_c = self._create_lead(first_name="C", mobile_no="+91 98666 66666")
 
-		from crm.api.lead import merge_leads, resolve_merged_lead
+		from crm.api.lead import merge_leads
+		from crm.fcrm.doctype.crm_lead.crm_lead import resolve_merged_lead
 		from crm.integrations.api import find_by_phone
 
 		merge_leads(lead_b.name, lead_a.name)
@@ -739,13 +846,22 @@ class TestMergeLead(IntegrationTestCase):
 		matches = find_by_phone("+91 98444 44444")
 		self.assertEqual([m["docname"] for m in matches], [lead_c.name])
 
+	def test_phone_match_on_lead_merged_into_a_missing_lead_returns_that_lead(self):
+		source = self._create_lead(first_name="Source", mobile_no="+91 97333 33333")
+		source.db_set({"merged_into": "CRM-LEAD-MISSING", "is_duplicate": 1})
+
+		from crm.integrations.api import find_by_phone
+
+		matches = find_by_phone("+91 97333 33333")
+		self.assertEqual([(m["doctype"], m["docname"]) for m in matches], [("CRM Lead", source.name)])
+
 	def test_resolve_merged_lead_stops_on_a_cycle(self):
 		lead_a = self._create_lead(first_name="A")
 		lead_b = self._create_lead(first_name="B")
 		lead_a.db_set("merged_into", lead_b.name)
 		lead_b.db_set("merged_into", lead_a.name)
 
-		from crm.api.lead import resolve_merged_lead
+		from crm.fcrm.doctype.crm_lead.crm_lead import resolve_merged_lead
 
 		self.assertIn(resolve_merged_lead(lead_a.name), (lead_a.name, lead_b.name))
 
@@ -816,6 +932,46 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(frappe.db.count("CRM Lead"), leads_before)
 
 
+class TestMergeLeadCustomField(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		create_custom_fields(
+			{
+				"CRM Lead": [
+					{
+						"fieldname": "merge_test_note",
+						"fieldtype": "Data",
+						"label": "Merge Test Note",
+						"insert_after": "source",
+					}
+				]
+			},
+			ignore_validate=True,
+		)
+		frappe.clear_cache(doctype="CRM Lead")
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def test_custom_field_merges_into_empty_target_and_restores_on_split(self):
+		target = frappe.get_doc({"doctype": "CRM Lead", "first_name": "Target"}).insert(
+			ignore_permissions=True
+		)
+		source = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Source", "merge_test_note": "from source"}
+		).insert(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(frappe.db.get_value("CRM Lead", target.name, "merge_test_note"), "from source")
+
+		split_lead(result["merge_log"])
+		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "merge_test_note"))
+		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "merge_test_note"), "from source")
+
+
 def create_user_without_lead_access():
 	email = "lead-noperm@example.com"
 	if not frappe.db.exists("User", email):
@@ -823,6 +979,47 @@ def create_user_without_lead_access():
 			{"doctype": "User", "email": email, "first_name": "No Lead", "send_welcome_email": 0}
 		).insert(ignore_permissions=True)
 	return email
+
+
+@contextmanager
+def capture_queries():
+	queries = []
+	real_sql = frappe.db.sql
+
+	def record(query, *args, **kwargs):
+		queries.append(f"{query} {args} {kwargs}")
+		return real_sql(query, *args, **kwargs)
+
+	with patch.object(frappe.db, "sql", side_effect=record):
+		yield queries
+
+
+def commit_from_another_connection(query):
+	"""Run a write on a second connection and commit it, as a concurrent request would."""
+	from frappe.database import get_db
+
+	conf = frappe.conf
+	other = get_db(
+		socket=conf.db_socket,
+		host=conf.db_host,
+		port=conf.db_port,
+		user=conf.db_user or conf.db_name,
+		password=conf.db_password,
+		cur_db_name=conf.db_name,
+	)
+	other.connect()
+	try:
+		other.sql(query.get_sql())
+		other.commit()
+	finally:
+		other.close()
+
+
+def delete_committed_leads(*names):
+	frappe.db.rollback()
+	for name in names:
+		frappe.delete_doc("CRM Lead", name, force=True, ignore_permissions=True)
+	frappe.db.commit()  # nosemgrep
 
 
 def create_lead_owner():
