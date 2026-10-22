@@ -1,9 +1,9 @@
 import json
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.doc import get_data
+from crm.tests import CRMTestCase
 
 
 def contact_list(**kwargs):
@@ -17,7 +17,7 @@ def contact_list(**kwargs):
 	)
 
 
-class TestListViewColumns(IntegrationTestCase):
+class TestListViewColumns(CRMTestCase):
 	def setUp(self):
 		frappe.set_user("Administrator")
 		frappe.db.delete("CRM View Settings", {"dt": "Contact", "user": "Administrator"})
