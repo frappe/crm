@@ -42,7 +42,11 @@ class FCRMSettings(Document):
 		favicon: DF.Attach | None
 		insights_dashboards: DF.Table[CRMInsightsDashboard]
 		service_provider: DF.Literal[
-			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
+			"frankfurter.app",
+			"fawazahmed-exchange-api",
+			"exchangerate.host",
+			"exchangerate-api",
+			"allratestoday",
 		]
 		update_timestamp_on_new_communication: DF.Check
 	# end: auto-generated types
