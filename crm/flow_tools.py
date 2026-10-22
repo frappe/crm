@@ -1396,8 +1396,10 @@ def send_email(
 ) -> dict[str, Any]:
 	"""Send an email from a lead or deal, as the CRM's email box does: from the user's email account,
 	shown on the record's timeline, where their reply also lands. `message` is plain text, with a
-	blank line between paragraphs. `to` defaults to the record's email. Show the user the whole
-	email and get their yes before sending. Find the lead or deal with find_records first."""
+	blank line between paragraphs. `to` defaults to the record's email. Find the lead or deal with
+	find_records first. Show the whole email first, with the lead or deal as that link, and send
+	only after their yes. In your reply, name the lead or deal as a link to `link`, such as [Kabir
+	Mehta](/crm/leads/...), so they can open it to review; never write its id."""
 	from frappe.core.doctype.communication.email import make
 
 	from crm.api import get_unsubscribed_emails
@@ -1441,7 +1443,8 @@ def add_note(
 ) -> dict[str, str]:
 	"""Add a note to a lead or deal, such as what was said on a call or in a meeting. For a call, title
 	it like "Call with Nina" and put what was said in `text`. `text` is plain text. Find the lead or
-	deal with find_records first."""
+	deal with find_records first. In your reply, name the lead or deal as a link to `link`, such as
+	[Kabir Mehta](/crm/leads/...), so they can open it to review; never write its id."""
 	_work_on(doctype, record)
 	note = frappe.get_doc(
 		{
@@ -1489,7 +1492,9 @@ def add_task(
 	"""Add a task or reminder on a lead or deal, such as "Call Nina back". Whenever they say when, pass
 	`due` as a date and time like "2026-10-24 10:00", using 10:00 if they gave a day but no time. It
 	goes to the user unless `assigned_to` names another CRM user by email; they get notified.
-	Returns the task's id for update_task. Find the lead or deal with find_records first."""
+	Returns the task's id for update_task. Find the lead or deal with find_records first. In your
+	reply, name the lead or deal as a link to `link`, such as [Kabir Mehta](/crm/leads/...), so they
+	can open it to review; never write its id."""
 	_work_on(doctype, record)
 	user = assigned_to or ctx.user
 	if not frappe.db.get_value("User", {"name": user, "enabled": 1, "user_type": "System User"}):
@@ -1568,10 +1573,10 @@ def update_task(
 
 @tool
 def find_records(text: str, *, ctx: ToolContext) -> list[dict[str, Any]]:
-	"""Find the leads and deals the user can see whose person, company or email matches `text`,
-	such as "Nina", "Corvid" or "nina@corvid.ai", one name at a time. Use it, never code, to work
-	out which lead or deal they mean before an email, note or task. Leads already turned into deals
-	are left out. Needs no approval."""
+	"""Find the leads and deals the user can see whose person, company or email matches `text`, such as
+	"Nina", "Corvid" or "nina@corvid.ai", one name at a time. Use it, never code, to work out which
+	lead or deal they mean before an email, note or task. Leads already turned into deals are left
+	out. Needs no approval. Name each match to the user as a link to its `link`, never their ids."""
 	like = f"%{text.strip()}%"
 	found = []
 	for doctype, extra in (("CRM Lead", {"converted": 0}), ("CRM Deal", {})):

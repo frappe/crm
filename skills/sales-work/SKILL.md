@@ -17,9 +17,9 @@ First find the lead or deal they mean with `find_records`, by the person's or co
 
 1. If it's a reply, read what they last sent first: `read_records("Communication", {"reference_doctype": <lead or deal>, "reference_name": <its name>}, order_by="communication_date desc", limit=3)`.
 2. Write the email in their voice: short, friendly, plain text, with their name at the end. Use what you know about the lead or deal, such as the company, the stage and the last email.
-3. Show the whole draft in the chat, subject first, and ask. Options: Send it, Change something.
+3. Show the whole draft in the chat, subject first, with who it's going to and the lead or deal as a link, such as [Kabir Mehta](/crm/leads/...), so they can open it and check before sending. Then ask. Options: Send it, Change something.
 4. Only after they say send, call `send_email` with the lead or deal, the `subject` and the `message`. It goes to the lead's or deal's email unless they gave another address.
-5. Say it's sent, and link to the lead or deal, where the email and their reply show up.
+5. Say it's sent, with the lead or deal as a link, where the email and their reply show up. Never write a record's id.
 
 If it fails because no email account can send, say email isn't connected yet and offer to connect it. If someone unsubscribed, say they asked not to get emails.
 
