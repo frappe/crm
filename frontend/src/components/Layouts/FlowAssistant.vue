@@ -99,6 +99,7 @@ import {
 } from '@/composables/assistant'
 import {
   changedRecords,
+  crmPathFor,
   whereToGo,
   type FlowChange,
 } from '@/utils/assistantChanges'
@@ -160,12 +161,17 @@ function keepCrmLinksHere(): void {
       const link = (event.target as HTMLElement).closest('a')
       if (!link) return
       const url = new URL(link.href, window.location.href)
+      if (url.origin !== window.location.origin) return
       // /crm/… only: /crm-form/… is a public page and keeps its new tab
       const crmPage =
         url.pathname === '/crm' || url.pathname.startsWith('/crm/')
-      if (url.origin !== window.location.origin || !crmPage) return
+      // a desk link to a lead, deal or other CRM record opens its CRM page instead
+      const page = crmPage
+        ? url.pathname.replace(/^\/crm/, '') + url.search + url.hash
+        : crmPathFor(url.pathname)
+      if (!page) return
       event.preventDefault()
-      router.push(url.pathname.replace(/^\/crm/, '') + url.search)
+      router.push(page)
     },
     true,
   )

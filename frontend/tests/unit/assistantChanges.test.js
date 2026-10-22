@@ -1,4 +1,4 @@
-import { changedRecords, whereToGo } from '@/utils/assistantChanges'
+import { changedRecords, crmPathFor, whereToGo } from '@/utils/assistantChanges'
 
 const create = (doctype, created) => ({
   tool: 'create',
@@ -277,5 +277,26 @@ describe('changedRecords', () => {
     expect(
       changedRecords([{ tool: 'invite_team', args: {}, result: {} }]).doctypes,
     ).toEqual([])
+  })
+})
+
+describe('crmPathFor', () => {
+  it('opens a desk link to a CRM record on its CRM page', () => {
+    expect(crmPathFor('/app/crm-lead/CRM-LEAD-0001')).toBe(
+      '/leads/CRM-LEAD-0001',
+    )
+    expect(crmPathFor('/app/crm-organization/Acme%20Corp')).toBe(
+      '/organizations/Acme%20Corp',
+    )
+  })
+
+  it('opens the list where the CRM has no page for one record', () => {
+    expect(crmPathFor('/app/crm-task/12')).toBe('/tasks')
+    expect(crmPathFor('/app/crm-deal')).toBe('/deals')
+  })
+
+  it('leaves desk pages the CRM does not show', () => {
+    expect(crmPathFor('/app/sales-invoice/SINV-1')).toBeNull()
+    expect(crmPathFor('/crm/leads')).toBeNull()
   })
 })

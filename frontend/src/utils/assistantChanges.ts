@@ -36,6 +36,22 @@ const RECORD_PAGES: Record<string, string> = {
   'CRM Organization': '/organizations/',
 }
 
+// A Frappe desk address, /app/<doctype>/<name>, as the CRM page for that record, or its list
+// where the CRM has no page for one record. Null for what the CRM doesn't show.
+export function crmPathFor(deskPath: string): string | null {
+  const [, app, slug, ...rest] = deskPath.split('/')
+  if (app !== 'app' || !slug) return null
+  const doctype = Object.keys(LIST_PAGES).find(
+    (d) => d.toLowerCase().replace(/ /g, '-') === slug,
+  )
+  if (!doctype) return null
+  const name = decodeURIComponent(rest.join('/'))
+  if (name && RECORD_PAGES[doctype]) {
+    return RECORD_PAGES[doctype] + encodeURIComponent(name)
+  }
+  return LIST_PAGES[doctype]
+}
+
 const SETTINGS_PAGES: Record<string, string> = {
   'Email Account': 'Accounts',
   'Email Template': 'Templates',
