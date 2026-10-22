@@ -827,6 +827,7 @@ def _people(people: list[str], me: str) -> list[str]:
 
 def _automation_rows(steps: list[AutomationStep], record: str, me: str) -> list[dict[str, Any]]:
 	rows, branch_of = [], 0
+	meta = frappe.get_meta(RECORDS[record])
 
 	def add(row: dict[str, Any], parent: int) -> int:
 		idx = len(rows) + 1
@@ -847,7 +848,8 @@ def _automation_rows(steps: list[AutomationStep], record: str, me: str) -> list[
 		parent = branch_of
 		if s.only_if:
 			# the step sits in the If arm of its own condition, so other records skip just this step
-			parent = add({"step_type": "If", "step_condition": _condition_expression(s.only_if)}, parent)
+			condition = _condition_expression(s.only_if, meta)
+			parent = add({"step_type": "If", "step_condition": condition}, parent)
 		if s.do == "stop if they replied":
 			# the If arm holds every later step, so they only run when nothing came back
 			branch_of = add(
@@ -862,15 +864,26 @@ def _automation_rows(steps: list[AutomationStep], record: str, me: str) -> list[
 	return rows
 
 
-def _condition_expression(conditions: list[Condition]) -> str:
-	"""A step's conditions as the expression its If step checks, with text compared case-insensitively."""
-	return " and ".join(_condition_part(c) for c in conditions)
+def _condition_expression(conditions: list[Condition], meta) -> str:
+	"""A step's conditions as the expression its If step checks: numbers compared as numbers, and
+	text case-insensitively."""
+	return " and ".join(_condition_part(c, meta) for c in conditions)
 
 
-def _condition_part(c: Condition) -> str:
-	if c.op in ("is more than", "is less than"):
-		sign = ">" if c.op == "is more than" else "<"
-		return f"float(doc.{c.field} or 0) {sign} {frappe.utils.flt(c.value)}"
+NUMBER_OPS = {"is": "==", "is not": "!=", "is more than": ">", "is less than": "<"}
+
+
+def _condition_part(c: Condition, meta) -> str:
+	from frappe.model import numeric_fieldtypes
+
+	field = meta.get_field(c.field)
+	is_number = field and field.fieldtype in numeric_fieldtypes
+	if is_number or c.op in ("is more than", "is less than"):
+		if c.op not in NUMBER_OPS:
+			frappe.throw(
+				_("{0} is a number: use is, is not, is more than or is less than.").format(field.label)
+			)
+		return f"float(doc.{c.field} or 0) {NUMBER_OPS[c.op]} {_number(c.value, field)}"
 	text, value = f"(doc.{c.field} or '').lower()", repr(c.value.lower())
 	return {
 		"is": f"{text} == {value}",
@@ -879,6 +892,13 @@ def _condition_part(c: Condition) -> str:
 		"does not contain": f"{value} not in {text}",
 		"ends with": f"{text}.endswith({value})",
 	}[c.op]
+
+
+def _number(value: str, field) -> float:
+	# a yes/no field holds 1 or 0
+	if field and field.fieldtype == "Check":
+		return 1.0 if value.strip().lower() in ("1", "yes", "true", "checked") else 0.0
+	return frappe.utils.flt(value)
 
 
 def _no_reply_since_start() -> str:
