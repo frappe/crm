@@ -1,5 +1,3 @@
-import frappe
-
 app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
@@ -237,14 +235,10 @@ override_doctype_class = {
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
-# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule.
-# Frappe v15 has no extend_doctype_class, so the class is overridden there instead.
-if int(frappe.__version__.split(".")[0]) >= 16:
-	extend_doctype_class = {
-		"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
-	}
-else:
-	override_doctype_class["Assignment Rule"] = "crm.overrides.assignment_rule.CRMAssignmentRuleV15"
+# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
+extend_doctype_class = {
+	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
+}
 
 # Document Events
 # ---------------
