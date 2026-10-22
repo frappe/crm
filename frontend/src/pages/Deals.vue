@@ -64,10 +64,9 @@
             getRow(itemName, titleField).full_name
           "
         >
-          <Avatar
+          <UserAvatar
             class="flex items-center"
-            :image="getRow(itemName, titleField).user_image"
-            :label="getRow(itemName, titleField).full_name"
+            :user="getRow(itemName, titleField).name"
             size="sm"
           />
         </div>
@@ -124,11 +123,10 @@
           />
         </div>
         <div v-else-if="fieldName === 'deal_owner'">
-          <Avatar
+          <UserAvatar
             v-if="getRow(itemName, fieldName).full_name"
             class="flex items-center"
-            :image="getRow(itemName, fieldName).user_image"
-            :label="getRow(itemName, fieldName).full_name"
+            :user="getRow(itemName, fieldName).name"
             size="xs"
           />
         </div>
@@ -252,6 +250,7 @@
 </template>
 
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
