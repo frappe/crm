@@ -5,6 +5,7 @@ import frappe
 from frappe import _, generate_hash
 from frappe.model.document import Document
 
+from crm.api.interactions import record
 from crm.integrations.api import get_contact_by_phone_number
 from crm.utils import seconds_to_duration
 
@@ -52,6 +53,12 @@ class CRMCallLog(Document):
 			self.id = generate_hash(length=12)
 		if not self.telephony_medium:
 			self.telephony_medium = "Manual"
+
+	def on_update(self):
+		if self.type == "Outgoing" and self.status == "Completed":
+			at = self.end_time or self.start_time or self.creation
+			for doctype, docname in self.get_crm_references().items():
+				record(doctype, docname, "Outbound", at)
 
 	@staticmethod
 	def default_list_data():
