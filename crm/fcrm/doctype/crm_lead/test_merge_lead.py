@@ -456,6 +456,25 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual([p.product_name for p in other.products], ["Other Product"])
 		self.assertNotEqual(frappe.db.get_value("CRM Lead", lead_a.name, "lead_score"), 99)
 
+	def test_split_only_restores_reference_fields(self):
+		lead_a = self._create_lead(first_name="A", email="refcheck-a@test.com")
+		lead_b = self._create_lead(first_name="B", email="refcheck-b@test.com")
+		other = self._create_lead(first_name="Other", email="refcheck-other@test.com")
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(lead_a.name, lead_b.name)
+		# A plain Data field that happens to hold the target's name is not a reference
+		other.db_set("first_name", lead_a.name)
+		tampered = {"doctype": "CRM Lead", "docname": other.name, "fieldname": "first_name"}
+		log = frappe.get_doc("CRM Merge Log", result["merge_log"])
+		refs = [*json.loads(log.reference_snapshot), {**tampered, "old_value": lead_b.name}]
+		log.db_set("reference_snapshot", json.dumps(refs))
+
+		split_lead(log.name)
+
+		self.assertEqual(frappe.db.get_value("CRM Lead", other.name, "first_name"), lead_a.name)
+
 	def test_split_merges_twice_fails(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
@@ -668,8 +687,6 @@ class TestMergeLead(IntegrationTestCase):
 			}
 		)
 		message.db_insert()
-		# db_insert skips the eviction a normal insert does when a new linked doctype appears
-		frappe.cache.delete_value("dynamic_link_map::WA Message::reference_doctype")
 
 		from crm.api.lead import merge_leads, split_lead
 
@@ -816,6 +833,42 @@ class TestMergeLead(IntegrationTestCase):
 		merge_leads(target.name, source.name)
 		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "facebook_lead_id"))
 		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "facebook_lead_id"), "fb-merge-1")
+
+	def test_merge_and_split_move_links_the_dynamic_link_cache_has_not_seen(self):
+		target = self._create_lead(first_name="Target", email="stale-target@test.com")
+		source = self._create_lead(first_name="Source", email="stale-source@test.com")
+		communication = frappe.get_doc(
+			{
+				"doctype": "Communication",
+				"communication_type": "Communication",
+				"communication_medium": "Email",
+				"sent_or_received": "Sent",
+				"subject": "Linked by a raw insert",
+			}
+		).insert(ignore_permissions=True)
+		cache_key = "dynamic_link_map::Communication Link::link_doctype"
+		frappe.cache.set_value(cache_key, [])
+		self.addCleanup(frappe.cache.delete_value, cache_key)
+		link = frappe.get_doc(
+			{
+				"doctype": "Communication Link",
+				"name": frappe.generate_hash(length=10),
+				"parent": communication.name,
+				"parenttype": "Communication",
+				"parentfield": "timeline_links",
+				"link_doctype": "CRM Lead",
+				"link_name": source.name,
+			}
+		)
+		link.db_insert()
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(frappe.db.get_value("Communication Link", link.name, "link_name"), target.name)
+
+		split_lead(result["merge_log"])
+		self.assertEqual(frappe.db.get_value("Communication Link", link.name, "link_name"), source.name)
 
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
