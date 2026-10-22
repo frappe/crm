@@ -71,11 +71,12 @@ sed -i 's/schedule:/# schedule:/g' Procfile
 sed -i 's/socketio:/# socketio:/g' Procfile
 sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
 
-bench get-app crm "${GITHUB_WORKSPACE}"
+# Server tests never load the built frontend, so skip its yarn install and builds.
+YARN_IGNORE_SCRIPTS=true bench get-app --skip-assets crm "${GITHUB_WORKSPACE}"
 
 # Only pull erpnext when the integration is under test, to keep other runs fast.
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-    bench get-app erpnext --branch "$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}" erpnext)"
+    bench get-app --skip-assets erpnext --branch "$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}" erpnext)"
 fi
 
 bench setup requirements --dev
