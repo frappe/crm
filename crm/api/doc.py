@@ -300,8 +300,11 @@ def get_data(
 	data = []
 	_list = get_controller(doctype)
 	default_rows = []
+	default_column_keys = []
 	if hasattr(_list, "default_list_data"):
-		default_rows = _list.default_list_data().get("rows")
+		default_list_data = _list.default_list_data()
+		default_rows = default_list_data.get("rows")
+		default_column_keys = [column.get("key") for column in default_list_data.get("columns", [])]
 
 	meta = frappe.get_meta(doctype)
 
@@ -337,19 +340,23 @@ def get_data(
 			rows = default_rows
 			columns = _list.default_list_data().get("columns")
 
-		# check if rows has all keys from columns if not add them
+		visible_columns = []
 		for column in columns:
-			if column.get("key") not in rows:
-				rows.append(column.get("key"))
+			key = column.get("key")
+			# hidden fields are dropped unless the doctype lists them in its own defaults
+			column_meta = meta.get_field(key)
+			if column_meta and column_meta.get("hidden") and key not in default_column_keys:
+				continue
+
+			if key not in rows:
+				rows.append(key)
 			column["label"] = _(column.get("label"))
 
-			if column.get("key") == "_liked_by" and column.get("width") == "10rem":
+			if key == "_liked_by" and column.get("width") == "10rem":
 				column["width"] = "50px"
 
-			# remove column if column.hidden is True
-			column_meta = meta.get_field(column.get("key"))
-			if column_meta and column_meta.get("hidden"):
-				columns.remove(column)
+			visible_columns.append(column)
+		columns = visible_columns
 
 		# check if rows has group_by_field if not add it
 		if group_by_field and group_by_field not in rows:
@@ -436,8 +443,7 @@ def get_data(
 				kc["all_count"] = all_count
 				kc["count"] = len(column_data)
 
-				for d in column_data:
-					getCounts(d, doctype)
+				set_activity_counts(column_data, doctype)
 
 			if order:
 				column_data = sorted(
@@ -587,7 +593,7 @@ def get_records_based_on_order(doctype, rows, filters, page_length, order):
 
 
 @frappe.whitelist()
-def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_permissions: bool = False):
+def remove_assignments(doctype: str, name: str, assignees: str | list):
 	assignees = frappe.parse_json(assignees)
 
 	if not assignees:
@@ -600,7 +606,6 @@ def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_pe
 			todo=None,
 			assign_to=assign_to,
 			status="Cancelled",
-			ignore_permissions=ignore_permissions,
 		)
 
 
@@ -613,6 +618,11 @@ def add_seen(doctype: str, name: str):
 
 @frappe.whitelist()
 def get_assigned_users(doctype: str, name: str | int, default_assigned_to: str | None = None):
+	frappe.get_doc(doctype, name).check_permission("read")
+	return get_assignees(doctype, name, default_assigned_to)
+
+
+def get_assignees(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",
 		fields=["allocated_to"],
@@ -648,37 +658,37 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 	return _fields
 
 
-def getCounts(d, doctype):
-	d["_email_count"] = (
-		frappe.db.count(
-			"Communication",
-			filters={
-				"reference_doctype": doctype,
-				"reference_name": d.get("name"),
-				"communication_type": "Communication",
-			},
+def set_activity_counts(rows, doctype):
+	# one grouped query per activity type instead of one query per card
+	names = [d.get("name") for d in rows]
+	if not names:
+		return rows
+
+	def count_by(activity_doctype, link_field, filters=None):
+		result = frappe.get_all(
+			activity_doctype,
+			filters={"reference_doctype": doctype, link_field: ["in", names], **(filters or {})},
+			fields=[link_field, COUNT_NAME],
+			group_by=link_field,
 		)
-		or 0
-	)
-	d["_email_count"] = d["_email_count"] + frappe.db.count(
+		return {r.get(link_field): r.total_count for r in result}
+
+	email_counts = count_by(
 		"Communication",
-		filters={
-			"reference_doctype": doctype,
-			"reference_name": d.get("name"),
-			"communication_type": "Automated Message",
-		},
+		"reference_name",
+		{"communication_type": ["in", ["Communication", "Automated Message"]]},
 	)
-	d["_comment_count"] = frappe.db.count(
-		"Comment",
-		filters={"reference_doctype": doctype, "reference_name": d.get("name"), "comment_type": "Comment"},
-	)
-	d["_task_count"] = frappe.db.count(
-		"CRM Task", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
-	)
-	d["_note_count"] = frappe.db.count(
-		"FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
-	)
-	return d
+	comment_counts = count_by("Comment", "reference_name", {"comment_type": "Comment"})
+	task_counts = count_by("CRM Task", "reference_docname")
+	note_counts = count_by("FCRM Note", "reference_docname")
+
+	for d in rows:
+		name = d.get("name")
+		d["_email_count"] = email_counts.get(name, 0)
+		d["_comment_count"] = comment_counts.get(name, 0)
+		d["_task_count"] = task_counts.get(name, 0)
+		d["_note_count"] = note_counts.get(name, 0)
+	return rows
 
 
 @frappe.whitelist()
@@ -688,6 +698,15 @@ def get_linked_docs_of_document(doctype: str, docname: str):
 	except frappe.DoesNotExistError:
 		return []
 
+	doc.check_permission("read")
+	return [
+		d
+		for d in get_linked_docs_data(doc)
+		if frappe.has_permission(d["reference_doctype"], "read", d["reference_docname"])
+	]
+
+
+def get_linked_docs_data(doc):
 	linked_docs = get_linked_docs(doc)
 	dynamic_linked_docs = get_dynamic_linked_docs(doc)
 
@@ -819,7 +838,7 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 				frappe.log_error(f"Document {doctype} {doc} does not exist", "Bulk Delete Error")
 				continue
 
-			linked_docs = get_linked_docs_of_document(doctype, doc)
+			linked_docs = get_linked_docs_data(frappe.get_doc(doctype, doc))
 			for linked_doc in linked_docs:
 				if not linked_doc.get("reference_doctype") or not linked_doc.get("reference_docname"):
 					continue

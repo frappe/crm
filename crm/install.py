@@ -29,6 +29,8 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_default_quick_filters()
 	add_standard_dropdown_items()
+	add_default_availability_statuses()
+	add_availability_user_fields()
 	add_default_scripts()
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
@@ -517,6 +519,7 @@ def add_default_quick_filters():
 		"CRM Organization": ["organization_name", "no_of_employees", "territory", "industry"],
 		"CRM Task": ["title", "priority", "assigned_to", "status", "due_date"],
 		"CRM Call Log": ["telephony_medium", "type", "status", "from", "to"],
+		"Data Import": ["name", "reference_doctype", "status"],
 	}
 
 	for quick_filter in quick_filters:
@@ -542,6 +545,55 @@ def add_standard_dropdown_items():
 		crm_settings.append("dropdown_items", item)
 
 	crm_settings.save()
+
+
+def add_default_availability_statuses():
+	statuses = [
+		{"availability_status": "Active", "category": "Active", "color": "green", "position": 1},
+		{"availability_status": "Away", "category": "Away", "color": "amber", "position": 2},
+		{"availability_status": "Unavailable", "category": "Unavailable", "color": "red", "position": 3},
+	]
+	for status in statuses:
+		if not frappe.db.exists("CRM Availability Status", status["availability_status"]):
+			frappe.get_doc({"doctype": "CRM Availability Status", **status}).insert(ignore_permissions=True)
+
+
+def add_availability_user_fields():
+	"""Each user's availability, used by assignment rules and shown next to their avatar."""
+	meta = frappe.get_meta("User")
+
+	fields = [
+		{
+			"fieldname": "crm_availability",
+			"fieldtype": "Link",
+			"options": "CRM Availability Status",
+			"label": "CRM Availability",
+			"insert_after": "email_signature",
+		},
+		{
+			"fieldname": "crm_availability_changed_on",
+			"fieldtype": "Datetime",
+			"label": "CRM Availability Changed On",
+			"read_only": 1,
+			"insert_after": "crm_availability",
+		},
+		{
+			"fieldname": "crm_availability_changed_by",
+			"fieldtype": "Link",
+			"options": "User",
+			"label": "CRM Availability Changed By",
+			"read_only": 1,
+			"insert_after": "crm_availability_changed_on",
+		},
+	]
+
+	fields = [field for field in fields if not meta.has_field(field["fieldname"])]
+	if not fields:
+		return
+
+	click.secho("* Installing Custom Fields in User")
+	create_custom_fields({"User": fields})
+	frappe.clear_cache(doctype="User")
 
 
 def add_default_scripts():
