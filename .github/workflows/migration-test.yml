@@ -65,11 +65,13 @@ jobs:
               with:
                   node-version: "24"
 
-            - name: Install system dependencies
-              run: |
-                  sudo apt update
-                  sudo apt install -y --no-install-recommends redis-server mariadb-client libmariadb-dev
-                  npm install -g yarn
+            - name: Install system packages
+              uses: ./pr-crm/.github/actions/apt-install
+              with:
+                  packages: redis-server mariadb-client libmariadb-dev
+
+            - name: Install yarn
+              run: npm install -g yarn
 
             - name: Configure database
               run: |
