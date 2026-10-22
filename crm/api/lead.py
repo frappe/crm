@@ -1,4 +1,3 @@
-import datetime
 import json
 
 import frappe
@@ -156,7 +155,7 @@ def merge_leads(target: str, source: str):
 			frappe.throw(_("Lead {0} is converted to a deal and cannot be merged").format(doc.name))
 
 	field_snapshot = _snapshot_doc(target_doc)
-	child_snapshot = _snapshot_child_tables(source_doc, target_doc)
+	child_snapshot = _snapshot_child_tables(source_doc)
 	ref_snapshot = _snapshot_references(source_doc)
 
 	_auto_merge_fields(target_doc, source_doc)
@@ -176,8 +175,8 @@ def merge_leads(target: str, source: str):
 			"reference_doctype": "CRM Lead",
 			"target_document_name": target,
 			"source_document_name": source,
-			"field_snapshot": json.dumps(field_snapshot),
-			"child_table_snapshot": json.dumps(child_snapshot.get("child_data")),
+			"field_snapshot": frappe.as_json(field_snapshot, indent=None),
+			"child_table_snapshot": json.dumps(child_snapshot),
 			"reference_snapshot": json.dumps(ref_snapshot),
 		}
 	)
@@ -309,54 +308,14 @@ def _mergeable_fields(doctype: str) -> list[str]:
 
 
 def _snapshot_doc(doc: frappe.model.document.Document) -> dict:
-	return {f: _serializable(doc.get(f)) for f in _mergeable_fields(doc.doctype)}
+	return {f: doc.get(f) for f in _mergeable_fields(doc.doctype)}
 
 
-def _serializable(obj):
-	if isinstance(obj, datetime.date | datetime.datetime):
-		return obj.isoformat()
-	if isinstance(obj, datetime.time):
-		return obj.isoformat()
-	return obj
-
-
-def _snapshot_child_tables(
-	source_doc: frappe.model.document.Document,
-	target_doc: frappe.model.document.Document,
-) -> dict:
-	child_tables = MERGE_CONFIG[target_doc.doctype]["child_tables"]
-	snapshots = {}
-
-	for ct in child_tables:
-		source_rows = source_doc.get(ct) or []
-		target_rows = target_doc.get(ct) or []
-		snapshots[ct] = {
-			"source_table": source_doc.name,
-			"target_table": target_doc.name,
-			"source_rows": [
-				{
-					r.name: {
-						f.fieldname: _serializable(r.get(f.fieldname))
-						for f in r.meta.fields
-						if f.fieldname != "name"
-					}
-				}
-				for r in source_rows
-			],
-			"target_rows_count": len(target_rows),
-			"source_rows_count": len(source_rows),
-		}
-
-	child_data = {}
-	for ct in child_tables:
-		source_rows = source_doc.get(ct) or []
-		child_data[ct] = []
-		for r in source_rows:
-			row_data = {f.fieldname: _serializable(r.get(f.fieldname)) for f in r.meta.fields}
-			row_data["name"] = r.name
-			child_data[ct].append(row_data)
-
-	return {"snapshots": snapshots, "child_data": child_data}
+def _snapshot_child_tables(source_doc: frappe.model.document.Document) -> dict:
+	return {
+		ct: [row.name for row in source_doc.get(ct) or []]
+		for ct in MERGE_CONFIG[source_doc.doctype]["child_tables"]
+	}
 
 
 def _snapshot_references(source_doc: frappe.model.document.Document) -> list:
@@ -501,9 +460,9 @@ def _move_child_tables_back(
 
 	for ct in child_tables:
 		child_doctype = target_doc.meta.get_field(ct).options
-		source_rows = child_data.get(ct) or []
-		for row_data in source_rows:
-			row_name = row_data.get("name")
+		for row in child_data.get(ct) or []:
+			# Logs written before names-only snapshots hold whole rows
+			row_name = row.get("name") if isinstance(row, dict) else row
 			if not row_name:
 				continue
 			parent = frappe.db.get_value(child_doctype, row_name, ["parent", "parenttype"])
