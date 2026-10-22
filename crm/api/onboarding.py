@@ -14,7 +14,7 @@ def complete_setup_for_fc_site(login_manager=None):
 		frappe.log_error("Frappe Cloud setup auto-complete failed")
 
 
-CRM_SITE_APPS = {"frappe", "crm", "whatsapp"}
+CRM_SITE_APPS = {"frappe", "crm", "frappe_whatsapp"}
 
 
 def should_auto_complete_setup():
