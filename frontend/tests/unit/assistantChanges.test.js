@@ -303,6 +303,18 @@ describe('crmPathFor', () => {
     expect(crmPathFor('/app/crm-deal')).toBe('/deals')
   })
 
+  it('opens a desk link to a setup record in Settings', () => {
+    expect(
+      crmPathFor('/app/email-template/Sorry%20to%20see%20you%20go'),
+    ).toEqual({
+      settings: 'Templates',
+      record: 'Sorry to see you go',
+    })
+    expect(crmPathFor('/app/web-form/contact-us')).toEqual({
+      settings: 'Forms',
+    })
+  })
+
   it('leaves desk pages the CRM does not show', () => {
     expect(crmPathFor('/app/sales-invoice/SINV-1')).toBeNull()
     expect(crmPathFor('/crm/leads')).toBeNull()

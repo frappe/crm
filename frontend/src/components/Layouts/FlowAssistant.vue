@@ -178,7 +178,9 @@ function keepCrmLinksHere(): void {
         : crmPathFor(url.pathname)
       if (!page) return
       event.preventDefault()
-      router.push(page)
+      if (typeof page === 'string') router.push(page)
+      // a template, form or other setup record opens in Settings
+      else router.push({ query: { ...route.query, ...page } })
     },
     true,
   )
