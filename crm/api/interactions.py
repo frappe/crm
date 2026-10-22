@@ -11,12 +11,12 @@ def record(doctype: str, docname: str, direction: str, at=None):
 
 	field = DIRECTION_FIELDS[direction]
 	at = get_datetime(at or now_datetime())
-	_move_forward(doctype, docname, field, at)
+	_set_if_newer(doctype, docname, field, at)
 
 	if doctype == "CRM Lead" and frappe.db.get_value("CRM Lead", docname, "converted"):
 		deal = get_latest_deal(docname)
 		if deal:
-			_move_forward("CRM Deal", deal, field, at)
+			_set_if_newer("CRM Deal", deal, field, at)
 
 
 def get_latest_deal(lead: str) -> str | None:
@@ -32,7 +32,7 @@ def get_awaiting_reply_since(last_inbound_at, last_outbound_at):
 	return None
 
 
-def _move_forward(doctype: str, docname: str, field: str, at):
+def _set_if_newer(doctype: str, docname: str, field: str, at):
 	row = frappe.db.get_value(doctype, docname, list(DIRECTION_FIELDS.values()), as_dict=True)
 	if not row or (row[field] and row[field] >= at):
 		return
