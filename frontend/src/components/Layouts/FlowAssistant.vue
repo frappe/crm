@@ -12,11 +12,24 @@
       mode === 'docked'
         ? 'relative z-[60] h-full w-[420px] shrink-0 !rounded-none border-l border-outline-gray-2'
         : '!z-[60]',
+      // minimized, it's only Flow's icon
+      mode === 'minimized' ? '!w-auto !bg-transparent !shadow-none' : '',
     ]"
     @pointerdown.capture="moving = true"
   >
     <template #header="{ dock, float, minimize, expandFromTray }">
-      <div class="flex items-center justify-between gap-2 px-2.5 py-1.5">
+      <button
+        v-if="mode === 'minimized'"
+        class="grid size-10 place-items-center overflow-hidden rounded-[10px] shadow-lg"
+        :title="__('Open the assistant')"
+        :aria-label="__('Open the assistant')"
+        @pointerdown.stop
+        @click="expandFromTray"
+      >
+        <img v-if="flowLogo" :src="flowLogo" alt="" class="size-full" />
+        <LucideSparkles v-else class="size-5 text-ink-gray-7" />
+      </button>
+      <div v-else class="flex items-center justify-between gap-2 px-2.5 py-1.5">
         <div
           class="flex min-w-0 items-center gap-2 text-sm font-medium text-ink-gray-8"
         >
@@ -25,40 +38,30 @@
         </div>
         <div class="flex shrink-0 items-center gap-1" @pointerdown.stop>
           <Button
-            v-if="mode === 'minimized'"
             variant="ghost"
-            :tooltip="__('Expand')"
-            @click="expandFromTray"
+            :tooltip="__('Open in a new tab')"
+            @click="openFullPage"
           >
-            <template #icon><LucideMaximize2 class="size-4" /></template>
+            <template #icon><LucideExternalLink class="size-4" /></template>
           </Button>
-          <template v-else>
-            <Button
-              variant="ghost"
-              :tooltip="__('Open in a new tab')"
-              @click="openFullPage"
-            >
-              <template #icon><LucideExternalLink class="size-4" /></template>
-            </Button>
-            <Button
-              variant="ghost"
-              :tooltip="
-                mode === 'docked' ? __('Pop out') : __('Dock to the side')
-              "
-              @click="mode === 'docked' ? float() : dock()"
-            >
-              <template #icon>
-                <LucidePictureInPicture2
-                  v-if="mode === 'docked'"
-                  class="size-4"
-                />
-                <LucidePanelRight v-else class="size-4" />
-              </template>
-            </Button>
-            <Button variant="ghost" :tooltip="__('Minimize')" @click="minimize">
-              <template #icon><LucideMinus class="size-4" /></template>
-            </Button>
-          </template>
+          <Button
+            variant="ghost"
+            :tooltip="
+              mode === 'docked' ? __('Pop out') : __('Dock to the side')
+            "
+            @click="mode === 'docked' ? float() : dock()"
+          >
+            <template #icon>
+              <LucidePictureInPicture2
+                v-if="mode === 'docked'"
+                class="size-4"
+              />
+              <LucidePanelRight v-else class="size-4" />
+            </template>
+          </Button>
+          <Button variant="ghost" :tooltip="__('Minimize')" @click="minimize">
+            <template #icon><LucideMinus class="size-4" /></template>
+          </Button>
           <Button
             variant="ghost"
             :tooltip="__('Close')"
@@ -88,6 +91,7 @@ import {
   assistantChanges,
   checkFlowInstalled,
   flowInstalled,
+  flowLogo,
   openAssistant,
 } from '@/composables/assistant'
 import {
@@ -103,7 +107,6 @@ import type { WindowMode } from 'frappe-ui/experimental'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import LucideExternalLink from '~icons/lucide/external-link'
-import LucideMaximize2 from '~icons/lucide/maximize-2'
 import LucideMinus from '~icons/lucide/minus'
 import LucidePanelRight from '~icons/lucide/panel-right'
 import LucidePictureInPicture2 from '~icons/lucide/picture-in-picture-2'
