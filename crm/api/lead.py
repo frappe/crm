@@ -3,24 +3,45 @@ import json
 
 import frappe
 from frappe import _
+from frappe.model import default_fields, no_value_fields, table_fields
 from frappe.model.dynamic_links import get_dynamic_link_map
 from frappe.model.rename_doc import get_link_fields
 
+from crm.fcrm.doctype.crm_lead.crm_lead import lock_lead
 from crm.integrations.api import find_by_phone
 from crm.utils import normalize_phone
 
-MAX_MERGE_DEPTH = 10
-
-
-def resolve_merged_lead(name: str) -> str:
-	"""The live lead a merged lead now lives in: follows merged_into until a lead with
-	none. Stops after MAX_MERGE_DEPTH hops so a corrupt cycle can't loop forever."""
-	for _depth in range(MAX_MERGE_DEPTH):
-		merged_into = frappe.db.get_value("CRM Lead", name, "merged_into")
-		if not merged_into:
-			break
-		name = merged_into
-	return name
+MERGE_CONFIG = {
+	"CRM Lead": {
+		# status_change_log and rolling_responses stay with their lead: the status log and the SLA
+		# both extend the lead's own last row, so moved rows would be closed in the target's place.
+		"child_tables": ["products"],
+		# Never merged or restored on top of the defaults: their values drive hooks (sharing,
+		# assignment, SLA, status logs) or describe the lead itself rather than its contact data.
+		"denylist": {
+			"lead_owner",
+			"status",
+			"lost_reason",
+			"sla",
+			"sla_creation",
+			"sla_status",
+			"response_by",
+			"first_responded_on",
+			"first_response_time",
+			"communication_status",
+			"lead_name",
+			"title",
+			"converted",
+			"merged_into",
+			"is_duplicate",
+			"naming_series",
+			# automation scoring state, not contact data
+			"lead_score",
+			"lead_temperature",
+		},
+		"match_keys": {"email": ["email"], "phone": ["mobile_no", "phone"]},
+	},
+}
 
 
 @frappe.whitelist()
@@ -29,13 +50,17 @@ def find_duplicate_leads(lead_name: str):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
 	lead = frappe.get_cached_doc("CRM Lead", lead_name)
+	match_keys = MERGE_CONFIG["CRM Lead"]["match_keys"]
 
 	candidates = set()
-	if lead.email:
-		candidates.update(frappe.get_all("CRM Lead", filters={"email": lead.email}, pluck="name"))
-	for number in (lead.mobile_no, lead.phone):
-		if number:
-			candidates.update(m["docname"] for m in find_by_phone(number) if m["doctype"] == "CRM Lead")
+	for field in match_keys["email"]:
+		if lead.get(field):
+			candidates.update(frappe.get_all("CRM Lead", filters={field: lead.get(field)}, pluck="name"))
+	for field in match_keys["phone"]:
+		if lead.get(field):
+			candidates.update(
+				m["docname"] for m in find_by_phone(lead.get(field)) if m["doctype"] == "CRM Lead"
+			)
 	candidates.discard(lead_name)
 	if not candidates:
 		return []
@@ -43,19 +68,20 @@ def find_duplicate_leads(lead_name: str):
 	possible = frappe.get_list(
 		"CRM Lead",
 		filters={"name": ("in", list(candidates)), "converted": 0, "is_duplicate": 0},
-		fields=["name", "lead_name", "email", "mobile_no", "phone", "organization"],
+		fields=["name", "lead_name", *match_keys["email"], *match_keys["phone"], "organization"],
 		limit=20,
 	)
 
-	numbers = {normalize_phone(n) for n in (lead.mobile_no, lead.phone)} - {""}
-	return [{**p, "matched_fields": _matched_fields(lead, p, numbers)} for p in possible]
+	numbers = {normalize_phone(lead.get(f)) for f in match_keys["phone"]} - {""}
+	return [{**p, "matched_fields": _matched_fields(lead, p, numbers, match_keys)} for p in possible]
 
 
-def _matched_fields(lead, candidate, numbers: set) -> list:
+def _matched_fields(lead, candidate, numbers: set, match_keys: dict) -> list:
 	matched = []
-	if lead.email and (candidate.email or "").lower() == lead.email.lower():
-		matched.append("email")
-	for field in ("mobile_no", "phone"):
+	for field in match_keys["email"]:
+		if lead.get(field) and (candidate.get(field) or "").lower() == lead.get(field).lower():
+			matched.append(field)
+	for field in match_keys["phone"]:
 		if normalize_phone(candidate.get(field)) in numbers:
 			matched.append(field)
 	return matched
@@ -98,22 +124,19 @@ def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 2
 
 @frappe.whitelist()
 def merge_leads(target: str, source: str):
-	_lock_leads(target, source)
-	target_doc = frappe.get_doc("CRM Lead", target, for_update=True)
-	source_doc = frappe.get_doc("CRM Lead", source, for_update=True)
-
+	if target == source:
+		frappe.throw(_("Cannot merge a lead into itself"))
 	if not frappe.has_permission("CRM Lead", "write", target):
 		frappe.throw(_("Not allowed to modify target lead"), frappe.PermissionError)
 	if not frappe.has_permission("CRM Lead", "write", source):
 		frappe.throw(_("Not allowed to modify source lead"), frappe.PermissionError)
 
+	target_doc, source_doc = lock_lead(target, source)
+
 	if source_doc.merged_into:
 		frappe.throw(_("Source lead {0} is already merged into {1}").format(source, source_doc.merged_into))
 	if target_doc.merged_into:
 		frappe.throw(_("Target lead {0} is already merged into {1}").format(target, target_doc.merged_into))
-
-	if target == source:
-		frappe.throw(_("Cannot merge a lead into itself"))
 
 	for doc in (source_doc, target_doc):
 		if doc.converted:
@@ -130,7 +153,7 @@ def merge_leads(target: str, source: str):
 	_update_references(ref_snapshot, target_doc.name)
 
 	target_doc.save(ignore_permissions=True)
-	_sync_assignments(source, target)
+	_sync_assignments("CRM Lead", source, target)
 
 	source_doc.db_set({"merged_into": target, "is_duplicate": 1})
 
@@ -147,7 +170,9 @@ def merge_leads(target: str, source: str):
 	)
 	merge_log.insert(ignore_permissions=True)
 
-	_update_timeline(source_doc.name, target, "merge", source_doc.lead_name, target_doc.lead_name)
+	message = _("{0} merged into {1}").format(source_doc.lead_name or source, target_doc.lead_name or target)
+	for doc in (target_doc, source_doc):
+		doc.add_comment("Info", message)
 
 	return {
 		"target": target,
@@ -176,9 +201,7 @@ def split_lead(merge_log_name: str):
 	child_data = json.loads(merge_log.child_table_snapshot or "{}")
 	ref_data = json.loads(merge_log.reference_snapshot or "[]")
 
-	_lock_leads(target, source)
-	target_doc = frappe.get_doc("CRM Lead", target, for_update=True)
-	source_doc = frappe.get_doc("CRM Lead", source, for_update=True)
+	target_doc, source_doc = lock_lead(target, source)
 
 	if source_doc.merged_into != target:
 		frappe.throw(_("Source lead {0} is not merged into {1}").format(source, target))
@@ -197,14 +220,14 @@ def split_lead(merge_log_name: str):
 
 	_move_child_tables_back(source_doc, target_doc, child_data)
 
-	_sync_assignments(source, target)
+	_sync_assignments("CRM Lead", source, target)
 
 	source_doc.db_set({"merged_into": None, "is_duplicate": 0})
 	merge_log.db_set({"split_at": frappe.utils.now(), "split_by": frappe.session.user})
 
-	source_title = frappe.db.get_value("CRM Lead", source, "lead_name") or source
-	target_title = frappe.db.get_value("CRM Lead", target, "lead_name") or target
-	_update_timeline(source, target, "split", source_title, target_title)
+	message = _("{0} split from {1}").format(source_doc.lead_name or source, target_doc.lead_name or target)
+	for doc in (target_doc, source_doc):
+		doc.add_comment("Info", message)
 
 	return {
 		"target": target,
@@ -256,40 +279,24 @@ def get_merge_history(lead_name: str):
 	]
 
 
-def _lock_leads(*names: str):
-	"""Serialize concurrent merges and splits of the same leads, locking in name order so two
-	of them over the same pair can't deadlock. Callers then load the leads with for_update:
-	under REPEATABLE READ a plain read after the lock can still return the pre-lock state."""
-	table = frappe.qb.DocType("CRM Lead")
-	for name in sorted(set(names)):
-		frappe.qb.from_(table).select(table.name).where(table.name == name).for_update().run()
-
-
-_COMPARE_FIELDS = [
-	"first_name",
-	"last_name",
-	"email",
-	"mobile_no",
-	"phone",
-	"organization",
-	"website",
-	"territory",
-	"industry",
-	"job_title",
-	"source",
-	"lead_owner",
-	"status",
-	"no_of_employees",
-	"annual_revenue",
-	"salutation",
-	"gender",
-	"lost_reason",
-	"lost_notes",
-]
+def _mergeable_fields(doctype: str) -> list[str]:
+	"""Value fields a merge fills on the target and a split restores, custom fields included.
+	Unique fields are left out: the source keeps its value, so a copy could never be saved."""
+	denylist = MERGE_CONFIG[doctype]["denylist"] | set(default_fields)
+	return [
+		df.fieldname
+		for df in frappe.get_meta(doctype).fields
+		if df.fieldtype not in no_value_fields
+		and df.fieldtype not in table_fields
+		and not df.no_copy
+		and not df.read_only
+		and not df.unique
+		and df.fieldname not in denylist
+	]
 
 
 def _snapshot_doc(doc: frappe.model.document.Document) -> dict:
-	return {f: _serializable(doc.get(f)) for f in _COMPARE_FIELDS}
+	return {f: _serializable(doc.get(f)) for f in _mergeable_fields(doc.doctype)}
 
 
 def _serializable(obj):
@@ -304,7 +311,7 @@ def _snapshot_child_tables(
 	source_doc: frappe.model.document.Document,
 	target_doc: frappe.model.document.Document,
 ) -> dict:
-	child_tables = ["products", "status_change_log", "rolling_responses"]
+	child_tables = MERGE_CONFIG[target_doc.doctype]["child_tables"]
 	snapshots = {}
 
 	for ct in child_tables:
@@ -343,9 +350,9 @@ def _snapshot_references(source_doc: frappe.model.document.Document) -> list:
 	source_name = source_doc.name
 	refs = []
 
-	refs.extend(_get_link_references("CRM Lead", source_name))
-	refs.extend(_get_dynamic_link_references("CRM Lead", source_name))
-	refs.extend(_get_file_references("CRM Lead", source_name))
+	refs.extend(_get_link_references(source_doc.doctype, source_name))
+	refs.extend(_get_dynamic_link_references(source_doc.doctype, source_name))
+	refs.extend(_get_file_references(source_doc.doctype, source_name))
 
 	return refs
 
@@ -353,7 +360,7 @@ def _snapshot_references(source_doc: frappe.model.document.Document) -> list:
 def _get_link_references(doctype: str, docname: str) -> list:
 	references = []
 	for field in get_link_fields(doctype):
-		if field.issingle or (field.parent, field.fieldname) == ("CRM Lead", "merged_into"):
+		if field.issingle or (field.parent, field.fieldname) == (doctype, "merged_into"):
 			continue
 		for name in frappe.get_all(field.parent, filters={field.fieldname: docname}, pluck="name"):
 			references.append(
@@ -402,13 +409,13 @@ def _restore_references(source_name: str, target_name: str, ref_data: list):
 		)
 
 
-def _sync_assignments(*lead_names: str):
-	for lead_name in lead_names:
+def _sync_assignments(doctype: str, *names: str):
+	for name in names:
 		assignees = frappe.get_all(
 			"ToDo",
 			filters={
-				"reference_type": "CRM Lead",
-				"reference_name": lead_name,
+				"reference_type": doctype,
+				"reference_name": name,
 				"status": ("not in", ("Cancelled", "Closed")),
 				"allocated_to": ("is", "set"),
 			},
@@ -417,8 +424,8 @@ def _sync_assignments(*lead_names: str):
 		)
 		assignees = list(dict.fromkeys(assignees))
 		frappe.db.set_value(
-			"CRM Lead",
-			lead_name,
+			doctype,
+			name,
 			"_assign",
 			json.dumps(assignees) if assignees else "",
 			update_modified=False,
@@ -429,7 +436,7 @@ def _move_child_tables(
 	source_doc: frappe.model.document.Document,
 	target_doc: frappe.model.document.Document,
 ):
-	child_tables = ["products", "status_change_log", "rolling_responses"]
+	child_tables = MERGE_CONFIG[target_doc.doctype]["child_tables"]
 
 	for ct in child_tables:
 		source_rows = source_doc.get(ct) or []
@@ -447,7 +454,7 @@ def _move_child_tables_back(
 	target_doc: frappe.model.document.Document,
 	child_data: dict,
 ):
-	child_tables = ["products", "status_change_log", "rolling_responses"]
+	child_tables = MERGE_CONFIG[target_doc.doctype]["child_tables"]
 
 	for ct in child_tables:
 		child_doctype = target_doc.meta.get_field(ct).options
@@ -470,10 +477,7 @@ def _auto_merge_fields(
 	target_doc: frappe.model.document.Document,
 	source_doc: frappe.model.document.Document,
 ):
-	for field in _COMPARE_FIELDS:
-		# Filling lead_owner would re-share the target with only that owner, dropping its other shares.
-		if field == "lead_owner":
-			continue
+	for field in _mergeable_fields(target_doc.doctype):
 		source_val = source_doc.get(field)
 		if source_val and not target_doc.get(field):
 			target_doc.set(field, source_val)
@@ -484,53 +488,6 @@ def _restore_fields(
 	source_doc: frappe.model.document.Document,
 	snapshot: dict,
 ):
-	for fieldname in _COMPARE_FIELDS:
+	for fieldname in _mergeable_fields(target_doc.doctype):
 		if fieldname in snapshot and target_doc.get(fieldname) == source_doc.get(fieldname):
 			target_doc.set(fieldname, snapshot[fieldname])
-
-
-def _update_timeline(
-	source: str, target: str, action: str, source_title: str | None = None, target_title: str | None = None
-):
-	src = source_title or source
-	tgt = target_title or target
-
-	if action == "merge":
-		comment_text = _("{0} merged into {1}").format(src, tgt)
-		frappe.get_doc(
-			{
-				"doctype": "Comment",
-				"comment_type": "Info",
-				"reference_doctype": "CRM Lead",
-				"reference_name": target,
-				"content": comment_text,
-			}
-		).insert(ignore_permissions=True)
-		frappe.get_doc(
-			{
-				"doctype": "Comment",
-				"comment_type": "Info",
-				"reference_doctype": "CRM Lead",
-				"reference_name": source,
-				"content": _("{0} merged into {1}").format(src, tgt),
-			}
-		).insert(ignore_permissions=True)
-	elif action == "split":
-		frappe.get_doc(
-			{
-				"doctype": "Comment",
-				"comment_type": "Info",
-				"reference_doctype": "CRM Lead",
-				"reference_name": target,
-				"content": _("{0} split from {1}").format(src, tgt),
-			}
-		).insert(ignore_permissions=True)
-		frappe.get_doc(
-			{
-				"doctype": "Comment",
-				"comment_type": "Info",
-				"reference_doctype": "CRM Lead",
-				"reference_name": source,
-				"content": _("{0} split from {1}").format(src, tgt),
-			}
-		).insert(ignore_permissions=True)

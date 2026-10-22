@@ -9,7 +9,6 @@ from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
-from crm.api.lead import resolve_merged_lead
 from crm.api.whatsapp import guard_doc_recipient_change
 from crm.automation.events import emit_lead_converted
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
@@ -555,7 +554,7 @@ def convert_to_deal(
 	an automation retry idempotent - and "Fail" refuses.
 	"""
 	validate_conversion_access(lead, doc)
-	lead = lock_lead(lead)
+	[lead] = lock_lead(lead)
 	validate_not_merged(lead)
 	existing = existing_deal(lead.name)
 	if existing and if_converted != "Create":
@@ -589,15 +588,30 @@ def validate_not_merged(lead):
 		frappe.throw(_("Lead {0} is marked as a duplicate and cannot be converted").format(lead.name))
 
 
-def lock_lead(lead: str):
-	"""Serialize concurrent conversions of the same Lead before reading its state."""
-	table = frappe.qb.DocType("CRM Lead")
-	frappe.qb.from_(table).select(table.name).where(table.name == lead).for_update().run()
-	return frappe.get_doc("CRM Lead", lead)
+def lock_lead(*leads: str) -> list[Document]:
+	"""Lock the Leads in name order, so concurrent callers can't deadlock, and return them in the
+	order given. They are read FOR UPDATE: under REPEATABLE READ a plain read after the lock can
+	still return this transaction's older snapshot."""
+	docs = {name: frappe.get_doc("CRM Lead", name, for_update=True) for name in sorted(set(leads))}
+	return [docs[name] for name in leads]
 
 
 def existing_deal(lead: str) -> str | None:
 	return frappe.db.get_value("CRM Deal", {"lead": lead}, "name")
+
+
+MAX_MERGE_DEPTH = 10
+
+
+def resolve_merged_lead(name: str) -> str:
+	"""The live lead a merged lead now lives in: follows merged_into to the last lead that
+	still exists. Stops after MAX_MERGE_DEPTH hops so a corrupt cycle can't loop forever."""
+	for _depth in range(MAX_MERGE_DEPTH):
+		merged_into = frappe.db.get_value("CRM Lead", name, "merged_into")
+		if not merged_into or not frappe.db.exists("CRM Lead", merged_into):
+			break
+		name = merged_into
+	return name
 
 
 def settle_converted(lead, deal: str, if_converted: str) -> str:
