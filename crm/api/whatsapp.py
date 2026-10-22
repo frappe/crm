@@ -6,12 +6,14 @@ from frappe.utils import now
 from pypika import Criterion
 
 from crm.api.doc import get_assigned_users
+from crm.api.interactions import record
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
 from crm.utils import normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 LEAD_SOURCE = "WhatsApp"
+INTERACTION_DIRECTIONS = {"Incoming": "Inbound", "Outgoing": "Outbound"}
 CONFIRM_PARAM = "confirm_whatsapp_recipient_change"
 
 
@@ -192,6 +194,18 @@ def update_reference_modified(doc, method=None):
 		return
 	frappe.db.set_value(
 		doc.reference_doctype, doc.reference_docname, "modified", now(), update_modified=False
+	)
+
+
+def record_interaction(doc, method=None):
+	"""A reaction is not a message, so it neither asks for nor gives a reply."""
+	if doc.reaction or not doc.reference_docname:
+		return
+	record(
+		doc.reference_doctype,
+		doc.reference_docname,
+		INTERACTION_DIRECTIONS.get(doc.direction),
+		doc.timestamp or doc.creation,
 	)
 
 
