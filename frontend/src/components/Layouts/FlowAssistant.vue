@@ -102,9 +102,16 @@ import {
   crmPathFor,
   whereToGo,
   type FlowChange,
+  settingsToReload,
 } from '@/utils/assistantChanges'
 import { reloadDocument } from '@/data/document'
-import { unsavedSettings } from '@/composables/settings'
+import {
+  activeSettingsPage,
+  settingsOpenCount,
+  settingsRecord,
+  showSettings,
+  unsavedSettings,
+} from '@/composables/settings'
 import { Button } from 'frappe-ui'
 import { FloatingWindow } from 'frappe-ui/experimental'
 import type { WindowMode } from 'frappe-ui/experimental'
@@ -187,7 +194,18 @@ function showChanges(event: MessageEvent): void {
   changed.records.forEach(({ doctype, name }) => reloadDocument(doctype, name))
   const destination = whereToGo(changes)
   // unsaved edits in Settings stay open; the chat links to what changed
-  if (!destination || unsavedSettings.value) return
+  if (unsavedSettings.value) return
+  if (!destination || !('settings' in destination)) {
+    // an open Settings page showing what changed reloads, even when the reply opens nothing
+    const reload = showSettings.value
+      ? settingsToReload(changed, activeSettingsPage.value, __)
+      : null
+    if (reload) {
+      settingsRecord.value = reload.record ?? ''
+      settingsOpenCount.value++
+    }
+  }
+  if (!destination) return
   if ('settings' in destination) {
     // the chat window sits above the Settings dialog, so the conversation carries on beside it
     const { settings, record } = destination

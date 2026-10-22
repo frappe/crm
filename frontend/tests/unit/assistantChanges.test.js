@@ -1,4 +1,9 @@
-import { changedRecords, crmPathFor, whereToGo } from '@/utils/assistantChanges'
+import {
+  changedRecords,
+  crmPathFor,
+  settingsToReload,
+  whereToGo,
+} from '@/utils/assistantChanges'
 
 const create = (doctype, created) => ({
   tool: 'create',
@@ -46,8 +51,10 @@ describe('whereToGo', () => {
         { tool: 'assign_new_leads', args: {}, result: 'Created the rule.' },
       ]),
     ).toEqual({ settings: 'Assignment Rules' })
+    // a new template opens on its own
     expect(whereToGo([create('Email Template', ['First reply'])])).toEqual({
       settings: 'Templates',
+      record: 'First reply',
     })
   })
 
@@ -274,9 +281,10 @@ describe('changedRecords', () => {
     expect(
       changedRecords([{ tool: 'execute', args: {}, result: null }]).doctypes,
     ).toEqual(['*'])
+    // a setup tool changes only what its Settings page shows
     expect(
       changedRecords([{ tool: 'invite_team', args: {}, result: {} }]).doctypes,
-    ).toEqual([])
+    ).toEqual(['CRM Invitation'])
   })
 })
 
@@ -298,5 +306,39 @@ describe('crmPathFor', () => {
   it('leaves desk pages the CRM does not show', () => {
     expect(crmPathFor('/app/sales-invoice/SINV-1')).toBeNull()
     expect(crmPathFor('/crm/leads')).toBeNull()
+  })
+})
+
+describe('settingsToReload', () => {
+  const changed = (doctypes, records = []) => ({ doctypes, records })
+
+  it('reloads the open Settings page and reopens the one record changed on it', () => {
+    expect(
+      settingsToReload(
+        changed(
+          ['Email Template'],
+          [{ doctype: 'Email Template', name: 'Sorry to see you go' }],
+        ),
+        'Templates',
+      ),
+    ).toEqual({ record: 'Sorry to see you go' })
+  })
+
+  it('reloads a page that shows what changed, and one where anything could have', () => {
+    expect(settingsToReload(changed(['Web Form']), 'Forms')).toEqual({})
+    expect(settingsToReload(changed(['*']), 'Accounts')).toEqual({})
+  })
+
+  it('leaves a page alone that shows none of it, or no page', () => {
+    expect(settingsToReload(changed(['CRM Lead']), 'Templates')).toBeNull()
+    expect(settingsToReload(changed(['Email Template']), '')).toBeNull()
+  })
+
+  it('matches the page by its translated label', () => {
+    expect(
+      settingsToReload(changed(['Web Form']), 'Formulaires', (l) =>
+        l === 'Forms' ? 'Formulaires' : l,
+      ),
+    ).toEqual({})
   })
 })

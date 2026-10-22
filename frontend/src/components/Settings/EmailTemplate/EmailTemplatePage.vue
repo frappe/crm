@@ -20,8 +20,9 @@ import NewEmailTemplate from './NewEmailTemplate.vue'
 import EditEmailTemplate from './EditEmailTemplate.vue'
 import EmailTemplates from './EmailTemplates.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { createListResource } from 'frappe-ui'
-import { provide, ref } from 'vue'
+import { settingsRecord } from '@/composables/settings'
+import { call, createListResource } from 'frappe-ui'
+import { provide, ref, watch } from 'vue'
 
 const step = ref('template-list')
 const template = ref(null)
@@ -60,4 +61,20 @@ on('email_template_page', (data) => {
   step.value = data.page
   template.value = data
 })
+
+// Settings opened on one template, such as one the assistant just changed
+watch(
+  settingsRecord,
+  async (name) => {
+    if (!name) return
+    settingsRecord.value = ''
+    templates.reload()
+    const doc = await call('frappe.client.get', {
+      doctype: 'Email Template',
+      name,
+    }).catch(() => null)
+    if (doc) updateStep('edit-template', doc)
+  },
+  { immediate: true },
+)
 </script>

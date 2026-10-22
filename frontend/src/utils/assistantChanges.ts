@@ -64,7 +64,29 @@ const SETTINGS_PAGES: Record<string, string> = {
 }
 
 // Settings pages that open one record given its name
-const SETTINGS_RECORD_PAGES = new Set(['Workflow Automations'])
+const SETTINGS_RECORD_PAGES = new Set(['Workflow Automations', 'Templates'])
+
+// A reply changed what the open Settings `page` shows: reload it, and reopen the changed record
+// when the page shows one at a time. Null when the page shows none of it. `label` translates a
+// page's English label into the one Settings shows.
+export function settingsToReload(
+  changed: ChangedRecords,
+  page: string,
+  label: (english: string) => string = (english) => english,
+): { record?: string } | null {
+  if (!page) return null
+  const doctype = Object.keys(SETTINGS_PAGES).find(
+    (d) => label(SETTINGS_PAGES[d]) === page,
+  )
+  if (!doctype) return null
+  if (!changed.doctypes.includes(doctype) && !changed.doctypes.includes('*')) {
+    return null
+  }
+  const records = changed.records.filter((r) => r.doctype === doctype)
+  const opensOne =
+    SETTINGS_RECORD_PAGES.has(SETTINGS_PAGES[doctype]) && records.length === 1
+  return opensOne ? { record: records[0].name } : {}
+}
 
 // the CRM's own setup tools for Flow (crm/flow_tools.py)
 const TOOL_PAGES: Record<string, Destination> = {
@@ -247,6 +269,13 @@ function placeKey(destination: Destination): string {
 // what a CRM tool can change, so the lists showing it reload
 const TOOL_DOCTYPES: Record<string, string[]> = {
   convert_lead: ['CRM Lead', 'CRM Deal', 'Contact', 'CRM Organization'],
+  // setup tools: the Settings page showing what they change reloads
+  publish_web_form: ['Web Form'],
+  connect_email: ['Email Account'],
+  invite_team: ['CRM Invitation'],
+  assign_new_leads: ['Assignment Rule'],
+  set_currency: ['FCRM Settings'],
+  add_automation: ['Automation Flow'],
   update_task: ['CRM Task'],
   clear_sample_data: [
     'CRM Lead',
