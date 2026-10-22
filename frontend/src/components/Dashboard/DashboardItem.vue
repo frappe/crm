@@ -25,10 +25,32 @@
         :is="axisChart.component"
         v-if="item.data"
         v-bind="axisChart.props"
-      />
+      >
+        <template #empty>
+          <span class="text-p-sm text-ink-gray-5">{{
+            __('No data to show')
+          }}</span>
+        </template>
+        <template #error>
+          <span class="text-sm-medium text-ink-red-7">{{
+            __('Could not render this chart')
+          }}</span>
+        </template>
+      </component>
     </ChartCard>
     <ChartCard v-else-if="item.type == 'donut_chart'" class="h-full">
-      <DonutChart v-if="item.data" v-bind="donutChartProps" />
+      <DonutChart v-if="item.data" v-bind="donutChartProps">
+        <template #empty>
+          <span class="text-p-sm text-ink-gray-5">{{
+            __('No data to show')
+          }}</span>
+        </template>
+        <template #error>
+          <span class="text-sm-medium text-ink-red-7">{{
+            __('Could not render this chart')
+          }}</span>
+        </template>
+      </DonutChart>
     </ChartCard>
   </div>
 </template>
