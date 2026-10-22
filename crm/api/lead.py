@@ -187,11 +187,14 @@ def split_lead(merge_log_name: str):
 
 	_restore_fields(target_doc, source_doc, field_snapshot)
 
+	# Before the save, so validations that look at linked records (e.g. the WhatsApp
+	# recipient guard) no longer see the source's records on the target.
+	_restore_references(source, target, ref_data)
+
 	target_doc.save(ignore_permissions=True)
 
 	_move_child_tables_back(source_doc, target_doc, child_data)
 
-	_restore_references(source, target, ref_data)
 	_sync_assignments(source, target)
 
 	source_doc.db_set({"merged_into": None, "is_duplicate": 0})

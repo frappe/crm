@@ -596,6 +596,37 @@ class TestMergeLead(IntegrationTestCase):
 			)
 		)
 
+	def test_split_moves_whatsapp_conversation_back_without_confirmation(self):
+		target = self._create_lead(first_name="Target", email="wa-target@test.com")
+		source = self._create_lead(first_name="Source", mobile_no="+91 96111 11111")
+		profile = frappe.get_doc(
+			{"doctype": "WA Profile", "name": frappe.generate_hash(length=10), "phone_number": "919611111111"}
+		)
+		profile.db_insert()
+		message = frappe.get_doc(
+			{
+				"doctype": "WA Message",
+				"name": frappe.generate_hash(length=10),
+				"to": profile.name,
+				"reference_doctype": "CRM Lead",
+				"reference_docname": source.name,
+			}
+		)
+		message.db_insert()
+		# db_insert skips the eviction a normal insert does when a new linked doctype appears
+		frappe.cache.delete_value("dynamic_link_map::WA Message::reference_doctype")
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(frappe.db.get_value("CRM Lead", target.name, "mobile_no"), "+91 96111 11111")
+		self.assertEqual(frappe.db.get_value("WA Message", message.name, "reference_docname"), target.name)
+
+		split_lead(result["merge_log"])
+
+		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "mobile_no"))
+		self.assertEqual(frappe.db.get_value("WA Message", message.name, "reference_docname"), source.name)
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
