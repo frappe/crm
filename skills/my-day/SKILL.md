@@ -17,7 +17,7 @@ The person asking works in sales and isn't technical. Answer in simple, plain En
    - **Tasks due today or overdue**, with what each is for.
    - **Waiting on your reply**: leads and deals whose last email came from them.
    - **Closing this week**: deals with a close date in the next 7 days.
-   - **Gone quiet**: deals with no change in 2 weeks, worth a nudge.
+   - **Gone quiet**: deals with no email, WhatsApp, call, note, comment, task or stage change in 2 weeks, worth a nudge.
    - **New leads** since yesterday.
 3. Name each lead or deal by the person's or company's name, as a link to it, such as [Acme Corp](/crm/deals/...). Keep each line short. Show at most 5 items in a group and say how many more there are.
 4. End by offering one or two next steps as options they can click, such as drafting a reply to the first lead waiting on them, or setting a reminder for a quiet deal.
@@ -25,7 +25,7 @@ The person asking works in sales and isn't technical. Answer in simple, plain En
 When they ask about one thing, answer just that, with the same names, links and limits:
 
 - **"Who's waiting on my reply?"**: only the Waiting on your reply group, the longest wait first.
-- **"Which deals have gone quiet?"**: only the Gone quiet group, with how long each has been quiet.
+- **"Which deals have gone quiet?"**: only the Gone quiet group, the quietest first, with how long since each last had any activity, such as "3 weeks".
 - **"What's due this week?"**: call `my_day` with `days` set to 7, and list only the tasks, overdue ones first, then by the day they're due, such as "Thursday".
 
 If what they asked about is empty, say so in one line and offer the full rundown instead.

@@ -16,7 +16,7 @@ The person asking may be a salesperson or a manager, and isn't technical. Answer
 3. Then a few short lines:
    - **Pipeline**: how many open deals and their total value, and the stage with the most in it. Skip stages with nothing in them.
    - **This month**: new leads, leads that became deals, deals won (with their value) and lost.
-   - **Needs attention**: deals gone quiet and overdue tasks, if any.
+   - **Needs attention**: deals gone quiet (no email, call, note or other activity in 2 weeks) and overdue tasks, if any.
 4. Write amounts in the CRM's currency with thousands separators, such as ₹18,42,600 or $1,842,600. If `currency` is empty, leave the symbol out.
 5. End with one or two options they can click, such as "What's on my plate today?" or "Show me the quiet deals". Link to [Deals](/crm/deals) or the [Deals board](/crm/deals/view/kanban) when they want to look for themselves.
 

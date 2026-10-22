@@ -990,8 +990,9 @@ QUIET_DAYS = 14
 @tool
 def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 	"""What the signed-in user has on today: their tasks due today or overdue, leads and deals of
-	theirs waiting on a reply, their deals closing in the next 7 days or gone quiet for 2 weeks,
-	and leads they got since yesterday. `days` widens the tasks to those due in that many days
+	theirs waiting on a reply, their deals closing in the next 7 days or with no activity for 2 weeks
+	(no email, WhatsApp, call, note, comment, task or stage change), and leads they got since
+	yesterday. `days` widens the tasks to those due in that many days
 	from today, such as 7 for the week. Each item has a `link`. Needs no approval."""
 	user, today = ctx.user, frappe.utils.getdate()
 	until = frappe.utils.add_days(today, min(max(days, 1), 31))
@@ -1022,9 +1023,7 @@ def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 			if d.expected_closure_date and today <= d.expected_closure_date <= frappe.utils.add_days(today, 7)
 		],
 		"quiet_deals": [
-			_deal(d)
-			for d in deals
-			if frappe.utils.getdate(d.modified) < frappe.utils.add_days(today, -QUIET_DAYS)
+			{**_deal(d), "last_activity": str(frappe.utils.getdate(last))} for d, last in _quiet(deals)
 		][:10],
 		"new_leads": [
 			_lead(lead)
@@ -1038,8 +1037,9 @@ def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 	"""How sales are going, for everything the user can see: open deals by stage with their value,
 	this month against last month (new leads, leads turned into deals, deals won and lost),
-	deals closing in the next 30 days, deals gone quiet for 2 weeks and overdue tasks. Values are
-	in the CRM's currency. Needs no approval."""
+	deals closing in the next 30 days, deals with no activity for 2 weeks, and overdue tasks that
+	are the user's or on records they can see. Values are in the CRM's currency. Needs no
+	approval."""
 	today = frappe.utils.getdate()
 	this_month = frappe.utils.get_first_day(today)
 	last_month = frappe.utils.add_months(this_month, -1)
@@ -1071,10 +1071,8 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 				limit=10,
 			)
 		],
-		"quiet_deals": _count(
-			"CRM Deal", {**open_deals, "modified": ["<", frappe.utils.add_days(today, -QUIET_DAYS)]}
-		),
-		"overdue_tasks": _count("CRM Task", {"status": OPEN_TASK, "due_date": ["<", today]}),
+		"quiet_deals": len(_quiet(_open_deals({}))),
+		"overdue_tasks": len(_overdue_tasks(today, ctx.user)),
 	}
 
 
@@ -1087,7 +1085,7 @@ DEAL_FIELDS = [
 	"expected_deal_value",
 	"exchange_rate",
 	"expected_closure_date",
-	"modified",
+	"creation",
 ]
 
 
@@ -1168,6 +1166,86 @@ def _lost_between(start, end):
 	return deal.name.isin(entered) | unlogged
 
 
+def _quiet(deals: list) -> list[tuple]:
+	"""The deals with no activity for QUIET_DAYS, longest quiet first, each with when it last had any."""
+	cutoff = frappe.utils.get_datetime(frappe.utils.add_days(frappe.utils.getdate(), -QUIET_DAYS))
+	last = _last_activity(deals)
+	quiet = [(d, last[d.name]) for d in deals if last[d.name] < cutoff]
+	return sorted(quiet, key=lambda pair: pair[1])
+
+
+# where a deal's activity is kept: the doctype, its field naming the deal, and when it happened
+ACTIVITY = [
+	("Communication", "reference_name", "communication_date"),
+	("WA Message", "reference_docname", "creation"),
+	("CRM Call Log", "reference_docname", "creation"),
+	("FCRM Note", "reference_docname", "creation"),
+	("Comment", "reference_name", "creation"),
+	("CRM Task", "reference_docname", "modified"),
+]
+
+
+def _last_activity(deals: list) -> dict[str, Any]:
+	"""When each deal last had an email, WhatsApp message, call, note, comment, task or stage
+	change, else when it was made. Edits to the deal itself don't count. Reads only the deals
+	given, which the caller got through get_list."""
+	from frappe.query_builder.functions import Max
+
+	last = {d.name: frappe.utils.get_datetime(d.creation) for d in deals}
+	if not last:
+		return last
+	names = list(last)
+	queries = []
+	for doctype, deal_field, when in ACTIVITY:
+		if not frappe.db.table_exists(doctype):
+			continue
+		t = frappe.qb.DocType(doctype)
+		query = (
+			frappe.qb.from_(t)
+			.select(t[deal_field], Max(t[when]))
+			.where(t.reference_doctype == "CRM Deal")
+			.where(t[deal_field].isin(names))
+			.groupby(t[deal_field])
+		)
+		if doctype == "Comment":
+			query = query.where(t.comment_type == "Comment")
+		queries.append(query)
+	log = frappe.qb.DocType("CRM Status Change Log")
+	queries.append(
+		frappe.qb.from_(log)
+		.select(log.parent, Max(log.from_date))
+		.where(log.parenttype == "CRM Deal")
+		.where(log.parent.isin(names))
+		.groupby(log.parent)
+	)
+	for query in queries:
+		for name, when in query.run():
+			if when and frappe.utils.get_datetime(when) > last[name]:
+				last[name] = frappe.utils.get_datetime(when)
+	return last
+
+
+def _overdue_tasks(today, user: str) -> list:
+	"""Open tasks due before today that are the user's, or on a lead or deal they can see."""
+	tasks = frappe.get_list(
+		"CRM Task",
+		filters={"status": OPEN_TASK, "due_date": ["<", today]},
+		fields=["name", "assigned_to", "reference_doctype", "reference_docname"],
+		limit=0,
+	)
+	visible = {}
+	for doctype in {t.reference_doctype for t in tasks if t.reference_doctype and t.reference_docname}:
+		names = [t.reference_docname for t in tasks if t.reference_doctype == doctype]
+		visible[doctype] = set(
+			frappe.get_list(doctype, filters={"name": ["in", names]}, pluck="name", limit=0)
+		)
+	return [
+		t
+		for t in tasks
+		if t.assigned_to == user or t.reference_docname in visible.get(t.reference_doctype, ())
+	]
+
+
 def _can_read(doctype: str) -> bool:
 	return frappe.has_permission(doctype, "read")
 
@@ -1204,6 +1282,9 @@ def _waiting_on_reply(records: list[tuple[str, str]]) -> list[dict[str, Any]]:
 
 
 def _record(doctype: str | None, name: str | None) -> dict[str, Any]:
+	# a task can be theirs on a record they can't open; then it names only the task
+	if not (doctype and name and frappe.has_permission(doctype, "read", name)):
+		return {"link": "/crm/tasks"}
 	if doctype == "CRM Deal" and name:
 		return _deal(
 			frappe.db.get_value(
