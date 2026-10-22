@@ -1042,8 +1042,11 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 	"""How sales are going, for everything the user can see: open deals by stage with their value,
 	this month against last month (new leads, leads turned into deals, deals won and lost),
 	deals closing in the next 30 days, deals with no activity for 2 weeks, overdue tasks that
-	are the user's or on records they can see, and why deals were lost in the last 90 days. Values are in the CRM's currency. Needs no
-	approval."""
+	are the user's or on records they can see, why deals were lost in the last 90 days, this
+	quarter's deals won and lost by owner with their win rate, how leads from each source turned
+	into deals in the last 90 days, and the forecast for this month and quarter: deals won so far
+	plus open deals due to close, at full value and weighted by their probability. Values are in
+	the CRM's currency. Everything counts only records the user can see. Needs no approval."""
 	today = frappe.utils.getdate()
 	this_month = frappe.utils.get_first_day(today)
 	last_month = frappe.utils.add_months(this_month, -1)
@@ -1078,6 +1081,14 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 		"quiet_deals": len(_quiet(_open_deals({}))),
 		"overdue_tasks": len(_overdue_tasks(today, ctx.user)),
 		"lost_reasons_last_90_days": _lost_by_reason(frappe.utils.add_days(today, -90), today, stages),
+		"this_quarter_by_owner": _by_owner(frappe.utils.get_quarter_start(today), today, stages),
+		"lead_sources_last_90_days": _lead_sources(frappe.utils.add_days(today, -90), today),
+		"forecast": {
+			"this_month": _forecast(this_month, frappe.utils.get_last_day(today), stages),
+			"this_quarter": _forecast(
+				frappe.utils.get_quarter_start(today), frappe.utils.get_quarter_ending(today), stages
+			),
+		},
 	}
 
 
@@ -1133,8 +1144,11 @@ def _count(doctype: str, filters: dict[str, Any], *where) -> int:
 	return query.run()[0][0]
 
 
-def _deal_totals(filters: dict[str, Any], group_by: str | None = None) -> list:
-	"""The number and value of the deals the user can see that match, summed in SQL."""
+def _deal_totals(
+	filters: dict[str, Any], group_by: str | None = None, where: tuple = (), weighted: bool = False
+) -> list:
+	"""The number and value of the deals the user can see that match, summed in SQL, with extra
+	`where` conditions; `weighted` also sums each value times its deal's probability."""
 	from frappe.query_builder.functions import Coalesce, Count, NullIf, Sum
 
 	deal = frappe.qb.DocType("CRM Deal")
@@ -1149,7 +1163,92 @@ def _deal_totals(filters: dict[str, Any], group_by: str | None = None) -> list:
 		ignore_permissions=False,
 		db_query_compat=True,
 	)
-	return query.select(Count(deal.name).as_("deals"), Sum(value).as_("value")).run(as_dict=True)
+	for condition in where:
+		query = query.where(condition)
+	query = query.select(Count(deal.name).as_("deals"), Sum(value).as_("value"))
+	if weighted:
+		query = query.select(Sum(value * Coalesce(deal.probability, 0) / 100).as_("weighted"))
+	return query.run(as_dict=True)
+
+
+def _by_owner(start, end, stages) -> dict[str, Any]:
+	"""Deals won and lost between two dates by deal owner, with each owner's win rate (won out
+	of won and lost) and the team's, over the deals the user can see; the most won value first."""
+	won = [s.name for s in stages if s.type == "Won"] or [""]
+	lost = [s.name for s in stages if s.type == "Lost"] or [""]
+	rows: dict[str | None, dict[str, Any]] = {}
+	for r in _deal_totals({"status": ["in", won], "closed_date": ["between", [start, end]]}, "deal_owner"):
+		rows.setdefault(r.deal_owner, {"won": 0, "won_value": 0, "lost": 0}).update(
+			won=r.deals, won_value=r.value or 0
+		)
+	for r in _deal_totals({"status": ["in", lost]}, "deal_owner", where=(_lost_between(start, end),)):
+		rows.setdefault(r.deal_owner, {"won": 0, "won_value": 0, "lost": 0})["lost"] = r.deals
+	people = [
+		{
+			"owner": frappe.utils.get_fullname(owner) if owner else "No owner",
+			**row,
+			"win_rate": _rate(row["won"], row["won"] + row["lost"]),
+		}
+		for owner, row in rows.items()
+	]
+	won_total, lost_total = sum(p["won"] for p in people), sum(p["lost"] for p in people)
+	return {
+		"from": str(start),
+		"people": sorted(people, key=lambda p: -p["won_value"]),
+		"team_win_rate": _rate(won_total, won_total + lost_total),
+	}
+
+
+def _lead_sources(start, end) -> list[dict[str, Any]] | None:
+	"""Leads the user can see that came in between two dates, by source, with how many became
+	deals; the most leads first. None when they can't see leads."""
+	from frappe.query_builder.functions import Count, Sum
+
+	if not _can_read("CRM Lead"):
+		return None
+	lead = frappe.qb.DocType("CRM Lead")
+	query = frappe.qb.get_query(
+		"CRM Lead",
+		fields=["source"],
+		filters={"creation": ["between", [start, frappe.utils.add_days(end, 1)]]},
+		group_by="source",
+		ignore_permissions=False,
+		db_query_compat=True,
+	).select(Count(lead.name).as_("leads"), Sum(lead.converted).as_("became_deals"))
+	return sorted(
+		(
+			{
+				"source": r.source or "No source",
+				"leads": r.leads,
+				"became_deals": int(r.became_deals or 0),
+				"conversion_rate": _rate(int(r.became_deals or 0), r.leads),
+			}
+			for r in query.run(as_dict=True)
+		),
+		key=lambda r: -r["leads"],
+	)
+
+
+def _forecast(start, end, stages) -> dict[str, Any]:
+	"""For a period: deals the user can see won so far, and open ones due to close in it, at full
+	value and weighted by probability."""
+	won = [s.name for s in stages if s.type == "Won"] or [""]
+	closed = [s.name for s in stages if s.type in ("Won", "Lost")] or [""]
+	[done] = _deal_totals({"status": ["in", won], "closed_date": ["between", [start, end]]})
+	[due] = _deal_totals(
+		{"status": ["not in", closed], "expected_closure_date": ["between", [start, end]]}, weighted=True
+	)
+	return {
+		"from": str(start),
+		"to": str(end),
+		"won_so_far": {"deals": done.deals, "value": done.value or 0},
+		"open_due_to_close": {"deals": due.deals, "value": due.value or 0, "weighted": due.weighted or 0},
+		"expected_total": (done.value or 0) + (due.weighted or 0),
+	}
+
+
+def _rate(part: int, whole: int) -> float | None:
+	return round(100 * part / whole) if whole else None
 
 
 def _lost_by_reason(start, end, stages) -> list[dict[str, Any]]:
