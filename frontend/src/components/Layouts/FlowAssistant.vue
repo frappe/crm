@@ -96,6 +96,7 @@ import {
   type FlowChange,
 } from '@/utils/assistantChanges'
 import { reloadDocument } from '@/data/document'
+import { unsavedSettings } from '@/composables/settings'
 import { Button } from 'frappe-ui'
 import { FloatingWindow } from 'frappe-ui/experimental'
 import type { WindowMode } from 'frappe-ui/experimental'
@@ -173,7 +174,8 @@ function showChanges(event: MessageEvent): void {
   assistantChanges.value = changed
   changed.records.forEach(({ doctype, name }) => reloadDocument(doctype, name))
   const destination = whereToGo(changes)
-  if (!destination) return
+  // unsaved edits in Settings stay open; the chat links to what changed
+  if (!destination || unsavedSettings.value) return
   if ('settings' in destination) {
     // the chat window sits above the Settings dialog, so the conversation carries on beside it
     const { settings, record } = destination
