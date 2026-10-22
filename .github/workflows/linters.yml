@@ -12,6 +12,7 @@ jobs:
     commit-lint:
         name: Semantic Commits
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         steps:
             - uses: actions/checkout@v6
@@ -32,6 +33,7 @@ jobs:
     semgrep:
         name: Semgrep Rules
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         env:
             PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -58,6 +60,7 @@ jobs:
     pre-commit:
         name: Pre-commit Checks
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         env:
             PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -83,3 +86,24 @@ jobs:
               uses: pre-commit/action@v3.0.1
               with:
                   extra_args: --all-files
+<<<<<<< HEAD
+=======
+
+    deps-vulnerable-check:
+        name: Vulnerable Dependency Check
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+
+            - name: Install and run pip-audit
+              run: |
+                  pip install pip-audit
+                  pip-audit --desc on .
+>>>>>>> 2e219f0 (ci: add timeouts to linter jobs)
