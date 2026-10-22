@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <DataImport
     :doctype="route.params.doctype"
     :importName="route.params.importName"
@@ -10,6 +11,34 @@
 import { usePageMeta } from 'frappe-ui'
 import { DataImport } from '@framework/ui/components/DataImport'
 import { useRoute } from 'vue-router'
+=======
+  <LegacyDataImport v-if="!dataImport" />
+  <template v-else>
+    <LayoutHeader>
+      <template #left-header>
+        <Breadcrumbs :items="breadcrumbs" />
+      </template>
+    </LayoutHeader>
+    <div class="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col p-5">
+      <DataImportWizard
+        :dataImport="dataImport"
+        @open-list="openList"
+        @open-record="openRecord"
+        @open-imports="openImports"
+        @new-import="newImport"
+      />
+    </div>
+  </template>
+</template>
+
+<script setup lang="ts">
+import LayoutHeader from '@/components/LayoutHeader.vue'
+import LegacyDataImport from '@/components/LegacyDataImport.vue'
+import { importListQuery } from '@/utils/dataImport'
+// Frappe v15 ships only the older DataImport, so these may be missing; a named
+// import would fail the build there
+import * as dataImportUi from '@framework/ui/components/DataImport'
+>>>>>>> b52b5e1 (fix: keep data import and availability assignment working on Frappe v15)
 import { getSettings } from '@/stores/settings'
 
 const route = useRoute()
@@ -52,4 +81,63 @@ usePageMeta(() => {
     icon: brand.favicon,
   }
 })
+<<<<<<< HEAD
+=======
+
+const name = ref<string | null>((route.params.importName as string) || null)
+const { DataImportWizard, useDataImport } = dataImportUi as Partial<
+  typeof dataImportUi
+>
+const dataImport = useDataImport?.(name, {
+  doctype: () => (route.params.doctype as string) || undefined,
+})
+
+// the first save names a new import; keep the URL on it so a reload reopens it
+watch(name, (importName) => {
+  if (importName && importName !== route.params.importName) {
+    router.replace({ name: 'DataImport', params: { importName } })
+  }
+})
+watch(
+  () => route.params.importName,
+  (importName) => (name.value = (importName as string) || null),
+)
+
+const breadcrumbs = computed(() => {
+  const doctype =
+    dataImport?.doc.value.reference_doctype || (route.params.doctype as string)
+  const page = crmPages[doctype]
+  const title = page?.title || doctype
+  return [
+    page && { label: __(page.title), route: { name: page.list } },
+    { label: __('Data Imports'), route: { name: 'Data Imports' } },
+    title && { label: __('Importing {0}', [__(title)]) },
+  ].filter(Boolean) as BreadcrumbsProps['items']
+})
+
+function openList(doctype: string) {
+  const page = crmPages[doctype]
+  if (page) {
+    router.push({
+      name: page.list,
+      query: importListQuery(dataImport!.doc.value),
+    })
+  }
+}
+
+function openRecord(doctype: string, docname: string) {
+  const page = crmPages[doctype]
+  if (page?.page && page.param) {
+    router.push({ name: page.page, params: { [page.param]: docname } })
+  }
+}
+
+function openImports(doctype: string) {
+  router.push({ name: 'Data Imports', query: { doctype, status: 'Pending' } })
+}
+
+function newImport(doctype: string) {
+  router.push({ name: 'NewDataImport', params: { doctype } })
+}
+>>>>>>> b52b5e1 (fix: keep data import and availability assignment working on Frappe v15)
 </script>

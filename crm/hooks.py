@@ -1,3 +1,5 @@
+import frappe
+
 app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
@@ -234,6 +236,24 @@ override_doctype_class = {
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
+<<<<<<< HEAD
+=======
+# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
+extend_doctype_class = {
+	"Data Import": ["crm.overrides.data_import.DataImportListView"],
+	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
+}
+
+# Frappe v15, still supported on main-hotfix, has no extend_doctype_class
+if int(frappe.__version__.split(".")[0]) < 16:
+	override_doctype_class.update(
+		{
+			"Data Import": "crm.overrides.data_import.DataImportV15",
+			"Assignment Rule": "crm.overrides.assignment_rule.CRMAssignmentRuleV15",
+		}
+	)
+
+>>>>>>> b52b5e1 (fix: keep data import and availability assignment working on Frappe v15)
 # Document Events
 # ---------------
 # Hook on document methods and events
