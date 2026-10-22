@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ui-tests-crm-${{ github.event.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FRAPPE_BRANCH: develop
@@ -46,6 +46,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: "3.14"
@@ -92,12 +93,35 @@ jobs:
           sudo apt update
           sudo apt-get install mariadb-client
 
+      - name: Week number
+        id: week
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore bench
+        id: bench-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/frappe-bench
+          key: ${{ runner.os }}-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}
+
       - name: Setup Bench
         run: |
           pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_BRANCH" --python "$(which python)" ~/frappe-bench
+          if [ -d ~/frappe-bench/apps/frappe ]; then
+            git -C ~/frappe-bench/apps/frappe fetch --depth 1 https://github.com/frappe/frappe "$FRAPPE_BRANCH"
+            git -C ~/frappe-bench/apps/frappe reset --hard FETCH_HEAD
+          else
+            bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_BRANCH" --python "$(which python)" ~/frappe-bench
+          fi
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+
+      - name: Save bench
+        if: steps.bench-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/frappe-bench
+          key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM
         working-directory: /home/runner/frappe-bench
