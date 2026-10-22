@@ -1377,7 +1377,8 @@ def _sender(user: str) -> str | None:
 
 
 def _email_prompt(args: dict) -> str:
-	to = ", ".join(args.get("to") or []) or "their email on the record"
+	record_email = frappe.db.get_value(args.get("doctype"), args.get("record"), "email")
+	to = ", ".join(args.get("to") or []) or record_email or "their email on the record"
 	cc = f"\nCopy to: {', '.join(args['cc'])}" if args.get("cc") else ""
 	return f"Send this email to {to}{cc}\nSubject: {args.get('subject')}\n\n{args.get('message')}"
 
