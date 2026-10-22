@@ -5,6 +5,22 @@ on:
         paths-ignore:
             - "**.css"
             - "**.js"
+            - "**.ts"
+            - "**.vue"
+            - "**.md"
+            - "**.html"
+            - "**.csv"
+            - "**.po"
+            - "**.pot"
+    # Seeds main-hotfix caches; scheduled runs only ever run on develop.
+    push:
+        branches:
+            - main-hotfix
+        paths-ignore:
+            - "**.css"
+            - "**.js"
+            - "**.ts"
+            - "**.vue"
             - "**.md"
             - "**.html"
             - "**.csv"
@@ -17,8 +33,8 @@ env:
     CRM_BRANCH: ${{ github.base_ref || github.ref_name }}
 
 concurrency:
-    group: develop-crm-${{ github.event.number }}
-    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
     setup:
@@ -68,7 +84,7 @@ jobs:
                   node-version: "24"
                   type: "server"
                   # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
-                  install-erpnext: ${{ (github.base_ref == 'main-hotfix' || github.base_ref == 'main') && matrix.frappe-branch != 'version-16' }}
+                  install-erpnext: ${{ (env.CRM_BRANCH == 'main-hotfix' || env.CRM_BRANCH == 'main') && matrix.frappe-branch != 'version-16' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
@@ -81,26 +97,10 @@ jobs:
                   type: "server"
                   ci-build-id: ${{ github.run_id }}
 
-            - name: Persist coverage artifact
-              if: github.base_ref == 'develop' || github.ref_name == 'develop'
-              uses: ./.github/actions/upload-coverage
-              with:
-                  artifact-name: coverage-${{ matrix.frappe-branch }}
-                  coverage-path: /home/runner/frappe-bench/sites/coverage.xml
-
-    coverage:
-        name: Coverage Wrap Up
-        needs: test
-        if: github.base_ref == 'develop' || github.ref_name == 'develop'
-        runs-on: ubuntu-latest
-        steps:
-            - name: Clone
-              uses: actions/checkout@v6
-
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
-
             - name: Publish coverage
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/publish-codecov
               with:
+                  files: /home/runner/frappe-bench/sites/coverage.xml
+                  fail-ci-if-error: "false"
                   token: ${{ secrets.CODECOV_TOKEN }}
