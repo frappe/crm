@@ -21,8 +21,8 @@ concurrency:
     cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-    lint:
-        name: Lint
+    frontend:
+        name: Lint, Build & Test
         runs-on: ubuntu-latest
         timeout-minutes: 15
 
@@ -52,8 +52,10 @@ jobs:
               run: cd frontend && npx eslint src --ext .js,.ts,.vue
 
             - name: Oxlint
+              if: success() || failure()
               run: cd frontend && npx oxlint src
 
+<<<<<<< HEAD
     build:
         name: Production Build
         runs-on: ubuntu-latest
@@ -81,9 +83,13 @@ jobs:
             - name: Install dependencies
               run: cd frontend && yarn install --frozen-lockfile
 
+=======
+>>>>>>> a967137 (ci: run frontend lint, build and tests in one job)
             - name: Build frontend
+              if: success() || failure()
               run: cd frontend && yarn build
 
+<<<<<<< HEAD
     test:
         name: Unit Tests & Coverage
         runs-on: ubuntu-latest
@@ -99,34 +105,16 @@ jobs:
                   cache: yarn
                   cache-dependency-path: frontend/yarn.lock
 
+=======
+>>>>>>> a967137 (ci: run frontend lint, build and tests in one job)
             - name: Run frontend tests
-              uses: ./.github/actions/frontend-tests
-              with:
-                  node-version: "24"
-                  enable-coverage: "true"
-
-            - name: Upload coverage artifact
-              if: github.base_ref == 'develop' || github.ref_name == 'develop'
-              uses: ./.github/actions/upload-coverage
-              with:
-                  artifact-name: coverage-frontend
-                  coverage-path: frontend/coverage/lcov.info
-
-    coverage:
-        name: Coverage Wrap Up
-        needs: test
-        if: github.base_ref == 'develop' || github.ref_name == 'develop'
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-
-        steps:
-            - uses: actions/checkout@v4
-
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
+              if: success() || failure()
+              run: cd frontend && yarn test:coverage
 
             - name: Publish coverage to Codecov
+              if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/publish-codecov
               with:
                   name: Frontend
+                  fail-ci-if-error: "false"
                   token: ${{ secrets.CODECOV_TOKEN }}
