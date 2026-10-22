@@ -1,3 +1,6 @@
+from frappe.core.doctype.data_import.data_import import DataImport
+
+
 class DataImportListView:
 	@staticmethod
 	def default_list_data():
@@ -49,3 +52,7 @@ class DataImportListView:
 			"modified",
 		]
 		return {"columns": columns, "rows": rows}
+
+
+class DataImportV15(DataImportListView, DataImport):
+	pass

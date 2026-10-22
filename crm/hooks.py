@@ -1,3 +1,5 @@
+import frappe
+
 app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
@@ -239,6 +241,10 @@ extend_doctype_class = {
 	"Data Import": ["crm.overrides.data_import.DataImportListView"],
 	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
 }
+
+# Frappe v15, still supported on main-hotfix, has no extend_doctype_class
+if int(frappe.__version__.split(".")[0]) < 16:
+	override_doctype_class["Data Import"] = "crm.overrides.data_import.DataImportV15"
 
 # Document Events
 # ---------------
