@@ -238,6 +238,7 @@ override_doctype_class = {
 
 # Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
 extend_doctype_class = {
+	"Data Import": ["crm.overrides.data_import.DataImportListView"],
 	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
 }
 
