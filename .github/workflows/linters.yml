@@ -12,6 +12,7 @@ jobs:
     commit-lint:
         name: Semantic Commits
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         steps:
             - uses: actions/checkout@v6
@@ -32,6 +33,7 @@ jobs:
     semgrep:
         name: Semgrep Rules
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         env:
             PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -58,6 +60,7 @@ jobs:
     pre-commit:
         name: Pre-commit Checks
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         env:
             PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -87,6 +90,7 @@ jobs:
     deps-vulnerable-check:
         name: Vulnerable Dependency Check
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         steps:
             - uses: actions/checkout@v6
