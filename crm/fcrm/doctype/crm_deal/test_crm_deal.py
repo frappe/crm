@@ -4,11 +4,7 @@
 import frappe
 from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
-<<<<<<< HEAD
-=======
 from frappe.permissions import add_permission, update_permission_property
-from frappe.tests import IntegrationTestCase
->>>>>>> 601f51d (fix: doc and deal api perms)
 
 from crm.api.doc import get_assigned_users, get_linked_docs_of_document, remove_assignments
 from crm.fcrm.doctype.crm_deal.api import get_deal_contacts
