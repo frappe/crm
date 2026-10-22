@@ -268,6 +268,87 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(frappe.db.count("Comment", {**comments, "reference_name": lead_b.name}), 0)
 		self.assertEqual(frappe.db.count("Comment", {**comments, "reference_name": lead_a.name}), 55)
 
+	def test_merge_and_split_repoint_many_references_in_one_update_each(self):
+		target = self._create_lead(first_name="Target", email="bulk-target@test.com")
+		source = self._create_lead(first_name="Source", email="bulk-source@test.com")
+		now = frappe.utils.now()
+		rows = [
+			(
+				frappe.generate_hash(length=10),
+				"Comment",
+				"CRM Lead",
+				source.name,
+				f"Bulk {i}",
+				now,
+				now,
+				"Administrator",
+			)
+			for i in range(600)
+		]
+		fields = [
+			"name",
+			"comment_type",
+			"reference_doctype",
+			"reference_name",
+			"content",
+			"creation",
+			"modified",
+			"owner",
+		]
+		frappe.db.bulk_insert("Comment", fields, rows)
+		bulk = {"reference_doctype": "CRM Lead", "comment_type": "Comment", "content": ("like", "Bulk %")}
+
+		from crm.api.lead import merge_leads, split_lead
+
+		def comment_updates(queries):
+			return [q for q in queries if q.lstrip().upper().startswith("UPDATE") and "tabComment" in q]
+
+		with capture_queries() as queries:
+			result = merge_leads(target.name, source.name)
+		self.assertEqual(len(comment_updates(queries)), 1)
+		self.assertEqual(frappe.db.count("Comment", {**bulk, "reference_name": target.name}), 600)
+
+		with capture_queries() as queries:
+			split_lead(result["merge_log"])
+		self.assertEqual(len(comment_updates(queries)), 1)
+		self.assertEqual(frappe.db.count("Comment", {**bulk, "reference_name": source.name}), 600)
+
+	def test_merge_and_split_keep_modified_on_moved_records(self):
+		target = self._create_lead(first_name="Target", email="stamp-target@test.com")
+		source = self._create_lead(first_name="Source", email="stamp-source@test.com")
+		linked = {
+			"Comment": {"comment_type": "Comment", "reference_doctype": "CRM Lead", "content": "Stamp"},
+			"FCRM Note": {"title": "Stamp", "reference_doctype": "CRM Lead"},
+			"Communication": {
+				"subject": "Stamp",
+				"communication_type": "Communication",
+				"sent_or_received": "Sent",
+				"reference_doctype": "CRM Lead",
+			},
+		}
+		docs = {}
+		for doctype, values in linked.items():
+			field = "reference_docname" if doctype == "FCRM Note" else "reference_name"
+			doc = frappe.get_doc({"doctype": doctype, **values, field: source.name}).insert(
+				ignore_permissions=True
+			)
+			stamp = {"modified": "2020-01-01 00:00:00", "modified_by": "Guest"}
+			frappe.db.set_value(doctype, doc.name, stamp, update_modified=False)
+			docs[doctype] = doc.name
+
+		from crm.api.lead import merge_leads, split_lead
+
+		def stamps():
+			return {
+				dt: frappe.db.get_value(dt, name, ["modified", "modified_by"]) for dt, name in docs.items()
+			}
+
+		before = stamps()
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(stamps(), before)
+		split_lead(result["merge_log"])
+		self.assertEqual(stamps(), before)
+
 	def test_merge_and_split_move_attachments(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
