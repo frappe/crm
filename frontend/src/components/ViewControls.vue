@@ -711,14 +711,11 @@ function updateSelections(selections) {
 async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
   const userId = getUser()?.name
-<<<<<<< HEAD
   let filters = {
     ...list.value.params.filters,
     ...defaultFilters.value,
   }
 
-=======
->>>>>>> 0b6d313 (fix: keep develop's export filters helper and apply the page filters last)
   // Only resolve @me placeholders when we know the current user; otherwise
   // leave filters untouched rather than emitting undefined / "%undefined%".
   if (userId) {
@@ -738,44 +735,7 @@ async function exportRows() {
     })
   }
 
-<<<<<<< HEAD
   filters = JSON.stringify(filters)
-=======
-const currentFilters = computed(() =>
-  resolveCurrentUser({
-    ...(list.value.params?.filters || {}),
-    ...defaultFilters.value,
-  }),
-)
-
-async function exportRows() {
-  let filters = JSON.stringify(currentFilters.value)
-
-  // a grouped list exports what it shows: one row per group, every group
-  window.location.href = groupSummary.value
-    ? groupedExportUrl(filters)
-    : listExportUrl(filters)
-
-  showExportDialog.value = false
-  export_all.value = false
-  export_type.value = 'Excel'
-}
-
-function groupedExportUrl(filters) {
-  const grouped = serializeGroupBy(groupSummary.value)
-  return (
-    `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}` +
-    `&title=${encodeURIComponent(props.doctype)}&doctype=${encodeURIComponent(props.doctype)}` +
-    `&fields=${encodeURIComponent(JSON.stringify(grouped.fields))}` +
-    `&filters=${encodeURIComponent(filters)}` +
-    `&group_by=${encodeURIComponent(grouped.group_by)}` +
-    `&order_by=${encodeURIComponent(grouped.order_by || '')}&view=Report`
-  )
-}
-
-function listExportUrl(filters) {
-  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
->>>>>>> 0b6d313 (fix: keep develop's export filters helper and apply the page filters last)
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
