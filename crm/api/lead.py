@@ -11,6 +11,8 @@ from crm.fcrm.doctype.crm_lead.crm_lead import lock_lead
 from crm.integrations.api import find_by_phone
 from crm.utils import normalize_phone
 
+MAX_SEARCH_LIMIT = 50
+
 MERGE_CONFIG = {
 	"CRM Lead": {
 		# status_change_log and rolling_responses stay with their lead: the status log and the SLA
@@ -59,7 +61,9 @@ def find_duplicate_leads(lead_name: str):
 	candidates = set()
 	for field in match_keys["email"]:
 		if lead.get(field):
-			candidates.update(frappe.get_all("CRM Lead", filters={field: lead.get(field)}, pluck="name"))
+			# LIKE, not =, so the match ignores case on Postgres as well
+			match = [[field, "like", _escape_like(lead.get(field))]]
+			candidates.update(frappe.get_all("CRM Lead", filters=match, pluck="name"))
 	for field in match_keys["phone"]:
 		if lead.get(field):
 			candidates.update(
@@ -94,25 +98,26 @@ def _matched_fields(lead, candidate, numbers: set, match_keys: dict) -> list:
 @frappe.whitelist()
 def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 20):
 	user = frappe.session.user
-	limit = int(limit)
+	limit = min(max(limit, 1), MAX_SEARCH_LIMIT)
 
-	filters = [["is_duplicate", "=", 0]]
+	filters = [["is_duplicate", "=", 0], ["converted", "=", 0]]
 	if current_lead:
 		filters.append(["name", "!=", current_lead])
 
 	or_filters = None
 	if txt:
-		or_filters = [[field, "like", f"%{txt}%"] for field in ("name", "lead_name", "email", "organization")]
+		pattern = f"%{_escape_like(txt)}%"
+		or_filters = [[field, "like", pattern] for field in ("name", "lead_name", "email", "organization")]
 
 	candidates = []
-	for assignment in (["_assign", "like", f"%{user}%"], ["_assign", "is", "not set"]):
+	for assignment in (["_assign", "like", f'%"{user}"%'], ["_assign", "is", "not set"]):
 		candidates += frappe.get_list(
 			"CRM Lead",
 			filters=[*filters, assignment],
 			or_filters=or_filters,
 			fields=["name", "lead_name", "email", "organization", "modified"],
 			order_by="modified desc",
-			limit_page_length=limit,
+			limit=limit,
 		)
 	candidates.sort(key=lambda r: r.modified, reverse=True)
 
@@ -126,7 +131,11 @@ def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 2
 	]
 
 
-@frappe.whitelist()
+def _escape_like(txt: str) -> str:
+	return txt.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+@frappe.whitelist(methods=["POST"])
 def merge_leads(target: str, source: str):
 	if target == source:
 		frappe.throw(_("Cannot merge a lead into itself"))
@@ -186,7 +195,7 @@ def merge_leads(target: str, source: str):
 	}
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def split_lead(merge_log_name: str):
 	merge_log = frappe.get_doc("CRM Merge Log", merge_log_name)
 

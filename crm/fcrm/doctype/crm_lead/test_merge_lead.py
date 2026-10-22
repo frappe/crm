@@ -32,6 +32,23 @@ class TestMergeLead(IntegrationTestCase):
 			if d["name"] == lead1.name:
 				self.assertIn("email", d["matched_fields"])
 
+	def test_find_duplicates_matches_email_in_any_case(self):
+		lead1 = self._create_lead(first_name="Mixed", email="mixed.case@test.com")
+		lead2 = self._create_lead(first_name="Upper", email="Mixed.Case@Test.com")
+
+		from crm.api.lead import find_duplicate_leads
+
+		dups = {d["name"]: d for d in find_duplicate_leads(lead2.name)}
+		self.assertEqual(dups[lead1.name]["matched_fields"], ["email"])
+
+	def test_find_duplicates_treats_email_wildcards_literally(self):
+		lead = self._create_lead(first_name="Under", email="under_score@test.com")
+		lookalike = self._create_lead(first_name="Lookalike", email="underxscore@test.com")
+
+		from crm.api.lead import find_duplicate_leads
+
+		self.assertNotIn(lookalike.name, [d["name"] for d in find_duplicate_leads(lead.name)])
+
 	def test_find_duplicates_by_mobile(self):
 		lead1 = self._create_lead(first_name="Jane", email="jane@test.com", mobile_no="+999")
 		lead2 = self._create_lead(first_name="Janet", mobile_no="+999")
@@ -869,6 +886,65 @@ class TestMergeLead(IntegrationTestCase):
 
 		split_lead(result["merge_log"])
 		self.assertEqual(frappe.db.get_value("Communication Link", link.name, "link_name"), source.name)
+
+	def test_merge_and_split_reject_get_requests(self):
+		from frappe.handler import is_valid_http_method
+
+		from crm.api.lead import merge_leads, split_lead
+
+		previous_request = getattr(frappe.local, "request", None)
+		self.addCleanup(setattr, frappe.local, "request", previous_request)
+		for method in (merge_leads, split_lead):
+			frappe.local.request = frappe._dict(method="GET")
+			with self.assertRaises(frappe.PermissionError):
+				is_valid_http_method(method)
+			frappe.local.request = frappe._dict(method="POST")
+			is_valid_http_method(method)
+
+	def test_search_mergeable_leads_matches_the_whole_assignee_email(self):
+		user = make_user("a@example.com", "Sales Manager")
+		make_user("aa@example.com", "Sales Manager")
+		mine = self._create_lead(first_name="Picker Mine", email="picker-mine@test.com")
+		theirs = self._create_lead(first_name="Picker Theirs", email="picker-theirs@test.com")
+		mine.db_set("_assign", json.dumps([user]))
+		theirs.db_set("_assign", json.dumps(["aa@example.com"]))
+
+		from crm.api.lead import search_mergeable_leads
+
+		frappe.set_user(user)
+		values = [r["value"] for r in search_mergeable_leads(txt="Picker")]
+		self.assertIn(mine.name, values)
+		self.assertNotIn(theirs.name, values)
+
+	def test_search_mergeable_leads_caps_the_limit(self):
+		for i in range(60):
+			self._create_lead(first_name=f"Capped {i}")
+
+		from crm.api.lead import search_mergeable_leads
+
+		self.assertEqual(len(search_mergeable_leads(txt="Capped", limit=1000)), 50)
+
+	def test_search_mergeable_leads_treats_wildcards_literally(self):
+		percent = self._create_lead(first_name="Pct100% Picker")
+		self._create_lead(first_name="Pct100x Picker")
+		underscore = self._create_lead(first_name="Und_Picker")
+		self._create_lead(first_name="UndxPicker")
+
+		from crm.api.lead import search_mergeable_leads
+
+		self.assertEqual([r["value"] for r in search_mergeable_leads(txt="100%")], [percent.name])
+		self.assertEqual([r["value"] for r in search_mergeable_leads(txt="Und_")], [underscore.name])
+
+	def test_search_mergeable_leads_skips_converted_leads(self):
+		open_lead = self._create_lead(first_name="Pickable Open", email="pickable-open@test.com")
+		converted = self._create_lead(first_name="Pickable Converted", email="pickable-converted@test.com")
+		converted.db_set("converted", 1)
+
+		from crm.api.lead import search_mergeable_leads
+
+		values = [r["value"] for r in search_mergeable_leads(txt="Pickable")]
+		self.assertIn(open_lead.name, values)
+		self.assertNotIn(converted.name, values)
 
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
