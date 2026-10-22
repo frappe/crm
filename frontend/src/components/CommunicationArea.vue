@@ -111,7 +111,6 @@ import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
-import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
@@ -126,7 +125,6 @@ const reload = defineModel('reload', { type: Boolean })
 const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
@@ -349,7 +347,6 @@ async function submitEmail() {
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
-  updateOnboardingStep('send_first_email')
 }
 
 async function submitComment() {
@@ -371,7 +368,6 @@ async function submitComment() {
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })
-  updateOnboardingStep('add_first_comment')
 }
 
 function toggleEmailBox() {

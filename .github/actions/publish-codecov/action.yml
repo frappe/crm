@@ -8,6 +8,10 @@ inputs:
     token:
         description: Codecov upload token
         required: true
+    files:
+        description: Comma-separated coverage files; searched for when empty
+        required: false
+        default: ""
     fail-ci-if-error:
         description: Fail workflow if Codecov upload fails
         required: false
@@ -24,5 +28,6 @@ runs:
           with:
               name: ${{ inputs.name }}
               token: ${{ inputs.token }}
+              files: ${{ inputs.files }}
               fail_ci_if_error: ${{ inputs.fail-ci-if-error }}
               verbose: ${{ inputs.verbose }}
