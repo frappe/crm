@@ -5,6 +5,7 @@ from unittest.mock import patch
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.form.assign_to import add as assign_add
+from frappe.permissions import add_permission, update_permission_property
 from frappe.tests import IntegrationTestCase
 
 
@@ -932,6 +933,11 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(frappe.db.count("CRM Lead"), leads_before)
 
 
+MERGE_TEST_FIELDS = ("merge_test_note", "merge_test_secret")
+MERGE_TEST_REP = "merge-rep@example.com"
+MERGE_TEST_MANAGER = "merge-manager@example.com"
+
+
 class TestMergeLeadCustomField(IntegrationTestCase):
 	@classmethod
 	def setUpClass(cls):
@@ -944,15 +950,72 @@ class TestMergeLeadCustomField(IntegrationTestCase):
 						"fieldtype": "Data",
 						"label": "Merge Test Note",
 						"insert_after": "source",
-					}
+					},
+					{
+						"fieldname": "merge_test_secret",
+						"fieldtype": "Data",
+						"label": "Merge Test Secret",
+						"insert_after": "source",
+						"permlevel": 1,
+					},
 				]
 			},
 			ignore_validate=True,
 		)
+		level_1 = {"parent": "CRM Lead", "role": "Sales Manager", "permlevel": 1, "if_owner": 0}
+		cls.added_level_1_perm = not frappe.db.exists("Custom DocPerm", level_1)
+		if cls.added_level_1_perm:
+			add_permission("CRM Lead", "Sales Manager", 1)
+		update_permission_property("CRM Lead", "Sales Manager", 1, "write", 1)
+		make_user(MERGE_TEST_REP, "Sales User")
+		make_user(MERGE_TEST_MANAGER, "Sales Manager")
 		frappe.clear_cache(doctype="CRM Lead")
+		# Adding custom field columns is DDL, which implicitly commits; commit the users and perms with it
+		frappe.db.commit()  # nosemgrep
+
+	@classmethod
+	def tearDownClass(cls):
+		frappe.set_user("Administrator")
+		for fieldname in MERGE_TEST_FIELDS:
+			frappe.delete_doc("Custom Field", f"CRM Lead-{fieldname}", ignore_missing=True, force=True)
+		frappe.db.drop_columns("CRM Lead", list(MERGE_TEST_FIELDS))
+		if cls.added_level_1_perm:
+			frappe.db.delete(
+				"Custom DocPerm", {"parent": "CRM Lead", "role": "Sales Manager", "permlevel": 1}
+			)
+		for user in (MERGE_TEST_REP, MERGE_TEST_MANAGER):
+			frappe.delete_doc("User", user, ignore_missing=True, force=True)
+		frappe.clear_cache(doctype="CRM Lead")
+		# Dropping the custom field columns is DDL, which implicitly commits anyway
+		frappe.db.commit()  # nosemgrep
+		super().tearDownClass()
 
 	def tearDown(self):
+		frappe.set_user("Administrator")
 		frappe.db.rollback()
+
+	def test_permlevel_field_merges_only_for_users_who_can_write_it(self):
+		from crm.api.lead import merge_leads
+
+		for user, copied in ((MERGE_TEST_REP, False), (MERGE_TEST_MANAGER, True)):
+			target = frappe.get_doc(
+				{"doctype": "CRM Lead", "first_name": "Target", "lead_owner": user}
+			).insert(ignore_permissions=True)
+			source = frappe.get_doc(
+				{
+					"doctype": "CRM Lead",
+					"first_name": "Source",
+					"lead_owner": user,
+					"merge_test_secret": "hidden",
+				}
+			).insert(ignore_permissions=True)
+
+			frappe.set_user(user)
+			merge_leads(target.name, source.name)
+			frappe.set_user("Administrator")
+
+			value = frappe.db.get_value("CRM Lead", target.name, "merge_test_secret")
+			self.assertEqual(value == "hidden", copied, user)
 
 	def test_custom_field_merges_into_empty_target_and_restores_on_split(self):
 		target = frappe.get_doc({"doctype": "CRM Lead", "first_name": "Target"}).insert(
@@ -1028,4 +1091,13 @@ def create_lead_owner():
 		frappe.get_doc(
 			{"doctype": "User", "email": email, "first_name": "Merge Owner", "send_welcome_email": 0}
 		).insert(ignore_permissions=True)
+	return email
+
+
+def make_user(email, role):
+	if not frappe.db.exists("User", email):
+		user = frappe.get_doc(
+			{"doctype": "User", "email": email, "first_name": email.split("@")[0], "send_welcome_email": 0}
+		).insert(ignore_permissions=True)
+		user.add_roles(role)
 	return email
