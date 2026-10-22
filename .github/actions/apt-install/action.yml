@@ -1,0 +1,46 @@
+name: Install apt packages
+description: Install apt packages, reusing downloaded .deb files until the package list or runner image changes.
+inputs:
+    packages:
+        description: Space-separated apt packages to install
+        required: true
+runs:
+    using: composite
+    steps:
+        - name: Apt cache key
+          id: key
+          shell: bash
+          env:
+              PACKAGES: ${{ inputs.packages }}
+          run: echo "key=apt-${ImageOS}-${ImageVersion}-$(echo "$PACKAGES" | tr ' ' '\n' | sort | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+        - name: Restore apt packages
+          id: cache
+          uses: actions/cache/restore@v4
+          with:
+              path: ~/apt-cache
+              key: ${{ steps.key.outputs.key }}
+
+        - name: Install from cache
+          if: steps.cache.outputs.cache-hit == 'true'
+          shell: bash
+          run: sudo apt-get install -y --no-install-recommends ~/apt-cache/*.deb
+
+        # Installing mariadb-client also removes the runner's preinstalled mysql packages.
+        - name: Download and install
+          if: steps.cache.outputs.cache-hit != 'true'
+          shell: bash
+          env:
+              PACKAGES: ${{ inputs.packages }}
+          run: |
+              sudo apt-get update
+              sudo apt-get install -y --no-install-recommends -o APT::Keep-Downloaded-Packages=true $PACKAGES
+              mkdir -p ~/apt-cache
+              cp /var/cache/apt/archives/*.deb ~/apt-cache/
+
+        - name: Save apt packages
+          if: steps.cache.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v4
+          with:
+              path: ~/apt-cache
+              key: ${{ steps.key.outputs.key }}
