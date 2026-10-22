@@ -116,6 +116,11 @@ runs:
               path: ~/db-snapshot
               key: ${{ steps.snapshot-key.outputs.key }}
 
+        - name: Install system packages
+          uses: ./.github/actions/apt-install
+          with:
+              packages: redis-server mariadb-client libmariadb-dev
+
         - name: Install bench dependencies
           shell: bash
           env:

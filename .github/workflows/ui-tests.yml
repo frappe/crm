@@ -90,9 +90,9 @@ jobs:
             ${{ runner.os }}-playwright-
 
       - name: Install MariaDB Client
-        run: |
-          sudo apt update
-          sudo apt-get install mariadb-client
+        uses: ./.github/actions/apt-install
+        with:
+          packages: mariadb-client
 
       - name: Week number
         id: week
