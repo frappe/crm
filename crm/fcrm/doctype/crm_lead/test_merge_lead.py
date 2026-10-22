@@ -627,6 +627,29 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "mobile_no"))
 		self.assertEqual(frappe.db.get_value("WA Message", message.name, "reference_docname"), source.name)
 
+	def test_patch_syncs_is_duplicate_with_merged_into(self):
+		target = self._create_lead(first_name="Target")
+		merged = self._create_lead(first_name="Merged")
+		stray = self._create_lead(first_name="Stray")
+		plain = self._create_lead(first_name="Plain")
+		merged.db_set("merged_into", target.name, update_modified=False)
+		stray.db_set("is_duplicate", 1, update_modified=False)
+		modified = frappe.db.get_value("CRM Lead", merged.name, "modified")
+
+		from crm.patches.v1_0.set_is_duplicate_for_merged_leads import execute
+
+		execute()
+		execute()
+
+		def values(name):
+			return frappe.db.get_value("CRM Lead", name, ["is_duplicate", "merged_into"])
+
+		self.assertEqual(values(merged.name), (1, target.name))
+		self.assertEqual(values(stray.name), (0, None))
+		self.assertEqual(values(plain.name), (0, None))
+		self.assertEqual(values(target.name), (0, None))
+		self.assertEqual(frappe.db.get_value("CRM Lead", merged.name, "modified"), modified)
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
