@@ -83,9 +83,13 @@ bench setup requirements --dev
 
 bench start &>> ~/frappe-bench/bench_start.log &
 CI=Yes bench build --app frappe &
+build_pid=$!
 
 if [ -f "${DB_SNAPSHOT}/test_site.sql.gz" ]; then
     restore_site
 else
     install_site
 fi
+
+# A restored snapshot finishes before the build; tests need its assets.json
+wait "$build_pid"
