@@ -1037,8 +1037,8 @@ def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 	"""How sales are going, for everything the user can see: open deals by stage with their value,
 	this month against last month (new leads, leads turned into deals, deals won and lost),
-	deals closing in the next 30 days, deals with no activity for 2 weeks, and overdue tasks that
-	are the user's or on records they can see. Values are in the CRM's currency. Needs no
+	deals closing in the next 30 days, deals with no activity for 2 weeks, overdue tasks that
+	are the user's or on records they can see, and why deals were lost in the last 90 days. Values are in the CRM's currency. Needs no
 	approval."""
 	today = frappe.utils.getdate()
 	this_month = frappe.utils.get_first_day(today)
@@ -1073,6 +1073,7 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 		],
 		"quiet_deals": len(_quiet(_open_deals({}))),
 		"overdue_tasks": len(_overdue_tasks(today, ctx.user)),
+		"lost_reasons_last_90_days": _lost_by_reason(frappe.utils.add_days(today, -90), today, stages),
 	}
 
 
@@ -1145,6 +1146,33 @@ def _deal_totals(filters: dict[str, Any], group_by: str | None = None) -> list:
 		db_query_compat=True,
 	)
 	return query.select(Count(deal.name).as_("deals"), Sum(value).as_("value")).run(as_dict=True)
+
+
+def _lost_by_reason(start, end, stages) -> list[dict[str, Any]]:
+	"""The deals the user can see that were lost between two dates, by lost reason, most first."""
+	from frappe.query_builder.functions import Coalesce, Count, NullIf, Sum
+
+	lost = [s.name for s in stages if s.type == "Lost"] or [""]
+	deal = frappe.qb.DocType("CRM Deal")
+	value = Coalesce(NullIf(deal.deal_value, 0), NullIf(deal.expected_deal_value, 0), 0) * Coalesce(
+		NullIf(deal.exchange_rate, 0), 1
+	)
+	query = frappe.qb.get_query(
+		"CRM Deal",
+		fields=["lost_reason"],
+		filters={"status": ["in", lost]},
+		group_by="lost_reason",
+		ignore_permissions=False,
+		db_query_compat=True,
+	).where(_lost_between(start, end))
+	rows = query.select(Count(deal.name).as_("deals"), Sum(value).as_("value")).run(as_dict=True)
+	return sorted(
+		(
+			{"reason": r.lost_reason or "No reason given", "deals": r.deals, "value": r.value or 0}
+			for r in rows
+		),
+		key=lambda r: -r["deals"],
+	)
 
 
 def _lost_between(start, end):

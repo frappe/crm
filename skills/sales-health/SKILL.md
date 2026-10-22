@@ -4,6 +4,7 @@ starter: How are my sales doing?
 prompts:
   - "How did this month compare to last?"
   - "Which deals are closing soon?"
+  - "Why are we losing deals?"
 description: Give a short, plain-English update on how sales are going in the CRM, such as the open pipeline by stage, this month against last month, deals won and lost, and deals that have gone quiet. Use when someone asks about their sales health, pipeline, numbers, performance or how the month is going.
 ---
 
@@ -23,6 +24,7 @@ The person asking may be a salesperson or a manager, and isn't technical. Answer
 When they ask about one thing, answer just that, still from `sales_health`:
 
 - **"How did this month compare to last?"**: only the month against last month: new leads, leads that became deals, deals won (with their value) and lost. Say that this month isn't over yet.
+- **"Why are we losing deals?"**: the reasons in `lost_reasons_last_90_days`, the most common first, each with how many deals and their value, such as "Pricing: 3 deals, ₹2,10,000". Name the top reason in one line first. If none were lost, say so. Suggest one thing that fits the top reason, such as reviewing prices or following up sooner.
 - **"Which deals are closing soon?"**: the deals in `closing_soon`, soonest first, each as a link with its close date and value, such as [Acme Corp](/crm/deals/...), closing Thursday, $12,000. If there are none, say no open deals are due to close in the next 30 days.
 
 It covers everything they're allowed to see. If a number is missing because they can't see those records, leave it out without explaining why.
