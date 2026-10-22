@@ -1023,13 +1023,15 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 	this_month = frappe.utils.get_first_day(today)
 	last_month = frappe.utils.add_months(this_month, -1)
 	stages = frappe.get_all("CRM Deal Status", fields=["name", "type"], order_by="position asc")
-	deals = _open_deals({})
+	closed = [s.name for s in stages if s.type in ("Won", "Lost")] or [""]
+	open_deals = {"status": ["not in", closed]}
+	by_stage = {row.status: row for row in _deal_totals(open_deals, group_by="status")}
 	pipeline = []
 	for stage in stages:
 		if stage.type in ("Won", "Lost"):
 			continue
-		rows = [d for d in deals if d.status == stage.name]
-		pipeline.append({"stage": stage.name, "deals": len(rows), "value": sum(_value(d) for d in rows)})
+		row = by_stage.get(stage.name) or frappe._dict(deals=0, value=0)
+		pipeline.append({"stage": stage.name, "deals": row.deals, "value": row.value or 0})
 	return {
 		"currency": frappe.db.get_single_value("FCRM Settings", "currency"),
 		"open_pipeline": pipeline,
@@ -1037,24 +1039,35 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 		"last_month": _month(last_month, frappe.utils.add_days(this_month, -1), stages),
 		"closing_soon": [
 			{**_deal(d), "closes": str(d.expected_closure_date), "value": _value(d)}
-			for d in sorted(
-				(d for d in deals if d.expected_closure_date),
-				key=lambda d: d.expected_closure_date,
+			for d in frappe.get_list(
+				"CRM Deal",
+				filters={
+					**open_deals,
+					"expected_closure_date": ["between", [today, frappe.utils.add_days(today, 30)]],
+				},
+				fields=DEAL_FIELDS,
+				order_by="expected_closure_date asc",
+				limit=10,
 			)
-			if today <= d.expected_closure_date <= frappe.utils.add_days(today, 30)
-		][:10],
-		"quiet_deals": len(
-			[d for d in deals if frappe.utils.getdate(d.modified) < frappe.utils.add_days(today, -QUIET_DAYS)]
+		],
+		"quiet_deals": _count(
+			"CRM Deal", {**open_deals, "modified": ["<", frappe.utils.add_days(today, -QUIET_DAYS)]}
 		),
-		"overdue_tasks": len(
-			frappe.get_list(
-				"CRM Task",
-				filters={"status": OPEN_TASK, "due_date": ["<", today]},
-				pluck="name",
-				limit=1000,
-			)
-		),
+		"overdue_tasks": _count("CRM Task", {"status": OPEN_TASK, "due_date": ["<", today]}),
 	}
+
+
+DEAL_FIELDS = [
+	"name",
+	"organization",
+	"lead_name",
+	"status",
+	"deal_value",
+	"expected_deal_value",
+	"exchange_rate",
+	"expected_closure_date",
+	"modified",
+]
 
 
 def _open_deals(filters: dict[str, Any]) -> list:
@@ -1062,17 +1075,7 @@ def _open_deals(filters: dict[str, Any]) -> list:
 	return frappe.get_list(
 		"CRM Deal",
 		filters={**filters, "status": ["not in", closed or [""]]},
-		fields=[
-			"name",
-			"organization",
-			"lead_name",
-			"status",
-			"deal_value",
-			"expected_deal_value",
-			"exchange_rate",
-			"expected_closure_date",
-			"modified",
-		],
+		fields=DEAL_FIELDS,
 		limit=1000,
 	)
 
@@ -1082,25 +1085,45 @@ def _month(start, end, stages) -> dict[str, Any]:
 	won = [s.name for s in stages if s.type == "Won"] or [""]
 	lost = [s.name for s in stages if s.type == "Lost"] or [""]
 	between = ["between", [start, end]]
-	won_deals = frappe.get_list(
-		"CRM Deal",
-		filters={"status": ["in", won], "closed_date": between},
-		fields=["deal_value", "expected_deal_value", "exchange_rate"],
-		limit=1000,
-	)
+	[won_deals] = _deal_totals({"status": ["in", won], "closed_date": between})
 	return {
-		"new_leads": frappe.db.count("CRM Lead", {"creation": between}) if _can_read("CRM Lead") else None,
-		"leads_turned_into_deals": len(
-			frappe.get_list("CRM Deal", filters={"lead": ["is", "set"], "creation": between}, pluck="name")
-		),
-		"deals_won": len(won_deals),
-		"won_value": sum(_value(d) for d in won_deals),
-		"deals_lost": len(
-			frappe.get_list(
-				"CRM Deal", filters={"status": ["in", lost], "closed_date": between}, pluck="name"
-			)
-		),
+		"new_leads": _count("CRM Lead", {"creation": between}) if _can_read("CRM Lead") else None,
+		"leads_turned_into_deals": _count("CRM Deal", {"lead": ["is", "set"], "creation": between}),
+		"deals_won": won_deals.deals,
+		"won_value": won_deals.value or 0,
+		"deals_lost": _count("CRM Deal", {"status": ["in", lost], "closed_date": between}),
 	}
+
+
+def _count(doctype: str, filters: dict[str, Any]) -> int:
+	"""How many records the user can see match, counted in SQL with get_list's filter rules."""
+	query = frappe.qb.get_query(
+		doctype,
+		fields=[{"COUNT": "*", "as": "count"}],
+		filters=filters,
+		ignore_permissions=False,
+		db_query_compat=True,
+	)
+	return query.run()[0][0]
+
+
+def _deal_totals(filters: dict[str, Any], group_by: str | None = None) -> list:
+	"""The number and value of the deals the user can see that match, summed in SQL."""
+	from frappe.query_builder.functions import Coalesce, Count, NullIf, Sum
+
+	deal = frappe.qb.DocType("CRM Deal")
+	value = Coalesce(NullIf(deal.deal_value, 0), NullIf(deal.expected_deal_value, 0), 0) * Coalesce(
+		NullIf(deal.exchange_rate, 0), 1
+	)
+	query = frappe.qb.get_query(
+		"CRM Deal",
+		fields=[group_by] if group_by else [],
+		filters=filters,
+		group_by=group_by,
+		ignore_permissions=False,
+		db_query_compat=True,
+	)
+	return query.select(Count(deal.name).as_("deals"), Sum(value).as_("value")).run(as_dict=True)
 
 
 def _can_read(doctype: str) -> bool:
