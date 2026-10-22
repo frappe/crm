@@ -457,6 +457,9 @@ def _auto_merge_fields(
 	source_doc: frappe.model.document.Document,
 ):
 	for field in _COMPARE_FIELDS:
+		# Filling lead_owner would re-share the target with only that owner, dropping its other shares.
+		if field == "lead_owner":
+			continue
 		source_val = source_doc.get(field)
 		if source_val and not target_doc.get(field):
 			target_doc.set(field, source_val)

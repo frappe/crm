@@ -524,6 +524,78 @@ class TestMergeLead(IntegrationTestCase):
 			split_lead(result["merge_log"])
 		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "merged_into"), target.name)
 
+	def test_merge_and_split_leave_no_source_owner_on_ownerless_target(self):
+		owner = create_lead_owner()
+		other = create_user_without_lead_access()
+		target = self._create_lead(first_name="Target", email="ownerless@test.com")
+		frappe.share.add_docshare(
+			"CRM Lead", target.name, other, write=1, flags={"ignore_share_permission": True}
+		)
+		source = self._create_lead(first_name="Source", email="owned@test.com", lead_owner=owner)
+		todo = frappe.db.get_value("ToDo", {"reference_name": source.name, "allocated_to": owner}, "name")
+		other_share = {"share_doctype": "CRM Lead", "share_name": target.name, "user": other}
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(frappe.db.get_value("ToDo", todo, "reference_name"), target.name)
+		self.assertTrue(frappe.db.exists("DocShare", other_share))
+		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "lead_owner"))
+
+		split_lead(result["merge_log"])
+
+		self.assertTrue(frappe.db.exists("DocShare", other_share))
+
+		self.assertEqual(frappe.db.get_value("ToDo", todo, "reference_name"), source.name)
+		self.assertFalse(
+			frappe.db.exists(
+				"ToDo",
+				{"reference_type": "CRM Lead", "reference_name": target.name, "allocated_to": owner},
+			)
+		)
+		self.assertFalse(
+			frappe.db.exists(
+				"DocShare", {"share_doctype": "CRM Lead", "share_name": target.name, "user": owner}
+			)
+		)
+		self.assertTrue(
+			frappe.db.exists(
+				"DocShare", {"share_doctype": "CRM Lead", "share_name": source.name, "user": owner}
+			)
+		)
+		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "lead_owner"), owner)
+		self.assertFalse(frappe.db.get_value("CRM Lead", target.name, "lead_owner"))
+
+	def test_merge_and_split_move_unowned_source_shares(self):
+		owner = create_lead_owner()
+		other = create_user_without_lead_access()
+		target = self._create_lead(first_name="Target", email="owned-target@test.com", lead_owner=owner)
+		source = self._create_lead(first_name="Source", email="unowned-source@test.com")
+		frappe.share.add_docshare(
+			"CRM Lead", source.name, other, write=1, flags={"ignore_share_permission": True}
+		)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		self.assertTrue(
+			frappe.db.exists(
+				"DocShare", {"share_doctype": "CRM Lead", "share_name": target.name, "user": other}
+			)
+		)
+
+		split_lead(result["merge_log"])
+		self.assertTrue(
+			frappe.db.exists(
+				"DocShare", {"share_doctype": "CRM Lead", "share_name": source.name, "user": other}
+			)
+		)
+		self.assertFalse(
+			frappe.db.exists(
+				"DocShare", {"share_doctype": "CRM Lead", "share_name": target.name, "user": other}
+			)
+		)
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
@@ -635,5 +707,14 @@ def create_user_without_lead_access():
 	if not frappe.db.exists("User", email):
 		frappe.get_doc(
 			{"doctype": "User", "email": email, "first_name": "No Lead", "send_welcome_email": 0}
+		).insert(ignore_permissions=True)
+	return email
+
+
+def create_lead_owner():
+	email = "lead-merge-owner@example.com"
+	if not frappe.db.exists("User", email):
+		frappe.get_doc(
+			{"doctype": "User", "email": email, "first_name": "Merge Owner", "send_welcome_email": 0}
 		).insert(ignore_permissions=True)
 	return email
