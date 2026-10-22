@@ -262,12 +262,60 @@ def add_fields(doctype: str, fields: list[NewField], *, ctx: ToolContext) -> dic
 	return {"added": added}
 
 
+# sections the CRM hides or removes on its own, which a field put there would vanish with
+AUTO_SECTIONS = {
+	("CRM Lead", "side panel"): {"lost_reason_section"},
+	("CRM Deal", "side panel"): {"lost_reason_section"},
+	("CRM Deal", "new record form"): {
+		"organization_section",
+		"organization_details_section",
+		"contact_section",
+		"contact_details_section",
+	},
+}
+
+
+def _tabs(layout: list) -> list[dict]:
+	# Data Fields may be tabs of sections; the others are a list of sections
+	return layout if layout and "sections" in layout[0] else [{"sections": layout}]
+
+
+def _section_fields(sec: dict) -> set[str]:
+	return {f for col in sec.get("columns", []) for f in col.get("fields", [])}
+
+
+def _new_section(label: str, fields: list[str]) -> dict[str, Any]:
+	from frappe.utils import random_string
+
+	return {
+		"label": label,
+		"name": f"section_{random_string(4)}",
+		"opened": True,
+		"columns": [{"name": f"column_{random_string(4)}", "fields": fields}],
+	}
+
+
+def _shown_in(doctype: str, fields: list[str]) -> list[str]:
+	"""The places on a record's page where any of `fields` shows."""
+	places = []
+	for place, kind in LAYOUT_PLACES.items():
+		layout = json.loads(
+			frappe.db.get_value("CRM Fields Layout", {"dt": doctype, "type": kind}, "layout") or "[]"
+		)
+		if any(
+			set(fields) & _section_fields(sec) for tab in _tabs(layout) for sec in tab.get("sections", [])
+		):
+			places.append(place)
+	return places
+
+
 def _show_prompt(args: dict) -> str:
 	doctype = args.get("doctype")
 	meta = frappe.get_meta(doctype)
 	labels = [meta.get_label(f) for f in args.get("fields") or []]
 	if args.get("after"):
-		places = " and ".join(args.get("places") or ["places they show"])
+		shown = args.get("places") or _shown_in(doctype, args.get("fields") or [])
+		places = " and ".join(shown or ["places they show"])
 		after = meta.get_label(args["after"])
 		return f"On {_(doctype)} records, put these fields right after {after} in the {places}:\n{_bullets(labels)}"
 	places = " and ".join(args.get("places") or ["side panel"])
@@ -289,11 +337,10 @@ def show_fields(
 	them: the side panel, the Data tab or the form for a new record. Without `after`, they go in the
 	section called `section`, made if missing, and a field already shown stays where it is. With
 	`after` (a fieldname), they go right after that field, moved from wherever they were; leave out
-	`places` to move them only where they already show. Not every record type has every place:
-	`not_available` lists the ones it lacks, and `after_missing` those where `after` isn't shown.
-	Returns the places changed."""
-	from frappe.utils import random_string
-
+	`places` to move them only where they already show. A section the CRM hides or removes on its
+	own, such as Lost Reason, takes no other fields: they go in a new `section` right after it.
+	Not every record type has every place: `not_available` lists the ones it lacks, and
+	`after_missing` those where `after` isn't shown. Returns the places changed."""
 	_check_doctype(doctype)
 	changed, not_available, after_missing = [], [], []
 	for place in places or (list(LAYOUT_PLACES) if after else ["side panel"]):
@@ -303,8 +350,8 @@ def show_fields(
 			continue
 		doc = frappe.get_doc("CRM Fields Layout", name)
 		layout = json.loads(doc.layout or "[]")
-		# Data Fields may be tabs of sections; the others are a list of sections
-		tabs = layout if layout and "sections" in layout[0] else [{"sections": layout}]
+		tabs = _tabs(layout)
+		auto = AUTO_SECTIONS.get((doctype, place), set())
 		columns = [col for tab in tabs for sec in tab.get("sections", []) for col in sec.get("columns", [])]
 		shown = {f for col in columns for f in col.get("fields", [])}
 		if after:
@@ -313,14 +360,29 @@ def show_fields(
 			moving = [f for f in fields if f != after and (places or f in shown)]
 			if not moving:
 				continue
-			target = next((col for col in columns if after in col.get("fields", [])), None)
-			if not target:
+			found = next(
+				(
+					(tab, sec, col)
+					for tab in tabs
+					for sec in tab.get("sections", [])
+					for col in sec.get("columns", [])
+					if after in col.get("fields", [])
+				),
+				None,
+			)
+			if not found:
 				after_missing.append(place)
 				continue
+			tab, target_sec, target = found
+			# only fields already in a section the CRM hides or removes stay in it
+			inside = _section_fields(target_sec) if target_sec.get("name") in auto else set(moving)
 			for col in columns:
 				col["fields"] = [f for f in col.get("fields", []) if f not in moving]
 			i = target["fields"].index(after) + 1
-			target["fields"][i:i] = moving
+			target["fields"][i:i] = [f for f in moving if f in inside]
+			if outside := [f for f in moving if f not in inside]:
+				sections = tab["sections"]
+				sections.insert(sections.index(target_sec) + 1, _new_section(section, outside))
 			# drop the sections the move left empty, but not ones that were empty before
 			for tab in tabs:
 				tab["sections"][:] = [
@@ -328,7 +390,7 @@ def show_fields(
 					for sec in tab.get("sections", [])
 					if not sec.get("columns")
 					or any(col.get("fields") for col in sec["columns"])
-					or not any(set(fields_before[id(col)]) & set(moving) for col in sec["columns"])
+					or not any(set(fields_before.get(id(col), [])) & set(moving) for col in sec["columns"])
 				]
 		else:
 			new = [f for f in fields if f not in shown]
@@ -336,19 +398,17 @@ def show_fields(
 				continue
 			sections = tabs[0]["sections"]
 			existing = next(
-				(sec for sec in sections if sec.get("label") == section and sec.get("columns")), None
+				(
+					sec
+					for sec in sections
+					if sec.get("label") == section and sec.get("columns") and sec.get("name") not in auto
+				),
+				None,
 			)
 			if existing:
 				existing["columns"][0].setdefault("fields", []).extend(new)
 			else:
-				sections.append(
-					{
-						"label": section,
-						"name": f"section_{random_string(4)}",
-						"opened": True,
-						"columns": [{"name": f"column_{random_string(4)}", "fields": new}],
-					}
-				)
+				sections.append(_new_section(section, new))
 		doc.layout = json.dumps(layout)
 		doc.save()
 		changed.append(place)
