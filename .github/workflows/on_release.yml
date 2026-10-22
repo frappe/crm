@@ -8,6 +8,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Entire Repository
         uses: actions/checkout@v2
