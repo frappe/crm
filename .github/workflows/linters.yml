@@ -34,6 +34,15 @@ jobs:
                   node-version: "24"
                   check-latest: true
 
+            # The lockfile rarely changes, so restoring node_modules beats a fresh yarn install.
+            - name: Cache node_modules
+              uses: actions/cache@v4
+              with:
+                  path: frontend/node_modules
+                  key: node-modules-${{ runner.os }}-node24-${{ hashFiles('frontend/yarn.lock') }}
+                  restore-keys: |
+                      node-modules-${{ runner.os }}-node24-
+
             - name: Install commitlint
               if: github.event_name == 'pull_request'
               run: npm install --no-save @commitlint/cli @commitlint/config-conventional
