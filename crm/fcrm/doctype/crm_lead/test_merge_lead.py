@@ -946,6 +946,49 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertIn(open_lead.name, values)
 		self.assertNotIn(converted.name, values)
 
+	def test_split_keeps_activity_added_to_the_target_after_the_merge(self):
+		target = self._create_lead(first_name="Target", email="activity-target@test.com")
+		source = self._create_lead(first_name="Source", email="activity-source@test.com")
+
+		def note(lead, title):
+			return frappe.get_doc(
+				{
+					"doctype": "FCRM Note",
+					"title": title,
+					"reference_doctype": "CRM Lead",
+					"reference_docname": lead,
+				}
+			).insert(ignore_permissions=True)
+
+		def comment(lead, content):
+			return frappe.get_doc(
+				{
+					"doctype": "Comment",
+					"comment_type": "Comment",
+					"reference_doctype": "CRM Lead",
+					"reference_name": lead,
+					"content": content,
+				}
+			).insert(ignore_permissions=True)
+
+		source_note = note(source.name, "Before the merge")
+		source_comment = comment(source.name, "Before the merge")
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(frappe.db.get_value("FCRM Note", source_note.name, "reference_docname"), target.name)
+		self.assertEqual(frappe.db.get_value("Comment", source_comment.name, "reference_name"), target.name)
+		later_note = note(target.name, "After the merge")
+		later_comment = comment(target.name, "After the merge")
+
+		split_lead(result["merge_log"])
+
+		self.assertEqual(frappe.db.get_value("FCRM Note", source_note.name, "reference_docname"), source.name)
+		self.assertEqual(frappe.db.get_value("Comment", source_comment.name, "reference_name"), source.name)
+		self.assertEqual(frappe.db.get_value("FCRM Note", later_note.name, "reference_docname"), target.name)
+		self.assertEqual(frappe.db.get_value("Comment", later_comment.name, "reference_name"), target.name)
+
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
 		source = self._create_lead(first_name="Source", mobile_no="+91 98111 11111")
