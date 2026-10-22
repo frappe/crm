@@ -98,8 +98,9 @@ def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 2
 
 @frappe.whitelist()
 def merge_leads(target: str, source: str):
-	target_doc = frappe.get_doc("CRM Lead", target)
-	source_doc = frappe.get_doc("CRM Lead", source)
+	_lock_leads(target, source)
+	target_doc = frappe.get_doc("CRM Lead", target, for_update=True)
+	source_doc = frappe.get_doc("CRM Lead", source, for_update=True)
 
 	if not frappe.has_permission("CRM Lead", "write", target):
 		frappe.throw(_("Not allowed to modify target lead"), frappe.PermissionError)
@@ -175,8 +176,9 @@ def split_lead(merge_log_name: str):
 	child_data = json.loads(merge_log.child_table_snapshot or "{}")
 	ref_data = json.loads(merge_log.reference_snapshot or "[]")
 
-	target_doc = frappe.get_doc("CRM Lead", target)
-	source_doc = frappe.get_doc("CRM Lead", source)
+	_lock_leads(target, source)
+	target_doc = frappe.get_doc("CRM Lead", target, for_update=True)
+	source_doc = frappe.get_doc("CRM Lead", source, for_update=True)
 
 	if source_doc.merged_into != target:
 		frappe.throw(_("Source lead {0} is not merged into {1}").format(source, target))
@@ -252,6 +254,15 @@ def get_merge_history(lead_name: str):
 		}
 		for log in logs
 	]
+
+
+def _lock_leads(*names: str):
+	"""Serialize concurrent merges and splits of the same leads, locking in name order so two
+	of them over the same pair can't deadlock. Callers then load the leads with for_update:
+	under REPEATABLE READ a plain read after the lock can still return the pre-lock state."""
+	table = frappe.qb.DocType("CRM Lead")
+	for name in sorted(set(names)):
+		frappe.qb.from_(table).select(table.name).where(table.name == name).for_update().run()
 
 
 _COMPARE_FIELDS = [
