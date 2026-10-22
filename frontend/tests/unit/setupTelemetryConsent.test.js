@@ -36,8 +36,12 @@ vi.mock('frappe-ui', () => ({
 }))
 import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 
-function mountPreference() {
-  mocks.call.mockReset().mockResolvedValue()
+function mountPreference(saved = 1) {
+  mocks.call
+    .mockReset()
+    .mockImplementation(async (method) =>
+      method === 'frappe.client.get_single_value' ? saved : undefined,
+    )
   mocks.disable.mockClear()
   mocks.install.mockReset().mockResolvedValue()
   const root = document.createElement('div')
@@ -54,12 +58,30 @@ async function settle() {
   await nextTick()
 }
 
-it('shows a checked usage-data checkbox without a separate consent screen', () => {
+it('shows a checked usage-data checkbox without a separate consent screen', async () => {
   const { root, app, checkbox } = mountPreference()
   try {
+    await settle()
     expect(checkbox.checked).toBe(true)
     expect(root.textContent).toContain('Share usage data')
-    expect(mocks.call).not.toHaveBeenCalled()
+    expect(mocks.call).not.toHaveBeenCalledWith(
+      'frappe.client.set_value',
+      expect.anything(),
+    )
+  } finally {
+    app.unmount()
+  }
+})
+
+it('starts unchecked when usage data sharing was turned off', async () => {
+  const { app, checkbox } = mountPreference(0)
+  try {
+    await settle()
+    expect(mocks.call).toHaveBeenCalledWith('frappe.client.get_single_value', {
+      doctype: 'System Settings',
+      field: 'enable_telemetry',
+    })
+    expect(checkbox.checked).toBe(false)
   } finally {
     app.unmount()
   }
@@ -68,6 +90,7 @@ it('shows a checked usage-data checkbox without a separate consent screen', () =
 it('saves opt-out and stops telemetry without navigating away', async () => {
   const { app, checkbox } = mountPreference()
   try {
+    await settle()
     checkbox.checked = !checkbox.checked
     checkbox.dispatchEvent(new Event('change'))
     await settle()
@@ -93,6 +116,7 @@ it('keeps the saved preference when updating fails', async () => {
   const { root, app, checkbox } = mountPreference()
   const log = vi.spyOn(console, 'error').mockImplementation(() => {})
   try {
+    await settle()
     mocks.call.mockRejectedValueOnce(new Error('Unable to save'))
     checkbox.checked = !checkbox.checked
     checkbox.dispatchEvent(new Event('change'))

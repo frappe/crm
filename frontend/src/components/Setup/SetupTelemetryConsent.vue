@@ -21,6 +21,11 @@ const enabled = ref(true)
 const saving = ref(false)
 const error = ref('')
 
+call('frappe.client.get_single_value', {
+  doctype: 'System Settings',
+  field: 'enable_telemetry',
+}).then((value) => (enabled.value = Boolean(value)))
+
 async function persistPreference(share) {
   await call('frappe.client.set_value', {
     doctype: 'System Settings',
