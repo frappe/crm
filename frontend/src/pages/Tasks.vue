@@ -223,12 +223,7 @@ import { formatDate, sanitizeHTML } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useOnboarding } from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
-<<<<<<< HEAD
-import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
-=======
-import { useCrmOnboarding } from '@/composables/onboarding'
 import { Tooltip, Dropdown } from 'frappe-ui'
->>>>>>> d0a03a8 (feat: show the availability dot on user avatars across the app)
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 

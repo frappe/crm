@@ -2,12 +2,12 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.install import add_default_availability_statuses
+from crm.tests import CRMTestCase
 
 
-class TestCRMAvailabilityStatus(IntegrationTestCase):
+class TestCRMAvailabilityStatus(CRMTestCase):
 	def setUp(self):
 		add_default_availability_statuses()
 

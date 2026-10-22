@@ -1,12 +1,12 @@
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.install import add_default_availability_statuses
+from crm.tests import CRMTestCase
 
 USERS = ("avail-a@example.com", "avail-b@example.com")
 
 
-class TestAvailability(IntegrationTestCase):
+class TestAvailability(CRMTestCase):
 	def setUp(self):
 		add_default_availability_statuses()
 		frappe.db.set_value("CRM Availability Status", {"name": ["is", "set"]}, "enabled", 1)
