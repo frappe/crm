@@ -512,7 +512,7 @@ const currentView = computed(() => {
 usePageMeta(() => {
   let label = currentView.value.label
   if (currentView.value.is_standard) {
-    let routeName = route.name
+    let routeName = __(route.name?.toString() || '')
     label = `${routeName} - ${label}`
   }
   return {
