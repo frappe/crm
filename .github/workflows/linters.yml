@@ -83,3 +83,20 @@ jobs:
               uses: pre-commit/action@v3.0.1
               with:
                   extra_args: --all-files
+
+    deps-vulnerable-check:
+        name: Vulnerable Dependency Check
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+
+            - name: Install and run pip-audit
+              run: |
+                  pip install pip-audit
+                  pip-audit --desc on .
