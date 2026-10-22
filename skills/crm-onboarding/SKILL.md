@@ -6,7 +6,7 @@ prompts:
   - "Add a form to my website"
   - "Invite my team"
   - "Set up a reminder"
-description: Set up Frappe CRM for a new team through a short conversation, then bring in their data. Use when someone wants to set up, configure or get started with their CRM, connect email, add a website form, set up lead assignment, change their sales pipeline or lead stages, import leads, deals, contacts or organizations from a CSV or spreadsheet, invite their team, or set up automations such as reminders, notifications, follow-ups, lead scoring, assigning or converting leads.
+description: Set up Frappe CRM for a new team through a short conversation, then bring in their data. Use when someone wants to set up, configure or get started with their CRM, connect email, add a website form, set up lead assignment, change their sales pipeline or lead stages, import leads, deals, contacts or organizations from a CSV or spreadsheet, invite their team, set up automations such as reminders, notifications, follow-ups, lead scoring, assigning or converting leads, or make a quote or quotation for a deal.
 ---
 
 # Set up Frappe CRM
@@ -158,6 +158,10 @@ Put `only_if` on the automation when the whole thing is for some records, and on
 Replies and email follow-ups only start once their email is connected. If it isn't, say so in one line, set up the automation anyway, and offer to connect email next. Only a System Manager can add automations. If it fails with a permission error, tell them to ask their CRM admin.
 
 Once it's added, the CRM opens it beside the chat. Give its `link` too, and say they can turn it off or change it there. It only acts on records from now on. If they want the same done to existing records, offer it as a separate step and use `update`.
+
+### Quotes
+
+When they ask for a quote or quotation, at any point, follow [reference/quotes.md](reference/quotes.md). Read it with `load_skill` before you answer. Quotes need ERPNext, so check that first and tell them plainly if it isn't there.
 
 ### Facebook or Instagram ads
 

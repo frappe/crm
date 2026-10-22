@@ -50,7 +50,8 @@ class NewField(BaseModel):
 @tool
 def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 	"""Everything the CRM setup checklist needs, in one read: currency, stages, email, forms, team,
-	lead assignment, data, and which sample records are left (None once cleared). Needs no approval."""
+	lead assignment, data, which sample records are left (None once cleared), and whether deals can
+	get quotes (`quotes`). Needs no approval."""
 	from crm.demo.api import get_demo_state
 	from crm.demo.users import DEMO_USER_EMAILS
 
@@ -96,6 +97,7 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 		"leads": frappe.db.count("CRM Lead"),
 		"deals": frappe.db.count("CRM Deal"),
 		"sample_data": _sample_data_left() if get_demo_state()["demo_data_created"] else None,
+		"quotes": _quote_setup(),
 		"automations": frappe.get_list(
 			"Automation Flow",
 			filters={"document_type": ["in", ["CRM Lead", "CRM Deal"]]},
@@ -103,6 +105,25 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 		)
 		if frappe.has_permission("Automation Flow")
 		else None,
+	}
+
+
+def _quote_setup() -> dict[str, Any]:
+	"""Quotes are ERPNext Quotations, made from a deal once ERPNext, on this site or another one, is
+	connected in the CRM's ERPNext settings."""
+	from crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings import (
+		_is_erpnext_installed,
+		can_create_quotations,
+	)
+
+	settings = frappe.db.get_singles_dict("ERPNext CRM Settings")
+	return {
+		"erpnext_on_this_site": _is_erpnext_installed(),
+		"connected": bool(frappe.utils.cint(settings.get("enabled"))),
+		"erpnext_site": settings.get("erpnext_site_url")
+		if frappe.utils.cint(settings.get("is_erpnext_in_different_site"))
+		else None,
+		"can_create": can_create_quotations(),
 	}
 
 
