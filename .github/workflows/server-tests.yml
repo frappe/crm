@@ -5,6 +5,8 @@ on:
         paths-ignore:
             - "**.css"
             - "**.js"
+            - "**.ts"
+            - "**.vue"
             - "**.md"
             - "**.html"
             - "**.csv"
@@ -17,8 +19,8 @@ env:
     CRM_BRANCH: ${{ github.base_ref || github.ref_name }}
 
 concurrency:
-    group: develop-crm-${{ github.event.number }}
-    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
     setup:
