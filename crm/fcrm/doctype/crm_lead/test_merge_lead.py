@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 import frappe
 from frappe.desk.form.assign_to import add as assign_add
@@ -649,6 +650,39 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(values(plain.name), (0, None))
 		self.assertEqual(values(target.name), (0, None))
 		self.assertEqual(frappe.db.get_value("CRM Lead", merged.name, "modified"), modified)
+
+	def test_merge_and_split_lock_both_leads_in_name_order_first(self):
+		source = self._create_lead(first_name="Source", email="lock-source@test.com")
+		target = self._create_lead(first_name="Target", email="lock-target@test.com")
+		self.assertLess(source.name, target.name)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		def lead_queries(call):
+			queries = []
+			real_sql = frappe.db.sql
+
+			def record(query, *args, **kwargs):
+				queries.append(f"{query} {args} {kwargs}")
+				return real_sql(query, *args, **kwargs)
+
+			with patch.object(frappe.db, "sql", side_effect=record):
+				result = call()
+			return result, [q for q in queries if "tabCRM Lead`" in q and "select" in q.lower()]
+
+		for call in (
+			lambda: merge_leads(target.name, source.name),
+			lambda: split_lead(frappe.db.get_value("CRM Merge Log", {"target_document_name": target.name})),
+		):
+			_result, reads = lead_queries(call)
+			locks = [q for q in reads if "for update" in q.lower()]
+			self.assertIn("for update", reads[0].lower())
+			self.assertIn(source.name, locks[0])
+			self.assertIn(target.name, locks[1])
+			for name in (source.name, target.name):
+				loads = [q for q in reads if q.lstrip().upper().startswith("SELECT *") and name in q]
+				# The load the merged_into/converted checks read must be a locking read
+				self.assertIn("for update", loads[0].lower())
 
 	def test_phone_match_on_merged_lead_resolves_to_target(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98222 22222", phone="+91 98333 33333")
