@@ -1091,11 +1091,11 @@ def _month(start, end, stages) -> dict[str, Any]:
 		"leads_turned_into_deals": _count("CRM Deal", {"lead": ["is", "set"], "creation": between}),
 		"deals_won": won_deals.deals,
 		"won_value": won_deals.value or 0,
-		"deals_lost": _count("CRM Deal", {"status": ["in", lost], "closed_date": between}),
+		"deals_lost": _count("CRM Deal", {"status": ["in", lost]}, _lost_between(start, end)),
 	}
 
 
-def _count(doctype: str, filters: dict[str, Any]) -> int:
+def _count(doctype: str, filters: dict[str, Any], *where) -> int:
 	"""How many records the user can see match, counted in SQL with get_list's filter rules."""
 	query = frappe.qb.get_query(
 		doctype,
@@ -1104,6 +1104,8 @@ def _count(doctype: str, filters: dict[str, Any]) -> int:
 		ignore_permissions=False,
 		db_query_compat=True,
 	)
+	for condition in where:
+		query = query.where(condition)
 	return query.run()[0][0]
 
 
@@ -1124,6 +1126,25 @@ def _deal_totals(filters: dict[str, Any], group_by: str | None = None) -> list:
 		db_query_compat=True,
 	)
 	return query.select(Count(deal.name).as_("deals"), Sum(value).as_("value")).run(as_dict=True)
+
+
+def _lost_between(start, end):
+	"""Lost deals by the day they moved to their Lost stage, as the status log records it, since
+	closed_date is set only for won deals; a deal with no log, such as an imported one, uses it."""
+	from frappe.query_builder.functions import Coalesce
+
+	deal, log = frappe.qb.DocType("CRM Deal"), frappe.qb.DocType("CRM Status Change Log")
+	# the log's open row, with no `to` yet, is the deal's current stage and when it got there
+	lost_rows = (
+		frappe.qb.from_(log)
+		.select(log.parent)
+		.where(log.parenttype == "CRM Deal")
+		.where(log.from_type == "Lost")
+		.where(Coalesce(log.to, "") == "")
+	)
+	entered = lost_rows.where(log.from_date >= start).where(log.from_date < frappe.utils.add_days(end, 1))
+	unlogged = deal.name.notin(lost_rows) & (deal.closed_date >= start) & (deal.closed_date <= end)
+	return deal.name.isin(entered) | unlogged
 
 
 def _can_read(doctype: str) -> bool:
