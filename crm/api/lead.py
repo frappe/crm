@@ -4,7 +4,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model import default_fields, no_value_fields, table_fields
-from frappe.model.dynamic_links import get_dynamic_link_map
+from frappe.model.dynamic_links import get_dynamic_links
 from frappe.model.rename_doc import get_link_fields
 
 from crm.fcrm.doctype.crm_lead.crm_lead import lock_lead
@@ -218,7 +218,7 @@ def split_lead(merge_log_name: str):
 
 	# Before the save, so validations that look at linked records (e.g. the WhatsApp
 	# recipient guard) no longer see the source's records on the target.
-	_restore_references(source, target, ref_data)
+	_restore_references(source, target, ref_data, _reference_fields("CRM Lead"))
 
 	target_doc.save(ignore_permissions=True)
 
@@ -361,11 +361,25 @@ def _snapshot_references(source_doc: frappe.model.document.Document) -> list:
 	return refs
 
 
+def _link_fields(doctype: str) -> list:
+	return [
+		field
+		for field in get_link_fields(doctype)
+		if not field.issingle and (field.parent, field.fieldname) != (doctype, "merged_into")
+	]
+
+
+def _reference_fields(doctype: str) -> set[tuple[str, str]]:
+	"""(doctype, fieldname) pairs a merge can re-point, so a split never writes any other field."""
+	fields = {(field.parent, field.fieldname) for field in _link_fields(doctype)}
+	fields |= {(df.parent, df.fieldname) for df in get_dynamic_links() if df.parent != "CRM Merge Log"}
+	fields.add(("File", "attached_to_name"))
+	return fields
+
+
 def _get_link_references(doctype: str, docname: str) -> list:
 	references = []
-	for field in get_link_fields(doctype):
-		if field.issingle or (field.parent, field.fieldname) == (doctype, "merged_into"):
-			continue
+	for field in _link_fields(doctype):
 		for name in frappe.get_all(field.parent, filters={field.fieldname: docname}, pluck="name"):
 			references.append(
 				{"doctype": field.parent, "docname": name, "fieldname": field.fieldname, "old_value": docname}
@@ -374,10 +388,15 @@ def _get_link_references(doctype: str, docname: str) -> list:
 
 
 def _get_dynamic_link_references(doctype: str, docname: str) -> list:
+	"""Rows whose Dynamic Link points at the document. Read from the field metadata, not
+	frappe's dynamic link map: that map is filtered by a cached list of the doctypes each
+	field already links to, which rows written without a normal insert never update."""
 	references = []
-	for df in get_dynamic_link_map().get(doctype, []):
+	for df in get_dynamic_links():
 		meta = frappe.get_meta(df.parent)
 		if meta.issingle or meta.is_virtual or df.parent == "CRM Merge Log":
+			continue
+		if not _can_link_to(meta.get_field(df.options), doctype) or not frappe.db.table_exists(df.parent):
 			continue
 		names = frappe.get_all(df.parent, filters={df.options: doctype, df.fieldname: docname}, pluck="name")
 		for name in names:
@@ -385,6 +404,17 @@ def _get_dynamic_link_references(doctype: str, docname: str) -> list:
 				{"doctype": df.parent, "docname": name, "fieldname": df.fieldname, "old_value": docname}
 			)
 	return references
+
+
+def _can_link_to(options_field, doctype: str) -> bool:
+	"""Whether the field naming a Dynamic Link's doctype can hold this doctype."""
+	if not options_field:
+		return False
+	if options_field.fieldtype == "Link":
+		return options_field.options == "DocType"
+	if options_field.fieldtype == "Select":
+		return doctype in (options_field.options or "").split("\n")
+	return options_field.fieldtype == "Data"
 
 
 def _get_file_references(doctype: str, docname: str) -> list:
@@ -402,9 +432,9 @@ def _update_references(refs: list, new_name: str):
 		frappe.db.set_value(ref["doctype"], ref["docname"], ref["fieldname"], new_name, update_modified=False)
 
 
-def _restore_references(source_name: str, target_name: str, ref_data: list):
+def _restore_references(source_name: str, target_name: str, ref_data: list, allowed: set):
 	for ref in ref_data:
-		if ref.get("old_value") != source_name:
+		if ref.get("old_value") != source_name or (ref.get("doctype"), ref.get("fieldname")) not in allowed:
 			continue
 		if frappe.db.get_value(ref["doctype"], ref["docname"], ref["fieldname"]) != target_name:
 			continue
