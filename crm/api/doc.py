@@ -436,8 +436,7 @@ def get_data(
 				kc["all_count"] = all_count
 				kc["count"] = len(column_data)
 
-				for d in column_data:
-					getCounts(d, doctype)
+				set_activity_counts(column_data, doctype)
 
 			if order:
 				column_data = sorted(
@@ -652,37 +651,37 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 	return _fields
 
 
-def getCounts(d, doctype):
-	d["_email_count"] = (
-		frappe.db.count(
-			"Communication",
-			filters={
-				"reference_doctype": doctype,
-				"reference_name": d.get("name"),
-				"communication_type": "Communication",
-			},
+def set_activity_counts(rows, doctype):
+	# one grouped query per activity type instead of one query per card
+	names = [d.get("name") for d in rows]
+	if not names:
+		return rows
+
+	def count_by(activity_doctype, link_field, filters=None):
+		result = frappe.get_all(
+			activity_doctype,
+			filters={"reference_doctype": doctype, link_field: ["in", names], **(filters or {})},
+			fields=[link_field, COUNT_NAME],
+			group_by=link_field,
 		)
-		or 0
-	)
-	d["_email_count"] = d["_email_count"] + frappe.db.count(
+		return {r.get(link_field): r.total_count for r in result}
+
+	email_counts = count_by(
 		"Communication",
-		filters={
-			"reference_doctype": doctype,
-			"reference_name": d.get("name"),
-			"communication_type": "Automated Message",
-		},
+		"reference_name",
+		{"communication_type": ["in", ["Communication", "Automated Message"]]},
 	)
-	d["_comment_count"] = frappe.db.count(
-		"Comment",
-		filters={"reference_doctype": doctype, "reference_name": d.get("name"), "comment_type": "Comment"},
-	)
-	d["_task_count"] = frappe.db.count(
-		"CRM Task", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
-	)
-	d["_note_count"] = frappe.db.count(
-		"FCRM Note", filters={"reference_doctype": doctype, "reference_docname": d.get("name")}
-	)
-	return d
+	comment_counts = count_by("Comment", "reference_name", {"comment_type": "Comment"})
+	task_counts = count_by("CRM Task", "reference_docname")
+	note_counts = count_by("FCRM Note", "reference_docname")
+
+	for d in rows:
+		name = d.get("name")
+		d["_email_count"] = email_counts.get(name, 0)
+		d["_comment_count"] = comment_counts.get(name, 0)
+		d["_task_count"] = task_counts.get(name, 0)
+		d["_note_count"] = note_counts.get(name, 0)
+	return rows
 
 
 @frappe.whitelist()
