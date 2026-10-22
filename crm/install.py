@@ -519,6 +519,7 @@ def add_default_quick_filters():
 		"CRM Organization": ["organization_name", "no_of_employees", "territory", "industry"],
 		"CRM Task": ["title", "priority", "assigned_to", "status", "due_date"],
 		"CRM Call Log": ["telephony_medium", "type", "status", "from", "to"],
+		"Data Import": ["name", "reference_doctype", "status"],
 	}
 
 	for quick_filter in quick_filters:

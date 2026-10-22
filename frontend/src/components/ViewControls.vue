@@ -23,6 +23,13 @@
         <div class="-ml-2 h-[70%] border-l" />
         <div class="flex shrink-0 gap-2">
           <Button
+            v-if="filterChip"
+            :label="filterChip.label"
+            iconRight="lucide-x"
+            :tooltip="__('Show all records')"
+            @click="filterChip.clear"
+          />
+          <Button
             :tooltip="__('Refresh')"
             icon="lucide-refresh-ccw"
             :loading="isLoading"
@@ -38,7 +45,7 @@
           <Filter
             v-model="list"
             :doctype="doctype"
-            :default_filters="filters"
+            :default_filters="defaultFilters"
             @update="updateFilter"
           />
           <SortBy
@@ -169,6 +176,13 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
+          v-if="filterChip"
+          :label="filterChip.label"
+          iconRight="lucide-x"
+          :tooltip="__('Show all records')"
+          @click="filterChip.clear"
+        />
+        <Button
           :tooltip="__('Refresh')"
           icon="lucide-refresh-ccw"
           :loading="isLoading"
@@ -183,7 +197,7 @@
         <Filter
           v-model="list"
           :doctype="doctype"
-          :default_filters="filters"
+          :default_filters="defaultFilters"
           @update="updateFilter"
         />
         <SortBy
@@ -222,6 +236,7 @@
                     }),
                   condition: () =>
                     !options.hideColumnsButton &&
+                    doctype !== 'Data Import' &&
                     route.params.viewType !== 'kanban',
                 },
                 {
@@ -378,11 +393,14 @@ import {
 } from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
+import { importListFilters, withoutImportQuery } from '@/utils/dataImport'
 import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
   doctype: { type: String, required: true },
   filters: { type: Object, default: () => ({}) },
+  // names the page's own `filters` in a chip that emits clearFilters
+  filtersLabel: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -392,6 +410,8 @@ const props = defineProps({
     }),
   },
 })
+
+const emit = defineEmits(['clearFilters'])
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
@@ -412,6 +432,24 @@ const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
 const router = useRouter()
+
+const defaultFilters = computed(() => ({
+  ...props.filters,
+  ...importListFilters(route.query),
+}))
+
+const filterChip = computed(() => {
+  if (props.filtersLabel) {
+    return { label: props.filtersLabel, clear: () => emit('clearFilters') }
+  }
+  if (route.query.import) {
+    return {
+      label: __('From import'),
+      clear: () => router.replace({ query: withoutImportQuery(route.query) }),
+    }
+  }
+  return null
+})
 
 const defaultParams = ref('')
 
@@ -546,7 +584,7 @@ function getParams() {
     doctype: props.doctype,
     filters: filters,
     order_by: order_by,
-    default_filters: props.filters,
+    default_filters: defaultFilters.value,
     view: {
       custom_view_name: view_name,
       view_type: view_type,
@@ -565,10 +603,19 @@ function getParams() {
 
 let listResource
 
+const pageFiltersKey = Object.keys(defaultFilters.value).length
+  ? [JSON.stringify(defaultFilters.value)]
+  : []
+
 listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
-  cache: [props.doctype, route.query.view, route.params.viewType],
+  cache: [
+    props.doctype,
+    route.query.view,
+    route.params.viewType,
+    ...pageFiltersKey,
+  ],
   auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
@@ -578,7 +625,7 @@ listResource = createResource({
       doctype: props.doctype,
       filters: params.filters,
       order_by: params.order_by,
-      default_filters: props.filters,
+      default_filters: defaultFilters.value,
       view: {
         custom_view_name: cv?.name || '',
         view_type: cv?.type || route.params.viewType || 'list',
@@ -665,8 +712,8 @@ async function exportRows() {
   let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
   const userId = getUser()?.name
   let filters = {
-    ...props.filters,
     ...list.value.params.filters,
+    ...defaultFilters.value,
   }
 
   // Only resolve @me placeholders when we know the current user; otherwise
