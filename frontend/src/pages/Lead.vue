@@ -180,7 +180,7 @@
                   v-if="canMerge"
                   :tooltip="__('Merge')"
                   icon="lucide-merge"
-                  @click="showSelectLeadModal = true"
+                  @click="openMerge"
                 />
 
                 <Button
@@ -356,6 +356,15 @@ const showFilesUploader = ref(false)
 const showSelectLeadModal = ref(false)
 const showMergeLeadModal = ref(false)
 const mergeSource = ref(null)
+
+function openMerge() {
+  // The lead reloads after the merge, which would drop unsaved edits.
+  if (document.isDirty) {
+    toast.warning(__('Save your changes before merging'))
+    return
+  }
+  showSelectLeadModal.value = true
+}
 
 function onSelectMergeLead(lead) {
   mergeSource.value = lead
@@ -779,9 +788,7 @@ useMergedLeadRedirect(() => document.doc, props.leadId)
 const moreActions = computed(() => [
   {
     label: __('Merge Lead'),
-    onClick: () => {
-      showSelectLeadModal.value = true
-    },
+    onClick: openMerge,
   },
 ])
 </script>
