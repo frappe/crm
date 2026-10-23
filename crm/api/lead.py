@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 
-from crm.api.merge import MERGE_CONFIG, merge_documents, split_documents
+from crm.api.merge import MERGE_CONFIG, get_field_differences, merge_documents, split_documents
 from crm.fcrm.doctype.crm_lead.crm_lead import lock_lead
 from crm.integrations.api import find_by_phone
 from crm.utils import normalize_phone
@@ -94,8 +94,21 @@ def _escape_like(txt: str) -> str:
 	return txt.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
+@frappe.whitelist()
+def get_lead_merge_fields(source: str, target: str):
+	"""Fields where the two leads differ and the user may write the target, for the merge modal."""
+	source_doc = frappe.get_doc("CRM Lead", source)
+	target_doc = frappe.get_doc("CRM Lead", target)
+	source_doc.check_permission("read")
+	target_doc.check_permission("write")
+	return get_field_differences(target_doc, source_doc)
+
+
 @frappe.whitelist(methods=["POST"])
-def merge_leads(target: str, source: str):
+def merge_leads(target: str, source: str, take_from_source: list[str] | str | None = None):
+	"""take_from_source: fields where the source's value replaces the target's."""
+	if isinstance(take_from_source, str):
+		take_from_source = frappe.parse_json(take_from_source)
 	if target == source:
 		frappe.throw(_("Cannot merge a lead into itself"))
 	if not frappe.has_permission("CRM Lead", "write", target):
@@ -114,7 +127,7 @@ def merge_leads(target: str, source: str):
 		if doc.converted:
 			frappe.throw(_("Lead {0} is converted to a deal and cannot be merged").format(doc.name))
 
-	merge_log = merge_documents(target_doc, source_doc)
+	merge_log = merge_documents(target_doc, source_doc, take_from_source)
 	source_doc.db_set({"merged_into": target, "is_duplicate": 1})
 
 	message = _("{0} merged into {1}").format(source_doc.lead_name or source, target_doc.lead_name or target)

@@ -6,7 +6,8 @@ from frappe.model import default_fields, no_value_fields, table_fields
 from frappe.model.document import Document
 from frappe.model.dynamic_links import get_dynamic_links
 from frappe.model.rename_doc import get_link_fields
-from frappe.utils import flt
+from frappe.utils import cstr, flt, strip_html
+from frappe.utils.formatters import format_value
 
 MERGE_CONFIG = {
 	"CRM Lead": {
@@ -47,10 +48,19 @@ MERGE_CONFIG = {
 }
 
 
-def merge_documents(target_doc: Document, source_doc: Document) -> Document:
+def merge_documents(
+	target_doc: Document, source_doc: Document, take_from_source: list[str] | None = None
+) -> Document:
 	"""Fill the target's empty fields from the source and move the source's child rows and every
-	reference to it onto the target. Returns the CRM Merge Log that split_documents undoes.
+	reference to it onto the target. Fields in take_from_source get the source's value even when
+	the target has one. Returns the CRM Merge Log that split_documents undoes.
 	Callers check permissions and lock both documents first."""
+	writable = _writable_fields(target_doc)
+	if invalid := set(take_from_source or []) - set(writable):
+		frappe.throw(
+			frappe._("Cannot take these fields from the merged lead: {0}").format(", ".join(sorted(invalid)))
+		)
+
 	merge_log = frappe.get_doc(
 		{
 			"doctype": "CRM Merge Log",
@@ -64,6 +74,9 @@ def merge_documents(target_doc: Document, source_doc: Document) -> Document:
 	refs = _snapshot_references(source_doc)
 	merge_log.reference_snapshot = json.dumps(refs)
 
+	# After the snapshot, so a split restores the target's own value for these too
+	for field in take_from_source or []:
+		target_doc.set(field, source_doc.get(field))
 	_auto_merge_fields(target_doc, source_doc)
 	_move_child_tables(source_doc, target_doc)
 	_repoint(refs, target_doc.doctype, source_doc.name, target_doc.name)
@@ -302,11 +315,52 @@ def _move_child_tables_back(source_doc: Document, target_doc: Document, child_da
 			)
 
 
-def _auto_merge_fields(target_doc: Document, source_doc: Document):
+def _writable_fields(target_doc: Document) -> list[str]:
+	"""Mergeable fields the session user may write on the target."""
+	fields = []
 	for field in _mergeable_fields(target_doc.doctype):
 		df = target_doc.meta.get_field(field)
 		if df.permlevel and not target_doc.has_permlevel_access_to(field, df, "write"):
 			continue
+		fields.append(field)
+	return fields
+
+
+def get_field_differences(target_doc: Document, source_doc: Document) -> list[dict]:
+	"""Fields a merge would decide between, with values formatted as plain text for display.
+	A field set on only one side is filled automatically; one set on both is the user's pick."""
+	differences = []
+	for field in _writable_fields(target_doc):
+		target_val, source_val = target_doc.get(field), source_doc.get(field)
+		if (not target_val and not source_val) or target_val == source_val:
+			continue
+		df = target_doc.meta.get_field(field)
+		differences.append(
+			{
+				"fieldname": field,
+				"label": frappe._(df.label) if df.label else field,
+				"fieldtype": df.fieldtype,
+				"options": df.options,
+				"source_value": source_val,
+				"target_value": target_val,
+				"source_display": _display_value(source_val, df, source_doc),
+				"target_display": _display_value(target_val, df, target_doc),
+			}
+		)
+	return differences
+
+
+def _display_value(value, df, doc) -> str:
+	if not value:
+		return ""
+	if df.fieldtype == "Check":
+		return frappe._("Yes")
+	# format_value returns markup for text editor / long text fields
+	return strip_html(cstr(format_value(value, df, doc))).strip()
+
+
+def _auto_merge_fields(target_doc: Document, source_doc: Document):
+	for field in _writable_fields(target_doc):
 		source_val = source_doc.get(field)
 		if source_val and not target_doc.get(field):
 			target_doc.set(field, source_val)
