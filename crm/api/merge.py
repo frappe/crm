@@ -66,7 +66,7 @@ def merge_documents(target_doc: Document, source_doc: Document) -> Document:
 
 	_auto_merge_fields(target_doc, source_doc)
 	_move_child_tables(source_doc, target_doc)
-	_repoint(refs, source_doc.name, target_doc.name)
+	_repoint(refs, target_doc.doctype, source_doc.name, target_doc.name)
 	target_doc.save(ignore_permissions=True)
 	_sync_assignments(target_doc.doctype, source_doc.name, target_doc.name)
 	_sync_product_totals(target_doc.doctype, source_doc.name, target_doc.name)
@@ -88,7 +88,7 @@ def split_documents(merge_log: Document, target_doc: Document, source_doc: Docum
 		for ref in json.loads(merge_log.reference_snapshot or "[]")
 		if ref.get("old_value") == source_doc.name and (ref.get("doctype"), ref.get("fieldname")) in allowed
 	]
-	_repoint(refs, target_doc.name, source_doc.name)
+	_repoint(refs, target_doc.doctype, target_doc.name, source_doc.name)
 
 	target_doc.save(ignore_permissions=True)
 	_move_child_tables_back(source_doc, target_doc, json.loads(merge_log.child_table_snapshot or "{}"))
@@ -145,11 +145,14 @@ def _link_fields(doctype: str) -> list:
 	]
 
 
-def _reference_fields(doctype: str) -> set[tuple[str, str]]:
-	"""(doctype, fieldname) pairs a merge can re-point, so a split never writes any other field."""
-	fields = {(field.parent, field.fieldname) for field in _link_fields(doctype)}
-	fields |= {(df.parent, df.fieldname) for df in get_dynamic_links() if df.parent != "CRM Merge Log"}
-	fields.add(("File", "attached_to_name"))
+def _reference_fields(doctype: str) -> dict[tuple[str, str], str | None]:
+	"""(doctype, fieldname) pairs a merge can re-point, so a split never writes any other field,
+	each mapped to the field naming its doctype for a dynamic link (None for a plain Link)."""
+	fields = {(field.parent, field.fieldname): None for field in _link_fields(doctype)}
+	fields |= {
+		(df.parent, df.fieldname): df.options for df in get_dynamic_links() if df.parent != "CRM Merge Log"
+	}
+	fields[("File", "attached_to_name")] = "attached_to_doctype"
 	return fields
 
 
@@ -203,21 +206,20 @@ def _get_file_references(doctype: str, docname: str) -> list:
 	]
 
 
-def _repoint(refs: list, from_name: str, to_name: str):
-	"""One UPDATE per (doctype, fieldname). Only rows that still hold from_name change, so a
-	split leaves alone a row that was pointed elsewhere after the merge."""
+def _repoint(refs: list, doctype: str, from_name: str, to_name: str):
+	"""One UPDATE per (doctype, fieldname). Only rows that still point at doctype's from_name
+	change, so a split leaves alone a row that was pointed elsewhere after the merge, including
+	a dynamic link moved to another doctype's record that happens to share the name."""
+	type_fields = _reference_fields(doctype)
 	groups = defaultdict(list)
 	for ref in refs:
 		if ref.get("docname"):
 			groups[(ref["doctype"], ref["fieldname"])].append(ref["docname"])
-	for (doctype, fieldname), names in groups.items():
-		frappe.db.set_value(
-			doctype,
-			{"name": ("in", names), fieldname: from_name},
-			fieldname,
-			to_name,
-			update_modified=False,
-		)
+	for (ref_doctype, fieldname), names in groups.items():
+		filters = {"name": ("in", names), fieldname: from_name}
+		if type_field := type_fields.get((ref_doctype, fieldname)):
+			filters[type_field] = doctype
+		frappe.db.set_value(ref_doctype, filters, fieldname, to_name, update_modified=False)
 
 
 def _sync_assignments(doctype: str, *names: str):

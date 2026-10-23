@@ -1107,6 +1107,44 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertIn(open_lead.name, values)
 		self.assertNotIn(converted.name, values)
 
+	def test_split_leaves_dynamic_links_moved_to_another_doctype(self):
+		target = self._create_lead(first_name="Target", email="relink-target@test.com")
+		source = self._create_lead(first_name="Source", email="relink-source@test.com")
+		note = frappe.get_doc(
+			{
+				"doctype": "FCRM Note",
+				"title": "Moved later",
+				"reference_doctype": "CRM Lead",
+				"reference_docname": source.name,
+			}
+		).insert(ignore_permissions=True)
+		file = frappe.get_doc(
+			{
+				"doctype": "File",
+				"file_url": "https://example.com/relinked.pdf",
+				"attached_to_doctype": "CRM Lead",
+				"attached_to_name": source.name,
+			}
+		).insert(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name)
+		# Re-linked to another doctype's record that shares the target lead's name
+		frappe.db.set_value("FCRM Note", note.name, "reference_doctype", "CRM Organization")
+		frappe.db.set_value("File", file.name, "attached_to_doctype", "CRM Organization")
+
+		split_lead(result["merge_log"])
+
+		self.assertEqual(
+			frappe.db.get_value("FCRM Note", note.name, ["reference_doctype", "reference_docname"]),
+			("CRM Organization", target.name),
+		)
+		self.assertEqual(
+			frappe.db.get_value("File", file.name, ["attached_to_doctype", "attached_to_name"]),
+			("CRM Organization", target.name),
+		)
+
 	def test_split_keeps_activity_added_to_the_target_after_the_merge(self):
 		target = self._create_lead(first_name="Target", email="activity-target@test.com")
 		source = self._create_lead(first_name="Source", email="activity-source@test.com")
