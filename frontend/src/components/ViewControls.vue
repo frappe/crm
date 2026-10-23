@@ -644,12 +644,15 @@ const pageFiltersKey = Object.keys(defaultFilters.value).length
 listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
-  cache: [
-    props.doctype,
-    route.query.view,
-    route.params.viewType,
-    ...pageFiltersKey,
-  ],
+  cache:
+    props.options.cache === false
+      ? undefined
+      : [
+          props.doctype,
+          route.query.view,
+          route.params.viewType,
+          ...pageFiltersKey,
+        ],
   auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
@@ -729,6 +732,30 @@ onBeforeUnmount(() => {
 })
 
 const isLoading = computed(() => list.value?.loading)
+
+// A page scope is independent of unsaved view filters/sorting. Wait for an
+// in-flight request before fetching the latest scope so older results cannot win.
+let pendingPageFilters = false
+function reloadPageFilters() {
+  if (isLoading.value) return
+  pendingPageFilters = false
+  listResource.params = {
+    ...getListParams(),
+    default_filters: defaultFilters.value,
+  }
+  listResource.reload()
+}
+watch(
+  defaultFilters,
+  () => {
+    pendingPageFilters = true
+    reloadPageFilters()
+  },
+  { deep: true },
+)
+watch(isLoading, (loading) => {
+  if (!loading && pendingPageFilters) reloadPageFilters()
+})
 
 function getListParams() {
   if (!listResource.params) listResource.params = getParams()
