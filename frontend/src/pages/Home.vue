@@ -3,6 +3,12 @@
     <LayoutHeader>
       <template #left-header>
         <ViewBreadcrumbs routeName="Home" />
+        <Badge
+          v-if="target !== 'mine'"
+          :label="defaultLabels[target]"
+          theme="orange"
+          variant="subtle"
+        />
       </template>
       <template #right-header>
         <template v-if="!editing">
@@ -11,6 +17,12 @@
             iconLeft="lucide-pen-line"
             @click="edit()"
           />
+          <Dropdown v-if="isAdmin()" :options="defaultOptions">
+            <Button
+              icon="lucide-more-horizontal"
+              :tooltip="__('Role defaults')"
+            />
+          </Dropdown>
         </template>
         <template v-else>
           <Dropdown :options="catalogOptions">
@@ -21,7 +33,7 @@
             />
           </Dropdown>
           <Button
-            :label="__('Reset to default')"
+            :label="resetLabel"
             iconLeft="lucide-undo-2"
             @click="reset()"
           />
@@ -37,7 +49,7 @@
     </LayoutHeader>
 
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <HomeHeader />
+      <HomeHeader v-if="target === 'mine'" />
       <DashboardGrid
         v-if="visibleItems.length"
         v-model="visibleItems"
@@ -80,12 +92,15 @@ import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import { getWidget } from '@/components/Home/widgets'
 import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
-import { Dropdown, usePageMeta } from 'frappe-ui'
+import { usersStore } from '@/stores/users'
+import { Badge, Dropdown, usePageMeta } from 'frappe-ui'
 import { computed } from 'vue'
 
 const { brand } = getSettings()
+const { isAdmin } = usersStore()
 
 const {
+  target,
   loading,
   editing,
   dirty,
@@ -102,11 +117,33 @@ const {
 
 load()
 
+const defaultLabels = {
+  agent: __('Agent default'),
+  manager: __('Manager default'),
+}
+
+const defaultOptions = [
+  {
+    label: __('Edit agent default'),
+    icon: 'lucide-user',
+    onClick: () => edit('agent'),
+  },
+  {
+    label: __('Edit manager default'),
+    icon: 'lucide-users',
+    onClick: () => edit('manager'),
+  },
+]
+
 const catalogOptions = computed(() =>
   availableWidgets.value.map((widget) => ({
     label: __(widget.label),
     onClick: () => addWidget(widget),
   })),
+)
+
+const resetLabel = computed(() =>
+  target.value === 'mine' ? __('Reset to default') : __('Reset to built-in'),
 )
 
 usePageMeta(() => ({ title: __('Home'), icon: brand.favicon }))
