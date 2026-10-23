@@ -42,3 +42,4 @@ crm.patches.v1_0.add_data_import_quick_filters
 crm.patches.v1_0.set_setup_completed_for_existing_sites
 crm.patches.v1_0.clear_mcp_agent_instructions
 crm.patches.v1_0.add_availability_statuses
+crm.patches.v1_0.set_is_duplicate_for_merged_leads
