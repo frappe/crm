@@ -97,8 +97,6 @@ const props = defineProps({
    * Only supported alongside object (or empty) `filters`.
    */
   grouping: { type: Object, default: null },
-  searchUrl: { type: String, default: '' },
-  searchArgs: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
@@ -173,14 +171,8 @@ function toOptions(data) {
 }
 
 const options = createResource({
-  url: props.searchUrl || 'frappe.desk.search.search_link',
-  cache: [
-    props.searchUrl || props.doctype,
-    text.value,
-    props.hideMe,
-    props.filters,
-    props.searchArgs,
-  ],
+  url: 'frappe.desk.search.search_link',
+  cache: [props.doctype, text.value, props.hideMe, props.filters],
   // GET so the browser can reuse a search for the 60s the endpoint allows
   method: 'GET',
   params: searchParams(text.value, props.filters),
@@ -289,7 +281,6 @@ function reload(val, force = false) {
 // A GET request sends every param as text, so filters go as JSON; without
 // this an object filter would arrive as "[object Object]".
 function searchParams(txt, filters) {
-  if (props.searchUrl) return { txt, ...props.searchArgs }
   const params = { txt, doctype: props.doctype }
   if (filters) {
     params.filters =
