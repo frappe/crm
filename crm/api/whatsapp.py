@@ -249,7 +249,7 @@ def count_conversation(doctype: str, docname: str, phone_number: str) -> int:
 	"""Messages the WhatsApp tab of this record shows for the given number: a Deal also
 	shows the messages of the Lead it was converted from."""
 	target = normalize_phone(phone_number)
-	if not target:
+	if not target or not frappe.db.exists("DocType", "WA Message"):
 		return 0
 
 	references = [(doctype, docname)]
