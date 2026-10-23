@@ -1,8 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, START_LOCATION } from 'vue-router'
 import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+import { getLandingPage, landingRoute, viewRoute } from '@/utils/landingPage'
 
 let setupChecked = false
 export const SETUP_DONE_KEY = 'crm_setup_completed'
@@ -163,19 +164,16 @@ async function mobileHomeRoute() {
   await views.promise
 
   const defaultView = getDefaultView()
-  if (!defaultView) return { name: 'Leads' }
+  return defaultView ? viewRoute(defaultView) : { name: 'Leads' }
+}
 
-  let { route_name, type, name, is_standard } = defaultView
-  route_name = route_name || 'Leads'
+async function landingPageRoute() {
+  const page = getLandingPage()
+  if (page === 'Home') return null
 
-  if (name && !is_standard) {
-    return {
-      name: route_name,
-      params: { viewType: type },
-      query: { view: name },
-    }
-  }
-  return { name: route_name, params: { viewType: type } }
+  const { views } = viewsStore()
+  await views.promise
+  return landingRoute(page, views.data, (name) => router.hasRoute(name))
 }
 
 let router = createRouter({
@@ -212,6 +210,9 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'Home' })
   } else if (to.name === 'Home' && isLoggedIn && isMobileView()) {
     next(await mobileHomeRoute())
+  } else if (to.name === 'Home' && isLoggedIn && from === START_LOCATION) {
+    const landing = await landingPageRoute()
+    landing ? next(landing) : next()
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {

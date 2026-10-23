@@ -113,6 +113,17 @@
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
+              {{ __('Landing page') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{ __('Choose the page CRM opens to.') }}
+            </span>
+          </div>
+          <LandingPageSelect />
+        </div>
+        <div class="flex items-center justify-between mt-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Emails & Signature') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -156,6 +167,7 @@ import EditIcon from '@/components/Icons/EditIcon.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import AvailabilitySelect from './AvailabilitySelect.vue'
+import LandingPageSelect from './LandingPageSelect.vue'
 import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { validateIsImageFile } from '@/utils'
