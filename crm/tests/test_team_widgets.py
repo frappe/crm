@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import add_to_date, now_datetime
+from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_widget_data
 from crm.tests.test_home import AGENT, MANAGER, make_user
@@ -59,6 +59,26 @@ class TestTeamRepliesWaiting(TeamWidgetTestCase):
 		lead = self.lead(awaiting_reply_since=now_datetime())
 		frappe.db.set_value("CRM Lead", lead, "lead_owner", None)
 		self.assertEqual(self.team("team_replies_waiting")["rows"][0]["owner"], AGENT)
+
+
+class TestTeamOverdueFollowUps(TeamWidgetTestCase):
+	def test_team_follow_ups_overdue_in_the_last_30_days_with_owner(self):
+		mine = self.follow_up(add_days(now_datetime(), -2), assigned_to=MANAGER)
+		reports = self.follow_up(add_days(nowdate(), -30), all_day=1)
+		self.follow_up(add_days(nowdate(), -31), all_day=1)
+		self.follow_up(nowdate(), all_day=1)
+		self.follow_up(add_days(now_datetime(), -1), assigned_to=OUTSIDER)
+		self.follow_up(add_days(now_datetime(), -1), status="Done")
+
+		rows = self.team("team_overdue_follow_ups")["rows"]
+		self.assertEqual(
+			[(row["name"], row["assigned_to"]) for row in rows], [(reports, AGENT), (mine, MANAGER)]
+		)
+
+	def test_manager_outside_the_hierarchy_sees_every_sales_user(self):
+		before = self.team("team_overdue_follow_ups", BOSS)["total"]
+		self.follow_up(add_days(now_datetime(), -1), assigned_to=OUTSIDER)
+		self.assertEqual(self.team("team_overdue_follow_ups", BOSS)["total"], before + 1)
 
 
 def hierarchy_node(user, **kwargs):

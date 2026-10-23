@@ -64,6 +64,13 @@ class TaskDue:
 		all_day = (task.all_day == 1) & (task.due_date < datetime.combine(self.today, time.min))
 		return task.status.notin(CLOSED_STATUSES) & (timed | all_day)
 
+	def overdue_within_condition(self, task, days: int):
+		"""Query condition for open tasks overdue and due within the last `days` user days."""
+		start = self.today - timedelta(days=days)
+		timed = (task.all_day == 0) & (task.due_date >= self._day_start(start))
+		all_day = (task.all_day == 1) & (task.due_date >= datetime.combine(start, time.min))
+		return self.overdue_condition(task) & (timed | all_day)
+
 	def due_by_today_condition(self, task):
 		"""Query condition for open tasks that are overdue or due today."""
 		tomorrow = self.today + timedelta(days=1)

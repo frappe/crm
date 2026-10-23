@@ -67,6 +67,7 @@ export const widgets = [
     label: 'Team overdue follow-ups',
     size: { w: 10, h: 8 },
     managerOnly: true,
+    component: lazy('TeamOverdueFollowUps'),
   },
   {
     key: 'unassigned',

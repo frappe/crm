@@ -5,7 +5,10 @@
 
 import json
 
-from crm.fcrm.doctype.crm_dashboard.home_widgets import RECORD_TYPES, RepliesWaiting
+from crm.fcrm.doctype.crm_dashboard.home_widgets import RECORD_TYPES, RepliesWaiting, TaskWidget
+
+# older overdue tasks are mostly abandoned and would bury the recent misses
+OVERDUE_DAYS = 30
 
 
 class TeamRepliesWaiting(RepliesWaiting):
@@ -18,8 +21,16 @@ class TeamRepliesWaiting(RepliesWaiting):
 		return super().decorate(rows)
 
 
+class TeamOverdueFollowUps(TaskWidget):
+	FIELDS = (*TaskWidget.FIELDS, "assigned_to")
+
+	def condition(self):
+		return self.linked() & self.due.overdue_within_condition(self.task, OVERDUE_DAYS)
+
+
 TEAM_WIDGET_DATA = {
 	"team_replies_waiting": TeamRepliesWaiting,
+	"team_overdue_follow_ups": TeamOverdueFollowUps,
 }
 
 
