@@ -36,7 +36,7 @@
           </Button>
         </template>
       </Dropdown>
-      <Dropdown :options="moreActions">
+      <Dropdown v-if="canMerge" :options="moreActions">
         <Button icon="lucide-more-horizontal" variant="ghost" />
       </Dropdown>
       <Tooltip
@@ -177,6 +177,13 @@
                 />
 
                 <Button
+                  v-if="canMerge"
+                  :tooltip="__('Merge')"
+                  icon="lucide-merge"
+                  @click="showSelectLeadModal = true"
+                />
+
+                <Button
                   v-if="canDelete"
                   :tooltip="__('Delete')"
                   variant="subtle"
@@ -245,10 +252,10 @@
     doctype="CRM Lead"
     :document="document"
   />
-  <MergeLeadModal
-    v-if="showMergeModal"
-    v-model="showMergeModal"
-    :leadId="leadId"
+  <SelectLeadModal
+    v-model="showSelectLeadModal"
+    :lead="leadId"
+    @select="onSelectMergeLead"
   />
 </template>
 <script setup>
@@ -279,7 +286,7 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
-import MergeLeadModal from '@/components/Modals/MergeLeadModal.vue'
+import SelectLeadModal from '@/components/Modals/SelectLeadModal.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -335,7 +342,13 @@ const errorMessage = ref('')
 const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
-const showMergeModal = ref(false)
+const showSelectLeadModal = ref(false)
+
+// TODO: open the merge modal with the picked lead
+function onSelectMergeLead(lead) {
+  console.log('Selected lead to merge', lead)
+  showSelectLeadModal.value = false
+}
 
 const {
   triggerOnChange,
@@ -348,6 +361,12 @@ const {
 } = useDocument('CRM Lead', props.leadId)
 
 const canDelete = computed(() => permissions.data?.permissions?.delete || false)
+const canMerge = computed(
+  () =>
+    Boolean(permissions.data?.permissions?.write) &&
+    !document.doc?.merged_into &&
+    !document.doc?.converted,
+)
 
 const doc = computed(() => document.doc || {})
 const isLeadConversionDisabled = computed(
@@ -742,7 +761,7 @@ const moreActions = computed(() => [
   {
     label: __('Merge Lead'),
     onClick: () => {
-      showMergeModal.value = true
+      showSelectLeadModal.value = true
     },
   },
 ])
