@@ -188,25 +188,42 @@ export function formatCurrency(value, format, currency = 'USD', precision = 2) {
   // }
 
   format = getNumberFormat(format)
+  let formatted = formatNumber(value, format, precision)
 
-  if (currency) {
-    let symbol = getCurrencySymbol(currency)
+  if (currency && !cint(window.sysdefaults.hide_currency_symbol)) {
+    // Mirrors frappe.utils.fmt_money: the Currency record wins, the currency
+    // code is the fallback, and the symbol moves to the right when the record
+    // says so. The lookup stays synchronous on purpose, because an async fetch
+    // cannot land before the first render and would be a no-op.
+    let symbol = getCurrencySymbol(currency) || currency
 
     if (symbol) {
-      return __(symbol) + ' ' + formatNumber(value, format, precision)
+      if (getCurrencySymbolOnRight(currency)) {
+        return formatted + ' ' + __(symbol)
+      }
+      return __(symbol) + ' ' + formatted
     }
   }
 
-  return formatNumber(value, format, precision)
+  return formatted
 }
 
 function getNumberFormat(format = null) {
   return format || window.sysdefaults.number_format || '#,###.##'
 }
 
+function getCurrencyRecord(currencyCode) {
+  return window.currency_info?.[currencyCode]
+}
+
 function getCurrencySymbol(currencyCode) {
+  const configured = getCurrencyRecord(currencyCode)?.symbol
+  if (configured) return configured
+
   try {
-    const formatter = new Intl.NumberFormat('en-US', {
+    // No Currency record (or no symbol on it): ask Intl for a best-effort
+    // symbol in the user's own locale, not a hardcoded en-US.
+    const formatter = new Intl.NumberFormat(undefined, {
       style: 'currency',
       currency: currencyCode,
       minimumFractionDigits: 0,
@@ -220,6 +237,10 @@ function getCurrencySymbol(currencyCode) {
     console.error(`Invalid currency code: ${currencyCode}`)
     return null
   }
+}
+
+function getCurrencySymbolOnRight(currencyCode) {
+  return Boolean(cint(getCurrencyRecord(currencyCode)?.symbol_on_right))
 }
 
 function getNumberFormatInfo(format) {
