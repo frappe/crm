@@ -600,18 +600,16 @@ def existing_deal(lead: str) -> str | None:
 	return frappe.db.get_value("CRM Deal", {"lead": lead}, "name")
 
 
-MAX_MERGE_DEPTH = 10
-
-
 def resolve_merged_lead(name: str) -> str:
 	"""The live lead a merged lead now lives in: follows merged_into to the last lead that
-	still exists. Stops after MAX_MERGE_DEPTH hops so a corrupt cycle can't loop forever."""
-	for _depth in range(MAX_MERGE_DEPTH):
+	still exists. Merges can chain to any length; a lead seen twice means a corrupt cycle."""
+	visited = {name}
+	while True:
 		merged_into = frappe.db.get_value("CRM Lead", name, "merged_into")
-		if not merged_into or not frappe.db.exists("CRM Lead", merged_into):
-			break
+		if not merged_into or merged_into in visited or not frappe.db.exists("CRM Lead", merged_into):
+			return name
+		visited.add(merged_into)
 		name = merged_into
-	return name
 
 
 def settle_converted(lead, deal: str, if_converted: str) -> str:

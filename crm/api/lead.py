@@ -132,10 +132,6 @@ def merge_leads(target: str, source: str):
 @frappe.whitelist(methods=["POST"])
 def split_lead(merge_log_name: str):
 	merge_log = frappe.get_doc("CRM Merge Log", merge_log_name)
-
-	if merge_log.split_at:
-		frappe.throw(_("This merge has already been split"))
-
 	target = merge_log.target_document_name
 	source = merge_log.source_document_name
 
@@ -146,6 +142,11 @@ def split_lead(merge_log_name: str):
 
 	target_doc, source_doc = lock_lead(target, source)
 
+	# Read under the leads' lock: a split and re-merge of the same pair that ran while this
+	# request waited would otherwise pass the checks below and get this log's old snapshots.
+	merge_log = frappe.get_doc("CRM Merge Log", merge_log_name, for_update=True)
+	if merge_log.split_at:
+		frappe.throw(_("This merge has already been split"))
 	if source_doc.merged_into != target:
 		frappe.throw(_("Source lead {0} is not merged into {1}").format(source, target))
 	if target_doc.merged_into:
