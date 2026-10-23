@@ -1,9 +1,12 @@
+from unittest.mock import patch
+
 import frappe
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_widget_data
-from crm.tests.test_home import AGENT, MANAGER, make_user
-from crm.tests.test_home_widgets import HomeWidgetTestCase, names
+from crm.fcrm.doctype.crm_dashboard import team_widgets
+from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_user
+from crm.tests.test_home_widgets import HomeWidgetTestCase, names, status
 
 OUTSIDER = "home.outsider@example.com"
 BOSS = "home.boss@example.com"
@@ -79,6 +82,39 @@ class TestTeamOverdueFollowUps(TeamWidgetTestCase):
 		before = self.team("team_overdue_follow_ups", BOSS)["total"]
 		self.follow_up(add_days(now_datetime(), -1), assigned_to=OUTSIDER)
 		self.assertEqual(self.team("team_overdue_follow_ups", BOSS)["total"], before + 1)
+
+
+class TestUnassigned(TeamWidgetTestCase):
+	def unassigned(self, **kwargs):
+		return make_lead(**{"status": self.open_lead, **kwargs})
+
+	def test_new_records_without_an_assignee_newest_first(self):
+		older = self.unassigned()
+		frappe.db.set_value("CRM Lead", older, "creation", add_days(now_datetime(), -1))
+		newer = self.unassigned()
+		deal = make_deal(status=status("CRM Deal Status", "Open"))
+		self.lead()
+		self.unassigned(status=self.ongoing_lead)
+		self.unassigned(converted=1)
+
+		rows = names(self.team("unassigned", BOSS))
+		self.assertEqual(rows[: rows.index(older) + 1], [deal, newer, older])
+		self.assertNotIn(deal, names(self.team("unassigned", BOSS, "Lead")))
+
+	def test_count_stops_at_the_cap(self):
+		def team_lead_without_assignee():
+			frappe.db.set_value("CRM Lead", self.lead(), "_assign", None)
+
+		with patch.object(team_widgets, "UNASSIGNED_CAP", 2):
+			team_lead_without_assignee()
+			team_lead_without_assignee()
+			self.assertEqual(self.summary(), (2, False))
+			team_lead_without_assignee()
+			self.assertEqual(self.summary(), (2, True))
+
+	def summary(self):
+		data = self.team("unassigned")
+		return data["total"], data["more"]
 
 
 def hierarchy_node(user, **kwargs):

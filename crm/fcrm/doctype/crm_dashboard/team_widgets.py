@@ -5,10 +5,20 @@
 
 import json
 
-from crm.fcrm.doctype.crm_dashboard.home_widgets import RECORD_TYPES, RepliesWaiting, TaskWidget
+import frappe
+from frappe.query_builder.functions import Coalesce, Count
+
+from crm.fcrm.doctype.crm_dashboard.home_widgets import (
+	RECORD_TYPES,
+	NewLeads,
+	RepliesWaiting,
+	TaskWidget,
+)
 
 # older overdue tasks are mostly abandoned and would bury the recent misses
 OVERDUE_DAYS = 30
+# unassigned new leads can run into the hundreds of thousands, so they are counted up to here
+UNASSIGNED_CAP = 100
 
 
 class TeamRepliesWaiting(RepliesWaiting):
@@ -28,9 +38,27 @@ class TeamOverdueFollowUps(TaskWidget):
 		return self.linked() & self.due.overdue_within_condition(self.task, OVERDUE_DAYS)
 
 
+class Unassigned(NewLeads):
+	sort_field = "creation"
+	descending = True
+
+	def filtered(self, doctype: str, table):
+		return super().filtered(doctype, table).where(Coalesce(table._assign, "").isin(("", "[]")))
+
+	def summary(self) -> dict:
+		total = self.count()
+		return {"rows": self.rows(), "total": min(total, UNASSIGNED_CAP), "more": total > UNASSIGNED_CAP}
+
+	def _count(self, doctype: str) -> int:
+		table = frappe.qb.DocType(doctype)
+		query = self.query(doctype, table).select(table.name).limit(UNASSIGNED_CAP + 1)
+		return frappe.qb.from_(query).select(Count("*")).run()[0][0]
+
+
 TEAM_WIDGET_DATA = {
 	"team_replies_waiting": TeamRepliesWaiting,
 	"team_overdue_follow_ups": TeamOverdueFollowUps,
+	"unassigned": Unassigned,
 }
 
 

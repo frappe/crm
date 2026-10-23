@@ -7,7 +7,7 @@
         {{ title }}
       </span>
       <span v-if="total" class="text-base tabular-nums text-ink-gray-5">
-        {{ total }}
+        {{ more ? `${total}+` : total }}
       </span>
       <div v-if="config" class="ml-auto">
         <Dropdown :options="doctypeOptions" align="end">
@@ -61,7 +61,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
-  // a get_widget resource, or plain `{ data: { rows, total } }`
+  // a get_widget resource, or plain `{ data: { rows, total } }`; `more` marks a capped total
   resource: { type: Object, required: true },
   // leave unset for widgets without the Lead | Deal | Both setting
   config: { type: Object, default: null },
@@ -82,6 +82,7 @@ const doctypeLabels = {
 const doctype = computed(() => props.config?.doctype || 'Both')
 const rows = computed(() => props.resource.data?.rows || [])
 const total = computed(() => props.resource.data?.total || 0)
+const more = computed(() => props.resource.data?.more)
 const loading = computed(() => props.resource.loading && !props.resource.data)
 
 const doctypeOptions = computed(() =>

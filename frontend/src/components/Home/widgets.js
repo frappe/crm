@@ -74,6 +74,7 @@ export const widgets = [
     label: 'Unassigned',
     size: { w: 10, h: 8 },
     managerOnly: true,
+    component: lazy('Unassigned'),
   },
 ]
 
