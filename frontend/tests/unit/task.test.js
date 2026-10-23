@@ -5,6 +5,7 @@ import {
   fromAllDayDueDate,
   isTaskOverdue,
   nextFollowUp,
+  relativeTaskDue,
   toAllDayDueDate,
 } from '@/utils/task'
 
@@ -39,6 +40,20 @@ describe('task due dates', () => {
     expect(
       isTaskOverdue({ due_date: '2026-10-01 10:00:00', status: 'Done' }),
     ).toBe(false)
+  })
+
+  it('labels due dates relative to the local day', () => {
+    const allDay = (date) => relativeTaskDue({ due_date: date, all_day: 1 })
+    const timed = (date) => relativeTaskDue({ due_date: date })
+    expect(allDay('2026-10-22 00:00:00')).toBe('2d overdue')
+    expect(timed('2026-10-23 18:00:00')).toBe('1d overdue')
+    expect(timed('2026-10-23 18:59:00')).toBe('Overdue')
+    expect(allDay('2026-10-24 00:00:00')).toBe('Today')
+    expect(timed('2026-10-24 04:30:00')).toBe('10:00 am')
+    expect(allDay('2026-10-25 00:00:00')).toBe('Tomorrow')
+    expect(allDay('2026-10-29 00:00:00')).toBe('Thu')
+    expect(allDay('2026-11-05 00:00:00')).toBe('5 Nov')
+    expect(relativeTaskDue({ due_date: null })).toBe('')
   })
 
   it('shows all-day tasks without a time or timezone shift', () => {

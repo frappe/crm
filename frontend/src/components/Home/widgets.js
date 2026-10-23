@@ -1,18 +1,49 @@
+import { defineAsyncComponent } from 'vue'
+
+const lazy = (name) =>
+  defineAsyncComponent(() => import(`./Widgets/${name}.vue`))
+
 // Every Home widget by its stable key, matching WIDGETS in home_layout.py. A widget shows
 // on Home and in the catalog once it has a `component`, which gets `config` and emits
 // `update:config`. Sizes are in DashboardGrid units (20 columns, 42px rows).
 export const widgets = [
-  { key: 'replies_waiting', label: 'Replies waiting', size: { w: 10, h: 8 } },
-  { key: 'follow_ups_due', label: 'Follow-ups due', size: { w: 10, h: 8 } },
+  {
+    key: 'replies_waiting',
+    label: 'Replies waiting',
+    size: { w: 10, h: 8 },
+  },
+  {
+    key: 'follow_ups_due',
+    label: 'Follow-ups due',
+    size: { w: 10, h: 8 },
+    component: lazy('FollowUpsDue'),
+  },
   {
     key: 'upcoming_follow_ups',
     label: 'Upcoming follow-ups',
     size: { w: 10, h: 8 },
+    component: lazy('UpcomingFollowUps'),
   },
-  { key: 'assigned_to_me', label: 'Assigned to me', size: { w: 10, h: 8 } },
-  { key: 'recently_opened', label: 'Recently opened', size: { w: 10, h: 8 } },
-  { key: 'no_next_step', label: 'No next step', size: { w: 10, h: 8 } },
-  { key: 'my_tasks', label: 'My tasks', size: { w: 10, h: 8 } },
+  {
+    key: 'assigned_to_me',
+    label: 'Assigned to me',
+    size: { w: 10, h: 8 },
+  },
+  {
+    key: 'recently_opened',
+    label: 'Recently opened',
+    size: { w: 10, h: 8 },
+  },
+  {
+    key: 'no_next_step',
+    label: 'No next step',
+    size: { w: 10, h: 8 },
+  },
+  {
+    key: 'my_tasks',
+    label: 'My tasks',
+    size: { w: 10, h: 8 },
+  },
   {
     key: 'team_overview',
     label: 'Team overview',

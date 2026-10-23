@@ -34,11 +34,12 @@
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
+import { homeVersion, refreshHome } from '@/composables/homeWidget'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { greetingFor } from '@/utils/home'
 import { Dropdown, createResource } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const { user } = sessionStore()
 const { getUser } = usersStore()
@@ -52,6 +53,8 @@ const counts = createResource({
   auto: true,
   initialData: {},
 })
+
+watch(homeVersion, () => counts.reload())
 
 const greeting = computed(() => {
   const name = getUser().first_name || getUser().full_name
@@ -109,6 +112,7 @@ const newOptions = [
         doctype: 'CRM Task',
         title: 'Task',
         defaults: { status: 'Todo', priority: 'Low', assigned_to: user },
+        callbacks: { afterInsert: refreshHome },
       }),
   },
 ]
