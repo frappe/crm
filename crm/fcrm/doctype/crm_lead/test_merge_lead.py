@@ -518,6 +518,31 @@ class TestMergeLead(IntegrationTestCase):
 		self.assertEqual(len(lead_a.products), 0)
 		self.assertEqual([p.product_name for p in lead_b.products], ["Test Product"])
 
+	def test_merge_and_split_recompute_product_totals(self):
+		target = self._create_lead(first_name="Target", email="totals-target@test.com")
+		source = self._create_lead(first_name="Source", email="totals-source@test.com")
+		for lead, amount, net_amount in ((target, 100, 90), (source, 50, 50)):
+			lead.append(
+				"products",
+				{"product_name": "Test Product", "rate": amount, "amount": amount, "net_amount": net_amount},
+			)
+			lead.total, lead.net_total = amount, net_amount
+			lead.flags.ignore_links = True
+			lead.save(ignore_permissions=True)
+
+		from crm.api.lead import merge_leads, split_lead
+
+		def totals(lead):
+			return tuple(frappe.db.get_value("CRM Lead", lead.name, ["total", "net_total"]))
+
+		result = merge_leads(target.name, source.name)
+		self.assertEqual(totals(target), (150, 140))
+		self.assertEqual(totals(source), (0, 0))
+
+		split_lead(result["merge_log"])
+		self.assertEqual(totals(target), (100, 90))
+		self.assertEqual(totals(source), (50, 50))
+
 	def test_merge_log_keeps_only_moved_child_row_names(self):
 		lead_a = self._create_lead(first_name="A", email="rows-a@test.com")
 		lead_b = self._create_lead(first_name="B", email="rows-b@test.com")
@@ -1307,6 +1332,31 @@ class TestMergeLeadCustomField(IntegrationTestCase):
 
 			value = frappe.db.get_value("CRM Lead", target.name, "merge_test_secret")
 			self.assertEqual(value == "hidden", copied, user)
+
+	def test_split_restores_permlevel_field_only_for_users_who_can_write_it(self):
+		from crm.api.lead import merge_leads, split_lead
+
+		for user, restored in ((MERGE_TEST_REP, False), (MERGE_TEST_MANAGER, True)):
+			target = frappe.get_doc(
+				{"doctype": "CRM Lead", "first_name": "Target", "lead_owner": user}
+			).insert(ignore_permissions=True)
+			source = frappe.get_doc(
+				{
+					"doctype": "CRM Lead",
+					"first_name": "Source",
+					"lead_owner": user,
+					"merge_test_secret": "hidden",
+				}
+			).insert(ignore_permissions=True)
+
+			frappe.set_user(MERGE_TEST_MANAGER)
+			result = merge_leads(target.name, source.name)
+			frappe.set_user(user)
+			split_lead(result["merge_log"])
+			frappe.set_user("Administrator")
+
+			value = frappe.db.get_value("CRM Lead", target.name, "merge_test_secret")
+			self.assertEqual(not value, restored, user)
 
 	def test_merge_snapshots_a_time_field_on_the_target(self):
 		target = frappe.get_doc(

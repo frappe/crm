@@ -6,6 +6,7 @@ from frappe.model import default_fields, no_value_fields, table_fields
 from frappe.model.document import Document
 from frappe.model.dynamic_links import get_dynamic_links
 from frappe.model.rename_doc import get_link_fields
+from frappe.utils import flt
 
 MERGE_CONFIG = {
 	"CRM Lead": {
@@ -68,6 +69,7 @@ def merge_documents(target_doc: Document, source_doc: Document) -> Document:
 	_repoint(refs, source_doc.name, target_doc.name)
 	target_doc.save(ignore_permissions=True)
 	_sync_assignments(target_doc.doctype, source_doc.name, target_doc.name)
+	_sync_product_totals(target_doc.doctype, source_doc.name, target_doc.name)
 
 	merge_log.insert(ignore_permissions=True)
 	return merge_log
@@ -91,6 +93,7 @@ def split_documents(merge_log: Document, target_doc: Document, source_doc: Docum
 	target_doc.save(ignore_permissions=True)
 	_move_child_tables_back(source_doc, target_doc, json.loads(merge_log.child_table_snapshot or "{}"))
 	_sync_assignments(target_doc.doctype, source_doc.name, target_doc.name)
+	_sync_product_totals(target_doc.doctype, source_doc.name, target_doc.name)
 
 	merge_log.db_set({"split_at": frappe.utils.now(), "split_by": frappe.session.user})
 
@@ -240,6 +243,29 @@ def _sync_assignments(doctype: str, *names: str):
 		)
 
 
+def _sync_product_totals(doctype: str, *names: str):
+	"""total and net_total are read-only and summed only by the form script, so recompute them
+	the same way once a merge or split has moved product rows."""
+	if "products" not in MERGE_CONFIG[doctype]["child_tables"]:
+		return
+	child_doctype = frappe.get_meta(doctype).get_field("products").options
+	for name in names:
+		rows = frappe.get_all(
+			child_doctype,
+			filters={"parent": name, "parenttype": doctype, "parentfield": "products"},
+			fields=["amount", "net_amount", "discount_percentage"],
+		)
+		total = sum(flt(row.amount) for row in rows)
+		net_total = sum(flt(row.net_amount) for row in rows)
+		discount_applied = any(flt(row.discount_percentage) > 0 for row in rows)
+		frappe.db.set_value(
+			doctype,
+			name,
+			{"total": total, "net_total": net_total if net_total or discount_applied else total},
+			update_modified=False,
+		)
+
+
 def _move_child_tables(source_doc: Document, target_doc: Document):
 	child_tables = MERGE_CONFIG[target_doc.doctype]["child_tables"]
 
@@ -286,5 +312,8 @@ def _auto_merge_fields(target_doc: Document, source_doc: Document):
 
 def _restore_fields(target_doc: Document, source_doc: Document, snapshot: dict):
 	for fieldname in _mergeable_fields(target_doc.doctype):
+		df = target_doc.meta.get_field(fieldname)
+		if df.permlevel and not target_doc.has_permlevel_access_to(fieldname, df, "write"):
+			continue
 		if fieldname in snapshot and target_doc.get(fieldname) == source_doc.get(fieldname):
 			target_doc.set(fieldname, snapshot[fieldname])
