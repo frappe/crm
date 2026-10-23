@@ -91,6 +91,23 @@ class TestTaskDue(IntegrationTestCase):
 		self.assertEqual(len(expected), 3)
 		self.assertEqual(query_names(due.due_by_today_condition, tasks), expected)
 
+	def test_upcoming_condition_covers_the_user_days_after_today(self):
+		# 20:00 UTC is already Oct 24 in Asia/Kolkata, so upcoming is Oct 25 to Oct 31 there
+		due = rules("2026-10-23 20:00:00", user_zone="Asia/Kolkata")
+		tasks = [
+			make_task("2026-10-24 18:29:00"),
+			make_task("2026-10-24 18:31:00"),
+			make_task("2026-10-24 00:00:00", all_day=1),
+			make_task("2026-10-25 00:00:00", all_day=1),
+			make_task("2026-10-31 00:00:00", all_day=1),
+			make_task("2026-11-01 00:00:00", all_day=1),
+			make_task("2026-10-31 18:29:00"),
+			make_task("2026-10-31 18:31:00"),
+			make_task("2026-10-26 00:00:00", all_day=1, status="Done"),
+		]
+		upcoming = query_names(partial(due.upcoming_condition, days=7), tasks)
+		self.assertEqual(upcoming, {tasks[i].name for i in (1, 3, 4, 6)})
+
 	def test_went_overdue_between_shifts_all_day_tasks_by_a_day(self):
 		tasks = [
 			make_task("2026-10-24 00:30:00"),
