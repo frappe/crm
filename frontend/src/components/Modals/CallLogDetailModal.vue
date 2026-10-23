@@ -23,11 +23,15 @@
                       icon: NoteIcon,
                       onClick: () => showNote(note),
                     },
-                    {
-                      label: task ? __('Edit Task') : __('Add Task'),
-                      icon: TaskIcon,
-                      onClick: () => showTask(task),
-                    },
+                    ...(task
+                      ? [
+                          {
+                            label: __('Edit Task'),
+                            icon: TaskIcon,
+                            onClick: () => showTask(task),
+                          },
+                        ]
+                      : []),
                   ],
                 },
               ]"
@@ -40,6 +44,20 @@
                 />
               </template>
             </Dropdown>
+            <FollowUpPopover
+              v-if="callLog?.data && !task"
+              :doctype="referenceDefaults().reference_doctype"
+              :docname="referenceDefaults().reference_docname"
+              :title="followUpTitle"
+              @created="linkTaskToCallLog"
+            >
+              <Button
+                variant="ghost"
+                :tooltip="__('Follow up')"
+                icon="lucide-calendar-clock"
+                class="w-7"
+              />
+            </FollowUpPopover>
             <Button
               v-if="!isMobileView"
               variant="ghost"
@@ -188,6 +206,7 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CheckCircleIcon from '@/components/Icons/CheckCircleIcon.vue'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
+import FollowUpPopover from '@/components/FollowUp/FollowUpPopover.vue'
 import Icon from '@/components/Icon.vue'
 import { getCallLogDetail } from '@/utils/callLog'
 import { sanitizeHTML } from '@/utils'
@@ -269,17 +288,28 @@ async function addNoteToCallLog(_note, isInsert = false) {
 
 async function addTaskToCallLog(_task, isInsert = false) {
   if (isInsert && _task.name) {
-    await call('crm.integrations.api.add_task_to_call_log', {
-      call_sid: callLog.value?.data?.id,
-      task: _task,
-    })
+    await linkTaskToCallLog(_task)
     completeStep('create_first_task')
     capture('task_created')
   } else {
     capture('task_updated')
+    callLog.value?.reload?.()
   }
+}
+
+async function linkTaskToCallLog(_task) {
+  await call('crm.integrations.api.add_task_to_call_log', {
+    call_sid: callLog.value?.data?.id,
+    task: _task,
+  })
   callLog.value?.reload?.()
 }
+
+const followUpTitle = computed(() => {
+  const data = callLog.value?.data
+  const contact = data?.type === 'Incoming' ? data?._caller : data?._receiver
+  return __('Follow up with {0}', [contact?.label || __('contact')])
+})
 
 const detailFields = computed(() => {
   if (!callLog.value?.data) return []
