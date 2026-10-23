@@ -76,10 +76,13 @@ class TestDigestTiming(DigestTestCase):
 		self.assertTrue(MorningDigest(AGENT, add_days(now, 1)).is_due())
 
 	def test_opted_out_user_is_never_due(self):
+		morning = system_time("Asia/Kolkata", 2026, 10, 24, 8, 30)
 		frappe.set_user(AGENT)
 		set_morning_digest(False)
+		self.assertFalse(MorningDigest(AGENT, morning).is_due())
+		set_morning_digest(True)
+		self.assertTrue(MorningDigest(AGENT, morning).is_due())
 		frappe.set_user("Administrator")
-		self.assertFalse(MorningDigest(AGENT, system_time("Asia/Kolkata", 2026, 10, 24, 8, 30)).is_due())
 
 
 class TestDigestSending(DigestTestCase):

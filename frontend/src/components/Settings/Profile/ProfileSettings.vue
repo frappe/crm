@@ -121,6 +121,24 @@
           </div>
           <LandingPageSelect />
         </div>
+        <div
+          v-if="settings.doc?.enable_morning_digest"
+          class="flex items-center justify-between mt-6"
+        >
+          <div class="flex flex-col gap-1">
+            <span class="text-base-medium text-ink-gray-8">
+              {{ __('Morning digest email') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{
+                __(
+                  'Get your follow-ups, replies, new assignments and tasks by email at about 8 AM.',
+                )
+              }}
+            </span>
+          </div>
+          <MorningDigestSwitch />
+        </div>
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
@@ -168,8 +186,10 @@ import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import AvailabilitySelect from './AvailabilitySelect.vue'
 import LandingPageSelect from './LandingPageSelect.vue'
+import MorningDigestSwitch from './MorningDigestSwitch.vue'
 import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { getSettings } from '@/stores/settings'
 import { validateIsImageFile } from '@/utils'
 import {
   Avatar,
@@ -183,6 +203,8 @@ import {
 import { ref, computed, inject, useTemplateRef, nextTick } from 'vue'
 
 const emit = defineEmits(['updateStep'])
+
+const { _settings: settings } = getSettings()
 
 const { user: sessionUser } = inject('session')
 const user = createDocumentResource({ doctype: 'User', name: sessionUser })

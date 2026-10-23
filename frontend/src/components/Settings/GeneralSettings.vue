@@ -75,6 +75,28 @@
           />
         </div>
       </div>
+      <div class="h-px border-t mx-2 border-outline-elevation-2" />
+      <div class="flex gap-4 items-center justify-between py-3 px-2">
+        <div class="flex flex-col">
+          <div class="text-p-base-medium text-ink-gray-7 truncate">
+            {{ __('Morning digest email') }}
+          </div>
+          <div class="text-p-sm text-ink-gray-5">
+            {{
+              __(
+                'Email each sales user their follow-ups, replies, new assignments and tasks at about 8 AM their time. Users can opt out in their profile',
+              )
+            }}
+          </div>
+        </div>
+        <div>
+          <Switch
+            v-model="settings.doc.enable_morning_digest"
+            size="sm"
+            @click.stop="toggle('enable_morning_digest')"
+          />
+        </div>
+      </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
       <div class="flex gap-4 items-center justify-between py-3 px-2">
         <div class="flex flex-col">
