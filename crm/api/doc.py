@@ -365,6 +365,8 @@ def get_data(
 		if meta.track_seen and "_seen" not in rows:
 			rows.append("_seen")
 
+		add_task_all_day(doctype, rows)
+
 		data = (
 			frappe.get_list(
 				doctype,
@@ -408,6 +410,8 @@ def get_data(
 		for field in kanban_fields:
 			if field not in rows:
 				rows.append(field)
+
+		add_task_all_day(doctype, rows)
 
 		for kc in kanban_columns:
 			# Start with base filters
@@ -553,6 +557,12 @@ def get_data(
 		"list_script": get_form_script(doctype, "List"),
 		"view_type": view_type,
 	}
+
+
+def add_task_all_day(doctype, rows):
+	# The due date cannot be shown without knowing whether it carries a time.
+	if doctype == "CRM Task" and "due_date" in rows and "all_day" not in rows:
+		rows.append("all_day")
 
 
 def parse_list_data(data, doctype):

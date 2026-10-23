@@ -1,5 +1,9 @@
+import { fromAllDayDueDate, toAllDayDueDate } from '@/utils/task'
+
 export class CRMTask {
   onRender() {
+    this.setDueDateType()
+
     if (this.doc.reference_doctype && this.doc.reference_docname) {
       let label = this.doc.reference_doctype.replace('CRM ', '')
 
@@ -21,5 +25,20 @@ export class CRMTask {
         },
       ]
     }
+  }
+
+  all_day() {
+    this.doc.due_date = this.doc.all_day
+      ? toAllDayDueDate(this.doc.due_date)
+      : fromAllDayDueDate(this.doc.due_date)
+    this.setDueDateType()
+  }
+
+  setDueDateType() {
+    this.setFieldProperty(
+      'due_date',
+      'fieldtype',
+      this.doc.all_day ? 'Date' : 'Datetime',
+    )
   }
 }

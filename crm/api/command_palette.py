@@ -1,6 +1,8 @@
 import frappe
 from frappe.utils import add_days, add_to_date, now_datetime
 
+from crm.fcrm.doctype.crm_task.rules import is_follow_up
+
 UPCOMING_LIMIT = 5
 UPCOMING_TASK_DAYS = 7
 UPCOMING_SLA_HOURS = 24
@@ -41,7 +43,7 @@ def _upcoming_tasks():
 		return []
 	rows = frappe.get_list(
 		"CRM Task",
-		fields=["name", "title", "due_date", "reference_doctype", "reference_docname"],
+		fields=["name", "title", "status", "due_date", "all_day", "reference_doctype", "reference_docname"],
 		filters={
 			"status": ["not in", OPEN_TASK_STATUSES],
 			"assigned_to": frappe.session.user,
@@ -59,8 +61,9 @@ def _upcoming_task(row):
 		"kind": "task",
 		"name": row.name,
 		"title": row.title,
-		"label": "Task",
+		"label": "Follow-up" if is_follow_up(row) else "Task",
 		"due": str(row.due_date),
+		"all_day": row.all_day,
 		"route": reference[0] if reference and row.reference_docname else "Tasks",
 		"route_name": row.reference_docname if reference else None,
 	}

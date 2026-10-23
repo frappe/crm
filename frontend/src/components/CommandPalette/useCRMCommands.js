@@ -1,4 +1,4 @@
-import { call, dayjs, dayjsLocal } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTelemetry } from '@framework/ui/telemetry'
@@ -21,6 +21,7 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import { prettyDate } from '@/utils'
+import { formatTaskDue, isTaskOverdue } from '@/utils/task'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 
@@ -226,8 +227,8 @@ function upcomingCommands(items, tracked) {
         group: 'Upcoming',
         icon: item.kind === 'task' ? TaskIcon : 'timer',
         subtitle: __(item.label),
-        badge: dueBadge(item.due),
-        badgeClass: isOverdue(item.due) ? 'text-ink-red-4' : 'text-ink-gray-5',
+        badge: dueBadge(item),
+        badgeClass: isOverdue(item) ? 'text-ink-red-4' : 'text-ink-gray-5',
         perform: () => router.push(upcomingRoute(item)),
       },
       'upcoming',
@@ -235,13 +236,15 @@ function upcomingCommands(items, tracked) {
   )
 }
 
-function isOverdue(due) {
-  return dayjsLocal(due).isBefore(dayjs())
+function isOverdue(item) {
+  return isTaskOverdue({ due_date: item.due, all_day: item.all_day })
 }
 
-function dueBadge(due) {
-  const relative = prettyDate(due, true)
-  return isOverdue(due) ? __('{0} overdue', [relative]) : relative
+function dueBadge(item) {
+  const due = item.all_day
+    ? formatTaskDue({ due_date: item.due, all_day: 1 })
+    : prettyDate(item.due, true)
+  return isOverdue(item) ? __('{0} overdue', [due]) : due
 }
 
 function upcomingRoute(item) {
