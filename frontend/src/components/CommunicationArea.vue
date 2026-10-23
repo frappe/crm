@@ -61,6 +61,7 @@
           newEmailEditor.cc = false
           newEmailEditor.bcc = false
           newEmail = ''
+          followUpIn = null
         },
       }"
       :editable="showEmailBox"
@@ -70,7 +71,11 @@
       :placeholder="
         __('Hi John, \n\nCan you please provide more details on this...')
       "
-    />
+    >
+      <template #actions>
+        <FollowUpAfterSend v-model="followUpIn" />
+      </template>
+    </EmailEditor>
   </div>
   <div
     v-show="showCommentBox"
@@ -105,10 +110,13 @@
 
 <script setup>
 import EmailEditor from '@/components/EmailEditor.vue'
+import FollowUpAfterSend from '@/components/FollowUp/FollowUpAfterSend.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty } from '@/utils'
+import { followUpPresets } from '@/utils/task'
+import { createFollowUp } from '@/composables/followUp'
 import {
   getEmailSubject,
   loadUserEmailSubjects,
@@ -132,6 +140,7 @@ const { getUser } = usersStore()
 const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
+const followUpIn = ref(null)
 const showCommentBox = ref(false)
 const newEmail = useStorage(
   `emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
@@ -332,6 +341,7 @@ async function deleteAttachedFiles() {
 async function submitEmail() {
   if (emailBlocked.value) return
   showEmailBox.value = false
+  const emailSubject = newEmailEditor.value.subject
   // toast.promise returns the toast id (not the promise), so await the send
   // itself — otherwise the reload below fires before the email is committed and
   // the new email is missing from the refetched list.
@@ -348,9 +358,27 @@ async function submitEmail() {
   }
   newEmail.value = ''
   attachments.value = []
+  await followUpAfterSend(emailSubject)
   reload.value = true
   emit('scroll')
   capture('email_sent', { doctype: props.doctype })
+}
+
+async function followUpAfterSend(emailSubject) {
+  const preset = followUpPresets().find((p) => p.key === followUpIn.value)
+  if (!preset) return
+  followUpIn.value = null
+  try {
+    await createFollowUp({
+      doctype: props.doctype,
+      docname: doc.value.name,
+      title: __('Follow up on: {0}', [emailSubject]),
+      dueDate: preset.date,
+    })
+    capture('follow_up_created', { doctype: props.doctype, source: 'email' })
+  } catch {
+    toast.error(__('Email sent, but the follow-up could not be added'))
+  }
 }
 
 async function submitComment() {

@@ -177,6 +177,7 @@
             </IconPicker>
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
+            <slot name="actions" />
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
             <Button
               variant="solid"
