@@ -15,9 +15,10 @@ import frappe
 from frappe.automation_engine import emit, is_enabled
 from frappe.utils import add_to_date, get_datetime, now
 
+from crm.fcrm.doctype.crm_task.rules import went_overdue_between
+
 CRM_REFERENCE_DOCTYPES = ("CRM Lead", "CRM Deal")
 QUALIFIED_STATUS = "Qualified"
-OVERDUE_STATUSES = ("Done", "Canceled")
 OVERDUE_SWEEP_KEY = "crm_last_overdue_task_sweep"
 OVERDUE_SWEEP_MAX_LOOKBACK_HOURS = 24
 
@@ -96,13 +97,12 @@ def emit_overdue_tasks():
 	if not _enabled():
 		return
 	until = now()
-	tasks = frappe.get_all(
-		"CRM Task",
-		filters={
-			"status": ("not in", OVERDUE_STATUSES),
-			"due_date": ("between", [_sweep_start(until), until]),
-		},
-		fields=["name", "reference_doctype", "reference_docname", "due_date"],
+	task = frappe.qb.DocType("CRM Task")
+	tasks = (
+		frappe.qb.from_(task)
+		.select(task.name, task.reference_doctype, task.reference_docname, task.due_date)
+		.where(went_overdue_between(task, _sweep_start(until), until))
+		.run(as_dict=True)
 	)
 	for task in tasks:
 		_emit_overdue_task(task)
