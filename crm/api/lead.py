@@ -6,8 +6,6 @@ from crm.fcrm.doctype.crm_lead.crm_lead import lock_lead
 from crm.integrations.api import find_by_phone
 from crm.utils import normalize_phone
 
-MAX_SEARCH_LIMIT = 50
-
 
 @frappe.whitelist()
 def find_duplicate_leads(lead_name: str):
@@ -52,42 +50,6 @@ def _matched_fields(lead, candidate, numbers: set, match_keys: dict) -> list:
 		if normalize_phone(candidate.get(field)) in numbers:
 			matched.append(field)
 	return matched
-
-
-@frappe.whitelist()
-def search_mergeable_leads(txt: str = "", current_lead: str = "", limit: int = 20):
-	user = frappe.session.user
-	limit = min(max(limit, 1), MAX_SEARCH_LIMIT)
-
-	filters = [["is_duplicate", "=", 0], ["converted", "=", 0]]
-	if current_lead:
-		filters.append(["name", "!=", current_lead])
-
-	or_filters = None
-	if txt:
-		pattern = f"%{_escape_like(txt)}%"
-		or_filters = [[field, "like", pattern] for field in ("name", "lead_name", "email", "organization")]
-
-	candidates = []
-	for assignment in (["_assign", "like", f'%"{user}"%'], ["_assign", "is", "not set"]):
-		candidates += frappe.get_list(
-			"CRM Lead",
-			filters=[*filters, assignment],
-			or_filters=or_filters,
-			fields=["name", "lead_name", "email", "organization", "modified"],
-			order_by="modified desc",
-			limit=limit,
-		)
-	candidates.sort(key=lambda r: r.modified, reverse=True)
-
-	return [
-		{
-			"value": r["name"],
-			"label": r.get("lead_name") or r["name"],
-			"description": r.get("email") or r.get("organization") or "",
-		}
-		for r in candidates[:limit]
-	]
 
 
 def _escape_like(txt: str) -> str:

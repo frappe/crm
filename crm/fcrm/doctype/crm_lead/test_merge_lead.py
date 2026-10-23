@@ -808,16 +808,6 @@ class TestMergeLead(IntegrationTestCase):
 		split_lead(first["merge_log"])
 		self.assertEqual(frappe.db.get_value("ToDo", todo.name, "reference_name"), lead_b.name)
 
-	def test_search_mergeable_leads_finds_older_leads(self):
-		older = self._create_lead(first_name="Zebulon", email="zebulon@test.com")
-		for i in range(55):
-			self._create_lead(first_name=f"Newer {i}")
-
-		from crm.api.lead import search_mergeable_leads
-
-		results = search_mergeable_leads(txt="zebulon", limit=1)
-		self.assertEqual([r["value"] for r in results], [older.name])
-
 	def test_cannot_split_when_target_is_converted(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 97222 22222")
 		source = self._create_lead(first_name="Source", email="source-split@test.com")
@@ -1117,51 +1107,6 @@ class TestMergeLead(IntegrationTestCase):
 				is_valid_http_method(method)
 			frappe.local.request = frappe._dict(method="POST")
 			is_valid_http_method(method)
-
-	def test_search_mergeable_leads_matches_the_whole_assignee_email(self):
-		user = make_user("a@example.com", "Sales Manager")
-		make_user("aa@example.com", "Sales Manager")
-		mine = self._create_lead(first_name="Picker Mine", email="picker-mine@test.com")
-		theirs = self._create_lead(first_name="Picker Theirs", email="picker-theirs@test.com")
-		mine.db_set("_assign", json.dumps([user]))
-		theirs.db_set("_assign", json.dumps(["aa@example.com"]))
-
-		from crm.api.lead import search_mergeable_leads
-
-		frappe.set_user(user)
-		values = [r["value"] for r in search_mergeable_leads(txt="Picker")]
-		self.assertIn(mine.name, values)
-		self.assertNotIn(theirs.name, values)
-
-	def test_search_mergeable_leads_caps_the_limit(self):
-		for i in range(60):
-			self._create_lead(first_name=f"Capped {i}")
-
-		from crm.api.lead import search_mergeable_leads
-
-		self.assertEqual(len(search_mergeable_leads(txt="Capped", limit=1000)), 50)
-
-	def test_search_mergeable_leads_treats_wildcards_literally(self):
-		percent = self._create_lead(first_name="Pct100% Picker")
-		self._create_lead(first_name="Pct100x Picker")
-		underscore = self._create_lead(first_name="Und_Picker")
-		self._create_lead(first_name="UndxPicker")
-
-		from crm.api.lead import search_mergeable_leads
-
-		self.assertEqual([r["value"] for r in search_mergeable_leads(txt="100%")], [percent.name])
-		self.assertEqual([r["value"] for r in search_mergeable_leads(txt="Und_")], [underscore.name])
-
-	def test_search_mergeable_leads_skips_converted_leads(self):
-		open_lead = self._create_lead(first_name="Pickable Open", email="pickable-open@test.com")
-		converted = self._create_lead(first_name="Pickable Converted", email="pickable-converted@test.com")
-		converted.db_set("converted", 1)
-
-		from crm.api.lead import search_mergeable_leads
-
-		values = [r["value"] for r in search_mergeable_leads(txt="Pickable")]
-		self.assertIn(open_lead.name, values)
-		self.assertNotIn(converted.name, values)
 
 	def test_split_leaves_dynamic_links_moved_to_another_doctype(self):
 		target = self._create_lead(first_name="Target", email="relink-target@test.com")
