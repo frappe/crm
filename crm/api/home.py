@@ -1,6 +1,7 @@
 import frappe
 
 from crm.fcrm.doctype.crm_dashboard.home_layout import HomeLayout, RoleDefault
+from crm.fcrm.doctype.crm_dashboard.home_scope import Mine
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	FollowUpsDue,
 	NewLeads,
@@ -62,11 +63,11 @@ def reset_default_layout(role: str) -> dict:
 @frappe.whitelist()
 @sales_user_only
 def get_counts() -> dict:
-	user = frappe.session.user
+	mine = Mine(frappe.session.user)
 	return {
-		"replies_waiting": RepliesWaiting(FOLLOW_UP_DOCTYPES, user).count(),
-		"follow_ups_due": FollowUpsDue(FOLLOW_UP_DOCTYPES, user).count(),
-		"new_leads": NewLeads(("CRM Lead",), user).count(),
+		"replies_waiting": RepliesWaiting(FOLLOW_UP_DOCTYPES, mine).count(),
+		"follow_ups_due": FollowUpsDue(FOLLOW_UP_DOCTYPES, mine).count(),
+		"new_leads": NewLeads(("CRM Lead",), mine).count(),
 	}
 
 

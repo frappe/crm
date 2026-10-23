@@ -1,11 +1,9 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Rows and totals for the shared Home widgets, always the viewer's own leads, deals and tasks.
+"""Rows and totals for the Home widgets, over the leads, deals and tasks of a scope.
 
-Records are "mine" when owned by or assigned to the viewer. Every CRM permission rule
-already lets a user read those, so the queries skip permission conditions and keep a
-single selective predicate each.
+The shared widgets cover the viewer's own records, the team widgets a manager's team.
 """
 
 from dataclasses import dataclass
@@ -18,6 +16,7 @@ from frappe.query_builder.functions import Coalesce, Count, Max
 from frappe.utils import now_datetime
 from pypika.terms import Function
 
+from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.reply_channel import set_reply_channels
 from crm.fcrm.doctype.crm_task.rules import CLOSED_STATUSES, FOLLOW_UP_DOCTYPES, TaskDue
 
@@ -47,20 +46,24 @@ def get_widget_data(widget: str, doctype: str = "Both", user: str | None = None)
 		frappe.throw(_("Home widget {0} has no data").format(widget))
 	if doctype not in DOCTYPES:
 		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(widget))
-	data = WIDGET_DATA[widget](DOCTYPES[doctype], user or frappe.session.user)
-	return {"rows": data.rows(), "total": data.count()}
+	return WIDGET_DATA[widget](DOCTYPES[doctype], Mine(user or frappe.session.user)).summary()
 
 
-class RecordWidget:
-	"""Open or ongoing leads and deals of the user, merged across doctypes by `sort_field`."""
+class Widget:
+	def __init__(self, doctypes: tuple, scope: Mine | Team):
+		self.doctypes = doctypes
+		self.scope = scope
+
+	def summary(self) -> dict:
+		return {"rows": self.rows(), "total": self.count()}
+
+
+class RecordWidget(Widget):
+	"""Open or ongoing leads and deals of the scope, merged across doctypes by `sort_field`."""
 
 	sort_field = "modified"
 	descending = False
 	status_types = ACTIVE_STATUS_TYPES
-
-	def __init__(self, doctypes: tuple, user: str):
-		self.doctypes = doctypes
-		self.user = user
 
 	def rows(self) -> list:
 		rows = []
@@ -77,9 +80,12 @@ class RecordWidget:
 		return sum(self._count(doctype) for doctype in self.doctypes)
 
 	def query(self, doctype: str, table):
-		record_type = RECORD_TYPES[doctype]
-		mine = table._assign.like(f'%"{self.user}"%') | (table[record_type.owner_field] == self.user)
-		return self.active(doctype, table).where(mine)
+		in_scope = self.scope.records(doctype, table, RECORD_TYPES[doctype].owner_field)
+		return self.filtered(doctype, table).where(in_scope)
+
+	def filtered(self, doctype: str, table):
+		"""The widget's records before narrowing them to the scope."""
+		return self.active(doctype, table)
 
 	def active(self, doctype: str, table):
 		status = frappe.qb.DocType(RECORD_TYPES[doctype].status_doctype)
@@ -116,8 +122,8 @@ class RecordWidget:
 class RepliesWaiting(RecordWidget):
 	sort_field = "awaiting_reply_since"
 
-	def query(self, doctype: str, table):
-		return super().query(doctype, table).where(table.awaiting_reply_since.isnotnull())
+	def filtered(self, doctype: str, table):
+		return super().filtered(doctype, table).where(table.awaiting_reply_since.isnotnull())
 
 	def fields(self, doctype: str, table) -> list:
 		fields = super().fields(doctype, table)
@@ -147,7 +153,7 @@ class AssignedToMe(RecordWidget):
 			self.active(doctype, table)
 			.join(todo)
 			.on((todo.reference_type == doctype) & (todo.reference_name == table.name))
-			.where((todo.allocated_to == self.user) & (todo.status == "Open"))
+			.where((todo.allocated_to == self.scope.user) & (todo.status == "Open"))
 			.groupby(table.name)
 		)
 
@@ -164,7 +170,7 @@ class NoNextStep(RecordWidget):
 
 	sort_field = "idle_since"
 
-	def query(self, doctype: str, table):
+	def filtered(self, doctype: str, table):
 		task = frappe.qb.DocType("CRM Task")
 		with_open_task = (
 			frappe.qb.from_(task)
@@ -178,7 +184,7 @@ class NoNextStep(RecordWidget):
 		cutoff = now_datetime() - timedelta(days=IDLE_DAYS)
 		return (
 			super()
-			.query(doctype, table)
+			.filtered(doctype, table)
 			.where(idle_since(table) < cutoff)
 			.where(table.name.notin(with_open_task))
 		)
@@ -187,16 +193,15 @@ class NoNextStep(RecordWidget):
 		return idle_since(table).as_(self.sort_field)
 
 
-class TaskWidget:
-	"""Open tasks assigned to the user."""
+class TaskWidget(Widget):
+	"""Open tasks assigned to the scope."""
 
 	FIELDS = ("name", "title", "status", "priority", "due_date", "all_day")
 
-	def __init__(self, doctypes: tuple, user: str):
-		self.doctypes = doctypes
-		self.user = user
+	def __init__(self, doctypes: tuple, scope: Mine | Team):
+		super().__init__(doctypes, scope)
 		self.task = frappe.qb.DocType("CRM Task")
-		self.due = TaskDue(user)
+		self.due = TaskDue(scope.user)
 
 	def rows(self) -> list:
 		task = self.task
@@ -210,7 +215,7 @@ class TaskWidget:
 
 	def query(self):
 		task = self.task
-		return frappe.qb.from_(task).where((task.assigned_to == self.user) & self.condition())
+		return frappe.qb.from_(task).where(self.scope.tasks(task) & self.condition())
 
 	def linked(self):
 		task = self.task
