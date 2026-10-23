@@ -46,11 +46,13 @@
                 : ''
             "
           >
-            <DashboardItem
-              :index="index"
-              :item="items[index]"
-              :editing="editing"
-            />
+            <slot name="item" :item="items[index]" :index="index">
+              <DashboardItem
+                :index="index"
+                :item="items[index]"
+                :editing="editing"
+              />
+            </slot>
           </div>
           <div
             v-if="editing"
@@ -58,7 +60,7 @@
           >
             <div
               class="rounded-4 p-1 hover:bg-surface-gray-8"
-              @click="items.splice(index, 1)"
+              @click="items = items.filter((_, i) => i !== index)"
             >
               <span
                 class="lucide-trash-2 size-3 text-ink-base"
