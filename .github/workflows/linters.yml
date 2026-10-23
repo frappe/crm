@@ -61,8 +61,8 @@ jobs:
               with:
                   extra_args: --all-files
 
-    semgrep:
-        name: Semgrep Rules
+    python-checks:
+        name: Semgrep & Dependency Audit
         runs-on: ubuntu-latest
         timeout-minutes: 15
 
@@ -79,11 +79,15 @@ jobs:
                   python-version: "3.14"
                   cache: pip
 
-            - name: Install Semgrep
-              run: pip install --upgrade semgrep
+            - name: Install Semgrep and pip-audit
+              run: pip install --upgrade semgrep pip-audit
 
             - name: Download Semgrep rules
               run: git clone --depth 1 https://github.com/frappe/semgrep-rules.git frappe-semgrep-rules
 
             - name: Run Semgrep rules
               run: semgrep ci --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness
+
+            - name: Run pip-audit
+              if: success() || failure()
+              run: pip-audit --desc on .
