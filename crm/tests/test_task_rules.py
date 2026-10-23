@@ -77,6 +77,20 @@ class TestTaskDue(IntegrationTestCase):
 		self.assertEqual(len(expected), 2)
 		self.assertEqual(query_names(due.overdue_condition, tasks), expected)
 
+	def test_due_by_today_condition_matches_overdue_or_due_today(self):
+		due = rules("2026-10-23 20:00:00", user_zone="Asia/Kolkata")
+		tasks = [
+			make_task("2026-10-23 10:00:00"),
+			make_task("2026-10-24 18:29:00"),
+			make_task("2026-10-24 18:31:00"),
+			make_task("2026-10-24 00:00:00", all_day=1),
+			make_task("2026-10-25 00:00:00", all_day=1),
+			make_task("2026-10-01 00:00:00", status="Done"),
+		]
+		expected = {t.name for t in tasks if due.is_overdue(t) or due.is_due_today(t)}
+		self.assertEqual(len(expected), 3)
+		self.assertEqual(query_names(due.due_by_today_condition, tasks), expected)
+
 	def test_went_overdue_between_shifts_all_day_tasks_by_a_day(self):
 		tasks = [
 			make_task("2026-10-24 00:30:00"),

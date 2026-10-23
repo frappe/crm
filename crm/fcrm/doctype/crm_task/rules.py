@@ -64,6 +64,13 @@ class TaskDue:
 		all_day = (task.all_day == 1) & (task.due_date < datetime.combine(self.today, time.min))
 		return task.status.notin(CLOSED_STATUSES) & (timed | all_day)
 
+	def due_by_today_condition(self, task):
+		"""Query condition for open tasks that are overdue or due today."""
+		tomorrow = self.today + timedelta(days=1)
+		timed = (task.all_day == 0) & (task.due_date < self._day_start(tomorrow))
+		all_day = (task.all_day == 1) & (task.due_date < datetime.combine(tomorrow, time.min))
+		return task.status.notin(CLOSED_STATUSES) & (timed | all_day)
+
 	def _day_start(self, day: date) -> datetime:
 		"""Midnight of the user's day, as a naive system time like stored datetimes."""
 		start = datetime.combine(day, time.min, tzinfo=self.user_zone)

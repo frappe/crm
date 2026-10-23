@@ -1,8 +1,11 @@
 import frappe
+from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
+from frappe.utils import add_days, now_datetime, nowdate
 
 from crm.api.home import (
 	LANDING_PAGE_KEY,
+	get_counts,
 	get_default_layout,
 	get_layout,
 	reset_default_layout,
@@ -207,3 +210,67 @@ class TestHomeRoleDefaults(IntegrationTestCase):
 	def test_built_in_defaults_are_valid(self):
 		self.assertEqual(validate_layout(agent_default(), "agent"), agent_default())
 		self.assertEqual(validate_layout(manager_default(), "manager"), manager_default())
+
+
+class TestHomeCounts(IntegrationTestCase):
+	def setUp(self):
+		make_user(AGENT, "Sales User")
+		make_user(MANAGER, "Sales User", "Sales Manager")
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def counts(self):
+		frappe.set_user(AGENT)
+		counts = get_counts()
+		frappe.set_user("Administrator")
+		return counts
+
+	def test_replies_waiting_counts_my_leads_and_deals(self):
+		make_lead(lead_owner=AGENT, awaiting_reply_since=now_datetime())
+		make_lead(lead_owner=AGENT)
+		make_lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
+		make_lead(lead_owner=AGENT, awaiting_reply_since=now_datetime(), converted=1)
+		make_deal(deal_owner=AGENT, awaiting_reply_since=now_datetime())
+		self.assertEqual(self.counts()["replies_waiting"], 2)
+
+	def test_assigned_records_count_as_mine(self):
+		lead = make_lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
+		assign({"assign_to": [AGENT], "doctype": "CRM Lead", "name": lead})
+		self.assertEqual(self.counts()["replies_waiting"], 1)
+
+	def test_new_leads_are_my_open_leads(self):
+		open_status = frappe.get_all("CRM Lead Status", filters={"type": "Open"}, pluck="name")[0]
+		other_status = frappe.get_all("CRM Lead Status", filters={"type": ["!=", "Open"]}, pluck="name")[0]
+		make_lead(lead_owner=AGENT, status=open_status)
+		make_lead(lead_owner=AGENT, status=other_status)
+		make_lead(lead_owner=MANAGER, status=open_status)
+		self.assertEqual(self.counts()["new_leads"], 1)
+
+	def test_follow_ups_due_are_my_open_linked_tasks_due_by_today(self):
+		lead = make_lead(lead_owner=AGENT)
+		linked = {"reference_doctype": "CRM Lead", "reference_docname": lead, "assigned_to": AGENT}
+		make_task(add_days(now_datetime(), -2), **linked)
+		make_task(nowdate(), all_day=1, **linked)
+		make_task(add_days(now_datetime(), 7), **linked)
+		make_task(add_days(now_datetime(), -2), status="Done", **linked)
+		make_task(add_days(now_datetime(), -2), assigned_to=AGENT)
+		make_task(add_days(now_datetime(), -2), **{**linked, "assigned_to": MANAGER})
+		self.assertEqual(self.counts()["follow_ups_due"], 2)
+
+
+def make_lead(**kwargs) -> str:
+	return frappe.get_doc({"doctype": "CRM Lead", "first_name": "Home", **kwargs}).insert().name
+
+
+def make_deal(**kwargs) -> str:
+	deal = frappe.get_doc({"doctype": "CRM Deal", **kwargs})
+	deal.flags.ignore_mandatory = True
+	return deal.insert().name
+
+
+def make_task(due_date, **kwargs):
+	return frappe.get_doc(
+		{"doctype": "CRM Task", "title": "Follow up", "due_date": due_date, **kwargs}
+	).insert()
