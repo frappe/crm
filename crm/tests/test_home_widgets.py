@@ -4,8 +4,8 @@ from frappe.desk.form.assign_to import remove as unassign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
-from crm.api.home import get_counts
-from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT, get_widget_data
+from crm.api.home import get_counts, get_widget_data
+from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT
 from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_task, make_user
 
 
@@ -213,7 +213,7 @@ class TestFollowUpWidgets(HomeWidgetTestCase):
 class TestWidgetValidation(HomeWidgetTestCase):
 	def test_unknown_widget_or_doctype_is_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
-			get_widget_data("team_overview")
+			get_widget_data("recently_opened")
 		with self.assertRaises(frappe.ValidationError):
 			get_widget_data("replies_waiting", "Contact")
 

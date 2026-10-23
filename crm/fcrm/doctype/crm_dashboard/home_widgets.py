@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 import frappe
-from frappe import _
 from frappe.query_builder import Case, Field, Order
 from frappe.query_builder.functions import Coalesce, Count, Max
 from frappe.utils import now_datetime
@@ -39,14 +38,6 @@ RECORD_TYPES = {
 	"CRM Lead": RecordType("lead_owner", "CRM Lead Status", "lead_name", "organization"),
 	"CRM Deal": RecordType("deal_owner", "CRM Deal Status", "organization", "lead_name"),
 }
-
-
-def get_widget_data(widget: str, doctype: str = "Both", user: str | None = None) -> dict:
-	if widget not in WIDGET_DATA:
-		frappe.throw(_("Home widget {0} has no data").format(widget))
-	if doctype not in DOCTYPES:
-		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(widget))
-	return WIDGET_DATA[widget](DOCTYPES[doctype], Mine(user or frappe.session.user)).summary()
 
 
 class Widget:

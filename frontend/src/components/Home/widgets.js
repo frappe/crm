@@ -60,6 +60,7 @@ export const widgets = [
     label: 'Team replies waiting',
     size: { w: 10, h: 8 },
     managerOnly: true,
+    component: lazy('TeamRepliesWaiting'),
   },
   {
     key: 'team_overdue_follow_ups',

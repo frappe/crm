@@ -1,10 +1,14 @@
 <template>
   <HomeWidget
-    :title="__('Replies waiting')"
+    :title="team ? __('Team replies waiting') : __('Replies waiting')"
     :resource="resource"
     :config="config"
     :viewAll="recordListViews(config.doctype)"
-    :emptyText="__('No one is waiting on a reply from you.')"
+    :emptyText="
+      team
+        ? __('No one is waiting on a reply from your team.')
+        : __('No one is waiting on a reply from you.')
+    "
     emptyIcon="lucide-inbox"
     @update:config="(value) => emit('update:config', value)"
   >
@@ -32,12 +36,14 @@
             {{ prettyDate(row.awaiting_reply_since, true) }}
           </span>
         </Tooltip>
+        <OwnerAvatar v-if="team" :user="row.owner" />
       </RecordRow>
     </template>
   </HomeWidget>
 </template>
 <script setup>
 import HomeWidget from '@/components/Home/HomeWidget.vue'
+import OwnerAvatar from '@/components/Home/OwnerAvatar.vue'
 import RecordRow from '@/components/Home/RecordRow.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
@@ -48,6 +54,7 @@ import { Tooltip } from 'frappe-ui'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },
+  team: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:config'])
@@ -57,5 +64,8 @@ const channels = {
   whatsapp: { label: __('WhatsApp'), icon: WhatsAppIcon },
 }
 
-const resource = useHomeWidget('replies_waiting', () => props.config)
+const resource = useHomeWidget(
+  props.team ? 'team_replies_waiting' : 'replies_waiting',
+  () => props.config,
+)
 </script>
