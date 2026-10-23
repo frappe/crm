@@ -216,6 +216,10 @@ class TaskWidget(Widget):
 			& (task.reference_docname != "")
 		)
 
+	def standalone(self):
+		task = self.task
+		return task.reference_docname.isnull() | (task.reference_docname == "")
+
 	def order(self, query):
 		return query.orderby(self.task.due_date)
 
@@ -236,9 +240,7 @@ class UpcomingFollowUps(TaskWidget):
 
 class MyTasks(TaskWidget):
 	def condition(self):
-		task = self.task
-		standalone = task.reference_docname.isnull() | (task.reference_docname == "")
-		return standalone & task.status.notin(CLOSED_STATUSES)
+		return self.standalone() & self.task.status.notin(CLOSED_STATUSES)
 
 	def order(self, query):
 		return (

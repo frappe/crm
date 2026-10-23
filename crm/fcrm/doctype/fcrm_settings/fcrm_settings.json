@@ -14,6 +14,7 @@
   "update_timestamp_on_new_communication",
   "auto_mark_replied_on_response",
   "auto_reopen_on_new_communication",
+  "enable_morning_digest",
   "activity_timeline_section",
   "crm_timeline_timestamp_format",
   "crm_timeline_sort_order",
@@ -187,6 +188,13 @@
    "label": "Reopen lead/deal on new communication"
   },
   {
+   "default": "1",
+   "description": "Email each sales user a summary of their follow-ups, replies, new assignments and tasks at about 8 AM their time",
+   "fieldname": "enable_morning_digest",
+   "fieldtype": "Check",
+   "label": "Morning digest email"
+  },
+  {
    "fieldname": "restore_demo_data",
    "fieldtype": "Button",
    "label": "Restore Demo Data"
@@ -224,7 +232,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-10-21 10:00:00.000000",
+ "modified": "2026-10-24 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

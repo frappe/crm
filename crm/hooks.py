@@ -339,6 +339,7 @@ scheduler_events = {
 	"hourly": [
 		"crm.api.event.trigger_hourly_event_notifications",
 		"crm.automation.events.emit_overdue_tasks",
+		"crm.api.digest.send_morning_digests",
 	],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",

@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 
+from crm.api.digest import OPT_OUT_KEY
 from crm.fcrm.doctype.crm_dashboard.home_layout import HomeLayout, RoleDefault, role_for
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
@@ -25,6 +26,16 @@ def set_landing_page(page: str | None = None):
 		frappe.defaults.clear_user_default(LANDING_PAGE_KEY)
 	else:
 		frappe.defaults.set_user_default(LANDING_PAGE_KEY, page)
+
+
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def set_morning_digest(enabled: bool):
+	"""Opt the user out of the morning digest email, or back in (cleared)."""
+	if enabled:
+		frappe.defaults.clear_user_default(OPT_OUT_KEY)
+	else:
+		frappe.defaults.set_user_default(OPT_OUT_KEY, "0")
 
 
 @frappe.whitelist()
