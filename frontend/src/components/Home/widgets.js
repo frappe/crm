@@ -44,6 +44,7 @@ export const widgets = [
     key: 'my_tasks',
     label: 'My tasks',
     size: { w: 10, h: 8 },
+    component: lazy('MyTasks'),
   },
   {
     key: 'team_overview',
