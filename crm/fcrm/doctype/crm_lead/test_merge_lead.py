@@ -150,6 +150,62 @@ class TestMergeLead(IntegrationTestCase):
 		for lead in (target.name, source.name):
 			self.assertEqual(info_comments(lead), ["Source merged into Target", "Source split from Target"])
 
+	def test_get_lead_merge_fields_lists_only_differing_fields(self):
+		target = self._create_lead(
+			first_name="T", email="t-fields@test.com", job_title="CEO", website="t.com"
+		)
+		source = self._create_lead(
+			first_name="S", email="s-fields@test.com", job_title="CTO", mobile_no="+123"
+		)
+		frappe.db.set_value("CRM Lead", source.name, "website", "t.com")
+
+		from crm.api.lead import get_lead_merge_fields
+
+		fields = {f["fieldname"]: f for f in get_lead_merge_fields(source.name, target.name)}
+		self.assertEqual(
+			(fields["job_title"]["target_value"], fields["job_title"]["source_value"]), ("CEO", "CTO")
+		)
+		self.assertEqual(
+			(fields["mobile_no"]["target_value"], fields["mobile_no"]["source_value"]), (None, "+123")
+		)
+		self.assertNotIn("website", fields)
+		# denylisted fields never merge, so the modal never offers them
+		self.assertNotIn("lead_owner", fields)
+		self.assertNotIn("lead_name", fields)
+
+	def test_merge_takes_picked_fields_from_source_and_split_restores_them(self):
+		target = self._create_lead(first_name="T", email="t-pick@test.com", job_title="CEO", website="t.com")
+		source = self._create_lead(first_name="S", email="s-pick@test.com", job_title="CTO", website="s.com")
+
+		from crm.api.lead import merge_leads, split_lead
+
+		result = merge_leads(target.name, source.name, take_from_source=["job_title"])
+		target.reload()
+		self.assertEqual(target.job_title, "CTO")
+		self.assertEqual(target.website, "t.com")
+
+		split_lead(result["merge_log"])
+		self.assertEqual(frappe.db.get_value("CRM Lead", target.name, "job_title"), "CEO")
+
+	def test_merge_accepts_picked_fields_as_json(self):
+		target = self._create_lead(first_name="T", email="t-json@test.com", job_title="CEO")
+		source = self._create_lead(first_name="S", email="s-json@test.com", job_title="CTO")
+
+		from crm.api.lead import merge_leads
+
+		merge_leads(target.name, source.name, take_from_source='["job_title"]')
+		self.assertEqual(frappe.db.get_value("CRM Lead", target.name, "job_title"), "CTO")
+
+	def test_merge_rejects_picking_a_denylisted_field(self):
+		target = self._create_lead(first_name="T", email="t-deny@test.com")
+		source = self._create_lead(first_name="S", email="s-deny@test.com")
+
+		from crm.api.lead import merge_leads
+
+		with self.assertRaises(frappe.ValidationError):
+			merge_leads(target.name, source.name, take_from_source=["lead_owner"])
+		self.assertFalse(frappe.db.get_value("CRM Lead", source.name, "merged_into"))
+
 	def test_merge_with_child_tables(self):
 		lead_a = self._create_lead(first_name="A", email="a@test.com")
 		lead_b = self._create_lead(first_name="B", email="b@test.com")
