@@ -2,7 +2,7 @@
   <div>
     <Checkbox
       :model-value="enabled"
-      :disabled="saving"
+      :disabled="loading || saving"
       :label="__('Share usage data')"
       @update:model-value="savePreference"
     />
@@ -18,13 +18,17 @@ import { getCurrentInstance, ref } from 'vue'
 const telemetry = useTelemetry()
 const app = getCurrentInstance().appContext.app
 const enabled = ref(true)
+const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
 
-call('frappe.client.get_single_value', {
+const loaded = call('frappe.client.get_single_value', {
   doctype: 'System Settings',
   field: 'enable_telemetry',
-}).then((value) => (enabled.value = Boolean(value)))
+})
+  .then((value) => (enabled.value = Boolean(value)))
+  .catch((err) => console.error('Failed to load telemetry preference', err))
+  .finally(() => (loading.value = false))
 
 async function persistPreference(share) {
   await call('frappe.client.set_value', {
@@ -54,5 +58,10 @@ async function savePreference(share) {
   }
 }
 
-defineExpose({ confirm: () => savePreference(enabled.value) })
+defineExpose({
+  confirm: async () => {
+    await loaded
+    return savePreference(enabled.value)
+  },
+})
 </script>
