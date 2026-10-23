@@ -10,6 +10,7 @@ from crm.tests.test_home_widgets import HomeWidgetTestCase, names, status
 
 OUTSIDER = "home.outsider@example.com"
 BOSS = "home.boss@example.com"
+OTHER_MANAGER = "home.manager2@example.com"
 
 
 class TeamWidgetTestCase(HomeWidgetTestCase):
@@ -115,6 +116,70 @@ class TestUnassigned(TeamWidgetTestCase):
 	def summary(self):
 		data = self.team("unassigned")
 		return data["total"], data["more"]
+
+
+class TestTeamOverview(TeamWidgetTestCase):
+	def setUp(self):
+		super().setUp()
+		self.clear_cache()
+
+	def tearDown(self):
+		self.clear_cache()
+		super().tearDown()
+
+	def clear_cache(self):
+		for scope in (MANAGER, OTHER_MANAGER, "all"):
+			frappe.cache.delete_value(overview_key(scope))
+
+	def overview(self, user=MANAGER):
+		return {row["user"]: row for row in self.team("team_overview", user)["rows"]}
+
+	def test_counts_per_member_match_their_own_widgets(self):
+		self.lead(awaiting_reply_since=now_datetime())
+		idle = self.lead()
+		frappe.db.set_value(
+			"CRM Lead", idle, "modified", add_days(now_datetime(), -10), update_modified=False
+		)
+		self.follow_up(add_days(now_datetime(), -1))
+		for seconds in (600, 1200):
+			responded = self.lead(status=self.closed_lead)
+			frappe.db.set_value("CRM Lead", responded, "first_response_time", seconds)
+		self.deal(deal_owner=MANAGER)
+
+		overview = self.overview()
+		self.assertEqual(set(overview), {MANAGER, AGENT})
+		self.assertEqual(
+			overview[AGENT],
+			{
+				"user": AGENT,
+				"open": 3,
+				"replies_waiting": 1,
+				"no_next_step": 1,
+				"overdue_follow_ups": 1,
+				"first_response_time": 900,
+			},
+		)
+		self.assertEqual(overview[AGENT]["replies_waiting"], self.data("replies_waiting")["total"])
+		self.assertEqual(overview[AGENT]["no_next_step"], self.data("no_next_step")["total"])
+		self.assertEqual(overview[MANAGER]["open"], 1)
+
+	def test_cached_per_scope_for_a_few_minutes(self):
+		make_user(OTHER_MANAGER, "Sales User", "Sales Manager")
+		frappe.db.delete("CRM Sales Hierarchy", {"user": ["in", [OTHER_MANAGER, OUTSIDER]]})
+		hierarchy_node(OUTSIDER, reports_to=hierarchy_node(OTHER_MANAGER, is_group=1))
+
+		self.assertEqual(self.overview()[AGENT]["open"], 0)
+		self.lead()
+		self.assertEqual(self.overview()[AGENT]["open"], 0)
+		self.assertEqual(set(self.overview(OTHER_MANAGER)), {OTHER_MANAGER, OUTSIDER})
+		self.assertEqual(self.overview(BOSS)[AGENT]["open"], 1)
+
+		ttl = frappe.cache.ttl(frappe.cache.make_key(overview_key(MANAGER)))
+		self.assertTrue(120 <= ttl <= 300)
+
+
+def overview_key(scope):
+	return f"crm:home:team_overview:{scope}"
 
 
 def hierarchy_node(user, **kwargs):

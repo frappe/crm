@@ -54,6 +54,7 @@ export const widgets = [
     label: 'Team overview',
     size: { w: 20, h: 8 },
     managerOnly: true,
+    component: lazy('TeamOverview'),
   },
   {
     key: 'team_replies_waiting',

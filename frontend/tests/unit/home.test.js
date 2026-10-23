@@ -3,6 +3,7 @@ import {
   recordListViews,
   recordRoute,
   recordTitle,
+  shortDuration,
 } from '@/utils/home'
 
 const at = (hour) => new Date(2026, 9, 23, hour)
@@ -47,5 +48,23 @@ describe('home records', () => {
       subtitle: '',
     })
     expect(recordTitle({ name: 'D-1' })).toEqual({ title: 'D-1', subtitle: '' })
+  })
+})
+
+describe('shortDuration', () => {
+  it('keeps the two largest units', () => {
+    expect(shortDuration(30)).toBe('<1m')
+    expect(shortDuration(45 * 60 + 20)).toBe('45m')
+    expect(shortDuration(3 * 3600 + 20 * 60)).toBe('3h 20m')
+    expect(shortDuration(2 * 86400 + 4 * 3600 + 59 * 60)).toBe('2d 4h')
+  })
+
+  it('drops an empty second unit', () => {
+    expect(shortDuration(3 * 3600 + 30)).toBe('3h')
+    expect(shortDuration(86400 + 5 * 60)).toBe('1d')
+  })
+
+  it('is blank without a value', () => {
+    expect(shortDuration(null)).toBe('')
   })
 })

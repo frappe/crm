@@ -30,3 +30,21 @@ export function recordTitle({ title, subtitle, name }) {
     subtitle: title && subtitle !== title ? subtitle : '',
   }
 }
+
+// The two largest units, for averages where seconds are noise: "<1m", "45m", "3h 20m", "2d 4h".
+export function shortDuration(seconds) {
+  if (seconds == null) return ''
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 1) return '<1m'
+  const units = [
+    ['d', Math.floor(minutes / 1440)],
+    ['h', Math.floor(minutes / 60) % 24],
+    ['m', minutes % 60],
+  ]
+  const first = units.findIndex(([, value]) => value)
+  return units
+    .slice(first, first + 2)
+    .filter(([, value]) => value)
+    .map(([unit, value]) => `${value}${unit}`)
+    .join(' ')
+}
