@@ -149,8 +149,6 @@ def get_group_by_fields(doctype: str):
 		{"label": "Like", "fieldname": "_liked_by"},
 		{"label": "Assigned To", "fieldname": "_assign"},
 		{"label": "Comments", "fieldname": "_comments"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Modified On", "fieldname": "modified"},
 	]
 
 	for field in standard_fields:
