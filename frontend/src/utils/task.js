@@ -42,6 +42,31 @@ export function fromAllDayDueDate(dueDate) {
     .format('YYYY-MM-DD HH:mm:ss')
 }
 
+export function followUpPresets(now = dayjsLocal()) {
+  const daysToMonday = (8 - now.day()) % 7 || 7
+  return [
+    { key: 'today', label: __('Today'), date: now },
+    { key: 'tomorrow', label: __('Tomorrow'), date: now.add(1, 'day') },
+    { key: 'in_3_days', label: __('In 3 days'), date: now.add(3, 'day') },
+    {
+      key: 'next_week',
+      label: __('Next week'),
+      date: now.add(daysToMonday, 'day'),
+    },
+  ].map((preset) => ({ ...preset, date: preset.date.format(DAY) }))
+}
+
+export function nextFollowUp(tasks = []) {
+  return tasks
+    .filter((task) => task.due_date && !CLOSED_STATUSES.includes(task.status))
+    .sort((a, b) => dueSortKey(a).localeCompare(dueSortKey(b)))[0]
+}
+
+function dueSortKey(task) {
+  if (task.all_day) return `${dueDay(task)} 00:00:00`
+  return dayjsLocal(task.due_date).format('YYYY-MM-DD HH:mm:ss')
+}
+
 function dueDay(task) {
   return task.due_date.slice(0, 10)
 }
