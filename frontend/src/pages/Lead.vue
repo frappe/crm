@@ -258,6 +258,15 @@
     :lead="leadId"
     @select="onSelectMergeLead"
   />
+  <MergeLeadModal
+    v-if="mergeSource"
+    v-model="showMergeLeadModal"
+    :target="doc"
+    :targetAssignees="assignees.data?.map((a) => a.name) || []"
+    :source="mergeSource"
+    @back="onMergeBack"
+    @merged="onLeadsMerged"
+  />
 </template>
 <script setup>
 import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
@@ -288,6 +297,7 @@ import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
 import SelectLeadModal from '@/components/Modals/SelectLeadModal.vue'
+import MergeLeadModal from '@/components/Modals/MergeLeadModal.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -300,7 +310,7 @@ import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
-import { useDocument } from '@/data/document'
+import { useDocument, reloadDocument } from '@/data/document'
 import { mergeFormTabs, composerTab } from '@/utils/formTabs'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
@@ -324,6 +334,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useUnsavedChangesWarning } from '@/composables/useUnsavedChangesWarning'
 import { useVisitedRecords } from '@/composables/useVisitedRecords'
+import { useMergedLeadRedirect } from '@/composables/useMergedLeadRedirect'
 
 const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
@@ -345,11 +356,27 @@ const showDeleteLinkedDocModal = ref(false)
 const showConvertToDealModal = ref(false)
 const showFilesUploader = ref(false)
 const showSelectLeadModal = ref(false)
+const showMergeLeadModal = ref(false)
+const mergeSource = ref(null)
 
-// TODO: open the merge modal with the picked lead
 function onSelectMergeLead(lead) {
-  console.log('Selected lead to merge', lead)
+  mergeSource.value = lead
   showSelectLeadModal.value = false
+  showMergeLeadModal.value = true
+}
+
+function onMergeBack() {
+  showMergeLeadModal.value = false
+  showSelectLeadModal.value = true
+}
+
+function onLeadsMerged() {
+  // the source's tasks, notes and assignments now belong to this lead
+  document.reload()
+  assignees.reload()
+  activities.value?.all_activities?.reload()
+  // a cached copy of the source would still show it unmerged, skipping the redirect
+  reloadDocument('CRM Lead', mergeSource.value?.name)
 }
 
 const {
@@ -750,15 +777,7 @@ function reloadResources(data) {
   }
 }
 
-watch(
-  () => document.doc,
-  (doc) => {
-    if (doc?.merged_into && doc.merged_into !== props.leadId) {
-      router.replace({ name: 'Lead', params: { leadId: doc.merged_into } })
-    }
-  },
-  { immediate: true },
-)
+useMergedLeadRedirect(() => document.doc, props.leadId)
 
 const moreActions = computed(() => [
   {
