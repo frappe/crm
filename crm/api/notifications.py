@@ -97,8 +97,16 @@ def get_hash(notification):
 		if notification.notification_type_doctype == "FCRM Note":
 			_hash = "#notes"
 
-	if notification.type == "WhatsApp":
+	if notification.type == "WhatsApp" or (
+		notification.type == "Reply" and notification.notification_type_doctype == "WA Message"
+	):
 		_hash = "#whatsapp"
+
+	if notification.type == "Reply" and notification.notification_type_doctype == "Communication":
+		_hash = "#emails"
+
+	if notification.type == "Reminder":
+		_hash = "#tasks"
 
 	if notification.type == "Assignment" and notification.notification_type_doctype == "CRM Task":
 		_hash = "#tasks"

@@ -5,11 +5,10 @@ from frappe.query_builder.functions import Count
 from frappe.utils import now
 from pypika import Criterion
 
-from crm.api.doc import get_assigned_users
 from crm.api.interactions import record
-from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
+from crm.api.reply_alerts import Reply
 from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
-from crm.utils import normalize_phone
+from crm.utils import is_unattended, normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 LEAD_SOURCE = "WhatsApp"
@@ -152,40 +151,6 @@ def _link_profile_to_crm_entities(doc) -> None:
 		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to link profile to CRM entities")
 
 
-def notify_agent(doc, method=None):
-	if doc.direction == "Incoming":
-		if not doc.reference_doctype or not doc.reference_docname:
-			return
-		doctype = doc.reference_doctype
-		if doctype and doctype.startswith("CRM "):
-			doctype = doctype[4:].lower()
-		safe_reference_title = frappe.utils.escape_html(
-			get_record_title(doc.reference_doctype, doc.reference_docname)
-		)
-		notification_text = f"""
-            <div class="mb-2 leading-5 text-ink-gray-5">
-                <span class="font-medium text-ink-gray-9">{_("You")}</span>
-                <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
-                <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
-            </div>
-        """
-		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_docname)
-		for user in assigned_users:
-			notify_user(
-				{
-					"owner": doc.owner,
-					"assigned_to": user,
-					"notification_type": "WhatsApp",
-					"message": doc.message,
-					"notification_text": notification_text,
-					"reference_doctype": "WA Message",
-					"reference_docname": doc.name,
-					"redirect_to_doctype": doc.reference_doctype,
-					"redirect_to_docname": doc.reference_docname,
-				}
-			)
-
-
 def update_reference_modified(doc, method=None):
 	"""A sent or received message bumps its lead or deal's modified time, as an email does."""
 	if doc.reference_doctype not in ("CRM Lead", "CRM Deal") or not doc.reference_docname:
@@ -206,19 +171,19 @@ def record_interaction(doc, method=None):
 		doc.reference_docname,
 		INTERACTION_DIRECTIONS.get(doc.direction),
 		doc.timestamp or doc.creation,
+		_reply(doc) if doc.direction == "Incoming" else None,
 	)
 
 
-def get_record_title(doctype: str, name: str) -> str:
-	"""The name people know a lead or deal by, as mention notifications show it."""
-	if doctype == "CRM Lead":
-		title = frappe.db.get_value(doctype, name, "lead_name")
-	elif doctype == "CRM Deal":
-		deal = frappe.db.get_value(doctype, name, ["organization", "lead_name"], as_dict=True)
-		title = deal and (deal.organization or deal.lead_name)
-	else:
-		title = None
-	return title or name
+def _reply(doc) -> Reply:
+	profile = frappe.db.get_value("WA Profile", doc.to, ["profile_name", "phone_number"], as_dict=True)
+	return Reply(
+		channel="WhatsApp",
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		sender_name=(profile and (profile.profile_name or profile.phone_number)) or _("A customer"),
+		preview=doc.message,
+	)
 
 
 def guard_doc_recipient_change(doc) -> None:
@@ -237,7 +202,7 @@ def guard_recipient_change(
 	showing on the record after the change, so the user has to know before it happens."""
 	if not old_number or normalize_phone(old_number) == normalize_phone(new_number):
 		return
-	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended():
+	if frappe.form_dict.get(CONFIRM_PARAM) or is_unattended():
 		return
 
 	count = count_conversation(doctype, docname, old_number)
@@ -287,12 +252,6 @@ def count_conversation(doctype: str, docname: str, phone_number: str) -> int:
 	).run()
 
 	return sum(count for phone, count in rows if normalize_phone(phone) == target)
-
-
-def _is_unattended() -> bool:
-	"""No one is there to confirm: data import, patches, install and migrate."""
-	flags = frappe.flags
-	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
 
 
 @frappe.whitelist()

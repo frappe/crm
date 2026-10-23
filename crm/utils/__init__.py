@@ -1,5 +1,6 @@
 import functools
 import re
+from email.utils import parseaddr
 
 import frappe
 import phonenumbers
@@ -191,6 +192,12 @@ def sales_user_only(fn: callable) -> callable:
 		return fn(*args, **kwargs)
 
 	return wrapper
+
+
+def is_unattended() -> bool:
+	"""No one is there to confirm or be alerted: data import, patches, install and migrate."""
+	flags = frappe.flags
+	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
 
 
 def is_frappe_version(version: str, above: bool = False, below: bool = False):
@@ -390,4 +397,25 @@ def _record_email_interaction(doc: Communication):
 
 	direction = {"Received": "Inbound", "Sent": "Outbound"}.get(doc.sent_or_received)
 	if doc.communication_type == "Communication" and direction:
-		record(doc.reference_doctype, doc.reference_name, direction, doc.communication_date or doc.creation)
+		reply = _email_reply(doc) if direction == "Inbound" else None
+		record(
+			doc.reference_doctype,
+			doc.reference_name,
+			direction,
+			doc.communication_date or doc.creation,
+			reply,
+		)
+
+
+def _email_reply(doc: Communication):
+	from crm.api.reply_alerts import Reply
+
+	sender_name, sender_email = parseaddr(doc.sender or "")
+	return Reply(
+		channel="Email",
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		sender_name=doc.sender_full_name or sender_name or sender_email,
+		preview=doc.subject,
+		sender_user=sender_email and frappe.db.get_value("User", {"email": sender_email}),
+	)
