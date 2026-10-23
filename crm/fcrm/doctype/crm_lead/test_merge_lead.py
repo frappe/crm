@@ -1,5 +1,6 @@
 import json
 from contextlib import contextmanager
+from itertools import pairwise
 from unittest.mock import patch
 
 import frappe
@@ -542,6 +543,28 @@ class TestMergeLead(IntegrationTestCase):
 		split_lead(result["merge_log"])
 		self.assertEqual(totals(target), (100, 90))
 		self.assertEqual(totals(source), (50, 50))
+
+	def test_split_rejects_a_log_split_while_waiting_for_the_lock(self):
+		target = self._create_lead(first_name="Target", email="race-target@test.com")
+		source = self._create_lead(first_name="Source", email="race-source@test.com")
+
+		from crm.api import lead as lead_api
+		from crm.fcrm.doctype.crm_lead.crm_lead import lock_lead
+
+		old_log = lead_api.merge_leads(target.name, source.name)["merge_log"]
+
+		def racing_lock(*names):
+			# What another request finishes while this one waits on the leads' row locks
+			with patch.object(lead_api, "lock_lead", lock_lead):
+				lead_api.split_lead(old_log)
+				lead_api.merge_leads(target.name, source.name)
+			return lock_lead(*names)
+
+		with patch.object(lead_api, "lock_lead", racing_lock):
+			with self.assertRaises(frappe.ValidationError):
+				lead_api.split_lead(old_log)
+
+		self.assertEqual(frappe.db.get_value("CRM Lead", source.name, "merged_into"), target.name)
 
 	def test_merge_log_keeps_only_moved_child_row_names(self):
 		lead_a = self._create_lead(first_name="A", email="rows-a@test.com")
@@ -1175,6 +1198,15 @@ class TestMergeLead(IntegrationTestCase):
 		from crm.fcrm.doctype.crm_lead.crm_lead import resolve_merged_lead
 
 		self.assertIn(resolve_merged_lead(lead_a.name), (lead_a.name, lead_b.name))
+
+	def test_resolve_merged_lead_follows_a_long_chain(self):
+		leads = [self._create_lead(first_name=f"Chain {i}") for i in range(12)]
+		for lead, merged_into in pairwise(leads):
+			lead.db_set("merged_into", merged_into.name)
+
+		from crm.fcrm.doctype.crm_lead.crm_lead import resolve_merged_lead
+
+		self.assertEqual(resolve_merged_lead(leads[0].name), leads[-1].name)
 
 	def test_phone_match_on_merged_lead_with_converted_target_returns_deal(self):
 		target = self._create_lead(first_name="Target", mobile_no="+91 98777 77777")
