@@ -27,6 +27,7 @@ class CRMTask(Document):
 		priority: DF.Literal["Low", "Medium", "High"]
 		reference_docname: DF.DynamicLink | None
 		reference_doctype: DF.Link | None
+		reminded_for: DF.Datetime | None
 		start_date: DF.Date | None
 		status: DF.Literal["Backlog", "Todo", "In Progress", "Done", "Canceled"]
 		title: DF.Data

@@ -18,6 +18,7 @@
   "status",
   "due_date",
   "all_day",
+  "reminded_for",
   "section_break_bzhd",
   "description"
  ],
@@ -74,6 +75,15 @@
    "label": "All Day"
   },
   {
+   "description": "The due date the assignee was last reminded of",
+   "fieldname": "reminded_for",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Reminded For",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
    "fieldname": "section_break_bzhd",
    "fieldtype": "Section Break"
   },
@@ -97,7 +107,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-23 12:00:00.000000",
+ "modified": "2026-10-24 12:00:00.000000",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Task",

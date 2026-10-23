@@ -351,7 +351,10 @@ scheduler_events = {
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
 	"cron": {
-		"*/5 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes"],
+		"*/5 * * * *": [
+			"crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes",
+			"crm.fcrm.doctype.crm_task.reminders.send_follow_up_reminders",
+		],
 		"*/10 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_10_minutes"],
 		"*/15 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_15_minutes"],
 	},

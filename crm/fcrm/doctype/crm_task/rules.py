@@ -26,6 +26,16 @@ def is_follow_up(task) -> bool:
 	)
 
 
+def follow_up_condition(task):
+	"""Query condition for `is_follow_up`."""
+	return (
+		task.status.notin(CLOSED_STATUSES)
+		& task.reference_doctype.isin(FOLLOW_UP_DOCTYPES)
+		& task.reference_docname.isnotnull()
+		& (task.reference_docname != "")
+	)
+
+
 def went_overdue_between(task, since, until):
 	"""Condition for open tasks that became overdue in [since, until], in system time."""
 	since, until = get_datetime(since), get_datetime(until)
@@ -40,7 +50,7 @@ class TaskDue:
 		self.system_zone = ZoneInfo(get_system_timezone())
 		self.user_zone = ZoneInfo(_user_time_zone(user or frappe.session.user))
 		self.now = now or now_datetime()
-		self.today = self.now.replace(tzinfo=self.system_zone).astimezone(self.user_zone).date()
+		self.today = self.user_time(self.now).date()
 
 	def is_overdue(self, task) -> bool:
 		if task.status in CLOSED_STATUSES or not task.due_date:
@@ -57,6 +67,9 @@ class TaskDue:
 		if task.all_day:
 			return due.date() == self.today
 		return self._day_start(self.today) <= due < self._day_start(self.today + timedelta(days=1))
+
+	def user_time(self, at: datetime) -> datetime:
+		return get_datetime(at).replace(tzinfo=self.system_zone).astimezone(self.user_zone)
 
 	def overdue_condition(self, task):
 		"""Query condition for open overdue tasks, for `frappe.qb` on a CRM Task table."""
