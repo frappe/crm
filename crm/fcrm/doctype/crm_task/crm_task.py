@@ -3,6 +3,7 @@
 
 from datetime import datetime, time
 
+import frappe
 from frappe.desk.form.assign_to import add as assign
 from frappe.desk.form.assign_to import remove as unassign
 from frappe.model.document import Document
@@ -126,3 +127,8 @@ class CRMTask(Document):
 			"title_field": "title",
 			"kanban_fields": '["description", "priority", "creation"]',
 		}
+
+
+def on_doctype_update():
+	frappe.db.add_index("CRM Task", ["reference_doctype", "reference_docname", "status"])
+	frappe.db.add_index("CRM Task", ["status", "due_date"])
