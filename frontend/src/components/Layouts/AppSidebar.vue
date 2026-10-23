@@ -130,7 +130,7 @@
           </SidebarItem>
           <SidebarItem
             v-if="!mobile && flowInstalled"
-            :label="__('Ask AI')"
+            :label="__('Flow')"
             :active="assistantOpen"
             @click="assistantOpen = !assistantOpen"
           >
