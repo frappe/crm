@@ -109,6 +109,7 @@ const leads = createResource({
       filters: [
         ['name', '!=', props.lead],
         ['converted', '=', 0],
+        ['is_duplicate', '=', 0],
       ],
       or_filters: txt
         ? ['name', 'lead_name', 'email', 'organization'].map((f) => [
