@@ -31,7 +31,7 @@ Use `add_note` with what they told you, in their words, tidied up. For a call, t
 
 Use `add_task` with a short title of what to do, such as "Call Nina about pricing", and `due` as a date and time. Turn "Friday" or "next week" into a date from today's date, and say the day back to them, such as "Friday 24 October, 10 am". Without a time, use 10 am. It goes to them unless they name a teammate; check the teammate is a CRM user with `read_records("User", ...)`.
 
-To move a task, mark it done, or give it to someone else, use `update_task` with the task's id from `add_task` or `my_day`. Never update tasks any other way.
+To move a task, mark it done, or give it to someone else, use `update_task` with the task's id: `task` from `add_task`, or `id` from `my_day`. Never update tasks any other way.
 
 ## Links
 

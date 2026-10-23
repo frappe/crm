@@ -319,6 +319,8 @@ export function changedRecords(changes: FlowChange[]): ChangedRecords {
       if (change.args?.doctype && change.args?.record) {
         records.push({ doctype: change.args.doctype, name: change.args.record })
       }
+      if (change.tool === 'add_task') doctypes.add('CRM Task')
+      if (change.tool === 'add_note') doctypes.add('FCRM Note')
     } else if (FIELD_TOOLS.has(change.tool)) {
       if (change.args?.doctype) doctypes.add(change.args.doctype)
     } else if (TOOL_DOCTYPES[change.tool]) {

@@ -162,7 +162,7 @@ def setup_unfinished() -> bool:
 		},
 		limit=1,
 	)
-	return not team and not frappe.db.exists("CRM Invitation", {})
+	return not team and not frappe.db.exists("CRM Invitation", {"status": "Pending"})
 
 
 def _listed(doctype: str, **kwargs) -> list | None:
@@ -1050,13 +1050,14 @@ def my_day(days: int = 1, *, ctx: ToolContext) -> dict[str, Any]:
 		"tasks": [
 			{
 				**_record(t.reference_doctype, t.reference_docname, "tasks"),
+				"id": t.name,
 				"task": t.title,
 				"due": str(t.due_date),
 			}
 			for t in frappe.get_list(
 				"CRM Task",
 				filters={"assigned_to": user, "status": OPEN_TASK, "due_date": ["<", until]},
-				fields=["title", "due_date", "reference_doctype", "reference_docname"],
+				fields=["name", "title", "due_date", "reference_doctype", "reference_docname"],
 				order_by="due_date asc",
 				limit=50,
 			)
@@ -1121,7 +1122,7 @@ def sales_health(*, ctx: ToolContext) -> dict[str, Any]:
 				limit=10,
 			)
 		],
-		"quiet_deals": len(_quiet(_open_deals({}))),
+		"quiet_deals": len(_quiet(_open_deals({}, limit=0))),
 		"overdue_tasks": len(_overdue_tasks(today, ctx.user)),
 		"lost_reasons_last_90_days": _lost_by_reason(frappe.utils.add_days(today, -90), today, stages),
 		"this_quarter_by_owner": _by_owner(frappe.utils.get_quarter_start(today), today, stages),
@@ -1148,13 +1149,14 @@ DEAL_FIELDS = [
 ]
 
 
-def _open_deals(filters: dict[str, Any]) -> list:
+def _open_deals(filters: dict[str, Any], limit: int = 1000) -> list:
+	"""Open deals the user can see; `limit=0` for all of them."""
 	closed = frappe.get_all("CRM Deal Status", filters={"type": ["in", ["Won", "Lost"]]}, pluck="name")
 	return frappe.get_list(
 		"CRM Deal",
 		filters={**filters, "status": ["not in", closed or [""]]},
 		fields=DEAL_FIELDS,
-		limit=1000,
+		limit=limit,
 	)
 
 
@@ -1384,6 +1386,18 @@ def _last_activity(deals: list) -> dict[str, Any]:
 		if doctype == "Comment":
 			query = query.where(t.comment_type == "Comment")
 		queries.append(query)
+	# Twilio and Exotel link a call to its deal through the call's links table
+	call, link = frappe.qb.DocType("CRM Call Log"), frappe.qb.DocType("Dynamic Link")
+	queries.append(
+		frappe.qb.from_(link)
+		.join(call)
+		.on(call.name == link.parent)
+		.select(link.link_name, Max(call.creation))
+		.where(link.parenttype == "CRM Call Log")
+		.where(link.link_doctype == "CRM Deal")
+		.where(link.link_name.isin(names))
+		.groupby(link.link_name)
+	)
 	log = frappe.qb.DocType("CRM Status Change Log")
 	queries.append(
 		frappe.qb.from_(log)

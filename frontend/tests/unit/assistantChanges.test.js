@@ -233,7 +233,7 @@ describe('changedRecords', () => {
         },
       ]),
     ).toEqual({
-      doctypes: [],
+      doctypes: ['FCRM Note'],
       records: [{ doctype: 'CRM Lead', name: 'CRM-LEAD-0001' }],
     })
   })
