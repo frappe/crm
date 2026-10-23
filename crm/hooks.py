@@ -437,6 +437,7 @@ after_migrate = [
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 	"crm.install.add_default_scripts",
 	"crm.install.add_web_form_custom_fields",
+	"crm.install.add_assignment_index",
 ]
 
 standard_dropdown_items = [

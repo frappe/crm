@@ -39,6 +39,7 @@ def after_install(force=False):
 	add_assignment_rule_property_setters()
 	seed_default_rules_and_mappings()
 	set_agent_instructions()
+	add_assignment_index()
 	frappe.db.commit()
 
 
@@ -619,6 +620,11 @@ def add_default_scripts():
 	for doctype in ["CRM Lead", "CRM Deal"]:
 		create_product_details_script(doctype)
 	create_forecasting_script()
+
+
+def add_assignment_index():
+	# ToDo is a framework doctype, so its index for CRM's assignment lookups is added here
+	frappe.db.add_index("ToDo", ["reference_type", "status", "allocated_to", "reference_name"])
 
 
 def add_assignment_rule_property_setters():
