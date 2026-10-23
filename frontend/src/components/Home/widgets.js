@@ -11,6 +11,7 @@ export const widgets = [
     key: 'replies_waiting',
     label: 'Replies waiting',
     size: { w: 10, h: 8 },
+    component: lazy('RepliesWaiting'),
   },
   {
     key: 'follow_ups_due',
