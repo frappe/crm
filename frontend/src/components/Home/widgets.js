@@ -38,6 +38,7 @@ export const widgets = [
     key: 'no_next_step',
     label: 'No next step',
     size: { w: 10, h: 8 },
+    component: lazy('NoNextStep'),
   },
   {
     key: 'my_tasks',
