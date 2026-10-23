@@ -254,6 +254,46 @@ class TestCRMCallLog(IntegrationTestCase):
 		self.assertEqual(parsed["from"], "+1234567890")
 		self.assertEqual(parsed["to"], "+0987654321")
 
+	def _missing_user(self):
+		"""Return a user id that is guaranteed not to exist on the test site"""
+		user = f"missing-{frappe.generate_hash(length=8)}@example.com"
+		self.assertFalse(frappe.db.exists("User", user))
+		return user
+
+	def test_parse_call_log_incoming_receiver_deleted(self):
+		"""A receiver that no longer exists is shown by id instead of raising"""
+		missing_user = self._missing_user()
+		call_data = {
+			"type": "Incoming",
+			"from": "+1234567890",
+			"to": "+0987654321",
+			"receiver": missing_user,
+			"duration": 120,
+		}
+
+		parsed = parse_call_log(call_data)
+
+		self.assertEqual(parsed["_receiver"]["label"], missing_user)
+		self.assertIsNone(parsed["_receiver"]["image"])
+		self.assertEqual(parsed["_caller"]["label"], "Unknown")
+
+	def test_parse_call_log_outgoing_caller_deleted(self):
+		"""A caller that no longer exists is shown by id instead of raising"""
+		missing_user = self._missing_user()
+		call_data = {
+			"type": "Outgoing",
+			"from": "+1234567890",
+			"to": "+0987654321",
+			"caller": missing_user,
+			"duration": 180,
+		}
+
+		parsed = parse_call_log(call_data)
+
+		self.assertEqual(parsed["_caller"]["label"], missing_user)
+		self.assertIsNone(parsed["_caller"]["image"])
+		self.assertEqual(parsed["_receiver"]["label"], "Unknown")
+
 	def test_get_call_log_api(self):
 		"""Test get_call_log API function"""
 		call = create_test_call_log(
