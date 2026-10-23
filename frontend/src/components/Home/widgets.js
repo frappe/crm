@@ -29,6 +29,7 @@ export const widgets = [
     key: 'assigned_to_me',
     label: 'Assigned to me',
     size: { w: 10, h: 8 },
+    component: lazy('AssignedToMe'),
   },
   {
     key: 'recently_opened',
