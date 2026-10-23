@@ -1,9 +1,12 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+from datetime import datetime, time
+
 from frappe.desk.form.assign_to import add as assign
 from frappe.desk.form.assign_to import remove as unassign
 from frappe.model.document import Document
+from frappe.utils import getdate
 
 
 class CRMTask(Document):
@@ -15,6 +18,7 @@ class CRMTask(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		all_day: DF.Check
 		assigned_to: DF.Link | None
 		description: DF.TextEditor | None
 		due_date: DF.Datetime | None
@@ -31,12 +35,18 @@ class CRMTask(Document):
 		self.assign_to()
 
 	def validate(self):
+		self.set_all_day_due_date()
 		if self.is_new() or not self.assigned_to:
 			return
 
 		if self.get_doc_before_save().assigned_to != self.assigned_to:
 			self.unassign_from_previous_user(self.get_doc_before_save().assigned_to)
 			self.assign_to()
+
+	def set_all_day_due_date(self):
+		# An all-day task keeps only its day, unshifted by any timezone.
+		if self.all_day and self.due_date:
+			self.due_date = datetime.combine(getdate(self.due_date), time.min)
 
 	def unassign_from_previous_user(self, user: str | None):
 		if user:
@@ -100,6 +110,7 @@ class CRMTask(Document):
 			"description",
 			"assigned_to",
 			"due_date",
+			"all_day",
 			"status",
 			"priority",
 			"reference_doctype",

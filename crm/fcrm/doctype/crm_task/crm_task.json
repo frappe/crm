@@ -17,6 +17,7 @@
   "assigned_to",
   "status",
   "due_date",
+  "all_day",
   "section_break_bzhd",
   "description"
  ],
@@ -67,6 +68,12 @@
    "label": "Due Date"
   },
   {
+   "default": "0",
+   "fieldname": "all_day",
+   "fieldtype": "Check",
+   "label": "All Day"
+  },
+  {
    "fieldname": "section_break_bzhd",
    "fieldtype": "Section Break"
   },
@@ -90,7 +97,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-26 12:55:16.304522",
+ "modified": "2026-10-23 12:00:00.000000",
  "modified_by": "shariq@frappe.io",
  "module": "FCRM",
  "name": "CRM Task",

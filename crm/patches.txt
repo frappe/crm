@@ -44,3 +44,4 @@ crm.patches.v1_0.set_mcp_agent_instructions
 crm.patches.v1_0.add_availability_statuses
 crm.patches.v1_0.backfill_interaction_timestamps
 crm.patches.v1_0.backfill_whatsapp_interaction_timestamps
+crm.patches.v1_0.add_all_day_to_task_quick_entry
