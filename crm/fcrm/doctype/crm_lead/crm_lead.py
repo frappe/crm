@@ -427,6 +427,12 @@ class CRMLead(Document):
 			if user and user != new_deal.deal_owner:
 				new_deal.assign_agent(user)
 
+		# Each co-assignee ToDo makes its user the owner (newest owns), so restore the lead's owner.
+		if new_deal.deal_owner:
+			frappe.db.set_value(
+				"CRM Deal", new_deal.name, "deal_owner", new_deal.deal_owner, update_modified=False
+			)
+
 		return new_deal.name
 
 	def set_sla(self):
