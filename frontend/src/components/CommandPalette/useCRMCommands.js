@@ -21,12 +21,15 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import { prettyDate } from '@/utils'
+import {
+  readRecent,
+  recentNamesByDoctype,
+  rememberRoute,
+  sortByRecency,
+} from '@/utils/recentRecords'
 import { formatTaskDue, isTaskOverdue } from '@/utils/task'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
-
-const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
-const RECENT_LIMIT = 5
 
 // Contextual groups are named after the page ('Lead', 'List'), not listed below.
 const CONTEXT_RANK = 350
@@ -391,49 +394,4 @@ function recordCommand(record, group, tracked) {
 function recordRoute(record) {
   const param = `${record.route.toLowerCase()}Id`
   return { name: record.route, params: { [param]: record.name } }
-}
-
-function rememberRoute(route, user) {
-  const doctype = RECENT_TYPES[route.name]
-  if (!doctype) return
-  const param = `${route.name.toLowerCase()}Id`
-  const name = route.params[param]
-  if (!name) return
-  const recent = [
-    { doctype, name },
-    ...readRecent(user).filter(
-      (item) => item.doctype !== doctype || item.name !== name,
-    ),
-  ].slice(0, RECENT_LIMIT)
-  localStorage.setItem(recentKey(user), JSON.stringify(recent))
-}
-
-// Newest first across doctypes, e.g. [{ doctype: 'CRM Deal', name: 'D-1' }].
-function readRecent(user) {
-  try {
-    const recent = JSON.parse(localStorage.getItem(recentKey(user)) || '[]')
-    return Array.isArray(recent) ? recent : []
-  } catch {
-    return []
-  }
-}
-
-function recentNamesByDoctype(recent) {
-  const names = {}
-  for (const { doctype, name } of recent) {
-    names[doctype] = [...(names[doctype] || []), name]
-  }
-  return names
-}
-
-function sortByRecency(records, recent) {
-  const position = (record) =>
-    recent.findIndex(
-      (item) => item.doctype === record.doctype && item.name === record.name,
-    )
-  return [...records].sort((a, b) => position(a) - position(b))
-}
-
-function recentKey(user) {
-  return `crm-command-palette-recent:${user || 'anonymous'}`
 }

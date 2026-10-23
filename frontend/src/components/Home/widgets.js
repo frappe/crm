@@ -35,6 +35,7 @@ export const widgets = [
     key: 'recently_opened',
     label: 'Recently opened',
     size: { w: 10, h: 8 },
+    component: lazy('RecentlyOpened'),
   },
   {
     key: 'no_next_step',
