@@ -18,16 +18,22 @@ export function openAssistant(prompt = ''): void {
   assistantOpen.value = true
 }
 
+// Flow is a separate app before Frappe 17 and part of the framework after; either way the
+// user may use it when they can read their chats
 export function checkFlowInstalled(): void {
   if (checkedFlow) return
   checkedFlow = true
   createResource({
+    url: 'frappe.client.get_count',
+    params: { doctype: 'Flow Session' },
+    auto: true,
+    onSuccess: () => (flowInstalled.value = true),
+  })
+  createResource({
     url: 'frappe.apps.get_apps',
     auto: true,
     onSuccess: (apps: { name: string; logo?: string }[]) => {
-      const flow = apps.find((app) => app.name === 'flow')
-      flowInstalled.value = !!flow
-      flowLogo.value = flow?.logo ?? ''
+      flowLogo.value = apps.find((app) => app.name === 'flow')?.logo ?? ''
     },
   })
 }

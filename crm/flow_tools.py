@@ -8,9 +8,14 @@ import re
 from typing import Any, Literal
 
 import frappe
-from flow import ToolContext, tool
 from frappe import _
 from pydantic import BaseModel
+
+try:
+	# Flow ships in the framework from Frappe 17
+	from frappe.flow import ToolContext, tool
+except ImportError:
+	from flow import ToolContext, tool
 
 FIELD_TYPES = {
 	"short text": "Data",
@@ -67,6 +72,8 @@ def setup_status(*, ctx: ToolContext) -> dict[str, Any]:
 		),
 		"lead_sources": _listed("CRM Lead Source", pluck="name"),
 		"lost_reasons": _listed("CRM Lost Reason", pluck="name"),
+		# without it, email is connected in Email settings, not in the chat
+		"password_box": _password_box() is not None,
 		"email_accounts": _listed(
 			"Email Account",
 			fields=[
@@ -142,6 +149,17 @@ def _sample_data_left() -> dict[str, Any]:
 		"deals": frappe.get_list("CRM Deal", filters={"name": ["in", deals or [""]]}, pluck="name"),
 		"users": frappe.get_all("User", filters={"name": ["in", DEMO_USER_EMAILS]}, pluck="name"),
 	}
+
+
+def _password_box():
+	"""Flow's `reveal` for a password typed in the chat's password box, or None when this Flow
+	has no password box, so passwords never go through the chat."""
+	for module in ("frappe.flow.lib.secrets", "flow.lib.secrets"):
+		try:
+			return frappe.get_attr(f"{module}.reveal")
+		except (ImportError, AttributeError):
+			continue
+	return None
 
 
 def setup_unfinished() -> bool:
@@ -489,9 +507,11 @@ def connect_email(
 ) -> str:
 	"""Connect a mailbox for sending and receiving. `password` is the secret: reference the chat's
 	password box returned, never the password itself."""
-	from flow.lib.secrets import reveal
-
 	from crm.api.settings import create_email_account
+
+	reveal = _password_box()
+	if not reveal:
+		frappe.throw(_("This chat can't take a password safely. Connect the email in Email settings."))
 
 	create_email_account(
 		{

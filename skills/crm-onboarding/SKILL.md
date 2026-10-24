@@ -86,7 +86,7 @@ When a step is done or skipped, say so in one line, give its link, and ask "What
 
 ### Connect your email
 
-Set it up for them, one question at a time:
+Set it up for them, one question at a time. If `setup_status` says `password_box` is false, this chat can't take a password safely: send them to [Email settings](/crm/leads?settings=Accounts) to connect it, ask them to say "done", and skip the steps below.
 
 1. **Which email do you use for sales?** Options: Gmail, Outlook, Yahoo, Yandex, then "Something else" after the --- line. For something else, send them to [Email settings](/crm/leads?settings=Accounts), which also covers Frappe Mail and custom servers, and ask them to say "done".
 2. **What's the email address?** An open question, so no options.
