@@ -351,6 +351,7 @@
   />
 </template>
 <script setup>
+import { assistantChanges } from '@/composables/assistant'
 import Icon from '@/components/Icon.vue'
 import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
@@ -722,6 +723,17 @@ function onEnrichmentDone(data) {
 
 onMounted(() => {
   $socket?.on('domain_enrichment_progress', onEnrichmentDone)
+})
+
+// the assistant changed records of this list's doctype: show them without a manual reload
+watch(assistantChanges, (changed) => {
+  if (!changed) return
+  if (
+    changed.doctypes.includes(props.doctype) ||
+    changed.doctypes.includes('*')
+  ) {
+    reload()
+  }
 })
 
 onBeforeUnmount(() => {
