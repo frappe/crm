@@ -154,9 +154,11 @@ def _sample_data_left() -> dict[str, Any]:
 def _password_box():
 	"""Flow's `reveal` for a password typed in the chat's password box, or None when this Flow
 	has no password box, so passwords never go through the chat."""
+	from importlib import import_module
+
 	for module in ("frappe.flow.lib.secrets", "flow.lib.secrets"):
 		try:
-			return frappe.get_attr(f"{module}.reveal")
+			return import_module(module).reveal
 		except (ImportError, AttributeError):
 			continue
 	return None
