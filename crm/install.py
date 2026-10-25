@@ -29,6 +29,7 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_default_quick_filters()
 	add_standard_dropdown_items()
+	add_default_view_all_roles()
 	add_user_email_subject_fields()
 	add_default_availability_statuses()
 	add_availability_user_fields()
@@ -531,6 +532,15 @@ def add_standard_dropdown_items():
 	for item in frappe.get_hooks("standard_dropdown_items"):
 		crm_settings.append("dropdown_items", item)
 
+	crm_settings.save()
+
+
+def add_default_view_all_roles():
+	# Sales Manager has always seen every Lead and Deal; keep that as the default.
+	crm_settings = frappe.get_single("FCRM Settings")
+	if crm_settings.view_all_roles:
+		return
+	crm_settings.append("view_all_roles", {"role": "Sales Manager"})
 	crm_settings.save()
 
 
