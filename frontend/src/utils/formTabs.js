@@ -14,7 +14,10 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
   const values = new Set(merged.map((tab) => tab.value))
 
   for (const tab of scriptTabs) {
-    if (!tab?.name) continue
+    if (typeof tab?.name !== 'string' || !tab.name.trim()) {
+      console.warn('CRM: tab skipped, its name must be a non-empty string')
+      continue
+    }
 
     const patch = { ...tab }
     // keep a reactive document.tabs from proxying components
@@ -52,8 +55,7 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
   return merged.filter((tab) => {
     // a broken script guard hides its own tab, not the whole tab bar
     try {
-      const hidden = typeof tab.hide === 'function' ? tab.hide() : tab.hide
-      return !hidden && (!tab.condition || Boolean(tab.condition()))
+      return tab.condition == null || isMet(tab.condition)
     } catch (error) {
       console.error(`CRM: tab "${tab.name}" visibility check failed`, error)
       return false
@@ -61,9 +63,14 @@ export function mergeFormTabs(baseTabs, scriptTabs = []) {
   })
 }
 
+// a condition is a boolean or a function returning one
+function isMet(condition) {
+  return Boolean(typeof condition === 'function' ? condition() : condition)
+}
+
 function both(a, b) {
-  if (!a || !b) return a || b
-  return () => a() && b()
+  if (a == null || b == null) return a ?? b
+  return () => isMet(a) && isMet(b)
 }
 
 // URL-safe tab value; keeps letters of any script

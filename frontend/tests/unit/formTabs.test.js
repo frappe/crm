@@ -57,17 +57,37 @@ describe('mergeFormTabs', () => {
     expect(result.map((t) => t.name)).toEqual(['Activity'])
   })
 
-  it('hides a tab with hide, as a flag or a function', () => {
+  it('takes a boolean condition', () => {
     const tabs = [
       ...base,
       { name: 'Comments', value: 'comments', condition: () => true },
     ]
     const result = mergeFormTabs(tabs, [
-      { name: 'Activity', hide: () => true },
-      { name: 'Emails', hide: false },
-      { name: 'Comments', hide: true },
+      { name: 'Activity', condition: false },
+      { name: 'Emails', condition: true },
+      { name: 'Comments', condition: false },
+      { name: 'Shipping', component, condition: false },
+      { name: 'Notes', component, condition: true },
     ])
-    expect(result.map((t) => t.name)).toEqual(['Emails'])
+    expect(result.map((t) => t.name)).toEqual(['Emails', 'Notes'])
+  })
+
+  it('skips a tab whose name is not a string', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const result = mergeFormTabs(base, [
+      { name: 42, component },
+      { name: { en: 'X' }, component },
+      { name: null, component },
+      { name: '  ', component },
+      { name: 'Shipping', component },
+    ])
+    expect(result.map((t) => t.name)).toEqual([
+      'Activity',
+      'Emails',
+      'Shipping',
+    ])
+    expect(warn).toHaveBeenCalledTimes(4)
+    warn.mockRestore()
   })
 
   it('labels an appended tab with its name by default', () => {

@@ -66,11 +66,11 @@ async function tabsAfter(script) {
 }
 
 describe('tabs from a real form script', () => {
-  it('hides a built-in tab with hide', async () => {
+  it('hides a built-in tab with a false condition', async () => {
     const { names } = await tabsAfter(`
       class CRMDeal {
         onLoad() {
-          this.tabs.push({ name: 'Comments', hide: true })
+          this.tabs.push({ name: 'Comments', condition: false })
         }
       }
     `)
