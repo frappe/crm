@@ -93,6 +93,7 @@
 
             <Button
               :tooltip="__('Send an Email')"
+              :disabled="!emailTab"
               :icon="Email2Icon"
               @click="
                 doc.email
@@ -394,6 +395,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { mergeFormTabs, composerTab } from '@/utils/formTabs'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { canViewQuotations } from '@/composables/erpnext'
 import { callEnabled } from '@/composables/telephony'
@@ -814,7 +816,7 @@ const tabs = computed(() => {
       condition: () => canViewQuotations.value,
     },
   ]
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+  return mergeFormTabs(tabOptions, document.tabs)
 })
 
 const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
@@ -1004,11 +1006,12 @@ function deleteDeal() {
 
 const activities = ref(null)
 
+const emailTab = computed(() => composerTab(tabs.value, activeTab.value))
+
 function openEmailBox() {
-  if (!['emails', 'comments', 'activities'].includes(activeTab.value)) {
-    activities.value.changeTabTo('emails')
-  }
-  nextTick(() => activities.value.emailBox?.openEmailBox())
+  if (!emailTab.value) return
+  changeTabTo(emailTab.value)
+  nextTick(() => activities.value?.emailBox?.openEmailBox())
 }
 
 function statusLabel(status) {

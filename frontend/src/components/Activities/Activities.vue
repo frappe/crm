@@ -4,11 +4,24 @@
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
     :title="title"
+    :label="currentTab?.label"
     :doc="doc"
     :modalRef="modalRef"
+    :tabs="tabs"
+    :customPane="Boolean(tabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
-    <QuotationsList v-if="title == 'Quotations'" :deal="docname" />
+    <div v-if="tabComponent" class="flex flex-col h-full">
+      <component
+        :is="tabComponent"
+        :key="currentTab.value"
+        :doctype="doctype"
+        :docname="docname"
+        :doc="doc"
+        :tab="currentTab"
+      />
+    </div>
+    <QuotationsList v-else-if="title == 'Quotations'" :deal="docname" />
     <div
       v-else-if="all_activities?.loading"
       class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
@@ -492,7 +505,7 @@
   </FadedScrollableDiv>
   <div>
     <CommunicationArea
-      v-if="['Emails', 'Comments', 'Activity'].includes(title)"
+      v-if="!tabComponent && ['Emails', 'Comments', 'Activity'].includes(title)"
       ref="emailBox"
       v-model="doc"
       v-model:reload="reload_email"
@@ -500,7 +513,7 @@
       @scroll="scroll"
     />
     <div
-      v-if="title == 'WhatsApp' && !hasMobileNumber"
+      v-if="!tabComponent && title == 'WhatsApp' && !hasMobileNumber"
       class="mx-3 mb-2.5 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
     >
       <span
@@ -510,7 +523,7 @@
       {{ __('Add a mobile number to send WhatsApp messages.') }}
     </div>
     <MessageInput
-      v-else-if="title == 'WhatsApp'"
+      v-else-if="!tabComponent && title == 'WhatsApp'"
       v-bind="messages"
       class="mx-3 mb-2.5 sm:mx-10"
       :sender-name="senderName"
@@ -664,11 +677,13 @@ const showFilesUploader = ref(false)
 const fieldLayoutTabIndex = ref(0)
 const fieldLayoutTabName = ref('')
 
-const title = computed(
-  () =>
-    props.tabs?.find((tab) => tab.value === activeTab.value)?.name ||
-    'Activity',
+const currentTab = computed(
+  () => props.tabs?.find((tab) => tab.value === activeTab.value) || null,
 )
+
+const title = computed(() => currentTab.value?.name || 'Activity')
+
+const tabComponent = computed(() => currentTab.value?.component || null)
 
 const changeTabTo = (tabName) => {
   if (!props.tabs?.some((tab) => tab.value === tabName)) return

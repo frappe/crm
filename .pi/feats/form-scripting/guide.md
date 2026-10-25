@@ -666,6 +666,41 @@ class CRMLead {
 
 ---
 
+## Custom Tabs (Lead and Deal Pages)
+
+Push onto `this.tabs` to add a tab, or to patch a built-in one by `name` (case-insensitive).
+
+```js
+class CRMDeal {
+	onLoad() {
+		this.tabs.push({
+			name: "Shipping",
+			label: __("Shipping"),
+			component: {
+				props: ["doc"],
+				setup: (props) => () => h("div", { class: "p-5" }, props.doc.name)
+			}
+		});
+		this.tabs.push({ name: "Comments", condition: false });
+	}
+}
+```
+
+| Key         | Description                                                                           |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `name`      | **Required.** Matching a built-in tab patches it; it keeps its own `name` and `value` |
+| `label`     | Tab bar and pane heading text — wrap in `__()`. Defaults to `name` on a new tab      |
+| `iconLeft`  | Icon component, as built-in tabs use                                                  |
+| `value`     | URL hash / remembered-tab key. Defaults to a slug of `name`; must be unique           |
+| `component` | The pane, built with `h` (no template compiler). Required for a new tab               |
+| `condition` | Boolean or function; falsy hides the tab. On a built-in tab both conditions must pass |
+
+- The component receives `doctype`, `docname`, `doc` and `tab` props, and owns its whole pane: no built-in header action or composer.
+- Mobile pages have a built-in `Details` tab that desktop lacks.
+- `onRender` runs on every visit, so pushing there accumulates entries; use a `condition` function for dynamic visibility rather than pushing again.
+
+---
+
 ## Showing Dialogs
 
 Two helpers are available for dialogs:
@@ -901,6 +936,7 @@ All helpers are available as bare names everywhere in your script — no imports
 | `createDialog(options)`     | Open a frappe-ui dialog modal (simple message/confirm)                       |
 | `formDialog(options)`       | Open a form dialog with FieldLayout. Supports Promise, `onSubmit` callback, and custom `actions`. See [form-dialog.md](./form-dialog.md) |
 | `socket`                    | Socket.io instance for realtime events                                       |
+| `h`                         | Vue's `h` — builds custom tab components                                     |
 | `throwError(message)`       | `toast.error` + `throw` in one call — stops execution                        |
 | `crm.makePhoneCall(number)` | Initiate a phone call via the CRM call integration                           |
 | `crm.openSettings(page)`    | Open the CRM settings panel to a specific page                               |
