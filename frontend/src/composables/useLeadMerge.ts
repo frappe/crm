@@ -2,6 +2,7 @@ import { call } from 'frappe-ui'
 import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
 import { usersStore } from '@/stores/users'
 import { formatNumber } from '@/utils/numberFormat'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 
 // Step 2 of the lead merge: the fields the two leads differ on and, for each,
 // which lead's value survives. `target` is the lead being kept, `source` the
@@ -132,12 +133,17 @@ export function useLeadMerge(
     merging.value = true
     error.value = ''
     try {
-      const result = await call('crm.api.lead.merge_leads', {
-        target: toValue(target),
-        source: toValue(source),
-        take_from_source: takeFromSource.value,
-      })
-      return result.target
+      // taking the source's mobile_no moves the target off a number it may have a
+      // WhatsApp conversation with; the server refuses until the user confirms
+      const result = await withRecipientConfirmation((confirm?: object) =>
+        call('crm.api.lead.merge_leads', {
+          target: toValue(target),
+          source: toValue(source),
+          take_from_source: takeFromSource.value,
+          ...confirm,
+        }),
+      )
+      return result?.target ?? null
     } catch (e) {
       error.value = errorMessage(e, __('Failed to merge leads'))
       return null
