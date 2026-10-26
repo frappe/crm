@@ -8,7 +8,6 @@ export function setLandingPageLocally(page) {
   window.sysdefaults = { ...window.sysdefaults, [LANDING_PAGE_KEY]: page }
 }
 
-// `page` is a route name or a saved view name; stale values fall back to Home.
 export function landingRoute(page, views, hasRoute) {
   if (!page || page === 'Home') return null
   const view = views?.find((v) => v.name === page)

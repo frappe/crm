@@ -1,6 +1,3 @@
-// The leads and deals a user opened last, kept in their browser only.
-// Read by the command palette and the Recently opened Home widget.
-
 const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
 export const RECENT_LIMIT = 5
 
@@ -19,7 +16,6 @@ export function rememberRoute(route, user) {
   localStorage.setItem(recentKey(user), JSON.stringify(recent))
 }
 
-// Newest first across doctypes, e.g. [{ doctype: 'CRM Deal', name: 'D-1' }].
 export function readRecent(user) {
   try {
     const recent = JSON.parse(localStorage.getItem(recentKey(user)) || '[]')

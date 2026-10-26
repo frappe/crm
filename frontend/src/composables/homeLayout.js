@@ -4,7 +4,6 @@ import { copy } from '@/utils'
 import { call, toast } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
-// "mine" is the user's own layout; "agent" and "manager" are role defaults a System Manager edits.
 function homeApi(target) {
   if (target === 'mine') {
     return {
@@ -35,7 +34,6 @@ export function useHomeLayout() {
 
   const visibleItems = computed({
     get: () => items.value.filter((item) => isRegistered(item.name)),
-    // unregistered widgets stay in the saved layout until their component ships
     set: (visible) => {
       const hidden = items.value.filter((item) => !isRegistered(item.name))
       items.value = [...visible, ...hidden]
@@ -108,7 +106,7 @@ export function useHomeLayout() {
   async function updateConfig(item, config) {
     item.config = config
     if (editing.value) return
-    await run(() => endpoints().save(items.value))
+    await save()
     items.value = copy(saved.value)
   }
 

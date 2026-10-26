@@ -22,7 +22,7 @@ import TaskRow from '@/components/Home/TaskRow.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { refreshHome, useHomeWidget } from '@/composables/homeWidget'
 
-// Home passes `config` to every widget; declared so it does not fall through as a setting
+// Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
 defineProps({ config: { type: Object, default: null } })
 
 const { showModal } = useDoctypeModal()

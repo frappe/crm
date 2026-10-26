@@ -1,12 +1,12 @@
 export function greetingFor(date, name) {
-  const hour = date.getHours()
-  const greeting =
-    hour < 12
-      ? __('Good morning')
-      : hour < 17
-        ? __('Good afternoon')
-        : __('Good evening')
+  const greeting = greetingAt(date.getHours())
   return name ? `${greeting}, ${name}` : greeting
+}
+
+function greetingAt(hour) {
+  if (hour < 12) return __('Good morning')
+  if (hour < 17) return __('Good afternoon')
+  return __('Good evening')
 }
 
 export function recordRoute({ doctype, name }) {
@@ -23,7 +23,6 @@ export function recordListViews(doctype = 'Both') {
   return doctype === 'Both' ? [views.Lead, views.Deal] : [views[doctype]]
 }
 
-// A deal without an organization falls back to its contact name, then its ID.
 export function recordTitle({ title, subtitle, name }) {
   return {
     title: title || subtitle || name,
@@ -31,7 +30,7 @@ export function recordTitle({ title, subtitle, name }) {
   }
 }
 
-// The two largest units, for averages where seconds are noise: "<1m", "45m", "3h 20m", "2d 4h".
+// "<1m", "45m", "3h 20m", "2d 4h"
 export function shortDuration(seconds) {
   if (seconds == null) return ''
   const minutes = Math.floor(seconds / 60)

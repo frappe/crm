@@ -61,11 +61,8 @@ import { computed } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
-  // a get_widget resource, or plain `{ data: { rows, total } }`; `more` marks a capped total
   resource: { type: Object, required: true },
-  // leave unset for widgets without the Lead | Deal | Both setting
   config: { type: Object, default: null },
-  // `{ label, route }` per list view; more than one shows a menu
   viewAll: { type: Array, default: () => [] },
   emptyText: { type: String, required: true },
   emptyIcon: { type: String, default: 'lucide-check-circle-2' },

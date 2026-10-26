@@ -3,9 +3,7 @@ import { defineAsyncComponent } from 'vue'
 const lazy = (name) =>
   defineAsyncComponent(() => import(`./Widgets/${name}.vue`))
 
-// Every Home widget by its stable key, matching WIDGETS in home_layout.py. A widget shows
-// on Home and in the catalog once it has a `component`, which gets `config` and emits
-// `update:config`. Sizes are in DashboardGrid units (20 columns, 42px rows).
+// Keys match WIDGETS in home_layout.py; sizes are DashboardGrid units (20 columns, 42px rows).
 export const widgets = [
   {
     key: 'replies_waiting',

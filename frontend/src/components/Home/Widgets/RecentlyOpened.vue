@@ -40,7 +40,6 @@ const DOCTYPES = { Lead: ['CRM Lead'], Deal: ['CRM Deal'] }
 
 const { user } = sessionStore()
 
-// shaped like a get_widget resource for HomeWidget
 const resource = reactive({ data: null, loading: false })
 
 watch(() => props.config.doctype, load, { immediate: true })
@@ -52,14 +51,16 @@ async function load() {
   )
   resource.loading = true
   try {
-    const records = await Promise.all(doctypes.map((d) => fetch(d, recent)))
+    const records = await Promise.all(
+      doctypes.map((d) => fetchRecords(d, recent)),
+    )
     resource.data = { rows: sortByRecency(records.flat(), recent) }
   } finally {
     resource.loading = false
   }
 }
 
-async function fetch(doctype, recent) {
+async function fetchRecords(doctype, recent) {
   const names = recent.filter((r) => r.doctype === doctype).map((r) => r.name)
   if (!names.length) return []
   const fields = FIELDS[doctype]

@@ -46,7 +46,7 @@ import { useHomeWidget } from '@/composables/homeWidget'
 import { usersStore } from '@/stores/users'
 import { shortDuration } from '@/utils/home'
 
-// Home passes `config` to every widget; declared so it does not fall through as a setting
+// Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
 defineProps({ config: { type: Object, default: null } })
 
 const { getUser } = usersStore()

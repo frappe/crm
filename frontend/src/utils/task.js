@@ -1,7 +1,7 @@
 import { dayjs, dayjsLocal, getConfig } from 'frappe-ui'
 
-// Mirrors crm/fcrm/doctype/crm_task/rules.py. An all-day due_date holds only its
-// day, unshifted by any timezone; a timed due_date is an instant in system time.
+// Mirrors crm/fcrm/doctype/crm_task/rules.py: an all-day due_date holds only its day,
+// unshifted by timezone; a timed due_date is an instant in system time.
 
 const CLOSED_STATUSES = ['Done', 'Canceled']
 const DAY = 'YYYY-MM-DD'
@@ -24,7 +24,6 @@ export function formatTaskDue(task, length = 'short') {
   return dayjsLocal(task.due_date).format(format.timed)
 }
 
-// Compact due label for lists: "2d overdue", "Today", "10:00 am", "Tomorrow", "Thu", "5 Nov".
 export function relativeTaskDue(task) {
   if (!task?.due_date) return ''
   const day = task.all_day

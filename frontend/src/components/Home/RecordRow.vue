@@ -34,7 +34,6 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const props = defineProps({
-  // { doctype, name, title, subtitle, status }
   record: { type: Object, required: true },
 })
 

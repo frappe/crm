@@ -212,7 +212,8 @@ router.beforeEach(async (to, from, next) => {
     next(await mobileHomeRoute())
   } else if (to.name === 'Home' && isLoggedIn && from === START_LOCATION) {
     const landing = await landingPageRoute()
-    landing ? next(landing) : next()
+    if (landing) next(landing)
+    else next()
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {
