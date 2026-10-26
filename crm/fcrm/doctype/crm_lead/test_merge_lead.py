@@ -150,6 +150,44 @@ class TestMergeLead(IntegrationTestCase):
 		for lead in (target.name, source.name):
 			self.assertEqual(info_comments(lead), ["Source merged into Target", "Source split from Target"])
 
+	def test_activity_feed_shows_merge_and_split_on_both_leads(self):
+		target = self._create_lead(first_name="Target", email="feed-target@test.com", job_title="CEO")
+		source = self._create_lead(
+			first_name="Source", email="feed-source@test.com", job_title="CTO", mobile_no="+5550001"
+		)
+
+		from crm.api.activities import get_lead_activities
+		from crm.api.lead import merge_leads, split_lead
+
+		def entries(lead, *types):
+			activities, *_ = get_lead_activities(lead)
+			return [a for a in activities if a["activity_type"] in types]
+
+		label = frappe.get_meta("CRM Lead").get_label
+		result = merge_leads(target.name, source.name, take_from_source=["job_title"])
+
+		[merge] = entries(target.name, "merge")
+		self.assertEqual(merge["data"]["lead"], source.name)
+		self.assertEqual(merge["data"]["lead_title"], "Source")
+		self.assertTrue(merge["data"]["is_target"])
+		self.assertEqual(merge["data"]["filled"], [label("mobile_no")])
+		self.assertEqual(merge["data"]["replaced"], [label("job_title")])
+		# the merge's own save is shown inside the merge entry, not as field changes
+		self.assertEqual(entries(target.name, "added", "changed", "removed"), [])
+
+		split_lead(result["merge_log"])
+
+		[split] = entries(target.name, "split")
+		self.assertEqual(split["data"]["lead"], source.name)
+		self.assertCountEqual(split["data"]["restored"], [label("mobile_no"), label("job_title")])
+		self.assertEqual(entries(target.name, "added", "changed", "removed"), [])
+
+		source_entries = entries(source.name, "merge", "split")
+		self.assertEqual([a["activity_type"] for a in source_entries], ["split", "merge"])
+		for activity in source_entries:
+			self.assertEqual(activity["data"]["lead"], target.name)
+			self.assertFalse(activity["data"]["is_target"])
+
 	def test_get_lead_merge_fields_lists_only_differing_fields(self):
 		target = self._create_lead(
 			first_name="T", email="t-fields@test.com", job_title="CEO", website="t.com"

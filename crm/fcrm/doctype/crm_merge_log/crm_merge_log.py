@@ -17,6 +17,7 @@ class CRMMergeLog(Document):
 
 		child_table_snapshot: DF.Code | None
 		field_snapshot: DF.Code | None
+		merge_version: DF.Link | None
 		merged_at: DF.Datetime
 		merged_by: DF.Link
 		reference_doctype: DF.Link
@@ -24,6 +25,7 @@ class CRMMergeLog(Document):
 		source_document_name: DF.DynamicLink
 		split_at: DF.Datetime | None
 		split_by: DF.Link | None
+		split_version: DF.Link | None
 		target_document_name: DF.DynamicLink
 	# end: auto-generated types
 

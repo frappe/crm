@@ -7,6 +7,7 @@ from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
 from frappe.translate import get_translated_doctypes
 
+from crm.api.merge import MERGE_CONFIG
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
 
@@ -212,9 +213,14 @@ def get_lead_activities(name: str):
 		}
 	]
 
+	merge_activities, merge_versions = get_merge_activities(name, lead_fields)
+	activities += merge_activities
+
 	docinfo.versions.reverse()
 
 	for version in docinfo.versions:
+		if version.name in merge_versions:
+			continue
 		data = json.loads(version.data)
 		if not data.get("changed"):
 			continue
@@ -324,6 +330,89 @@ def get_lead_activities(name: str):
 	activities = group_note_activities(activities)
 
 	return activities, calls, notes, tasks, attachments
+
+
+def get_merge_activities(name: str, lead_fields: dict) -> tuple[list, set]:
+	"""Merge and split entries for a lead, from either side of its CRM Merge Logs, and the
+	Versions those merges and splits saved on the target, which the feed shows inside the entry
+	rather than as field changes of their own."""
+	logs = frappe.get_all(
+		"CRM Merge Log",
+		filters={"reference_doctype": "CRM Lead"},
+		or_filters={"target_document_name": name, "source_document_name": name},
+		fields=[
+			"target_document_name",
+			"source_document_name",
+			"merged_by",
+			"merged_at",
+			"merge_version",
+			"split_by",
+			"split_at",
+			"split_version",
+		],
+	)
+	if not logs:
+		return [], set()
+
+	others = {
+		log.source_document_name if log.target_document_name == name else log.target_document_name
+		for log in logs
+	}
+	# get_list, so a lead the user cannot read shows as its ID only
+	titles = dict(
+		frappe.get_list(
+			"CRM Lead", filters={"name": ("in", list(others))}, fields=["name", "lead_name"], as_list=True
+		)
+	)
+	version_names = {v for log in logs for v in (log.merge_version, log.split_version) if v}
+	versions = dict(
+		frappe.get_all(
+			"Version", filters={"name": ("in", list(version_names))}, fields=["name", "data"], as_list=True
+		)
+	)
+	denylist = MERGE_CONFIG["CRM Lead"]["denylist"]
+
+	def changed_fields(version_name):
+		changed = json.loads(versions.get(version_name) or "{}").get("changed") or []
+		return [
+			(lead_fields[field]["label"] or field, bool(old_value))
+			for field, old_value, _new_value in changed
+			if field in lead_fields and field not in denylist
+		]
+
+	activities = []
+	for log in logs:
+		is_target = log.target_document_name == name
+		other = log.source_document_name if is_target else log.target_document_name
+		data = {"lead": other, "lead_title": titles.get(other), "is_target": is_target}
+
+		merge_data = {**data, "filled": [], "replaced": []}
+		if is_target:
+			for label, had_value in changed_fields(log.merge_version):
+				merge_data["replaced" if had_value else "filled"].append(label)
+		activities.append(
+			{
+				"activity_type": "merge",
+				"creation": log.merged_at,
+				"owner": log.merged_by,
+				"data": merge_data,
+				"is_lead": True,
+			}
+		)
+
+		if log.split_at:
+			restored = [label for label, _ in changed_fields(log.split_version)] if is_target else []
+			activities.append(
+				{
+					"activity_type": "split",
+					"creation": log.split_at,
+					"owner": log.split_by,
+					"data": {**data, "restored": restored},
+					"is_lead": True,
+				}
+			)
+
+	return activities, version_names
 
 
 def get_readable_fields(doctype: str):

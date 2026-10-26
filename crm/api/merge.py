@@ -80,7 +80,7 @@ def merge_documents(
 	_auto_merge_fields(target_doc, source_doc)
 	_move_child_tables(source_doc, target_doc)
 	_repoint(refs, target_doc.doctype, source_doc.name, target_doc.name)
-	target_doc.save(ignore_permissions=True)
+	merge_log.merge_version = _save_with_version(target_doc)
 	_sync_assignments(target_doc.doctype, source_doc.name, target_doc.name)
 	_sync_product_totals(target_doc.doctype, source_doc.name, target_doc.name)
 
@@ -103,12 +103,30 @@ def split_documents(merge_log: Document, target_doc: Document, source_doc: Docum
 	]
 	_repoint(refs, target_doc.doctype, target_doc.name, source_doc.name)
 
-	target_doc.save(ignore_permissions=True)
+	split_version = _save_with_version(target_doc)
 	_move_child_tables_back(source_doc, target_doc, json.loads(merge_log.child_table_snapshot or "{}"))
 	_sync_assignments(target_doc.doctype, source_doc.name, target_doc.name)
 	_sync_product_totals(target_doc.doctype, source_doc.name, target_doc.name)
 
-	merge_log.db_set({"split_at": frappe.utils.now(), "split_by": frappe.session.user})
+	merge_log.db_set(
+		{"split_at": frappe.utils.now(), "split_by": frappe.session.user, "split_version": split_version}
+	)
+
+
+def _save_with_version(doc: Document) -> str | None:
+	"""Save, writing a Version even in tests, and return that Version's name, or None when the
+	save changed nothing. The activity feed shows it inside the merge or split entry instead of
+	as a field change of its own."""
+	before = _latest_version(doc)
+	doc.save(ignore_permissions=True, ignore_version=False)
+	after = _latest_version(doc)
+	return after if after != before else None
+
+
+def _latest_version(doc: Document) -> str | None:
+	return frappe.db.get_value(
+		"Version", {"ref_doctype": doc.doctype, "docname": doc.name}, "name", order_by="creation desc"
+	)
 
 
 def _mergeable_fields(doctype: str) -> list[str]:

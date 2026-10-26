@@ -11,6 +11,7 @@
   "column_break_1",
   "merged_by",
   "merged_at",
+  "merge_version",
   "section_snapshots",
   "field_snapshot",
   "column_break_snapshots",
@@ -19,7 +20,8 @@
   "section_split",
   "split_at",
   "column_break_split",
-  "split_by"
+  "split_by",
+  "split_version"
  ],
  "fields": [
   {
@@ -63,6 +65,13 @@
    "fieldname": "merged_at",
    "fieldtype": "Datetime",
    "label": "Merged At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "merge_version",
+   "fieldtype": "Link",
+   "label": "Merge Version",
+   "options": "Version",
    "read_only": 1
   },
   {
@@ -113,12 +122,19 @@
    "label": "Split By",
    "options": "User",
    "read_only": 1
+  },
+  {
+   "fieldname": "split_version",
+   "fieldtype": "Link",
+   "label": "Split Version",
+   "options": "Version",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-22 14:00:00.000000",
+ "modified": "2026-10-26 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Merge Log",
