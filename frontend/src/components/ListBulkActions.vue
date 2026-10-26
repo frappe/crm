@@ -86,18 +86,32 @@ function convertToDeal(selections, unselectAll) {
       {
         label: __('Convert'),
         variant: 'solid',
-        onClick: ({ close }) => {
+        onClick: async ({ close }) => {
           capture('bulk_convert_to_deal')
-          Array.from(selections).forEach((name) => {
-            call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
-              lead: name,
-            }).then(() => {
-              toast.success(__('Converted Successfully'))
-              list.value.reload()
-              unselectAll()
-              close()
-            })
+          const names = Array.from(selections)
+          const results = await Promise.allSettled(
+            names.map((name) =>
+              call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
+                lead: name,
+              }),
+            ),
+          )
+          let converted = 0
+          results.forEach((result, i) => {
+            if (result.status === 'fulfilled') {
+              converted++
+              return
+            }
+            const message =
+              result.reason?.messages?.[0] || __('Error converting to deal')
+            toast.error(`${names[i]}: ${message}`)
           })
+          if (converted) {
+            toast.success(__('{0} lead(s) converted successfully', [converted]))
+          }
+          list.value.reload()
+          unselectAll()
+          close()
         },
       },
     ],
