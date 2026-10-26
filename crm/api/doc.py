@@ -258,6 +258,41 @@ def update_in_standard_filter(fieldname, doctype, value):
 		)
 
 
+def apply_comments_filter(doctype, filters):
+	"""Match the Comments filter against the Comment doctype instead of `_comments`.
+
+	`_comments` is a cache Frappe keeps on the parent doc and it only stores the
+	first ~100 characters of each comment, so `like` on it misses later text.
+	"""
+	value = filters.get("_comments")
+	if not isinstance(value, list | tuple) or len(value) != 2:
+		return
+
+	operator, text = str(value[0]).lower(), value[1]
+	if operator not in ("like", "not like"):
+		return
+
+	commented = frappe.get_all(
+		"Comment",
+		filters={"reference_doctype": doctype, "comment_type": "Comment", "content": ["like", text]},
+		pluck="reference_name",
+		distinct=True,
+		limit_page_length=0,
+	)
+	filters.pop("_comments")
+
+	if "name" not in filters:
+		filters["name"] = ["in" if operator == "like" else "not in", commented]
+		return
+
+	# a "name" filter is already set, keep it and combine both
+	scoped = set(
+		frappe.get_all(doctype, filters={"name": filters["name"]}, pluck="name", limit_page_length=0)
+	)
+	names = scoped & set(commented) if operator == "like" else scoped - set(commented)
+	filters["name"] = ["in", list(names)]
+
+
 @frappe.whitelist()
 def get_data(
 	doctype: str,
@@ -300,6 +335,8 @@ def get_data(
 	if default_filters:
 		default_filters = frappe.parse_json(default_filters)
 		filters.update(default_filters)
+
+	apply_comments_filter(doctype, filters)
 
 	is_default = True
 	data = []
