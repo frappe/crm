@@ -9,12 +9,15 @@
       <span v-if="total" class="text-base tabular-nums text-ink-gray-5">
         {{ more ? `${total}+` : total }}
       </span>
+      <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
+        · {{ doctypeLabels[doctype] }}
+      </span>
       <div v-if="config" class="ml-auto">
         <Dropdown :options="doctypeOptions" align="end">
           <Button
             variant="ghost"
-            :label="doctypeLabels[doctype]"
-            iconRight="lucide-chevron-down"
+            icon="lucide-ellipsis"
+            :aria-label="__('Widget options')"
           />
         </Dropdown>
       </div>
@@ -106,13 +109,16 @@ const total = computed(() => props.resource.data?.total || 0)
 const more = computed(() => props.resource.data?.more)
 const loading = computed(() => props.resource.loading && !props.resource.data)
 
-const doctypeOptions = computed(() =>
-  Object.entries(doctypeLabels).map(([value, label]) => ({
-    label,
-    selected: value === doctype.value,
-    onClick: () => {
-      if (value !== doctype.value) emit('update:config', { doctype: value })
-    },
-  })),
-)
+const doctypeOptions = computed(() => [
+  {
+    group: __('Show'),
+    options: Object.entries(doctypeLabels).map(([value, label]) => ({
+      label,
+      selected: value === doctype.value,
+      onClick: () => {
+        if (value !== doctype.value) emit('update:config', { doctype: value })
+      },
+    })),
+  },
+])
 </script>
