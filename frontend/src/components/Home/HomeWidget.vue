@@ -12,7 +12,7 @@
       <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
         · {{ doctypeLabels[doctype] }}
       </span>
-      <div v-if="config" class="ml-auto">
+      <div v-if="config && !editing" class="ml-auto">
         <Dropdown :options="doctypeOptions" align="end">
           <Button
             variant="ghost"
@@ -81,7 +81,7 @@
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { Dropdown } from 'frappe-ui'
 import { List, ListRows } from 'frappe-ui/list'
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -94,6 +94,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:config'])
+
+const editing = inject('homeEditing', ref(false))
 
 const doctypeLabels = {
   Both: __('Leads & deals'),

@@ -15,7 +15,7 @@
         </template>
       </p>
     </div>
-    <div class="flex items-center gap-2">
+    <div v-if="!editing" class="flex items-center gap-2">
       <Button
         :label="__('My reports')"
         iconLeft="lucide-chart-column"
@@ -40,6 +40,10 @@ import { usersStore } from '@/stores/users'
 import { greetingFor } from '@/utils/home'
 import { Dropdown, createResource } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
+
+defineProps({
+  editing: { type: Boolean, default: false },
+})
 
 const { user } = sessionStore()
 const { getUser } = usersStore()

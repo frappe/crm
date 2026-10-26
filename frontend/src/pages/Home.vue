@@ -49,20 +49,48 @@
     </LayoutHeader>
 
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <HomeHeader v-if="target === 'mine'" />
+      <HomeHeader v-if="target === 'mine'" :editing="editing" />
       <DashboardGrid
         v-if="visibleItems.length"
         v-model="visibleItems"
         class="px-2"
         :editing="editing"
+        dragHandle=".home-drag-handle"
       >
-        <template #item="{ item }">
-          <component
-            :is="getWidget(item.name).component"
-            class="h-full w-full"
-            :config="item.config"
-            @update:config="(config) => updateConfig(item, config)"
-          />
+        <template #item="{ item, remove }">
+          <div class="relative h-full w-full">
+            <component
+              :is="getWidget(item.name).component"
+              class="h-full w-full"
+              :class="{ 'pointer-events-none select-none': editing }"
+              :config="item.config"
+              @update:config="(config) => updateConfig(item, config)"
+            />
+            <template v-if="editing">
+              <div
+                class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
+              />
+              <div class="absolute right-2 top-2 flex items-center gap-0.5">
+                <Tooltip :text="__('Drag to move')">
+                  <span
+                    class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
+                    :aria-label="__('Drag to move')"
+                  >
+                    <span
+                      class="lucide-grip-vertical size-4"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Tooltip>
+                <Button
+                  variant="ghost"
+                  icon="lucide-x"
+                  :tooltip="__('Remove')"
+                  @click="remove"
+                />
+              </div>
+            </template>
+          </div>
         </template>
       </DashboardGrid>
       <div
@@ -93,8 +121,8 @@ import { getWidget } from '@/components/Home/widgets'
 import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
-import { Badge, Dropdown, usePageMeta } from 'frappe-ui'
-import { computed } from 'vue'
+import { Badge, Dropdown, Tooltip, usePageMeta } from 'frappe-ui'
+import { computed, provide } from 'vue'
 
 const { brand } = getSettings()
 const { isAdmin } = usersStore()
@@ -116,6 +144,8 @@ const {
 } = useHomeLayout()
 
 load()
+
+provide('homeEditing', editing)
 
 const defaultLabels = {
   agent: __('Agent default'),

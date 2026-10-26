@@ -33,6 +33,7 @@
         :min-h="l.minH"
         :max-w="l.maxW"
         :max-h="l.maxH"
+        :drag-allow-from="dragHandle"
       >
         <div
           v-if="layoutReady"
@@ -41,12 +42,18 @@
           <div
             class="flex h-full w-full items-center justify-center"
             :class="
-              editing
+              editing && !$slots.item
                 ? 'pointer-events-none  [&>div:first-child]:rounded-4 [&>div:first-child]:group-hover:ring-2 [&>div:first-child]:group-hover:ring-outline-gray-2'
                 : ''
             "
           >
-            <slot name="item" :item="items[index]" :index="index">
+            <!-- A custom item draws its own edit chrome -->
+            <slot
+              name="item"
+              :item="items[index]"
+              :index="index"
+              :remove="() => remove(index)"
+            >
               <DashboardItem
                 :index="index"
                 :item="items[index]"
@@ -55,12 +62,12 @@
             </slot>
           </div>
           <div
-            v-if="editing"
+            v-if="editing && !$slots.item"
             class="flex absolute right-0 top-0 bg-surface-gray-9 rounded-4 cursor-pointer opacity-0 group-hover:opacity-100"
           >
             <div
               class="rounded-4 p-1 hover:bg-surface-gray-8"
-              @click="items = items.filter((_, i) => i !== index)"
+              @click="remove(index)"
             >
               <span
                 class="lucide-trash-2 size-3 text-ink-base"
@@ -79,11 +86,16 @@ import { ref } from 'vue'
 
 defineProps({
   editing: { type: Boolean, default: false },
+  dragHandle: { type: String, default: undefined },
 })
 
 const items = defineModel({ type: Array, default: () => [] })
 
 const layoutReady = ref(false)
+
+function remove(index) {
+  items.value = items.value.filter((_, i) => i !== index)
+}
 </script>
 
 <style scoped>
