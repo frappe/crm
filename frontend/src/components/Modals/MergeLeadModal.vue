@@ -24,7 +24,7 @@
         </div>
 
         <div
-          class="mb-5 inline-flex max-w-full items-center rounded-full bg-surface-gray-2 px-3 py-1 text-base text-ink-gray-7"
+          class="mb-5 inline-flex max-w-full items-center rounded-4 bg-surface-gray-2 px-3 py-1.5 text-base text-ink-gray-6"
         >
           <span class="truncate">
             {{ source.lead_name || source.name }} · {{ source.name }}

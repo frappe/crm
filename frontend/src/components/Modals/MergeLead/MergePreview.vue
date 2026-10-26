@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg border border-outline-gray-2 bg-surface-white">
+  <div class="rounded-6 border border-outline-gray-2 bg-surface-base">
     <div class="flex items-center gap-3 border-b border-outline-gray-1 p-4">
       <Avatar
         :label="doc.lead_name || doc.name"
@@ -25,11 +25,15 @@
             <span class="truncate">{{ row.text }}</span>
           </template>
           <template v-else-if="row.fieldname === 'lead_owner'">
-            <UserAvatar :user="doc.lead_owner as string" size="xs" />
+            <UserAvatar :user="doc.lead_owner as string" size="xs" hideStatus />
             <span class="truncate">{{ row.text }}</span>
           </template>
           <template v-else-if="row.fieldname === '_assign'">
-            <MultipleAvatar :avatars="parseAssignees(assignees)" size="xs" />
+            <MultipleAvatar
+              :avatars="parseAssignees(assignees)"
+              size="sm"
+              hideStatus
+            />
             <Tooltip :text="__('Assignments from both leads are kept')">
               <span
                 class="lucide-circle-help size-3.5 shrink-0 text-ink-gray-5"

@@ -5,7 +5,7 @@
       :key="field.fieldname"
       role="radiogroup"
       :aria-labelledby="`merge-field-${field.fieldname}`"
-      class="grid grid-cols-[150px_minmax(0,1fr)_minmax(0,1fr)] items-center gap-2 border-b border-outline-gray-1 py-2 first:pt-0"
+      class="grid grid-cols-[130px_minmax(0,1fr)_minmax(0,1fr)] items-center gap-3 border-b border-outline-gray-1 py-2 first:pt-0"
     >
       <span
         :id="`merge-field-${field.fieldname}`"
@@ -24,11 +24,11 @@
           :aria-checked="picks[field.fieldname] === side"
           :tabindex="picks[field.fieldname] === side ? 0 : -1"
           :data-side="side"
-          class="flex h-8 min-w-0 cursor-pointer items-center rounded border px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+          class="flex h-8 min-w-0 cursor-pointer items-center rounded-4 border px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
           :class="
             picks[field.fieldname] === side
-              ? 'border-transparent bg-surface-gray-3 text-ink-gray-9'
-              : 'border-outline-gray-2 bg-surface-white text-ink-gray-7 hover:bg-surface-gray-1'
+              ? 'border-transparent bg-surface-gray-2 text-ink-gray-9'
+              : 'border-outline-gray-2 bg-surface-base text-ink-gray-7 hover:bg-surface-gray-1'
           "
           @click="emit('pick', field.fieldname, side)"
           @keydown="onKeydown($event, field.fieldname, side)"
@@ -41,7 +41,7 @@
     <div v-if="autoFields.length" :class="{ 'mt-3': conflicts.length }">
       <button
         type="button"
-        class="flex items-center gap-1 rounded text-base text-ink-gray-6 hover:text-ink-gray-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
+        class="flex items-center gap-1 rounded-4 text-base text-ink-gray-6 hover:text-ink-gray-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
         :aria-expanded="showAuto"
         @click="showAuto = !showAuto"
       >
@@ -58,7 +58,7 @@
       </button>
       <dl
         v-if="showAuto"
-        class="mt-2 grid grid-cols-[150px_minmax(0,1fr)] gap-x-2 gap-y-2 pl-5"
+        class="mt-2 grid grid-cols-[130px_minmax(0,1fr)] gap-x-3 gap-y-2 pl-5"
       >
         <template v-for="field in autoFields" :key="field.fieldname">
           <dt class="truncate text-base text-ink-gray-5">{{ field.label }}</dt>

@@ -61,12 +61,12 @@
                 v-for="l in group.rows"
                 :key="l.name"
                 type="button"
-                class="flex w-full items-center gap-3 rounded px-2 py-2 text-left hover:bg-surface-gray-2 focus-visible:bg-surface-gray-2 focus-visible:outline-none"
+                class="flex w-full items-center gap-3 rounded-4 px-2 py-1.5 text-left hover:bg-surface-gray-2 focus-visible:bg-surface-gray-2 focus-visible:outline-none"
                 @click="emit('select', l)"
               >
                 <Avatar
                   :label="l.lead_name || l.name"
-                  size="lg"
+                  size="md"
                   class="shrink-0"
                 />
                 <div class="flex min-w-0 flex-1 flex-col gap-1">
