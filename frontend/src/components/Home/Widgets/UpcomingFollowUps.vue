@@ -6,10 +6,11 @@
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('No follow-ups in the next 7 days.')"
     emptyIcon="lucide-calendar"
+    :columns="['1rem', 'minmax(0,1fr)', '6rem']"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
-      <TaskRow v-for="task in rows" :key="task.name" :task="task" />
+    <template #default="{ row }">
+      <TaskRow :task="row" />
     </template>
   </HomeWidget>
 </template>

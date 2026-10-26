@@ -31,9 +31,18 @@
         <span :class="emptyIcon" class="size-5 text-ink-gray-4" />
         <span class="text-p-base text-ink-gray-6">{{ emptyText }}</span>
       </div>
-      <div v-else class="flex flex-col">
-        <slot :rows="rows" />
-      </div>
+      <slot v-else name="list" :rows="rows">
+        <List
+          :columns="columns"
+          :rowHeight="32"
+          divider="none"
+          class="list-row-px-2 text-base"
+        >
+          <ListRows :items="rows" :rowKey="rowKey" v-slot="{ item }">
+            <slot :row="item" />
+          </ListRows>
+        </List>
+      </slot>
     </div>
 
     <div v-if="viewAll.length && total" class="flex shrink-0 justify-end p-2">
@@ -57,6 +66,7 @@
 <script setup>
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { Dropdown } from 'frappe-ui'
+import { List, ListRows } from 'frappe-ui/list'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -66,6 +76,7 @@ const props = defineProps({
   viewAll: { type: Array, default: () => [] },
   emptyText: { type: String, required: true },
   emptyIcon: { type: String, default: 'lucide-check-circle-2' },
+  columns: { type: Array, default: undefined },
 })
 
 const emit = defineEmits(['update:config'])
@@ -75,6 +86,8 @@ const doctypeLabels = {
   Lead: __('Leads'),
   Deal: __('Deals'),
 }
+
+const rowKey = (row) => `${row.doctype}:${row.name}`
 
 const doctype = computed(() => props.config?.doctype || 'Both')
 const rows = computed(() => props.resource.data?.rows || [])

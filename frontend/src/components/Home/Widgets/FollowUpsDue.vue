@@ -5,11 +5,14 @@
     :config="config"
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('Nothing due today. You are all caught up.')"
+    :columns="['1rem', 'minmax(0,1fr)', '6rem', '3.5rem']"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
-      <TaskRow v-for="task in rows" :key="task.name" :task="task">
-        <FollowUpActions :task="task" @change="refreshHome" />
+    <template #default="{ row }">
+      <TaskRow :task="row">
+        <ListCell class="justify-end">
+          <FollowUpActions class="relative" :task="row" @change="refreshHome" />
+        </ListCell>
       </TaskRow>
     </template>
   </HomeWidget>
@@ -19,6 +22,7 @@ import FollowUpActions from '@/components/FollowUp/FollowUpActions.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import TaskRow from '@/components/Home/TaskRow.vue'
 import { refreshHome, useHomeWidget } from '@/composables/homeWidget'
+import { ListCell } from 'frappe-ui/list'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },

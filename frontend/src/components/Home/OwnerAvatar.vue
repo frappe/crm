@@ -1,6 +1,6 @@
 <template>
   <Tooltip :text="user ? getUser(user).full_name : __('No owner')">
-    <span class="flex w-5 shrink-0 justify-center">
+    <span class="relative flex w-5 shrink-0 justify-center">
       <UserAvatar v-if="user" :user="user" size="sm" hideStatus />
     </span>
   </Tooltip>

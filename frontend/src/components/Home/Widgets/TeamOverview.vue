@@ -5,37 +5,37 @@
     :emptyText="__('No one is on your team yet.')"
     emptyIcon="lucide-users"
   >
-    <template #default="{ rows }">
-      <div class="grid text-base" :style="{ gridTemplateColumns: columns }">
-        <div
-          class="contents text-sm text-ink-gray-5 [&>*]:sticky [&>*]:top-0 [&>*]:bg-surface-elevation-2 [&>*]:py-1.5"
-        >
-          <span class="px-2">{{ __('Member') }}</span>
-          <span v-for="stat in stats" :key="stat.key" class="px-2 text-right">
-            {{ stat.label }}
-          </span>
-        </div>
-        <div
-          v-for="row in sorted(rows)"
-          :key="row.user"
-          class="contents [&>*]:flex [&>*]:h-8 [&>*]:items-center [&>*]:border-t [&>*]:border-outline-gray-1"
-        >
-          <span class="min-w-0 gap-2 px-2">
-            <UserAvatar :user="row.user" size="sm" hideStatus />
-            <span class="truncate text-ink-gray-8">
-              {{ getUser(row.user).full_name }}
-            </span>
-          </span>
-          <span
+    <template #list="{ rows }">
+      <List :columns="columns" :rowHeight="32" class="list-row-px-2 text-base">
+        <ListHeader class="sticky top-0 z-10 bg-surface-elevation-2">
+          <ListHeaderCell>{{ __('Member') }}</ListHeaderCell>
+          <ListHeaderCell
             v-for="stat in stats"
             :key="stat.key"
-            class="justify-end px-2 tabular-nums"
-            :class="row[stat.key] ? 'text-ink-gray-8' : 'text-ink-gray-4'"
+            class="justify-end"
           >
-            {{ stat.format ? stat.format(row[stat.key]) : row[stat.key] }}
-          </span>
-        </div>
-      </div>
+            {{ stat.label }}
+          </ListHeaderCell>
+        </ListHeader>
+        <ListRows :items="sorted(rows)" rowKey="user" v-slot="{ item }">
+          <ListRow>
+            <ListCell class="gap-2">
+              <UserAvatar :user="item.user" size="sm" hideStatus />
+              <span class="truncate text-ink-gray-8">
+                {{ getUser(item.user).full_name }}
+              </span>
+            </ListCell>
+            <ListCell
+              v-for="stat in stats"
+              :key="stat.key"
+              class="justify-end tabular-nums"
+              :class="item[stat.key] ? 'text-ink-gray-8' : 'text-ink-gray-4'"
+            >
+              {{ stat.format ? stat.format(item[stat.key]) : item[stat.key] }}
+            </ListCell>
+          </ListRow>
+        </ListRows>
+      </List>
     </template>
   </HomeWidget>
 </template>
@@ -45,6 +45,14 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import { useHomeWidget } from '@/composables/homeWidget'
 import { usersStore } from '@/stores/users'
 import { shortDuration } from '@/utils/home'
+import {
+  List,
+  ListCell,
+  ListHeader,
+  ListHeaderCell,
+  ListRow,
+  ListRows,
+} from 'frappe-ui/list'
 
 // Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
 defineProps({ config: { type: Object, default: null } })
@@ -63,7 +71,7 @@ const stats = [
   },
 ]
 
-const columns = `minmax(10rem, 1fr) repeat(${stats.length}, minmax(5rem, auto))`
+const columns = ['minmax(10rem,1fr)', ...stats.map(() => 'minmax(5rem,9rem)')]
 
 const resource = useHomeWidget('team_overview')
 

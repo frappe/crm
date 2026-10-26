@@ -5,14 +5,10 @@
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('No tasks on your list.')"
     emptyIcon="lucide-square-check"
+    :columns="['1rem', 'minmax(0,1fr)', '6rem']"
   >
-    <template #default="{ rows }">
-      <TaskRow
-        v-for="task in rows"
-        :key="task.name"
-        :task="task"
-        @open="openTask"
-      />
+    <template #default="{ row }">
+      <TaskRow :task="row" @open="openTask" />
     </template>
   </HomeWidget>
 </template>

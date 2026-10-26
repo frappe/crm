@@ -6,25 +6,26 @@
     :viewAll="recordListViews(config.doctype)"
     :emptyText="__('Nothing open is assigned to you.')"
     emptyIcon="lucide-user-check"
+    :columns="['1rem', 'minmax(0,1fr)', '3rem', '2.5rem']"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
-      <RecordRow
-        v-for="row in rows"
-        :key="`${row.doctype}:${row.name}`"
-        :record="row"
-      >
-        <Badge
-          v-if="isNew(row)"
-          :label="__('New')"
-          theme="blue"
-          variant="subtle"
-        />
-        <Tooltip :text="__('Assigned {0}', [prettyDate(row.assigned_at)])">
-          <span class="w-8 whitespace-nowrap text-right">
-            {{ prettyDate(row.assigned_at, true) }}
-          </span>
-        </Tooltip>
+    <template #default="{ row }">
+      <RecordRow :record="row">
+        <ListCell class="justify-end">
+          <Badge
+            v-if="isNew(row)"
+            :label="__('New')"
+            theme="blue"
+            variant="subtle"
+          />
+        </ListCell>
+        <ListCell class="justify-end text-ink-gray-5">
+          <Tooltip :text="__('Assigned {0}', [prettyDate(row.assigned_at)])">
+            <span class="relative whitespace-nowrap">
+              {{ prettyDate(row.assigned_at, true) }}
+            </span>
+          </Tooltip>
+        </ListCell>
       </RecordRow>
     </template>
   </HomeWidget>
@@ -37,6 +38,7 @@ import { statusesStore } from '@/stores/statuses'
 import { prettyDate } from '@/utils'
 import { recordListViews } from '@/utils/home'
 import { Badge, Tooltip } from 'frappe-ui'
+import { ListCell } from 'frappe-ui/list'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },
