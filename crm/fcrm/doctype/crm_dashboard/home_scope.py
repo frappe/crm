@@ -8,7 +8,7 @@ from functools import cached_property
 import frappe
 from pypika.terms import EmptyCriterion
 
-from crm.permissions.org_hierarchy import _permission_query_conditions, _team_mem_query
+from crm.permissions.org_hierarchy import permission_query_conditions, team_members_query
 
 SALES_ROLES = ("Sales User", "Sales Manager")
 
@@ -35,11 +35,11 @@ class Team:
 
 	def __init__(self, user: str):
 		self.user = user
-		self.sees_everyone = not _permission_query_conditions(user, "CRM Lead")
+		self.sees_everyone = not permission_query_conditions(user, "CRM Lead")
 		self.key = "all" if self.sees_everyone else user
 
 	def records(self, doctype: str, table, owner_field: str):
-		return _permission_query_conditions(self.user, doctype) or EmptyCriterion()
+		return permission_query_conditions(self.user, doctype) or EmptyCriterion()
 
 	def tasks(self, task):
 		return task.assigned_to.isin(self.members or [None])
@@ -48,7 +48,7 @@ class Team:
 	def members(self) -> list:
 		if self.sees_everyone:
 			return sales_users()
-		return _team_mem_query(self.user).run(pluck=True)
+		return team_members_query(self.user).run(pluck=True)
 
 
 def sales_users() -> list:
