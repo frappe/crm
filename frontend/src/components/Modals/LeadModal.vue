@@ -1,47 +1,49 @@
 <template>
   <Dialog v-model:open="show" :size="'3xl'" bare>
     <template #default>
-      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <Dialog.Title as-child>
-              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-                {{ __('Create Lead') }}
-              </h3>
-            </Dialog.Title>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Dialog.Close as-child>
+      <div class="flex max-h-[calc(100dvh-6rem)] flex-col">
+        <div class="flex min-h-0 flex-1 flex-col bg-surface-elevation-2 pt-5">
+          <div class="mb-5 flex items-center justify-between px-4 sm:px-6">
+            <div>
+              <Dialog.Title as-child>
+                <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                  {{ __('Create Lead') }}
+                </h3>
+              </Dialog.Title>
+            </div>
+            <div class="flex items-center gap-1">
               <Button
-                :aria-label="__('Close')"
+                v-if="isManager() && !isMobileView"
                 variant="ghost"
                 class="w-7"
-                icon="lucide-x"
+                :tooltip="__('Edit Fields Layout')"
+                :icon="EditIcon"
+                @click="openQuickEntryModal"
               />
-            </Dialog.Close>
+              <Dialog.Close as-child>
+                <Button
+                  :aria-label="__('Close')"
+                  variant="ghost"
+                  class="w-7"
+                  icon="lucide-x"
+                />
+              </Dialog.Close>
+            </div>
+          </div>
+          <div class="min-h-0 flex-1 overflow-y-auto px-4 pb-6 sm:px-6">
+            <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
+            <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
           </div>
         </div>
-        <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
-          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isLeadCreating"
-            @click="createNewLead"
-          />
+        <div class="px-4 pb-7 pt-4 sm:px-6">
+          <div class="flex flex-row-reverse gap-2">
+            <Button
+              variant="solid"
+              :label="__('Create')"
+              :loading="isLeadCreating"
+              @click="createNewLead"
+            />
+          </div>
         </div>
       </div>
     </template>
