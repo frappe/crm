@@ -21,7 +21,7 @@ LANDING_PAGE_KEY = "crm_landing_page"
 @frappe.whitelist(methods=["POST"])
 @sales_user_only
 def set_landing_page(page: str | None = None):
-	"""Store where `/` sends the user: Home (cleared), a page route name or a CRM View Settings name."""
+	"""`page` is a page route name or a CRM View Settings name."""
 	if not page or page == "Home":
 		frappe.defaults.clear_user_default(LANDING_PAGE_KEY)
 	else:
@@ -31,7 +31,6 @@ def set_landing_page(page: str | None = None):
 @frappe.whitelist(methods=["POST"])
 @sales_user_only
 def set_morning_digest(enabled: bool):
-	"""Opt the user out of the morning digest email, or back in (cleared)."""
 	if enabled:
 		frappe.defaults.clear_user_default(OPT_OUT_KEY)
 	else:

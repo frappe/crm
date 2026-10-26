@@ -1,8 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Whose leads, deals and tasks a Home widget covers: the viewer's own, or a manager's team."""
-
 from functools import cached_property
 
 import frappe
@@ -14,8 +12,7 @@ SALES_ROLES = ("Sales User", "Sales Manager")
 
 
 class Mine:
-	"""Records owned by or assigned to the user. Every CRM permission rule lets a user read
-	those, so no permission condition is needed and each query keeps one selective predicate."""
+	"""Every CRM permission rule lets a user read their own and assigned records, so no condition is needed."""
 
 	def __init__(self, user: str):
 		self.user = user
@@ -28,10 +25,7 @@ class Mine:
 
 
 class Team:
-	"""What the manager can see under Sales Hierarchy permissions: their subtree, or everyone.
-
-	CRM Task has no permission hook, so tasks are scoped to the team's members instead.
-	"""
+	"""CRM Task has no permission hook, so tasks are scoped to the team's members instead."""
 
 	def __init__(self, user: str):
 		self.user = user

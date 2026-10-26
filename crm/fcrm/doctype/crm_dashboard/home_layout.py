@@ -1,12 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Home page layouts, kept as CRM Dashboard records named "Home - ...".
-
-A user's own layout is created on first save and deleted on reset, so until then they
-follow their role default. Role defaults have no user, like the Manager Dashboard.
-"""
-
 import json
 from dataclasses import dataclass
 
@@ -139,7 +133,6 @@ def validate_layout(layout, role: str) -> list:
 
 
 def allowed_items(layout: list, role: str) -> list:
-	"""Drop widgets that no longer exist or that the role lost access to."""
 	return [
 		item
 		for item in layout

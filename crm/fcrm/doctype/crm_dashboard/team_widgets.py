@@ -1,8 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Manager-only Home widgets, run on a Team scope."""
-
 import json
 from datetime import timedelta
 
@@ -22,9 +20,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 )
 from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 
-# older overdue tasks are mostly abandoned and would bury the recent misses
 OVERDUE_DAYS = 30
-# unassigned new leads can run into the hundreds of thousands, so they are counted up to here
 UNASSIGNED_CAP = 100
 OVERVIEW_CACHE_SECONDS = 180
 RESPONSE_DAYS = 30
@@ -66,10 +62,6 @@ class Unassigned(NewLeads):
 
 
 class TeamOverview(Widget):
-	"""Per team member: the counts their own widgets show, and their average first response
-	time on records created in the last RESPONSE_DAYS. Cached per scope, as it groups over
-	every record of the team."""
-
 	def summary(self) -> dict:
 		key = f"crm:home:team_overview:{self.scope.key}"
 		rows = frappe.cache.get_value(key)
@@ -87,9 +79,8 @@ class TeamOverview(Widget):
 			table = frappe.qb.DocType(doctype)
 			for stat, widget in OVERVIEW_COUNTS.items():
 				records = self.by_member(doctype, widget(self.doctypes, self.scope).filtered(doctype, table))
-				for member, count in (
-					frappe.qb.from_(records).select("member", Count("*")).groupby("member").run()
-				):
+				counts = frappe.qb.from_(records).select("member", Count("*")).groupby("member")
+				for member, count in counts.run():
 					stats[member][stat] += count
 
 		for member, count in self.overdue_follow_ups():
@@ -123,7 +114,6 @@ class TeamOverview(Widget):
 		return {member: round(seconds / count) for member, (seconds, count) in totals.items()}
 
 	def by_member(self, doctype: str, query, *fields):
-		"""Each record of `query` once per member who owns it or has it assigned, like Mine."""
 		table = frappe.qb.DocType(doctype)
 		todo = frappe.qb.DocType("ToDo")
 		owner = table[RECORD_TYPES[doctype].owner_field]
@@ -147,7 +137,6 @@ TEAM_WIDGET_DATA = {
 
 
 def set_owners(rows: list):
-	"""Fall back to the first assignee for records without an owner."""
 	for row in rows:
 		assigned = json.loads(row.pop("_assign") or "[]")
 		row["owner"] = row["owner"] or next(iter(assigned), None)

@@ -1,11 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Rows and totals for the Home widgets, over the leads, deals and tasks of a scope.
-
-The shared widgets cover the viewer's own records, the team widgets a manager's team.
-"""
-
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -50,18 +45,16 @@ class Widget:
 
 
 class RecordWidget(Widget):
-	"""Open or ongoing leads and deals of the scope, merged across doctypes by `sort_field`."""
-
 	sort_field = "modified"
 	descending = False
 	status_types = ACTIVE_STATUS_TYPES
 
 	def rows(self) -> list:
 		rows = []
+		order = Order.desc if self.descending else Order.asc
 		for doctype in self.doctypes:
 			table = frappe.qb.DocType(doctype)
 			query = self.query(doctype, table).select(*self.fields(doctype, table), self.sort_term(table))
-			order = Order.desc if self.descending else Order.asc
 			for row in query.orderby(Field(self.sort_field), order=order).limit(ROW_LIMIT).run(as_dict=True):
 				rows.append({**row, "doctype": doctype})
 		rows.sort(key=lambda row: row[self.sort_field], reverse=self.descending)
@@ -75,7 +68,6 @@ class RecordWidget(Widget):
 		return self.filtered(doctype, table).where(in_scope)
 
 	def filtered(self, doctype: str, table):
-		"""The widget's records before narrowing them to the scope."""
 		return self.active(doctype, table)
 
 	def active(self, doctype: str, table):
@@ -130,10 +122,7 @@ class NewLeads(RecordWidget):
 
 
 class AssignedToMe(RecordWidget):
-	"""Records with an open assignment to the user, newest assignment first.
-
-	Owned records without an assignment are left out: the widget is about assignments.
-	"""
+	"""Unlike Mine, owned records without an open assignment are left out."""
 
 	sort_field = "assigned_at"
 	descending = True
@@ -153,12 +142,6 @@ class AssignedToMe(RecordWidget):
 
 
 class NoNextStep(RecordWidget):
-	"""Records idle for IDLE_DAYS with no open task, longest idle first.
-
-	Idle counts from the latest of `modified` and the last inbound or outbound message,
-	because emails and calls record interactions without touching `modified`.
-	"""
-
 	sort_field = "idle_since"
 
 	def filtered(self, doctype: str, table):
@@ -185,8 +168,6 @@ class NoNextStep(RecordWidget):
 
 
 class TaskWidget(Widget):
-	"""Open tasks assigned to the scope."""
-
 	FIELDS = ("name", "title", "status", "priority", "due_date", "all_day")
 
 	def __init__(self, doctypes: tuple, scope: Mine | Team):
@@ -277,6 +258,7 @@ def set_reference_titles(rows: list):
 
 
 def idle_since(table):
+	"""Emails and calls record interactions without touching `modified`."""
 	return Function(
 		"GREATEST",
 		table.modified,

@@ -1,13 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""The morning digest email: a user's follow-ups, replies, new assignments and tasks for the day.
-
-An hourly job sends it between DIGEST_HOUR and CUTOFF_HOUR in each user's timezone, at most
-once a local day. A window rather than one hour covers half-hour timezones and a late
-scheduler; the cutoff keeps a morning digest from arriving in the afternoon after an outage.
-"""
-
 from datetime import timedelta
 
 import frappe
@@ -37,7 +30,6 @@ from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES, TaskDue
 DIGEST_HOUR = 8
 CUTOFF_HOUR = 11
 BATCH_SIZE = 50
-# a user away for weeks gets the last week of assignments, not all of them
 ASSIGNED_MAX_DAYS = 7
 LAST_RUN_KEY = "crm_digest_last_run"
 OPT_OUT_KEY = "crm_morning_digest"
@@ -82,7 +74,6 @@ class MorningDigest:
 		return not last_run or self.due.user_time(last_run).date() < self.local_now.date()
 
 	def send(self):
-		"""Send unless every section is empty, and mark the day done either way."""
 		sections = self.sections()
 		if any(section.total for section in sections):
 			frappe.sendmail(
@@ -147,8 +138,6 @@ class Section:
 
 
 class FollowUpsSection(Section, FollowUpsDue):
-	"""Follow-ups due today, and those overdue from the last OVERDUE_DAYS like the team widget."""
-
 	def title(self) -> str:
 		return _("Follow-ups due")
 
@@ -179,14 +168,12 @@ class RepliesSection(Section, RepliesWaiting):
 
 
 class NewlyAssignedSection(Section, AssignedToMe):
-	"""Assignments made since the last digest, leaving out the ones the user made themselves."""
-
-	def title(self) -> str:
-		return _("Newly assigned to you")
-
 	def __init__(self, doctypes: tuple, scope: Mine, since):
 		super().__init__(doctypes, scope)
 		self.since = since
+
+	def title(self) -> str:
+		return _("Newly assigned to you")
 
 	def query(self, doctype: str, table):
 		todo = frappe.qb.DocType("ToDo")
@@ -206,8 +193,6 @@ class NewlyAssignedSection(Section, AssignedToMe):
 
 
 class TasksDueTodaySection(Section, TaskWidget):
-	"""Tasks not linked to a lead or deal, which the follow-ups section already covers."""
-
 	def title(self) -> str:
 		return _("Tasks due today")
 

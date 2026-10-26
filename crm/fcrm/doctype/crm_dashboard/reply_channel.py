@@ -1,12 +1,8 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Which channel a waiting reply came in on, looked up for the few rows a widget shows.
-
-The channel is not stored with `last_inbound_at`, so the latest inbound email and WhatsApp
-message of each record are compared instead. A deal also gets the messages of the lead
-it was converted from, as interactions on a converted lead are forwarded to its deal.
-"""
+"""The channel is not stored with `last_inbound_at`, so it is derived from the latest inbound
+messages; a deal also counts its source lead's, as a converted lead's interactions go to its deal."""
 
 import frappe
 from frappe.query_builder.functions import Coalesce, Max
