@@ -22,6 +22,11 @@ function showModal({
   show.value = true
 }
 
+function closeModal() {
+  show.value = false
+  callbacks.value = {}
+}
+
 function triggerCallback(event, ...args) {
   callbacks.value[event]?.(...args)
 }
@@ -34,6 +39,7 @@ export function useDoctypeModal() {
     title,
     defaults,
     showModal,
+    closeModal,
     triggerCallback,
   }
 }
