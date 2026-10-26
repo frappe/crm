@@ -180,7 +180,7 @@
                 <Button
                   v-if="canMerge"
                   :tooltip="__('Merge')"
-                  icon="lucide-merge"
+                  icon="lucide-git-merge"
                   @click="openMerge"
                 />
 

@@ -632,7 +632,7 @@ import MissedCallIcon from '@/components/Icons/MissedCallIcon.vue'
 import DeclinedCallIcon from '@/components/Icons/DeclinedCallIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
-import LucideMerge from '~icons/lucide/merge'
+import LucideGitMerge from '~icons/lucide/git-merge'
 import LucideSplit from '~icons/lucide/split'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
@@ -1057,7 +1057,7 @@ function timelineIcon(activity_type, is_lead) {
       icon = NoteIcon
       break
     case 'merge':
-      icon = LucideMerge
+      icon = LucideGitMerge
       break
     case 'split':
       icon = LucideSplit
