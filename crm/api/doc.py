@@ -560,7 +560,6 @@ def get_data(
 
 
 def add_task_all_day(doctype, rows):
-	# The due date cannot be shown without knowing whether it carries a time.
 	if doctype == "CRM Task" and "due_date" in rows and "all_day" not in rows:
 		rows.append("all_day")
 

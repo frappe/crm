@@ -1,13 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""In-app reminders shortly before a timed follow-up is due.
-
-`reminded_for` keeps the due date a reminder went out for, so each due date is reminded
-once and rescheduling arms a new one. All-day follow-ups get none; the morning digest
-lists them.
-"""
-
 from datetime import timedelta
 
 import frappe
@@ -36,7 +29,6 @@ def send_follow_up_reminders():
 
 
 def due_soon(now=None) -> list:
-	"""Timed follow-ups due within REMINDER_MINUTES, not yet reminded for their due date."""
 	now = now or now_datetime()
 	task = frappe.qb.DocType("CRM Task")
 	return (
@@ -51,6 +43,7 @@ def due_soon(now=None) -> list:
 		)
 		.where(
 			follow_up_condition(task)
+			# all-day follow-ups get no reminder; the morning digest lists them
 			& (task.all_day == 0)
 			& task.assigned_to.isnotnull()
 			& (task.due_date > now)
