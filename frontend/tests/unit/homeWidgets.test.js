@@ -3,11 +3,11 @@ import { catalog, isRegistered, newItem } from '@/components/Home/widgets'
 const Component = {}
 
 const registry = [
-  { key: 'replies_waiting', size: { w: 10, h: 8 }, component: Component },
-  { key: 'my_tasks', size: { w: 10, h: 8 } },
+  { key: 'replies_waiting', size: { w: 10, h: 7 }, component: Component },
+  { key: 'my_tasks', size: { w: 10, h: 7 } },
   {
     key: 'team_overview',
-    size: { w: 20, h: 8 },
+    size: { w: 20, h: 10 },
     managerOnly: true,
     component: Component,
   },
@@ -52,7 +52,7 @@ describe('newItem', () => {
     expect(newItem(widget, [item('a', 0, 8), item('b', 8, 4)])).toEqual({
       name: 'team_overview',
       config: {},
-      layout: { x: 0, y: 12, w: 20, h: 8, i: 'team_overview' },
+      layout: { x: 0, y: 12, w: 20, h: 10, i: 'team_overview' },
     })
   })
 

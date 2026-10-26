@@ -175,7 +175,8 @@ def _position(item: dict) -> dict:
 	return {**{k: layout[k] for k in keys}, "i": item["name"]}
 
 
-def _item(name: str, x: int, y: int, w: int = 10, h: int = 8) -> dict:
+# Heights fit the content; see widgets.js for the arithmetic.
+def _item(name: str, x: int, y: int, w: int = 10, h: int = 7) -> dict:
 	config = {"doctype": "Both"} if WIDGETS[name].doctype_setting else {}
 	return {"name": name, "config": config, "layout": {"x": x, "y": y, "w": w, "h": h, "i": name}}
 
@@ -184,21 +185,21 @@ def agent_default() -> list:
 	return [
 		_item("replies_waiting", 0, 0),
 		_item("follow_ups_due", 10, 0),
-		_item("assigned_to_me", 0, 8),
-		_item("recently_opened", 10, 8),
-		_item("upcoming_follow_ups", 0, 16),
-		_item("no_next_step", 10, 16),
-		_item("my_tasks", 0, 24),
+		_item("assigned_to_me", 0, 7),
+		_item("recently_opened", 10, 7),
+		_item("upcoming_follow_ups", 0, 14),
+		_item("no_next_step", 10, 14),
+		_item("my_tasks", 0, 21),
 	]
 
 
 def manager_default() -> list:
 	return [
-		_item("team_overview", 0, 0, w=20),
-		_item("team_replies_waiting", 0, 8),
-		_item("team_overdue_follow_ups", 10, 8),
-		_item("unassigned", 0, 16),
-		_item("replies_waiting", 10, 16),
+		_item("team_overview", 0, 0, w=20, h=10),
+		_item("team_replies_waiting", 0, 10),
+		_item("team_overdue_follow_ups", 10, 10),
+		_item("unassigned", 0, 17),
+		_item("replies_waiting", 10, 17),
 	]
 
 

@@ -149,6 +149,17 @@ class TestHomeLayout(IntegrationTestCase):
 			with self.assertRaises(frappe.ValidationError):
 				save_layout([item])
 
+	def test_built_in_defaults_do_not_overlap(self):
+		for default, role in ((agent_default, "agent"), (manager_default, "manager")):
+			layout = validate_layout(default(), role)
+			cells = [
+				(x, y)
+				for item in layout
+				for x in range(item["layout"]["x"], item["layout"]["x"] + item["layout"]["w"])
+				for y in range(item["layout"]["y"], item["layout"]["y"] + item["layout"]["h"])
+			]
+			self.assertEqual(len(cells), len(set(cells)), role)
+
 	def test_saved_items_drop_extra_keys(self):
 		frappe.set_user(AGENT)
 		item = widget("my_tasks", data=[1, 2])

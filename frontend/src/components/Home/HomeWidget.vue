@@ -26,10 +26,16 @@
       </div>
       <div
         v-else-if="!rows.length"
-        class="flex flex-1 flex-col items-center justify-center gap-2 px-4 pb-4 text-center"
+        class="flex flex-1 flex-col items-center justify-center gap-3 px-4 pb-11 text-center"
       >
-        <span :class="emptyIcon" class="size-5 text-ink-gray-4" />
-        <span class="text-p-base text-ink-gray-6">{{ emptyText }}</span>
+        <span
+          class="flex size-8 items-center justify-center rounded-full bg-surface-gray-2"
+        >
+          <span :class="emptyIcon" class="size-4 text-ink-gray-5" />
+        </span>
+        <span class="max-w-64 text-p-base text-ink-gray-6">
+          {{ emptyText }}
+        </span>
       </div>
       <slot v-else name="list" :rows="rows">
         <List
@@ -45,21 +51,26 @@
       </slot>
     </div>
 
-    <div v-if="viewAll.length && total" class="flex shrink-0 justify-end p-2">
-      <Button
-        v-if="viewAll.length === 1"
-        variant="ghost"
-        :label="__('View all')"
-        iconRight="lucide-arrow-right"
-        :route="viewAll[0].route"
-      />
-      <Dropdown v-else :options="viewAll" align="end">
+    <div
+      v-if="$slots.footer || (viewAll.length && total)"
+      class="flex h-10 shrink-0 items-center justify-end px-2"
+    >
+      <slot name="footer">
         <Button
+          v-if="viewAll.length === 1"
           variant="ghost"
           :label="__('View all')"
-          iconRight="lucide-chevron-down"
+          iconRight="lucide-arrow-right"
+          :route="viewAll[0].route"
         />
-      </Dropdown>
+        <Dropdown v-else :options="viewAll" align="end">
+          <Button
+            variant="ghost"
+            :label="__('View all')"
+            iconRight="lucide-chevron-down"
+          />
+        </Dropdown>
+      </slot>
     </div>
   </div>
 </template>
