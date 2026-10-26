@@ -171,11 +171,11 @@ def record_interaction(doc, method=None):
 		doc.reference_docname,
 		INTERACTION_DIRECTIONS.get(doc.direction),
 		doc.timestamp or doc.creation,
-		_reply(doc) if doc.direction == "Incoming" else None,
+		_whatsapp_reply(doc) if doc.direction == "Incoming" else None,
 	)
 
 
-def _reply(doc) -> Reply:
+def _whatsapp_reply(doc) -> Reply:
 	profile = frappe.db.get_value("WA Profile", doc.to, ["profile_name", "phone_number"], as_dict=True)
 	return Reply(
 		channel="WhatsApp",

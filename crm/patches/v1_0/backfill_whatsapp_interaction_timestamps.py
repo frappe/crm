@@ -13,6 +13,5 @@ WHATSAPP_TIMES = """
 
 
 def execute():
-	"""Merge WhatsApp message times into last inbound/outbound and awaiting_reply_since."""
 	if frappe.db.table_exists("WA Message"):
 		backfill(WHATSAPP_TIMES)

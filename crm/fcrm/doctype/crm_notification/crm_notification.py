@@ -87,7 +87,6 @@ def notify_user(notification):
 
 
 def get_record_title(doctype: str, name: str) -> str:
-	"""The name people know a lead or deal by, as mention notifications show it."""
 	if doctype == "CRM Lead":
 		title = frappe.db.get_value(doctype, name, "lead_name")
 	elif doctype == "CRM Deal":

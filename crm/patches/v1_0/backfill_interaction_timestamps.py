@@ -11,15 +11,11 @@ EMAIL_TIMES = """
 
 
 def execute():
-	"""Backfill last inbound/outbound email times and awaiting_reply_since on leads and deals."""
 	backfill(EMAIL_TIMES)
 
 
 def backfill(times_query: str):
-	"""Merge a channel's latest times into leads and deals.
-
-	`times_query` takes a %(doctype)s parameter and returns reference_name, inbound and outbound.
-	"""
+	"""`times_query` takes a %(doctype)s parameter and returns reference_name, inbound and outbound."""
 	for doctype in ("CRM Lead", "CRM Deal"):
 		merge_times(doctype, times_query)
 	forward_converted_leads()

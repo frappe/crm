@@ -7,11 +7,6 @@ DIRECTION_FIELDS = {"Inbound": "last_inbound_at", "Outbound": "last_outbound_at"
 
 
 def record(doctype: str, docname: str, direction: str, at=None, reply: Reply | None = None):
-	"""Record an inbound or outbound message on a lead or deal, forwarding converted leads to their deal.
-
-	A `reply` alerts the assignees, once, on the deal for a converted lead. Messages older than
-	the last one recorded raise no alert: they arrive late, out of order or from a resync.
-	"""
 	if doctype not in ("CRM Lead", "CRM Deal") or direction not in DIRECTION_FIELDS:
 		return
 

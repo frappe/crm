@@ -195,7 +195,6 @@ def sales_user_only(fn: callable) -> callable:
 
 
 def is_unattended() -> bool:
-	"""No one is there to confirm or be alerted: data import, patches, install and migrate."""
 	flags = frappe.flags
 	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
 
@@ -396,15 +395,15 @@ def _record_email_interaction(doc: Communication):
 	from crm.api.interactions import record
 
 	direction = {"Received": "Inbound", "Sent": "Outbound"}.get(doc.sent_or_received)
-	if doc.communication_type == "Communication" and direction:
-		reply = _email_reply(doc) if direction == "Inbound" else None
-		record(
-			doc.reference_doctype,
-			doc.reference_name,
-			direction,
-			doc.communication_date or doc.creation,
-			reply,
-		)
+	if doc.communication_type != "Communication" or not direction:
+		return
+	record(
+		doc.reference_doctype,
+		doc.reference_name,
+		direction,
+		doc.communication_date or doc.creation,
+		_email_reply(doc) if direction == "Inbound" else None,
+	)
 
 
 def _email_reply(doc: Communication):

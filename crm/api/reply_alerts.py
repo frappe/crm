@@ -1,8 +1,6 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""In-app alerts to a lead's or deal's assignees when a customer message comes in."""
-
 from dataclasses import dataclass
 
 import frappe
@@ -22,8 +20,6 @@ from crm.utils import is_unattended
 
 @dataclass(frozen=True)
 class Reply:
-	"""An inbound message, as the channel that received it describes it."""
-
 	channel: str
 	source_doctype: str
 	source_name: str

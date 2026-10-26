@@ -146,7 +146,7 @@ class CRMCallLog(Document):
 		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
 
 	def get_crm_references(self) -> dict[str, str]:
-		"""The lead and deal this call is about: manual logs set the reference, integrations add links."""
+		"""Manual logs set the reference; telephony integrations add links."""
 		references = {}
 		if self.reference_doctype in ("CRM Lead", "CRM Deal") and self.reference_docname:
 			references[self.reference_doctype] = self.reference_docname
