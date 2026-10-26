@@ -34,7 +34,7 @@
       <Tooltip v-if="task.due_date" :text="formatTaskDue(task, 'long')">
         <span
           class="relative whitespace-nowrap"
-          :class="isTaskOverdue(task) ? 'text-ink-red-4' : 'text-ink-gray-5'"
+          :class="isTaskOverdue(task) ? 'text-ink-red-7' : 'text-ink-gray-5'"
         >
           {{ relativeTaskDue(task) }}
         </span>

@@ -231,7 +231,7 @@ function upcomingCommands(items, tracked) {
         icon: item.kind === 'task' ? TaskIcon : 'timer',
         subtitle: __(item.label),
         badge: dueBadge(item),
-        badgeClass: isOverdue(item) ? 'text-ink-red-4' : 'text-ink-gray-5',
+        badgeClass: isOverdue(item) ? 'text-ink-red-7' : 'text-ink-gray-5',
         perform: () => router.push(upcomingRoute(item)),
       },
       'upcoming',

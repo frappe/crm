@@ -12,7 +12,7 @@
       <Tooltip :text="formatTaskDue(task, 'long')">
         <span
           class="shrink-0"
-          :class="isTaskOverdue(task) ? 'text-ink-red-4' : ''"
+          :class="isTaskOverdue(task) ? 'text-ink-red-7' : ''"
         >
           {{ formatTaskDue(task) }}
         </span>
