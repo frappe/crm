@@ -18,10 +18,11 @@
         <FollowUpDates :disabled="creating" @select="create" />
         <div class="border-t border-outline-elevation-2 pt-1.5">
           <ItemListRow
-            as="button"
-            type="button"
-            class="text-left outline-none hover:bg-surface-gray-3 focus-visible:bg-surface-gray-3"
+            role="button"
+            tabindex="0"
+            class="cursor-pointer outline-none hover:bg-surface-gray-3 focus-visible:bg-surface-gray-3"
             @click="openFullForm"
+            @keydown.enter.space.prevent="openFullForm"
           >
             {{ __('More options') }}
           </ItemListRow>

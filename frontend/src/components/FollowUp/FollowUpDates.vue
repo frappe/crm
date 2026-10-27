@@ -3,11 +3,12 @@
     <ItemListRow
       v-for="preset in presets"
       :key="preset.key"
-      as="button"
-      type="button"
+      role="button"
+      :tabindex="disabled ? -1 : 0"
       :class="rowClass"
       :disabled="disabled"
       @click="select(preset.date)"
+      @keydown.enter.space.prevent="select(preset.date)"
     >
       {{ preset.label }}
       <template #suffix>
@@ -21,11 +22,12 @@
     >
       <template #trigger="{ setOpen }">
         <ItemListRow
-          as="button"
-          type="button"
+          role="button"
+          :tabindex="disabled ? -1 : 0"
           :class="rowClass"
           :disabled="disabled"
           @click="setOpen(true)"
+          @keydown.enter.space.prevent="setOpen(true)"
         >
           {{ __('Pick date…') }}
         </ItemListRow>
@@ -44,7 +46,7 @@ const props = defineProps({
 const emit = defineEmits(['select'])
 
 const rowClass =
-  'text-left outline-none hover:bg-surface-gray-3 focus-visible:bg-surface-gray-3'
+  'cursor-pointer outline-none hover:bg-surface-gray-3 focus-visible:bg-surface-gray-3'
 
 const presets = followUpPresets()
 
