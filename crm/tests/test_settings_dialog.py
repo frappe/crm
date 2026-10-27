@@ -3,6 +3,7 @@
 
 import json
 import os
+from unittest.mock import patch
 
 import frappe
 from frappe.shell.settings import resolve_panes
@@ -13,10 +14,12 @@ RECORDS = ("crm", "crm-frappe")
 
 class TestCRMSettingsDialog(IntegrationTestCase):
 	def test_the_shipped_records_pass_validation(self):
-		for name in RECORDS:
-			path = os.path.join(frappe.get_app_path("crm"), "settings_dialog", name, f"{name}.json")
-			with open(path) as f:
-				frappe.get_doc(json.load(f)).run_method("validate")
+		# App content validates only in developer mode, which CI sites do not set.
+		with patch.dict(frappe.conf, {"developer_mode": 1}):
+			for name in RECORDS:
+				path = os.path.join(frappe.get_app_path("crm"), "settings_dialog", name, f"{name}.json")
+				with open(path) as f:
+					frappe.get_doc(json.load(f)).run_method("validate")
 
 	def test_crm_ships_the_general_pane_on_fcrm_settings(self):
 		general = self.pane("crm", "general")
