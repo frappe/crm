@@ -2,12 +2,14 @@
   <HomeWidget
     :title="__('No next step')"
     :resource="resource"
+    widget="no_next_step"
+    :columns="defaultColumns"
     :config="config"
     :viewAll="recordListViews(config.doctype)"
     :emptyText="__('Every open lead and deal has a next step.')"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
+    <template #default="{ rows, columns }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute">
         <template #follow_up="{ row }">
           <div class="flex justify-end" @click.stop.prevent>
@@ -43,7 +45,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:config'])
 
-const columns = [
+const defaultColumns = [
   homeColumns.record(),
   homeColumns.status(),
   homeColumns.timeAgo('idle_since', __('Idle since')),

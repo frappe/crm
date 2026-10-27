@@ -12,14 +12,26 @@
       <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
         · {{ doctypeLabels[doctype] }}
       </span>
-      <div v-if="config && !editing" class="ml-auto">
-        <Dropdown :options="doctypeOptions" align="end">
-          <Button
-            variant="ghost"
-            icon="lucide-ellipsis"
-            :aria-label="__('Widget options')"
-          />
-        </Dropdown>
+      <div v-if="widget && !editing" class="ml-auto">
+        <ColumnSettings
+          v-model="columnList"
+          v-model:open="editingColumns"
+          manual
+          :fieldOptions="fieldOptions"
+          :lockedColumns="columnInfo?.locked"
+          :defaultWidth="(field) => field.width || fieldWidth(field)"
+          @update="updateColumns"
+        >
+          <template #trigger>
+            <Dropdown :options="menuOptions" align="end">
+              <Button
+                variant="ghost"
+                icon="lucide-ellipsis"
+                :aria-label="__('Widget options')"
+              />
+            </Dropdown>
+          </template>
+        </ColumnSettings>
       </div>
     </div>
 
@@ -40,7 +52,7 @@
           {{ emptyText }}
         </span>
       </div>
-      <slot v-else :rows="rows" />
+      <slot v-else :rows="rows" :columns="shownColumns" />
     </div>
 
     <div
@@ -67,14 +79,25 @@
   </div>
 </template>
 <script setup>
+import ColumnSettings from '@/components/ColumnSettings.vue'
+import {
+  fieldWidth,
+  keepAvailable,
+  resolveColumns,
+  toSavedColumns,
+} from '@/components/Home/columns'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
+import { getWidgetColumns, loadWidgetColumns } from '@/composables/homeWidget'
 import { Dropdown } from 'frappe-ui'
-import { computed, inject, ref } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
   resource: { type: Object, required: true },
   config: { type: Object, default: null },
+  // Key in widgets.js; set with `columns` when the widget's columns are editable.
+  widget: { type: String, default: null },
+  columns: { type: Array, default: () => [] },
   viewAll: { type: Array, default: () => [] },
   emptyText: { type: String, required: true },
   emptyIcon: { type: String, default: 'lucide-check-circle-2' },
@@ -96,16 +119,94 @@ const total = computed(() => props.resource.data?.total || 0)
 const more = computed(() => props.resource.data?.more)
 const loading = computed(() => props.resource.loading && !props.resource.data)
 
-const doctypeOptions = computed(() => [
+const hasDoctypeSetting = computed(() => Boolean(props.config?.doctype))
+const columnInfo = computed(() => getWidgetColumns(props.widget, doctype.value))
+const fields = computed(() => columnInfo.value?.fields || {})
+
+const shownColumns = computed(() =>
+  resolveColumns(props.columns, props.config?.columns, fields.value),
+)
+
+const savedKeys = () => props.config?.columns?.map((column) => column.key)
+watch(
+  () => props.widget && savedKeys()?.join(),
+  () => {
+    const defaults = props.columns.map((column) => column.key)
+    if (savedKeys()?.some((key) => !defaults.includes(key)))
+      loadWidgetColumns(props.widget, doctype.value)
+  },
+  { immediate: true },
+)
+
+const menuOptions = computed(() => [
+  ...(hasDoctypeSetting.value
+    ? [
+        {
+          group: __('Show'),
+          options: Object.entries(doctypeLabels).map(([value, label]) => ({
+            label,
+            selected: value === doctype.value,
+            onClick: () => setDoctype(value),
+          })),
+        },
+      ]
+    : []),
   {
-    group: __('Show'),
-    options: Object.entries(doctypeLabels).map(([value, label]) => ({
-      label,
-      selected: value === doctype.value,
-      onClick: () => {
-        if (value !== doctype.value) emit('update:config', { doctype: value })
+    group: __('Columns'),
+    hideLabel: true,
+    options: [
+      {
+        label: __('Edit columns'),
+        icon: 'lucide-columns-3',
+        onClick: editColumns,
       },
-    })),
+    ],
   },
 ])
+
+async function setDoctype(value) {
+  if (value === doctype.value) return
+  const config = { ...props.config, doctype: value }
+  if (config.columns) {
+    const { fields } = await loadWidgetColumns(props.widget, value)
+    config.columns = keepAvailable(config.columns, props.columns, fields)
+  }
+  emit('update:config', config)
+}
+
+const editingColumns = ref(false)
+// ColumnSettings edits this copy in place and reports each change through `update`.
+const columnList = ref({ data: null })
+
+async function editColumns() {
+  await loadWidgetColumns(props.widget, doctype.value)
+  columnList.value = {
+    data: {
+      columns: shownColumns.value.map((column) => ({ ...column })),
+      rows: shownColumns.value.map((column) => column.key),
+      is_default: !props.config?.columns,
+    },
+  }
+  editingColumns.value = true
+}
+
+// Built-in columns that were removed can be added back like any field.
+const fieldOptions = computed(() => [
+  ...props.columns
+    .filter((column) => column.label)
+    .map((column) => ({
+      fieldname: column.key,
+      label: column.label,
+      fieldtype: column.fieldtype,
+      width: column.width,
+    })),
+  ...Object.values(fields.value),
+])
+
+function updateColumns({ columns, isDefault }) {
+  const config = { ...props.config }
+  if (isDefault) delete config.columns
+  else config.columns = toSavedColumns(columns, props.columns, fields.value)
+  emit('update:config', config)
+}
 </script>

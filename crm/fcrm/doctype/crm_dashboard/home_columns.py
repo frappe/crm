@@ -29,6 +29,7 @@ COLUMN_FIELDTYPES = frozenset(
 		"Time",
 	)
 )
+SYSTEM_FIELDS = frozenset(("naming_series",))
 STANDARD_FIELDS = {"creation": "Created On", "modified": "Last Modified"}
 WIDTH_PATTERN = re.compile(r"^(\d{1,4}(\.\d{1,2})?(px|rem|fr)?|minmax\(0,\d{1,2}(\.\d)?fr\))$")
 MAX_LABEL_LENGTH = 140
@@ -94,7 +95,10 @@ class ColumnFields:
 		fields = {
 			df.fieldname: field(df.fieldname, _(df.label), df.fieldtype, df.options)
 			for df in meta.fields
-			if df.fieldname in permitted and not df.hidden and df.fieldtype in COLUMN_FIELDTYPES
+			if df.fieldname in permitted
+			and not df.hidden
+			and df.fieldtype in COLUMN_FIELDTYPES
+			and df.fieldname not in SYSTEM_FIELDS
 		}
 		standard = {key: field(key, _(label), "Datetime") for key, label in STANDARD_FIELDS.items()}
 		return {**fields, **standard}
@@ -103,7 +107,10 @@ class ColumnFields:
 		aliases = {}
 		for key, alias in ALIASES.items():
 			if all(alias.fields.get(doctype) in self.by_doctype[doctype] for doctype in self.doctypes):
-				aliases[key] = field(key, _(alias.label), alias.fieldtype, alias.options)
+				aliases[key] = {
+					**field(key, _(alias.label), alias.fieldtype, alias.options),
+					"source": alias.fields,
+				}
 		return aliases
 
 

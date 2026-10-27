@@ -260,7 +260,7 @@ class TestHomeColumns(IntegrationTestCase):
 		self.assertNotIn("organization", available)
 
 	def test_unknown_hidden_and_non_value_fields_are_rejected(self):
-		for key in ("not_a_field", "image", "_assign", "naming_series_break", "lost_notes"):
+		for key in ("not_a_field", "image", "_assign", "naming_series", "lost_notes"):
 			self.assertRejected(reply_columns(key), "Lead")
 
 	def test_unreadable_field_is_rejected(self):

@@ -2,11 +2,15 @@
   <HomeWidget
     :title="__('My tasks')"
     :resource="resource"
+    widget="my_tasks"
+    :columns="defaultColumns"
+    :config="config"
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('No tasks on your list.')"
     emptyIcon="lucide-square-check"
+    @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
+    <template #default="{ rows, columns }">
       <HomeTable :columns="columns" :rows="rows" :onRowClick="openTask" />
     </template>
   </HomeWidget>
@@ -18,19 +22,22 @@ import { homeColumns } from '@/components/Home/columns'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { refreshHome, useHomeWidget } from '@/composables/homeWidget'
 
-// Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
-defineProps({ config: { type: Object, default: null } })
+const props = defineProps({
+  config: { type: Object, default: () => ({}) },
+})
+
+const emit = defineEmits(['update:config'])
 
 const { showModal } = useDoctypeModal()
 
-const columns = [
+const defaultColumns = [
   homeColumns.taskStatus(),
   homeColumns.task(),
   homeColumns.priority(),
   homeColumns.dueDate(),
 ]
 
-const resource = useHomeWidget('my_tasks')
+const resource = useHomeWidget('my_tasks', () => props.config)
 
 function openTask(task) {
   showModal({

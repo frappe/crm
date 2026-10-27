@@ -2,6 +2,8 @@
   <HomeWidget
     :title="team ? __('Team replies waiting') : __('Replies waiting')"
     :resource="resource"
+    :widget="team ? 'team_replies_waiting' : 'replies_waiting'"
+    :columns="defaultColumns"
     :config="config"
     :viewAll="recordListViews(config.doctype)"
     :emptyText="
@@ -12,7 +14,7 @@
     emptyIcon="lucide-inbox"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
+    <template #default="{ rows, columns }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute">
         <template #channel="{ item, column }">
           <ListRowItem
@@ -52,7 +54,7 @@ const channels = {
   whatsapp: { label: __('WhatsApp'), icon: WhatsAppIcon },
 }
 
-const columns = [
+const defaultColumns = [
   homeColumns.record(),
   homeColumns.status(),
   { key: 'channel', label: __('Channel'), width: '6rem' },

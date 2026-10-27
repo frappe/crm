@@ -2,12 +2,14 @@
   <HomeWidget
     :title="__('Team overdue follow-ups')"
     :resource="resource"
+    widget="team_overdue_follow_ups"
+    :columns="defaultColumns"
     :config="config"
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('Your team has no follow-ups overdue in the last 30 days.')"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows }">
+    <template #default="{ rows, columns }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="taskRecordRoute" />
     </template>
   </HomeWidget>
@@ -25,7 +27,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:config'])
 
-const columns = [
+const defaultColumns = [
   homeColumns.task(),
   homeColumns.taskRecord(),
   homeColumns.dueDate(),
