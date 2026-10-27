@@ -19,7 +19,11 @@
         v-for="column in columns"
         :key="column.key"
         :item="column"
-      />
+      >
+        <Tooltip v-if="column.tooltip" :text="column.tooltip">
+          <div class="truncate">{{ column.label }}</div>
+        </Tooltip>
+      </ListHeaderItem>
     </ListHeader>
     <div class="*:mx-0 *:sm:mx-0">
       <ListRows v-slot="{ column, item, row }" :rows="rows">
@@ -33,6 +37,7 @@
 <script setup>
 import HomeCell from '@/components/Home/HomeCell.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { Tooltip } from 'frappe-ui'
 import { ListHeader, ListHeaderItem, ListView } from 'frappe-ui/experimental'
 
 defineProps({

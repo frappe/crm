@@ -208,11 +208,12 @@ def agent_default() -> list:
 
 def manager_default() -> list:
 	return [
-		_item("team_overview", 0, 0, w=20, h=12),
-		_item("team_overdue_follow_ups", 0, 12, w=20),
-		_item("team_replies_waiting", 0, 20, w=20),
-		_item("unassigned", 0, 28),
-		_item("replies_waiting", 10, 28),
+		_item("team_overview", 0, 0),
+		_item("unassigned", 10, 0),
+		_item("team_overdue_follow_ups", 0, 8, w=20),
+		_item("team_replies_waiting", 0, 16, w=20),
+		_item("replies_waiting", 0, 24),
+		_item("recently_opened", 10, 24),
 	]
 
 

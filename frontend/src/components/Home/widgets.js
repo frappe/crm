@@ -6,9 +6,9 @@ const lazy = (name) =>
 // Keys match WIDGETS in home_layout.py; sizes are DashboardGrid units (20 columns, 42px rows,
 // 16px gutter), sized to fit content. List rows are 40px with 1px dividers:
 // border 2 + header 40 + 6 rows (245) + footer 32 = 319 ≤ 8 × 42 − 16.
-// Team overview adds a 40px column header and shows 9 members: 2 + 40 + 40 + 368 + 32 = 482 ≤ 12 × 42 − 16.
-// Team tables have five columns, so they default to full width. Task tables need the full width
-// for their title, record and assignee, so minW stops them from being resized narrower.
+// Team overview adds a 40px column header and shows 5 members: 2 + 40 + 40 + 204 + 32 = 318.
+// Team replies waiting has five columns, so it defaults to full width. Task tables need the full
+// width for their title, record and assignee, so minW stops them from being resized narrower.
 export const widgets = [
   {
     key: 'replies_waiting',
@@ -58,7 +58,7 @@ export const widgets = [
   {
     key: 'team_overview',
     label: 'Team overview',
-    size: { w: 20, h: 12 },
+    size: { w: 10, h: 8 },
     managerOnly: true,
     component: lazy('TeamOverview'),
   },

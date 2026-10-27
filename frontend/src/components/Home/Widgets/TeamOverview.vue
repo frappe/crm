@@ -34,29 +34,38 @@ defineProps({ config: { type: Object, default: null } })
 
 const { getUser } = usersStore()
 
-const stat = (key, label, format = String) => ({
+// Stat columns are as wide as their short label, so Member keeps the rest of a half-width card.
+const stat = (key, label, tooltip, width, format = String) => ({
   key,
   label,
+  tooltip,
+  width,
   align: 'right',
-  width: 'minmax(5rem,9rem)',
   getLabel: ({ row }) => format(row[key]),
 })
 
 const columns = [
-  { ...homeColumns.user('user', __('Member')), width: 'minmax(10rem,1fr)' },
-  stat('open', __('Open')),
-  stat('replies_waiting', __('Replies waiting')),
-  stat('overdue_follow_ups', __('Overdue follow-ups')),
-  stat('no_next_step', __('No next step')),
+  { ...homeColumns.user('user', __('Member')), width: 'minmax(0,1fr)' },
+  stat('open', __('Open'), __('Open leads and deals'), '2.25rem'),
+  stat('replies_waiting', __('Replies'), __('Replies waiting'), '3rem'),
+  stat('overdue_follow_ups', __('Overdue'), __('Overdue follow-ups'), '3.5rem'),
+  stat(
+    'no_next_step',
+    __('No next step'),
+    __('Open leads and deals with no follow-up'),
+    '5rem',
+  ),
   stat(
     'first_response_time',
-    __('Avg. first response'),
+    __('First response'),
+    __('Average first response time'),
+    '6rem',
     (seconds) => shortDuration(seconds) || '—',
   ),
 ]
 
 // Fits the default card height (see widgets.js); the rest scroll once expanded.
-const VISIBLE_MEMBERS = 9
+const VISIBLE_MEMBERS = 5
 
 const resource = useHomeWidget('team_overview')
 
