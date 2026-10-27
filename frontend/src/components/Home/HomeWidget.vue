@@ -41,20 +41,23 @@
           @update="updateColumns"
         >
           <template #trigger>
-            <Button
-              v-if="editing"
-              variant="ghost"
-              icon="lucide-columns-3"
-              :tooltip="__('Edit columns')"
-              @click="editColumns"
-            />
-            <Dropdown v-else :options="menuOptions" align="end">
+            <!-- One root element, so the popover sees focus returning from the menu as its own trigger -->
+            <div class="flex">
               <Button
+                v-if="editing"
                 variant="ghost"
-                icon="lucide-ellipsis"
-                :aria-label="__('Widget options')"
+                icon="lucide-columns-3"
+                :tooltip="__('Edit columns')"
+                @click="editColumns"
               />
-            </Dropdown>
+              <Dropdown v-else :options="menuOptions" align="end">
+                <Button
+                  variant="ghost"
+                  icon="lucide-ellipsis"
+                  :aria-label="__('Widget options')"
+                />
+              </Dropdown>
+            </div>
           </template>
         </ColumnSettings>
         <template v-if="editing">
