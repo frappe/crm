@@ -72,8 +72,10 @@ class TestCommandPaletteActivity(IntegrationTestCase):
 		load_crm_user_test_records()
 		cls.own_lead = make_lead(SALES_USER)
 		cls.other_lead = make_lead(OTHER_SALES_USER)
-		cls.converted_lead = make_lead(OTHER_SALES_USER)
+		cls.converted_lead = make_lead(SALES_USER)
 		cls.deal = make_deal(SALES_USER, lead=cls.converted_lead)
+		cls.hidden_source_lead = make_lead(OTHER_SALES_USER)
+		make_deal(SALES_USER, lead=cls.hidden_source_lead)
 		cls.lead_with_hidden_deal = make_lead(SALES_USER)
 		make_deal(OTHER_SALES_USER, lead=cls.lead_with_hidden_deal)
 
@@ -81,6 +83,7 @@ class TestCommandPaletteActivity(IntegrationTestCase):
 		add_comment("CRM Lead", cls.other_lead, "otherleadmarker")
 		cls.converted_comment = add_comment("CRM Lead", cls.converted_lead, "convertedmarker")
 		add_comment("CRM Lead", cls.lead_with_hidden_deal, "hiddendealmarker")
+		add_comment("CRM Lead", cls.hidden_source_lead, "hiddenleadmarker")
 		cls.merged_comment = add_comment("CRM Lead", cls.converted_lead, "mergemarker")
 		add_comment("CRM Deal", cls.deal, "mergemarker")
 		for _index in range(ACTIVITY_LIMIT + 1):
@@ -135,7 +138,15 @@ class TestCommandPaletteActivity(IntegrationTestCase):
 		with patch("crm.search_sqlite.PREFILTER_LIMIT", 0):
 			self.assertEqual(self.parents("ownleadmarker"), [("CRM Lead", self.own_lead)])
 			self.assertEqual(self.parents("convertedmarker"), [("CRM Deal", self.deal)])
+			self.assertEqual(self.parents("hiddendealmarker"), [("CRM Lead", self.lead_with_hidden_deal)])
 			self.assertEqual(self.activity("otherleadmarker"), [])
+
+	def test_unreadable_lead_comment_is_hidden_even_when_its_deal_is_readable(self):
+		self.assertEqual(self.activity("hiddenleadmarker"), [])
+
+	def test_post_filter_hides_unreadable_lead_comment_even_when_its_deal_is_readable(self):
+		with patch("crm.search_sqlite.PREFILTER_LIMIT", 0):
+			self.assertEqual(self.activity("hiddenleadmarker"), [])
 
 	def test_converted_lead_comment_opens_its_deal(self):
 		[row] = self.activity("convertedmarker")

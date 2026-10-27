@@ -158,21 +158,27 @@ def _search_activity(query: str):
 	except SQLiteSearchIndexMissingError:
 		return []
 
-	targets = _activity_targets(hits)
-	if not search.is_post_filter_required:
-		targets = targets[:ACTIVITY_LIMIT]
-	# The record lookup is permission-checked, so it is also the post-filter.
+	if search.is_post_filter_required:
+		hits = _readable_hits(hits)
+	targets = _activity_targets(hits)[:ACTIVITY_LIMIT]
 	records = _activity_records([key for key, _hit in targets])
-	rows = [_activity_row(hit, records[key]) for key, hit in targets if key in records]
-	return rows[:ACTIVITY_LIMIT]
+	return [_activity_row(hit, records[key]) for key, hit in targets if key in records]
+
+
+def _readable_hits(hits: list[dict]):
+	readable = _activity_records([_parent_of(hit) for hit in hits])
+	return [hit for hit in hits if _parent_of(hit) in readable]
 
 
 def _activity_targets(hits: list[dict]):
-	"""Pair each hit with the record it opens, moving converted Lead hits to their readable Deal."""
+	"""Pair each hit with the record it opens, moving converted Lead hits to their readable Deal.
+
+	Hits must already be limited to parents the user can read.
+	"""
 	deal_by_lead = _readable_deals_by_lead(hits)
 	targets = {}
 	for hit in hits:
-		doctype, name = hit["parent"].split(":", 1)
+		doctype, name = _parent_of(hit)
 		if doctype == "CRM Lead" and name in deal_by_lead:
 			doctype, name = "CRM Deal", deal_by_lead[name]
 		targets.setdefault((doctype, name), hit)
@@ -185,6 +191,11 @@ def _readable_deals_by_lead(hits: list[dict]):
 		return {}
 	deals = frappe.get_list("CRM Deal", filters={"lead": ["in", leads]}, fields=["name", "lead"])
 	return {deal.lead: deal.name for deal in deals}
+
+
+def _parent_of(hit: dict) -> tuple[str, str]:
+	doctype, name = hit["parent"].split(":", 1)
+	return doctype, name
 
 
 def _activity_records(keys: list[tuple[str, str]]):
