@@ -6,15 +6,15 @@
     </div>
     <button
       type="button"
-      class="flex flex-col gap-1 text-left"
+      class="flex items-center justify-between gap-3 text-left"
       @click="emit('open', task)"
     >
-      <span class="line-clamp-2 text-base text-ink-gray-8">
+      <span class="min-w-0 truncate text-base text-ink-gray-8">
         {{ task.title }}
       </span>
       <Tooltip :text="formatTaskDue(task, 'long')">
         <span
-          class="text-sm"
+          class="shrink-0 whitespace-nowrap text-sm leading-5"
           :class="isTaskOverdue(task) ? 'text-ink-red-7' : 'text-ink-gray-5'"
         >
           {{ formatTaskDue(task) }}
