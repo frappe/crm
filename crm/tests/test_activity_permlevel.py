@@ -41,12 +41,6 @@ class TestActivityPermlevel(IntegrationTestCase):
 		add_permission("CRM Lead", "Sales Manager", 1)
 		update_permission_property("CRM Lead", "Sales Manager", 1, "write", 1)
 		frappe.clear_cache(doctype="CRM Lead")
-		print(
-			"DEBUG setUpClass db",
-			frappe.db.sql(
-				"select role, permlevel, `read` from `tabCustom DocPerm` where parent=%s", "CRM Lead"
-			),
-		)
 
 	def setUp(self):
 		frappe.db.savepoint("test_activity_permlevel")
@@ -68,6 +62,9 @@ class TestActivityPermlevel(IntegrationTestCase):
 		return lead
 
 	def activities_as(self, user, name):
+		# CI runs bench workers on the same Redis; they can re-cache CRM Lead meta
+		# without the uncommitted permlevel rule added in setUpClass
+		frappe.clear_cache(doctype="CRM Lead")
 		frappe.set_user(user)
 		try:
 			activities, *_ = get_activities(name)
@@ -85,39 +82,6 @@ class TestActivityPermlevel(IntegrationTestCase):
 	def test_permitted_user_still_sees_the_change(self):
 		lead = self.make_lead_with_restricted_change()
 		activities = self.activities_as("mgr@permlevel.test", lead.name)
-
-		# DEBUG: temporary, to find why the change is missing on develop CI
-		from frappe.desk.form.load import get_docinfo
-
-		from crm.api.activities import get_readable_fields
-
-		print(
-			"DEBUG versions",
-			frappe.get_all(
-				"Version", {"ref_doctype": "CRM Lead", "docname": lead.name}, ["name", "data", "creation"]
-			),
-		)
-		print(
-			"DEBUG test db",
-			frappe.db.sql(
-				"select role, permlevel, `read` from `tabCustom DocPerm` where parent=%s", "CRM Lead"
-			),
-		)
-		print("DEBUG cached meta", [(p.role, p.permlevel) for p in frappe.get_meta("CRM Lead").permissions])
-		print(
-			"DEBUG fresh meta",
-			[(p.role, p.permlevel) for p in frappe.get_meta("CRM Lead", cached=False).permissions],
-		)
-		print("DEBUG track_changes", frappe.get_meta("CRM Lead").track_changes)
-		frappe.set_user("mgr@permlevel.test")
-		print("DEBUG roles", frappe.get_roles())
-		print("DEBUG readable", RESTRICTED_FIELD in get_readable_fields("CRM Lead"))
-		print("DEBUG perms", [(p.role, p.permlevel, p.read) for p in frappe.get_meta("CRM Lead").permissions])
-		frappe.response.pop("docinfo", None)
-		get_docinfo("", "CRM Lead", lead.name)
-		print("DEBUG docinfo versions", frappe.response["docinfo"].versions)
-		frappe.set_user("Administrator")
-		print("DEBUG activities", activities)
 
 		self.assertIn(RESTRICTED_FIELD, changed_fields(activities))
 
