@@ -1,6 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.form.assign_to import add as assign_add
@@ -582,6 +584,15 @@ class TestCRMLead(FrappeTestCase):
 		lead = create_lead(first_name="Override", lead_owner="crm.user1@example.com")
 		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
 		self.assertEqual(frappe.db.get_value("CRM Lead", lead.name, "lead_owner"), "crm.user2@example.com")
+
+	def test_unique_email_rejects_duplicates(self):
+		"""A Unique field set via Customize Form is enforced even when the DB index stays non-unique"""
+		email_field = frappe.get_meta("CRM Lead").get_field("email")
+		with patch.object(email_field, "unique", 1):
+			lead = create_lead(first_name="Unique", email="unique.lead@example.com")
+			with self.assertRaises(frappe.UniqueValidationError):
+				create_lead(first_name="Duplicate", email="unique.lead@example.com")
+			lead.save()
 
 
 def create_lead(**kwargs):
