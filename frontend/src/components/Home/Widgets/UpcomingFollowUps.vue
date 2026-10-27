@@ -2,15 +2,13 @@
   <HomeWidget
     :title="__('Upcoming follow-ups')"
     :resource="resource"
-    widget="upcoming_follow_ups"
-    :columns="defaultColumns"
     :config="config"
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('No follow-ups in the next 7 days.')"
     emptyIcon="lucide-calendar"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows, columns }">
+    <template #default="{ rows }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="taskRecordRoute" />
     </template>
   </HomeWidget>
@@ -28,7 +26,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:config'])
 
-const defaultColumns = [
+const columns = [
   homeColumns.task(),
   homeColumns.taskRecord(),
   homeColumns.dueDate(),

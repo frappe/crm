@@ -2,14 +2,12 @@
   <HomeWidget
     :title="__('Follow-ups due')"
     :resource="resource"
-    widget="follow_ups_due"
-    :columns="defaultColumns"
     :config="config"
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('Nothing due today. You are all caught up.')"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows, columns }">
+    <template #default="{ rows }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="taskRecordRoute">
         <template #actions="{ row }">
           <div class="flex justify-end" @click.stop.prevent>
@@ -34,7 +32,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:config'])
 
-const defaultColumns = [
+const columns = [
   homeColumns.task(),
   homeColumns.taskRecord(),
   homeColumns.dueDate(true),

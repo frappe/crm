@@ -6,16 +6,7 @@ from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_counts, get_widget_data
 from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT
-from crm.tests.test_home import (
-	AGENT,
-	MANAGER,
-	make_deal,
-	make_lead,
-	make_task,
-	make_user,
-	reply_columns,
-	unreadable,
-)
+from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_task, make_user
 
 
 def status(doctype, *types):
@@ -40,8 +31,8 @@ class HomeWidgetTestCase(IntegrationTestCase):
 		frappe.set_user("Administrator")
 		frappe.db.rollback()
 
-	def data(self, widget, doctype="Both", columns=None):
-		return get_widget_data(widget, doctype, AGENT, columns)
+	def data(self, widget, doctype="Both"):
+		return get_widget_data(widget, doctype, AGENT)
 
 	def counts(self):
 		frappe.set_user(AGENT)
@@ -217,45 +208,6 @@ class TestFollowUpWidgets(HomeWidgetTestCase):
 		data = self.data("my_tasks")
 		self.assertEqual(names(data), [dated, undated])
 		self.assertEqual(data["total"], 2)
-
-
-class TestWidgetColumns(HomeWidgetTestCase):
-	def test_rows_carry_the_requested_fields(self):
-		self.lead(awaiting_reply_since=now_datetime(), territory=None)
-		self.deal(awaiting_reply_since=now_datetime())
-		rows = self.data("replies_waiting", columns=reply_columns("owner", "territory"))["rows"]
-		self.assertEqual([row["owner"] for row in rows], [AGENT, AGENT])
-		self.assertTrue(all("territory" in row for row in rows))
-
-	def test_currency_columns_carry_the_row_currency(self):
-		self.deal(awaiting_reply_since=now_datetime(), deal_value=500, currency="EUR")
-		row = self.data("replies_waiting", "Deal", reply_columns("deal_value"))["rows"][0]
-		self.assertEqual((row["deal_value"], row["currency"]), (500, "EUR"))
-
-	def test_task_rows_carry_the_requested_fields(self):
-		make_task(nowdate(), assigned_to=AGENT, start_date=nowdate())
-		columns = [{"key": key} for key in ("title", "due_date", "start_date")]
-		row = self.data("my_tasks", columns=columns)["rows"][0]
-		self.assertEqual(str(row["start_date"]), nowdate())
-
-	def test_disallowed_and_unreadable_fields_are_not_fetched(self):
-		self.lead(awaiting_reply_since=now_datetime(), lead_score=7)
-		row = self.data("replies_waiting", "Lead", reply_columns("lead_score"))["rows"][0]
-		self.assertEqual(row["lead_score"], 7)
-
-		with unreadable("CRM Lead", "lead_score"):
-			row = self.data("replies_waiting", "Lead", reply_columns("lead_score"))["rows"][0]
-		self.assertNotIn("lead_score", row)
-		for key in ("deal_value", "not_a_field", "image"):
-			row = self.data("replies_waiting", "Lead", reply_columns(key))["rows"][0]
-			self.assertNotIn(key, row)
-
-	def test_default_columns_fetch_no_extra_fields(self):
-		self.lead(awaiting_reply_since=now_datetime())
-		row = self.data("replies_waiting")["rows"][0]
-		self.assertEqual(
-			set(row), {"name", "status", "title", "subtitle", "awaiting_reply_since", "doctype", "channel"}
-		)
 
 
 class TestWidgetValidation(HomeWidgetTestCase):

@@ -1,22 +1,14 @@
 <template>
-  <Popover
-    v-model:open="popoverOpen"
-    side="bottom"
-    align="end"
-    bare
-    :trigger="manual ? 'manual' : 'click'"
-  >
+  <Popover side="bottom" align="end" bare>
     <template #trigger>
-      <slot name="trigger">
-        <Button :label="__('Columns')">
-          <template v-if="hideLabel" #icon>
-            <ColumnsIcon class="h-4" />
-          </template>
-          <template v-if="!hideLabel" #prefix>
-            <ColumnsIcon class="h-4" />
-          </template>
-        </Button>
-      </slot>
+      <Button :label="__('Columns')">
+        <template v-if="hideLabel" #icon>
+          <ColumnsIcon class="h-4" />
+        </template>
+        <template v-if="!hideLabel" #prefix>
+          <ColumnsIcon class="h-4" />
+        </template>
+      </Button>
     </template>
     <template #default="{ close }">
       <div
@@ -49,7 +41,6 @@
                     </template>
                   </Button>
                   <Button
-                    v-if="!lockedColumns.includes(element.key)"
                     variant="ghost"
                     class="!h-5 w-5 !p-1"
                     @click="removeColumn(element)"
@@ -160,17 +151,9 @@ import { computed, ref } from 'vue'
 import { watchOnce } from '@vueuse/core'
 
 const props = defineProps({
-  doctype: { type: String, default: null },
+  doctype: { type: String, required: true },
   hideLabel: { type: Boolean, default: false },
-  // Callers that pick their own fields (Home widgets) pass them instead of a doctype.
-  fieldOptions: { type: Array, default: null },
-  lockedColumns: { type: Array, default: () => [] },
-  defaultWidth: { type: Function, default: () => '10rem' },
-  // Opened through `open` by the caller instead of the trigger's click.
-  manual: { type: Boolean, default: false },
 })
-
-const popoverOpen = defineModel('open', { type: Boolean, default: undefined })
 
 const emit = defineEmits(['update'])
 const columnsUpdated = ref(false)
@@ -211,11 +194,10 @@ const rows = computed({
   },
 })
 
-const { getFields } = props.fieldOptions ? {} : getMeta(props.doctype)
+const { getFields } = getMeta(props.doctype)
 
 const fields = computed(() => {
-  const _fields =
-    props.fieldOptions || getFields({ withStandardFields: true }) || []
+  const _fields = getFields({ withStandardFields: true }) || []
   if (!_fields.length) return []
 
   let existingFields = []
@@ -246,7 +228,7 @@ function addColumn(c) {
     type: c.fieldtype,
     key: c.fieldname,
     options: c.options,
-    width: props.defaultWidth(c),
+    width: '10rem',
     align,
   }
   columns.value.push(_column)

@@ -10,7 +10,6 @@ from frappe.query_builder.functions import Coalesce, Count, Max
 from frappe.utils import now_datetime
 from pypika.terms import Function
 
-from crm.fcrm.doctype.crm_dashboard.home_columns import ColumnFields
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.reply_channel import set_reply_channels
 from crm.fcrm.doctype.crm_task.rules import CLOSED_STATUSES, FOLLOW_UP_DOCTYPES, TaskDue
@@ -20,7 +19,6 @@ IDLE_DAYS = 7
 UPCOMING_DAYS = 7
 ACTIVE_STATUS_TYPES = ("Open", "Ongoing")
 DOCTYPES = {"Lead": ("CRM Lead",), "Deal": ("CRM Deal",), "Both": FOLLOW_UP_DOCTYPES}
-TASK_DOCTYPES = ("CRM Task",)
 
 
 @dataclass(frozen=True)
@@ -38,14 +36,9 @@ RECORD_TYPES = {
 
 
 class Widget:
-	column_doctypes = None
-
-	def __init__(self, doctypes: tuple, scope: Mine | Team, columns: tuple = ()):
-		"""`columns` are extra keys already checked by `WidgetColumns`."""
+	def __init__(self, doctypes: tuple, scope: Mine | Team):
 		self.doctypes = doctypes
 		self.scope = scope
-		self.columns = columns
-		self.column_fields = ColumnFields(self.column_doctypes or doctypes, scope.user)
 
 	def summary(self) -> dict:
 		return {"rows": self.rows(), "total": self.count()}
@@ -95,16 +88,7 @@ class RecordWidget(Widget):
 			table.status,
 			table[record_type.title_field].as_("title"),
 			table[record_type.subtitle_field].as_("subtitle"),
-			*self.extra_fields(doctype, table),
 		]
-
-	def extra_fields(self, doctype: str, table) -> list:
-		fields = {}
-		for key in self.columns:
-			fields[key] = self.column_fields.term(doctype, table, key)
-			if currency := self.column_fields.currency_field(doctype, key):
-				fields.setdefault(currency, table[currency])
-		return list(fields.values())
 
 	def sort_term(self, table):
 		return table[self.sort_field]
@@ -185,17 +169,15 @@ class NoNextStep(RecordWidget):
 
 class TaskWidget(Widget):
 	FIELDS = ("name", "title", "status", "priority", "due_date", "all_day")
-	column_doctypes = TASK_DOCTYPES
 
-	def __init__(self, doctypes: tuple, scope: Mine | Team, columns: tuple = ()):
-		super().__init__(doctypes, scope, columns)
+	def __init__(self, doctypes: tuple, scope: Mine | Team):
+		super().__init__(doctypes, scope)
 		self.task = frappe.qb.DocType("CRM Task")
 		self.due = TaskDue(scope.user)
 
 	def rows(self) -> list:
 		task = self.task
-		extra = [task[key] for key in self.columns if key not in self.FIELDS]
-		query = self.query().select(*self.FIELDS, task.reference_doctype, task.reference_docname, *extra)
+		query = self.query().select(*self.FIELDS, task.reference_doctype, task.reference_docname)
 		rows = self.order(query).limit(ROW_LIMIT).run(as_dict=True)
 		set_reference_titles(rows)
 		return rows

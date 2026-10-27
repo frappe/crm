@@ -15,19 +15,6 @@
       <div class="truncate">{{ formatTaskDue(row) }}</div>
     </div>
   </Tooltip>
-  <div
-    v-else-if="column.fieldtype === 'Check'"
-    class="flex"
-    :class="column.align === 'right' ? 'justify-end' : ''"
-  >
-    <FormControl type="checkbox" :modelValue="Boolean(item)" disabled />
-  </div>
-  <RatingInput
-    v-else-if="column.fieldtype === 'Rating'"
-    :value="item"
-    class="!opacity-100 flex-nowrap overflow-hidden"
-    :disabled="true"
-  />
   <ListRowItem
     v-else
     :column="column"
@@ -53,7 +40,6 @@
   </ListRowItem>
 </template>
 <script setup>
-import RatingInput from '@/components/Controls/RatingInput.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
@@ -62,10 +48,8 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
-import { formatDate, formatTime } from '@/utils'
-import { formatCurrency, formatNumber } from '@/utils/numberFormat'
 import { formatTaskDue, isTaskOverdue } from '@/utils/task'
-import { FormControl, Tooltip } from 'frappe-ui'
+import { Tooltip } from 'frappe-ui'
 import { ListRowItem } from 'frappe-ui/experimental'
 import { computed } from 'vue'
 
@@ -91,27 +75,6 @@ const label = computed(() => {
     return props.item && getUser(props.item).full_name
   if (['taskStatus', 'priority'].includes(props.column.type))
     return __(props.item)
-  if (props.column.type === 'field') return fieldLabel(props.column, props.row)
   return props.item
 })
-
-// Same formatting as the list views' rows.
-function fieldLabel({ key, fieldtype, options }, row) {
-  const value = row[key]
-  if (value == null || value === '') return ''
-  if (fieldtype === 'Currency')
-    return formatCurrency(
-      value,
-      '',
-      row[options] || window.sysdefaults.currency,
-      null,
-    )
-  if (fieldtype === 'Float') return formatNumber(value, '', null)
-  if (fieldtype === 'Percent') return formatNumber(value, '', null) + '%'
-  if (fieldtype === 'Duration') return formatTime(value)
-  if (['Date', 'Datetime'].includes(fieldtype))
-    return formatDate(value, '', true, fieldtype === 'Datetime')
-  if (fieldtype === 'Select') return __(value)
-  return value
-}
 </script>

@@ -2,14 +2,12 @@
   <HomeWidget
     :title="__('Recently opened')"
     :resource="resource"
-    widget="recently_opened"
-    :columns="defaultColumns"
     :config="config"
     :emptyText="__('Leads and deals you open will show up here.')"
     emptyIcon="lucide-history"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows, columns }">
+    <template #default="{ rows }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute" />
     </template>
   </HomeWidget>
@@ -18,7 +16,6 @@
 import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import { homeColumns } from '@/components/Home/columns'
-import { loadWidgetColumns } from '@/composables/homeWidget'
 import { sessionStore } from '@/stores/session'
 import { recordRoute } from '@/utils/home'
 import { readRecent, sortByRecency } from '@/utils/recentRecords'
@@ -37,7 +34,7 @@ const FIELDS = {
 }
 const DOCTYPES = { Lead: ['CRM Lead'], Deal: ['CRM Deal'] }
 
-const defaultColumns = [
+const columns = [
   homeColumns.record(),
   {
     key: 'doctype',
@@ -53,14 +50,7 @@ const { user } = sessionStore()
 
 const resource = reactive({ data: null, loading: false })
 
-const extraKeys = () =>
-  (props.config.columns || [])
-    .map((column) => column.key)
-    .filter((key) => !defaultColumns.some((column) => column.key === key))
-
-watch(() => [props.config.doctype, extraKeys().join()], load, {
-  immediate: true,
-})
+watch(() => props.config.doctype, load, { immediate: true })
 
 async function load() {
   const doctypes = DOCTYPES[props.config.doctype] || Object.keys(FIELDS)
@@ -69,9 +59,8 @@ async function load() {
   )
   resource.loading = true
   try {
-    const extra = await extraFields()
     const records = await Promise.all(
-      doctypes.map((d) => fetchRecords(d, recent, extra)),
+      doctypes.map((d) => fetchRecords(d, recent)),
     )
     resource.data = { rows: sortByRecency(records.flat(), recent) }
   } finally {
@@ -79,49 +68,21 @@ async function load() {
   }
 }
 
-async function extraFields() {
-  const keys = extraKeys()
-  if (!keys.length) return []
-  const { fields } = await loadWidgetColumns(
-    'recently_opened',
-    props.config.doctype || 'Both',
-  )
-  return keys
-    .filter((key) => fields[key])
-    .map((key) => ({ ...fields[key], currency: currencyField(fields, key) }))
-}
-
-async function fetchRecords(doctype, recent, extra) {
+async function fetchRecords(doctype, recent) {
   const names = recent.filter((r) => r.doctype === doctype).map((r) => r.name)
   if (!names.length) return []
   const fields = FIELDS[doctype]
   const records = await call('frappe.client.get_list', {
     doctype,
     filters: { name: ['in', names] },
-    fields: [
-      'name',
-      'status',
-      fields.title,
-      fields.subtitle,
-      ...extra.flatMap((field) => fetchedFields(field, doctype)),
-    ],
+    fields: ['name', 'status', fields.title, fields.subtitle],
   })
   return records.map((record) => ({
-    ...record,
     doctype,
+    name: record.name,
+    status: record.status,
     title: record[fields.title],
     subtitle: record[fields.subtitle],
   }))
-}
-
-function fetchedFields({ fieldname, source, currency }, doctype) {
-  if (source) return [`${source[doctype]} as ${fieldname}`]
-  return currency ? [fieldname, currency] : [fieldname]
-}
-
-// Currency cells format in the row's currency, so its field comes along when the user can add it.
-function currencyField(fields, key) {
-  const { fieldtype, options } = fields[key]
-  return fieldtype === 'Currency' && fields[options] ? options : null
 }
 </script>

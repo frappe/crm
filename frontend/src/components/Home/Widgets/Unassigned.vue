@@ -2,15 +2,13 @@
   <HomeWidget
     :title="__('Unassigned')"
     :resource="resource"
-    widget="unassigned"
-    :columns="defaultColumns"
     :config="config"
     :viewAll="recordListViews(config.doctype)"
     :emptyText="__('Every new lead and deal has an assignee.')"
     emptyIcon="lucide-user-check"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ rows, columns }">
+    <template #default="{ rows }">
       <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute" />
     </template>
   </HomeWidget>
@@ -28,7 +26,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:config'])
 
-const defaultColumns = [
+const columns = [
   homeColumns.record(),
   homeColumns.status(),
   homeColumns.timeAgo('creation', __('Created')),

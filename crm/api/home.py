@@ -2,13 +2,7 @@ import frappe
 from frappe import _
 
 from crm.api.digest import OPT_OUT_KEY
-from crm.fcrm.doctype.crm_dashboard.home_layout import (
-	WIDGETS,
-	HomeLayout,
-	RoleDefault,
-	role_for,
-	widget_columns,
-)
+from crm.fcrm.doctype.crm_dashboard.home_layout import HomeLayout, RoleDefault, role_for
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	DOCTYPES,
@@ -92,39 +86,21 @@ def get_counts() -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_widget(widget: str, doctype: str = "Both", columns: list | str | None = None) -> dict:
-	return get_widget_data(widget, doctype, columns=frappe.parse_json(columns) if columns else None)
+def get_widget(widget: str, doctype: str = "Both") -> dict:
+	return get_widget_data(widget, doctype)
 
 
-@frappe.whitelist()
-@sales_user_only
-def get_widget_columns(widget: str, doctype: str = "Both") -> dict:
-	"""Fields the user can add as columns to `widget`, and the columns they cannot remove."""
-	validate_widget(widget, doctype)
-	columns = widget_columns(widget, {"doctype": doctype})
-	return {"fields": columns.available(), "locked": WIDGETS[widget].locked}
-
-
-def get_widget_data(
-	widget: str, doctype: str = "Both", user: str | None = None, columns: list | None = None
-) -> dict:
+def get_widget_data(widget: str, doctype: str = "Both", user: str | None = None) -> dict:
 	user = user or frappe.session.user
 	if widget not in WIDGET_DATA and widget not in TEAM_WIDGET_DATA:
 		frappe.throw(_("Home widget {0} has no data").format(widget))
-	validate_widget(widget, doctype)
-	extra = widget_columns(widget, {"doctype": doctype}, user).extra(columns)
+	if doctype not in DOCTYPES:
+		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(widget))
 
 	if widget in WIDGET_DATA:
-		return WIDGET_DATA[widget](DOCTYPES[doctype], Mine(user), extra).summary()
+		return WIDGET_DATA[widget](DOCTYPES[doctype], Mine(user)).summary()
 	if role_for(user) != "manager":
 		frappe.throw(
 			_("Home widget {0} is only available to managers").format(widget), frappe.PermissionError
 		)
-	return TEAM_WIDGET_DATA[widget](DOCTYPES[doctype], Team(user), extra).summary()
-
-
-def validate_widget(widget: str, doctype: str):
-	if widget not in WIDGETS:
-		frappe.throw(_("Unknown Home widget {0}").format(widget))
-	if doctype not in DOCTYPES:
-		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(widget))
+	return TEAM_WIDGET_DATA[widget](DOCTYPES[doctype], Team(user)).summary()
