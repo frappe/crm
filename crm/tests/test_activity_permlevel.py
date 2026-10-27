@@ -47,9 +47,6 @@ class TestActivityPermlevel(IntegrationTestCase):
 				"select role, permlevel, `read` from `tabCustom DocPerm` where parent=%s", "CRM Lead"
 			),
 		)
-		print(
-			"DEBUG setUpClass meta", [(p.role, p.permlevel) for p in frappe.get_meta("CRM Lead").permissions]
-		)
 
 	def setUp(self):
 		frappe.db.savepoint("test_activity_permlevel")
@@ -105,6 +102,11 @@ class TestActivityPermlevel(IntegrationTestCase):
 			frappe.db.sql(
 				"select role, permlevel, `read` from `tabCustom DocPerm` where parent=%s", "CRM Lead"
 			),
+		)
+		print("DEBUG cached meta", [(p.role, p.permlevel) for p in frappe.get_meta("CRM Lead").permissions])
+		print(
+			"DEBUG fresh meta",
+			[(p.role, p.permlevel) for p in frappe.get_meta("CRM Lead", cached=False).permissions],
 		)
 		print("DEBUG track_changes", frappe.get_meta("CRM Lead").track_changes)
 		frappe.set_user("mgr@permlevel.test")
