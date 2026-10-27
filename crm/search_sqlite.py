@@ -4,9 +4,12 @@
 from typing import ClassVar
 
 import frappe
+from bs4 import BeautifulSoup
+from email_reply_parser import EmailReplyParser
 from frappe.search.sqlite_search import SQLiteSearch
 
 PARENT_DOCTYPES = ["CRM Lead", "CRM Deal"]
+QUOTE_SELECTORS = "blockquote, .gmail_quote, .yahoo_quoted"
 
 # Past this many readable records the IN (...) pre-filter gets too large, so hits are
 # permission-checked after the search instead.
@@ -103,6 +106,11 @@ class CRMSearch(SQLiteSearch):
 
 		reference_name = doc.reference_docname if doc.doctype == "FCRM Note" else doc.reference_name
 		document["parent"] = parent_key(doc.reference_doctype, reference_name)
+
+		# Index only the new text of an email, so a phrase matches the email that said it
+		# and not every later reply that quotes it.
+		if doc.doctype == "Communication":
+			document["content"] = self._process_content(strip_quoted_reply(doc.content))
 		return document
 
 	def index_doc(self, doctype, docname):
@@ -120,6 +128,13 @@ class CRMSearch(SQLiteSearch):
 
 def parent_key(doctype: str, name: str) -> str:
 	return f"{doctype}:{name}"
+
+
+def strip_quoted_reply(html: str) -> str:
+	soup = BeautifulSoup(html, "html.parser")
+	for quote in soup.select(QUOTE_SELECTORS):
+		quote.decompose()
+	return EmailReplyParser.parse_reply(soup.get_text("\n"))
 
 
 def matches_filters(doc, filters: dict) -> bool:
