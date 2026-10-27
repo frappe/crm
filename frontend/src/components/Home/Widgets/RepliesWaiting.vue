@@ -10,47 +10,35 @@
         : __('No one is waiting on a reply from you.')
     "
     emptyIcon="lucide-inbox"
-    :columns="columns"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ row }">
-      <RecordRow :record="row">
-        <ListCell class="text-ink-gray-5">
-          <Tooltip v-if="row.channel" :text="channels[row.channel]?.label">
-            <span class="relative flex">
-              <component :is="channels[row.channel]?.icon" class="size-4" />
-            </span>
-          </Tooltip>
-        </ListCell>
-        <ListCell class="justify-end text-ink-gray-5">
-          <Tooltip
-            :text="
-              __('Waiting since {0}', [prettyDate(row.awaiting_reply_since)])
-            "
+    <template #default="{ rows }">
+      <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute">
+        <template #channel="{ item, column }">
+          <ListRowItem
+            v-if="channels[item]"
+            :item="channels[item].label"
+            :column="column"
+            class="overflow-hidden"
           >
-            <span class="relative whitespace-nowrap">
-              {{ prettyDate(row.awaiting_reply_since, true) }}
-            </span>
-          </Tooltip>
-        </ListCell>
-        <ListCell v-if="team">
-          <OwnerAvatar :user="row.owner" />
-        </ListCell>
-      </RecordRow>
+            <template #prefix>
+              <component :is="channels[item].icon" class="size-4" />
+            </template>
+          </ListRowItem>
+        </template>
+      </HomeTable>
     </template>
   </HomeWidget>
 </template>
 <script setup>
+import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
-import OwnerAvatar from '@/components/Home/OwnerAvatar.vue'
-import RecordRow from '@/components/Home/RecordRow.vue'
+import { homeColumns } from '@/components/Home/columns'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import { useHomeWidget } from '@/composables/homeWidget'
-import { prettyDate } from '@/utils'
-import { recordListViews } from '@/utils/home'
-import { Tooltip } from 'frappe-ui'
-import { ListCell } from 'frappe-ui/list'
+import { recordListViews, recordRoute } from '@/utils/home'
+import { ListRowItem } from 'frappe-ui/experimental'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },
@@ -65,11 +53,11 @@ const channels = {
 }
 
 const columns = [
-  '1rem',
-  'minmax(0,1fr)',
-  '1rem',
-  '2.5rem',
-  ...(props.team ? ['1.25rem'] : []),
+  homeColumns.record(),
+  homeColumns.status(),
+  { key: 'channel', label: __('Channel'), width: '6rem' },
+  homeColumns.timeAgo('awaiting_reply_since', __('Waiting since')),
+  ...(props.team ? [homeColumns.user('owner', __('Owner'))] : []),
 ]
 
 const resource = useHomeWidget(

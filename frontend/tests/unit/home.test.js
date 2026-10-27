@@ -42,12 +42,11 @@ describe('home records', () => {
   it('falls back to the contact name and then the ID', () => {
     expect(
       recordTitle({ title: 'Stripe', subtitle: 'Casey Brown', name: 'D-1' }),
-    ).toEqual({ title: 'Stripe', subtitle: 'Casey Brown' })
-    expect(recordTitle({ subtitle: 'Casey Brown', name: 'D-1' })).toEqual({
-      title: 'Casey Brown',
-      subtitle: '',
-    })
-    expect(recordTitle({ name: 'D-1' })).toEqual({ title: 'D-1', subtitle: '' })
+    ).toBe('Stripe')
+    expect(recordTitle({ subtitle: 'Casey Brown', name: 'D-1' })).toBe(
+      'Casey Brown',
+    )
+    expect(recordTitle({ name: 'D-1' })).toBe('D-1')
   })
 })
 

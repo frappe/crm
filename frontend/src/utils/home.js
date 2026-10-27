@@ -9,15 +9,17 @@ function greetingAt(hour) {
   return __('Good evening')
 }
 
-// Home rows stay static so they can hold buttons; a stretched link opens them,
-// so they need the clickable row surface by hand.
-export const homeRowClass =
-  'rounded-[10px] hover:bg-surface-gray-1 active:bg-surface-gray-2 has-[:focus-visible]:bg-surface-gray-2'
-
 export function recordRoute({ doctype, name }) {
   return doctype === 'CRM Deal'
     ? { name: 'Deal', params: { dealId: name } }
     : { name: 'Lead', params: { leadId: name } }
+}
+
+export function taskRecordRoute(task) {
+  return recordRoute({
+    doctype: task.reference_doctype,
+    name: task.reference_docname,
+  })
 }
 
 export function recordListViews(doctype = 'Both') {
@@ -29,10 +31,7 @@ export function recordListViews(doctype = 'Both') {
 }
 
 export function recordTitle({ title, subtitle, name }) {
-  return {
-    title: title || subtitle || name,
-    subtitle: title && subtitle !== title ? subtitle : '',
-  }
+  return title || subtitle || name
 }
 
 // "<1m", "45m", "3h 20m", "2d 4h"

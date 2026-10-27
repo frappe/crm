@@ -5,37 +5,8 @@
     :emptyText="__('No one is on your team yet.')"
     emptyIcon="lucide-users"
   >
-    <template #list="{ rows }">
-      <List :columns="columns" :rowHeight="32" class="list-row-px-2 text-base">
-        <ListHeader class="sticky top-0 z-10 bg-surface-elevation-2">
-          <ListHeaderCell>{{ __('Member') }}</ListHeaderCell>
-          <ListHeaderCell
-            v-for="stat in stats"
-            :key="stat.key"
-            class="justify-end"
-          >
-            {{ stat.label }}
-          </ListHeaderCell>
-        </ListHeader>
-        <ListRows :items="visible(rows)" rowKey="user" v-slot="{ item }">
-          <ListRow>
-            <ListCell class="gap-2">
-              <UserAvatar :user="item.user" size="sm" hideStatus />
-              <span class="truncate text-ink-gray-8">
-                {{ getUser(item.user).full_name }}
-              </span>
-            </ListCell>
-            <ListCell
-              v-for="stat in stats"
-              :key="stat.key"
-              class="justify-end tabular-nums"
-              :class="item[stat.key] ? 'text-ink-gray-8' : 'text-ink-gray-4'"
-            >
-              {{ stat.format ? stat.format(item[stat.key]) : item[stat.key] }}
-            </ListCell>
-          </ListRow>
-        </ListRows>
-      </List>
+    <template #default="{ rows }">
+      <HomeTable :columns="columns" :rows="visible(rows)" showHeader />
     </template>
     <template v-if="members.length > VISIBLE_MEMBERS" #footer>
       <Button
@@ -50,19 +21,12 @@
   </HomeWidget>
 </template>
 <script setup>
+import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
+import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
 import { usersStore } from '@/stores/users'
 import { shortDuration } from '@/utils/home'
-import {
-  List,
-  ListCell,
-  ListHeader,
-  ListHeaderCell,
-  ListRow,
-  ListRows,
-} from 'frappe-ui/list'
 import { computed, ref } from 'vue'
 
 // Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
@@ -70,19 +34,26 @@ defineProps({ config: { type: Object, default: null } })
 
 const { getUser } = usersStore()
 
-const stats = [
-  { key: 'open', label: __('Open') },
-  { key: 'replies_waiting', label: __('Replies waiting') },
-  { key: 'overdue_follow_ups', label: __('Overdue follow-ups') },
-  { key: 'no_next_step', label: __('No next step') },
-  {
-    key: 'first_response_time',
-    label: __('Avg. first response'),
-    format: (seconds) => shortDuration(seconds) || '—',
-  },
-]
+const stat = (key, label, format = String) => ({
+  key,
+  label,
+  align: 'right',
+  width: 'minmax(5rem,9rem)',
+  getLabel: ({ row }) => format(row[key]),
+})
 
-const columns = ['minmax(10rem,1fr)', ...stats.map(() => 'minmax(5rem,9rem)')]
+const columns = [
+  { ...homeColumns.user('user', __('Member')), width: 'minmax(10rem,1fr)' },
+  stat('open', __('Open')),
+  stat('replies_waiting', __('Replies waiting')),
+  stat('overdue_follow_ups', __('Overdue follow-ups')),
+  stat('no_next_step', __('No next step')),
+  stat(
+    'first_response_time',
+    __('Avg. first response'),
+    (seconds) => shortDuration(seconds) || '—',
+  ),
+]
 
 // Fits the default card height (see widgets.js); the rest scroll once expanded.
 const VISIBLE_MEMBERS = 9
@@ -94,13 +65,13 @@ const expanded = ref(false)
 const members = computed(() => resource.data?.rows || [])
 
 function visible(rows) {
-  const busiestFirst = [...rows].sort(
-    (a, b) => b.open - a.open || name(a).localeCompare(name(b)),
-  )
+  const busiestFirst = rows
+    .map((row) => ({ ...row, name: row.user }))
+    .sort((a, b) => b.open - a.open || fullName(a).localeCompare(fullName(b)))
   return expanded.value ? busiestFirst : busiestFirst.slice(0, VISIBLE_MEMBERS)
 }
 
-function name(row) {
+function fullName(row) {
   return getUser(row.user).full_name || row.user
 }
 </script>

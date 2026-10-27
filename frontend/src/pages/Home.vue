@@ -70,7 +70,7 @@
               <div
                 class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
               />
-              <div class="absolute right-2 top-2 flex items-center gap-0.5">
+              <div class="absolute right-2 top-1.5 flex items-center gap-0.5">
                 <Tooltip :text="__('Drag to move')">
                   <span
                     class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"

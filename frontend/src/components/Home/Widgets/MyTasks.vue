@@ -5,16 +5,16 @@
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('No tasks on your list.')"
     emptyIcon="lucide-square-check"
-    :columns="['1rem', 'minmax(0,1fr)', '6rem']"
   >
-    <template #default="{ row }">
-      <TaskRow :task="row" @open="openTask" />
+    <template #default="{ rows }">
+      <HomeTable :columns="columns" :rows="rows" :onRowClick="openTask" />
     </template>
   </HomeWidget>
 </template>
 <script setup>
+import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
-import TaskRow from '@/components/Home/TaskRow.vue'
+import { homeColumns } from '@/components/Home/columns'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { refreshHome, useHomeWidget } from '@/composables/homeWidget'
 
@@ -22,6 +22,13 @@ import { refreshHome, useHomeWidget } from '@/composables/homeWidget'
 defineProps({ config: { type: Object, default: null } })
 
 const { showModal } = useDoctypeModal()
+
+const columns = [
+  homeColumns.taskStatus(),
+  homeColumns.task(),
+  homeColumns.priority(),
+  homeColumns.dueDate(),
+]
 
 const resource = useHomeWidget('my_tasks')
 

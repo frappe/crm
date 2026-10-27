@@ -5,25 +5,21 @@
     :config="config"
     :emptyText="__('Leads and deals you open will show up here.')"
     emptyIcon="lucide-history"
-    :columns="['1rem', 'minmax(0,1fr)', '4rem']"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ row }">
-      <RecordRow :record="row">
-        <ListCell class="justify-end text-ink-gray-5">
-          {{ row.doctype === 'CRM Deal' ? __('Deal') : __('Lead') }}
-        </ListCell>
-      </RecordRow>
+    <template #default="{ rows }">
+      <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute" />
     </template>
   </HomeWidget>
 </template>
 <script setup>
+import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
-import RecordRow from '@/components/Home/RecordRow.vue'
+import { homeColumns } from '@/components/Home/columns'
 import { sessionStore } from '@/stores/session'
+import { recordRoute } from '@/utils/home'
 import { readRecent, sortByRecency } from '@/utils/recentRecords'
 import { call } from 'frappe-ui'
-import { ListCell } from 'frappe-ui/list'
 import { reactive, watch } from 'vue'
 
 const props = defineProps({
@@ -37,6 +33,18 @@ const FIELDS = {
   'CRM Deal': { title: 'organization', subtitle: 'lead_name' },
 }
 const DOCTYPES = { Lead: ['CRM Lead'], Deal: ['CRM Deal'] }
+
+const columns = [
+  homeColumns.record(),
+  {
+    key: 'doctype',
+    label: __('Type'),
+    width: '4rem',
+    getLabel: ({ row }) =>
+      row.doctype === 'CRM Deal' ? __('Deal') : __('Lead'),
+  },
+  homeColumns.status(),
+]
 
 const { user } = sessionStore()
 

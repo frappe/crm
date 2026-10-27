@@ -5,30 +5,33 @@
     :config="config"
     :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
     :emptyText="__('Your team has no follow-ups overdue in the last 30 days.')"
-    :columns="['1rem', 'minmax(0,1fr)', '6rem', '1.25rem']"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ row }">
-      <TaskRow :task="row">
-        <ListCell>
-          <OwnerAvatar :user="row.assigned_to" />
-        </ListCell>
-      </TaskRow>
+    <template #default="{ rows }">
+      <HomeTable :columns="columns" :rows="rows" :rowRoute="taskRecordRoute" />
     </template>
   </HomeWidget>
 </template>
 <script setup>
+import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
-import OwnerAvatar from '@/components/Home/OwnerAvatar.vue'
-import TaskRow from '@/components/Home/TaskRow.vue'
+import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
-import { ListCell } from 'frappe-ui/list'
+import { taskRecordRoute } from '@/utils/home'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:config'])
+
+const columns = [
+  homeColumns.task(),
+  homeColumns.taskRecord(),
+  homeColumns.dueDate(),
+  homeColumns.priority(),
+  homeColumns.user('assigned_to', __('Assigned to')),
+]
 
 const resource = useHomeWidget('team_overdue_follow_ups', () => props.config)
 </script>

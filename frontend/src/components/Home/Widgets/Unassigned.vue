@@ -6,36 +6,31 @@
     :viewAll="recordListViews(config.doctype)"
     :emptyText="__('Every new lead and deal has an assignee.')"
     emptyIcon="lucide-user-check"
-    :columns="['1rem', 'minmax(0,1fr)', '2.5rem']"
     @update:config="(value) => emit('update:config', value)"
   >
-    <template #default="{ row }">
-      <RecordRow :record="row">
-        <ListCell class="justify-end text-ink-gray-5">
-          <Tooltip :text="__('Created {0}', [prettyDate(row.creation)])">
-            <span class="relative whitespace-nowrap">
-              {{ prettyDate(row.creation, true) }}
-            </span>
-          </Tooltip>
-        </ListCell>
-      </RecordRow>
+    <template #default="{ rows }">
+      <HomeTable :columns="columns" :rows="rows" :rowRoute="recordRoute" />
     </template>
   </HomeWidget>
 </template>
 <script setup>
+import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
-import RecordRow from '@/components/Home/RecordRow.vue'
+import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
-import { prettyDate } from '@/utils'
-import { recordListViews } from '@/utils/home'
-import { Tooltip } from 'frappe-ui'
-import { ListCell } from 'frappe-ui/list'
+import { recordListViews, recordRoute } from '@/utils/home'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:config'])
+
+const columns = [
+  homeColumns.record(),
+  homeColumns.status(),
+  homeColumns.timeAgo('creation', __('Created')),
+]
 
 const resource = useHomeWidget('unassigned', () => props.config)
 </script>

@@ -2,7 +2,7 @@
   <div
     class="flex h-full w-full flex-col overflow-hidden rounded-4 border border-outline-gray-1 bg-surface-elevation-2"
   >
-    <div class="flex h-11 shrink-0 items-center gap-1.5 pl-4 pr-2">
+    <div class="flex h-10 shrink-0 items-center gap-1.5 pl-4 pr-2">
       <span class="truncate text-base-medium text-ink-gray-8">
         {{ title }}
       </span>
@@ -29,7 +29,7 @@
       </div>
       <div
         v-else-if="!rows.length"
-        class="flex flex-1 flex-col items-center justify-center gap-3 px-4 pb-11 text-center"
+        class="flex flex-1 flex-col items-center justify-center gap-3 px-4 pb-10 text-center"
       >
         <span
           class="flex size-8 items-center justify-center rounded-full bg-surface-gray-2"
@@ -40,23 +40,12 @@
           {{ emptyText }}
         </span>
       </div>
-      <slot v-else name="list" :rows="rows">
-        <List
-          :columns="columns"
-          :rowHeight="32"
-          divider="none"
-          class="list-row-px-2 text-base"
-        >
-          <ListRows :items="rows" :rowKey="rowKey" v-slot="{ item }">
-            <slot :row="item" />
-          </ListRows>
-        </List>
-      </slot>
+      <slot v-else :rows="rows" />
     </div>
 
     <div
       v-if="$slots.footer || (viewAll.length && total)"
-      class="flex h-10 shrink-0 items-center justify-end px-2"
+      class="flex h-8 shrink-0 items-center justify-end px-2"
     >
       <slot name="footer">
         <Button
@@ -80,7 +69,6 @@
 <script setup>
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { Dropdown } from 'frappe-ui'
-import { List, ListRows } from 'frappe-ui/list'
 import { computed, inject, ref } from 'vue'
 
 const props = defineProps({
@@ -90,7 +78,6 @@ const props = defineProps({
   viewAll: { type: Array, default: () => [] },
   emptyText: { type: String, required: true },
   emptyIcon: { type: String, default: 'lucide-check-circle-2' },
-  columns: { type: Array, default: undefined },
 })
 
 const emit = defineEmits(['update:config'])
@@ -102,8 +89,6 @@ const doctypeLabels = {
   Lead: __('Leads'),
   Deal: __('Deals'),
 }
-
-const rowKey = (row) => `${row.doctype}:${row.name}`
 
 const doctype = computed(() => props.config?.doctype || 'Both')
 const rows = computed(() => props.resource.data?.rows || [])
