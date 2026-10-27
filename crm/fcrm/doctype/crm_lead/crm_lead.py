@@ -93,6 +93,7 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_unique_fields()
 		self.validate_lost_reason()
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
@@ -156,6 +157,16 @@ class CRMLead(Document):
 
 			if self.email == self.lead_owner:
 				frappe.throw(_("Lead Owner cannot be same as the Lead Email Address"))
+
+	def validate_unique_fields(self):
+		# DB may keep a non-unique index when Unique is set via Customize Form
+		for df in self.meta.get("fields", {"unique": 1}):
+			value = self.get(df.fieldname)
+			if value and frappe.db.exists(self.doctype, {df.fieldname: value, "name": ("!=", self.name)}):
+				frappe.throw(
+					_("{0} {1} already exists").format(_(df.label), frappe.bold(value)),
+					frappe.UniqueValidationError,
+				)
 
 	def validate_lost_reason(self):
 		"""
@@ -419,6 +430,12 @@ class CRMLead(Document):
 		for user in self.get_assigned_users():
 			if user and user != new_deal.deal_owner:
 				new_deal.assign_agent(user)
+
+		# Each co-assignee ToDo makes its user the owner (newest owns), so restore the lead's owner.
+		if new_deal.deal_owner:
+			frappe.db.set_value(
+				"CRM Deal", new_deal.name, "deal_owner", new_deal.deal_owner, update_modified=False
+			)
 
 		return new_deal.name
 
