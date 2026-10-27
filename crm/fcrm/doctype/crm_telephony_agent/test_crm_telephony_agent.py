@@ -39,5 +39,9 @@ class IntegrationTestCRMTelephonyAgent(IntegrationTestCase):
 		self.assertEqual(self.agent.mobile_no, "+912222222222")
 		self.assertEqual(self.numbers(), [("+912222222222", 1)])
 
+	def test_a_mobile_no_that_is_not_a_phone_number_is_refused(self):
+		self.agent.mobile_no = "call me maybe"
+		self.assertRaises(frappe.InvalidPhoneNumberError, self.agent.save, ignore_permissions=True)
+
 	def numbers(self):
 		return [(phone.number, phone.is_primary) for phone in self.agent.phone_nos]
