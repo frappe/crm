@@ -2,6 +2,7 @@ import {
   catalog,
   isRegistered,
   newItem,
+  persistedLayout,
   withMinWidth,
 } from '@/components/Home/widgets'
 
@@ -85,5 +86,28 @@ describe('withMinWidth', () => {
       minW: 20,
       i: 'my_tasks',
     })
+  })
+})
+
+describe('persisted home layout', () => {
+  it('ignores keys the grid adds to a layout', () => {
+    const saved = [item('replies_waiting')]
+    const shown = [
+      {
+        ...item('replies_waiting'),
+        layout: { ...item('replies_waiting').layout, moved: false, minW: 20 },
+      },
+    ]
+    expect(persistedLayout(shown)).toBe(persistedLayout(saved))
+  })
+
+  it('changes when a widget moves or its config changes', () => {
+    const saved = persistedLayout([item('replies_waiting')])
+    expect(persistedLayout([item('replies_waiting', 4)])).not.toBe(saved)
+    expect(
+      persistedLayout([
+        { ...item('replies_waiting'), config: { doctype: 'Lead' } },
+      ]),
+    ).not.toBe(saved)
   })
 })

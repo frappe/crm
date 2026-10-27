@@ -120,3 +120,14 @@ export function withMinWidth(item, registry = widgets) {
   const minW = getWidget(item.name, registry)?.minW
   return minW ? { ...item, layout: { ...item.layout, minW } } : item
 }
+
+// The grid adds its own keys (moved, minW) to each layout, so only what the server stores counts.
+export function persistedLayout(items) {
+  return JSON.stringify(
+    items.map(({ name, config, layout: { x, y, w, h } }) => ({
+      name,
+      config,
+      layout: { x, y, w, h },
+    })),
+  )
+}

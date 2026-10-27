@@ -2,6 +2,7 @@ import {
   catalog,
   isRegistered,
   newItem,
+  persistedLayout,
   withMinWidth,
 } from '@/components/Home/widgets'
 import { usersStore } from '@/stores/users'
@@ -54,7 +55,7 @@ export function useHomeLayout() {
   )
 
   const dirty = computed(
-    () => JSON.stringify(items.value) !== JSON.stringify(saved.value),
+    () => persistedLayout(items.value) !== persistedLayout(saved.value),
   )
 
   async function load(nextTarget = 'mine') {
