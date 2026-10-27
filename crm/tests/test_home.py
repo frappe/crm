@@ -1,3 +1,5 @@
+import json
+
 import frappe
 from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
@@ -14,7 +16,12 @@ from crm.api.home import (
 	save_layout,
 	set_landing_page,
 )
-from crm.fcrm.doctype.crm_dashboard.home_layout import agent_default, manager_default, validate_layout
+from crm.fcrm.doctype.crm_dashboard.home_layout import (
+	WIDGETS,
+	agent_default,
+	manager_default,
+	validate_layout,
+)
 
 
 class TestLandingPage(IntegrationTestCase):
@@ -77,7 +84,7 @@ class TestHomeLayout(IntegrationTestCase):
 
 	def test_saved_layout_is_one_record_per_user(self):
 		frappe.set_user(AGENT)
-		save_layout([widget("my_tasks")])
+		save_layout([widget("my_tasks", w=20)])
 		save_layout([widget("replies_waiting", config={"doctype": "Deal"})])
 
 		home = get_layout()
@@ -87,14 +94,14 @@ class TestHomeLayout(IntegrationTestCase):
 
 	def test_saved_layout_is_kept_out_of_the_dashboard(self):
 		frappe.set_user(AGENT)
-		save_layout([widget("my_tasks")])
+		save_layout([widget("my_tasks", w=20)])
 		name = frappe.db.get_value("CRM Dashboard", {"user": AGENT})
 		self.assertTrue(name.startswith("Home - "))
 		self.assertNotEqual(name, "Manager Dashboard")
 
 	def test_reset_returns_to_the_role_default(self):
 		frappe.set_user(AGENT)
-		save_layout([widget("my_tasks")])
+		save_layout([widget("my_tasks", w=20)])
 		home = reset_layout()
 		self.assertTrue(home["is_default"])
 		self.assertEqual(self.names(home["layout"]), self.names(agent_default()))
@@ -108,7 +115,7 @@ class TestHomeLayout(IntegrationTestCase):
 	def test_duplicate_widget_is_rejected(self):
 		frappe.set_user(AGENT)
 		with self.assertRaises(frappe.ValidationError):
-			save_layout([widget("my_tasks"), widget("my_tasks", y=8)])
+			save_layout([widget("my_tasks", w=20), widget("my_tasks", w=20, y=8)])
 
 	def test_manager_widgets_are_rejected_for_agents(self):
 		frappe.set_user(AGENT)
@@ -122,7 +129,7 @@ class TestHomeLayout(IntegrationTestCase):
 
 	def test_manager_widgets_are_hidden_after_losing_the_role(self):
 		frappe.set_user(MANAGER)
-		save_layout([widget("team_overview", w=20), widget("my_tasks", y=8)])
+		save_layout([widget("team_overview", w=20), widget("my_tasks", w=20, y=8)])
 
 		frappe.set_user("Administrator")
 		frappe.get_doc("User", MANAGER).remove_roles("Sales Manager")
@@ -136,7 +143,7 @@ class TestHomeLayout(IntegrationTestCase):
 			with self.assertRaises(frappe.ValidationError):
 				save_layout([widget("replies_waiting", config=config)])
 		with self.assertRaises(frappe.ValidationError):
-			save_layout([widget("my_tasks", config={"doctype": "Lead"})])
+			save_layout([widget("my_tasks", w=20, config={"doctype": "Lead"})])
 
 		saved = save_layout([widget("replies_waiting")])["layout"][0]
 		self.assertEqual(saved["config"], {"doctype": "Both"})
@@ -144,7 +151,7 @@ class TestHomeLayout(IntegrationTestCase):
 	def test_position_must_fit_the_grid(self):
 		frappe.set_user(AGENT)
 		for position in ({"x": 15, "w": 10}, {"w": 0}, {"x": -1}, {"h": "8"}):
-			item = widget("my_tasks")
+			item = widget("my_tasks", w=20)
 			item["layout"].update(position)
 			with self.assertRaises(frappe.ValidationError):
 				save_layout([item])
@@ -160,9 +167,31 @@ class TestHomeLayout(IntegrationTestCase):
 			]
 			self.assertEqual(len(cells), len(set(cells)), role)
 
+	def test_task_widgets_span_the_full_width(self):
+		frappe.set_user(MANAGER)
+		for name in ("follow_ups_due", "upcoming_follow_ups", "my_tasks", "team_overdue_follow_ups"):
+			with self.assertRaises(frappe.ValidationError):
+				save_layout([widget(name, x=10, w=10)])
+		self.assertEqual(save_layout([widget("team_overview")])["layout"][0]["layout"]["w"], 10)
+
+	def test_narrow_task_widget_saved_earlier_is_widened(self):
+		frappe.set_user(AGENT)
+		save_layout([widget("replies_waiting")])
+		name = frappe.db.get_value("CRM Dashboard", {"user": AGENT})
+		old = [widget("replies_waiting", config={"doctype": "Both"}), widget("my_tasks", x=10, config={})]
+		frappe.db.set_value("CRM Dashboard", name, "layout", json.dumps(old))
+
+		position = get_layout()["layout"][1]["layout"]
+		self.assertEqual((position["x"], position["w"]), (0, 20))
+
+	def test_built_in_defaults_respect_min_widths(self):
+		for layout in (agent_default(), manager_default()):
+			for item in layout:
+				self.assertGreaterEqual(item["layout"]["w"], WIDGETS[item["name"]].min_w, item["name"])
+
 	def test_saved_items_drop_extra_keys(self):
 		frappe.set_user(AGENT)
-		item = widget("my_tasks", data=[1, 2])
+		item = widget("my_tasks", w=20, data=[1, 2])
 		item["layout"]["moved"] = True
 		self.assertEqual(
 			save_layout([item])["layout"],
@@ -170,7 +199,7 @@ class TestHomeLayout(IntegrationTestCase):
 				{
 					"name": "my_tasks",
 					"config": {},
-					"layout": {"x": 0, "y": 0, "w": 10, "h": 8, "i": "my_tasks"},
+					"layout": {"x": 0, "y": 0, "w": 20, "h": 8, "i": "my_tasks"},
 				}
 			],
 		)
@@ -186,7 +215,7 @@ class TestHomeRoleDefaults(IntegrationTestCase):
 		frappe.set_user("Administrator")
 
 	def test_admin_edits_the_agent_default(self):
-		save_default_layout("agent", [widget("my_tasks")])
+		save_default_layout("agent", [widget("my_tasks", w=20)])
 		frappe.set_user(AGENT)
 		home = get_layout()
 		self.assertTrue(home["is_default"])
@@ -202,7 +231,7 @@ class TestHomeRoleDefaults(IntegrationTestCase):
 			save_default_layout("agent", [widget("unassigned")])
 
 	def test_reset_default_returns_to_built_in(self):
-		save_default_layout("agent", [widget("my_tasks")])
+		save_default_layout("agent", [widget("my_tasks", w=20)])
 		default = reset_default_layout("agent")
 		self.assertTrue(default["is_default"])
 		self.assertEqual(default["layout"], agent_default())

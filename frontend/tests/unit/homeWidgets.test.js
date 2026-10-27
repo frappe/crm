@@ -1,10 +1,15 @@
-import { catalog, isRegistered, newItem } from '@/components/Home/widgets'
+import {
+  catalog,
+  isRegistered,
+  newItem,
+  withMinWidth,
+} from '@/components/Home/widgets'
 
 const Component = {}
 
 const registry = [
   { key: 'replies_waiting', size: { w: 10, h: 7 }, component: Component },
-  { key: 'my_tasks', size: { w: 10, h: 7 } },
+  { key: 'my_tasks', size: { w: 20, h: 7 }, minW: 20 },
   {
     key: 'team_overview',
     size: { w: 20, h: 10 },
@@ -58,5 +63,27 @@ describe('newItem', () => {
 
   it('starts at the top of an empty grid', () => {
     expect(newItem(registry[0], []).layout.y).toBe(0)
+  })
+})
+
+describe('withMinWidth', () => {
+  it('passes the minimum width to the grid', () => {
+    expect(withMinWidth(item('my_tasks'), registry).layout.minW).toBe(20)
+  })
+
+  it('leaves widgets without a minimum alone', () => {
+    const replies = item('replies_waiting')
+    expect(withMinWidth(replies, registry)).toBe(replies)
+  })
+
+  it('adds new task widgets at full width', () => {
+    expect(newItem(registry[1], []).layout).toEqual({
+      x: 0,
+      y: 0,
+      w: 20,
+      h: 7,
+      minW: 20,
+      i: 'my_tasks',
+    })
   })
 })

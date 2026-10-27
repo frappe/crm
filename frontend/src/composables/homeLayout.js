@@ -1,4 +1,9 @@
-import { catalog, isRegistered, newItem } from '@/components/Home/widgets'
+import {
+  catalog,
+  isRegistered,
+  newItem,
+  withMinWidth,
+} from '@/components/Home/widgets'
 import { usersStore } from '@/stores/users'
 import { copy } from '@/utils'
 import { call, toast } from 'frappe-ui'
@@ -63,7 +68,7 @@ export function useHomeLayout() {
   }
 
   function apply(home) {
-    saved.value = home.layout
+    saved.value = home.layout.map((item) => withMinWidth(item))
     items.value = copy(home.layout)
   }
 

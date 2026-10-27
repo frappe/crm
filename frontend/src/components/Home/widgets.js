@@ -7,7 +7,8 @@ const lazy = (name) =>
 // 16px gutter), sized to fit content. List rows are 40px with 1px dividers:
 // border 2 + header 40 + 6 rows (245) + footer 32 = 319 ≤ 8 × 42 − 16.
 // Team overview adds a 40px column header and shows 9 members: 2 + 40 + 40 + 368 + 32 = 482 ≤ 12 × 42 − 16.
-// Team tables have five columns, so they default to full width.
+// Team tables have five columns, so they default to full width. Task tables need the full width
+// for their title, record and assignee, so minW stops them from being resized narrower.
 export const widgets = [
   {
     key: 'replies_waiting',
@@ -18,13 +19,15 @@ export const widgets = [
   {
     key: 'follow_ups_due',
     label: 'Follow-ups due',
-    size: { w: 10, h: 8 },
+    size: { w: 20, h: 8 },
+    minW: 20,
     component: lazy('FollowUpsDue'),
   },
   {
     key: 'upcoming_follow_ups',
     label: 'Upcoming follow-ups',
-    size: { w: 10, h: 8 },
+    size: { w: 20, h: 8 },
+    minW: 20,
     component: lazy('UpcomingFollowUps'),
   },
   {
@@ -48,7 +51,8 @@ export const widgets = [
   {
     key: 'my_tasks',
     label: 'My tasks',
-    size: { w: 10, h: 8 },
+    size: { w: 20, h: 8 },
+    minW: 20,
     component: lazy('MyTasks'),
   },
   {
@@ -69,6 +73,7 @@ export const widgets = [
     key: 'team_overdue_follow_ups',
     label: 'Team overdue follow-ups',
     size: { w: 20, h: 8 },
+    minW: 20,
     managerOnly: true,
     component: lazy('TeamOverdueFollowUps'),
   },
@@ -101,9 +106,18 @@ export function catalog({ manager, items }, registry = widgets) {
 
 export function newItem(widget, items) {
   const y = Math.max(0, ...items.map(({ layout }) => layout.y + layout.h))
-  return {
-    name: widget.key,
-    config: {},
-    layout: { x: 0, y, ...widget.size, i: widget.key },
-  }
+  return withMinWidth(
+    {
+      name: widget.key,
+      config: {},
+      layout: { x: 0, y, ...widget.size, i: widget.key },
+    },
+    [widget],
+  )
+}
+
+// The grid reads minW from the layout; the server drops it on save.
+export function withMinWidth(item, registry = widgets) {
+  const minW = getWidget(item.name, registry)?.minW
+  return minW ? { ...item, layout: { ...item.layout, minW } } : item
 }

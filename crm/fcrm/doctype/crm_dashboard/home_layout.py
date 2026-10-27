@@ -17,19 +17,21 @@ GRID_COLUMNS = 20
 class Widget:
 	manager_only: bool = False
 	doctype_setting: bool = True
+	min_w: int = 1
 
 
+# Task widgets need the full width for their title, record and assignee.
 WIDGETS = {
 	"replies_waiting": Widget(),
-	"follow_ups_due": Widget(),
-	"upcoming_follow_ups": Widget(),
+	"follow_ups_due": Widget(min_w=GRID_COLUMNS),
+	"upcoming_follow_ups": Widget(min_w=GRID_COLUMNS),
 	"assigned_to_me": Widget(),
 	"recently_opened": Widget(),
 	"no_next_step": Widget(),
-	"my_tasks": Widget(doctype_setting=False),
+	"my_tasks": Widget(doctype_setting=False, min_w=GRID_COLUMNS),
 	"team_overview": Widget(manager_only=True, doctype_setting=False),
 	"team_replies_waiting": Widget(manager_only=True),
-	"team_overdue_follow_ups": Widget(manager_only=True),
+	"team_overdue_follow_ups": Widget(manager_only=True, min_w=GRID_COLUMNS),
 	"unassigned": Widget(manager_only=True),
 }
 
@@ -134,10 +136,19 @@ def validate_layout(layout, role: str) -> list:
 
 def allowed_items(layout: list, role: str) -> list:
 	return [
-		item
+		_widen(item)
 		for item in layout
 		if item.get("name") in WIDGETS and (role == "manager" or not WIDGETS[item["name"]].manager_only)
 	]
+
+
+# Layouts saved before a widget had a minimum width still render, at that width.
+def _widen(item: dict) -> dict:
+	min_w = WIDGETS[item["name"]].min_w
+	layout = item.get("layout") or {}
+	if layout.get("w", min_w) >= min_w:
+		return item
+	return {**item, "layout": {**layout, "x": 0, "w": min_w}}
 
 
 def load(layout: str | None) -> list:
@@ -172,6 +183,8 @@ def _position(item: dict) -> dict:
 	)
 	if not valid:
 		frappe.throw(_("Home widget {0} has an invalid position").format(item["name"]))
+	if layout["w"] < WIDGETS[item["name"]].min_w:
+		frappe.throw(_("Home widget {0} must span the full width").format(item["name"]))
 	return {**{k: layout[k] for k in keys}, "i": item["name"]}
 
 
@@ -183,21 +196,21 @@ def _item(name: str, x: int, y: int, w: int = 10, h: int = 8) -> dict:
 
 def agent_default() -> list:
 	return [
-		_item("replies_waiting", 0, 0),
-		_item("follow_ups_due", 10, 0),
-		_item("assigned_to_me", 0, 8),
-		_item("recently_opened", 10, 8),
-		_item("upcoming_follow_ups", 0, 16),
-		_item("no_next_step", 10, 16),
-		_item("my_tasks", 0, 24),
+		_item("follow_ups_due", 0, 0, w=20),
+		_item("replies_waiting", 0, 8),
+		_item("assigned_to_me", 10, 8),
+		_item("upcoming_follow_ups", 0, 16, w=20),
+		_item("recently_opened", 0, 24),
+		_item("no_next_step", 10, 24),
+		_item("my_tasks", 0, 32, w=20),
 	]
 
 
 def manager_default() -> list:
 	return [
 		_item("team_overview", 0, 0, w=20, h=12),
-		_item("team_replies_waiting", 0, 12, w=20),
-		_item("team_overdue_follow_ups", 0, 20, w=20),
+		_item("team_overdue_follow_ups", 0, 12, w=20),
+		_item("team_replies_waiting", 0, 20, w=20),
 		_item("unassigned", 0, 28),
 		_item("replies_waiting", 10, 28),
 	]
