@@ -7,16 +7,7 @@
     emptyIcon="lucide-square-check"
   >
     <template #tabs>
-      <TabButtons v-model="tab" :options="tabs">
-        <template #suffix="{ button }">
-          <span
-            v-if="counts[button.value]"
-            class="text-sm tabular-nums text-ink-gray-5"
-          >
-            {{ counts[button.value] }}
-          </span>
-        </template>
-      </TabButtons>
+      <HomeTabs v-model="tab" :tabs="tabs" :counts="resource.data?.counts" />
     </template>
     <template #default="{ rows }">
       <HomeTable
@@ -37,13 +28,13 @@
 <script setup>
 import FollowUpActions from '@/components/FollowUp/FollowUpActions.vue'
 import HomeTable from '@/components/Home/HomeTable.vue'
+import HomeTabs from '@/components/Home/HomeTabs.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { homeVersion, refreshHome } from '@/composables/homeWidget'
+import { refreshHome, useTabbedHomeWidget } from '@/composables/homeWidget'
 import { taskRecordRoute } from '@/utils/home'
-import { TabButtons, createResource } from 'frappe-ui'
-import { computed, ref, watch } from 'vue'
+import { ref } from 'vue'
 
 // Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
 defineProps({ config: { type: Object, default: null } })
@@ -75,14 +66,7 @@ const columns = [
 
 const tab = ref('all')
 
-const resource = createResource({
-  url: 'crm.api.home.get_tasks',
-  makeParams: () => ({ tab: tab.value }),
-  auto: true,
-})
-watch([homeVersion, tab], () => resource.reload())
-
-const counts = computed(() => resource.data?.counts || {})
+const resource = useTabbedHomeWidget('tasks', tab)
 
 function linkedRecordRoute(task) {
   return task.reference_docname ? taskRecordRoute(task) : null

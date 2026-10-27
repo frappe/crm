@@ -3,6 +3,7 @@
 
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import ClassVar
 
 import frappe
 from frappe import _
@@ -120,6 +121,8 @@ class RepliesWaiting(RecordWidget):
 
 class NewLeads(RecordWidget):
 	status_types = ("Open",)
+	sort_field = "creation"
+	descending = True
 
 
 class AssignedToMe(RecordWidget):
@@ -242,14 +245,14 @@ class UnlinkedTasks(OpenTasks):
 		return self.standalone() & super().condition()
 
 
-TASK_TABS = {"all": OpenTasks, "due": DueTasks, "upcoming": UpcomingTasks, "unlinked": UnlinkedTasks}
+class TabbedWidget(Widget):
+	TABS: ClassVar[dict] = {}
 
-
-class Tasks:
-	def __init__(self, scope: Mine, tab: str = "all"):
-		if tab not in TASK_TABS:
-			frappe.throw(_("Unknown task tab {0}").format(tab))
-		self.tabs = {key: widget(FOLLOW_UP_DOCTYPES, scope) for key, widget in TASK_TABS.items()}
+	def __init__(self, doctypes: tuple, scope: Mine, tab: str):
+		if tab not in self.TABS:
+			frappe.throw(_("Unknown tab {0}").format(tab))
+		super().__init__(doctypes, scope)
+		self.tabs = {key: widget(doctypes, scope) for key, widget in self.TABS.items()}
 		self.tab = tab
 
 	def summary(self) -> dict:
@@ -257,11 +260,24 @@ class Tasks:
 		return {"rows": self.tabs[self.tab].rows(), "total": counts[self.tab], "counts": counts}
 
 
+class Tasks(TabbedWidget):
+	TABS: ClassVar[dict] = {
+		"all": OpenTasks,
+		"due": DueTasks,
+		"upcoming": UpcomingTasks,
+		"unlinked": UnlinkedTasks,
+	}
+
+
+class LeadsAndDeals(TabbedWidget):
+	TABS: ClassVar[dict] = {"replies": RepliesWaiting, "new": NewLeads}
+
+
 WIDGET_DATA = {
-	"replies_waiting": RepliesWaiting,
-	"assigned_to_me": AssignedToMe,
 	"no_next_step": NoNextStep,
 }
+
+TABBED_WIDGETS = {"tasks": Tasks, "leads_and_deals": LeadsAndDeals}
 
 
 def set_reference_titles(rows: list):

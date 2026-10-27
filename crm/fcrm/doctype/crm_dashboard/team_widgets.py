@@ -45,9 +45,6 @@ class TeamOverdueFollowUps(TaskWidget):
 
 
 class Unassigned(NewLeads):
-	sort_field = "creation"
-	descending = True
-
 	def filtered(self, doctype: str, table):
 		return super().filtered(doctype, table).where(Coalesce(table._assign, "").isin(("", "[]")))
 

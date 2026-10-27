@@ -17,16 +17,10 @@ export const widgets = [
     component: lazy('Tasks'),
   },
   {
-    key: 'replies_waiting',
-    label: 'Replies waiting',
+    key: 'leads_and_deals',
+    label: 'Leads & deals',
     size: { w: 10, h: 9 },
-    component: lazy('RepliesWaiting'),
-  },
-  {
-    key: 'assigned_to_me',
-    label: 'Assigned to me',
-    size: { w: 10, h: 9 },
-    component: lazy('AssignedToMe'),
+    component: lazy('LeadsAndDeals'),
   },
   {
     key: 'recently_opened',

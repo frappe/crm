@@ -17,6 +17,12 @@ export const homeColumns = {
     type: 'status',
     width: fr(2),
   }),
+  channel: () => ({
+    key: 'channel',
+    label: __('Channel'),
+    type: 'channel',
+    width: '6rem',
+  }),
   task: () => ({ key: 'title', label: __('Task'), width: fr(3) }),
   taskRecord: () => ({
     key: 'reference_title',

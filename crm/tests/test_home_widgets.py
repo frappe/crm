@@ -4,9 +4,15 @@ from frappe.desk.form.assign_to import remove as unassign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
-from crm.api.home import get_counts, get_widget_data
+from crm.api.home import get_counts, get_tab_data, get_widget_data
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine
-from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT, Tasks
+from crm.fcrm.doctype.crm_dashboard.home_widgets import (
+	DOCTYPES,
+	ROW_LIMIT,
+	AssignedToMe,
+	NoNextStep,
+	RepliesWaiting,
+)
 from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_task, make_user
 
 
@@ -27,13 +33,14 @@ class HomeWidgetTestCase(IntegrationTestCase):
 		self.closed_lead = status("CRM Lead Status", "Won")
 		self.open_deal = status("CRM Deal Status", "Open", "Ongoing")
 		self.closed_deal = status("CRM Deal Status", "Won")
+		self.new_deal = status("CRM Deal Status", "Open")
 
 	def tearDown(self):
 		frappe.set_user("Administrator")
 		frappe.db.rollback()
 
 	def data(self, widget, doctype="Both"):
-		return get_widget_data(widget, doctype, AGENT)
+		return widget(DOCTYPES[doctype], Mine(AGENT)).summary()
 
 	def counts(self):
 		frappe.set_user(AGENT)
@@ -67,7 +74,7 @@ class TestRepliesWaiting(HomeWidgetTestCase):
 		self.lead(awaiting_reply_since=now_datetime(), status=self.closed_lead)
 		self.deal(awaiting_reply_since=now_datetime(), status=self.closed_deal)
 
-		data = self.data("replies_waiting")
+		data = self.data(RepliesWaiting)
 		self.assertEqual(names(data), [older, newer])
 		self.assertEqual(data["total"], 2)
 		self.assertEqual(self.counts()["replies_waiting"], 2)
@@ -75,18 +82,18 @@ class TestRepliesWaiting(HomeWidgetTestCase):
 	def test_doctype_setting_picks_leads_or_deals(self):
 		lead = self.lead(awaiting_reply_since=now_datetime())
 		deal = self.deal(awaiting_reply_since=now_datetime())
-		self.assertEqual(names(self.data("replies_waiting", "Lead")), [lead])
-		self.assertEqual(names(self.data("replies_waiting", "Deal")), [deal])
+		self.assertEqual(names(self.data(RepliesWaiting, "Lead")), [lead])
+		self.assertEqual(names(self.data(RepliesWaiting, "Deal")), [deal])
 
 	def test_assigned_records_are_mine(self):
 		lead = self.lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
 		assign({"assign_to": [AGENT], "doctype": "CRM Lead", "name": lead})
-		self.assertEqual(names(self.data("replies_waiting")), [lead])
+		self.assertEqual(names(self.data(RepliesWaiting)), [lead])
 
 	def test_rows_are_capped_but_total_counts_all(self):
 		for _ in range(ROW_LIMIT + 2):
 			self.lead(awaiting_reply_since=now_datetime())
-		data = self.data("replies_waiting")
+		data = self.data(RepliesWaiting)
 		self.assertEqual(len(data["rows"]), ROW_LIMIT)
 		self.assertEqual(data["total"], ROW_LIMIT + 2)
 
@@ -98,7 +105,7 @@ class TestReplyChannel(HomeWidgetTestCase):
 			self.skipTest("WhatsApp is not installed")
 
 	def channel(self):
-		return {row["name"]: row["channel"] for row in self.data("replies_waiting")["rows"]}
+		return {row["name"]: row["channel"] for row in self.data(RepliesWaiting)["rows"]}
 
 	def test_channel_is_the_latest_inbound_message(self):
 		emailed = self.lead(awaiting_reply_since=now_datetime())
@@ -126,7 +133,7 @@ class TestAssignedToMe(HomeWidgetTestCase):
 		frappe.db.set_value("ToDo", {"reference_name": first}, "creation", add_days(now_datetime(), -1))
 		assign({"assign_to": [AGENT], "doctype": "CRM Deal", "name": second})
 
-		data = self.data("assigned_to_me")
+		data = self.data(AssignedToMe)
 		self.assertEqual(names(data), [second, first])
 		self.assertEqual(data["total"], 2)
 
@@ -139,7 +146,7 @@ class TestAssignedToMe(HomeWidgetTestCase):
 		self.lead(status=self.closed_lead)
 		ongoing = self.lead(status=self.ongoing_lead)
 
-		self.assertEqual(names(self.data("assigned_to_me")), [ongoing])
+		self.assertEqual(names(self.data(AssignedToMe)), [ongoing])
 
 
 class TestNoNextStep(HomeWidgetTestCase):
@@ -156,7 +163,7 @@ class TestNoNextStep(HomeWidgetTestCase):
 		self.idle(self.lead(), 9, last_inbound_at=add_days(now_datetime(), -1))
 		self.idle(self.lead(status=self.closed_lead), 30)
 
-		data = self.data("no_next_step")
+		data = self.data(NoNextStep)
 		self.assertEqual(names(data), [idler, idle])
 		self.assertEqual(data["total"], 2)
 
@@ -168,12 +175,12 @@ class TestNoNextStep(HomeWidgetTestCase):
 		self.idle(planned, 10)
 		self.idle(done, 10)
 
-		self.assertEqual(names(self.data("no_next_step")), [done])
+		self.assertEqual(names(self.data(NoNextStep)), [done])
 
 
 class TestTasksWidget(HomeWidgetTestCase):
 	def tasks(self, tab="all"):
-		return Tasks(Mine(AGENT), tab).summary()
+		return get_tab_data("tasks", tab, user=AGENT)
 
 	def test_all_lists_my_open_tasks_by_due_date_undated_last(self):
 		undated = make_task(None, assigned_to=AGENT).name
@@ -221,12 +228,38 @@ class TestTasksWidget(HomeWidgetTestCase):
 			self.tasks("done")
 
 
+class TestLeadsAndDealsWidget(HomeWidgetTestCase):
+	def test_new_lists_my_open_records_newest_first_with_tab_counts(self):
+		older = self.lead()
+		frappe.db.set_value("CRM Lead", older, "creation", add_days(now_datetime(), -2))
+		newer = self.deal(status=self.new_deal)
+		self.lead(status=self.ongoing_lead)
+		self.lead(lead_owner=MANAGER)
+		waiting = self.lead(status=self.ongoing_lead, awaiting_reply_since=now_datetime())
+
+		data = get_tab_data("leads_and_deals", "new", user=AGENT)
+		self.assertEqual(names(data), [newer, older])
+		self.assertEqual(data["counts"], {"replies": 1, "new": 2})
+		self.assertEqual(names(get_tab_data("leads_and_deals", "replies", user=AGENT)), [waiting])
+
+	def test_doctype_setting_applies_to_every_tab(self):
+		lead = self.lead()
+		self.deal(status=self.new_deal)
+		data = get_tab_data("leads_and_deals", "new", "Lead", AGENT)
+		self.assertEqual(names(data), [lead])
+		self.assertEqual(data["counts"]["new"], 1)
+
+
 class TestWidgetValidation(HomeWidgetTestCase):
 	def test_unknown_widget_or_doctype_is_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
 			get_widget_data("recently_opened")
 		with self.assertRaises(frappe.ValidationError):
-			get_widget_data("replies_waiting", "Contact")
+			get_widget_data("no_next_step", "Contact")
+		with self.assertRaises(frappe.ValidationError):
+			get_tab_data("no_next_step", "all")
+		with self.assertRaises(frappe.ValidationError):
+			get_tab_data("leads_and_deals", "new", "Contact")
 
 
 def received_email(doctype, name, at):

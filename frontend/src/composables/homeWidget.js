@@ -16,3 +16,17 @@ export function useHomeWidget(widget, config = () => ({})) {
   watch([homeVersion, () => config().doctype], () => resource.reload())
   return resource
 }
+
+export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
+  const resource = createResource({
+    url: 'crm.api.home.get_tab',
+    makeParams: () => ({
+      widget,
+      tab: tab.value,
+      doctype: config().doctype || 'Both',
+    }),
+    auto: true,
+  })
+  watch([homeVersion, tab, () => config().doctype], () => resource.reload())
+  return resource
+}

@@ -33,6 +33,12 @@
       <div v-else-if="column.type === 'priority'" class="shrink-0">
         <TaskPriorityIcon :priority="item" />
       </div>
+      <div
+        v-else-if="column.type === 'channel' && channels[item]"
+        class="shrink-0"
+      >
+        <component :is="channels[item].icon" class="size-4" />
+      </div>
       <div v-else-if="column.type === 'user' && item" class="shrink-0">
         <UserAvatar class="flex items-center" :user="item" size="sm" />
       </div>
@@ -41,9 +47,11 @@
 </template>
 <script setup>
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { statusesStore } from '@/stores/statuses'
@@ -59,6 +67,11 @@ const props = defineProps({
   item: { type: [String, Number, Object], default: null },
 })
 
+const channels = {
+  email: { label: __('Email'), icon: EmailIcon },
+  whatsapp: { label: __('WhatsApp'), icon: WhatsAppIcon },
+}
+
 const { getLeadStatus, getDealStatus } = statusesStore()
 const { getUser } = usersStore()
 
@@ -73,6 +86,7 @@ const statusColor = computed(() => {
 const label = computed(() => {
   if (props.column.type === 'user')
     return props.item && getUser(props.item).full_name
+  if (props.column.type === 'channel') return channels[props.item]?.label
   if (['taskStatus', 'priority'].includes(props.column.type))
     return __(props.item)
   return props.item

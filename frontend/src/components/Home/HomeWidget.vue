@@ -15,7 +15,7 @@
       <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
         · {{ doctypeLabels[doctype] }}
       </span>
-      <div v-if="$slots.tabs" class="ml-auto">
+      <div v-if="$slots.tabs" class="pl-2">
         <slot name="tabs" />
       </div>
       <div v-if="config && !editing" class="ml-auto">

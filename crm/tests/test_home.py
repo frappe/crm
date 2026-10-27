@@ -85,7 +85,7 @@ class TestHomeLayout(IntegrationTestCase):
 	def test_saved_layout_is_one_record_per_user(self):
 		frappe.set_user(AGENT)
 		save_layout([widget("tasks", w=20)])
-		save_layout([widget("replies_waiting", config={"doctype": "Deal"})])
+		save_layout([widget("leads_and_deals", config={"doctype": "Deal"})])
 
 		home = get_layout()
 		self.assertFalse(home["is_default"])
@@ -141,11 +141,11 @@ class TestHomeLayout(IntegrationTestCase):
 		frappe.set_user(AGENT)
 		for config in ({"doctype": "Contact"}, {"doctype": "Lead", "limit": 5}, "Lead"):
 			with self.assertRaises(frappe.ValidationError):
-				save_layout([widget("replies_waiting", config=config)])
+				save_layout([widget("leads_and_deals", config=config)])
 		with self.assertRaises(frappe.ValidationError):
 			save_layout([widget("tasks", w=20, config={"doctype": "Lead"})])
 
-		saved = save_layout([widget("replies_waiting")])["layout"][0]
+		saved = save_layout([widget("leads_and_deals")])["layout"][0]
 		self.assertEqual(saved["config"], {"doctype": "Both"})
 
 	def test_position_must_fit_the_grid(self):
@@ -176,9 +176,9 @@ class TestHomeLayout(IntegrationTestCase):
 
 	def test_narrow_task_widget_saved_earlier_is_widened(self):
 		frappe.set_user(AGENT)
-		save_layout([widget("replies_waiting")])
+		save_layout([widget("leads_and_deals")])
 		name = frappe.db.get_value("CRM Dashboard", {"user": AGENT})
-		old = [widget("replies_waiting", config={"doctype": "Both"}), widget("tasks", x=10, config={})]
+		old = [widget("leads_and_deals", config={"doctype": "Both"}), widget("tasks", x=10, config={})]
 		frappe.db.set_value("CRM Dashboard", name, "layout", json.dumps(old))
 
 		position = get_layout()["layout"][1]["layout"]

@@ -5,6 +5,7 @@ from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_widget_data
 from crm.fcrm.doctype.crm_dashboard import team_widgets
+from crm.fcrm.doctype.crm_dashboard.home_widgets import NoNextStep, RepliesWaiting
 from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_user
 from crm.tests.test_home_widgets import HomeWidgetTestCase, names, status
 
@@ -159,8 +160,8 @@ class TestTeamOverview(TeamWidgetTestCase):
 				"first_response_time": 900,
 			},
 		)
-		self.assertEqual(overview[AGENT]["replies_waiting"], self.data("replies_waiting")["total"])
-		self.assertEqual(overview[AGENT]["no_next_step"], self.data("no_next_step")["total"])
+		self.assertEqual(overview[AGENT]["replies_waiting"], self.data(RepliesWaiting)["total"])
+		self.assertEqual(overview[AGENT]["no_next_step"], self.data(NoNextStep)["total"])
 		self.assertEqual(overview[MANAGER]["open"], 1)
 
 	def test_cached_per_scope_for_a_few_minutes(self):
