@@ -48,7 +48,7 @@ import {
   mobileSidebarOpened as sidebarOpened,
   onMobileSidebarClosed,
 } from '@/composables/settings'
-import { nextTick, watch } from 'vue'
+import { nextTick, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -60,4 +60,7 @@ watch(
   () => route.fullPath,
   () => (sidebarOpened.value = false),
 )
+
+// Unmounting mid-transition (e.g. resizing to desktop) skips after-leave.
+onBeforeUnmount(onMobileSidebarClosed)
 </script>
