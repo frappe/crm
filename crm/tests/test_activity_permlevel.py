@@ -62,6 +62,9 @@ class TestActivityPermlevel(IntegrationTestCase):
 		return lead
 
 	def activities_as(self, user, name):
+		# CI runs bench workers on the same Redis; they can re-cache CRM Lead meta
+		# without the uncommitted permlevel rule added in setUpClass
+		frappe.clear_cache(doctype="CRM Lead")
 		frappe.set_user(user)
 		try:
 			activities, *_ = get_activities(name)
