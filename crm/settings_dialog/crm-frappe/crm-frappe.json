@@ -1,0 +1,27 @@
+{
+ "app": "crm",
+ "blocks": [
+  {
+   "binding_type": "Record",
+   "document_type": "CRM Telephony Agent",
+   "fields": "[\"mobile_no\", \"default_medium\", \"call_receiving_device\", \"twilio_number\", \"exotel_number\"]",
+   "key": "telephony",
+   "label": "Telephony",
+   "name_resolver": "session_user",
+   "pane": "profile",
+   "save_mode": "auto"
+  }
+ ],
+ "creation": "2026-10-27 10:30:00.000000",
+ "docstatus": 0,
+ "doctype": "Settings Dialog",
+ "extends": "frappe",
+ "idx": 0,
+ "modified": "2026-10-27 10:30:00.000000",
+ "modified_by": "Administrator",
+ "name": "crm-frappe",
+ "owner": "Administrator",
+ "panes": [],
+ "standard": 1,
+ "user": ""
+}
