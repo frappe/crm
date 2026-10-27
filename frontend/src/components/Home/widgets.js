@@ -5,74 +5,73 @@ const lazy = (name) =>
 
 // Keys match WIDGETS in home_layout.py; sizes are DashboardGrid units (20 columns, 42px rows,
 // 16px gutter), sized to fit content. List rows are 40px with 1px dividers:
-// border 2 + header 40 + 6 rows (245) + footer 32 = 319 ≤ 8 × 42 − 16.
-// Team overview adds a 40px column header and shows 5 members: 2 + 40 + 40 + 204 + 32 = 318.
+// border 2 + title 40 + column header 40 + 6 rows (245) + footer 32 = 359 ≤ 9 × 42 − 16.
 // Team replies waiting has five columns, so it defaults to full width. Task tables need the full
 // width for their title, record and assignee, so minW stops them from being resized narrower.
 export const widgets = [
   {
     key: 'replies_waiting',
     label: 'Replies waiting',
-    size: { w: 10, h: 8 },
+    size: { w: 10, h: 9 },
     component: lazy('RepliesWaiting'),
   },
   {
     key: 'follow_ups_due',
     label: 'Follow-ups due',
-    size: { w: 20, h: 8 },
+    size: { w: 20, h: 9 },
     minW: 20,
     component: lazy('FollowUpsDue'),
   },
   {
     key: 'upcoming_follow_ups',
     label: 'Upcoming follow-ups',
-    size: { w: 20, h: 8 },
+    size: { w: 20, h: 9 },
     minW: 20,
     component: lazy('UpcomingFollowUps'),
   },
   {
     key: 'assigned_to_me',
     label: 'Assigned to me',
-    size: { w: 10, h: 8 },
+    size: { w: 10, h: 9 },
     component: lazy('AssignedToMe'),
   },
   {
     key: 'recently_opened',
     label: 'Recently opened',
-    size: { w: 10, h: 8 },
+    size: { w: 10, h: 9 },
     component: lazy('RecentlyOpened'),
   },
   {
     key: 'no_next_step',
     label: 'No next step',
-    size: { w: 10, h: 8 },
+    size: { w: 10, h: 9 },
     component: lazy('NoNextStep'),
   },
   {
     key: 'my_tasks',
     label: 'My tasks',
-    size: { w: 20, h: 8 },
+    size: { w: 20, h: 9 },
     minW: 20,
     component: lazy('MyTasks'),
   },
   {
     key: 'team_overview',
     label: 'Team overview',
-    size: { w: 10, h: 8 },
+    size: { w: 10, h: 9 },
     managerOnly: true,
     component: lazy('TeamOverview'),
   },
   {
     key: 'team_replies_waiting',
     label: 'Team replies waiting',
-    size: { w: 20, h: 8 },
+    size: { w: 20, h: 9 },
     managerOnly: true,
     component: lazy('TeamRepliesWaiting'),
   },
   {
     key: 'team_overdue_follow_ups',
     label: 'Team overdue follow-ups',
-    size: { w: 20, h: 8 },
+    size: { w: 20, h: 9 },
     minW: 20,
     managerOnly: true,
     component: lazy('TeamOverdueFollowUps'),
@@ -80,7 +79,7 @@ export const widgets = [
   {
     key: 'unassigned',
     label: 'Unassigned',
-    size: { w: 10, h: 8 },
+    size: { w: 10, h: 9 },
     managerOnly: true,
     component: lazy('Unassigned'),
   },

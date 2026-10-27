@@ -14,7 +14,7 @@
       resizeColumn: false,
     }"
   >
-    <ListHeader v-if="showHeader" class="sticky top-0 z-10">
+    <ListHeader class="sticky top-0 z-10">
       <ListHeaderItem
         v-for="column in columns"
         :key="column.key"
@@ -44,7 +44,6 @@ defineProps({
   columns: { type: Array, required: true },
   rows: { type: Array, required: true },
   rowKey: { type: String, default: 'name' },
-  showHeader: { type: Boolean, default: false },
   rowRoute: { type: Function, default: null },
   onRowClick: { type: Function, default: null },
 })

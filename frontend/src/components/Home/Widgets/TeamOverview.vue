@@ -6,7 +6,7 @@
     emptyIcon="lucide-users"
   >
     <template #default="{ rows }">
-      <HomeTable :columns="columns" :rows="visible(rows)" showHeader />
+      <HomeTable :columns="columns" :rows="visible(rows)" />
     </template>
     <template v-if="members.length > VISIBLE_MEMBERS" #footer>
       <Button
@@ -65,7 +65,7 @@ const columns = [
 ]
 
 // Fits the default card height (see widgets.js); the rest scroll once expanded.
-const VISIBLE_MEMBERS = 5
+const VISIBLE_MEMBERS = 6
 
 const resource = useHomeWidget('team_overview')
 
