@@ -3,3 +3,9 @@ export function parseActivityHash(hash) {
   const [tab, anchor = tab] = (hash || '').replace(/^#/, '').split('/')
   return { tab, anchor }
 }
+
+export function activityHashFor(hit) {
+  return hit.source_doctype === 'FCRM Note'
+    ? `#notes/${hit.hash}`
+    : `#${hit.hash}`
+}
