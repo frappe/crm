@@ -30,7 +30,7 @@ class TestCRMSearch(IntegrationTestCase):
 		cls.note = add_note("CRM Lead", cls.own_lead, f"{FILLER} notemarker")
 		cls.email = add_email("CRM Lead", cls.own_lead, f"<p>{FILLER} emailmarker</p>")
 		add_comment("CRM Lead", cls.other_lead, "otherleadmarker")
-		cls.source_lead_comment = add_comment("CRM Lead", cls.source_lead, "sourceleadmarker")
+		add_comment("CRM Lead", cls.source_lead, "sourceleadmarker")
 
 		add_email(
 			"CRM Lead",
@@ -121,11 +121,12 @@ class TestCRMSearch(IntegrationTestCase):
 		self.assertNotIn(f"CRM Lead:{self.other_lead}", parents)
 		self.assertEqual(self.hit_ids("otherleadmarker"), [])
 
-	def test_search_filters_include_the_source_lead_of_a_readable_deal(self):
+	def test_search_filters_leave_out_an_unreadable_source_lead_of_a_readable_deal(self):
 		parents = self.search.get_search_filters()["parent"]
 
-		self.assertIn(f"CRM Lead:{self.source_lead}", parents)
-		self.assertEqual(self.hit_ids("sourceleadmarker"), [f"Comment:{self.source_lead_comment}"])
+		self.assertIn(f"CRM Deal:{self.deal}", parents)
+		self.assertNotIn(f"CRM Lead:{self.source_lead}", parents)
+		self.assertEqual(self.hit_ids("sourceleadmarker"), [])
 
 	def test_too_many_readable_records_switch_to_post_filtering(self):
 		with patch("crm.search_sqlite.PREFILTER_LIMIT", 0):

@@ -80,18 +80,14 @@ class CRMSearch(SQLiteSearch):
 		return {} if parents is None else {"parent": parents}
 
 	def get_readable_parents(self) -> list[str] | None:
-		"""Return `parent` keys the user can read, or None when there are too many to pre-filter.
-
-		Includes the source Lead of each readable Deal, so a Deal reader also finds its Lead's activity.
-		"""
+		"""Return `parent` keys the user can read, or None when there are too many to pre-filter."""
 		leads = frappe.get_list("CRM Lead", pluck="name", limit=PREFILTER_LIMIT + 1)
-		deals = frappe.get_list("CRM Deal", fields=["name", "lead"], limit=PREFILTER_LIMIT + 1)
+		deals = frappe.get_list("CRM Deal", pluck="name", limit=PREFILTER_LIMIT + 1)
 		if len(leads) > PREFILTER_LIMIT or len(deals) > PREFILTER_LIMIT:
 			return None
 
-		lead_names = set(leads) | {deal.lead for deal in deals if deal.lead}
-		return [parent_key("CRM Lead", name) for name in lead_names] + [
-			parent_key("CRM Deal", deal.name) for deal in deals
+		return [parent_key("CRM Lead", name) for name in leads] + [
+			parent_key("CRM Deal", name) for name in deals
 		]
 
 	def prepare_document(self, doc):
