@@ -41,6 +41,15 @@ class TestActivityPermlevel(IntegrationTestCase):
 		add_permission("CRM Lead", "Sales Manager", 1)
 		update_permission_property("CRM Lead", "Sales Manager", 1, "write", 1)
 		frappe.clear_cache(doctype="CRM Lead")
+		print(
+			"DEBUG setUpClass db",
+			frappe.db.sql(
+				"select role, permlevel, `read` from `tabCustom DocPerm` where parent=%s", "CRM Lead"
+			),
+		)
+		print(
+			"DEBUG setUpClass meta", [(p.role, p.permlevel) for p in frappe.get_meta("CRM Lead").permissions]
+		)
 
 	def setUp(self):
 		frappe.db.savepoint("test_activity_permlevel")
@@ -89,6 +98,12 @@ class TestActivityPermlevel(IntegrationTestCase):
 			"DEBUG versions",
 			frappe.get_all(
 				"Version", {"ref_doctype": "CRM Lead", "docname": lead.name}, ["name", "data", "creation"]
+			),
+		)
+		print(
+			"DEBUG test db",
+			frappe.db.sql(
+				"select role, permlevel, `read` from `tabCustom DocPerm` where parent=%s", "CRM Lead"
 			),
 		)
 		print("DEBUG track_changes", frappe.get_meta("CRM Lead").track_changes)
