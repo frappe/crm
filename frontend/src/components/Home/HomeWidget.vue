@@ -2,7 +2,10 @@
   <div
     class="flex h-full w-full flex-col overflow-hidden rounded-4 border border-outline-gray-1 bg-surface-elevation-2"
   >
-    <div class="flex h-10 shrink-0 items-center gap-1.5 pl-4 pr-2">
+    <div
+      class="flex h-10 shrink-0 items-center gap-1.5 pl-4"
+      :class="editing ? 'pr-16' : 'pr-2'"
+    >
       <span class="truncate text-base-medium text-ink-gray-8">
         {{ title }}
       </span>
@@ -61,7 +64,7 @@
 <script setup>
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { Dropdown } from 'frappe-ui'
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -73,6 +76,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:config'])
+
+const editing = inject('homeEditing', ref(false))
 
 const doctypeLabels = {
   Both: __('All'),
