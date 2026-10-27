@@ -22,7 +22,7 @@
              active row's shadow. Widen the scroll box to the sidebar edges and
              pad the content back in so the shadow has room. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          <SidebarItem :label="__('Search')" @click="openCommandPalette">
+          <SidebarItem :label="__('Search')" @click="onSearchClick">
             <template #prefix>
               <LucideSearch class="size-4 text-ink-gray-7" />
             </template>
@@ -368,6 +368,11 @@ watch(
   () => [route.name, route.query.view],
   () => (activeItem.value = currentRouteKey()),
 )
+
+function onSearchClick() {
+  if (props.mobile) mobileSidebarOpened.value = false
+  openCommandPalette()
+}
 
 function onNotificationsClick(event) {
   if (props.mobile) {
