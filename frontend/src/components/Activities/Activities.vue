@@ -40,6 +40,7 @@
         <div
           v-for="note in activities"
           :key="note.name"
+          :id="note.name"
           @click="openNote(note, { edit: () => modalRef.showNote(note) })"
         >
           <NoteArea v-model="all_activities" :note="note" />
@@ -546,6 +547,7 @@ import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { startCase } from '@/utils'
+import { parseActivityHash } from '@/utils/activityHash'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
@@ -619,6 +621,9 @@ const changeTabTo = (tabName) => {
   activeTab.value = tabName
 }
 
+// Data loads after mount, so the first load is what lands on a linked row.
+let linkedRowOnLoad = linkedRow(route.hash)
+
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
   params: { name: props.docname },
@@ -627,7 +632,11 @@ const all_activities = createResource({
   transform: ([versions, calls, notes, tasks, attachments]) => {
     return { versions, calls, notes, tasks, attachments }
   },
-  onSuccess: () => nextTick(() => scroll()),
+  onSuccess: () =>
+    nextTick(() => {
+      scroll(linkedRowOnLoad)
+      linkedRowOnLoad = null
+    }),
   onError: (error) => {
     toast.error(error.messages?.[0] || __('Failed to load activities'))
   },
@@ -682,6 +691,30 @@ onMounted(() => {
   })
 })
 
+<<<<<<< HEAD
+=======
+// A hash change no longer remounts the page, so links that point at an
+// activity on the page already open (like a mention notification) scroll here.
+watch(
+  () => route.hash,
+  (hash) => hash && scrollToHash(hash),
+)
+
+function linkedRow(hash) {
+  const { anchor } = parseActivityHash(hash)
+  if (!anchor || props.tabs?.some((tab) => tab.value === anchor)) return null
+  return anchor
+}
+
+function scrollToHash(hash) {
+  const id = parseActivityHash(hash).anchor || null
+  let tabNames = props.tabs?.map((tab) => tab.name)
+  if (!tabNames?.includes(id)) {
+    scroll(id)
+  }
+}
+
+>>>>>>> 9185e46 (feat: open the notes tab from a note link)
 function handleDocinfoUpdate({ doc, key }) {
   // 'comments' covers comment activity; 'communications' covers new/updated
   // emails (e.g. a reply arriving, or a read-receipt coming in) so the

@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDebounceFn, useStorage } from '@vueuse/core'
+import { parseActivityHash } from '@/utils/activityHash'
 
 export function useActiveTabManager(tabs, storageKey) {
   const lastVisitedTab = useStorage(storageKey, 'activity')
@@ -17,13 +18,12 @@ export function useActiveTabManager(tabs, storageKey) {
   }, 300)
 
   function setActiveTabInUrl(tabName) {
-    let hash = '#' + tabName
-    if (route.hash === hash) return
-    router.push({ ...route, hash })
+    if (getActiveTabFromUrl() === tabName) return
+    router.push({ ...route, hash: '#' + tabName })
   }
 
   function getActiveTabFromUrl() {
-    return route.hash.replace('#', '')
+    return parseActivityHash(route.hash).tab
   }
 
   function hasTab(tabName) {
@@ -61,7 +61,7 @@ export function useActiveTabManager(tabs, storageKey) {
     (tabValue) => {
       if (!tabValue) return
 
-      let tabName = tabValue.replace('#', '')
+      let tabName = parseActivityHash(tabValue).tab
       if (!hasTab(tabName)) tabName = firstTab()
 
       preserveLastVisitedTab(tabName)
