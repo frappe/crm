@@ -10,6 +10,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	FollowUpsDue,
 	NewLeads,
 	RepliesWaiting,
+	Tasks,
 )
 from crm.fcrm.doctype.crm_dashboard.team_widgets import TEAM_WIDGET_DATA
 from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
@@ -82,6 +83,12 @@ def get_counts() -> dict:
 		"follow_ups_due": FollowUpsDue(FOLLOW_UP_DOCTYPES, mine).count(),
 		"new_leads": NewLeads(("CRM Lead",), mine).count(),
 	}
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_tasks(tab: str = "all") -> dict:
+	return Tasks(Mine(frappe.session.user), tab).summary()
 
 
 @frappe.whitelist()

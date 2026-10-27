@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 import frappe
+from frappe import _
 from frappe.query_builder import Case, Field, Order
 from frappe.query_builder.functions import Coalesce, Count, Max
 from frappe.utils import now_datetime
@@ -205,23 +206,9 @@ class TaskWidget(Widget):
 		return query.orderby(self.task.due_date)
 
 
-class FollowUpsDue(TaskWidget):
+class OpenTasks(TaskWidget):
 	def condition(self):
-		return self.linked() & self.due.due_by_today_condition(self.task)
-
-	def order(self, query):
-		overdue_first = Case().when(self.due.overdue_condition(self.task), 0).else_(1)
-		return query.orderby(overdue_first).orderby(self.task.due_date)
-
-
-class UpcomingFollowUps(TaskWidget):
-	def condition(self):
-		return self.linked() & self.due.upcoming_condition(self.task, UPCOMING_DAYS)
-
-
-class MyTasks(TaskWidget):
-	def condition(self):
-		return self.standalone() & self.task.status.notin(CLOSED_STATUSES)
+		return self.task.status.notin(CLOSED_STATUSES)
 
 	def order(self, query):
 		return (
@@ -231,13 +218,49 @@ class MyTasks(TaskWidget):
 		)
 
 
+class DueTasks(TaskWidget):
+	def condition(self):
+		return self.due.due_by_today_condition(self.task)
+
+	def order(self, query):
+		overdue_first = Case().when(self.due.overdue_condition(self.task), 0).else_(1)
+		return query.orderby(overdue_first).orderby(self.task.due_date)
+
+
+class FollowUpsDue(DueTasks):
+	def condition(self):
+		return self.linked() & super().condition()
+
+
+class UpcomingTasks(TaskWidget):
+	def condition(self):
+		return self.due.upcoming_condition(self.task, UPCOMING_DAYS)
+
+
+class UnlinkedTasks(OpenTasks):
+	def condition(self):
+		return self.standalone() & super().condition()
+
+
+TASK_TABS = {"all": OpenTasks, "due": DueTasks, "upcoming": UpcomingTasks, "unlinked": UnlinkedTasks}
+
+
+class Tasks:
+	def __init__(self, scope: Mine, tab: str = "all"):
+		if tab not in TASK_TABS:
+			frappe.throw(_("Unknown task tab {0}").format(tab))
+		self.tabs = {key: widget(FOLLOW_UP_DOCTYPES, scope) for key, widget in TASK_TABS.items()}
+		self.tab = tab
+
+	def summary(self) -> dict:
+		counts = {key: widget.count() for key, widget in self.tabs.items()}
+		return {"rows": self.tabs[self.tab].rows(), "total": counts[self.tab], "counts": counts}
+
+
 WIDGET_DATA = {
 	"replies_waiting": RepliesWaiting,
 	"assigned_to_me": AssignedToMe,
 	"no_next_step": NoNextStep,
-	"follow_ups_due": FollowUpsDue,
-	"upcoming_follow_ups": UpcomingFollowUps,
-	"my_tasks": MyTasks,
 }
 
 

@@ -22,13 +22,11 @@ class Widget:
 
 # Task widgets need the full width for their title, record and assignee.
 WIDGETS = {
+	"tasks": Widget(doctype_setting=False, min_w=GRID_COLUMNS),
 	"replies_waiting": Widget(),
-	"follow_ups_due": Widget(min_w=GRID_COLUMNS),
-	"upcoming_follow_ups": Widget(min_w=GRID_COLUMNS),
 	"assigned_to_me": Widget(),
 	"recently_opened": Widget(),
 	"no_next_step": Widget(),
-	"my_tasks": Widget(doctype_setting=False, min_w=GRID_COLUMNS),
 	"team_overview": Widget(manager_only=True, doctype_setting=False),
 	"team_replies_waiting": Widget(manager_only=True),
 	"team_overdue_follow_ups": Widget(manager_only=True, min_w=GRID_COLUMNS),
@@ -196,13 +194,11 @@ def _item(name: str, x: int, y: int, w: int = 10, h: int = 9) -> dict:
 
 def agent_default() -> list:
 	return [
-		_item("follow_ups_due", 0, 0, w=20),
+		_item("tasks", 0, 0, w=20),
 		_item("replies_waiting", 0, 9),
 		_item("assigned_to_me", 10, 9),
-		_item("upcoming_follow_ups", 0, 18, w=20),
-		_item("recently_opened", 0, 27),
-		_item("no_next_step", 10, 27),
-		_item("my_tasks", 0, 36, w=20),
+		_item("recently_opened", 0, 18),
+		_item("no_next_step", 10, 18),
 	]
 
 

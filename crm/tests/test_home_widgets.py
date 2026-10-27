@@ -5,7 +5,8 @@ from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_counts, get_widget_data
-from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT
+from crm.fcrm.doctype.crm_dashboard.home_scope import Mine
+from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT, Tasks
 from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_task, make_user
 
 
@@ -170,25 +171,33 @@ class TestNoNextStep(HomeWidgetTestCase):
 		self.assertEqual(names(self.data("no_next_step")), [done])
 
 
-class TestFollowUpWidgets(HomeWidgetTestCase):
-	def test_follow_ups_due_puts_overdue_first_and_matches_the_header(self):
-		today = self.follow_up(nowdate(), all_day=1)
+class TestTasksWidget(HomeWidgetTestCase):
+	def tasks(self, tab="all"):
+		return Tasks(Mine(AGENT), tab).summary()
+
+	def test_all_lists_my_open_tasks_by_due_date_undated_last(self):
+		undated = make_task(None, assigned_to=AGENT).name
+		later = make_task(add_days(nowdate(), 20), assigned_to=AGENT).name
 		overdue = self.follow_up(add_days(now_datetime(), -2))
-		self.follow_up(add_days(now_datetime(), 3))
+		upcoming = self.follow_up(add_days(nowdate(), 3), all_day=1)
 		self.follow_up(add_days(now_datetime(), -1), status="Done")
 		self.follow_up(add_days(now_datetime(), -1), assigned_to=MANAGER)
-		make_task(add_days(now_datetime(), -1), assigned_to=AGENT)
 
-		data = self.data("follow_ups_due")
-		self.assertEqual(names(data), [overdue, today])
-		self.assertEqual(data["total"], self.counts()["follow_ups_due"])
+		data = self.tasks()
+		self.assertEqual(names(data), [overdue, upcoming, later, undated])
+		self.assertEqual(data["total"], 4)
+		self.assertEqual(data["counts"], {"all": 4, "due": 1, "upcoming": 1, "unlinked": 2})
+
+	def test_due_puts_overdue_first_and_includes_unlinked_tasks(self):
+		today = self.follow_up(nowdate(), all_day=1)
+		overdue = self.follow_up(add_days(now_datetime(), -2))
+		unlinked = make_task(add_days(now_datetime(), -1), assigned_to=AGENT).name
+		self.follow_up(add_days(now_datetime(), 3))
+
+		data = self.tasks("due")
+		self.assertEqual(names(data), [overdue, unlinked, today])
 		self.assertEqual(data["rows"][0]["reference_title"], "Home")
-
-	def test_follow_ups_follow_the_doctype_setting(self):
-		on_lead = self.follow_up(nowdate(), all_day=1)
-		on_deal = self.follow_up(nowdate(), "CRM Deal", self.deal(), all_day=1)
-		self.assertEqual(names(self.data("follow_ups_due", "Lead")), [on_lead])
-		self.assertEqual(names(self.data("follow_ups_due", "Deal")), [on_deal])
+		self.assertEqual(self.counts()["follow_ups_due"], 2)
 
 	def test_upcoming_covers_the_next_seven_days(self):
 		later = self.follow_up(add_days(nowdate(), 7), all_day=1)
@@ -196,18 +205,20 @@ class TestFollowUpWidgets(HomeWidgetTestCase):
 		self.follow_up(nowdate(), all_day=1)
 		self.follow_up(add_days(nowdate(), 8), all_day=1)
 
-		self.assertEqual(names(self.data("upcoming_follow_ups")), [tomorrow, later])
+		self.assertEqual(names(self.tasks("upcoming")), [tomorrow, later])
 
-	def test_my_tasks_are_open_standalone_tasks(self):
+	def test_unlinked_are_open_tasks_without_a_record(self):
 		undated = make_task(None, assigned_to=AGENT).name
 		dated = make_task(add_days(nowdate(), 2), assigned_to=AGENT).name
 		make_task(nowdate(), assigned_to=AGENT, status="Done")
 		make_task(nowdate(), assigned_to=MANAGER)
 		self.follow_up(nowdate())
 
-		data = self.data("my_tasks")
-		self.assertEqual(names(data), [dated, undated])
-		self.assertEqual(data["total"], 2)
+		self.assertEqual(names(self.tasks("unlinked")), [dated, undated])
+
+	def test_unknown_tab_is_rejected(self):
+		with self.assertRaises(frappe.ValidationError):
+			self.tasks("done")
 
 
 class TestWidgetValidation(HomeWidgetTestCase):

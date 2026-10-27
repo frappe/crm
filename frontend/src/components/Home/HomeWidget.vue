@@ -6,12 +6,18 @@
       <span class="truncate text-base-medium text-ink-gray-8">
         {{ title }}
       </span>
-      <span v-if="total" class="text-base tabular-nums text-ink-gray-5">
+      <span
+        v-if="total && !$slots.tabs"
+        class="text-base tabular-nums text-ink-gray-5"
+      >
         {{ more ? `${total}+` : total }}
       </span>
       <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
         · {{ doctypeLabels[doctype] }}
       </span>
+      <div v-if="$slots.tabs" class="ml-auto">
+        <slot name="tabs" />
+      </div>
       <div v-if="config && !editing" class="ml-auto">
         <Dropdown :options="doctypeOptions" align="end">
           <Button

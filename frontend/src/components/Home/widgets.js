@@ -10,24 +10,17 @@ const lazy = (name) =>
 // width for their title, record and assignee, so minW stops them from being resized narrower.
 export const widgets = [
   {
+    key: 'tasks',
+    label: 'Tasks',
+    size: { w: 20, h: 9 },
+    minW: 20,
+    component: lazy('Tasks'),
+  },
+  {
     key: 'replies_waiting',
     label: 'Replies waiting',
     size: { w: 10, h: 9 },
     component: lazy('RepliesWaiting'),
-  },
-  {
-    key: 'follow_ups_due',
-    label: 'Follow-ups due',
-    size: { w: 20, h: 9 },
-    minW: 20,
-    component: lazy('FollowUpsDue'),
-  },
-  {
-    key: 'upcoming_follow_ups',
-    label: 'Upcoming follow-ups',
-    size: { w: 20, h: 9 },
-    minW: 20,
-    component: lazy('UpcomingFollowUps'),
   },
   {
     key: 'assigned_to_me',
@@ -46,13 +39,6 @@ export const widgets = [
     label: 'No next step',
     size: { w: 10, h: 9 },
     component: lazy('NoNextStep'),
-  },
-  {
-    key: 'my_tasks',
-    label: 'My tasks',
-    size: { w: 20, h: 9 },
-    minW: 20,
-    component: lazy('MyTasks'),
   },
   {
     key: 'team_overview',
