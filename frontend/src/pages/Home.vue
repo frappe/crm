@@ -49,7 +49,7 @@
     </LayoutHeader>
 
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <HomeHeader v-if="target === 'mine'" :editing="editing" />
+      <HomeHeader v-if="target === 'mine'" />
       <DashboardGrid
         v-if="visibleItems.length"
         v-model="visibleItems"
