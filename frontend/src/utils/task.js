@@ -24,26 +24,6 @@ export function formatTaskDue(task, length = 'short') {
   return dayjsLocal(task.due_date).format(format.timed)
 }
 
-export function relativeTaskDue(task) {
-  if (!task?.due_date) return ''
-  const day = task.all_day
-    ? dueDay(task)
-    : dayjsLocal(task.due_date).format(DAY)
-  const days = Math.round(
-    dayjs(day).diff(dayjsLocal().format(DAY), 'day', true),
-  )
-  if (days < 0) return __('{0}d overdue', [-days])
-  if (days === 0) {
-    if (isTaskOverdue(task)) return __('Overdue')
-    return task.all_day
-      ? __('Today')
-      : dayjsLocal(task.due_date).format('hh:mm a')
-  }
-  if (days === 1) return __('Tomorrow')
-  if (days < 7) return dayjs(day).format('ddd')
-  return formatTaskDue(task)
-}
-
 export function toAllDayDueDate(dueDate) {
   return dueDate ? dayjsLocal(dueDate).format(DAY) : dueDate
 }
