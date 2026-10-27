@@ -7,9 +7,11 @@ from dataclasses import dataclass
 import frappe
 from frappe import _
 
+from crm.fcrm.doctype.crm_dashboard.home_columns import WidgetColumns
+from crm.fcrm.doctype.crm_dashboard.home_widgets import DOCTYPES, TASK_DOCTYPES
+
 HOME_PREFIX = "Home - "
 MANAGER_ROLES = ("Sales Manager", "System Manager")
-DOCTYPE_OPTIONS = ("Lead", "Deal", "Both")
 GRID_COLUMNS = 20
 
 
@@ -18,21 +20,56 @@ class Widget:
 	manager_only: bool = False
 	doctype_setting: bool = True
 	min_w: int = 1
+	tasks: bool = False
+	# Default column keys, in order; `locked` ones identify the widget and cannot be removed.
+	columns: tuple = ()
+	locked: tuple = ()
 
+	def doctypes(self, setting: str) -> tuple:
+		return TASK_DOCTYPES if self.tasks else DOCTYPES[setting]
+
+
+REPLY_COLUMNS = ("title", "status", "channel", "awaiting_reply_since")
+FOLLOW_UP_COLUMNS = ("title", "reference_title", "due_date")
 
 # Task widgets need the full width for their title, record and assignee.
 WIDGETS = {
-	"replies_waiting": Widget(),
-	"follow_ups_due": Widget(min_w=GRID_COLUMNS),
-	"upcoming_follow_ups": Widget(min_w=GRID_COLUMNS),
-	"assigned_to_me": Widget(),
-	"recently_opened": Widget(),
-	"no_next_step": Widget(),
-	"my_tasks": Widget(doctype_setting=False, min_w=GRID_COLUMNS),
+	"replies_waiting": Widget(columns=REPLY_COLUMNS, locked=("title", "awaiting_reply_since")),
+	"follow_ups_due": Widget(
+		min_w=GRID_COLUMNS,
+		tasks=True,
+		columns=(*FOLLOW_UP_COLUMNS, "actions"),
+		locked=("title", "due_date", "actions"),
+	),
+	"upcoming_follow_ups": Widget(
+		min_w=GRID_COLUMNS, tasks=True, columns=FOLLOW_UP_COLUMNS, locked=("title", "due_date")
+	),
+	"assigned_to_me": Widget(columns=("title", "status", "assigned_at"), locked=("title", "assigned_at")),
+	"recently_opened": Widget(columns=("title", "doctype", "status"), locked=("title",)),
+	"no_next_step": Widget(
+		columns=("title", "status", "idle_since", "follow_up"), locked=("title", "idle_since", "follow_up")
+	),
+	"my_tasks": Widget(
+		doctype_setting=False,
+		min_w=GRID_COLUMNS,
+		tasks=True,
+		columns=("status", "title", "priority", "due_date"),
+		locked=("title", "due_date"),
+	),
 	"team_overview": Widget(manager_only=True, doctype_setting=False),
-	"team_replies_waiting": Widget(manager_only=True),
-	"team_overdue_follow_ups": Widget(manager_only=True, min_w=GRID_COLUMNS),
-	"unassigned": Widget(manager_only=True),
+	"team_replies_waiting": Widget(
+		manager_only=True, columns=(*REPLY_COLUMNS, "owner"), locked=("title", "awaiting_reply_since")
+	),
+	"team_overdue_follow_ups": Widget(
+		manager_only=True,
+		min_w=GRID_COLUMNS,
+		tasks=True,
+		columns=(*FOLLOW_UP_COLUMNS, "priority", "assigned_to"),
+		locked=("title", "due_date", "assigned_to"),
+	),
+	"unassigned": Widget(
+		manager_only=True, columns=("title", "status", "creation"), locked=("title", "creation")
+	),
 }
 
 
@@ -50,12 +87,13 @@ class HomeLayout:
 	def get(self) -> dict:
 		name = self._record()
 		if not name:
-			return {"layout": RoleDefault(self.role).get_layout(), "is_default": True, "role": self.role}
+			layout = RoleDefault(self.role).get_layout(self.user)
+			return {"layout": layout, "is_default": True, "role": self.role}
 		layout = load(frappe.db.get_value("CRM Dashboard", name, "layout"))
-		return {"layout": allowed_items(layout, self.role), "is_default": False, "role": self.role}
+		return {"layout": allowed_items(layout, self.role, self.user), "is_default": False, "role": self.role}
 
 	def save(self, layout) -> dict:
-		layout = validate_layout(layout, self.role)
+		layout = validate_layout(layout, self.role, self.user)
 		name = self._record()
 		if name:
 			frappe.db.set_value("CRM Dashboard", name, "layout", json.dumps(layout))
@@ -94,9 +132,10 @@ class RoleDefault:
 			"role": self.role,
 		}
 
-	def get_layout(self) -> list:
+	def get_layout(self, user: str | None = None) -> list:
+		"""Columns the viewing `user` cannot read are dropped."""
 		layout = frappe.db.get_value("CRM Dashboard", self.name, "layout")
-		return allowed_items(load(layout), self.role) if layout else BUILT_IN_DEFAULTS[self.role]()
+		return allowed_items(load(layout), self.role, user) if layout else BUILT_IN_DEFAULTS[self.role]()
 
 	def save(self, layout) -> dict:
 		layout = json.dumps(validate_layout(layout, self.role))
@@ -114,7 +153,7 @@ class RoleDefault:
 		return self.get()
 
 
-def validate_layout(layout, role: str) -> list:
+def validate_layout(layout, role: str, user: str | None = None) -> list:
 	layout = load(layout) if isinstance(layout, str) else layout
 	if not isinstance(layout, list):
 		frappe.throw(_("Home layout must be a list of widgets"))
@@ -130,16 +169,35 @@ def validate_layout(layout, role: str) -> list:
 		if WIDGETS[name].manager_only and role != "manager":
 			frappe.throw(_("Home widget {0} is only available to managers").format(name))
 		seen.add(name)
-		items.append({"name": name, "config": _config(name, item.get("config")), "layout": _position(item)})
+		items.append(
+			{"name": name, "config": _config(name, item.get("config"), user), "layout": _position(item)}
+		)
 	return items
 
 
-def allowed_items(layout: list, role: str) -> list:
+def allowed_items(layout: list, role: str, user: str | None = None) -> list:
 	return [
-		_widen(item)
+		_allowed_columns(_widen(item), user)
 		for item in layout
 		if item.get("name") in WIDGETS and (role == "manager" or not WIDGETS[item["name"]].manager_only)
 	]
+
+
+# Field permissions can change after a layout is saved, and role defaults are saved by someone else.
+def _allowed_columns(item: dict, user: str | None) -> dict:
+	config = item.get("config") or {}
+	if "columns" not in config:
+		return item
+	config = {k: v for k, v in config.items() if k != "columns"}
+	columns = widget_columns(item["name"], config, user).allowed(item["config"]["columns"])
+	if columns is not None:
+		config["columns"] = columns
+	return {**item, "config": config}
+
+
+def widget_columns(name: str, config: dict, user: str | None = None) -> WidgetColumns:
+	spec = WIDGETS[name]
+	return WidgetColumns(name, spec, spec.doctypes(config.get("doctype", "Both")), user)
 
 
 # Layouts saved before a widget had a minimum width still render, at that width.
@@ -158,17 +216,22 @@ def load(layout: str | None) -> list:
 		frappe.throw(_("Home layout is not valid JSON"))
 
 
-def _config(name: str, config) -> dict:
-	if not WIDGETS[name].doctype_setting:
-		if config:
-			frappe.throw(_("Home widget {0} has no settings").format(name))
-		return {}
-
+def _config(name: str, config, user: str | None) -> dict:
+	spec = WIDGETS[name]
 	config = config or {}
-	doctype = config.get("doctype", "Both") if isinstance(config, dict) else None
-	if doctype not in DOCTYPE_OPTIONS or set(config) - {"doctype"}:
-		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(name))
-	return {"doctype": doctype}
+	if not isinstance(config, dict) or set(config) - {"doctype", "columns"}:
+		frappe.throw(_("Home widget {0} has invalid settings").format(name))
+	if "doctype" in config and not spec.doctype_setting:
+		frappe.throw(_("Home widget {0} has no doctype setting").format(name))
+
+	clean = {}
+	if spec.doctype_setting:
+		clean["doctype"] = config.get("doctype", "Both")
+		if clean["doctype"] not in DOCTYPES:
+			frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(name))
+	if "columns" in config:
+		clean["columns"] = widget_columns(name, clean, user).validate(config["columns"])
+	return clean
 
 
 def _position(item: dict) -> dict:

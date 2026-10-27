@@ -1,6 +1,8 @@
 import json
+from contextlib import contextmanager
 
 import frappe
+from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, now_datetime, nowdate
@@ -10,6 +12,7 @@ from crm.api.home import (
 	get_counts,
 	get_default_layout,
 	get_layout,
+	get_widget_columns,
 	reset_default_layout,
 	reset_layout,
 	save_default_layout,
@@ -50,6 +53,22 @@ def make_user(email, *roles):
 
 def widget(name, x=0, y=0, w=10, h=8, **kwargs):
 	return {"name": name, "layout": {"x": x, "y": y, "w": w, "h": h, "i": name}, **kwargs}
+
+
+def reply_columns(*extra, **column):
+	keys = ("title", "awaiting_reply_since", *extra)
+	return [{"key": key, **(column if key == keys[-1] else {})} for key in keys]
+
+
+@contextmanager
+def unreadable(doctype, fieldname):
+	"""No role reads permlevel 1 on CRM records."""
+	make_property_setter(doctype, fieldname, "permlevel", 1, "Int", validate_fields_for_doctype=False)
+	try:
+		yield
+	finally:
+		frappe.db.delete("Property Setter", {"doc_type": doctype, "field_name": fieldname})
+		frappe.clear_cache(doctype=doctype)
 
 
 class TestHomeLayout(IntegrationTestCase):
@@ -137,7 +156,7 @@ class TestHomeLayout(IntegrationTestCase):
 		frappe.set_user(MANAGER)
 		self.assertEqual(self.names(get_layout()["layout"]), ["my_tasks"])
 
-	def test_config_only_holds_the_doctype(self):
+	def test_config_holds_the_doctype_and_columns(self):
 		frappe.set_user(AGENT)
 		for config in ({"doctype": "Contact"}, {"doctype": "Lead", "limit": 5}, "Lead"):
 			with self.assertRaises(frappe.ValidationError):
@@ -205,6 +224,93 @@ class TestHomeLayout(IntegrationTestCase):
 		)
 
 
+class TestHomeColumns(IntegrationTestCase):
+	def setUp(self):
+		make_user(AGENT, "Sales User")
+		frappe.db.delete("CRM Dashboard", {"user": AGENT})
+		frappe.set_user(AGENT)
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+
+	def save(self, columns, doctype="Both", name="replies_waiting", **layout):
+		config = {"doctype": doctype, "columns": columns} if doctype else {"columns": columns}
+		return save_layout([widget(name, config=config, **layout)])["layout"][0]["config"]
+
+	def assertRejected(self, columns, doctype="Both", name="replies_waiting", **layout):
+		with self.assertRaises(frappe.ValidationError):
+			self.save(columns, doctype, name, **layout)
+
+	def test_lead_and_deal_widgets_offer_their_own_fields(self):
+		self.assertEqual(self.save(reply_columns("lead_score"), "Lead")["columns"][-1], {"key": "lead_score"})
+		self.assertRejected(reply_columns("deal_value"), "Lead")
+		self.assertEqual(self.save(reply_columns("deal_value"), "Deal")["columns"][-1], {"key": "deal_value"})
+		self.assertRejected(reply_columns("lead_score"), "Deal")
+
+	def test_both_offers_shared_fields_and_the_owner_alias(self):
+		self.assertEqual(self.save(reply_columns("owner"))["columns"][-1], {"key": "owner"})
+		self.save(reply_columns("territory"))
+		for key in ("lead_owner", "deal_value", "organization"):
+			self.assertRejected(reply_columns(key))
+
+		available = {field["fieldname"] for field in get_widget_columns("replies_waiting")["fields"]}
+		self.assertIn("owner", available)
+		self.assertIn("territory", available)
+		self.assertNotIn("lead_owner", available)
+		self.assertNotIn("organization", available)
+
+	def test_unknown_hidden_and_non_value_fields_are_rejected(self):
+		for key in ("not_a_field", "image", "_assign", "naming_series_break", "lost_notes"):
+			self.assertRejected(reply_columns(key), "Lead")
+
+	def test_unreadable_field_is_rejected(self):
+		with unreadable("CRM Lead", "lead_score"):
+			self.assertRejected(reply_columns("lead_score"), "Lead")
+			available = {
+				field["fieldname"] for field in get_widget_columns("replies_waiting", "Lead")["fields"]
+			}
+			self.assertNotIn("lead_score", available)
+
+	def test_unreadable_field_is_dropped_from_a_saved_layout(self):
+		self.save(reply_columns("lead_score"), "Lead")
+		with unreadable("CRM Lead", "lead_score"):
+			columns = get_layout()["layout"][0]["config"]["columns"]
+		self.assertEqual([column["key"] for column in columns], ["title", "awaiting_reply_since"])
+
+	def test_locked_columns_cannot_be_removed(self):
+		self.assertRejected([{"key": "title"}, {"key": "status"}])
+		self.assertRejected(
+			[{"key": "title"}, {"key": "reference_title"}, {"key": "due_date"}],
+			name="follow_ups_due",
+			w=20,
+		)
+		locked = get_widget_columns("follow_ups_due")["locked"]
+		self.assertEqual(list(locked), ["title", "due_date", "actions"])
+
+	def test_built_in_columns_can_be_reordered_or_removed(self):
+		columns = [{"key": "awaiting_reply_since"}, {"key": "title", "label": "Who"}]
+		self.assertEqual(self.save(columns)["columns"], columns)
+
+	def test_task_widgets_offer_task_fields(self):
+		columns = [{"key": key} for key in ("status", "title", "due_date", "start_date")]
+		self.assertEqual(self.save(columns, None, "my_tasks", w=20)["columns"], columns)
+		self.assertRejected([*columns, {"key": "lead_score"}], None, "my_tasks", w=20)
+
+	def test_team_overview_has_no_columns(self):
+		frappe.set_user("Administrator")
+		with self.assertRaises(frappe.ValidationError):
+			save_layout([widget("team_overview", config={"columns": [{"key": "user"}]})])
+
+	def test_column_label_and_width_are_checked(self):
+		self.save(reply_columns("territory", label="Region", width="8rem"))
+		self.save(reply_columns("territory", width="minmax(0,2fr)"))
+		for column in ({"width": "8rem;color:red"}, {"label": "x" * 200}, {"label": 5}, {"align": "right"}):
+			self.assertRejected(reply_columns("territory", **column))
+
+	def test_duplicate_column_is_rejected(self):
+		self.assertRejected(reply_columns("territory", "territory"))
+
+
 class TestHomeRoleDefaults(IntegrationTestCase):
 	def setUp(self):
 		make_user(AGENT, "Sales User")
@@ -225,6 +331,12 @@ class TestHomeRoleDefaults(IntegrationTestCase):
 		save_default_layout("manager", [widget("unassigned")])
 		frappe.set_user(MANAGER)
 		self.assertEqual([i["name"] for i in get_layout()["layout"]], ["unassigned"])
+
+	def test_role_default_carries_columns(self):
+		columns = [{"key": "title"}, {"key": "awaiting_reply_since"}, {"key": "owner", "label": "Rep"}]
+		save_default_layout("agent", [widget("replies_waiting", config={"columns": columns})])
+		frappe.set_user(AGENT)
+		self.assertEqual(get_layout()["layout"][0]["config"], {"doctype": "Both", "columns": columns})
 
 	def test_agent_default_rejects_manager_widgets(self):
 		with self.assertRaises(frappe.ValidationError):
