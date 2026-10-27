@@ -1,4 +1,4 @@
-import { parseActivityHash } from '@/utils/activityHash'
+import { activityHashFor, parseActivityHash } from '@/utils/activityHash'
 
 describe('parseActivityHash', () => {
   it('reads a tab hash as both tab and anchor', () => {
@@ -24,5 +24,19 @@ describe('parseActivityHash', () => {
 
   it('reads an empty hash as no tab', () => {
     expect(parseActivityHash('')).toEqual({ tab: '', anchor: '' })
+  })
+})
+
+describe('activityHashFor', () => {
+  it('opens a note through the notes tab', () => {
+    expect(activityHashFor({ source_doctype: 'FCRM Note', hash: 'n1' })).toBe(
+      '#notes/n1',
+    )
+  })
+
+  it('anchors comments and emails on the timeline row', () => {
+    expect(activityHashFor({ source_doctype: 'Comment', hash: 'c1' })).toBe(
+      '#c1',
+    )
   })
 })
