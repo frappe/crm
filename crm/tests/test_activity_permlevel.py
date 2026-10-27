@@ -80,6 +80,28 @@ class TestActivityPermlevel(IntegrationTestCase):
 		lead = self.make_lead_with_restricted_change()
 		activities = self.activities_as("mgr@permlevel.test", lead.name)
 
+		# DEBUG: temporary, to find why the change is missing on develop CI
+		from frappe.desk.form.load import get_docinfo
+
+		from crm.api.activities import get_readable_fields
+
+		print(
+			"DEBUG versions",
+			frappe.get_all(
+				"Version", {"ref_doctype": "CRM Lead", "docname": lead.name}, ["name", "data", "creation"]
+			),
+		)
+		print("DEBUG track_changes", frappe.get_meta("CRM Lead").track_changes)
+		frappe.set_user("mgr@permlevel.test")
+		print("DEBUG roles", frappe.get_roles())
+		print("DEBUG readable", RESTRICTED_FIELD in get_readable_fields("CRM Lead"))
+		print("DEBUG perms", [(p.role, p.permlevel, p.read) for p in frappe.get_meta("CRM Lead").permissions])
+		frappe.response.pop("docinfo", None)
+		get_docinfo("", "CRM Lead", lead.name)
+		print("DEBUG docinfo versions", frappe.response["docinfo"].versions)
+		frappe.set_user("Administrator")
+		print("DEBUG activities", activities)
+
 		self.assertIn(RESTRICTED_FIELD, changed_fields(activities))
 
 	def test_unrestricted_fields_are_untouched(self):
