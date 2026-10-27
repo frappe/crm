@@ -110,4 +110,16 @@ describe('persisted home layout', () => {
       ]),
     ).not.toBe(saved)
   })
+
+  it("changes when only a widget's columns change", () => {
+    const config = { doctype: 'Both', columns: [{ key: 'title' }] }
+    const saved = persistedLayout([{ ...item('replies_waiting'), config }])
+    const resized = {
+      ...config,
+      columns: [{ key: 'title', width: '12rem' }],
+    }
+    expect(
+      persistedLayout([{ ...item('replies_waiting'), config: resized }]),
+    ).not.toBe(saved)
+  })
 })

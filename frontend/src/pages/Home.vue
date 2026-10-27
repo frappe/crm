@@ -65,31 +65,12 @@
               :class="{ 'pointer-events-none select-none': editing }"
               :config="item.config"
               @update:config="(config) => updateConfig(item, config)"
+              @remove="remove"
             />
-            <template v-if="editing">
-              <div
-                class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
-              />
-              <div class="absolute right-2 top-1.5 flex items-center gap-0.5">
-                <Tooltip :text="__('Drag to move')">
-                  <span
-                    class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
-                    :aria-label="__('Drag to move')"
-                  >
-                    <span
-                      class="lucide-grip-vertical size-4"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </Tooltip>
-                <Button
-                  variant="ghost"
-                  icon="lucide-x"
-                  :tooltip="__('Remove')"
-                  @click="remove"
-                />
-              </div>
-            </template>
+            <div
+              v-if="editing"
+              class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
+            />
           </div>
         </template>
       </DashboardGrid>
@@ -121,7 +102,7 @@ import { getWidget } from '@/components/Home/widgets'
 import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
-import { Badge, Dropdown, Tooltip, usePageMeta } from 'frappe-ui'
+import { Badge, Dropdown, usePageMeta } from 'frappe-ui'
 import { computed, provide } from 'vue'
 
 const { brand } = getSettings()

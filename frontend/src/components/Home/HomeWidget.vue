@@ -12,8 +12,26 @@
       <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
         · {{ doctypeLabels[doctype] }}
       </span>
-      <div v-if="widget && !editing" class="ml-auto">
+      <div
+        v-if="widget || editing"
+        class="ml-auto flex shrink-0 items-center gap-0.5"
+        :class="{ 'pointer-events-auto': editing }"
+      >
+        <Dropdown
+          v-if="editing && hasDoctypeSetting"
+          :options="[doctypeOptions]"
+          align="end"
+        >
+          <Button
+            variant="ghost"
+            icon="lucide-list-filter"
+            :tooltip="__('Show leads or deals')"
+          />
+        </Dropdown>
+        <!-- Keyed so the popover re-anchors when the trigger changes with edit mode -->
         <ColumnSettings
+          v-if="widget"
+          :key="editing"
           v-model="columnList"
           v-model:open="editingColumns"
           manual
@@ -23,7 +41,14 @@
           @update="updateColumns"
         >
           <template #trigger>
-            <Dropdown :options="menuOptions" align="end">
+            <Button
+              v-if="editing"
+              variant="ghost"
+              icon="lucide-columns-3"
+              :tooltip="__('Edit columns')"
+              @click="editColumns"
+            />
+            <Dropdown v-else :options="menuOptions" align="end">
               <Button
                 variant="ghost"
                 icon="lucide-ellipsis"
@@ -32,6 +57,22 @@
             </Dropdown>
           </template>
         </ColumnSettings>
+        <template v-if="editing">
+          <Tooltip :text="__('Drag to move')">
+            <span
+              class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
+              :aria-label="__('Drag to move')"
+            >
+              <span class="lucide-grip-vertical size-4" aria-hidden="true" />
+            </span>
+          </Tooltip>
+          <Button
+            variant="ghost"
+            icon="lucide-x"
+            :tooltip="__('Remove')"
+            @click="emit('remove')"
+          />
+        </template>
       </div>
     </div>
 
@@ -88,7 +129,7 @@ import {
 } from '@/components/Home/columns'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { getWidgetColumns, loadWidgetColumns } from '@/composables/homeWidget'
-import { Dropdown } from 'frappe-ui'
+import { Dropdown, Tooltip } from 'frappe-ui'
 import { computed, inject, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -103,7 +144,8 @@ const props = defineProps({
   emptyIcon: { type: String, default: 'lucide-check-circle-2' },
 })
 
-const emit = defineEmits(['update:config'])
+// Home's `remove` listener falls through each widget component to here.
+const emit = defineEmits(['update:config', 'remove'])
 
 const editing = inject('homeEditing', ref(false))
 
@@ -138,19 +180,17 @@ watch(
   { immediate: true },
 )
 
+const doctypeOptions = computed(() => ({
+  group: __('Show'),
+  options: Object.entries(doctypeLabels).map(([value, label]) => ({
+    label,
+    selected: value === doctype.value,
+    onClick: () => setDoctype(value),
+  })),
+}))
+
 const menuOptions = computed(() => [
-  ...(hasDoctypeSetting.value
-    ? [
-        {
-          group: __('Show'),
-          options: Object.entries(doctypeLabels).map(([value, label]) => ({
-            label,
-            selected: value === doctype.value,
-            onClick: () => setDoctype(value),
-          })),
-        },
-      ]
-    : []),
+  ...(hasDoctypeSetting.value ? [doctypeOptions.value] : []),
   {
     group: __('Columns'),
     hideLabel: true,
