@@ -222,6 +222,7 @@
           </div>
           <div
             v-if="activity.activity_type == 'communication'"
+            :id="activity.name"
             class="pb-5 mt-px"
           >
             <EmailArea :activity="activity" :emailBox="emailBox" />
