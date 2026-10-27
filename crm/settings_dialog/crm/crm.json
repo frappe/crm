@@ -8,7 +8,7 @@
    "key": "deals",
    "label": "Deals",
    "pane": "general",
-   "save_mode": "auto"
+   "save_mode": "button"
   },
   {
    "binding_type": "Single",
@@ -41,7 +41,7 @@
  "panes": [
   {
    "description": "Forecasting, currency, communication and the activity timeline.",
-   "icon": "settings",
+   "icon": "sliders-horizontal",
    "key": "general",
    "label": "General"
   }

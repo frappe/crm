@@ -42,9 +42,8 @@ class CRMTelephonyAgent(Document):
 		if old_mobile_no == new_mobile_no:
 			return
 
-		# if new mobile no. is not in phone_nos table, then add it
-		if new_mobile_no and not any(phone.get("number") == new_mobile_no for phone in self.phone_nos):
-			self.append("phone_nos", {"number": new_mobile_no, "is_primary": 1})
+		if new_mobile_no:
+			self.make_primary(new_mobile_no)
 
 		# if old mobile no. is in phone_nos table, then remove it
 		phone_to_remove = next(
@@ -52,6 +51,14 @@ class CRMTelephonyAgent(Document):
 		)
 		if phone_to_remove:
 			self.phone_nos.remove(phone_to_remove)
+
+	def make_primary(self, number):
+		row = next((phone for phone in self.phone_nos if phone.get("number") == number), None)
+		if not row:
+			row = self.append("phone_nos", {"number": number})
+
+		for phone in self.phone_nos:
+			phone.is_primary = 1 if phone is row else 0
 
 	def set_primary(self):
 		# Used to set primary mobile no.
