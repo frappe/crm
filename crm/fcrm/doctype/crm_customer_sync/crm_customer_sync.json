@@ -1,0 +1,161 @@
+{
+ "actions": [],
+ "autoname": "field:sync_key",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sync_key",
+  "erpnext_site",
+  "customer",
+  "customer_name",
+  "customer_type",
+  "organization",
+  "status",
+  "match_rule",
+  "direction",
+  "last_attempt",
+  "last_success",
+  "source_modified",
+  "message",
+  "error_log",
+  "last_synced_values"
+ ],
+ "fields": [
+  {
+   "fieldname": "sync_key",
+   "fieldtype": "Data",
+   "label": "Sync Key",
+   "hidden": 1,
+   "unique": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "erpnext_site",
+   "fieldtype": "Data",
+   "length": 255,
+   "label": "ERPNext Site",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "label": "ERPNext Customer",
+   "in_list_view": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "organization",
+   "fieldtype": "Link",
+   "options": "CRM Organization",
+   "label": "Organization",
+   "in_list_view": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Pending\nSynced\nReview\nFailed\nIgnored\nUnlinked",
+   "label": "Status",
+   "in_list_view": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "match_rule",
+   "fieldtype": "Data",
+   "label": "Match Rule",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "direction",
+   "fieldtype": "Data",
+   "label": "Direction",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "last_attempt",
+   "fieldtype": "Datetime",
+   "label": "Last Attempt",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "last_success",
+   "fieldtype": "Datetime",
+   "label": "Last Successful Sync",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "source_modified",
+   "fieldtype": "Datetime",
+   "label": "Source Modified",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "label": "Details",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "error_log",
+   "fieldtype": "Link",
+   "options": "Error Log",
+   "label": "Error Log",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "last_synced_values",
+   "fieldtype": "Long Text",
+   "label": "Last Synced Values",
+   "hidden": 1,
+   "read_only": 1,
+   "no_copy": 1
+  }
+ ],
+ "links": [],
+ "module": "FCRM",
+ "name": "CRM Customer Sync",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "Sales Manager",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
