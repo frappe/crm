@@ -72,6 +72,16 @@
           </template>
         </Badge>
         <Badge
+          v-if="call.transcript || callLog?.data?.transcript"
+          :label="__('Transcript')"
+          variant="subtle"
+          theme="blue"
+        >
+          <template #prefix>
+            <span class="lucide-file-text size-3" />
+          </template>
+        </Badge>
+        <Badge
           :label="getCallStatusLabel(call.status, call.type)"
           :theme="statusColorMap[call.status]"
         />

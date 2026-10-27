@@ -23,6 +23,7 @@ class CRMTwilioSettings(Document):
 		auth_token: DF.Password | None
 		enabled: DF.Check
 		record_calls: DF.Check
+		enable_live_transcription: DF.Check
 		twilio_apps: DF.Data | None
 		twiml_sid: DF.Data | None
 	# end: auto-generated types

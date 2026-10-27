@@ -220,3 +220,148 @@ def get_datetime_from_timestamp(timestamp):
 	system_timezone = frappe.utils.get_system_timezone()
 	converted_datetime = datetime_utc_tz.astimezone(ZoneInfo(system_timezone))
 	return frappe.utils.format_datetime(converted_datetime, "yyyy-MM-dd HH:mm:ss")
+
+
+@frappe.whitelist(allow_guest=True)
+def transcription_callback(**kwargs):
+	"""Webhook endpoint for Twilio real-time transcription callbacks.
+	Receives streaming transcription events (both tracks) and broadcasts them to the agent
+	via Frappe realtime socket while persisting final utterances in the CRM Call Log.
+	"""
+	args = frappe._dict(kwargs)
+	if not args and frappe.request and getattr(frappe.request, "data", None):
+		try:
+			args = frappe._dict(json.loads(frappe.request.data))
+		except Exception:
+			pass
+
+	validate_twilio_request(args)
+
+	call_sid = args.get("CallSid")
+	if not call_sid:
+		return {"status": "ignored", "reason": "Missing CallSid"}
+
+	call_log = frappe.db.get_value("CRM Call Log", call_sid, ["name", "type", "caller", "receiver"], as_dict=True)
+	if not call_log and args.get("ParentCallSid"):
+		call_log = frappe.db.get_value("CRM Call Log", args.get("ParentCallSid"), ["name", "type", "caller", "receiver"], as_dict=True)
+	if not call_log:
+		call_log = frappe.db.get_value("CRM Call Log", {"id": call_sid}, ["name", "type", "caller", "receiver"], as_dict=True)
+
+	transcription_event = args.get("TranscriptionEvent") or args.get("event") or ""
+
+	agent_user = None
+	if call_log:
+		agent_user = call_log.caller if call_log.type == "Outgoing" else call_log.receiver
+
+	if transcription_event == "transcription-started":
+		msg = {
+			"call_sid": call_sid,
+			"event": "started",
+		}
+		if agent_user:
+			frappe.publish_realtime("twilio_transcription", msg, user=agent_user, after_commit=False)
+		else:
+			frappe.publish_realtime("twilio_transcription", msg, after_commit=False)
+		return {"status": "ok"}
+
+	elif transcription_event == "transcription-stopped":
+		msg = {
+			"call_sid": call_sid,
+			"event": "stopped",
+		}
+		if agent_user:
+			frappe.publish_realtime("twilio_transcription", msg, user=agent_user, after_commit=False)
+		else:
+			frappe.publish_realtime("twilio_transcription", msg, after_commit=False)
+		return {"status": "ok"}
+
+	# Handle transcription-content
+	raw_data = args.get("TranscriptionData")
+	data = {}
+	if isinstance(raw_data, str):
+		try:
+			data = json.loads(raw_data)
+		except Exception:
+			data = {"transcript": raw_data}
+	elif isinstance(raw_data, dict):
+		data = raw_data
+
+	transcript_text = (data.get("transcript") or "").strip()
+	if not transcript_text:
+		return {"status": "ok"}
+
+	# Determine speaker: Customer or Agent
+	track = args.get("Track") or ""
+	speaker = None
+
+	if track == "inbound_track":
+		speaker = args.get("InboundTrackLabel") or args.get("TrackLabel")
+	elif track == "outbound_track":
+		speaker = args.get("OutboundTrackLabel") or args.get("TrackLabel")
+	else:
+		speaker = args.get("TrackLabel")
+
+	if not speaker or speaker.lower() not in ("customer", "agent"):
+		if call_log:
+			if call_log.type == "Outgoing":
+				speaker = "agent" if track == "inbound_track" else "customer"
+			else:
+				speaker = "customer" if track == "inbound_track" else "agent"
+		else:
+			speaker = "agent" if track == "inbound_track" else "customer"
+
+	speaker = "customer" if speaker.lower() in ("customer", "caller", "client", "lead") else "agent"
+
+	is_final = str(args.get("Final", "false")).lower() in ("true", "1") or bool(data.get("isFinal"))
+
+	msg = {
+		"call_sid": call_sid,
+		"event": "content",
+		"speaker": speaker,
+		"text": transcript_text,
+		"is_final": is_final,
+		"sequence_id": args.get("SequenceId"),
+		"timestamp": args.get("Timestamp"),
+	}
+
+	if agent_user:
+		frappe.publish_realtime("twilio_transcription", msg, user=agent_user, after_commit=False)
+	else:
+		frappe.publish_realtime("twilio_transcription", msg, after_commit=False)
+
+	# Atomically record final utterance to CRM Call Log
+	if is_final and call_log:
+		formatted_utterance = f"[{speaker.capitalize()}]\n{transcript_text}\n\n"
+		frappe.db.sql(
+			"""
+			UPDATE `tabCRM Call Log`
+			SET transcript = CONCAT(IFNULL(transcript, ''), %s)
+			WHERE name = %s
+			""",
+			(formatted_utterance, call_log.name),
+		)
+		frappe.db.commit()
+
+	return {"status": "ok"}
+
+
+@frappe.whitelist()
+def save_call_transcript(call_sid: str, transcript: str):
+	"""Save complete formatted transcript to CRM Call Log upon call completion."""
+	if not frappe.has_permission("CRM Call Log", "write", call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	if transcript and transcript.strip():
+		call_log.transcript = transcript.strip()
+		call_log.save(ignore_permissions=True)
+		frappe.db.commit()
+	return {"status": "ok", "transcript": call_log.transcript}
+
+
+@frappe.whitelist()
+def get_call_transcript(call_sid: str):
+	"""Retrieve call transcript for a given call sid."""
+	if not frappe.has_permission("CRM Call Log", "read", call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+	return frappe.db.get_value("CRM Call Log", call_sid, "transcript")

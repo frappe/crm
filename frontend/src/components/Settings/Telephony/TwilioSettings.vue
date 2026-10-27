@@ -102,6 +102,21 @@
               <Switch v-model="twilio.doc.record_calls" size="sm" />
             </div>
           </div>
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col">
+              <div class="text-p-base-medium text-ink-gray-7 truncate">
+                {{ __('Live Call Transcription') }}
+              </div>
+              <div class="text-p-sm text-ink-gray-5 truncate">
+                {{
+                  __('Transcribe both sides of the call live in real time')
+                }}
+              </div>
+            </div>
+            <div>
+              <Switch v-model="twilio.doc.enable_live_transcription" size="sm" />
+            </div>
+          </div>
         </div>
         <!--  Disabled state -->
         <div v-else class="relative flex h-full w-full justify-center">

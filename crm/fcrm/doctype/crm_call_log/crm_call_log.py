@@ -28,6 +28,7 @@ class CRMCallLog(Document):
 		note: DF.Link | None
 		receiver: DF.Link | None
 		recording_url: DF.SmallText | None
+		transcript: DF.LongText | None
 		reference_docname: DF.DynamicLink | None
 		reference_doctype: DF.Link | None
 		start_time: DF.Datetime | None
@@ -246,6 +247,7 @@ def get_call_log(name: str):
 			"note",
 			"recording_url",
 			"recording_url_path",
+			"transcript",
 			"reference_doctype",
 			"reference_docname",
 			"creation",

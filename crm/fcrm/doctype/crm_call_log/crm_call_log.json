@@ -25,6 +25,7 @@
   "receiver",
   "caller",
   "recording_url",
+  "transcript",
   "end_time",
   "note",
   "section_break_kebz",
@@ -96,6 +97,11 @@
    "fieldname": "recording_url",
    "fieldtype": "Small Text",
    "label": "Recording URL"
+  },
+  {
+   "fieldname": "transcript",
+   "fieldtype": "Long Text",
+   "label": "Transcript"
   },
   {
    "fieldname": "end_time",

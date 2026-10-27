@@ -11,6 +11,7 @@
   "enabled",
   "column_break_avmt",
   "record_calls",
+  "enable_live_transcription",
   "section_break_eklq",
   "account_sid",
   "column_break_yqvr",
@@ -78,6 +79,13 @@
    "fieldname": "record_calls",
    "fieldtype": "Check",
    "label": "Record Calls"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "enable_live_transcription",
+   "fieldtype": "Check",
+   "label": "Enable Live Transcription"
   },
   {
    "fieldname": "column_break_avmt",

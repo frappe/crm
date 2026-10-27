@@ -2,7 +2,7 @@
   <div v-show="showCallPopup" v-bind="$attrs">
     <div
       ref="callPopup"
-      class="fixed z-20 flex w-60 cursor-move select-none flex-col rounded-6 bg-surface-gray-10 p-4 text-ink-gray-2 shadow-2xl"
+      class="fixed z-20 flex w-72 cursor-move select-none flex-col rounded-6 bg-surface-gray-10 p-4 text-ink-gray-2 shadow-2xl"
       :style="style"
     >
       <div class="flex flex-row-reverse items-center gap-1">
@@ -16,8 +16,11 @@
           v-if="contact?.image"
           :image="contact.image"
           :label="contact.full_name"
-          class="relative flex !h-24 !w-24 items-center justify-center [&>div]:text-[30px]"
-          :class="onCall || calling ? '' : 'pulse'"
+          class="relative flex items-center justify-center [&>div]:text-[30px]"
+          :class="[
+            onCall || calling ? '' : 'pulse',
+            onCall ? '!h-16 !w-16 [&>div]:!text-[20px]' : '!h-24 !w-24',
+          ]"
         />
         <div class="flex flex-col items-center justify-center gap-1">
           <div class="text-2xl-medium">
@@ -41,6 +44,74 @@
                   : __('Incoming call...')
           }}
         </div>
+
+        <!-- Live Transcript Area -->
+        <div
+          v-if="onCall || utterances.length > 0"
+          class="flex w-full flex-col gap-1.5 rounded-lg bg-surface-gray-9/70 p-2.5 text-left border border-surface-gray-7/50"
+        >
+          <div
+            class="flex items-center justify-between text-[11px] font-semibold text-ink-gray-4 uppercase tracking-wider"
+          >
+            <div class="flex items-center gap-1.5">
+              <span
+                class="size-2 rounded-full"
+                :class="
+                  transcriptionStatus === 'error'
+                    ? 'bg-amber-500'
+                    : 'bg-emerald-500 animate-pulse'
+                "
+              />
+              <span>{{ __('Live Transcript') }}</span>
+            </div>
+            <span
+              v-if="transcriptionStatus === 'error'"
+              class="text-[10px] lowercase text-ink-gray-5"
+            >
+              {{ __('unavailable') }}
+            </span>
+          </div>
+
+          <div
+            ref="transcriptContainer"
+            class="flex max-h-48 min-h-[72px] w-full flex-col gap-2 overflow-y-auto pr-1 text-xs select-text scroll-smooth"
+          >
+            <div
+              v-if="utterances.length === 0"
+              class="flex h-full min-h-[60px] items-center justify-center text-center text-ink-gray-5 italic text-[11px]"
+            >
+              {{
+                transcriptionStatus === 'error'
+                  ? __('Live transcription unavailable')
+                  : __('Listening for speech...')
+              }}
+            </div>
+
+            <div
+              v-for="(item, index) in utterances"
+              :key="index"
+              class="flex flex-col gap-0.5"
+            >
+              <div
+                class="text-[11px] font-semibold"
+                :class="
+                  item.speaker === 'agent'
+                    ? 'text-blue-400'
+                    : 'text-emerald-400'
+                "
+              >
+                {{ item.speaker === 'agent' ? __('Agent') : __('Customer') }}
+              </div>
+              <div
+                class="rounded bg-surface-gray-8/60 px-2 py-1 text-ink-gray-2 leading-relaxed whitespace-pre-wrap break-words"
+                :class="{ 'opacity-75 italic': !item.isFinal }"
+              >
+                {{ item.text }}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div v-if="onCall" class="flex gap-2">
           <Button
             :icon="muted ? 'lucide-mic-off' : 'lucide-mic'"
@@ -193,10 +264,16 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { Device } from '@twilio/voice-sdk'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
+import { globalStore } from '@/stores/global'
+import {
+  formatTranscriptUtterances,
+  appendOrUpdateUtterance,
+} from '@/utils/callTranscript'
 import { Avatar, call, createResource } from 'frappe-ui'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 
 const { capture } = useTelemetry()
+const { $socket } = globalStore()
 
 let device = ''
 let log = ref('Connecting...')
@@ -211,6 +288,12 @@ let showKeypad = ref(false)
 let callPopup = ref(null)
 let counterUp = ref(null)
 let callStatus = ref('')
+
+const activeCallSid = ref('')
+const utterances = ref([])
+const transcriptionStatus = ref('idle')
+const transcriptContainer = ref(null)
+let transcriptSaved = false
 
 const keypadDigits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#']
 
@@ -261,9 +344,10 @@ function openNoteModal() {
 
 async function updateNote(_note, isInsert = false) {
   note.value = _note
-  if (isInsert && _note.name) {
+  const sid = activeCallSid.value || _call?.parameters?.CallSid
+  if (isInsert && _note.name && sid) {
     await call('crm.integrations.api.add_note_to_call_log', {
-      call_sid: _call.parameters.CallSid,
+      call_sid: sid,
       note: _note,
     })
     capture('note_created')
@@ -275,14 +359,101 @@ async function updateNote(_note, isInsert = false) {
 const { width, height } = useWindowSize()
 
 let { style } = useDraggable(callPopup, {
-  initialValue: { x: width.value - 280, y: height.value - 310 },
+  initialValue: { x: width.value - 320, y: height.value - 380 },
   preventDefault: true,
+})
+
+function handleLiveTranscriptEvent(data) {
+  if (!data || !data.text) return
+
+  // Filter out if not for this call
+  if (activeCallSid.value && data.call_sid && data.call_sid !== activeCallSid.value) {
+    return
+  }
+  if (!activeCallSid.value && data.call_sid) {
+    activeCallSid.value = data.call_sid
+  }
+
+  transcriptionStatus.value = 'listening'
+
+  utterances.value = appendOrUpdateUtterance(utterances.value, {
+    speaker: data.speaker,
+    text: data.text,
+    isFinal: data.is_final,
+    timestamp: data.timestamp,
+  })
+
+  scrollToBottom()
+}
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (transcriptContainer.value) {
+      transcriptContainer.value.scrollTop = transcriptContainer.value.scrollHeight
+    }
+  })
+}
+
+async function saveFinalTranscript() {
+  if (transcriptSaved) return
+  const sid = activeCallSid.value || _call?.parameters?.CallSid
+  if (!sid || utterances.value.length === 0) return
+
+  transcriptSaved = true
+  const formatted = formatTranscriptUtterances(utterances.value)
+
+  try {
+    await call('crm.integrations.twilio.api.save_call_transcript', {
+      call_sid: sid,
+      transcript: formatted,
+    })
+  } catch (err) {
+    console.error('Failed to save call transcript to CRM:', err)
+  }
+}
+
+function resetTranscriptState() {
+  utterances.value = []
+  activeCallSid.value = ''
+  transcriptionStatus.value = 'idle'
+  transcriptSaved = false
+}
+
+function handleSocketMessage(data) {
+  if (!data) return
+  if (data.event === 'started') {
+    transcriptionStatus.value = 'listening'
+    return
+  }
+  if (data.event === 'stopped') {
+    return
+  }
+  if (data.event === 'content') {
+    handleLiveTranscriptEvent(data)
+  }
+}
+
+function setupSocket() {
+  if ($socket) {
+    $socket.on('twilio_transcription', handleSocketMessage)
+  }
+}
+
+onMounted(() => {
+  setupSocket()
+})
+
+onBeforeUnmount(() => {
+  if ($socket) {
+    $socket.off('twilio_transcription', handleSocketMessage)
+  }
 })
 
 async function startupClient() {
   log.value = 'Requesting Access Token...'
 
   try {
+    setupSocket()
     const data = await call('crm.integrations.twilio.api.generate_access_token')
     log.value = 'Got a token.'
     intitializeDevice(data.token)
@@ -345,14 +516,21 @@ function sendDigit(digit) {
 }
 
 function handleIncomingCall(call) {
+  resetTranscriptState()
   log.value = `Incoming call from ${call.parameters.From}`
   phoneNumber.value = call.parameters.From
 
   showCallPopup.value = true
   _call = call
+  if (call.parameters?.CallSid) {
+    activeCallSid.value = call.parameters.CallSid
+  }
 
   _call.on('accept', (conn) => {
     console.log('conn', conn)
+    if (_call?.parameters?.CallSid) {
+      activeCallSid.value = _call.parameters.CallSid
+    }
   })
 
   // add event listener to call object
@@ -364,6 +542,9 @@ function handleIncomingCall(call) {
 async function acceptIncomingCall() {
   log.value = 'Accepted incoming call.'
   onCall.value = true
+  if (_call?.parameters?.CallSid) {
+    activeCallSid.value = _call.parameters.CallSid
+  }
   await _call.accept()
   counterUp.value.start()
 }
@@ -377,9 +558,11 @@ function rejectIncomingCall() {
 
   callStatus.value = ''
   muted.value = false
+  resetTranscriptState()
 }
 
-function hangUpCall() {
+async function hangUpCall() {
+  await saveFinalTranscript()
   _call.disconnect()
   log.value = 'Hanging up incoming call'
   onCall.value = false
@@ -392,10 +575,12 @@ function hangUpCall() {
     content: '',
   }
   counterUp.value.stop()
+  resetTranscriptState()
 }
 
-function handleDisconnectedIncomingCall() {
+async function handleDisconnectedIncomingCall() {
   log.value = `Call ended from handle disconnected Incoming call.`
+  await saveFinalTranscript()
   showCallPopup.value = false
   showSmallCallWindow.value = false
   showKeypad.value = false
@@ -403,10 +588,12 @@ function handleDisconnectedIncomingCall() {
   muted.value = false
   onCall.value = false
   counterUp.value.stop()
+  resetTranscriptState()
 }
 
 async function makeOutgoingCall(number) {
   phoneNumber.value = number
+  resetTranscriptState()
 
   if (device) {
     log.value = `Attempting to call ${number} ...`
@@ -415,6 +602,9 @@ async function makeOutgoingCall(number) {
       _call = await device.connect({
         params: { To: number },
       })
+      if (_call.parameters?.CallSid) {
+        activeCallSid.value = _call.parameters.CallSid
+      }
 
       showCallPopup.value = true
       callStatus.value = 'initiating'
@@ -424,6 +614,11 @@ async function makeOutgoingCall(number) {
       _call.on('messageReceived', (message) => {
         let info = message.content
         callStatus.value = info.CallStatus
+        if (info.ParentCallSid) {
+          activeCallSid.value = info.ParentCallSid
+        } else if (info.CallSid && !activeCallSid.value) {
+          activeCallSid.value = info.CallSid
+        }
 
         log.value = `Call status: ${info.CallStatus}`
 
@@ -440,9 +635,13 @@ async function makeOutgoingCall(number) {
         showCallPopup.value = true
         calling.value = true
         onCall.value = false
+        if (_call?.parameters?.CallSid) {
+          activeCallSid.value = _call.parameters.CallSid
+        }
       })
-      _call.on('disconnect', () => {
+      _call.on('disconnect', async () => {
         log.value = `Call ended from makeOutgoing call disconnect.`
+        await saveFinalTranscript()
         calling.value = false
         onCall.value = false
         showCallPopup.value = false
@@ -457,6 +656,7 @@ async function makeOutgoingCall(number) {
           title: '',
           content: '',
         }
+        resetTranscriptState()
       })
       _call.on('cancel', () => {
         log.value = `Call ended from makeOutgoing call cancel.`
@@ -474,9 +674,11 @@ async function makeOutgoingCall(number) {
           content: '',
         }
         counterUp.value.stop()
+        resetTranscriptState()
       })
     } catch (error) {
       log.value = `Could not connect call: ${error.message}`
+      transcriptionStatus.value = 'error'
     }
   } else {
     log.value = 'Unable to make call.'
@@ -497,6 +699,7 @@ function cancelCall() {
     title: '',
     content: '',
   }
+  resetTranscriptState()
 }
 
 function toggleCallWindow() {

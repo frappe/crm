@@ -73,9 +73,29 @@ class Twilio:
 		url_path = "/api/method/crm.integrations.twilio.api.update_call_status_info"
 		return get_public_url(url_path)
 
-	def generate_twilio_dial_response(self, from_number: str, to_number: str):
+	def get_transcription_callback_url(self):
+		url_path = "/api/method/crm.integrations.twilio.api.transcription_callback"
+		return get_public_url(url_path)
+
+	def append_transcription_if_enabled(self, resp: VoiceResponse, direction: str = "Outgoing"):
+		if not getattr(self.settings, "enable_live_transcription", False):
+			return
+		try:
+			start = resp.start()
+			start.transcription(
+				track="both_tracks",
+				status_callback_url=self.get_transcription_callback_url(),
+				inbound_track_label="agent" if direction == "Outgoing" else "customer",
+				outbound_track_label="customer" if direction == "Outgoing" else "agent",
+				partial_results=True,
+			)
+		except Exception:
+			frappe.log_error(title="Failed to append Twilio real-time transcription to TwiML")
+
+	def generate_twilio_dial_response(self, from_number: str, to_number: str, direction: str = "Outgoing"):
 		"""Generates voice call instructions to forward the call to agents Phone."""
 		resp = VoiceResponse()
+		self.append_transcription_if_enabled(resp, direction=direction)
 		dial = Dial(
 			caller_id=from_number,
 			record=self.settings.record_calls,
@@ -97,6 +117,7 @@ class Twilio:
 	def generate_twilio_client_response(self, client, ring_tone="at"):
 		"""Generates voice call instructions to forward the call to agents computer."""
 		resp = VoiceResponse()
+		self.append_transcription_if_enabled(resp, direction="Incoming")
 		dial = Dial(
 			ring_tone=ring_tone,
 			record=self.settings.record_calls,
@@ -145,7 +166,7 @@ class IncomingCall:
 			return resp
 
 		if attender["call_receiving_device"] == "Phone":
-			return twilio.generate_twilio_dial_response(self.from_number, attender["mobile_no"])
+			return twilio.generate_twilio_dial_response(self.from_number, attender["mobile_no"], direction="Incoming")
 		else:
 			return twilio.generate_twilio_client_response(twilio.safe_identity(attender["name"]))
 
