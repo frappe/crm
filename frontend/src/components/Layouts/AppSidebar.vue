@@ -223,6 +223,7 @@ import {
   showSettings,
   activeSettingsPage,
   mobileSidebarOpened,
+  closeMobileSidebar,
 } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
@@ -370,8 +371,8 @@ watch(
 )
 
 function onSearchClick() {
-  if (props.mobile) mobileSidebarOpened.value = false
-  openCommandPalette()
+  if (props.mobile) closeMobileSidebar(openCommandPalette)
+  else openCommandPalette()
 }
 
 function onNotificationsClick(event) {

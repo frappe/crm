@@ -1,5 +1,8 @@
 <template>
-  <TransitionRoot :show="sidebarOpened">
+  <TransitionRoot
+    :show="sidebarOpened"
+    @after-leave="nextTick(onMobileSidebarClosed)"
+  >
     <Dialog as="div" class="fixed inset-0" @close="sidebarOpened = false">
       <!-- The panel wrapper below needs w-fit so it stays at the sidebar's
            width. Without it the block div spans the viewport and swallows the
@@ -41,8 +44,11 @@ import {
   DialogOverlay,
 } from '@headlessui/vue'
 import AppSidebar from '@/components/Layouts/AppSidebar.vue'
-import { mobileSidebarOpened as sidebarOpened } from '@/composables/settings'
-import { watch } from 'vue'
+import {
+  mobileSidebarOpened as sidebarOpened,
+  onMobileSidebarClosed,
+} from '@/composables/settings'
+import { nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
