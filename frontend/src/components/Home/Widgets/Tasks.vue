@@ -2,7 +2,7 @@
   <HomeWidget
     :title="__('Tasks')"
     :resource="resource"
-    :viewAll="[{ label: __('Tasks'), route: { name: 'Tasks' } }]"
+    :viewAll="{ name: 'Tasks' }"
     :emptyText="emptyText[tab]"
     emptyIcon="lucide-square-check"
   >

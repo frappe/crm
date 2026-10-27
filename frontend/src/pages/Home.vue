@@ -122,7 +122,7 @@ import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
 import { Badge, Dropdown, Tooltip, usePageMeta } from 'frappe-ui'
-import { computed, provide } from 'vue'
+import { computed } from 'vue'
 
 const { brand } = getSettings()
 const { isAdmin } = usersStore()
@@ -144,8 +144,6 @@ const {
 } = useHomeLayout()
 
 load()
-
-provide('homeEditing', editing)
 
 const defaultLabels = {
   agent: __('Agent default'),

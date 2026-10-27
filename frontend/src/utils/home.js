@@ -22,12 +22,8 @@ export function taskRecordRoute(task) {
   })
 }
 
-export function recordListViews(doctype = 'Both') {
-  const views = {
-    Lead: { label: __('Leads'), route: { name: 'Leads' } },
-    Deal: { label: __('Deals'), route: { name: 'Deals' } },
-  }
-  return doctype === 'Both' ? [views.Lead, views.Deal] : [views[doctype]]
+export function recordListRoute(doctype = 'Both') {
+  return { name: doctype === 'Deal' ? 'Deals' : 'Leads' }
 }
 
 export function recordTitle({ title, subtitle, name }) {

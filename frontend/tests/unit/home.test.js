@@ -1,6 +1,6 @@
 import {
   greetingFor,
-  recordListViews,
+  recordListRoute,
   recordRoute,
   recordTitle,
   shortDuration,
@@ -32,11 +32,9 @@ describe('home records', () => {
     })
   })
 
-  it('links to the list views of the doctype setting', () => {
-    const routes = (doctype) =>
-      recordListViews(doctype).map((view) => view.route.name)
-    expect(routes('Both')).toEqual(['Leads', 'Deals'])
-    expect(routes('Deal')).toEqual(['Deals'])
+  it('links to the list view of the doctype setting', () => {
+    expect(recordListRoute('Both').name).toBe('Leads')
+    expect(recordListRoute('Deal').name).toBe('Deals')
   })
 
   it('falls back to the contact name and then the ID', () => {

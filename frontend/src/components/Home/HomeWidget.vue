@@ -12,20 +12,16 @@
       >
         {{ more ? `${total}+` : total }}
       </span>
-      <span v-if="config && doctype !== 'Both'" class="text-sm text-ink-gray-5">
-        · {{ doctypeLabels[doctype] }}
-      </span>
-      <div v-if="$slots.tabs" class="pl-2">
+      <Dropdown v-if="config" :options="doctypeOptions">
+        <Button
+          variant="ghost"
+          size="sm"
+          :label="doctypeLabels[doctype]"
+          iconRight="lucide-chevron-down"
+        />
+      </Dropdown>
+      <div v-if="$slots.tabs" class="ml-auto">
         <slot name="tabs" />
-      </div>
-      <div v-if="config && !editing" class="ml-auto">
-        <Dropdown :options="doctypeOptions" align="end">
-          <Button
-            variant="ghost"
-            icon="lucide-ellipsis"
-            :aria-label="__('Widget options')"
-          />
-        </Dropdown>
       </div>
     </div>
 
@@ -50,48 +46,36 @@
     </div>
 
     <div
-      v-if="$slots.footer || (viewAll.length && total)"
+      v-if="viewAll && total"
       class="flex h-8 shrink-0 items-center justify-end px-2"
     >
-      <slot name="footer">
-        <Button
-          v-if="viewAll.length === 1"
-          variant="ghost"
-          :label="__('View all')"
-          iconRight="lucide-arrow-right"
-          :route="viewAll[0].route"
-        />
-        <Dropdown v-else :options="viewAll" align="end">
-          <Button
-            variant="ghost"
-            :label="__('View all')"
-            iconRight="lucide-chevron-down"
-          />
-        </Dropdown>
-      </slot>
+      <Button
+        variant="ghost"
+        :label="__('View all')"
+        iconRight="lucide-arrow-right"
+        :route="viewAll"
+      />
     </div>
   </div>
 </template>
 <script setup>
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { Dropdown } from 'frappe-ui'
-import { computed, inject, ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
   resource: { type: Object, required: true },
   config: { type: Object, default: null },
-  viewAll: { type: Array, default: () => [] },
+  viewAll: { type: Object, default: null },
   emptyText: { type: String, required: true },
   emptyIcon: { type: String, default: 'lucide-check-circle-2' },
 })
 
 const emit = defineEmits(['update:config'])
 
-const editing = inject('homeEditing', ref(false))
-
 const doctypeLabels = {
-  Both: __('Leads & deals'),
+  Both: __('All'),
   Lead: __('Leads'),
   Deal: __('Deals'),
 }

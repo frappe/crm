@@ -3,7 +3,7 @@
     :title="__('No next step')"
     :resource="resource"
     :config="config"
-    :viewAll="recordListViews(config.doctype)"
+    :viewAll="recordListRoute(config.doctype)"
     :emptyText="__('Every open lead and deal has a next step.')"
     @update:config="(value) => emit('update:config', value)"
   >
@@ -35,7 +35,7 @@ import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { refreshHome, useHomeWidget } from '@/composables/homeWidget'
-import { recordListViews, recordRoute, recordTitle } from '@/utils/home'
+import { recordListRoute, recordRoute, recordTitle } from '@/utils/home'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },

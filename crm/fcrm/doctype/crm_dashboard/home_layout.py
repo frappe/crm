@@ -24,6 +24,8 @@ class Widget:
 WIDGETS = {
 	"tasks": Widget(doctype_setting=False, min_w=GRID_COLUMNS),
 	"leads_and_deals": Widget(),
+	"leads": Widget(doctype_setting=False),
+	"deals": Widget(doctype_setting=False),
 	"recently_opened": Widget(),
 	"no_next_step": Widget(),
 	"team_overview": Widget(manager_only=True, doctype_setting=False),

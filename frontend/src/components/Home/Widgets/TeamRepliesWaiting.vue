@@ -3,7 +3,7 @@
     :title="__('Team replies waiting')"
     :resource="resource"
     :config="config"
-    :viewAll="recordListViews(config.doctype)"
+    :viewAll="recordListRoute(config.doctype)"
     :emptyText="__('No one is waiting on a reply from your team.')"
     emptyIcon="lucide-inbox"
     @update:config="(value) => emit('update:config', value)"
@@ -18,7 +18,7 @@ import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
-import { recordListViews, recordRoute } from '@/utils/home'
+import { recordListRoute, recordRoute } from '@/utils/home'
 
 const props = defineProps({
   config: { type: Object, default: () => ({}) },

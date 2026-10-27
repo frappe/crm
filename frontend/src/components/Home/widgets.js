@@ -23,6 +23,18 @@ export const widgets = [
     component: lazy('LeadsAndDeals'),
   },
   {
+    key: 'leads',
+    label: 'Leads',
+    size: { w: 10, h: 9 },
+    component: lazy('Leads'),
+  },
+  {
+    key: 'deals',
+    label: 'Deals',
+    size: { w: 10, h: 9 },
+    component: lazy('Deals'),
+  },
+  {
     key: 'recently_opened',
     label: 'Recently opened',
     size: { w: 10, h: 9 },
