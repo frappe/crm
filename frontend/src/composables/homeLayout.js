@@ -69,7 +69,7 @@ export function useHomeLayout() {
 
   function apply(home) {
     saved.value = home.layout.map((item) => withMinWidth(item))
-    items.value = copy(home.layout)
+    items.value = copy(saved.value)
   }
 
   async function edit(nextTarget = 'mine') {
