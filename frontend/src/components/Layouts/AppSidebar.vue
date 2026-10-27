@@ -22,6 +22,18 @@
              active row's shadow. Widen the scroll box to the sidebar edges and
              pad the content back in so the shadow has room. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
+          <SidebarItem :label="__('Search')" @click="onSearchClick">
+            <template #prefix>
+              <LucideSearch class="size-4 text-ink-gray-7" />
+            </template>
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Search') }}
+            </span>
+            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
+              K
+            </KeyboardShortcut>
+          </SidebarItem>
+
           <SidebarItem
             id="notifications-btn"
             :label="__('Notifications')"
@@ -196,6 +208,9 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import Notifications from '@/components/Notifications.vue'
+import KeyboardShortcut from '@/components/KeyboardShortcut.vue'
+import LucideSearch from '~icons/lucide/search'
+import { openCommandPalette } from '@/composables/useCommandPalette'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
 import {
@@ -208,6 +223,7 @@ import {
   showSettings,
   activeSettingsPage,
   mobileSidebarOpened,
+  closeMobileSidebar,
 } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
@@ -353,6 +369,11 @@ watch(
   () => [route.name, route.query.view],
   () => (activeItem.value = currentRouteKey()),
 )
+
+function onSearchClick() {
+  if (props.mobile) closeMobileSidebar(openCommandPalette)
+  else openCommandPalette()
+}
 
 function onNotificationsClick(event) {
   if (props.mobile) {
