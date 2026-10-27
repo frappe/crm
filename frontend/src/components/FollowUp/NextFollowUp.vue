@@ -1,26 +1,26 @@
 <template>
-  <div
-    v-if="task"
-    class="flex items-center gap-1.5 border-b px-5 py-2 text-base text-ink-gray-8"
-  >
+  <div v-if="task" class="flex flex-col gap-1 border-b px-5 py-3">
+    <div class="flex items-center justify-between gap-2">
+      <span class="text-sm-medium text-ink-gray-5">{{ __('Next step') }}</span>
+      <FollowUpActions :task="task" @change="emit('change')" />
+    </div>
     <button
       type="button"
-      class="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+      class="flex flex-col gap-1 text-left"
       @click="emit('open', task)"
     >
-      <span class="shrink-0 text-ink-gray-5">{{ __('Next:') }}</span>
+      <span class="line-clamp-2 text-base text-ink-gray-8">
+        {{ task.title }}
+      </span>
       <Tooltip :text="formatTaskDue(task, 'long')">
         <span
-          class="shrink-0"
-          :class="isTaskOverdue(task) ? 'text-ink-red-7' : ''"
+          class="text-sm"
+          :class="isTaskOverdue(task) ? 'text-ink-red-7' : 'text-ink-gray-5'"
         >
           {{ formatTaskDue(task) }}
         </span>
       </Tooltip>
-      <span class="shrink-0 text-ink-gray-4">&middot;</span>
-      <span class="truncate">{{ task.title }}</span>
     </button>
-    <FollowUpActions :task="task" @change="emit('change')" />
   </div>
 </template>
 <script setup>
