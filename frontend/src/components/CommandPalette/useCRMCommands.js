@@ -15,6 +15,8 @@ import {
   setCommandPaletteProvider,
 } from '@/composables/useCommandPalette'
 import { getNavigationItems } from '@/utils/navigation'
+import { activityHashFor } from '@/utils/activityHash'
+import { activityCommand } from './activityCommands'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -111,6 +113,7 @@ export function useCRMCommands() {
 function createSearchState() {
   return {
     records: ref([]),
+    activity: ref([]),
     recent: ref([]),
     upcoming: ref([]),
     error: ref(false),
@@ -135,6 +138,9 @@ function buildCommands(context) {
     ...state.recent.value.map((item) => recordCommand(item, 'Recent', tracked)),
     ...state.records.value.map((item) =>
       recordCommand(item, 'Records', tracked),
+    ),
+    ...state.activity.value.map((hit) =>
+      tracked(activityCommand(hit, openActivity), 'activity'),
     ),
   ])
 }
@@ -178,7 +184,7 @@ function scheduleSearch(query, context) {
   context.state.requestId++
   commandPaletteSearching.value = query.trim().length >= 2
   if (!query.trim()) return fetchRecords('', context)
-  if (query.trim().length < 2) return (context.state.records.value = [])
+  if (query.trim().length < 2) return clearMatches(context.state)
   context.state.timer = setTimeout(() => fetchRecords(query, context), 180)
 }
 
@@ -194,15 +200,21 @@ async function fetchRecords(query, context) {
     commandPaletteSearching.value = false
     context.state.error.value = false
     context.state.records.value = data.matches || []
+    context.state.activity.value = data.activity || []
     context.state.recent.value = sortByRecency(data.recent || [], recent)
     context.state.upcoming.value = data.upcoming || []
   } catch (error) {
     if (currentRequest !== context.state.requestId) return
     commandPaletteSearching.value = false
     context.state.error.value = true
-    context.state.records.value = []
+    clearMatches(context.state)
     console.error('Command palette record search failed', error)
   }
+}
+
+function clearMatches(state) {
+  state.records.value = []
+  state.activity.value = []
 }
 
 function searchErrorCommand() {
@@ -242,6 +254,10 @@ function isOverdue(due) {
 function dueBadge(due) {
   const relative = prettyDate(due, true)
   return isOverdue(due) ? __('{0} overdue', [relative]) : relative
+}
+
+function openActivity(hit) {
+  router.push({ ...upcomingRoute(hit), hash: activityHashFor(hit) })
 }
 
 function upcomingRoute(item) {
