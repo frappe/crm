@@ -1,5 +1,7 @@
 {
 	"dependencies": {
+		"@framework/ui": "*",
+		"frappe-ui": "*",
 		"vue": "^3.5.13"
 	}
 }
