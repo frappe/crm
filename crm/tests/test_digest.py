@@ -88,6 +88,7 @@ class TestDigestTiming(DigestTestCase):
 class TestDigestSending(DigestTestCase):
 	def setUp(self):
 		super().setUp()
+		frappe.db.set_single_value("FCRM Settings", "enable_morning_digest", 1)
 		if not frappe.db.exists("Email Account", {"default_outgoing": 1}):
 			make_outgoing_email_account()
 
