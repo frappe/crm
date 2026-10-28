@@ -233,16 +233,14 @@ def agent_default() -> list:
 
 def manager_default() -> list:
 	return [
-		_item("won_this_month", 0, 0, h=4),
-		_item("expected_revenue", 10, 0, h=4),
-		_item("team_overview", 0, 4),
-		_item("unassigned", 10, 4),
-		_item("team_overdue_follow_ups", 0, 14, w=20),
-		_item("team_replies_waiting", 0, 24, w=20),
-		_item("leads_and_deals", 0, 34),
-		_item("recently_opened", 10, 34),
-		_item("top_open_deals", 0, 44),
-		_item("funnel_conversion", 0, 54, w=20),
+		_item("tasks", 0, 0, w=20, h=9),
+		_item("team_overview", 0, 9, w=20, h=9, period="last_month"),
+		_item("won_this_month", 0, 18, w=8, h=3),
+		_item("unassigned", 8, 18, w=12, h=11),
+		_item("expected_revenue", 0, 21, w=8, h=3),
+		_item("top_open_deals", 0, 24, w=8, h=14),
+		_item("funnel_conversion", 8, 29, w=12, h=9),
+		_item("team_replies_waiting", 0, 38, w=20, h=9),
 	]
 
 
