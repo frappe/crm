@@ -49,64 +49,65 @@
     </LayoutHeader>
 
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <HomeHeader v-if="target === 'mine'" />
-      <DashboardGrid
-        v-if="visibleItems.length"
-        v-model="visibleItems"
-        class="px-2"
-        :editing="editing"
-        dragHandle=".home-drag-handle"
-      >
-        <template #item="{ item, remove }">
-          <div class="relative h-full w-full">
-            <component
-              :is="getWidget(item.name).component"
-              class="h-full w-full"
-              :class="{ 'pointer-events-none select-none': editing }"
-              :config="item.config"
-              @update:config="(config) => updateConfig(item, config)"
-            />
-            <template v-if="editing">
-              <div
-                class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
+      <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col">
+        <HomeHeader v-if="target === 'mine'" />
+        <DashboardGrid
+          v-if="visibleItems.length"
+          v-model="visibleItems"
+          :editing="editing"
+          dragHandle=".home-drag-handle"
+        >
+          <template #item="{ item, remove }">
+            <div class="relative h-full w-full">
+              <component
+                :is="getWidget(item.name).component"
+                class="h-full w-full"
+                :class="{ 'pointer-events-none select-none': editing }"
+                :config="item.config"
+                @update:config="(config) => updateConfig(item, config)"
               />
-              <div class="absolute right-2 top-1.5 flex items-center gap-0.5">
-                <Tooltip :text="__('Drag to move')">
-                  <span
-                    class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
-                    :aria-label="__('Drag to move')"
-                  >
-                    <span
-                      class="lucide-grip-vertical size-4"
-                      aria-hidden="true"
-                    />
-                  </span>
-                </Tooltip>
-                <Button
-                  variant="ghost"
-                  icon="lucide-x"
-                  :tooltip="__('Remove')"
-                  @click="remove"
+              <template v-if="editing">
+                <div
+                  class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
                 />
-              </div>
-            </template>
-          </div>
-        </template>
-      </DashboardGrid>
-      <div
-        v-else-if="!loading"
-        class="flex flex-1 flex-col items-center justify-center gap-1 p-5 text-center"
-      >
-        <span class="text-base-medium text-ink-gray-8">
-          {{ __('Nothing on Home yet') }}
-        </span>
-        <span class="text-p-base text-ink-gray-6">
-          {{
-            availableWidgets.length
-              ? __('Add widgets to see what needs you next.')
-              : __('Widgets will appear here once they are available.')
-          }}
-        </span>
+                <div class="absolute right-2 top-1.5 flex items-center gap-0.5">
+                  <Tooltip :text="__('Drag to move')">
+                    <span
+                      class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
+                      :aria-label="__('Drag to move')"
+                    >
+                      <span
+                        class="lucide-grip-vertical size-4"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Tooltip>
+                  <Button
+                    variant="ghost"
+                    icon="lucide-x"
+                    :tooltip="__('Remove')"
+                    @click="remove"
+                  />
+                </div>
+              </template>
+            </div>
+          </template>
+        </DashboardGrid>
+        <div
+          v-else-if="!loading"
+          class="flex flex-1 flex-col items-center justify-center gap-1 p-5 text-center"
+        >
+          <span class="text-base-medium text-ink-gray-8">
+            {{ __('Nothing on Home yet') }}
+          </span>
+          <span class="text-p-base text-ink-gray-6">
+            {{
+              availableWidgets.length
+                ? __('Add widgets to see what needs you next.')
+                : __('Widgets will appear here once they are available.')
+            }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
