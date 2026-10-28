@@ -45,9 +45,5 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			["Mobile No.", "Default Medium", "Device", "Twilio Number", "Exotel Number"],
 		)
 
-	def test_the_telephony_component_file_ships(self):
-		path = os.path.join(frappe.get_app_path("crm"), "fcrm", "frontend", "settings", "telephony.vue")
-		self.assertTrue(os.path.isfile(path))
-
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)

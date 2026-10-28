@@ -1,9 +1,8 @@
-<!-- The person's CRM Telephony Agent. A provider's number shows only while that provider is on,
-     as in CRM's own Telephony pane. -->
+<!-- The person's CRM Telephony Agent, with each provider's rows only while that provider is on. -->
 <template>
 	<div v-if="loading" aria-hidden="true">
 		<div
-			v-for="row in 3"
+			v-for="row in rows.length"
 			:key="row"
 			class="flex items-center gap-8 border-b border-outline-gray-1 py-3.5 last:border-b-0"
 		>
@@ -37,25 +36,24 @@
 					:field="{ ...field, label: '', description: '' }"
 					:model-value="agent.doc[field.fieldname]"
 					@update:model-value="(value: unknown) => (agent.doc[field.fieldname] = value)"
-					@change="commit(field.fieldname)"
+					@change="agent.commit()"
 				/>
 			</SettingsRow>
-			<ErrorMessage
-				v-if="refused[field.fieldname]"
-				class="-mt-1.5 pb-3.5"
-				:message="refused[field.fieldname]"
-			/>
 		</div>
+		<ErrorMessage v-if="agent.error" class="py-3.5" :message="agent.error" />
 	</template>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, ref } from "vue";
 import { ErrorMessage, SettingsRow, Skeleton } from "frappe-ui";
 import { runMethod } from "@framework/ui/api";
 import { buildLayoutFromMeta, getFieldComponent, layoutFields } from "@framework/ui/FormLayout";
+import { useDocPermissions } from "@framework/ui/useDocPermissions";
+import type { FieldNode } from "@framework/ui/FormLayout/types";
 import type { DoctypeMeta } from "@framework/ui/useDoctypeMeta";
 import { __ } from "frappe/i18n";
+import { telephonyRows } from "./telephonyRows.js";
 
 /** The part of the settings dialog's binding this block reads; the full shape is `ComponentBinding`. */
 interface Binding {
@@ -67,25 +65,15 @@ interface Binding {
 	commit(): Promise<void>;
 }
 
-type Providers = Record<string, boolean>;
-
 const DOCTYPE = "CRM Telephony Agent";
-
-/** The rows in order, each with when it shows. */
-const SHOWN_WHEN: Record<string, (on: Providers) => boolean> = {
-	mobile_no: () => true,
-	default_medium: (on) => Object.values(on).some(Boolean),
-	call_receiving_device: () => true,
-	twilio_number: (on) => !!on.twilio,
-	exotel_number: (on) => !!on.exotel,
-};
 
 const props = defineProps<{ bindings: { agent: Binding } }>();
 const agent = props.bindings.agent;
+const perms = useDocPermissions(DOCTYPE);
 
-const providers = ref<Providers | null>(null);
-// CRM's own pane treats a failed read as no provider on.
-runMethod<{ integrations: Providers }>(
+const providers = ref<Record<string, boolean> | null>(null);
+// A failed read shows no provider's rows.
+runMethod<{ integrations: Record<string, boolean> }>(
 	"crm.integrations.api.is_call_integration_enabled",
 	{},
 	{ http: "GET" }
@@ -95,7 +83,9 @@ runMethod<{ integrations: Providers }>(
 );
 
 const loading = computed(() => agent.loading || !providers.value);
+const rows = computed(() => telephonyRows(providers.value ?? {}));
 
+/** Generated rows' rules: hidden and unreadable fields are left out, unwritable ones read-only. */
 const fields = computed(() => {
 	const byName = new Map(
 		layoutFields(buildLayoutFromMeta(agent.meta?.fields ?? [])).map((field) => [
@@ -103,17 +93,14 @@ const fields = computed(() => {
 			field,
 		])
 	);
-	return Object.entries(SHOWN_WHEN)
-		.filter(([, shown]) => shown(providers.value ?? {}))
-		.map(([fieldname]) => byName.get(fieldname))
-		.filter((field) => !!field);
+	const writes = perms.loading.value || perms.holds("write");
+	return rows.value
+		.map((fieldname) => byName.get(fieldname))
+		.filter((field): field is FieldNode => !!field && !field.hidden)
+		.filter((field) => perms.fieldAccess(field) !== "none")
+		.map((field) => ({
+			...field,
+			readOnly: field.readOnly || !writes || perms.fieldAccess(field) === "read",
+		}));
 });
-
-const refused = reactive<Record<string, string>>({});
-
-/** The binding's error is shared by every component on this draft, so it is read right after this block's save. */
-async function commit(fieldname: string) {
-	await agent.commit();
-	refused[fieldname] = agent.error;
-}
 </script>
