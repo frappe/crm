@@ -9,6 +9,15 @@ from jinja2 import meta, nodes
 from jinja2.exceptions import TemplateError
 
 
+# separate classes so the settings UI can show the error under the right field
+class InvalidSubjectVariableError(frappe.ValidationError):
+	pass
+
+
+class InvalidContentVariableError(frappe.ValidationError):
+	pass
+
+
 class CustomEmailTemplate(EmailTemplate):
 	def validate(self):
 		super().validate()
@@ -26,27 +35,20 @@ class CustomEmailTemplate(EmailTemplate):
 			return
 
 		known = self.get_template_context_keys()
-		jenv = frappe.get_jenv()
-		unknown = set()
 
-		for template in (self.subject, self.response_):
-			if not template:
-				continue
-			ast = jenv.parse(template)
-			unknown |= meta.find_undeclared_variables(ast) - known - set(jenv.globals)
-			unknown |= {
-				f"doc.{node.attr}"
-				for node in ast.find_all(nodes.Getattr)
-				if isinstance(node.node, nodes.Name) and node.node.name == "doc" and node.attr not in known
-			}
-
-		if unknown:
-			frappe.throw(
-				_("{0} has no field(s) named: {1}").format(
-					frappe.bold(self.reference_doctype), ", ".join(sorted(unknown))
-				),
-				title=_("Unknown Template Variable"),
-			)
+		for template, exc in (
+			(self.subject, InvalidSubjectVariableError),
+			(self.response_, InvalidContentVariableError),
+		):
+			unknown = get_unknown_variables(template, known)
+			if unknown:
+				frappe.throw(
+					_("{0} has no field(s) named: {1}").format(
+						frappe.bold(self.reference_doctype), ", ".join(sorted(unknown))
+					),
+					exc=exc,
+					title=_("Unknown Template Variable"),
+				)
 
 	def get_template_context_keys(self):
 		fieldnames = {df.fieldname for df in frappe.get_meta(self.reference_doctype).fields}
@@ -112,6 +114,21 @@ class CustomEmailTemplate(EmailTemplate):
 			"modified",
 		]
 		return {"columns": columns, "rows": rows}
+
+
+def get_unknown_variables(template: str | None, known: set) -> set:
+	if not template:
+		return set()
+
+	jenv = frappe.get_jenv()
+	ast = jenv.parse(template)
+	unknown = meta.find_undeclared_variables(ast) - known - set(jenv.globals)
+	unknown |= {
+		f"doc.{node.attr}"
+		for node in ast.find_all(nodes.Getattr)
+		if isinstance(node.node, nodes.Name) and node.node.name == "doc" and node.attr not in known
+	}
+	return unknown
 
 
 def get_jinja_error_reason(e: TemplateError) -> str:

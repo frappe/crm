@@ -38,6 +38,7 @@
             :placeholder="__('Payment Reminder')"
             :label="__('Name')"
             :required="true"
+            :error="errors.name"
           />
         </div>
         <div class="flex-1">
@@ -68,6 +69,7 @@
           :label="__('Subject')"
           :placeholder="__('Payment Reminder from Frappé - (#{{ name }})')"
           :required="true"
+          :error="errors.subject"
         />
       </div>
       <div class="border-t pt-4">
@@ -90,6 +92,7 @@
           type="textarea"
           :label="__('Content')"
           :required="true"
+          :error="errors.content"
           :rows="10"
           :placeholder="
             __(
@@ -112,11 +115,9 @@
             "
             @change="(val) => (template.response = val)"
           />
+          <ErrorMessage class="mt-1.5" :message="errors.content" />
         </div>
       </div>
-    </div>
-    <div v-if="errorMessage">
-      <ErrorMessage :message="__(errorMessage)" />
     </div>
   </div>
 </template>
@@ -125,6 +126,7 @@ import { useBroadcast } from '@/composables/useBroadcast'
 import RichTextField from '@/components/RichTextField.vue'
 import { FormControl, Switch, toast } from 'frappe-ui'
 import { inject, onMounted, ref } from 'vue'
+import { useEmailTemplateErrors } from '@/composables/useEmailTemplateErrors'
 
 const props = defineProps({
   templateData: { type: Object, default: () => ({}) },
@@ -133,7 +135,6 @@ const props = defineProps({
 const { send } = useBroadcast()
 
 const emit = defineEmits(['updateStep'])
-const errorMessage = ref('')
 
 const template = ref({
   name: '',
@@ -146,25 +147,10 @@ const template = ref({
 })
 
 const templates = inject('templates')
+const { errors, validate, setServerError } = useEmailTemplateErrors(template)
 
 const createTemplate = () => {
-  errorMessage.value = ''
-  if (!template.value.name) {
-    errorMessage.value = __('Name is required')
-    return
-  }
-  if (!template.value.subject) {
-    errorMessage.value = __('Subject is required')
-    return
-  }
-  if (template.value.content_type === 'Rich Text' && !template.value.response) {
-    errorMessage.value = __('Content is required')
-    return
-  }
-  if (template.value.content_type === 'HTML' && !template.value.response_html) {
-    errorMessage.value = __('Content is required')
-    return
-  }
+  if (!validate()) return
 
   templates.insert.submit(
     { ...template.value },
@@ -175,8 +161,7 @@ const createTemplate = () => {
         send('refresh-email-templates')
       },
       onError: (error) => {
-        errorMessage.value =
-          error.messages[0] || __('Failed to create template')
+        setServerError(error, __('Failed to create template'))
       },
     },
   )

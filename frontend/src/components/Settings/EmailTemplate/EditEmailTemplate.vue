@@ -37,6 +37,7 @@
             :placeholder="__('Payment Reminder')"
             :label="__('Name')"
             :required="true"
+            :error="errors.name"
           />
         </div>
         <div class="flex-1">
@@ -67,6 +68,7 @@
           :label="__('Subject')"
           :placeholder="__('Payment reminder from Frappé - (#{{ name }})')"
           :required="true"
+          :error="errors.subject"
         />
       </div>
       <div class="border-t pt-4">
@@ -89,6 +91,7 @@
           type="textarea"
           :label="__('Content')"
           :required="true"
+          :error="errors.content"
           :rows="10"
           :placeholder="
             __(
@@ -111,11 +114,9 @@
             "
             @change="(val) => (template.response = val)"
           />
+          <ErrorMessage class="mt-1.5" :message="errors.content" />
         </div>
       </div>
-    </div>
-    <div v-if="errorMessage">
-      <ErrorMessage :message="__(errorMessage)" />
     </div>
   </div>
 </template>
@@ -123,35 +124,20 @@
 import RichTextField from '@/components/RichTextField.vue'
 import { FormControl, Switch, toast, createResource } from 'frappe-ui'
 import { computed, inject, onMounted, ref } from 'vue'
+import { useEmailTemplateErrors } from '@/composables/useEmailTemplateErrors'
 
 const props = defineProps({
   templateData: { type: Object, required: true },
 })
 
 const emit = defineEmits(['updateStep'])
-const errorMessage = ref('')
 
 const templates = inject('templates')
 const template = ref({})
+const { errors, validate, setServerError } = useEmailTemplateErrors(template)
 
 const updateTemplate = async () => {
-  errorMessage.value = ''
-  if (!template.value.name) {
-    errorMessage.value = __('Name is required')
-    return
-  }
-  if (!template.value.subject) {
-    errorMessage.value = __('Subject is required')
-    return
-  }
-  if (template.value.content_type === 'Rich Text' && !template.value.response) {
-    errorMessage.value = __('Content is required')
-    return
-  }
-  if (template.value.content_type === 'HTML' && !template.value.response_html) {
-    errorMessage.value = __('Content is required')
-    return
-  }
+  if (!validate()) return
 
   template.value.use_html = template.value.content_type === 'HTML'
 
@@ -193,8 +179,7 @@ const updateTemplate = async () => {
           toast.success(__('Template updated successfully'))
         },
         onError: (error) => {
-          errorMessage.value =
-            error.messages[0] || __('Failed to update template')
+          setServerError(error, __('Failed to update template'))
         },
       },
     )
@@ -228,7 +213,8 @@ const renameDoc = createResource({
     toast.success(__('Template renamed successfully'))
   },
   onError: (error) => {
-    errorMessage.value = error.messages[0] || __('Failed to rename template')
+    // e.g. a template with the new name already exists
+    errors.value.name = error.messages?.[0] || __('Failed to rename template')
   },
 })
 
