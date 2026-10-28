@@ -1,17 +1,31 @@
 <template>
   <HomeWidget
     :title="__('Team workload')"
-    :subtitle="
-      __(
-        'Open records, replies, overdue follow-ups and response time per person',
-      )
-    "
+    :subtitle="__('Per person, for leads and deals created in the period')"
     :resource="resource"
     :emptyText="__('No one is on your team yet.')"
     emptyIcon="lucide-users"
   >
+    <template #tabs>
+      <PeriodPicker
+        class="h-6 text-base"
+        :period="config?.period"
+        @change="(period) => emit('update:config', { ...config, period })"
+      />
+    </template>
     <template #default="{ rows }">
-      <HomeTable :columns="columns" :rows="visible(rows)" />
+      <HomeTable :columns="columns" :rows="visible(rows)">
+        <template #first_response_time="{ column, row }">
+          <Tooltip :text="slaHint(row)">
+            <div
+              class="truncate text-right text-base tabular-nums"
+              :class="missedSla(row) ? 'text-ink-red-7' : 'text-ink-gray-8'"
+            >
+              {{ column.getLabel({ row }) }}
+            </div>
+          </Tooltip>
+        </template>
+      </HomeTable>
     </template>
     <template v-if="members.length > VISIBLE_MEMBERS" #footer>
       <Button
@@ -28,14 +42,18 @@
 <script setup>
 import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
+import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
 import { usersStore } from '@/stores/users'
 import { shortDuration } from '@/utils/home'
+import { Tooltip } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
-// Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
-defineProps({ config: { type: Object, default: null } })
+// Not passed on to HomeWidget, which would show the doctype setting for any config
+const props = defineProps({ config: { type: Object, default: null } })
+
+const emit = defineEmits(['update:config'])
 
 const { getUser } = usersStore()
 
@@ -63,16 +81,26 @@ const columns = [
   stat(
     'first_response_time',
     __('First response'),
-    __('Average first response time'),
+    __('Average first response time, in red when an SLA was missed'),
     '6rem',
     (seconds) => shortDuration(seconds) || '—',
   ),
 ]
 
+function missedSla(row) {
+  return row.sla_met < row.sla_total
+}
+
+function slaHint(row) {
+  if (!row.sla_total) return __('No SLA due in this period')
+  const rate = Math.round((row.sla_met / row.sla_total) * 100)
+  return __('SLA met on {0} of {1} ({2}%)', [row.sla_met, row.sla_total, rate])
+}
+
 // Fits the default card height (see widgets.js); the rest scroll once expanded.
 const VISIBLE_MEMBERS = 6
 
-const resource = useHomeWidget('team_overview')
+const resource = useHomeWidget('team_overview', () => props.config || {})
 
 const expanded = ref(false)
 

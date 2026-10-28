@@ -8,13 +8,12 @@ from datetime import timedelta
 from itertools import accumulate
 
 import frappe
-from frappe import _
 from frappe.query_builder import Case, DocType, Order
 from frappe.query_builder.functions import Coalesce, IfNull, Sum
 from frappe.utils import getdate, now_datetime
 
 from crm.api.dashboard import get_base_currency_symbol, get_funnel_conversion
-from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, PERIOD_DAYS, role_for
+from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, period_days, role_for
 from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT, Widget
 
 TREND_POINTS = 8
@@ -24,9 +23,7 @@ OPEN_TYPES = ("Open", "Ongoing")
 class SalesWidget(Widget):
 	def __init__(self, doctypes: tuple, scope, period: str = DEFAULT_PERIOD):
 		super().__init__(doctypes, scope)
-		if period not in PERIOD_DAYS:
-			frappe.throw(_("Unknown period {0}").format(period))
-		self.days = PERIOD_DAYS[period]
+		self.days = period_days(period)
 		self.owner = None if role_for(scope.user) == "manager" else scope.user
 		self.deal = DocType("CRM Deal")
 		self.status = DocType("CRM Deal Status")

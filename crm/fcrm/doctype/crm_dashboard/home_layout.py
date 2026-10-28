@@ -36,11 +36,17 @@ WIDGETS = {
 	"won_this_month": Widget(doctype_setting=False, period_setting=True),
 	"expected_revenue": Widget(doctype_setting=False, period_setting=True),
 	"top_open_deals": Widget(doctype_setting=False),
-	"team_overview": Widget(manager_only=True, doctype_setting=False),
+	"team_overview": Widget(manager_only=True, doctype_setting=False, period_setting=True),
 	"team_replies_waiting": Widget(manager_only=True),
 	"team_overdue_follow_ups": Widget(manager_only=True, min_w=GRID_COLUMNS),
 	"unassigned": Widget(manager_only=True),
 }
+
+
+def period_days(period: str) -> int:
+	if period not in PERIOD_DAYS:
+		frappe.throw(_("Unknown period {0}").format(period))
+	return PERIOD_DAYS[period]
 
 
 def role_for(user: str) -> str:

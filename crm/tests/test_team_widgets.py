@@ -5,6 +5,7 @@ from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_widget_data
 from crm.fcrm.doctype.crm_dashboard import team_widgets
+from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, PERIOD_DAYS
 from crm.fcrm.doctype.crm_dashboard.home_widgets import NoNextStep, RepliesWaiting
 from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_user
 from crm.tests.test_home_widgets import HomeWidgetTestCase, names, status
@@ -28,8 +29,8 @@ class TeamWidgetTestCase(HomeWidgetTestCase):
 		hierarchy_node(AGENT, reports_to=head)
 		hierarchy_node(OUTSIDER)
 
-	def team(self, widget, user=MANAGER, doctype="Both"):
-		return get_widget_data(widget, doctype, user)
+	def team(self, widget, user=MANAGER, doctype="Both", period=None):
+		return get_widget_data(widget, doctype, user, period)
 
 
 class TestTeamScope(TeamWidgetTestCase):
@@ -130,10 +131,11 @@ class TestTeamOverview(TeamWidgetTestCase):
 
 	def clear_cache(self):
 		for scope in (MANAGER, OTHER_MANAGER, "all"):
-			frappe.cache.delete_value(overview_key(scope))
+			for period in PERIOD_DAYS:
+				frappe.cache.delete_value(overview_key(scope, period))
 
-	def overview(self, user=MANAGER):
-		return {row["user"]: row for row in self.team("team_overview", user)["rows"]}
+	def overview(self, user=MANAGER, period=None):
+		return {row["user"]: row for row in self.team("team_overview", user, period=period)["rows"]}
 
 	def test_counts_per_member_match_their_own_widgets(self):
 		self.lead(awaiting_reply_since=now_datetime())
@@ -158,11 +160,59 @@ class TestTeamOverview(TeamWidgetTestCase):
 				"no_next_step": 1,
 				"overdue_follow_ups": 1,
 				"first_response_time": 900,
+				"sla_met": 0,
+				"sla_total": 0,
 			},
 		)
 		self.assertEqual(overview[AGENT]["replies_waiting"], self.data(RepliesWaiting)["total"])
 		self.assertEqual(overview[AGENT]["no_next_step"], self.data(NoNextStep)["total"])
 		self.assertEqual(overview[MANAGER]["open"], 1)
+
+	def test_sla_counts_late_and_overdue_unanswered_records_as_missed(self):
+		now = now_datetime()
+		self.responded(response_by=add_to_date(now, hours=-1), first_responded_on=add_to_date(now, hours=-2))
+		self.responded(response_by=add_to_date(now, hours=-2), first_responded_on=add_to_date(now, hours=-1))
+		self.responded(response_by=add_to_date(now, hours=-1))
+		self.responded(response_by=add_to_date(now, hours=1))
+		self.lead()
+
+		agent = self.overview()[AGENT]
+		self.assertEqual((agent["sla_met"], agent["sla_total"]), (1, 3))
+
+	def test_period_limits_response_time_and_sla_to_records_created_in_it(self):
+		now = now_datetime()
+		lead = self.responded(
+			response_by=add_to_date(now, hours=-1),
+			first_responded_on=add_to_date(now, hours=-2),
+			first_response_time=600,
+		)
+		frappe.db.set_value("CRM Lead", lead, "creation", add_days(now, -10))
+
+		last_week = self.overview(period="last_week")[AGENT]
+		self.assertEqual((last_week["first_response_time"], last_week["sla_total"]), (None, 0))
+		last_month = self.overview(period="last_month")[AGENT]
+		self.assertEqual((last_month["first_response_time"], last_month["sla_total"]), (600, 1))
+
+	def test_period_limits_every_count_to_records_created_in_it(self):
+		lead = self.lead(awaiting_reply_since=now_datetime())
+		self.follow_up(add_days(now_datetime(), -1), reference=lead)
+		frappe.db.set_value("CRM Lead", lead, "creation", add_days(now_datetime(), -10))
+
+		def counts(period):
+			agent = self.overview(period=period)[AGENT]
+			return agent["open"], agent["replies_waiting"], agent["overdue_follow_ups"]
+
+		self.assertEqual(counts("last_week"), (0, 0, 0))
+		self.assertEqual(counts("last_month"), (1, 1, 1))
+
+	def test_unknown_period_is_rejected(self):
+		with self.assertRaises(frappe.ValidationError):
+			self.overview(period="yesterday")
+
+	def responded(self, **values):
+		lead = self.lead()
+		frappe.db.set_value("CRM Lead", lead, values)
+		return lead
 
 	def test_cached_per_scope_for_a_few_minutes(self):
 		make_user(OTHER_MANAGER, "Sales User", "Sales Manager")
@@ -179,8 +229,8 @@ class TestTeamOverview(TeamWidgetTestCase):
 		self.assertTrue(120 <= ttl <= 300)
 
 
-def overview_key(scope):
-	return f"crm:home:team_overview:{scope}"
+def overview_key(scope, period=DEFAULT_PERIOD):
+	return f"crm:home:team_overview:{scope}:{period}"
 
 
 def hierarchy_node(user, **kwargs):

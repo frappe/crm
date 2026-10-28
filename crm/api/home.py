@@ -2,7 +2,13 @@ import frappe
 from frappe import _
 
 from crm.api.digest import OPT_OUT_KEY
-from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, HomeLayout, RoleDefault, role_for
+from crm.fcrm.doctype.crm_dashboard.home_layout import (
+	DEFAULT_PERIOD,
+	WIDGETS,
+	HomeLayout,
+	RoleDefault,
+	role_for,
+)
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	DOCTYPES,
@@ -117,7 +123,10 @@ def get_widget_data(
 		frappe.throw(
 			_("Home widget {0} is only available to managers").format(widget), frappe.PermissionError
 		)
-	return TEAM_WIDGET_DATA[widget](DOCTYPES[doctype], Team(user)).summary()
+	args = (DOCTYPES[doctype], Team(user))
+	if WIDGETS[widget].period_setting:
+		args += (period or DEFAULT_PERIOD,)
+	return TEAM_WIDGET_DATA[widget](*args).summary()
 
 
 def get_tab_data(widget: str, tab: str, doctype: str = "Both", user: str | None = None) -> dict:

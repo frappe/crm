@@ -2,13 +2,16 @@
 # For license information, please see license.txt
 
 import json
+import operator
 from datetime import timedelta
+from functools import reduce
 
 import frappe
-from frappe.query_builder import Field
+from frappe.query_builder import Case, Field
 from frappe.query_builder.functions import Coalesce, Count, Sum
 from frappe.utils import now_datetime
 
+from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, period_days
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	RECORD_TYPES,
 	NewLeads,
@@ -23,7 +26,6 @@ from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 OVERDUE_DAYS = 30
 UNASSIGNED_CAP = 100
 OVERVIEW_CACHE_SECONDS = 180
-RESPONSE_DAYS = 30
 OVERVIEW_COUNTS = {"open": RecordWidget, "replies_waiting": RepliesWaiting, "no_next_step": NoNextStep}
 
 
@@ -59,8 +61,15 @@ class Unassigned(NewLeads):
 
 
 class TeamOverview(Widget):
+	"""Every column counts only leads and deals created in the period."""
+
+	def __init__(self, doctypes: tuple, scope, period: str = DEFAULT_PERIOD):
+		super().__init__(doctypes, scope)
+		self.since = now_datetime() - timedelta(days=period_days(period))
+		self.period = period
+
 	def summary(self) -> dict:
-		key = f"crm:home:team_overview:{self.scope.key}"
+		key = f"crm:home:team_overview:{self.scope.key}:{self.period}"
 		rows = frappe.cache.get_value(key)
 		if rows is None:
 			rows = self.rows()
@@ -75,7 +84,8 @@ class TeamOverview(Widget):
 		for doctype in FOLLOW_UP_DOCTYPES:
 			table = frappe.qb.DocType(doctype)
 			for stat, widget in OVERVIEW_COUNTS.items():
-				records = self.by_member(doctype, widget(self.doctypes, self.scope).filtered(doctype, table))
+				filtered = widget(self.doctypes, self.scope).filtered(doctype, table)
+				records = self.by_member(doctype, filtered.where(table.creation >= self.since))
 				counts = frappe.qb.from_(records).select("member", Count("*")).groupby("member")
 				for member, count in counts.run():
 					stats[member][stat] += count
@@ -83,32 +93,68 @@ class TeamOverview(Widget):
 		for member, count in self.overdue_follow_ups():
 			stats[member]["overdue_follow_ups"] = count
 
-		response_times = self.first_response_times()
+		responses = self.responses()
+		no_responses = {"first_response_time": None, "sla_met": 0, "sla_total": 0}
 		return [
-			{"user": member, **counts, "first_response_time": response_times.get(member)}
+			{"user": member, **counts, **responses.get(member, no_responses)}
 			for member, counts in stats.items()
 		]
 
 	def overdue_follow_ups(self) -> list:
 		follow_ups = TeamOverdueFollowUps(FOLLOW_UP_DOCTYPES, self.scope)
-		assignee = follow_ups.task.assigned_to
-		return follow_ups.query().select(assignee, Count("*")).groupby(assignee).run()
+		task = follow_ups.task
+		on_recent_records = reduce(
+			operator.or_,
+			(
+				(task.reference_doctype == doctype) & task.reference_docname.isin(self.created(doctype))
+				for doctype in FOLLOW_UP_DOCTYPES
+			),
+		)
+		query = follow_ups.query().where(on_recent_records)
+		return query.select(task.assigned_to, Count("*")).groupby(task.assigned_to).run()
 
-	def first_response_times(self) -> dict:
+	def created(self, doctype: str):
+		table = frappe.qb.DocType(doctype)
+		return frappe.qb.from_(table).select(table.name).where(table.creation >= self.since)
+
+	def responses(self) -> dict:
+		"""An unanswered record counts against the SLA once its response_by has passed."""
+		now = now_datetime()
 		totals = {}
-		since = now_datetime() - timedelta(days=RESPONSE_DAYS)
 		for doctype in FOLLOW_UP_DOCTYPES:
 			table = frappe.qb.DocType(doctype)
-			responded = frappe.qb.from_(table).where(
-				(table.creation >= since) & table.first_response_time.isnotnull()
+			created = frappe.qb.from_(table).where(table.creation >= self.since)
+			sla_decided = table.response_by.isnotnull() & (
+				table.first_responded_on.isnotnull() | (table.response_by < now)
 			)
-			records = self.by_member(doctype, responded, table.first_response_time)
+			records = self.by_member(
+				doctype,
+				created,
+				table.first_response_time,
+				Case().when(table.first_responded_on <= table.response_by, 1).else_(0).as_("sla_met"),
+				Case().when(sla_decided, 1).else_(0).as_("sla_total"),
+			)
 			response_time = Field("first_response_time")
-			query = frappe.qb.from_(records).select("member", Sum(response_time), Count(response_time))
-			for member, seconds, count in query.groupby("member").run():
-				total_seconds, total_count = totals.get(member, (0, 0))
-				totals[member] = (total_seconds + seconds, total_count + count)
-		return {member: round(seconds / count) for member, (seconds, count) in totals.items()}
+			query = frappe.qb.from_(records).select(
+				"member",
+				Sum(response_time),
+				Count(response_time),
+				Sum(Field("sla_met")),
+				Sum(Field("sla_total")),
+			)
+			for member, *values in query.groupby("member").run():
+				previous = totals.get(member, (0, 0, 0, 0))
+				totals[member] = tuple(
+					total + (value or 0) for total, value in zip(previous, values, strict=True)
+				)
+		return {
+			member: {
+				"first_response_time": round(seconds / count) if count else None,
+				"sla_met": int(met),
+				"sla_total": int(total),
+			}
+			for member, (seconds, count, met, total) in totals.items()
+		}
 
 	def by_member(self, doctype: str, query, *fields):
 		table = frappe.qb.DocType(doctype)
