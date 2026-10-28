@@ -1,6 +1,11 @@
 <template>
   <HomeWidget
-    :title="__('Team overview')"
+    :title="__('Team workload')"
+    :subtitle="
+      __(
+        'Open records, replies, overdue follow-ups and response time per person',
+      )
+    "
     :resource="resource"
     :emptyText="__('No one is on your team yet.')"
     emptyIcon="lucide-users"
@@ -47,12 +52,12 @@ const stat = (key, label, tooltip, width, format = String) => ({
 const columns = [
   { ...homeColumns.user('user', __('Member')), width: 'minmax(0,1fr)' },
   stat('open', __('Open'), __('Open leads and deals'), '2.25rem'),
-  stat('replies_waiting', __('Replies'), __('Replies waiting'), '3rem'),
+  stat('replies_waiting', __('Replies'), __('Awaiting reply'), '3rem'),
   stat('overdue_follow_ups', __('Overdue'), __('Overdue follow-ups'), '3.5rem'),
   stat(
     'no_next_step',
-    __('No next step'),
-    __('Open leads and deals with no follow-up'),
+    __('Going cold'),
+    __('Open leads and deals with no follow-up and no activity in 7 days'),
     '5rem',
   ),
   stat(

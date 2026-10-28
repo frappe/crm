@@ -1,6 +1,7 @@
 <template>
   <HomeWidget
-    :title="__('Tasks')"
+    :title="__('My tasks')"
+    :subtitle="__('Open tasks assigned to you, soonest first')"
     :resource="resource"
     :viewAll="{ name: 'Tasks' }"
     :emptyText="emptyText[tab]"

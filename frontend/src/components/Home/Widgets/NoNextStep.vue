@@ -1,6 +1,9 @@
 <template>
   <HomeWidget
-    :title="__('No next step')"
+    :title="__('Going cold')"
+    :subtitle="
+      __('Open leads and deals with no follow-up and no activity in 7 days')
+    "
     :resource="resource"
     :config="config"
     :viewAll="recordListRoute(config.doctype)"

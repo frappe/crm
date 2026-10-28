@@ -1,6 +1,7 @@
 <template>
   <HomeWidget
-    :title="__('Team overdue follow-ups')"
+    :title="__('Missed follow-ups')"
+    :subtitle="__('Team follow-ups past their due date in the last 30 days')"
     :resource="resource"
     :config="config"
     :viewAll="{ name: 'Tasks' }"

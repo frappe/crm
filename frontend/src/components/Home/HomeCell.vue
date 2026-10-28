@@ -15,6 +15,11 @@
       <div class="truncate">{{ formatTaskDue(row) }}</div>
     </div>
   </Tooltip>
+  <Tooltip v-else-if="column.type === 'taskStatus'" :text="__(item)">
+    <div class="flex">
+      <TaskStatusIcon :status="item" />
+    </div>
+  </Tooltip>
   <ListRowItem
     v-else
     :column="column"
@@ -26,9 +31,6 @@
     <template #prefix>
       <div v-if="column.type === 'status'" class="shrink-0">
         <IndicatorIcon :class="statusColor" />
-      </div>
-      <div v-else-if="column.type === 'taskStatus'" class="shrink-0">
-        <TaskStatusIcon :status="item" />
       </div>
       <div v-else-if="column.type === 'priority'" class="shrink-0">
         <TaskPriorityIcon :priority="item" />
@@ -87,8 +89,7 @@ const label = computed(() => {
   if (props.column.type === 'user')
     return props.item && getUser(props.item).full_name
   if (props.column.type === 'channel') return channels[props.item]?.label
-  if (['taskStatus', 'priority'].includes(props.column.type))
-    return __(props.item)
+  if (props.column.type === 'priority') return __(props.item)
   return props.item
 })
 </script>

@@ -1,6 +1,7 @@
 <template>
   <HomeWidget
-    :title="__('Unassigned')"
+    :title="__('Needs an owner')"
+    :subtitle="__('Open leads and deals nobody is assigned to')"
     :resource="resource"
     :config="config"
     :viewAll="recordListRoute(config.doctype)"

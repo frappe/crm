@@ -1,6 +1,7 @@
 <template>
   <HomeWidget
     :title="titles[doctype || 'Both']"
+    :subtitle="tabEmpty[tab].subtitle"
     :resource="resource"
     :config="doctype ? null : config"
     :viewAll="recordListRoute(filter.doctype)"
@@ -33,9 +34,9 @@ const props = defineProps({
 const emit = defineEmits(['update:config'])
 
 const titles = {
-  Both: __('Leads & deals'),
-  Lead: __('Leads'),
-  Deal: __('Deals'),
+  Both: __('Needs your attention'),
+  Lead: __('Leads needing attention'),
+  Deal: __('Deals needing attention'),
 }
 
 const filter = computed(() =>
@@ -43,16 +44,21 @@ const filter = computed(() =>
 )
 
 const tabs = [
-  { label: __('Replies waiting'), value: 'replies' },
+  { label: __('Awaiting reply'), value: 'replies' },
   { label: __('New'), value: 'new' },
 ]
 
 const tabEmpty = {
   replies: {
+    subtitle: __('Customers waiting on a reply from you'),
     text: __('No one is waiting on a reply from you.'),
     icon: 'lucide-inbox',
   },
-  new: { text: __('Nothing new for you right now.'), icon: 'lucide-sparkles' },
+  new: {
+    subtitle: __('New leads and deals, newest first'),
+    text: __('Nothing new for you right now.'),
+    icon: 'lucide-sparkles',
+  },
 }
 
 const columns = {

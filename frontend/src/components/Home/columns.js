@@ -32,9 +32,9 @@ export const homeColumns = {
   }),
   taskStatus: () => ({
     key: 'status',
-    label: __('Status'),
+    label: '',
     type: 'taskStatus',
-    width: '5.5rem',
+    width: '1.75rem',
   }),
   priority: () => ({
     key: 'priority',

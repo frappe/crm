@@ -3,27 +3,26 @@
     class="flex h-full w-full flex-col overflow-hidden rounded-4 border border-outline-gray-1 bg-surface-elevation-2"
   >
     <div
-      class="flex h-10 shrink-0 items-center gap-1.5 pl-4"
+      class="flex shrink-0 items-start gap-2 pb-3 pl-4 pt-4"
       :class="editing ? 'pr-16' : 'pr-2'"
     >
-      <span class="truncate text-base-medium text-ink-gray-8">
-        {{ title }}
-      </span>
-      <span
-        v-if="total && !$slots.tabs"
-        class="text-base tabular-nums text-ink-gray-5"
-      >
-        {{ more ? `${total}+` : total }}
-      </span>
-      <Dropdown v-if="config" :options="doctypeOptions">
-        <Button
-          variant="ghost"
-          size="sm"
-          :label="doctypeLabels[doctype]"
-          iconRight="lucide-chevron-down"
-        />
-      </Dropdown>
-      <div v-if="$slots.tabs" class="ml-auto">
+      <div class="flex min-w-0 flex-1 flex-col gap-1">
+        <div class="flex h-6 min-w-0 items-center gap-1.5">
+          <span class="truncate text-xl-semibold text-ink-gray-9">
+            {{ title }}
+          </span>
+          <Dropdown v-if="config" :options="doctypeOptions">
+            <Button
+              variant="ghost"
+              size="sm"
+              :label="doctypeLabels[doctype]"
+              iconRight="lucide-chevron-down"
+            />
+          </Dropdown>
+        </div>
+        <span class="truncate text-base text-ink-gray-5">{{ subtitle }}</span>
+      </div>
+      <div v-if="$slots.tabs" class="shrink-0">
         <slot name="tabs" />
       </div>
     </div>
@@ -68,6 +67,7 @@ import { computed, inject, ref } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
+  subtitle: { type: String, required: true },
   resource: { type: Object, required: true },
   config: { type: Object, default: null },
   viewAll: { type: Object, default: null },
@@ -88,7 +88,6 @@ const doctypeLabels = {
 const doctype = computed(() => props.config?.doctype || 'Both')
 const rows = computed(() => props.resource.data?.rows || [])
 const total = computed(() => props.resource.data?.total || 0)
-const more = computed(() => props.resource.data?.more)
 const loading = computed(() => props.resource.loading && !props.resource.data)
 
 const doctypeOptions = computed(() => [
