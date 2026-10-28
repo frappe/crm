@@ -5,7 +5,7 @@
     :value="data.forecasting ? data.value : null"
     :prefix="data.currency"
     :format="formatCompactNumber"
-    :delta="data.delta"
+    :delta="delta"
     deltaSuffix="%"
     :deltaFormat="formatPercentChange"
     :sparkline="{ data: data.sparkline || [] }"
@@ -24,6 +24,7 @@
     <template v-if="data.forecasting" #caption>
       <PeriodPicker
         :period="config?.period"
+        :labels="comparisonLabels"
         @change="(period) => emit('update:config', { ...config, period })"
       />
     </template>
@@ -59,8 +60,22 @@ const emit = defineEmits(['update:config'])
 
 const { isAdmin } = usersStore()
 
+// The value is today's pipeline; the period only sets the window the change covers.
+const comparisonLabels = {
+  last_week: __('in the last week'),
+  last_month: __('in the last month'),
+  last_3_months: __('in the last 3 months'),
+}
+
 const resource = useHomeWidget('expected_revenue', () => props.config || {})
 const data = computed(() => resource.data || {})
+
+// A pipeline that grew from nothing has no percent change; show it as the top of the scale.
+const delta = computed(() => {
+  const { delta, value, sparkline } = data.value
+  if (delta != null) return delta
+  return sparkline?.[0] === 0 && value > 0 ? Infinity : null
+})
 
 function openForecastingSettings() {
   activeSettingsPage.value = 'Dashboard'

@@ -15,6 +15,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   period: { type: String, default: 'last_month' },
+  labels: { type: Object, default: null },
 })
 
 const emit = defineEmits(['change'])
@@ -22,17 +23,19 @@ const emit = defineEmits(['change'])
 const current = computed(() => props.period || 'last_month')
 
 // Keys match PERIOD_DAYS in home_layout.py.
-const labels = {
+const defaultLabels = {
   last_week: __('Last week'),
   last_month: __('Last month'),
   last_3_months: __('Last 3 months'),
 }
 
+const labels = computed(() => props.labels || defaultLabels)
+
 const options = computed(() => [
   {
     group: __('Period'),
     hideLabel: true,
-    options: Object.entries(labels).map(([period, label]) => ({
+    options: Object.entries(labels.value).map(([period, label]) => ({
       label,
       selected: period === current.value,
       onClick: () => period !== current.value && emit('change', period),
