@@ -2,12 +2,15 @@ import json
 
 import frappe
 from frappe import _
-from frappe.query_builder import Case, DocType
-from frappe.query_builder.functions import Avg, Coalesce, Count, Date, DateFormat, IfNull, Sum
+from frappe.query_builder import Case, DocType, Field
+from frappe.query_builder.functions import Avg, Coalesce, Count, Date, DateFormat, IfNull, Max, Sum
 from pypika.functions import Function
 
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.utils import sales_user_only
+
+# Lost and On Hold are exits from the pipeline, not steps in it.
+FUNNEL_STAGE_TYPES = ("Open", "Ongoing", "Won")
 
 
 # Custom function for TIMESTAMPDIFF (MySQL/MariaDB)
@@ -792,7 +795,7 @@ def get_forecasted_revenue(from_date: str | None = None, to_date: str | None = N
 
 	forecasted_value = (
 		Case()
-		.when(CRMDealStatus.type == "Lost", CRMDeal.expected_deal_value * IfNull(CRMDeal.exchange_rate, 1))
+		.when(CRMDealStatus.type == "Lost", 0)
 		.else_(
 			CRMDeal.expected_deal_value
 			* IfNull(CRMDeal.probability, 0)
@@ -851,54 +854,35 @@ def get_forecasted_revenue(from_date: str | None = None, to_date: str | None = N
 	}
 
 
-def get_funnel_conversion(from_date: str | None = None, to_date: str | None = None, user: str | None = None):
+def get_funnel_conversion(
+	from_date: str | None = None,
+	to_date: str | None = None,
+	user: str | None = None,
+):
 	"""
-	Get funnel conversion data for the dashboard.
+	Leads created in the period, then the deals created in it counted at each stage.
 	[
 		{ stage: 'Leads', count: 120 },
 		{ stage: 'Qualification', count: 100 },
-		{ stage: 'Negotiation', count: 80 },
-		{ stage: 'Ready to Close', count: 60 },
+		{ stage: 'Proposal/Quotation', count: 80 },
 		{ stage: 'Won', count: 30 },
-		...
 	]
 	"""
-	lead_conds = ""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
-	lead_filters = {"from": from_date, "to": to_date}
-	deal_filters = {"from": from_date, "to": to_date}
-
-	if user:
-		lead_conds += " AND lead_owner = %(user)s"
-		deal_conds += " AND deal_owner = %(user)s"
-		lead_filters["user"] = user
-		deal_filters["user"] = user
-
-	result = []
-
-	# Get total leads using Query Builder
 	CRMLead = DocType("CRM Lead")
-
 	query = (
 		frappe.qb.from_(CRMLead)
 		.select(Count("*").as_("count"))
 		.where(Date(CRMLead.creation).between(from_date, to_date))
 	)
-
 	if user:
 		query = query.where(CRMLead.lead_owner == user)
 
-	total_leads = query.run(as_dict=True)
-	total_leads_count = total_leads[0].count if total_leads else 0
-
-	result.append({"stage": "Leads", "count": total_leads_count})
-
-	result += get_deal_status_change_counts(from_date, to_date, deal_conds, deal_filters)
+	result = [{"stage": "Leads", "count": query.run()[0][0]}]
+	result += get_funnel_stage_counts(from_date, to_date, user)
 
 	return {
 		"data": result or [],
@@ -1273,53 +1257,56 @@ def get_base_currency_symbol():
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
 
 
-def get_deal_status_change_counts(
-	from_date: str | None = None,
-	to_date: str | None = None,
-	deal_conds: str = "",
-	filters: dict | None = None,
-):
-	"""
-	Get count of unique deals that ever reached each status (to), excluding deals with current status
-	type 'Lost'. Order results by status position.
-
-	Counts distinct deals per stage rather than status-change events, so a deal that re-enters a stage
-	(e.g. Won -> Negotiation -> Won) is counted once per stage and does not inflate the funnel.
-	Returns:
-	[
-	  {"status": "Qualification", "count": 120},
-	  {"status": "Negotiation", "count": 85},
-	  ...
-	]
-	"""
-	# Using Frappe Query Builder with multiple JOINs and table aliases
-	CRMStatusChangeLog = DocType("CRM Status Change Log")
-	CRMDeal = DocType("CRM Deal")
-	CurrentStatus = DocType("CRM Deal Status").as_("s")
-	TargetStatus = DocType("CRM Deal Status").as_("st")
-
-	query = (
-		frappe.qb.from_(CRMStatusChangeLog)
-		.join(CRMDeal)
-		.on(CRMStatusChangeLog.parent == CRMDeal.name)
-		.join(CurrentStatus)
-		.on(CRMDeal.status == CurrentStatus.name)
-		.join(TargetStatus)
-		.on(CRMStatusChangeLog.to == TargetStatus.name)
-		.select(CRMStatusChangeLog.to.as_("stage"), Count(CRMStatusChangeLog.parent).distinct().as_("count"))
-		.where(
-			(CRMStatusChangeLog.to.isnotnull())
-			& (CRMStatusChangeLog.to != "")
-			& (CurrentStatus.type != "Lost")
-			& (Date(CRMDeal.creation).between(from_date, to_date))
-		)
-		.groupby(CRMStatusChangeLog.to, TargetStatus.position)
-		.orderby(TargetStatus.position)
+def get_funnel_stage_counts(from_date, to_date, user: str | None = None) -> list:
+	"""Count each deal at every stage up to the furthest it reached, so the funnel always narrows:
+	a deal that skipped a stage still passed it, and a lost deal still counts where it got to."""
+	reached = get_furthest_stages(from_date, to_date, user)
+	stages = frappe.get_all(
+		"CRM Deal Status",
+		filters={"type": ["in", FUNNEL_STAGE_TYPES]},
+		fields=["name", "position"],
+		order_by="position asc",
 	)
+	return [
+		{"stage": stage.name, "count": sum(row.position >= stage.position for row in reached)}
+		for stage in stages
+	]
 
-	# Handle optional user filter if deal_conds contains user condition
-	if filters and filters.get("user"):
-		query = query.where(CRMDeal.deal_owner == filters["user"])
 
-	result = query.run(as_dict=True)
-	return result or []
+def get_furthest_stages(from_date, to_date, user: str | None = None) -> list:
+	"""The furthest stage position each deal created in the period reached."""
+	deal = DocType("CRM Deal")
+	log = DocType("CRM Status Change Log")
+	status = DocType("CRM Deal Status")
+
+	in_period = Date(deal.creation).between(from_date, to_date)
+	if user:
+		in_period &= deal.deal_owner == user
+
+	def logged(column):
+		return (
+			frappe.qb.from_(log)
+			.join(deal)
+			.on(log.parent == deal.name)
+			.select(log.parent.as_("deal"), log[column].as_("status"))
+			.where((log.parenttype == "CRM Deal") & in_period)
+		)
+
+	# A deal's first status is logged only as `from`, so both ends of each change count.
+	visits = (
+		frappe.qb.from_(deal)
+		.select(deal.name.as_("deal"), deal.status.as_("status"))
+		.where(in_period)
+		.union_all(logged("from"))
+		.union_all(logged("to"))
+	)
+	visit_deal, visit_status = Field("deal", table=visits), Field("status", table=visits)
+	return (
+		frappe.qb.from_(visits)
+		.join(status)
+		.on(status.name == visit_status)
+		.select(visit_deal, Max(status.position).as_("position"))
+		.where(status.type.isin(FUNNEL_STAGE_TYPES))
+		.groupby(visit_deal)
+		.run(as_dict=True)
+	)

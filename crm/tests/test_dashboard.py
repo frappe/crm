@@ -19,7 +19,6 @@ from crm.api.dashboard import (
 	get_chart,
 	get_chart_options,
 	get_dashboard,
-	get_deal_status_change_counts,
 	get_deals_by_salesperson,
 	get_deals_by_source,
 	get_deals_by_stage_axis,
@@ -27,6 +26,7 @@ from crm.api.dashboard import (
 	get_deals_by_territory,
 	get_forecasted_revenue,
 	get_funnel_conversion,
+	get_funnel_stage_counts,
 	get_leads_by_source,
 	get_lost_deal_reasons,
 	get_ongoing_deals,
@@ -437,22 +437,19 @@ class TestDashboard(IntegrationTestCase):
 		self.assertIsNotNone(result.get("error"))
 		self.assertGreater(len(result["error"]), 0)
 
-	def test_get_deal_status_change_counts(self):
-		"""Test get_deal_status_change_counts returns status transition data"""
-		result = get_deal_status_change_counts(self.from_date, self.to_date)
+	def test_funnel_stage_counts_list_every_pipeline_stage(self):
+		stages = [row["stage"] for row in get_funnel_stage_counts(self.from_date, self.to_date)]
+		expected = frappe.get_all(
+			"CRM Deal Status",
+			filters={"type": ["in", ("Open", "Ongoing", "Won")]},
+			order_by="position asc",
+			pluck="name",
+		)
+		self.assertEqual(stages, expected)
 
-		self.assertIsInstance(result, list)
-		# May be empty if no status changes recorded
-		if result:
-			for entry in result:
-				self.assertIsInstance(entry, dict)
-
-	def test_status_change_counts_deduplicate_reentered_stages(self):
+	def test_funnel_counts_a_reentered_stage_once(self):
 		"""Re-entering a stage (Won -> Negotiation -> Won) must not double-count the deal"""
-		# Baseline counts before adding the toggled deal
-		baseline = {
-			r["stage"]: r["count"] for r in get_deal_status_change_counts(self.from_date, self.to_date)
-		}
+		baseline = {r["stage"]: r["count"] for r in get_funnel_stage_counts(self.from_date, self.to_date)}
 
 		deal = frappe.get_doc(
 			{
@@ -464,18 +461,13 @@ class TestDashboard(IntegrationTestCase):
 				"deal_owner": "Administrator",
 			}
 		).insert()
-
-		# Toggle the status back and forth: this appends multiple status change log rows,
-		# including two "Won" transitions and one "Negotiation" transition.
 		for status in ["Negotiation", "Won", "Negotiation", "Won"]:
 			deal.status = status
 			deal.save()
 
-		counts = {r["stage"]: r["count"] for r in get_deal_status_change_counts(self.from_date, self.to_date)}
-
-		# Despite reaching each stage multiple times, the single deal adds exactly one to each stage.
-		self.assertEqual(counts.get("Negotiation", 0), baseline.get("Negotiation", 0) + 1)
-		self.assertEqual(counts.get("Won", 0), baseline.get("Won", 0) + 1)
+		counts = {r["stage"]: r["count"] for r in get_funnel_stage_counts(self.from_date, self.to_date)}
+		self.assertEqual(counts["Negotiation"], baseline["Negotiation"] + 1)
+		self.assertEqual(counts["Won"], baseline["Won"] + 1)
 
 	def test_user_filtering_isolation(self):
 		"""Test that user filtering correctly isolates data across metrics"""
