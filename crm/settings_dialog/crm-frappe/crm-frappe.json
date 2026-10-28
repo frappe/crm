@@ -4,6 +4,7 @@
   {
    "bindings": "{\"agent\": {\"type\": \"Record\", \"doctype\": \"CRM Telephony Agent\", \"resolver\": \"session_user\"}}",
    "component": "telephony",
+   "fields": "[\"mobile_no\", \"default_medium\", \"call_receiving_device\", \"twilio_number\", \"exotel_number\"]",
    "key": "telephony",
    "label": "Telephony",
    "pane": "profile",
@@ -16,7 +17,7 @@
  "doctype": "Settings Dialog",
  "extends": "frappe",
  "idx": 0,
- "modified": "2026-10-28 10:00:00.000000",
+ "modified": "2026-10-28 13:57:50.820577",
  "modified_by": "Administrator",
  "name": "crm-frappe",
  "owner": "Administrator",

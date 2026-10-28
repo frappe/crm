@@ -41,6 +41,10 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			{"agent": {"type": "Record", "doctype": "CRM Telephony Agent", "resolver": "session_user"}},
 		)
 		self.assertEqual(
+			telephony["fields"],
+			["mobile_no", "default_medium", "call_receiving_device", "twilio_number", "exotel_number"],
+		)
+		self.assertEqual(
 			[setting["label"] for setting in telephony["settings"]],
 			["Mobile No.", "Default Medium", "Device", "Twilio Number", "Exotel Number"],
 		)
