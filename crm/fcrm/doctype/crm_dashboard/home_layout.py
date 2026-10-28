@@ -10,6 +10,9 @@ from frappe import _
 HOME_PREFIX = "Home - "
 MANAGER_ROLES = ("Sales Manager", "System Manager")
 DOCTYPE_OPTIONS = ("Lead", "Deal", "Both")
+# Rolling windows the sales cards compare against the window before them, as Helpdesk's cards do.
+PERIOD_DAYS = {"last_week": 7, "last_month": 30, "last_3_months": 90}
+DEFAULT_PERIOD = "last_month"
 GRID_COLUMNS = 20
 
 
@@ -17,6 +20,7 @@ GRID_COLUMNS = 20
 class Widget:
 	manager_only: bool = False
 	doctype_setting: bool = True
+	period_setting: bool = False
 	min_w: int = 1
 
 
@@ -28,6 +32,10 @@ WIDGETS = {
 	"deals": Widget(doctype_setting=False),
 	"recently_opened": Widget(),
 	"no_next_step": Widget(),
+	"funnel_conversion": Widget(doctype_setting=False, period_setting=True),
+	"won_this_month": Widget(doctype_setting=False, period_setting=True),
+	"expected_revenue": Widget(doctype_setting=False, period_setting=True),
+	"top_open_deals": Widget(doctype_setting=False),
 	"team_overview": Widget(manager_only=True, doctype_setting=False),
 	"team_replies_waiting": Widget(manager_only=True),
 	"team_overdue_follow_ups": Widget(manager_only=True, min_w=GRID_COLUMNS),
@@ -158,16 +166,24 @@ def load(layout: str | None) -> list:
 
 
 def _config(name: str, config) -> dict:
-	if not WIDGETS[name].doctype_setting:
-		if config:
-			frappe.throw(_("Home widget {0} has no settings").format(name))
-		return {}
-
+	widget = WIDGETS[name]
 	config = config or {}
-	doctype = config.get("doctype", "Both") if isinstance(config, dict) else None
-	if doctype not in DOCTYPE_OPTIONS or set(config) - {"doctype"}:
-		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(name))
-	return {"doctype": doctype}
+	allowed = {"doctype"} if widget.doctype_setting else set()
+	if widget.period_setting:
+		allowed.add("period")
+	if not isinstance(config, dict) or set(config) - allowed:
+		frappe.throw(_("Home widget {0} has no such setting").format(name))
+
+	settings = {}
+	if widget.doctype_setting:
+		settings["doctype"] = config.get("doctype", "Both")
+		if settings["doctype"] not in DOCTYPE_OPTIONS:
+			frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(name))
+	if "period" in config:
+		if config["period"] not in PERIOD_DAYS:
+			frappe.throw(_("Home widget {0} can only compare last week, month or 3 months").format(name))
+		settings["period"] = config["period"]
+	return settings
 
 
 def _position(item: dict) -> dict:
@@ -188,28 +204,39 @@ def _position(item: dict) -> dict:
 
 
 # Heights fit the content; see widgets.js for the arithmetic.
-def _item(name: str, x: int, y: int, w: int = 10, h: int = 9) -> dict:
-	config = {"doctype": "Both"} if WIDGETS[name].doctype_setting else {}
+def _item(
+	name: str, x: int, y: int, w: int = 10, h: int = 10, doctype: str = "Both", period: str | None = None
+) -> dict:
+	config = {"doctype": doctype} if WIDGETS[name].doctype_setting else {}
+	if period:
+		config["period"] = period
 	return {"name": name, "config": config, "layout": {"x": x, "y": y, "w": w, "h": h, "i": name}}
 
 
 def agent_default() -> list:
 	return [
 		_item("tasks", 0, 0, w=20),
-		_item("leads_and_deals", 0, 9),
-		_item("no_next_step", 10, 9),
-		_item("recently_opened", 0, 18),
+		_item("won_this_month", 0, 10, w=5, h=3, period="last_3_months"),
+		_item("expected_revenue", 5, 10, w=5, h=3, period="last_3_months"),
+		_item("no_next_step", 10, 10, h=13, doctype="Lead"),
+		_item("leads_and_deals", 0, 13),
+		_item("funnel_conversion", 0, 23, w=12, period="last_3_months"),
+		_item("top_open_deals", 12, 23, w=8),
 	]
 
 
 def manager_default() -> list:
 	return [
-		_item("team_overview", 0, 0),
-		_item("unassigned", 10, 0),
-		_item("team_overdue_follow_ups", 0, 9, w=20),
-		_item("team_replies_waiting", 0, 18, w=20),
-		_item("leads_and_deals", 0, 27),
-		_item("recently_opened", 10, 27),
+		_item("won_this_month", 0, 0, h=4),
+		_item("expected_revenue", 10, 0, h=4),
+		_item("team_overview", 0, 4),
+		_item("unassigned", 10, 4),
+		_item("team_overdue_follow_ups", 0, 14, w=20),
+		_item("team_replies_waiting", 0, 24, w=20),
+		_item("leads_and_deals", 0, 34),
+		_item("recently_opened", 10, 34),
+		_item("top_open_deals", 0, 44),
+		_item("funnel_conversion", 0, 54, w=20),
 	]
 
 

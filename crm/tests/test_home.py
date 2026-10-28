@@ -148,6 +148,18 @@ class TestHomeLayout(IntegrationTestCase):
 		saved = save_layout([widget("leads_and_deals")])["layout"][0]
 		self.assertEqual(saved["config"], {"doctype": "Both"})
 
+	def test_number_cards_keep_a_comparison_period(self):
+		frappe.set_user(AGENT)
+		saved = save_layout([widget("won_this_month", h=4, config={"period": "last_week"})])["layout"][0]
+		self.assertEqual(saved["config"], {"period": "last_week"})
+		for name, config in (
+			("won_this_month", {"period": "yesterday"}),
+			("won_this_month", {"doctype": "Lead"}),
+			("leads_and_deals", {"period": "last_week"}),
+		):
+			with self.assertRaises(frappe.ValidationError):
+				save_layout([widget(name, config=config)])
+
 	def test_position_must_fit_the_grid(self):
 		frappe.set_user(AGENT)
 		for position in ({"x": 15, "w": 10}, {"w": 0}, {"x": -1}, {"h": "8"}):
@@ -254,6 +266,7 @@ class TestHomeRoleDefaults(IntegrationTestCase):
 
 class TestHomeCounts(IntegrationTestCase):
 	def setUp(self):
+		without_forecasting()
 		make_user(AGENT, "Sales User")
 		make_user(MANAGER, "Sales User", "Sales Manager")
 
@@ -298,6 +311,11 @@ class TestHomeCounts(IntegrationTestCase):
 		make_task(add_days(now_datetime(), -2), assigned_to=AGENT)
 		make_task(add_days(now_datetime(), -2), **{**linked, "assigned_to": MANAGER})
 		self.assertEqual(self.counts()["follow_ups_due"], 2)
+
+
+def without_forecasting():
+	"""Test deals carry no expected value or closure date, which forecasting makes mandatory."""
+	frappe.db.set_single_value("FCRM Settings", "enable_forecasting", 0)
 
 
 def make_lead(**kwargs) -> str:

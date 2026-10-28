@@ -1,4 +1,5 @@
 import {
+  formatPercentChange,
   greetingFor,
   recordListRoute,
   recordRoute,
@@ -63,5 +64,13 @@ describe('shortDuration', () => {
 
   it('is blank without a value', () => {
     expect(shortDuration(null)).toBe('')
+  })
+})
+
+describe('formatPercentChange', () => {
+  it('rounds and caps the change', () => {
+    expect(formatPercentChange(12.4)).toBe('12')
+    expect(formatPercentChange(999)).toBe('999')
+    expect(formatPercentChange(960461444)).toBe('999+')
   })
 })

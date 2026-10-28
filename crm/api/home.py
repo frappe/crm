@@ -2,7 +2,7 @@ import frappe
 from frappe import _
 
 from crm.api.digest import OPT_OUT_KEY
-from crm.fcrm.doctype.crm_dashboard.home_layout import HomeLayout, RoleDefault, role_for
+from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, HomeLayout, RoleDefault, role_for
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	DOCTYPES,
@@ -12,6 +12,8 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NewLeads,
 	RepliesWaiting,
 )
+from crm.fcrm.doctype.crm_dashboard.recent_activity import RecentActivity
+from crm.fcrm.doctype.crm_dashboard.sales_widgets import SALES_WIDGET_DATA
 from crm.fcrm.doctype.crm_dashboard.team_widgets import TEAM_WIDGET_DATA
 from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 from crm.utils import sales_user_only
@@ -93,19 +95,24 @@ def get_tab(widget: str, tab: str, doctype: str = "Both") -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_widget(widget: str, doctype: str = "Both") -> dict:
-	return get_widget_data(widget, doctype)
+def get_widget(widget: str, doctype: str = "Both", period: str | None = None) -> dict:
+	return get_widget_data(widget, doctype, period=period)
 
 
-def get_widget_data(widget: str, doctype: str = "Both", user: str | None = None) -> dict:
+def get_widget_data(
+	widget: str, doctype: str = "Both", user: str | None = None, period: str | None = None
+) -> dict:
 	user = user or frappe.session.user
-	if widget not in WIDGET_DATA and widget not in TEAM_WIDGET_DATA:
+	shared = {**WIDGET_DATA, **SALES_WIDGET_DATA, "recently_opened": RecentActivity}
+	if widget not in shared and widget not in TEAM_WIDGET_DATA:
 		frappe.throw(_("Home widget {0} has no data").format(widget))
 	if doctype not in DOCTYPES:
 		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(widget))
 
-	if widget in WIDGET_DATA:
-		return WIDGET_DATA[widget](DOCTYPES[doctype], Mine(user)).summary()
+	if widget in SALES_WIDGET_DATA:
+		return SALES_WIDGET_DATA[widget](DOCTYPES[doctype], Mine(user), period or DEFAULT_PERIOD).summary()
+	if widget in shared:
+		return shared[widget](DOCTYPES[doctype], Mine(user)).summary()
 	if role_for(user) != "manager":
 		frappe.throw(
 			_("Home widget {0} is only available to managers").format(widget), frappe.PermissionError

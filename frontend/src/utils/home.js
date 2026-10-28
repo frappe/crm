@@ -47,3 +47,8 @@ export function shortDuration(seconds) {
     .map(([unit, value]) => `${value}${unit}`)
     .join(' ')
 }
+
+// A percentage over a near-empty start says nothing past "much more"; the arrow carries the sign.
+export function formatPercentChange(value) {
+  return value > 999 ? '999+' : String(Math.round(value))
+}

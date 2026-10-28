@@ -10,10 +10,16 @@ export function refreshHome() {
 export function useHomeWidget(widget, config = () => ({})) {
   const resource = createResource({
     url: 'crm.api.home.get_widget',
-    makeParams: () => ({ widget, doctype: config().doctype || 'Both' }),
+    makeParams: () => ({
+      widget,
+      doctype: config().doctype || 'Both',
+      period: config().period,
+    }),
     auto: true,
   })
-  watch([homeVersion, () => config().doctype], () => resource.reload())
+  watch([homeVersion, () => config().doctype, () => config().period], () =>
+    resource.reload(),
+  )
   return resource
 }
 
