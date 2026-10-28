@@ -13,7 +13,15 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NoNextStep,
 	RepliesWaiting,
 )
-from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_task, make_user
+from crm.tests.test_home import (
+	AGENT,
+	MANAGER,
+	make_deal,
+	make_lead,
+	make_task,
+	make_user,
+	without_forecasting,
+)
 
 
 def status(doctype, *types):
@@ -26,6 +34,7 @@ def names(data):
 
 class HomeWidgetTestCase(IntegrationTestCase):
 	def setUp(self):
+		without_forecasting()
 		make_user(AGENT, "Sales User")
 		make_user(MANAGER, "Sales User", "Sales Manager")
 		self.open_lead = status("CRM Lead Status", "Open")
@@ -250,10 +259,59 @@ class TestLeadsAndDealsWidget(HomeWidgetTestCase):
 		self.assertEqual(data["counts"]["new"], 1)
 
 
+class TestRecentActivity(HomeWidgetTestCase):
+	def act(self, doctype, values, days_ago=0, user=AGENT):
+		frappe.set_user(user)
+		doc = frappe.get_doc({"doctype": doctype, **values}).insert(ignore_permissions=True)
+		frappe.set_user("Administrator")
+		frappe.db.set_value(doctype, doc.name, "creation", add_days(now_datetime(), -days_ago))
+		return doc
+
+	def view(self, lead, days_ago=0, user=AGENT):
+		values = {"viewed_by": user, "reference_doctype": "CRM Lead", "reference_name": lead}
+		return self.act("View Log", values, days_ago, user)
+
+	def comment(self, lead, days_ago=0):
+		values = {
+			"comment_type": "Comment",
+			"reference_doctype": "CRM Lead",
+			"reference_name": lead,
+			"content": "Called back",
+		}
+		return self.act("Comment", values, days_ago)
+
+	def activity(self):
+		rows = get_widget_data("recently_opened", user=AGENT)["rows"]
+		return [(row["name"], row["activity"]) for row in rows]
+
+	def test_latest_action_per_record_newest_first(self):
+		viewed, commented = self.lead(), self.lead()
+		self.view(viewed, days_ago=1)
+		self.view(commented, days_ago=3)
+		self.comment(commented, days_ago=2)
+
+		self.assertEqual(self.activity(), [(viewed, "Viewed"), (commented, "Commented")])
+
+	def test_names_a_status_change(self):
+		lead = frappe.get_doc("CRM Lead", self.lead())
+		frappe.set_user(AGENT)
+		lead.status = self.ongoing_lead
+		lead.save(ignore_permissions=True, ignore_version=False)
+		frappe.set_user("Administrator")
+
+		self.assertEqual(self.activity(), [(lead.name, f"Set status to {self.ongoing_lead}")])
+
+	def test_leaves_out_others_and_old_activity(self):
+		lead = self.lead()
+		self.view(lead, user=MANAGER)
+		self.view(lead, days_ago=10)
+		self.assertEqual(self.activity(), [])
+
+
 class TestWidgetValidation(HomeWidgetTestCase):
 	def test_unknown_widget_or_doctype_is_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
-			get_widget_data("recently_opened")
+			get_widget_data("sales_trend")
 		with self.assertRaises(frappe.ValidationError):
 			get_widget_data("no_next_step", "Contact")
 		with self.assertRaises(frappe.ValidationError):

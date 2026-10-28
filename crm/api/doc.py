@@ -632,6 +632,7 @@ def add_seen(doctype: str, name: str):
 	doc = frappe.get_doc(doctype, name)
 	doc.check_permission("read")
 	doc.add_seen()
+	doc.add_viewed()
 
 
 @frappe.whitelist()
