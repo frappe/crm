@@ -79,6 +79,7 @@ def get_boot():
 			"is_fc_site": is_fc_site(),
 			"translated_doctypes": get_translated_doctypes(),
 			"translated_messages": get_messages_for_boot(),
+			"currency_info": get_currency_info(),
 			"timezone": {
 				"system": get_system_timezone(),
 				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
@@ -110,6 +111,29 @@ def get_state_options() -> dict[str, list[str]]:
 	except Exception:
 		# Degrade silently to free-text: this runs in boot, so the except branch
 		# must not do anything that can itself raise (e.g. logging to a missing dir).
+		return {}
+
+
+def get_currency_info() -> dict[str, dict]:
+	"""Currency name -> {symbol, symbol_on_right} for every enabled Currency.
+
+	The frontend formats money synchronously while rendering, so it cannot await a
+	fetch for this. Shipping it with the boot payload is what makes
+	``frappe.utils.fmt_money``'s symbol placement reproducible in JS.
+
+	Runs inside ``get_boot``, so it must never raise. ``frappe.db.get_all`` skips
+	document permissions on purpose: a user who can open CRM should still get a
+	correctly formatted amount even without read access to the Currency doctype.
+	"""
+	try:
+		currencies = frappe.db.get_all(
+			"Currency", filters={"enabled": 1}, fields=["name", "symbol", "symbol_on_right"]
+		)
+		return {
+			row.name: {"symbol": row.symbol, "symbol_on_right": cint(row.symbol_on_right)}
+			for row in currencies
+		}
+	except Exception:
 		return {}
 
 
