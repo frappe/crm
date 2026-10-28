@@ -35,8 +35,15 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		telephony = next(block for block in profile["blocks"] if block["key"] == "telephony")
 
 		self.assertEqual(telephony["app"], "crm")
-		self.assertEqual(telephony["binding"]["doctype"], "CRM Telephony Agent")
-		self.assertEqual(telephony["binding"]["resolver"], "session_user")
+		self.assertEqual(telephony["component"], "telephony")
+		self.assertEqual(
+			telephony["bindings"],
+			{"agent": {"type": "Record", "doctype": "CRM Telephony Agent", "resolver": "session_user"}},
+		)
+		self.assertEqual(
+			[setting["label"] for setting in telephony["settings"]],
+			["Mobile No.", "Default Medium", "Device", "Twilio Number", "Exotel Number"],
+		)
 
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)
