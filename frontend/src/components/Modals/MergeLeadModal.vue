@@ -53,6 +53,7 @@
             v-if="loaded"
             :doc="mergedDoc"
             :displays="displays"
+            :fields="fields"
             :assignees="assignees"
           />
         </div>

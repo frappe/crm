@@ -1,15 +1,10 @@
 <template>
   <div class="rounded-6 border border-outline-gray-2 bg-surface-base">
     <div class="flex items-center gap-3 border-b border-outline-gray-1 p-4">
-      <Avatar
-        :label="doc.lead_name || doc.name"
-        :image="doc.image"
-        size="xl"
-        class="shrink-0"
-      />
+      <Avatar :label="leadName" :image="doc.image" size="xl" class="shrink-0" />
       <div class="flex min-w-0 flex-col gap-1">
         <span class="truncate text-base-medium text-ink-gray-9">
-          {{ doc.lead_name || doc.name }}
+          {{ leadName }}
         </span>
         <span class="truncate text-p-sm text-ink-gray-5">{{ doc.name }}</span>
       </div>
@@ -58,7 +53,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import { Avatar, Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 import { parseAssignees } from '@/utils'
-import { formatAmount } from '@/composables/useLeadMerge'
+import { formatAmount, type MergeField } from '@/composables/useLeadMerge'
 import { statusesStore } from '@/stores/statuses'
 import { usersStore } from '@/stores/users'
 
@@ -67,6 +62,8 @@ const props = defineProps<{
   doc: Record<string, unknown>
   // plain-text values for the fields the merge decides on
   displays: Record<string, string>
+  // every field the merge decides on, so picks outside FIELDS show up too
+  fields: MergeField[]
   assignees: string[]
 }>()
 
@@ -98,11 +95,26 @@ function text(fieldname: string): string {
   return String(value)
 }
 
-const rows = computed(() =>
-  FIELDS.filter(([fieldname]) =>
-    fieldname === '_assign'
-      ? props.assignees.length
-      : props.doc[fieldname] || fieldname in props.displays,
-  ).map(([fieldname, label]) => ({ fieldname, label, text: text(fieldname) })),
-)
+// mirrors CRMLead.set_full_name, which rebuilds lead_name when the merge saves
+const leadName = computed(() => {
+  const doc = props.doc
+  if (!doc.first_name) return (doc.lead_name || doc.name) as string
+  return [doc.salutation, doc.first_name, doc.middle_name, doc.last_name]
+    .filter(Boolean)
+    .join(' ')
+})
+
+const rows = computed(() => {
+  const listed = new Set(FIELDS.map(([fieldname]) => fieldname))
+  const extra: [string, string][] = props.fields
+    .filter((f) => !listed.has(f.fieldname))
+    .map((f) => [f.fieldname, f.label])
+  return [...FIELDS, ...extra]
+    .filter(([fieldname]) =>
+      fieldname === '_assign'
+        ? props.assignees.length
+        : props.doc[fieldname] || fieldname in props.displays,
+    )
+    .map(([fieldname, label]) => ({ fieldname, label, text: text(fieldname) }))
+})
 </script>

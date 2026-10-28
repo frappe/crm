@@ -69,7 +69,7 @@ export function useLeadMerge(
     fields.value = []
     picks.value = {}
     try {
-      const [mergeFields, assignees] = await Promise.all([
+      const [mergeFields, sourceAssignedUsers] = await Promise.all([
         call('crm.api.lead.get_lead_merge_fields', {
           source: toValue(source),
           target: toValue(target),
@@ -81,7 +81,7 @@ export function useLeadMerge(
       ])
       if (id !== loadId) return
       fields.value = mergeFields
-      sourceAssignees.value = assignees || []
+      sourceAssignees.value = sourceAssignedUsers || []
       picks.value = Object.fromEntries(
         mergeFields.map((f) => [
           f.fieldname,
