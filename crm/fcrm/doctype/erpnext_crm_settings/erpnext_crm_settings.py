@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import json
+from urllib.parse import quote
 
 import frappe
 from frappe import _
@@ -60,6 +61,15 @@ class ERPNextCRMSettings(Document):
 			self.create_custom_fields()
 			self.create_crm_form_script()
 			self.grant_item_access_to_sales_roles()
+			if self.get("sync_customers") and not (old and old.get("sync_customers") and old.enabled):
+				frappe.enqueue(
+					"crm.integrations.erpnext.customers.run_reconciliation",
+					queue="long",
+					timeout=3600,
+					job_id="crm_customer_reconciliation",
+					deduplicate=True,
+					enqueue_after_commit=True,
+				)
 			if not was_active and not self.is_erpnext_in_different_site:
 				from crm.fcrm.doctype.crm_product.reconcile_job import enqueue_reconciliation
 
@@ -92,7 +102,98 @@ class ERPNextCRMSettings(Document):
 		self.create_custom_fields_in_frappe_crm()
 
 	def create_custom_fields_in_frappe_crm(self):
+		for doctype, definitions in {
+			"CRM Organization": {"erpnext_customer": "Data", "erpnext_site": "Data", "tax_id": "Data"},
+			"Contact": {
+				"erpnext_record": "Data",
+				"erpnext_site": "Data",
+				"erpnext_synced_values": "Long Text",
+			},
+			"Address": {
+				"erpnext_record": "Data",
+				"erpnext_site": "Data",
+				"erpnext_synced_values": "Long Text",
+			},
+		}.items():
+			meta = frappe.get_meta(doctype)
+			for name, fieldtype in definitions.items():
+				field = meta.get_field(name)
+				if field and field.fieldtype != fieldtype:
+					frappe.throw(
+						_(
+							"The {0} field {1} has an incompatible definition. Resolve it before enabling customer synchronization."
+						).format(doctype, name)
+					)
 		custom_fields = {
+			"CRM Organization": [
+				{
+					"fieldname": "erpnext_customer",
+					"fieldtype": "Data",
+					"label": "Customer in ERPNext",
+					"read_only": 1,
+					"no_copy": 1,
+					"insert_after": "organization_name",
+				},
+				{
+					"fieldname": "erpnext_site",
+					"fieldtype": "Data",
+					"label": "ERPNext Site",
+					"read_only": 1,
+					"no_copy": 1,
+					"hidden": 1,
+				},
+				{"fieldname": "tax_id", "fieldtype": "Data", "label": "Tax ID", "insert_after": "website"},
+			],
+			"Contact": [
+				{
+					"fieldname": "erpnext_synced_values",
+					"fieldtype": "Long Text",
+					"label": "Last ERPNext Values",
+					"read_only": 1,
+					"no_copy": 1,
+					"hidden": 1,
+				},
+				{
+					"fieldname": "erpnext_record",
+					"fieldtype": "Data",
+					"label": "Contact in ERPNext",
+					"read_only": 1,
+					"no_copy": 1,
+				},
+				{
+					"fieldname": "erpnext_site",
+					"fieldtype": "Data",
+					"label": "ERPNext Site",
+					"read_only": 1,
+					"no_copy": 1,
+					"hidden": 1,
+				},
+			],
+			"Address": [
+				{
+					"fieldname": "erpnext_synced_values",
+					"fieldtype": "Long Text",
+					"label": "Last ERPNext Values",
+					"read_only": 1,
+					"no_copy": 1,
+					"hidden": 1,
+				},
+				{
+					"fieldname": "erpnext_record",
+					"fieldtype": "Data",
+					"label": "Address in ERPNext",
+					"read_only": 1,
+					"no_copy": 1,
+				},
+				{
+					"fieldname": "erpnext_site",
+					"fieldtype": "Data",
+					"label": "ERPNext Site",
+					"read_only": 1,
+					"no_copy": 1,
+					"hidden": 1,
+				},
+			],
 			"CRM Deal": [
 				{
 					"fieldname": "erpnext_customer",
@@ -135,14 +236,43 @@ class ERPNextCRMSettings(Document):
 		if frappe.db.exists("DocType", "Customer"):
 			custom_fields["Customer"] = [
 				{
+					"fieldname": "crm_organization",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Organization",
+					"read_only": 1,
+					"no_copy": 1,
+					"insert_after": "prospect_name",
+				},
+				{
+					"fieldname": "crm_site",
+					"fieldtype": "Data",
+					"label": "Frappe CRM Site",
+					"read_only": 1,
+					"no_copy": 1,
+				},
+				{
 					"fieldname": "crm_deal",
 					"fieldtype": "Data",
 					"label": "Frappe CRM Deal",
 					"read_only": 1,
 					"insert_after": "prospect_name",
-				}
+				},
 			]
+		for field in custom_fields["CRM Organization"]:
+			if field["fieldname"] in ("erpnext_customer", "tax_id"):
+				field["search_index"] = 1
 		_create_custom_fields(custom_fields, ignore_validate=True)
+		frappe.db.add_unique(
+			"CRM Organization",
+			["erpnext_site", "erpnext_customer"],
+			constraint_name="unique_erpnext_customer_organization",
+		)
+		for doctype in ("Contact", "Address"):
+			frappe.db.add_unique(
+				doctype,
+				["erpnext_site", "erpnext_record"],
+				constraint_name=f"unique_erpnext_{doctype.lower()}_record",
+			)
 
 	def create_custom_fields_in_remote_site(self):
 		client = get_erpnext_site_client(self)
@@ -339,6 +469,13 @@ def get_erpnext_site_client(erpnext_crm_settings):
 
 
 def get_local_customer(crm_deal: str):
+	organization = frappe.db.get_value("CRM Deal", crm_deal, "organization")
+	if organization:
+		from crm.integrations.erpnext.customers import customer_for_organization
+
+		customer = customer_for_organization(organization)
+		if customer:
+			return customer
 	customer = frappe.db.exists("Customer", {"crm_deal": crm_deal})
 	if not customer:
 		customer = frappe.db.get_value("CRM Deal", crm_deal, "erpnext_customer")
@@ -348,6 +485,18 @@ def get_local_customer(crm_deal: str):
 @frappe.whitelist()
 def get_customer_link(crm_deal: str):
 	erpnext_crm_settings = _get_enabled_settings()
+	deal = frappe.get_doc("CRM Deal", crm_deal)
+	deal.check_permission("read")
+	if deal.organization:
+		from crm.integrations.erpnext.customers import customer_for_organization
+
+		customer = customer_for_organization(deal.organization, erpnext_crm_settings)
+		if customer:
+			return (
+				f"{erpnext_crm_settings.erpnext_site_url.rstrip('/')}/app/customer/{quote(customer, safe='')}"
+				if erpnext_crm_settings.is_erpnext_in_different_site
+				else get_url_to_form("Customer", customer)
+			)
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		customer = get_local_customer(crm_deal)
@@ -651,6 +800,10 @@ def get_deal_from_sales_order(doc):
 
 
 def create_customer_from_deal(doc, erpnext_crm_settings):
+	if doc.organization:
+		from crm.integrations.erpnext.customers import create_company_customer_from_deal
+
+		return create_company_customer_from_deal(doc, erpnext_crm_settings)
 	contacts = get_contacts(doc)
 	address = get_organization_address(doc.organization)
 

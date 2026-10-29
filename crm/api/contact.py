@@ -1,7 +1,50 @@
 import frappe
 from frappe import _
+from frappe.utils import cint
 
 from crm.api.whatsapp import guard_recipient_change
+
+
+@frappe.whitelist()
+def get_organization_contacts(organization: str, start=0, page_length=20):
+	"""Read employer and explicit Organization links through native Contact permissions."""
+	organization = frappe.get_doc("CRM Organization", organization)
+	organization.check_permission("read")
+	start = max(0, cint(start))
+	page_length = min(100, max(1, cint(page_length)))
+	contact = frappe.qb.DocType("Contact")
+	link = frappe.qb.DocType("Dynamic Link")
+	linked_contacts = (
+		frappe.qb.from_(link)
+		.select(link.parent)
+		.where(
+			(link.parenttype == "Contact")
+			& (link.parentfield == "links")
+			& (link.link_doctype == "CRM Organization")
+			& (link.link_name == organization.name)
+		)
+	)
+	membership = (contact.company_name == organization.name) | contact.name.isin(linked_contacts)
+	rows = frappe.qb.get_query(
+		"Contact",
+		fields=["name", "full_name", "image", "email_id", "mobile_no", "company_name", "modified"],
+		filters=membership,
+		order_by="modified desc, name asc",
+		limit=page_length,
+		offset=start,
+		ignore_permissions=False,
+	).run(as_dict=True)
+	total = (
+		frappe.qb.get_query(
+			"Contact",
+			fields=[{"COUNT": "name", "as": "total_count"}],
+			filters=membership,
+			ignore_permissions=False,
+		)
+		.run(as_dict=True)[0]
+		.total_count
+	)
+	return {"rows": rows, "total_count": total, "start": start, "has_more": start + len(rows) < total}
 
 
 def validate(doc, method):

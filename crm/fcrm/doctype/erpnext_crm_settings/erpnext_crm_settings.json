@@ -11,6 +11,7 @@
   "column_break_vfru",
   "is_erpnext_in_different_site",
   "sync_products",
+  "sync_customers",
   "erpnext_site_url",
   "section_break_oubd",
   "api_key",
@@ -19,7 +20,11 @@
   "section_break_jnbn",
   "create_customer_on_status_change",
   "column_break_kbhw",
-  "deal_status"
+  "deal_status",
+  "customer_sync_status",
+  "customer_sync_message",
+  "customer_sync_last_attempt",
+  "customer_sync_last_success"
  ],
  "fields": [
   {
@@ -113,6 +118,43 @@
    "label": "Deal Status",
    "mandatory_depends_on": "create_customer_on_status_change",
    "options": "CRM Deal Status"
+  },
+  {
+   "default": "0",
+   "depends_on": "enabled",
+   "fieldname": "sync_customers",
+   "fieldtype": "Check",
+   "label": "Sync ERPNext Customers",
+   "description": "Create and update CRM organizations from ERPNext company customers. Conflicting mappings require review."
+  },
+  {
+   "fieldname": "customer_sync_status",
+   "fieldtype": "Select",
+   "label": "Customer Sync Status",
+   "read_only": 1,
+   "depends_on": "enabled",
+   "options": "\nQueued\nRunning\nCompleted\nFailed"
+  },
+  {
+   "fieldname": "customer_sync_message",
+   "fieldtype": "Small Text",
+   "label": "Customer Sync Details",
+   "read_only": 1,
+   "depends_on": "enabled"
+  },
+  {
+   "fieldname": "customer_sync_last_attempt",
+   "fieldtype": "Datetime",
+   "label": "Last Customer Sync Attempt",
+   "read_only": 1,
+   "depends_on": "enabled"
+  },
+  {
+   "fieldname": "customer_sync_last_success",
+   "fieldtype": "Datetime",
+   "label": "Last Completed Customer Sync",
+   "read_only": 1,
+   "depends_on": "enabled"
   }
  ],
  "index_web_pages_for_search": 1,

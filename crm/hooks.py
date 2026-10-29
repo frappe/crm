@@ -254,8 +254,24 @@ if int(frappe.__version__.split(".")[0]) < 16:
 # Hook on document methods and events
 
 doc_events = {
+	"Customer": {
+		"on_update": ["crm.integrations.erpnext.customers.on_customer_update"],
+		"after_rename": ["crm.integrations.erpnext.customers.after_customer_rename"],
+	},
+	"CRM Organization": {
+		"validate": ["crm.integrations.erpnext.customers.validate_organization_mapping"],
+		"before_rename": ["crm.integrations.erpnext.customers.before_organization_rename"],
+		"after_rename": ["crm.integrations.erpnext.customers.after_organization_rename"],
+		"on_trash": ["crm.integrations.erpnext.customers.before_organization_delete"],
+	},
+	"Address": {
+		"validate": ["crm.integrations.erpnext.customers.validate_related_mapping"],
+	},
 	"Contact": {
-		"validate": ["crm.api.contact.validate"],
+		"validate": [
+			"crm.integrations.erpnext.customers.validate_related_mapping",
+			"crm.api.contact.validate",
+		],
 	},
 	"Notification Log": {
 		"before_insert": ["crm.extends.notification_log.before_insert"],
@@ -285,6 +301,7 @@ doc_events = {
 		],
 	},
 	"CRM Deal": {
+		"validate": ["crm.integrations.erpnext.customers.validate_deal_customer"],
 		"on_update": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
 			"crm.automation.events.on_deal_update",
@@ -346,6 +363,7 @@ whatsapp_access_guard = ["crm.api.whatsapp.validate_access"]
 scheduler_events = {
 	"all": ["crm.api.event.trigger_offset_event_notifications"],
 	"hourly": [
+		"crm.integrations.erpnext.customers.enqueue_reconciliation",
 		"crm.api.event.trigger_hourly_event_notifications",
 		"crm.automation.events.emit_overdue_tasks",
 	],

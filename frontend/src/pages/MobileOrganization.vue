@@ -128,6 +128,32 @@
         </Badge>
       </template>
       <template #tab-panel="{ tab }">
+        <div
+          v-if="tab.value === 'contacts' && contacts.error"
+          class="space-y-2 px-4 py-4"
+          role="alert"
+        >
+          <ErrorMessage
+            :message="
+              contacts.error?.messages?.[0] ||
+              contacts.error?.message ||
+              __('Contacts could not be loaded.')
+            "
+          />
+          <Button
+            :label="__('Try Again')"
+            :loading="contacts.loading"
+            @click="contacts.reload()"
+          />
+        </div>
+        <div
+          v-if="tab.value === 'contacts' && contacts.loading && !contacts.data"
+          class="flex justify-center py-8"
+          role="status"
+          :aria-label="__('Loading contacts')"
+        >
+          <LoadingIndicator class="size-5" />
+        </div>
         <div v-if="tab.name == 'Details'">
           <div
             v-if="sections.data"
@@ -156,12 +182,55 @@
           :options="{ selectable: false, showTooltip: false }"
         />
         <div
-          v-if="!rows.length && tab.name !== 'Details'"
+          v-if="
+            !rows.length &&
+            tab.name !== 'Details' &&
+            !(
+              tab.value === 'contacts' &&
+              (contacts.loading || contacts.error || contacts.data?.total_count)
+            )
+          "
           class="grid flex-1 place-items-center text-2xl-medium text-ink-gray-4"
         >
           <div class="flex flex-col items-center justify-center space-y-3">
             <component :is="tab.iconLeft" class="!h-10 !w-10" />
             <div>{{ __('No {0} Found', [__(tab.label)]) }}</div>
+          </div>
+        </div>
+        <div
+          v-if="tab.value === 'contacts' && contacts.data"
+          class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3 text-p-sm text-ink-gray-5"
+        >
+          <span
+            v-if="!contacts.data.rows.length && contacts.data.total_count"
+            >{{ __('There are no contacts on this page.') }}</span
+          >
+          <span>{{
+            contacts.data.rows.length
+              ? __('{0}–{1} of {2}', [
+                  contacts.data.start + 1,
+                  contacts.data.start + contacts.data.rows.length,
+                  contacts.data.total_count,
+                ])
+              : __('{0} contacts', [contacts.data.total_count])
+          }}</span>
+          <div class="flex gap-2">
+            <Button
+              v-if="!contacts.data.rows.length && contacts.data.total_count"
+              :label="__('First Page')"
+              :disabled="contacts.loading"
+              @click="firstContactPage"
+            />
+            <Button
+              :label="__('Previous')"
+              :disabled="contacts.loading || contactStart === 0"
+              @click="changeContactPage(-1)"
+            />
+            <Button
+              :label="__('Next')"
+              :disabled="contacts.loading || !contacts.data.has_more"
+              @click="changeContactPage(1)"
+            />
           </div>
         </div>
       </template>
@@ -209,6 +278,7 @@ import {
   createListResource,
   usePageMeta,
   createResource,
+  LoadingIndicator,
   toast,
 } from 'frappe-ui'
 import { useDoctypeModal } from '@/composables/doctypeModal'
@@ -381,7 +451,7 @@ const tabs = [
     value: 'contacts',
     label: __('Contacts'),
     iconLeft: h(ContactsIcon, { class: 'h-4 w-4' }),
-    count: computed(() => contacts.data?.length),
+    count: computed(() => contacts.data?.total_count),
   },
 ]
 
@@ -408,30 +478,33 @@ const deals = createListResource({
   auto: true,
 })
 
-const contacts = createListResource({
-  type: 'list',
-  doctype: 'Contact',
-  cache: ['contacts', props.organizationId],
-  fields: [
-    'name',
-    'full_name',
-    'image',
-    'email_id',
-    'mobile_no',
-    'company_name',
-    'modified',
-  ],
-  filters: {
-    company_name: props.organizationId,
-  },
-  orderBy: 'modified desc',
-  pageLength: 20,
+const contactStart = ref(0)
+const contactPageLength = 20
+const contacts = createResource({
+  url: 'crm.api.contact.get_organization_contacts',
+  makeParams: () => ({
+    organization: props.organizationId,
+    start: contactStart.value,
+    page_length: contactPageLength,
+  }),
   auto: true,
 })
 
-// Links an existing contact to this organization; `Contact.company_name` is
-// the only tie between the two, and until now it could only be set from the
-// contact's own page.
+function firstContactPage() {
+  contactStart.value = 0
+  contacts.reload()
+}
+
+function changeContactPage(direction) {
+  contactStart.value = Math.max(
+    0,
+    contactStart.value + direction * contactPageLength,
+  )
+  contacts.reload()
+}
+
+// This explicit user action changes the contact's employer. Reading synchronized
+// contacts uses their native Organization links without changing that employer.
 async function addContact(contact) {
   if (!contact) return
   await call('frappe.client.set_value', {
@@ -445,11 +518,11 @@ async function addContact(contact) {
 }
 
 const rows = computed(() => {
-  let list = activeTab.value === 'deals' ? deals : contacts
+  const data = activeTab.value === 'deals' ? deals.data : contacts.data?.rows
 
-  if (!list.data) return []
+  if (!data) return []
 
-  return list.data.map((row) => {
+  return data.map((row) => {
     return activeTab.value === 'deals'
       ? getDealRowObject(row)
       : getContactRowObject(row)
@@ -496,7 +569,10 @@ function getContactRowObject(contact) {
     mobile_no: contact.mobile_no,
     company_name: {
       label: contact.company_name,
-      logo: organization.doc?.organization_logo,
+      logo:
+        contact.company_name === organization.doc?.name
+          ? organization.doc?.organization_logo
+          : undefined,
     },
     modified: timestampCell(contact.modified),
   }
