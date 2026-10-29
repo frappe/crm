@@ -1,0 +1,2 @@
+# main has no other Guard config. Only turn off automatic reviews here.
+auto_review = []
