@@ -10,6 +10,7 @@
   "restore_demo_data",
   "enable_forecasting",
   "enable_sales_hierarchy",
+  "view_all_roles",
   "auto_update_expected_deal_value",
   "update_timestamp_on_new_communication",
   "auto_mark_replied_on_response",
@@ -92,6 +93,13 @@
    "fieldname": "enable_sales_hierarchy",
    "fieldtype": "Check",
    "label": "Enable Sales Hierarchy Permissions"
+  },
+  {
+   "description": "Users with any of these roles can read every Lead and Deal, whoever owns it. Document permissions still decide what they may do; only Sales Manager also bypasses the owner filter for write actions.",
+   "fieldname": "view_all_roles",
+   "fieldtype": "Table MultiSelect",
+   "label": "Roles that see all Leads and Deals",
+   "options": "Has Role"
   },
   {
    "fieldname": "currency",
