@@ -12,12 +12,13 @@ const DISMISS_KEY = 'crm-trial-card-dismissed-at'
 
 function readCache() {
   try {
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) ?? 'null')
-    return cached && Date.now() - cached.fetchedAt < CACHE_MS ? cached : null
+    return JSON.parse(localStorage.getItem(CACHE_KEY) ?? 'null')
   } catch {
     return null
   }
 }
+
+const isFresh = (cached) => cached && Date.now() - cached.fetchedAt < CACHE_MS
 
 async function loadTrial() {
   const { trial } = await getBilling()
@@ -49,7 +50,9 @@ function isDismissed() {
 
 export function useTrialCard() {
   const enabled = isCloudSettingsAvailable()
-  const trial = ref(readCache()?.trial ?? null)
+  const cached = readCache()
+  // A stale trial stays on screen if the refresh fails
+  const trial = ref(cached?.trial ?? null)
   const dismissed = ref(isDismissed())
 
   const refresh = () =>
@@ -57,7 +60,7 @@ export function useTrialCard() {
       .then((value) => (trial.value = value))
       .catch(() => {})
 
-  if (enabled && !readCache()) refresh()
+  if (enabled && !isFresh(cached)) refresh()
 
   // Choosing a plan in the billing dialog ends the trial
   watch(cloudSettingsOpen, (open, wasOpen) => {
