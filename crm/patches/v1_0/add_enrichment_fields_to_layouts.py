@@ -63,7 +63,11 @@ def execute():
 		except (ValueError, TypeError):
 			continue
 
-		present = {f for col in _iter_columns(layout) for f in col.get("fields", [])}
+		present = {
+			f.get("fieldname") if isinstance(f, dict) else f
+			for col in _iter_columns(layout)
+			for f in col.get("fields") or []
+		}
 		meta = frappe.get_meta(doc.dt)
 		missing = [f for f in ENRICHMENT_FIELDS if f not in present and meta.has_field(f)]
 		if not missing:
