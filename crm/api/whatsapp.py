@@ -5,7 +5,7 @@ from frappe.query_builder.functions import Count
 from frappe.utils import now
 from pypika import Criterion
 
-from crm.api.doc import get_assigned_users
+from crm.api.doc import get_assignees
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
 from crm.utils import normalize_phone
@@ -167,7 +167,7 @@ def notify_agent(doc, method=None):
                 <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
             </div>
         """
-		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_docname)
+		assigned_users = get_assignees(doc.reference_doctype, doc.reference_name)
 		for user in assigned_users:
 			notify_user(
 				{
