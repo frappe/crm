@@ -1,6 +1,6 @@
 strictness = 2
 comment_types = ["logic", "syntax"]
-auto_review = ["open", "push", "rebase"]
+auto_review = []
 review_drafts = false
 include_branches = ["develop"]
 disabled_labels = ["conflicts", "skip-guard"]
