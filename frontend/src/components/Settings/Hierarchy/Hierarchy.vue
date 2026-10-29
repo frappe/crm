@@ -304,7 +304,7 @@ const nodes = createListResource({
   doctype: DOCTYPE,
   fields: ['name', 'user', 'full_name', 'reports_to', 'is_group'],
   orderBy: 'lft asc',
-  pageLength: 0,
+  pageLength: 99999,
   auto: true,
 })
 

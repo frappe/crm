@@ -65,7 +65,7 @@
     >
       <template #default="{ open }">
         <Button
-          variant="solid"
+          variant="subtle"
           class="flex items-center gap-1"
           :label="__('New')"
           iconLeft="lucide-plus"
