@@ -167,7 +167,7 @@ def notify_agent(doc, method=None):
                 <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
             </div>
         """
-		assigned_users = get_assignees(doc.reference_doctype, doc.reference_name)
+		assigned_users = get_assignees(doc.reference_doctype, doc.reference_docname)
 		for user in assigned_users:
 			notify_user(
 				{
