@@ -95,10 +95,16 @@ jobs:
                   mkdir sites/test_site
                   cp "${GITHUB_WORKSPACE}/pr-crm/.github/helper/site_config.json" sites/test_site/site_config.json
                   sed -i 's/watch:/# watch:/g; s/schedule:/# schedule:/g; s/socketio:/# socketio:/g; s/redis_socketio:/# redis_socketio:/g' Procfile
+<<<<<<< HEAD
                   bench get-app crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+=======
+                  bench get-app --skip-assets whatsapp
+                  YARN_IGNORE_SCRIPTS=true bench get-app --skip-assets crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+>>>>>>> c164c73 (ci: skip asset builds in the migration test)
                   bench setup requirements --dev
                   bench start &>> "$BENCH_PATH/bench_start.log" &
-                  CI=Yes bench build --app frappe &
+                  # Emails resolve CSS through assets.json; tests never load the built bundles.
+                  mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
                   bench --site test_site reinstall --yes
                   bench --verbose --site test_site install-app crm
 
