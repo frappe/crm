@@ -118,11 +118,9 @@ async function saveEdit() {
   }
   saving.value = true
   try {
-    await call('frappe.client.set_value', {
-      doctype: 'Comment',
+    await call('frappe.desk.form.utils.update_comment', {
       name: props.activity.name,
-      fieldname: 'content',
-      value: editContent.value,
+      content: editContent.value,
     })
     editing.value = false
     emit('reload')
