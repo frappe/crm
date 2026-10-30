@@ -3,7 +3,7 @@
 		<Button v-if="readOnly" :label="__(page.doc.status)" disabled>
 			<template #prefix><StatusDot :color="current?.color" /></template>
 		</Button>
-		<Dropdown v-else :options="options" align="start">
+		<Dropdown v-else :options="options" align="end">
 			<template #default="{ open }">
 				<Button :label="__(page.doc.status)" :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'">
 					<template #prefix><StatusDot :color="current?.color" /></template>

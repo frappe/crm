@@ -20,6 +20,24 @@ const INK = {
 
 export const STATUS_FIELDS = ['name', 'color', 'position', 'type']
 
+const STATUS_DOCTYPES = { 'CRM Lead': 'CRM Lead Status', 'CRM Deal': 'CRM Deal Status' }
+
+/** Adds `component` in `onRefresh`; a new record keeps `status` in its form, since a pick would insert it. */
+export function placeStatusControl(page, component, readStatuses) {
+	const doctype = STATUS_DOCTYPES[page.doctype]
+	if (page.isNew || !doctype) return
+	const statuses = page.cached(`statuses:${doctype}`, () => readStatuses(doctype))
+	page.header.add(
+		{
+			name: 'status',
+			zone: 'right',
+			component,
+			props: { statuses, readOnly: Boolean(page.fields.get('status')?.read_only) },
+		},
+		{ before: 'save' },
+	)
+}
+
 /** The text colour class for a status row's `color`; gray for none or an unknown one. */
 export function statusInk(color) {
 	return INK[color] ?? INK.gray

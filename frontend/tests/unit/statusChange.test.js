@@ -3,6 +3,7 @@ import {
   changeStatus,
   findStatus,
   statusInk,
+  placeStatusControl,
   statusPicker,
 } from '../../../crm/fcrm/frontend/status/statusChange.js'
 
@@ -95,5 +96,43 @@ describe('statusPicker', () => {
     answer()
     await first
     expect(busy.value).toBe(false)
+  })
+})
+
+describe('placeStatusControl', () => {
+  function recordPage(isNew = false) {
+    return {
+      doctype: 'CRM Lead',
+      isNew,
+      cached: vi.fn(() => []),
+      fields: { get: () => ({}) },
+      header: { add: vi.fn() },
+    }
+  }
+
+  it("puts the control in the header's right zone, before Save", () => {
+    const page = recordPage()
+    const control = {}
+    placeStatusControl(page, control, vi.fn())
+    expect(page.header.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'status',
+        zone: 'right',
+        component: control,
+      }),
+      { before: 'save' },
+    )
+  })
+
+  it('leaves a doctype with no status doctype without the control', () => {
+    const page = { ...recordPage(), doctype: 'CRM Task' }
+    placeStatusControl(page, {}, vi.fn())
+    expect(page.header.add).not.toHaveBeenCalled()
+  })
+
+  it('leaves a new record without the control', () => {
+    const page = recordPage(true)
+    placeStatusControl(page, {}, vi.fn())
+    expect(page.header.add).not.toHaveBeenCalled()
   })
 })
