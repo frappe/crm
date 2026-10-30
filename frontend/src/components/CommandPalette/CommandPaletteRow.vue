@@ -1,7 +1,8 @@
 <template>
   <div
-    class="flex h-9 w-full min-w-0 items-center rounded-4 px-2 text-sm"
+    class="flex w-full min-w-0 items-center rounded-4 px-2 text-sm"
     :class="[
+      command.snippet ? 'py-1.5' : 'h-9',
       active ? 'bg-surface-gray-2' : '',
       command.disabled
         ? 'text-ink-gray-4'
@@ -16,11 +17,17 @@
       class="me-2.5 size-3.5 shrink-0"
       :class="active ? 'text-ink-gray-7' : 'text-ink-gray-5'"
     />
-    <span
-      class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
-    >
-      {{ command.translate === false ? command.title : __(command.title) }}
-    </span>
+    <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span class="overflow-hidden text-ellipsis whitespace-nowrap">
+        {{ command.translate === false ? command.title : __(command.title) }}
+      </span>
+      <span
+        v-if="command.snippet"
+        class="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-ink-gray-5"
+      >
+        <MarkedText :text="command.snippet" />
+      </span>
+    </div>
     <span v-if="command.subtitle" class="ms-3 shrink-0 text-xs text-ink-gray-4">
       {{ command.subtitle }}
     </span>
@@ -46,6 +53,7 @@
 import Icon from '@/components/Icon.vue'
 import LucideCheck from '~icons/lucide/check'
 import LucideChevronRight from '~icons/lucide/chevron-right'
+import MarkedText from './MarkedText.vue'
 
 defineProps({
   command: { type: Object, required: true },

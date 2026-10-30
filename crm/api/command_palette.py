@@ -1,7 +1,13 @@
+from collections import defaultdict
+
 import frappe
+from frappe.search.sqlite_search import SQLiteSearchIndexMissingError
 from frappe.utils import add_days, add_to_date, now_datetime
 
+from crm.search_sqlite import CRMSearch
+
 UPCOMING_LIMIT = 5
+ACTIVITY_LIMIT = 5
 UPCOMING_TASK_DAYS = 7
 UPCOMING_SLA_HOURS = 24
 # Anything older than this is backlog, not something to surface as upcoming.
@@ -24,6 +30,7 @@ def search(query: str = "", recent_names: str | None = None):
 	recent = _parse_recent(recent_names)
 	return {
 		"matches": _search_all(query) if len(query) >= 2 else [],
+		"activity": _search_activity(query) if len(query) >= 2 else [],
 		"recent": _get_recent(recent) if not query else [],
 		"upcoming": _get_upcoming() if not query else [],
 	}
@@ -141,6 +148,80 @@ def _search_doctype(doctype: str, config: tuple, query: str):
 def _keywords(row, search_fields: list[str]):
 	"""Non-title matched values, so the client can rank title hits above them."""
 	return " ".join(str(row.get(field)) for field in ["name", *search_fields] if row.get(field))
+
+
+def _search_activity(query: str):
+	"""Comments, notes and emails matching the query, one per readable Lead or Deal."""
+	search = CRMSearch()
+	try:
+		hits = search.search(query)["results"]
+	except SQLiteSearchIndexMissingError:
+		return []
+
+	if search.is_post_filter_required:
+		hits = _readable_hits(hits)
+	targets = _activity_targets(hits)[:ACTIVITY_LIMIT]
+	records = _activity_records([key for key, _hit in targets])
+	return [_activity_row(hit, records[key]) for key, hit in targets if key in records]
+
+
+def _readable_hits(hits: list[dict]):
+	readable = _activity_records([_parent_of(hit) for hit in hits])
+	return [hit for hit in hits if _parent_of(hit) in readable]
+
+
+def _activity_targets(hits: list[dict]):
+	"""Pair each hit with the record it opens, moving converted Lead hits to their readable Deal.
+
+	Hits must already be limited to parents the user can read.
+	"""
+	deal_by_lead = _readable_deals_by_lead(hits)
+	targets = {}
+	for hit in hits:
+		doctype, name = _parent_of(hit)
+		if doctype == "CRM Lead" and name in deal_by_lead:
+			doctype, name = "CRM Deal", deal_by_lead[name]
+		targets.setdefault((doctype, name), hit)
+	return list(targets.items())
+
+
+def _readable_deals_by_lead(hits: list[dict]):
+	leads = [hit["parent"].split(":", 1)[1] for hit in hits if hit["parent"].startswith("CRM Lead:")]
+	if not leads:
+		return {}
+	deals = frappe.get_list("CRM Deal", filters={"lead": ["in", leads]}, fields=["name", "lead"])
+	return {deal.lead: deal.name for deal in deals}
+
+
+def _parent_of(hit: dict) -> tuple[str, str]:
+	doctype, name = hit["parent"].split(":", 1)
+	return doctype, name
+
+
+def _activity_records(keys: list[tuple[str, str]]):
+	names = defaultdict(list)
+	for doctype, name in keys:
+		names[doctype].append(name)
+	return {
+		(record["doctype"], record["name"]): record
+		for doctype, doctype_names in names.items()
+		for record in _recent_doctype(doctype, doctype_names)
+	}
+
+
+def _activity_row(hit: dict, record: dict):
+	return {
+		"source_doctype": hit["doctype"],
+		"source_name": hit["name"],
+		"parent_doctype": record["doctype"],
+		"parent_name": record["name"],
+		"parent_title": record["title"],
+		"title": hit["title"],
+		"snippet": hit["content"],
+		"route": record["route"],
+		"route_name": record["name"],
+		"hash": hit["name"],
+	}
 
 
 def _get_recent(recent: dict):
