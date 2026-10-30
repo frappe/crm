@@ -1,9 +1,17 @@
 name: Pre-build assets
 
+# The release commit semantic-release pushes to main (on_release.yml) is also
+# advertised in frappe/marketplace as the stable release, once its assets exist.
+
 on:
   push:
     # develop needs the whatsapp app at build time, which the Pilot build does not check out yet.
     branches: [main]
+
+# Release PRs edit the same marketplace entry, so run one at a time per branch.
+concurrency:
+  group: assets-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   assets:
@@ -14,3 +22,43 @@ jobs:
       frappe-branch: version-16
     permissions:
       contents: write
+
+  marketplace:
+    name: Open the marketplace release PR
+    needs: assets
+    if: startsWith(github.event.head_commit.message, 'chore(release):')
+    uses: frappe/marketplace/.github/workflows/publish-release.yml@main
+    with:
+      app: crm
+      branch: ${{ github.ref_name }}
+      commit: ${{ github.sha }}
+      channel: stable
+    secrets:
+      registry_token: ${{ secrets.MARKETPLACE_PR_TOKEN }}
+
+  marketplace-merge:
+    name: Merge the marketplace release PR
+    needs: marketplace
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.MARKETPLACE_PR_TOKEN }}
+          GH_REPO: frappe/marketplace
+          COMMIT: ${{ github.sha }}
+        run: |
+          # publish-release.yml names the branch publish/<app>-<first 8 characters of the commit>.
+          pr=$(gh pr list --head "publish/crm-${COMMIT:0:8}" --json number --jq '.[0].number')
+          if [ -z "$pr" ]; then
+            echo "No marketplace PR: the marketplace already lists this commit."
+            exit 0
+          fi
+          # The marketplace checks start some time after the PR opens; wait up to 5 minutes for them.
+          for attempt in $(seq 20); do
+            count=$(gh pr checks "$pr" --json name --jq length 2>/dev/null || true)
+            [ "${count:-0}" -gt 0 ] && break
+            [ "$attempt" = 20 ] && { echo "The marketplace PR has no checks."; exit 1; }
+            sleep 15
+          done
+          gh pr checks "$pr" --watch --fail-fast --interval 30
+          gh pr merge "$pr" --squash --delete-branch
