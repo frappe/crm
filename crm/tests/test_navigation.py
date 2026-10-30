@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # MIT License. See license.txt
 
-"""CRM's shipped desk v2 navigation: one Rail record and four addressed Sidebars.
+"""CRM's shipped desk v2 navigation: one Rail record and the Setup sidebar.
 
 These are fixture tests. CRM ships no navigation code at all -- the rows arrive as JSON at
 `bench migrate` and the framework resolves them -- so what there is to get wrong is the
@@ -18,25 +18,37 @@ import frappe
 from frappe.shell.navigation import resolve_navigation
 from frappe.tests import IntegrationTestCase
 
-RAIL = ("leads", "deals", "contacts", "organizations", "tasks", "notes")
+RAIL = ("leads", "deals", "contacts", "organizations", "tasks", "notes", "call-logs", "setup")
 
-# The four primary doctypes that open a sidebar, by the scrubbed address boot files them
-# under -- which is also the string the rail item of type `Sidebar` carries in `link_to`.
+# The one sidebar, by the scrubbed address boot files it under -- which is also the string
+# the rail item of type `Sidebar` carries in `link_to`.
 SIDEBARS = {
-	"doctype_crm_lead": ("leads", "leads-configure", "lead-statuses", "lead-sources", "lost-reasons"),
-	"doctype_crm_deal": ("deals", "deals-configure", "deal-statuses", "products", "territories"),
-	"doctype_contact": ("contacts", "call-logs"),
-	"doctype_crm_organization": (
-		"organizations",
-		"organizations-configure",
+	"module_def_fcrm": (
+		"leads",
+		"lead-statuses",
+		"lead-sources",
+		"deals",
+		"deal-statuses",
+		"lost-reasons",
+		"products",
+		"accounts",
 		"industries",
 		"territories",
 	),
 }
 
-# The two rail items that open no sidebar. Charter point 1 makes independent a first-class
-# state and nothing else on this rail exercises it.
-INDEPENDENT = ("tasks", "notes")
+SETUP_DOCTYPES = (
+	"CRM Lead Status",
+	"CRM Lead Source",
+	"CRM Deal Status",
+	"CRM Lost Reason",
+	"CRM Product",
+	"CRM Industry",
+	"CRM Territory",
+)
+
+# The rail items that open their list with no panel.
+INDEPENDENT = ("leads", "deals", "contacts", "organizations", "tasks", "notes", "call-logs")
 
 
 class TestCRMNavigation(IntegrationTestCase):
@@ -53,7 +65,7 @@ class TestCRMNavigation(IntegrationTestCase):
 		self.addCleanup(frappe.set_user, "Administrator")
 		self.addCleanup(self.drop_layer, self.user)
 
-	def test_rail_is_the_six_authored_items(self):
+	def test_rail_is_the_eight_authored_items(self):
 		"""The shipped rail replaces the derived one, which is every CRM doctype in the site."""
 		rail = resolve_navigation("crm")["rail"]
 
@@ -89,7 +101,7 @@ class TestCRMNavigation(IntegrationTestCase):
 		for key in INDEPENDENT:
 			self.assertEqual(rail[key]["item_type"], "DocType")
 
-	def test_the_containers_are_the_rail_and_its_four_sidebars(self):
+	def test_the_containers_are_the_rail_and_the_setup_sidebar(self):
 		"""What `every_container()` finds, which four tests below iterate and would otherwise
 		pass over in silence if the fixtures had not been imported at all."""
 		self.assertEqual(
@@ -111,34 +123,20 @@ class TestCRMNavigation(IntegrationTestCase):
 				if row.item_type == "DocType":
 					self.assertTrue(frappe.db.exists("DocType", row.link_to), f"{address}/{row.key}")
 
-	def test_crm_territory_is_listed_in_both_the_panels_it_belongs_to(self):
-		"""The replacement for the guard that said the opposite. See the note.
-
-		CRM used to ship each destination exactly once, because an address resolved to exactly
-		one panel: the deepest cover won and equal covers tie-broke on rail order, so clicking
-		Territories in the Organizations panel moved the reader to Deals. `CRM Territory` was
-		removed from Organizations rather than the behaviour being fixed, and a test guarded
-		that removal.
-
-		The reader now keeps the panel they are in, so a destination may be listed in as many
-		panels as it belongs in. This asserts the restored row rather than merely allowing it,
-		so the thinning is not quietly redone by someone reading the old convention.
+	def test_every_destination_is_listed_once(self):
+		"""One Setup sidebar holds every setup list, so no doctype is reachable from two rows.
 
 		Read off the shipped rows: a destination the reader cannot open is gone from the
-		resolved payload, so the row could hide behind a permission rather than be reported.
+		resolved payload, so a duplicate could hide behind a permission.
 		"""
-		panels = set()
+		destinations = [
+			row.link_to
+			for container, address in every_container()
+			for row in shipped(container, address)
+			if row.item_type == "DocType"
+		]
 
-		for container, address in every_container():
-			# The rail is not one of the panels this is about, and it carries `DocType` rows of
-			# its own -- Tasks and Notes.
-			if container != "Sidebar":
-				continue
-			for row in shipped(container, address):
-				if (row.link_doctype, row.link_to) == ("DocType", "CRM Territory"):
-					panels.add(address)
-
-		self.assertEqual(panels, {"doctype_crm_deal", "doctype_crm_organization"})
+		self.assertEqual(len(destinations), len(set(destinations)), destinations)
 
 	def test_keys_are_unique_within_each_container(self):
 		"""Every site and user edit is filed against a key, so two rows sharing one collide."""
@@ -167,38 +165,32 @@ class TestCRMNavigation(IntegrationTestCase):
 				if row.parent_key:
 					self.assertIn(row.parent_key, sections, f"{address}/{row.key}")
 
-	def test_a_configure_section_drops_when_its_doctypes_are_unreadable(self):
-		"""The section cascade, on the first shipped section on this branch.
+	def test_a_section_drops_when_its_doctypes_are_unreadable(self):
+		"""A person who cannot read the lead setup doctypes loses the Leads heading with them."""
+		with self.patch_readable(exclude=("CRM Lead Status", "CRM Lead Source")):
+			rows = resolve_navigation("crm")["sidebars"]["module_def_fcrm"]
 
-		A person who cannot read the three lead-configuration doctypes is left with a heading
-		over nothing, so the section goes with them -- and the sidebar keeps its own list.
-		"""
-		unreadable = ("CRM Lead Status", "CRM Lead Source", "CRM Lost Reason")
-		with self.patch_readable(exclude=unreadable):
-			rows = resolve_navigation("crm")["sidebars"]["doctype_crm_lead"]
+		self.assertEqual(tuple(row["key"] for row in rows), SIDEBARS["module_def_fcrm"][3:])
 
-		self.assertEqual(tuple(row["key"] for row in rows), ("leads",))
-
-	def test_a_linked_item_goes_when_its_whole_sidebar_goes(self):
+	def test_setup_goes_when_its_whole_sidebar_goes(self):
 		"""`Derived From Children`, across containers: no rows left, no rail item either."""
-		with self.patch_readable(exclude=("Contact", "CRM Call Log")):
+		with self.patch_readable(exclude=SETUP_DOCTYPES):
 			navigation = resolve_navigation("crm")
 
-		self.assertNotIn("doctype_contact", navigation["sidebars"])
-		self.assertNotIn("contacts", [item["key"] for item in navigation["rail"]])
+		self.assertNotIn("module_def_fcrm", navigation["sidebars"])
+		self.assertNotIn("setup", [item["key"] for item in navigation["rail"]])
 
 	def test_one_persons_arrangement_is_theirs_alone(self):
 		"""The per-user overlay over rows an app SHIPS, which is new here.
 
 		Every rail the framework's own suites arrange is derived or built in the test, so this is
 		the first arrangement filed against authored keys. What is stored is the difference from
-		the shipped list -- three rows out of six for the three changes below -- which is
+		the shipped list -- three rows out of eight for the three changes below -- which is
 		#42229's sparse move-list doing the work a stored copy of the whole list could not.
 		"""
 		from frappe.shell.arrangement import get_arrangement, save_arrangement
 
-		desired = [dict(item) for item in get_arrangement("Rail", "crm")]
-		desired.insert(0, desired.pop())  # notes to the top
+		desired = notes_first(get_arrangement("Rail", "crm"))
 		by_key = {item["key"]: item for item in desired}
 		by_key["leads"]["label"] = "My Leads"
 		by_key["deals"]["hidden"] = 1
@@ -213,6 +205,8 @@ class TestCRMNavigation(IntegrationTestCase):
 				("contacts", "Contacts"),
 				("organizations", "Organizations"),
 				("tasks", "Tasks"),
+				("call-logs", "Call Logs"),
+				("setup", "Setup"),
 			],
 		)
 		self.assertEqual(self.stored_layer_keys(), {"notes", "leads", "deals"})
@@ -233,9 +227,7 @@ class TestCRMNavigation(IntegrationTestCase):
 		"""
 		from frappe.shell.arrangement import get_arrangement, save_arrangement
 
-		desired = [dict(item) for item in get_arrangement("Rail", "crm")]
-		desired.insert(0, desired.pop())
-		save_arrangement("Rail", "crm", desired)
+		save_arrangement("Rail", "crm", notes_first(get_arrangement("Rail", "crm")))
 
 		frappe.set_user("Administrator")
 		reimport_shipped_rail()
@@ -307,6 +299,10 @@ def shipped(container: str, address: str) -> list:
 		fields=["key", "parent_key", "item_type", "link_doctype", "link_to"],
 		order_by="idx asc",
 	)
+
+
+def notes_first(rail: list[dict]) -> list[dict]:
+	return sorted((dict(item) for item in rail), key=lambda item: item["key"] != "notes")
 
 
 def reimport_shipped_rail():
