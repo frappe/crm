@@ -116,6 +116,11 @@ describe('isFetchedFromLink', () => {
     expect(isFetchedFromLink(field, { organization: null })).toBe(false)
   })
 
+  it('leaves a fetch_if_empty field editable even when its link has a value', () => {
+    const field = { fetch_from: 'organization.industry', fetch_if_empty: 1 }
+    expect(isFetchedFromLink(field, { organization: 'Acme' })).toBe(false)
+  })
+
   it('leaves ordinary and malformed fields editable', () => {
     expect(isFetchedFromLink({ fieldname: 'first_name' }, {})).toBe(false)
     expect(
