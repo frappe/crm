@@ -38,7 +38,11 @@ class FCRMSettings(Document):
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
 		service_provider: DF.Literal[
-			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
+			"frankfurter.app",
+			"fawazahmed-exchange-api",
+			"exchangerate.host",
+			"exchangerate-api",
+			"allratestoday",
 		]
 		update_timestamp_on_new_communication: DF.Check
 	# end: auto-generated types

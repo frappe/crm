@@ -38,6 +38,9 @@ def _fetch_exchange_rate(from_currency: str, to_currency: str, date: str):
 	if provider == "exchangerate-api":
 		return _fetch_from_exchangerate_api(settings, from_currency, to_currency), provider
 
+	if provider == "allratestoday":
+		return _fetch_from_allratestoday(settings, from_currency, to_currency), provider
+
 	# Free providers — try both as fallbacks, regardless of which is "primary"
 	if provider == "frankfurter.app":
 		rate = _fetch_from_frankfurter(from_currency, to_currency, date)
@@ -123,6 +126,26 @@ def _fetch_from_exchangerate_api(settings: FCRMSettings, from_currency: str, to_
 		data = res.json()
 		if data["result"] == "success":
 			return data["conversion_rate"]
+	return None
+
+
+def _fetch_from_allratestoday(settings: FCRMSettings, from_currency: str, to_currency: str):
+	if not settings.access_key:
+		frappe.throw(
+			_("Access Key is required for Service Provider: {0}").format(
+				frappe.bold(settings.service_provider)
+			)
+		)
+	res = requests.get(
+		"https://allratestoday.com/api/v1/rates",
+		params={"source": from_currency, "target": to_currency},
+		headers={"Authorization": f"Bearer {settings.access_key}"},
+		timeout=5,
+	)
+	if res.ok:
+		for item in res.json():
+			if item.get("target") == to_currency:
+				return item.get("rate")
 	return None
 
 
