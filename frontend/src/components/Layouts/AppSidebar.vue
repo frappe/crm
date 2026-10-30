@@ -121,10 +121,11 @@
               :afterSignup="() => capture('signup_from_demo_site')"
             />
             <TrialBanner
-              v-if="isFCSite"
+              v-if="isFCSite && !isCloudSettingsAvailable()"
               :isSidebarCollapsed="isCollapsed"
               :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
             />
+            <TrialCard v-if="!isCollapsed" />
             <GettingStartedBanner
               v-if="!isOnboardingStepsCompleted"
               :isSidebarCollapsed="isCollapsed"
@@ -229,6 +230,8 @@ import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
 import { SignupBanner } from '@framework/ui/components/SignupBanner'
 import { TrialBanner } from '@framework/ui/components/TrialBanner'
+import TrialCard from '@/components/Layouts/TrialCard.vue'
+import { isCloudSettingsAvailable } from '@/composables/cloudSettings'
 import {
   HelpModal,
   GettingStartedBanner,
