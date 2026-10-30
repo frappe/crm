@@ -2,13 +2,14 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   changeStatus,
   findStatus,
-  saveError,
   statusInk,
+  statusPicker,
 } from '../../../crm/fcrm/frontend/status/statusChange.js'
 
 function fakePage(status, save = () => Promise.resolve()) {
   const page = {
     doc: { status },
+    saved: { status },
     toast: { error: vi.fn() },
     save: vi.fn(() => {
       page.savedWith = page.doc.status
@@ -54,22 +55,45 @@ describe('changeStatus', () => {
     expect(page.save).not.toHaveBeenCalled()
   })
 
-  it('puts the old status back and shows the server message when the save fails', async () => {
-    const refusal = Object.assign(new Error('Save failed'), {
-      messages: ['Please specify a reason for losing the deal'],
-    })
+  it('goes back to the saved status and shows the message when the save is refused', async () => {
+    const refusal = new Error('Please specify a reason for losing the deal.')
     const page = fakePage('Qualification', () => Promise.reject(refusal))
     await changeStatus(page, { name: 'Lost' })
     expect(page.doc.status).toBe('Qualification')
     expect(page.toast.error).toHaveBeenCalledWith(
-      'Please specify a reason for losing the deal',
+      'Please specify a reason for losing the deal.',
     )
+  })
+
+  it('keeps the record a conflict reload brought in, and leaves the message to its dialog', async () => {
+    const page = fakePage('Qualification', () => {
+      page.doc = { status: 'Won' }
+      page.saved = { status: 'Won' }
+      return Promise.reject(
+        Object.assign(new Error('Saved elsewhere'), { name: 'SaveConflict' }),
+      )
+    })
+    await changeStatus(page, { name: 'Negotiation' })
+    expect(page.doc.status).toBe('Won')
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 })
 
-describe('saveError', () => {
-  it("reads the server's first message, else the error's own", () => {
-    expect(saveError({ messages: ['A'], message: 'B' })).toBe('A')
-    expect(saveError(new Error('B'))).toBe('B')
+describe('statusPicker', () => {
+  it('ignores a pick while a save is running', async () => {
+    let answer
+    const page = fakePage(
+      'New',
+      () => new Promise((resolve) => (answer = resolve)),
+    )
+    const { busy, pick } = statusPicker(page)
+    const first = pick({ name: 'Contacted' })
+    expect(busy.value).toBe(true)
+    await pick({ name: 'Qualified' })
+    expect(page.save).toHaveBeenCalledTimes(1)
+    expect(page.doc.status).toBe('Contacted')
+    answer()
+    await first
+    expect(busy.value).toBe(false)
   })
 })

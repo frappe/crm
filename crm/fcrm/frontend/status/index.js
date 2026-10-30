@@ -7,8 +7,8 @@ const STATUS_DOCTYPES = { 'CRM Lead': 'CRM Lead Status', 'CRM Deal': 'CRM Deal S
 
 /** Adds the control in `onRefresh`; a new record keeps `status` in its form, since a pick would insert it. */
 export function addStatusControl(page) {
-	if (page.isNew) return
 	const doctype = STATUS_DOCTYPES[page.doctype]
+	if (page.isNew || !doctype) return
 	const statuses = page.cached(`statuses:${doctype}`, () => readStatuses(doctype))
 	page.header.add(
 		{

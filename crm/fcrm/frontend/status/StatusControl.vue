@@ -20,7 +20,7 @@
 import { computed, h } from 'vue'
 import { Button, Dropdown } from 'frappe-ui'
 import { __ } from 'frappe/i18n'
-import { changeStatus, findStatus, statusInk } from './statusChange.js'
+import { findStatus, statusInk, statusPicker } from './statusChange.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
@@ -28,12 +28,13 @@ const props = defineProps({
 	readOnly: { type: Boolean, default: false },
 })
 
-// A 16px box with an 8px dot, as CRM v1's IndicatorIcon draws it.
 const StatusDot = (dot) =>
 	h('span', { class: ['flex size-4 shrink-0 items-center justify-center', statusInk(dot.color)] }, [
 		h('span', { class: 'size-2 rounded-full bg-current' }),
 	])
 StatusDot.props = ['color']
+
+const { busy, pick } = statusPicker(props.page)
 
 const current = computed(() => findStatus(props.statuses, props.page.doc.status))
 
@@ -42,7 +43,8 @@ const options = computed(() =>
 		label: __(status.name),
 		color: status.color,
 		selected: status.name === props.page.doc.status,
-		onClick: () => changeStatus(props.page, status),
+		disabled: busy.value,
+		onClick: () => pick(status),
 	})),
 )
 </script>

@@ -1,6 +1,7 @@
 // What the header's status control does, kept free of the desk's imports so it is unit-tested.
+import { ref } from 'vue'
 
-// The status doctypes' `color` options in the shades CRM v1 drew; the ink tokens flip in dark mode.
+// The status doctypes' `color` options in CRM v1's shades, as ink tokens that follow the dark theme.
 const INK = {
 	black: 'text-ink-gray-9',
 	gray: 'text-ink-gray-6',
@@ -29,20 +30,33 @@ export function findStatus(statuses, name) {
 	return statuses?.find((status) => status.name === name)
 }
 
-/** Writes `status` on the record and saves; a failed save puts the old status back and shows why. */
+/** One pick at a time: a pick during a save would join it and be dropped. */
+export function statusPicker(page) {
+	const busy = ref(false)
+	async function pick(status) {
+		if (busy.value) return
+		busy.value = true
+		try {
+			await changeStatus(page, status)
+		} finally {
+			busy.value = false
+		}
+	}
+	return { busy, pick }
+}
+
+/** Writes `status` on the record and saves; a refused save goes back to the saved status and says why. */
 export async function changeStatus(page, status) {
-	const previous = page.doc.status
-	if (status.name === previous) return
+	if (status.name === page.doc.status) return
 	page.doc.status = status.name
 	try {
 		await page.save()
 	} catch (error) {
-		page.doc.status = previous
-		page.toast.error(saveError(error))
+		// A conflict reload has already replaced the draft; only a pick still in it goes back.
+		if (page.doc.status === status.name) page.doc.status = page.saved.status
+		if (!SHOWN_IN_DIALOG.includes(error?.name)) page.toast.error(error?.message || String(error))
 	}
 }
 
-/** A failed save's first server message, else its own. */
-export function saveError(error) {
-	return error?.messages?.[0] || error?.message || String(error)
-}
+// The record page's own dialog has told the reader why: a save conflict, or code that does not compile.
+const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']
