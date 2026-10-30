@@ -345,6 +345,31 @@
           >
             <CallArea :activity="activity" />
           </div>
+          <div
+            v-else-if="['merge', 'split'].includes(activity.activity_type)"
+            class="mb-4 flex flex-col gap-1 py-1.5"
+          >
+            <div class="flex items-center justify-stretch gap-2 text-base">
+              <div
+                class="inline-flex items-center flex-wrap gap-1.5 text-ink-gray-5"
+              >
+                <span class="font-medium text-ink-gray-8">
+                  {{ activity.owner_name }}
+                </span>
+                <span>{{ mergeSummary(activity) }}</span>
+              </div>
+              <div class="ml-auto whitespace-nowrap">
+                <TimelineTimestamp :date="activity.creation" />
+              </div>
+            </div>
+            <div
+              v-for="line in mergeFieldLines(activity)"
+              :key="line"
+              class="text-p-sm text-ink-gray-5"
+            >
+              {{ line }}
+            </div>
+          </div>
           <div v-else class="mb-4 flex flex-col gap-2 py-1.5">
             <div class="flex items-center justify-stretch gap-2 text-base">
               <div
@@ -609,6 +634,8 @@ import MissedCallIcon from '@/components/Icons/MissedCallIcon.vue'
 import DeclinedCallIcon from '@/components/Icons/DeclinedCallIcon.vue'
 import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import OutboundCallIcon from '@/components/Icons/OutboundCallIcon.vue'
+import LucideGitMerge from '~icons/lucide/git-merge'
+import LucideSplit from '~icons/lucide/split'
 import FadedScrollableDiv from '@/components/FadedScrollableDiv.vue'
 import CommunicationArea from '@/components/CommunicationArea.vue'
 import WhatsAppTemplateSelectorModal from '@/components/Modals/WhatsAppTemplateSelectorModal.vue'
@@ -903,6 +930,35 @@ function update_activities_details(activity) {
   }
 }
 
+function mergeSummary(activity) {
+  const { lead, lead_title, is_target } = activity.data
+  const other = lead_title ? `${lead_title} (${lead})` : lead
+  if (activity.activity_type == 'merge') {
+    return is_target
+      ? __('merged {0} into this lead', [other])
+      : __('merged this lead into {0}', [other])
+  }
+  return is_target
+    ? __('split {0} from this lead', [other])
+    : __('split this lead from {0}', [other])
+}
+
+function mergeFieldLines(activity) {
+  const labels = (fields) => (fields || []).map((f) => __(f)).join(', ')
+  const { filled, replaced, restored } = activity.data
+  const lines = []
+  if (filled?.length) {
+    lines.push(__('Filled from the merged lead: {0}', [labels(filled)]))
+  }
+  if (replaced?.length) {
+    lines.push(__("Took the merged lead's value: {0}", [labels(replaced)]))
+  }
+  if (restored?.length) {
+    lines.push(__('Restored: {0}', [labels(restored)]))
+  }
+  return lines
+}
+
 const top = computed(() => {
   if (['Activity', 'Emails', 'Comments'].includes(title.value)) {
     return '32.3%'
@@ -1015,6 +1071,12 @@ function timelineIcon(activity_type, is_lead) {
       break
     case 'note':
       icon = NoteIcon
+      break
+    case 'merge':
+      icon = LucideGitMerge
+      break
+    case 'split':
+      icon = LucideSplit
       break
     default:
       icon = DotIcon

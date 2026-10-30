@@ -47,6 +47,7 @@ class CRMLead(Document):
 		gender: DF.Link | None
 		image: DF.AttachImage | None
 		industry: DF.Link | None
+		is_duplicate: DF.Check
 		job_title: DF.Data | None
 		last_name: DF.Data | None
 		last_responded_on: DF.Datetime | None
@@ -57,6 +58,7 @@ class CRMLead(Document):
 		lead_temperature: DF.Literal["", "Cold", "Warm", "Hot"]
 		lost_notes: DF.Text | None
 		lost_reason: DF.Link | None
+		merged_into: DF.Link | None
 		middle_name: DF.Data | None
 		mobile_no: DF.Data | None
 		naming_series: DF.Literal["CRM-LEAD-.YYYY.-"]
@@ -464,7 +466,7 @@ class CRMLead(Document):
 
 	@staticmethod
 	def get_non_filterable_fields():
-		return ["converted"]
+		return ["converted", "is_duplicate"]
 
 	@staticmethod
 	def default_list_data():
@@ -558,7 +560,8 @@ def convert_to_deal(
 	an automation retry idempotent - and "Fail" refuses.
 	"""
 	validate_conversion_access(lead, doc)
-	lead = lock_lead(lead)
+	[lead] = lock_lead(lead)
+	validate_not_merged(lead)
 	existing = existing_deal(lead.name)
 	if existing and if_converted != "Create":
 		return settle_converted(lead, existing, if_converted)
@@ -580,15 +583,39 @@ def validate_conversion_access(lead: str, doc: Document | None = None):
 		frappe.throw(_("Not allowed to convert Lead to Deal"), frappe.PermissionError)
 
 
-def lock_lead(lead: str):
-	"""Serialize concurrent conversions of the same Lead before reading its state."""
-	table = frappe.qb.DocType("CRM Lead")
-	frappe.qb.from_(table).select(table.name).where(table.name == lead).for_update().run()
-	return frappe.get_doc("CRM Lead", lead)
+def validate_not_merged(lead):
+	if lead.merged_into:
+		frappe.throw(
+			_("Lead {0} was merged into {1}. Convert {1} instead.").format(
+				lead.name, resolve_merged_lead(lead.name)
+			)
+		)
+	if lead.is_duplicate:
+		frappe.throw(_("Lead {0} is marked as a duplicate and cannot be converted").format(lead.name))
+
+
+def lock_lead(*leads: str) -> list[Document]:
+	"""Lock the Leads in name order, so concurrent callers can't deadlock, and return them in the
+	order given. They are read FOR UPDATE: under REPEATABLE READ a plain read after the lock can
+	still return this transaction's older snapshot."""
+	docs = {name: frappe.get_doc("CRM Lead", name, for_update=True) for name in sorted(set(leads))}
+	return [docs[name] for name in leads]
 
 
 def existing_deal(lead: str) -> str | None:
 	return frappe.db.get_value("CRM Deal", {"lead": lead}, "name")
+
+
+def resolve_merged_lead(name: str) -> str:
+	"""The live lead a merged lead now lives in: follows merged_into to the last lead that
+	still exists. Merges can chain to any length; a lead seen twice means a corrupt cycle."""
+	visited = {name}
+	while True:
+		merged_into = frappe.db.get_value("CRM Lead", name, "merged_into")
+		if not merged_into or merged_into in visited or not frappe.db.exists("CRM Lead", merged_into):
+			return name
+		visited.add(merged_into)
+		name = merged_into
 
 
 def settle_converted(lead, deal: str, if_converted: str) -> str:
