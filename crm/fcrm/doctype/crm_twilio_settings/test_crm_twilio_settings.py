@@ -1,6 +1,7 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+import json
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -35,15 +36,28 @@ class TestCRMTwilioSettings(IntegrationTestCase):
 			settings.save()
 
 		self.assertNotIn(SECRET, (settings.api_secret, self.stored_secret()))
+		self.assertFalse(self.versions_holding_the_secret())
 		self.assertEqual(frappe.get_single("CRM Twilio Settings").get_password("api_secret"), SECRET)
 
 	def test_the_patch_moves_a_plain_api_secret_into_the_password_store(self):
 		frappe.db.set_single_value("CRM Twilio Settings", "api_secret", SECRET)
+		frappe.get_doc(
+			doctype="Version",
+			ref_doctype="CRM Twilio Settings",
+			docname="CRM Twilio Settings",
+			data=json.dumps({"changed": [["api_key", None, "SK-test"], ["api_secret", None, SECRET]]}),
+		).insert(ignore_permissions=True)
 
 		encrypt_twilio_api_secret.execute()
 
 		self.assertEqual(self.stored_secret(), "*" * len(SECRET))
+		self.assertFalse(self.versions_holding_the_secret())
 		self.assertEqual(frappe.get_single("CRM Twilio Settings").get_password("api_secret"), SECRET)
+
+	def versions_holding_the_secret(self):
+		return frappe.get_all(
+			"Version", {"ref_doctype": "CRM Twilio Settings", "data": ["like", f"%{SECRET}%"]}, pluck="name"
+		)
 
 	def stored_secret(self):
 		return frappe.db.get_single_value("CRM Twilio Settings", "api_secret")
