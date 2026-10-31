@@ -5,6 +5,7 @@ import json
 import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+from frappe.permissions import add_permission, update_permission_property
 
 from crm.domain_enrichment.install import seed_default_rules_and_mappings
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
@@ -34,6 +35,7 @@ def after_install(force=False):
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
 	seed_default_rules_and_mappings()
+	add_sales_manager_setup_permissions()
 	frappe.db.commit()
 
 
@@ -612,3 +614,13 @@ def create_assignment_rule_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Assignment Rule")
+
+
+def add_sales_manager_setup_permissions():
+	for doctype in ("Assignment Rule", "Email Template"):
+		if not frappe.db.exists(
+			"Custom DocPerm", {"parent": doctype, "role": "Sales Manager", "permlevel": 0}
+		):
+			add_permission(doctype, "Sales Manager", 0)
+		for ptype in ("read", "write", "create"):
+			update_permission_property(doctype, "Sales Manager", 0, ptype, 1)
