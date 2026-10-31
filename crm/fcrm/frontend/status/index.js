@@ -1,4 +1,4 @@
-// The status control on CRM Lead's and CRM Deal's record pages: `header.status`, before Save.
+// Status on CRM Lead's and CRM Deal's record pages: the `header.status` control and the `status` field handler.
 import { listDocuments } from '@framework/ui/api'
 import { __ } from 'frappe/i18n'
 import StatusControl from './StatusControl.vue'

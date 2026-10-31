@@ -1,4 +1,4 @@
-// What the header's status control does, kept free of the desk's imports so it is unit-tested.
+// A status change on Lead and Deal, from the header or a field; free of the desk's imports so it is unit-tested.
 import { ref } from 'vue'
 
 // The status doctypes' `color` options in CRM v1's shades, as ink tokens that follow the dark theme.
@@ -73,14 +73,17 @@ export async function changeStatus(page, status, lostReasonTitle) {
 		await page.save()
 	} catch (error) {
 		// A conflict reload has already replaced the draft; only a pick still in it goes back.
-		if (page.doc.status === status.name) page.doc.status = page.saved.status
+		if (page.doc.status === status.name) Object.assign(page.doc, savedValues(page, ['status', ...Object.keys(reason)]))
 		if (!SHOWN_IN_DIALOG.includes(error?.name)) page.toast.error(error?.message || String(error))
 	}
 }
 
 /** The `status` field handler's job: a Lost status writes its reason, a cancel goes back to the saved status. */
 export async function keepLostReason(page, statuses, lostReasonTitle) {
-	const status = findStatus(await statuses, page.doc.status)
+	const picked = page.doc.status
+	const status = findStatus(await statuses, picked)
+	// A later pick has its own handler, which asks for itself.
+	if (page.doc.status !== picked) return
 	const reason = await askLostReason(page, status, lostReasonTitle)
 	if (reason) Object.assign(page.doc, reason)
 	else page.doc.status = page.saved.status
@@ -102,6 +105,10 @@ async function askLostReason(page, status, title) {
 export const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']
 
 const LOST_REASON_FIELDS = ['lost_reason', 'lost_notes']
+
+function savedValues(page, fieldnames) {
+	return Object.fromEntries(fieldnames.map((fieldname) => [fieldname, page.saved[fieldname]]))
+}
 
 function currentReason(doc) {
 	const filled = LOST_REASON_FIELDS.filter((fieldname) => doc[fieldname])

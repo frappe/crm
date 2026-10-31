@@ -109,6 +109,20 @@ describe('changeStatus to a Lost status', () => {
     expect(page.doc.status).toBe('Negotiation')
   })
 
+  it('puts the saved reason back with the status when the save is refused', async () => {
+    const page = fakePage(
+      'Negotiation',
+      () => Promise.reject(new Error('Expected closure date is required.')),
+      { lost_reason: 'Pricing', lost_notes: null },
+    )
+    await changeStatus(page, lost)
+    expect(page.doc.status).toBe('Negotiation')
+    expect(page.doc.lost_reason).toBeUndefined()
+    expect(page.toast.error).toHaveBeenCalledWith(
+      'Expected closure date is required.',
+    )
+  })
+
   it('opens the dialog on the reason the record already has', async () => {
     const page = fakePage('Negotiation', undefined, null)
     page.doc.lost_reason = 'Pricing'
@@ -149,6 +163,17 @@ describe('keepLostReason', () => {
     const page = editedPage('Lost', null)
     await keepLostReason(page, Promise.resolve(statuses))
     expect(page.doc.status).toBe('Negotiation')
+  })
+
+  it('leaves a pick made while the statuses load to its own handler', async () => {
+    const page = editedPage('Lost', null)
+    let answer
+    const statusesRead = new Promise((resolve) => (answer = resolve))
+    const first = keepLostReason(page, statusesRead)
+    page.doc.status = 'Negotiation'
+    answer(statuses)
+    await first
+    expect(page.dialog.form).not.toHaveBeenCalled()
   })
 
   it('leaves a status of another type alone', async () => {
