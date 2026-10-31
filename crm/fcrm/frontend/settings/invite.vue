@@ -30,15 +30,11 @@ import { InviteUser, useInviteUser } from "@framework/ui/InviteUser";
 import type { InviteResult } from "@framework/ui/InviteUser";
 import { useUserRoles } from "@framework/ui/useUserRoles";
 import { __ } from "frappe/i18n";
-import { crmRole, givenRoles, withImpliedRoles } from "./users/crmUsers.js";
+import { crmRole, givenRoles } from "./users/crmUsers.js";
 
 defineProps<{ bindings: Record<string, never> }>();
 
-const invitations = useInviteUser({
-	appName: "crm",
-	redirectPath: "/apps/crm",
-	transformRoles: withImpliedRoles,
-});
+const invitations = useInviteUser({ appName: "crm", redirectPath: "/apps/crm" });
 
 const { roles } = useUserRoles();
 const roleOptions = computed(() =>
@@ -60,10 +56,10 @@ function announce(result: InviteResult) {
 	if (result.invited_emails.length)
 		toast.success(__("Invitation sent to {0}", [list(result.invited_emails)]));
 	if (result.pending_invite_emails.length)
-		toast.info(__("{0} already invited", [list(result.pending_invite_emails)]));
+		toast.info(__("Already invited: {0}", [list(result.pending_invite_emails)]));
 	if (result.accepted_invite_emails.length)
-		toast.info(__("{0} already accepted an invitation", [list(result.accepted_invite_emails)]));
+		toast.info(__("Already accepted: {0}", [list(result.accepted_invite_emails)]));
 	if (result.disabled_user_emails.length)
-		toast.info(__("{0} is a disabled user", [list(result.disabled_user_emails)]));
+		toast.info(__("Not invited, disabled users: {0}", [list(result.disabled_user_emails)]));
 }
 </script>

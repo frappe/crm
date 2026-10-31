@@ -5,7 +5,6 @@ import {
   listedUsers,
   removable,
   roleChoices,
-  withImpliedRoles,
 } from '../../../crm/fcrm/frontend/settings/users/crmUsers.js'
 
 const admin = { name: 'admin@example.com', role: 'System Manager' }
@@ -91,24 +90,5 @@ describe('crmRole', () => {
     )
     expect(crmRole(['Sales User', 'Sales Manager'])).toBe('Sales Manager')
     expect(crmRole(['Guest'])).toBe('')
-  })
-})
-
-describe('withImpliedRoles', () => {
-  it('adds the CRM roles below the highest one picked', () => {
-    expect(withImpliedRoles(['System Manager'])).toEqual([
-      'System Manager',
-      'Sales Manager',
-      'Sales User',
-    ])
-    expect(withImpliedRoles(['Sales User', 'Sales Manager'])).toEqual([
-      'Sales User',
-      'Sales Manager',
-    ])
-    expect(withImpliedRoles(['Sales User'])).toEqual(['Sales User'])
-  })
-
-  it('leaves other roles as they are', () => {
-    expect(withImpliedRoles(['Accounts User'])).toEqual(['Accounts User'])
   })
 })
