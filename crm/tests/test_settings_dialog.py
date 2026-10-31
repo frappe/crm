@@ -110,6 +110,23 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			["Mobile No.", "Default Medium", "Device", "Twilio Number", "Exotel Number"],
 		)
 
+	def test_crm_ships_a_users_pane_for_sales_and_system_managers(self):
+		users = self.pane("crm", "users")
+
+		self.assertEqual(
+			[(block["key"], block["component"]) for block in users["blocks"]], [("users", "users")]
+		)
+		self.assertEqual(users["blocks"][0]["roles"], ["Sales Manager", "System Manager"])
+
+	def test_only_a_manager_sees_the_users_pane(self):
+		self.make_user(SALES_USER, "Sales User")
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with set_user(SALES_USER):
+			self.assertIsNone(self.visible_pane("users"))
+		with set_user(SALES_MANAGER):
+			self.assertEqual([block["key"] for block in self.visible_pane("users")["blocks"]], ["users"])
+
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)
 
