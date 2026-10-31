@@ -11,8 +11,8 @@ LAYOUT_DOCTYPES = (
 	"CRM Call Log",
 )
 
-# Settings records, plus the doctypes asked on frappe/frappe#45885:
-# Q1, SLA's required tables; Q2, records an editor or the server makes.
+# Settings records, SLA (required child tables) and records only an editor or the server makes:
+# asked on frappe/frappe#45885.
 LEFT_OUT = {
 	"CRM Global Settings",
 	"CRM Service Level Agreement",
@@ -81,7 +81,8 @@ def quick_entry_layouts(dt: str) -> list[dict]:
 
 
 def quick_entry_fields(dt: str) -> list[str]:
-	default = next(layout for layout in quick_entry_layouts(dt) if not layout["condition"])
+	default = next((layout for layout in quick_entry_layouts(dt) if not layout["condition"]), None)
+	assert default, f"{dt} has no default Quick Entry layout"
 	return [
 		fieldname
 		for tab in default["layout"]
