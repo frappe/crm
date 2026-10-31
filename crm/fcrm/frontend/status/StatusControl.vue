@@ -20,6 +20,7 @@
 import { computed, h } from 'vue'
 import { Button, Dropdown } from 'frappe-ui'
 import { __ } from 'frappe/i18n'
+import { lostReasonLabels } from './lostReasonLabels.js'
 import { findStatus, statusInk, statusPicker } from './statusChange.js'
 
 const props = defineProps({
@@ -34,7 +35,7 @@ const StatusDot = (dot) =>
 	])
 StatusDot.props = ['color']
 
-const { busy, pick } = statusPicker(props.page, __('Lost Reason'))
+const { busy, pick } = statusPicker(props.page, lostReasonLabels())
 
 const current = computed(() => findStatus(props.statuses, props.page.doc.status))
 

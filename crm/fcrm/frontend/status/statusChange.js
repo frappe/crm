@@ -49,13 +49,13 @@ export function findStatus(statuses, name) {
 }
 
 /** One pick at a time: a pick during a save would join it and be dropped. */
-export function statusPicker(page, lostReasonTitle) {
+export function statusPicker(page, labels) {
 	const busy = ref(false)
 	async function pick(status) {
 		if (busy.value) return
 		busy.value = true
 		try {
-			await changeStatus(page, status, lostReasonTitle)
+			await changeStatus(page, status, labels)
 		} finally {
 			busy.value = false
 		}
@@ -64,9 +64,9 @@ export function statusPicker(page, lostReasonTitle) {
 }
 
 /** Writes `status` on the record and saves; a Lost one asks its reason first, and a refused save goes back. */
-export async function changeStatus(page, status, lostReasonTitle) {
+export async function changeStatus(page, status, labels) {
 	if (status.name === page.doc.status) return
-	const reason = await askLostReason(page, status, lostReasonTitle)
+	const reason = await askLostReason(page, status, labels)
 	if (!reason) return
 	Object.assign(page.doc, reason, { status: status.name })
 	try {
@@ -79,21 +79,21 @@ export async function changeStatus(page, status, lostReasonTitle) {
 }
 
 /** The `status` field handler's job: a Lost status writes its reason, a cancel goes back to the saved status. */
-export async function keepLostReason(page, statuses, lostReasonTitle) {
+export async function keepLostReason(page, statuses, labels) {
 	const picked = page.doc.status
 	const status = findStatus(await statuses, picked)
 	// A later pick has its own handler, which asks for itself.
 	if (page.doc.status !== picked) return
-	const reason = await askLostReason(page, status, lostReasonTitle)
+	const reason = await askLostReason(page, status, labels)
 	if (reason) Object.assign(page.doc, reason)
 	else page.doc.status = page.saved.status
 }
 
 /** The reason for `status`: `{}` when it is not Lost, the dialog's values, or `null` when cancelled. */
-async function askLostReason(page, status, title) {
+async function askLostReason(page, status, labels) {
 	if (status?.type !== 'Lost') return {}
 	return page.dialog.form({
-		title,
+		...labels,
 		doctype: page.doctype,
 		fieldnames: LOST_REASON_FIELDS,
 		required: ['lost_reason'],

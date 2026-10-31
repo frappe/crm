@@ -8,6 +8,12 @@ import {
   statusPicker,
 } from '../../../crm/fcrm/frontend/status/statusChange.js'
 
+const labels = {
+  title: 'Lost Reason',
+  submitLabel: 'Save',
+  cancelLabel: 'Cancel',
+}
+
 function fakePage(status, save = () => Promise.resolve(), reason = null) {
   const page = {
     doctype: 'CRM Deal',
@@ -89,10 +95,10 @@ describe('changeStatus to a Lost status', () => {
   it('asks for the lost reason, then saves it with the status', async () => {
     const reason = { lost_reason: 'Other', lost_notes: 'Went with a rival' }
     const page = fakePage('Negotiation', undefined, reason)
-    await changeStatus(page, lost, 'Lost Reason')
+    await changeStatus(page, lost, labels)
     expect(page.dialog.form).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: 'Lost Reason',
+        ...labels,
         doctype: 'CRM Deal',
         fieldnames: ['lost_reason', 'lost_notes'],
         required: ['lost_reason'],
@@ -154,7 +160,10 @@ describe('keepLostReason', () => {
 
   it('writes the reason into the draft without saving', async () => {
     const page = editedPage('Lost', { lost_reason: 'Pricing', lost_notes: '' })
-    await keepLostReason(page, Promise.resolve(statuses), 'Lost Reason')
+    await keepLostReason(page, Promise.resolve(statuses), labels)
+    expect(page.dialog.form).toHaveBeenCalledWith(
+      expect.objectContaining(labels),
+    )
     expect(page.doc).toMatchObject({ status: 'Lost', lost_reason: 'Pricing' })
     expect(page.save).not.toHaveBeenCalled()
   })
