@@ -82,6 +82,7 @@ class CRMDeal(Document):
 		from crm.api.form import enrich_form_submission
 
 		enrich_form_submission(self)
+		self.add_contact_from_link()
 
 	def before_validate(self):
 		self.set_sla()
@@ -123,6 +124,13 @@ class CRMDeal(Document):
 				self.status = "Qualification"
 			else:
 				self.status = frappe.get_all("CRM Deal Status", {"type": "Open"}, pluck="name")[0]
+
+	def add_contact_from_link(self):
+		"""Quick Entry sets only the `contact` Link; the deal's contacts are its `contacts` rows."""
+		if self.contact and not any(row.contact == self.contact for row in self.contacts):
+			self.append("contacts", {"contact": self.contact})
+			# insert fetched link values before `before_insert`; the new row needs its email and phone
+			self._validate_links()
 
 	def set_primary_contact(self, contact=None):
 		if not self.contacts:
