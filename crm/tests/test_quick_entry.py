@@ -1,5 +1,5 @@
 import frappe
-from frappe.desk.doctype.form_layout.form_layout import get_layouts, opens_in_dialog
+from frappe.desk.doctype.form_layout.form_layout import get_form_layouts
 from frappe.tests import IntegrationTestCase
 
 LAYOUT_DOCTYPES = (
@@ -24,15 +24,13 @@ LEFT_OUT = {
 
 class TestQuickEntry(IntegrationTestCase):
 	def test_every_creatable_crm_doctype_opens_in_dialog(self):
-		full_page = [
-			dt for dt in creatable_crm_doctypes() if not opens_in_dialog(dt, quick_entry_layouts(dt))
-		]
+		full_page = [dt for dt in creatable_crm_doctypes() if not quick_entry(dt)["dialog"]]
 		self.assertEqual(full_page, [])
 
 	def test_layout_doctypes_have_a_default_quick_entry_layout(self):
 		for dt in LAYOUT_DOCTYPES:
 			with self.subTest(dt=dt):
-				defaults = [layout for layout in quick_entry_layouts(dt) if not layout["condition"]]
+				defaults = [layout for layout in quick_entry(dt)["layouts"] if not layout["condition"]]
 				self.assertEqual(len(defaults), 1)
 				self.assertTrue(defaults[0]["layout"])
 
@@ -76,12 +74,13 @@ def any_role_can_create(dt: str) -> bool:
 	return any(perm.create for perm in frappe.get_meta(dt).permissions)
 
 
-def quick_entry_layouts(dt: str) -> list[dict]:
-	return get_layouts(dt, "Quick Entry")
+def quick_entry(dt: str) -> dict:
+	"""What Create on `/apps/crm` reads."""
+	return get_form_layouts(dt, "Quick Entry", app="crm")
 
 
 def quick_entry_fields(dt: str) -> list[str]:
-	default = next((layout for layout in quick_entry_layouts(dt) if not layout["condition"]), None)
+	default = next((layout for layout in quick_entry(dt)["layouts"] if not layout["condition"]), None)
 	assert default, f"{dt} has no default Quick Entry layout"
 	return [
 		fieldname
