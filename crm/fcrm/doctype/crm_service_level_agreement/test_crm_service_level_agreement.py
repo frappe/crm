@@ -95,6 +95,24 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 			with self.assertRaisesRegex(frappe.ValidationError, "End Time must be after Start Time"):
 				sla.save()
 
+	def test_blank_priorities_reach_the_mandatory_check(self):
+		sla = create_test_sla_with_working_hours(sla_name="Blank Priorities SLA")
+		sla.append("priorities", {"first_response_time": 60})
+		sla.append("priorities", {"first_response_time": 60})
+
+		with self.assertRaises(frappe.MandatoryError):
+			sla.save()
+
+	def test_midnight_read_back_is_still_checked(self):
+		sla = create_test_sla_with_working_hours(sla_name="Midnight SLA")
+		sla.working_hours[0].start_time = time(0, 0)
+		sla.save()
+
+		sla = frappe.get_doc("CRM Service Level Agreement", sla.name)
+		sla.working_hours[0].end_time = time(0, 0)
+		with self.assertRaisesRegex(frappe.ValidationError, "End Time must be after Start Time"):
+			sla.save()
+
 	def test_saved_sla_saves_again(self):
 		"""Times read back from the database are timedeltas; the checks must accept them."""
 		sla = create_test_sla_with_working_hours(sla_name="Reloaded SLA")

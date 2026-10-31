@@ -83,6 +83,10 @@ function placeLegacyNote(page, pair, legacyNote) {
 	)
 }
 
+export function expressionOptions(fields, pair) {
+	return { fields, fieldPrefix: pair.fieldPrefix }
+}
+
 export function parseConditions(json) {
 	try {
 		const conditions = JSON.parse(json || '[]')

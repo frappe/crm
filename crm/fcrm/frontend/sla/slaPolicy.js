@@ -1,4 +1,3 @@
-// What CRM v1's SLA pane checks and fills in the browser; the server checks dates, priorities and working hours.
 import { listDocuments } from '@framework/ui/api'
 import { __ } from 'frappe/i18n'
 
@@ -37,7 +36,7 @@ export function refuseBadDefaults(page) {
 		throw page.fields.setError('priorities', __('There can only be one default priority'))
 }
 
-// One row per communication status, as CRM v1 starts a policy; the first created is the default.
+// The first created status (Open) is the default: SLA timing reads the default as awaiting a response.
 async function statusPriorities() {
 	const { data } = await listDocuments('CRM Communication Status', {
 		fields: ['name'],

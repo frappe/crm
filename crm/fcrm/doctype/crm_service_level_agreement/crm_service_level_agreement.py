@@ -9,7 +9,7 @@ from frappe.model.document import Document
 from frappe.utils import (
 	add_to_date,
 	get_datetime,
-	get_time,
+	get_timedelta,
 	get_weekdays,
 	getdate,
 	now_datetime,
@@ -59,17 +59,21 @@ class CRMServiceLevelAgreement(Document):
 			frappe.throw(_("End Date cannot be before Start Date"))
 
 	def validate_priorities(self):
-		duplicates = find_duplicates(row.priority for row in self.priorities)
+		# Blank rows are left to the mandatory check, which runs after validate.
+		duplicates = find_duplicates(row.priority for row in self.priorities if row.priority)
 		if duplicates:
 			frappe.throw(_("Priorities must be unique: {0}").format(", ".join(duplicates)))
 
 	def validate_working_hours(self):
-		duplicates = find_duplicates(row.workday for row in self.working_hours)
+		duplicates = find_duplicates(row.workday for row in self.working_hours if row.workday)
 		if duplicates:
-			frappe.throw(_("Each workday can appear only once: {0}").format(", ".join(duplicates)))
+			frappe.throw(
+				_("Each workday can appear only once: {0}").format(", ".join(_(day) for day in duplicates))
+			)
 
 		for row in self.working_hours:
-			if row.start_time and row.end_time and get_time(row.start_time) >= get_time(row.end_time):
+			start, end = seconds_of_day(row.start_time), seconds_of_day(row.end_time)
+			if start is not None and end is not None and start >= end:
 				frappe.throw(
 					_("End Time must be after Start Time for {0} in row {1}").format(_(row.workday), row.idx)
 				)
@@ -381,6 +385,19 @@ class CRMServiceLevelAgreement(Document):
 		for row in holiday_list.holidays:
 			res.append(row.date)
 		return res
+
+
+# Not `get_time` and a truth test: a 00:00 read back from the database is a falsy `timedelta(0)`.
+def seconds_of_day(value) -> float | None:
+	if value is None or value == "":
+		return None
+	if isinstance(value, str):
+		value = get_timedelta(value)
+		if value is None:
+			return None
+	if isinstance(value, timedelta):
+		return value.total_seconds()
+	return value.hour * 3600 + value.minute * 60 + value.second
 
 
 def find_duplicates(values) -> list[str]:

@@ -23,19 +23,22 @@ export async function addWeeklyOffs(page) {
 	for (const fieldname of missing) page.fields.setError(fieldname, __('Set this to add the weekly offs'))
 	if (missing.length) return
 
-	const kept = page.doc.holidays ?? []
+	const sent = [...(page.doc.holidays ?? [])]
 	const { docs } = await runMethod(
 		'run_doc_method',
 		{
 			// Without `__islocal` the server reads a new list from the database and answers 404.
-			document: { ...page.doc, doctype: page.doctype, __islocal: page.isNew ? 1 : 0 },
+			document: { ...page.doc, holidays: sent, doctype: page.doctype, __islocal: page.isNew ? 1 : 0 },
 			method: 'get_weekly_off_dates',
 		},
 		{ nullable: true },
 	)
-	// The server appends after the rows it was sent, skipping a date already listed.
-	const added = (docs?.[0]?.holidays ?? []).slice(kept.length)
-	page.doc.holidays = [...kept, ...added.map(({ date, description, weekly_off }) => ({ date, description, weekly_off }))]
+	// The server appends after the rows it was sent; rows edited meanwhile are kept.
+	const added = (docs?.[0]?.holidays ?? []).slice(sent.length)
+	page.doc.holidays = [
+		...(page.doc.holidays ?? []),
+		...added.map(({ date, description, weekly_off }) => ({ date, description, weekly_off })),
+	]
 }
 
 export function clearHolidays(page) {

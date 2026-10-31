@@ -10,7 +10,7 @@ const {
   refuseBadDefaults,
   startNewPolicy,
 } = await import('../../../crm/fcrm/frontend/sla/slaPolicy.js')
-const { keepExpression, placeConditions } = await import(
+const { expressionOptions, keepExpression, placeConditions } = await import(
   '../../../crm/fcrm/frontend/conditions/conditions.js'
 )
 
@@ -173,15 +173,23 @@ describe('the condition', () => {
     expect(patch.description).toBe('Set Apply On to add conditions.')
   })
 
-  it('compiles against the Apply On fields with the record as `doc`', async () => {
+  it('reads the Apply On fields and hands the compiler its pair', async () => {
     const json = JSON.stringify([['status', 'equals', 'New']])
     const page = fakePage({ apply_on: 'CRM Lead', condition_json: json })
-    const fieldsOf = vi.fn(async () => [])
-    const compile = vi.fn(
-      (json, fields, pair) => `${pair.fieldPrefix}.status == "New"`,
-    )
+    const fields = [{ fieldname: 'status' }]
+    const fieldsOf = vi.fn(async () => fields)
+    const compile = vi.fn(() => 'compiled')
     await keepExpression(page, SLA_CONDITION, { fieldsOf, compile })
     expect(fieldsOf).toHaveBeenCalledWith('CRM Lead')
-    expect(page.doc.condition).toBe('doc.status == "New"')
+    expect(compile).toHaveBeenCalledWith(json, fields, SLA_CONDITION)
+    expect(page.doc.condition).toBe('compiled')
+  })
+
+  it('compiles with the record as `doc`, and an Assignment Rule without a prefix', () => {
+    expect(expressionOptions([], SLA_CONDITION)).toEqual({
+      fields: [],
+      fieldPrefix: 'doc',
+    })
+    expect(expressionOptions([], { json: 'x' }).fieldPrefix).toBeUndefined()
   })
 })

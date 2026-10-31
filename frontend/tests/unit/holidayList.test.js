@@ -118,6 +118,23 @@ describe('Add to Holidays', () => {
       'weekly_off',
     ])
   })
+
+  it('keeps a row added while the server answers', async () => {
+    const page = fakePage({ holidays: [] })
+    runMethod.mockImplementationOnce(async () => {
+      page.doc.holidays = [{ date: '2026-11-05', description: 'Added' }]
+      return {
+        data: null,
+        docs: [{ holidays: [{ date: '2026-11-01', description: 'Sunday' }] }],
+      }
+    })
+    await act(page, 'add_to_holidays').run(page)
+
+    expect(page.doc.holidays.map((row) => row.date)).toEqual([
+      '2026-11-05',
+      '2026-11-01',
+    ])
+  })
 })
 
 describe('Clear Table', () => {

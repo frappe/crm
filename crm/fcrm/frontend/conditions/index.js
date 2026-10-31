@@ -4,6 +4,7 @@ import { useDoctypeMeta } from '@framework/ui/useDoctypeMeta'
 import ConditionsField from './ConditionsField.vue'
 import LegacyCondition from './LegacyCondition.vue'
 import {
+	expressionOptions,
 	keepChangedExpressions,
 	keepExpressions,
 	keepExpression,
@@ -15,8 +16,8 @@ export { refuseIncompleteConditions } from './conditions.js'
 
 const compiler = {
 	fieldsOf: targetFields,
-	compile: (json, fields, { fieldPrefix }) =>
-		toConditionExpression(fromFrappeConditions(parseConditions(json)), { fields, fieldPrefix }),
+	compile: (json, fields, pair) =>
+		toConditionExpression(fromFrappeConditions(parseConditions(json)), expressionOptions(fields, pair)),
 }
 
 export function addConditionBuilders(page, pairs) {
