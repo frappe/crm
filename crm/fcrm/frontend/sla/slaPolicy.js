@@ -5,6 +5,18 @@ import { __ } from 'frappe/i18n'
 const WORKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const ONE_HOUR = 60 * 60
 
+// The server evaluates the condition with the record as `doc` (`get_context`).
+export const SLA_CONDITION = {
+	json: 'condition_json',
+	python: 'condition',
+	doctypeField: 'apply_on',
+	fieldPrefix: 'doc',
+	required: false,
+	label: () => __('Condition'),
+	description: (doctype) => __('Choose which {0} this SLA applies to.', [doctype]),
+	noDoctype: () => __('Set Apply On to add conditions.'),
+}
+
 export async function startNewPolicy(page) {
 	if (!page.isNew) return
 	if (!page.doc.working_hours?.length) page.doc.working_hours = officeHours()

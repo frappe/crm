@@ -9,29 +9,30 @@ import {
 	keepExpression,
 	parseConditions,
 	placeConditions,
-} from './assignmentRule.js'
+} from './conditions.js'
 
-export { CONDITIONS, refuseIncompleteConditions, startOnEveryDay } from './assignmentRule.js'
+export { refuseIncompleteConditions } from './conditions.js'
 
 const compiler = {
 	fieldsOf: targetFields,
-	compile: (json, fields) => toConditionExpression(fromFrappeConditions(parseConditions(json)), { fields }),
+	compile: (json, fields, { fieldPrefix }) =>
+		toConditionExpression(fromFrappeConditions(parseConditions(json)), { fields, fieldPrefix }),
 }
 
-export function addConditionBuilders(page) {
-	placeConditions(page, { builder: ConditionsField, legacyNote: LegacyCondition })
+export function addConditionBuilders(page, pairs) {
+	placeConditions(page, pairs, { builder: ConditionsField, legacyNote: LegacyCondition })
 }
 
 export function keepConditionInStep(page, pair) {
 	return keepExpression(page, pair, compiler)
 }
 
-export function keepConditionsInStep(page) {
-	return keepExpressions(page, compiler)
+export function keepConditionsInStep(page, pairs) {
+	return keepExpressions(page, pairs, compiler)
 }
 
-export function keepChangedConditionsInStep(page) {
-	return keepChangedExpressions(page, compiler)
+export function keepChangedConditionsInStep(page, pairs) {
+	return keepChangedExpressions(page, pairs, compiler)
 }
 
 // Check and numeric fields compile from their fieldtype; `undefined` falls back to reading the value.

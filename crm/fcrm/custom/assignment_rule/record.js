@@ -1,27 +1,26 @@
+import { CONDITIONS, startOnEveryDay } from '../../frontend/assignment_rule/assignmentRule.js'
 import {
-	CONDITIONS,
 	addConditionBuilders,
 	keepChangedConditionsInStep,
 	keepConditionInStep,
 	keepConditionsInStep,
 	refuseIncompleteConditions,
-	startOnEveryDay,
-} from '../../frontend/assignment_rule/index.js'
+} from '../../frontend/conditions/index.js'
 
 const [assign, unassign] = CONDITIONS
 
 export default {
 	onRefresh(page) {
-		addConditionBuilders(page)
+		addConditionBuilders(page, CONDITIONS)
 	},
 	onOpen(page) {
 		startOnEveryDay(page)
 	},
 	async beforeSave(page) {
-		await keepChangedConditionsInStep(page)
-		refuseIncompleteConditions(page)
+		await keepChangedConditionsInStep(page, CONDITIONS)
+		refuseIncompleteConditions(page, CONDITIONS)
 	},
-	document_type: (page) => keepConditionsInStep(page),
+	document_type: (page) => keepConditionsInStep(page, CONDITIONS),
 	assign_condition_json: (page) => keepConditionInStep(page, assign),
 	unassign_condition_json: (page) => keepConditionInStep(page, unassign),
 }

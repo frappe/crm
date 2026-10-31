@@ -44,7 +44,7 @@ import {
 	fromFrappeConditions,
 	toFrappeConditions,
 } from '@framework/ui/ConditionBuilder'
-import { parseConditions } from './assignmentRule.js'
+import { parseConditions } from './conditions.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
@@ -53,12 +53,13 @@ const props = defineProps({
 	error: { type: [String, Array], default: null },
 	python: { type: String, required: true },
 	required: { type: Boolean, default: false },
+	doctypeField: { type: String, required: true },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const open = ref(false)
-const doctype = computed(() => props.page.doc.document_type || '')
+const doctype = computed(() => props.page.doc[props.doctypeField] || '')
 const expression = computed(() => props.page.doc[props.python])
 
 // The tree lives here: the JSON drops a row with no field yet, so reading it back would lose the row.

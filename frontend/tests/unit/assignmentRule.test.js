@@ -1,19 +1,28 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   CONDITIONS,
+  startOnEveryDay,
+} from '../../../crm/fcrm/frontend/assignment_rule/assignmentRule.js'
+import {
   canEdit,
   isLegacy,
-  keepChangedExpressions,
+  keepChangedExpressions as keepChangedOf,
   keepExpression,
-  keepExpressions,
+  keepExpressions as keepAllOf,
   parseConditions,
-  placeConditions,
-  refuseIncompleteConditions,
-  startOnEveryDay,
+  placeConditions as placeOf,
+  refuseIncompleteConditions as refuseOf,
   switchToBuilder,
-} from '../../../crm/fcrm/frontend/assignment_rule/assignmentRule.js'
+} from '../../../crm/fcrm/frontend/conditions/conditions.js'
 
 const [assign, unassign] = CONDITIONS
+const placeConditions = (page, components) =>
+  placeOf(page, CONDITIONS, components)
+const keepExpressions = (page, compiler) =>
+  keepAllOf(page, CONDITIONS, compiler)
+const keepChangedExpressions = (page, compiler) =>
+  keepChangedOf(page, CONDITIONS, compiler)
+const refuseIncompleteConditions = (page) => refuseOf(page, CONDITIONS)
 const builder = { name: 'ConditionsField' }
 const legacyNote = { name: 'LegacyCondition' }
 const STATUS_OPEN = JSON.stringify([['status', 'equals', 'Open']])
@@ -55,6 +64,7 @@ describe('placeConditions', () => {
         page,
         python: pair.python,
         required: pair.required,
+        doctypeField: 'document_type',
       })
       expect(updatesFor(page, pair.python)).toEqual([{ hidden: true }])
     }
@@ -164,7 +174,7 @@ describe('keepExpression', () => {
     })
     await keepExpression(page, assign, { fieldsOf, compile })
     expect(fieldsOf).toHaveBeenCalledWith('CRM Lead')
-    expect(compile).toHaveBeenCalledWith(STATUS_OPEN, fields)
+    expect(compile).toHaveBeenCalledWith(STATUS_OPEN, fields, assign)
     expect(page.doc.assign_condition).toBe('status == "Open"')
   })
 
@@ -176,7 +186,7 @@ describe('keepExpression', () => {
     }
     const compile = vi.fn(() => 'compiled')
     await keepExpression(page, assign, { fieldsOf, compile })
-    expect(compile).toHaveBeenCalledWith(STATUS_OPEN, fields)
+    expect(compile).toHaveBeenCalledWith(STATUS_OPEN, fields, assign)
   })
 
   it('leaves a Python condition alone', async () => {

@@ -4,8 +4,14 @@ const listDocuments = vi.fn()
 
 vi.mock('@framework/ui/api', () => ({ listDocuments }))
 
-const { default: script } = await import(
-  '../../../crm/fcrm/doctype/crm_service_level_agreement/frontend/record.js'
+const {
+  SLA_CONDITION,
+  enableDefaultPolicy,
+  refuseBadDefaults,
+  startNewPolicy,
+} = await import('../../../crm/fcrm/frontend/sla/slaPolicy.js')
+const { keepExpression, placeConditions } = await import(
+  '../../../crm/fcrm/frontend/conditions/conditions.js'
 )
 
 function fakePage(doc = {}, overrides = {}) {
@@ -13,7 +19,12 @@ function fakePage(doc = {}, overrides = {}) {
     doctype: 'CRM Service Level Agreement',
     isNew: true,
     doc: { sla_name: 'SLA 45959', ...doc },
-    fields: { setError: vi.fn((_, message) => new Error(message)) },
+    app: 'crm',
+    fields: {
+      update: vi.fn(),
+      setError: vi.fn((_, message) => new Error(message)),
+    },
+    form: { add: vi.fn() },
     ...overrides,
   }
 }
@@ -24,7 +35,7 @@ describe('a new SLA policy', () => {
       data: [{ name: 'Open' }, { name: 'Replied' }],
     })
     const page = fakePage()
-    await script.onOpen(page)
+    await startNewPolicy(page)
 
     expect(listDocuments).toHaveBeenCalledWith(
       'CRM Communication Status',
@@ -52,7 +63,7 @@ describe('a new SLA policy', () => {
     const priorities = [{ priority: 'Open', default_priority: 1 }]
     const working_hours = [{ workday: 'Sunday' }]
     const page = fakePage({ priorities, working_hours })
-    await script.onOpen(page)
+    await startNewPolicy(page)
 
     expect(listDocuments).not.toHaveBeenCalled()
     expect(page.doc.priorities).toBe(priorities)
@@ -61,9 +72,11 @@ describe('a new SLA policy', () => {
 
   it('does not overwrite priorities added while the statuses load', async () => {
     let answer
-    listDocuments.mockReturnValueOnce(new Promise((resolve) => (answer = resolve)))
+    listDocuments.mockReturnValueOnce(
+      new Promise((resolve) => (answer = resolve)),
+    )
     const page = fakePage()
-    const opening = script.onOpen(page)
+    const opening = startNewPolicy(page)
     page.doc.priorities = [{ priority: 'Replied' }]
     answer({ data: [{ name: 'Open' }] })
     await opening
@@ -74,7 +87,7 @@ describe('a new SLA policy', () => {
   it('fills nothing on a saved policy', async () => {
     listDocuments.mockClear()
     const page = fakePage({}, { isNew: false })
-    await script.onOpen(page)
+    await startNewPolicy(page)
 
     expect(listDocuments).not.toHaveBeenCalled()
     expect(page.doc.working_hours).toBeUndefined()
@@ -84,19 +97,19 @@ describe('a new SLA policy', () => {
 describe('the default policy', () => {
   it('turns enabled on when set as default', () => {
     const page = fakePage({ default: 1, enabled: 0 })
-    script.default(page)
+    enableDefaultPolicy(page)
     expect(page.doc.enabled).toBe(1)
   })
 
   it('leaves enabled alone when the default is cleared', () => {
     const page = fakePage({ default: 0, enabled: 0 })
-    script.default(page)
+    enableDefaultPolicy(page)
     expect(page.doc.enabled).toBe(0)
   })
 
   it('refuses to save a disabled default', () => {
     const page = fakePage({ default: 1, enabled: 0 })
-    expect(() => script.beforeSave(page)).toThrow(
+    expect(() => refuseBadDefaults(page)).toThrow(
       'An SLA set as default cannot be disabled',
     )
     expect(page.fields.setError).toHaveBeenCalledWith(
@@ -114,7 +127,7 @@ describe('the default priority', () => {
         { priority: 'Replied', default_priority: 1 },
       ],
     })
-    expect(() => script.beforeSave(page)).toThrow(
+    expect(() => refuseBadDefaults(page)).toThrow(
       'There can only be one default priority',
     )
     expect(page.fields.setError).toHaveBeenCalledWith(
@@ -129,7 +142,46 @@ describe('the default priority', () => {
       [0, 0],
     ]) {
       const priorities = flags.map((default_priority) => ({ default_priority }))
-      expect(() => script.beforeSave(fakePage({ priorities }))).not.toThrow()
+      expect(() => refuseBadDefaults(fakePage({ priorities }))).not.toThrow()
     }
+  })
+})
+
+describe('the condition', () => {
+  const builder = { name: 'ConditionsField' }
+
+  it('builds on the Apply On doctype', () => {
+    const page = fakePage({ apply_on: 'CRM Deal' })
+    placeConditions(page, [SLA_CONDITION], { builder, legacyNote: {} })
+    expect(page.fields.update).toHaveBeenCalledWith(
+      'condition_json',
+      expect.objectContaining({
+        component: builder,
+        description: 'Choose which CRM Deal this SLA applies to.',
+        props: expect.objectContaining({ doctypeField: 'apply_on' }),
+      }),
+    )
+    expect(page.fields.update).toHaveBeenCalledWith('condition', {
+      hidden: true,
+    })
+  })
+
+  it('asks for Apply On before the builder takes conditions', () => {
+    const page = fakePage()
+    placeConditions(page, [SLA_CONDITION], { builder, legacyNote: {} })
+    const [, patch] = page.fields.update.mock.calls[0]
+    expect(patch.description).toBe('Set Apply On to add conditions.')
+  })
+
+  it('compiles against the Apply On fields with the record as `doc`', async () => {
+    const json = JSON.stringify([['status', 'equals', 'New']])
+    const page = fakePage({ apply_on: 'CRM Lead', condition_json: json })
+    const fieldsOf = vi.fn(async () => [])
+    const compile = vi.fn(
+      (json, fields, pair) => `${pair.fieldPrefix}.status == "New"`,
+    )
+    await keepExpression(page, SLA_CONDITION, { fieldsOf, compile })
+    expect(fieldsOf).toHaveBeenCalledWith('CRM Lead')
+    expect(page.doc.condition).toBe('doc.status == "New"')
   })
 })

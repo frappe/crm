@@ -76,7 +76,12 @@ describe('Add to Holidays', () => {
               idx: 2,
               doctype: 'CRM Holiday',
             },
-            { date: '2026-11-08', description: 'Sunday', weekly_off: 1, idx: 3 },
+            {
+              date: '2026-11-08',
+              description: 'Sunday',
+              weekly_off: 1,
+              idx: 3,
+            },
           ],
         },
       ],
