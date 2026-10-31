@@ -23,8 +23,23 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      '@': path.resolve(import.meta.dirname, 'src'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(import.meta.dirname, 'src') },
+      // The desk resolves these for `crm/fcrm/frontend/`, which sits outside this package.
+      {
+        find: /^frappe-ui$/,
+        replacement: path.resolve(
+          import.meta.dirname,
+          'node_modules/frappe-ui/src/index.ts',
+        ),
+      },
+      {
+        find: 'frappe/i18n',
+        replacement: path.resolve(
+          import.meta.dirname,
+          'tests/fixtures/frappeI18n.js',
+        ),
+      },
+    ],
   },
 })
