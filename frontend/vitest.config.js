@@ -34,6 +34,13 @@ export default defineConfig({
         ),
       },
       {
+        find: '@framework/ui/api',
+        replacement: path.resolve(
+          import.meta.dirname,
+          'tests/fixtures/frameworkApi.js',
+        ),
+      },
+      {
         find: 'frappe/i18n',
         replacement: path.resolve(
           import.meta.dirname,
