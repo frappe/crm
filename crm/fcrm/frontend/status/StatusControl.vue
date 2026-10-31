@@ -34,7 +34,7 @@ const StatusDot = (dot) =>
 	])
 StatusDot.props = ['color']
 
-const { busy, pick } = statusPicker(props.page)
+const { busy, pick } = statusPicker(props.page, __('Lost Reason'))
 
 const current = computed(() => findStatus(props.statuses, props.page.doc.status))
 
