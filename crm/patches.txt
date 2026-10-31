@@ -34,3 +34,4 @@ crm.patches.v1_0.set_seen_for_existing_deals_and_leads
 crm.patches.v1_0.mirror_fields_layouts_to_form_layout
 crm.patches.v1_0.mirror_contact_and_address_layouts_to_form_layout
 crm.patches.v1_0.add_setup_sidebar_permissions
+crm.patches.v1_0.encrypt_twilio_api_secret
