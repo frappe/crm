@@ -126,6 +126,23 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			["Mobile No.", "Default Medium", "Device", "Twilio Number", "Exotel Number"],
 		)
 
+	def test_crm_adds_an_email_accounts_block_after_desks_email_block(self):
+		blocks = self.pane("frappe", "profile")["blocks"]
+		keys = [block["key"] for block in blocks]
+
+		self.assertEqual(keys[keys.index("email") + 1], "email-accounts")
+		self.assertFalse(blocks[keys.index("email-accounts")].get("roles"))
+
+	def test_a_sales_user_sees_the_email_accounts_block_in_profile(self):
+		self.make_user(SALES_USER, "Sales User")
+
+		with set_user(SALES_USER):
+			profile = self.visible_pane("profile", app="frappe")
+		block = next(block for block in profile["blocks"] if block["key"] == "email-accounts")
+
+		self.assertEqual((block["app"], block["component"]), ("crm", "email-accounts"))
+		self.assertFalse(block.get("bindings"))
+
 	def test_crm_ships_a_users_pane_for_sales_and_system_managers(self):
 		users = self.pane("crm", "users")
 
@@ -146,9 +163,9 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)
 
-	def visible_pane(self, key):
+	def visible_pane(self, key, app="crm"):
 		panes = SettingsFilter().filter(resolve_panes())["panes"]
-		return next((pane for pane in panes if pane["app"] == "crm" and pane["key"] == key), None)
+		return next((pane for pane in panes if pane["app"] == app and pane["key"] == key), None)
 
 	def make_user(self, email, role):
 		if not frappe.db.exists("User", email):
