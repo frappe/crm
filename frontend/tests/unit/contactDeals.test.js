@@ -1,67 +1,46 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
-  LINKED_DEALS,
+  CONTACT_DEALS,
   placeDealsTab,
 } from '../../../crm/fcrm/frontend/contact/contactDeals.js'
+import { linkedQuery } from '../../../crm/fcrm/frontend/linked/linkedQuery.js'
 
 const DealsTab = { name: 'DealsTab' }
 const TAB = { label: 'Deals', component: DealsTab }
-const DEALS = [{ name: 'CRM-DEAL-45892' }]
 const STATUSES = [{ name: 'Won', color: 'green' }]
 
 function fakePage(overrides = {}) {
-  const values = { 'linked-deals': DEALS, 'statuses:CRM Deal Status': STATUSES }
   return {
     app: 'crm',
     doctype: 'Contact',
     docname: 'Contact 45892',
     isNew: false,
     tabs: { add: vi.fn(), order: vi.fn() },
-    cached: vi.fn((key) => values[key]),
-    call: vi.fn(() => Promise.resolve(DEALS)),
+    cached: vi.fn(() => STATUSES),
     ...overrides,
   }
 }
 
-function fetcher(page, key) {
-  return page.cached.mock.calls.find(([name]) => name === key)[1]
-}
-
 describe('placeDealsTab', () => {
-  it('adds the Deals tab first on /apps/crm with the deals and their statuses', () => {
+  it('adds the Deals tab first on /apps/crm with the deal statuses', () => {
     const page = fakePage()
-    placeDealsTab(page, TAB, vi.fn())
+    const readStatuses = vi.fn()
+    placeDealsTab(page, TAB, readStatuses)
 
     expect(page.tabs.add).toHaveBeenCalledWith({
       name: 'deals',
       icon: 'lucide-handshake',
       label: 'Deals',
       component: DealsTab,
-      props: { deals: DEALS, statuses: STATUSES },
+      props: { statuses: STATUSES },
     })
     expect(page.tabs.order).toHaveBeenCalledWith(['deals'])
-  })
-
-  it("reads the contact's deals and the deal statuses", async () => {
-    const page = fakePage()
-    const readStatuses = vi.fn()
-    placeDealsTab(page, TAB, readStatuses)
-
-    await expect(fetcher(page, 'linked-deals')()).resolves.toBe(DEALS)
-    expect(page.call).toHaveBeenCalledWith(LINKED_DEALS, {
-      contact: 'Contact 45892',
-    })
-    fetcher(page, 'statuses:CRM Deal Status')()
+    expect(page.cached).toHaveBeenCalledWith(
+      'statuses:CRM Deal Status',
+      expect.any(Function),
+    )
+    page.cached.mock.calls[0][1]()
     expect(readStatuses).toHaveBeenCalledWith('CRM Deal Status')
-  })
-
-  it('holds null when the deals cannot be read', async () => {
-    const page = fakePage({
-      call: vi.fn(() => Promise.reject(new Error('Not permitted'))),
-    })
-    placeDealsTab(page, TAB, vi.fn())
-
-    await expect(fetcher(page, 'linked-deals')()).resolves.toBeNull()
   })
 
   it.each([
@@ -74,5 +53,15 @@ describe('placeDealsTab', () => {
     expect(page.cached).not.toHaveBeenCalled()
     expect(page.tabs.add).not.toHaveBeenCalled()
     expect(page.tabs.order).not.toHaveBeenCalled()
+  })
+})
+
+describe('CONTACT_DEALS', () => {
+  it("lists each CRM Deal once by a contact in the deal's contacts table", () => {
+    expect(CONTACT_DEALS.doctype).toBe('CRM Deal')
+    expect(linkedQuery(CONTACT_DEALS, 'Contact 45892')).toMatchObject({
+      filters: { 'contacts.contact': 'Contact 45892' },
+      group_by: 'name',
+    })
   })
 })

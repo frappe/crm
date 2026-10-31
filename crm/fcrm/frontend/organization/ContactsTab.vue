@@ -23,7 +23,7 @@ import { Avatar } from 'frappe-ui'
 import { ListCell } from 'frappe-ui/list'
 import { TimeAgo } from '@framework/ui/ActivityTimeline'
 import { __ } from 'frappe/i18n'
-import LinkedList from './LinkedList.vue'
+import LinkedList from '../linked/LinkedList.vue'
 import { CONTACTS } from './organizationTabs.js'
 
 defineProps({

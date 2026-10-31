@@ -24,10 +24,9 @@
 <script setup>
 import { ListCell } from 'frappe-ui/list'
 import { TimeAgo } from '@framework/ui/ActivityTimeline'
-import { useFieldDisplay } from '@framework/ui/FormLayout'
 import { __ } from 'frappe/i18n'
-import { findStatus, statusInk } from '../status/statusChange.js'
-import LinkedList from './LinkedList.vue'
+import { useDealCells } from '../linked/dealCells.js'
+import LinkedList from '../linked/LinkedList.vue'
 import { DEALS } from './organizationTabs.js'
 
 const props = defineProps({
@@ -43,14 +42,5 @@ const columns = [
 	{ label: __('Last Modified'), width: 'minmax(0, 1fr)' },
 ]
 
-const DEAL_VALUE = { fieldname: 'deal_value', fieldtype: 'Currency', options: 'currency' }
-const display = useFieldDisplay()
-
-function ink(status) {
-	return statusInk(findStatus(props.statuses, status)?.color)
-}
-
-function amount(row) {
-	return display(DEAL_VALUE, row.deal_value, { doc: row })
-}
+const { ink, amount } = useDealCells(() => props.statuses)
 </script>

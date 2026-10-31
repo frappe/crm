@@ -1,4 +1,4 @@
-<!-- A tab's table of the records that link to the organization, each row opening its record. -->
+<!-- A tab's table of the records that link to the page's record, each row opening its record. -->
 <template>
 	<div class="flex flex-col gap-3 px-[--page-gutter] pb-8 pt-4">
 		<List
@@ -39,7 +39,7 @@ import { List, ListHeader, ListHeaderCell, ListRow } from 'frappe-ui/list'
 import { usePagedList } from '@framework/ui'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
-import { linkedQuery } from './organizationTabs.js'
+import { linkedQuery } from './linkedQuery.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
