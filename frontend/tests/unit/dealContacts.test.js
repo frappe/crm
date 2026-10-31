@@ -12,6 +12,7 @@ const MESSAGES = {
   added: 'Contact added',
   removed: 'Contact removed',
   primary: 'Primary contact set',
+  stale: 'Contacts changed while you were editing',
 }
 
 function fakePage(overrides = {}) {
@@ -169,7 +170,8 @@ describe('ContactsEditor', () => {
     expect(page.reload).not.toHaveBeenCalled()
     expect(page.toast.success).not.toHaveBeenCalled()
   })
-  it('keeps edits typed during the call: no re-read over a dirty draft', async () => {
+
+  it('keeps edits typed during the call and asks for a reload instead of a success', async () => {
     const page = fakePage()
     page.call = vi.fn(() => {
       page.isDirty = true
@@ -178,7 +180,21 @@ describe('ContactsEditor', () => {
     const done = await new ContactsEditor(page, MESSAGES).setPrimary('Ana Ruiz')
     expect(done).toBe(true)
     expect(page.reload).not.toHaveBeenCalled()
-    expect(page.toast.success).toHaveBeenCalledWith(MESSAGES.primary)
+    expect(page.toast.success).not.toHaveBeenCalled()
+    expect(page.toast.error).toHaveBeenCalledWith(MESSAGES.stale)
+  })
+
+  it('refuses every later write once the page is behind the server', async () => {
+    const page = fakePage()
+    page.call = vi.fn(() => {
+      page.isDirty = true
+      return Promise.resolve(true)
+    })
+    const editor = new ContactsEditor(page, MESSAGES)
+    await editor.remove('Ana Ruiz')
+    expect(await editor.add('Cara Lim')).toBe(false)
+    expect(page.call).toHaveBeenCalledTimes(1)
+    expect(page.toast.error).toHaveBeenLastCalledWith(MESSAGES.stale)
   })
 
   it('runs one write at a time and is busy while it runs', async () => {

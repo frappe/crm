@@ -58,6 +58,7 @@ const editor = new ContactsEditor(props.page, {
 	added: __('Contact added'),
 	removed: __('Contact removed'),
 	primary: __('Primary contact set'),
+	stale: __('Contacts changed while you were editing. Reload the deal to see them; unsaved edits will be lost.'),
 })
 
 const busy = editor.busy

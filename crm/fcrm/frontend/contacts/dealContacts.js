@@ -34,6 +34,7 @@ export class ContactsEditor {
 		this.page = page
 		this.messages = messages
 		this.busy = ref(false)
+		this.stale = false
 	}
 
 	get editable() {
@@ -70,6 +71,10 @@ export class ContactsEditor {
 
 	async #change(method, contact, done) {
 		if (this.busy.value) return false
+		if (this.stale) {
+			this.page.toast.error(this.messages.stale)
+			return false
+		}
 		this.busy.value = true
 		try {
 			return await this.#write(method, contact, done)
@@ -87,8 +92,13 @@ export class ContactsEditor {
 			this.page.toast.error(error?.message || String(error))
 			return false
 		}
-		// A re-read would drop edits typed during the call; the next save's conflict dialog keeps them.
-		if (!this.page.isDirty) await this.page.reload()
+		// Edits typed during the call sit on the old copy: a re-read would drop them, a save conflicts.
+		if (this.page.isDirty) {
+			this.stale = true
+			this.page.toast.error(this.messages.stale)
+			return true
+		}
+		await this.page.reload()
 		this.page.toast.success(done)
 		return true
 	}
