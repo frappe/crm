@@ -11,7 +11,8 @@
 		:error="error"
 		:disabled="busy"
 		openOnFocus
-		@update:open="clearSearch"
+		@focus="rememberInput"
+		@update:open="startNewValue"
 		@update:modelValue="choose"
 	>
 		<template #item-add="{ query }">
@@ -21,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { Combobox } from 'frappe-ui'
 import { __ } from 'frappe/i18n'
 import { reachEditor } from './contactReach.js'
@@ -57,6 +58,7 @@ const text = TEXT[props.field.fieldname]
 const editor = reachEditor(props.page, props.field.fieldname, { ...text, stale: STALE })
 const busy = editor.busy
 const query = ref('')
+let input = null
 
 const options = computed(() => [
 	...editor.values().map((value) => ({ label: value, value })),
@@ -71,9 +73,19 @@ const options = computed(() => [
 	},
 ])
 
-// Combobox opens with the primary in its search; typing would append to it, not start a new value.
-function clearSearch(open) {
+// Combobox puts the primary in its input on open and on a close that keeps focus (Enter on the
+// primary); typing would append to it, so the search empties or the text is selected.
+function startNewValue(open) {
 	if (open) query.value = ''
+	else nextTick(selectSearch)
+}
+
+function rememberInput(event) {
+	input = event.target
+}
+
+function selectSearch() {
+	if (input && document.activeElement === input) input.select()
 }
 
 function choose(value) {

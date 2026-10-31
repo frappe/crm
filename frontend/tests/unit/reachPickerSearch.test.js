@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick } from 'vue'
 
 // The real Combobox, since the bug lives in how it fills its search; frappe-ui's index does not load under vitest.
@@ -24,6 +24,9 @@ function fakePage() {
   }
 }
 
+let unmount = () => {}
+afterEach(() => unmount())
+
 function mountPicker(page) {
   const root = document.createElement('div')
   document.body.appendChild(root)
@@ -36,13 +39,12 @@ function mountPicker(page) {
       }),
   })
   app.mount(root)
-  return {
-    input: root.querySelector('input'),
-    unmount: () => {
-      app.unmount()
-      root.remove()
-    },
+  unmount = () => {
+    app.unmount()
+    root.remove()
+    unmount = () => {}
   }
+  return root.querySelector('input')
 }
 
 async function settle() {
@@ -63,15 +65,14 @@ function addRows() {
 
 describe('ReachPicker search', () => {
   it('shows the primary while closed', async () => {
-    const { input, unmount } = mountPicker(fakePage())
+    const input = mountPicker(fakePage())
     await settle()
 
     expect(input.value).toBe('a@example.com')
-    unmount()
   })
 
   it('opens with an empty search, so a typed value is offered alone', async () => {
-    const { input, unmount } = mountPicker(fakePage())
+    const input = mountPicker(fakePage())
     await settle()
 
     input.focus()
@@ -80,6 +81,20 @@ describe('ReachPicker search', () => {
 
     await type(input, 'new@example.com')
     expect(addRows()).toEqual(['Add new@example.com'])
-    unmount()
+  })
+
+  it('selects the primary when the list closes but keeps focus, so typing replaces it', async () => {
+    const input = mountPicker(fakePage())
+    await settle()
+
+    input.focus()
+    await settle()
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+    )
+    await settle()
+    expect(document.activeElement).toBe(input)
+    expect(input.value).toBe('a@example.com')
+    expect([input.selectionStart, input.selectionEnd]).toEqual([0, 13])
   })
 })
