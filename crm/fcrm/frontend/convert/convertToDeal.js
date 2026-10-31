@@ -10,9 +10,9 @@ const FROM_LEAD = { deal_owner: 'lead_owner' }
 // A lead status is not a CRM Deal Status name.
 const NOT_FROM_LEAD = ['status']
 
-/** Adds the button after the status control; a new lead has nothing to convert yet. */
+/** Adds the button after the status control, on a saved lead not yet converted. */
 export function placeConvertButton(page, item) {
-	if (page.isNew) return
+	if (page.isNew || page.doc.converted) return
 	page.header.add(
 		{ name: 'convert_to_deal', zone: 'right', display: 'button', right: 'write', ...item },
 		{ after: 'status' },
