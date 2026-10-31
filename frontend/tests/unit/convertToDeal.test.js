@@ -5,7 +5,6 @@ import {
   leadDefaults,
   placeConvertButton,
   requiredDealFields,
-  saveLead,
   toDialogField,
 } from '../../../crm/fcrm/frontend/convert/convertToDeal.js'
 
@@ -15,7 +14,6 @@ function fakePage(overrides = {}) {
     isNew: false,
     header: { add: vi.fn() },
     toast: { error: vi.fn() },
-    save: vi.fn(() => Promise.resolve()),
     call: vi.fn(() => Promise.resolve('CRM-DEAL-0001')),
     ...overrides,
   }
@@ -193,31 +191,6 @@ describe('leadDefaults', () => {
       field('custom_size', 'Region', 'Int'),
     ]
     expect(leadDefaults(lead, leadFields, fields)).toEqual({})
-  })
-})
-
-describe('saveLead', () => {
-  it('saves the lead and answers true', async () => {
-    const page = fakePage()
-    expect(await saveLead(page)).toBe(true)
-    expect(page.save).toHaveBeenCalledOnce()
-  })
-
-  it('answers false and toasts the reason when the save is refused', async () => {
-    const page = fakePage({
-      save: vi.fn(() => Promise.reject(new Error('Invalid email'))),
-    })
-    expect(await saveLead(page)).toBe(false)
-    expect(page.toast.error).toHaveBeenCalledWith('Invalid email')
-  })
-
-  it('does not toast a refusal the page has explained in its own dialog', async () => {
-    const conflict = Object.assign(new Error('Saved by someone else'), {
-      name: 'SaveConflict',
-    })
-    const page = fakePage({ save: vi.fn(() => Promise.reject(conflict)) })
-    expect(await saveLead(page)).toBe(false)
-    expect(page.toast.error).not.toHaveBeenCalled()
   })
 })
 
