@@ -1,12 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   CONDITIONS,
+  canEdit,
   isLegacy,
+  keepChangedExpressions,
   keepExpression,
   keepExpressions,
   parseConditions,
   placeConditions,
-  refuseEmptyCondition,
+  refuseIncompleteConditions,
   startOnEveryDay,
   switchToBuilder,
 } from '../../../crm/fcrm/frontend/assignment_rule/assignmentRule.js'
@@ -115,6 +117,29 @@ describe('placeConditions', () => {
   })
 })
 
+describe('emptying a Python condition', () => {
+  it('keeps the Python field to retype it, not the builder', () => {
+    const page = fakePage({
+      doc: { assign_condition: '' },
+      saved: {
+        document_type: 'CRM Lead',
+        assign_condition: 'status == "Open"',
+      },
+    })
+    placeConditions(page, { builder, legacyNote })
+    expect(updatesFor(page, assign.json)).toEqual([])
+    expect(updatesFor(page, assign.python)).toEqual([])
+  })
+})
+
+describe('canEdit', () => {
+  it('lets a new record switch before its insert, and a saved one only with write', () => {
+    expect(canEdit(fakePage({ isNew: true, perms: {} }))).toBe(true)
+    expect(canEdit(fakePage({ perms: { write: 1 } }))).toBe(true)
+    expect(canEdit(fakePage({ perms: {} }))).toBe(false)
+  })
+})
+
 describe('switchToBuilder', () => {
   it('drops the Python, so a save never keeps the old condition running', () => {
     const page = fakePage({ doc: { unassign_condition: 'status == "Closed"' } })
@@ -163,6 +188,47 @@ describe('keepExpression', () => {
   })
 })
 
+describe('keepChangedExpressions', () => {
+  const compiler = {
+    fieldsOf: async () => [],
+    compile: vi.fn(() => 'compiled'),
+  }
+
+  it('recompiles only the condition whose JSON changed since the save', async () => {
+    compiler.compile.mockClear()
+    const page = fakePage({
+      doc: {
+        assign_condition_json: STATUS_OPEN,
+        unassign_condition_json: '[]',
+        unassign_condition: 'kept',
+      },
+      saved: {
+        document_type: 'CRM Lead',
+        assign_condition_json: '[]',
+        unassign_condition_json: '[]',
+      },
+    })
+    await keepChangedExpressions(page, compiler)
+    expect(compiler.compile).toHaveBeenCalledOnce()
+    expect(page.doc).toMatchObject({
+      assign_condition: 'compiled',
+      unassign_condition: 'kept',
+    })
+  })
+
+  it('recompiles both when the document type moved', async () => {
+    compiler.compile.mockClear()
+    const doc = {
+      document_type: 'CRM Deal',
+      assign_condition_json: STATUS_OPEN,
+      unassign_condition_json: STATUS_OPEN,
+    }
+    const page = fakePage({ doc, saved: { ...doc, document_type: 'CRM Lead' } })
+    await keepChangedExpressions(page, compiler)
+    expect(compiler.compile).toHaveBeenCalledTimes(2)
+  })
+})
+
 describe('startOnEveryDay', () => {
   it('fills all seven days on a new CRM rule', () => {
     const page = fakePage({ isNew: true })
@@ -192,18 +258,21 @@ describe('startOnEveryDay', () => {
   })
 })
 
-describe('refuseEmptyCondition', () => {
-  const complete = { assign_condition_json: STATUS_OPEN }
+describe('refuseIncompleteConditions', () => {
+  const complete = {
+    assign_condition_json: STATUS_OPEN,
+    assign_condition: 'status == "Open"',
+  }
 
   it('passes a rule with a condition', () => {
     expect(() =>
-      refuseEmptyCondition(fakePage({ doc: complete })),
+      refuseIncompleteConditions(fakePage({ doc: complete })),
     ).not.toThrow()
   })
 
   it('refuses an empty assign condition in the builder', () => {
     const page = fakePage({ doc: { ...complete, assign_condition_json: '[]' } })
-    expect(() => refuseEmptyCondition(page)).toThrow(
+    expect(() => refuseIncompleteConditions(page)).toThrow(
       'Add at least one condition',
     )
     expect(page.fields.setError).toHaveBeenCalledWith(
@@ -212,11 +281,45 @@ describe('refuseEmptyCondition', () => {
     )
   })
 
+  it('refuses a condition that compiles to nothing, in any app', () => {
+    const page = fakePage({
+      app: 'frappe',
+      doc: {
+        assign_condition_json: JSON.stringify([['first_name', 'like', '']]),
+        assign_condition: '',
+      },
+    })
+    expect(() => refuseIncompleteConditions(page)).toThrow(
+      'Complete each condition',
+    )
+    expect(page.fields.setError).toHaveBeenCalledWith(
+      'assign_condition_json',
+      'Complete each condition',
+    )
+  })
+
+  it('refuses an unassign condition that compiles to nothing, and lets an empty one go', () => {
+    const base = { ...complete, assign_condition: 'status == "Open"' }
+    const broken = fakePage({
+      doc: {
+        ...base,
+        unassign_condition_json: STATUS_OPEN,
+        unassign_condition: '',
+      },
+    })
+    expect(() => refuseIncompleteConditions(broken)).toThrow(
+      'Complete each condition',
+    )
+    expect(() =>
+      refuseIncompleteConditions(fakePage({ doc: base })),
+    ).not.toThrow()
+  })
+
   it('leaves a Python condition to the server', () => {
     const page = fakePage({
       doc: { ...complete, assign_condition_json: '', assign_condition: 'True' },
     })
-    expect(() => refuseEmptyCondition(page)).not.toThrow()
+    expect(() => refuseIncompleteConditions(page)).not.toThrow()
   })
 })
 

@@ -1,12 +1,17 @@
-// Assignment Rule's condition builder on CRM's JSON fields, wired to the desk.
 import { watch } from 'vue'
 import { fromFrappeConditions, toConditionExpression } from '@framework/ui/ConditionBuilder'
 import { useDoctypeMeta } from '@framework/ui/useDoctypeMeta'
 import ConditionsField from './ConditionsField.vue'
 import LegacyCondition from './LegacyCondition.vue'
-import { keepExpression, keepExpressions, parseConditions, placeConditions } from './assignmentRule.js'
+import {
+	keepChangedExpressions,
+	keepExpressions,
+	keepExpression,
+	parseConditions,
+	placeConditions,
+} from './assignmentRule.js'
 
-export { CONDITIONS, refuseEmptyCondition, startOnEveryDay } from './assignmentRule.js'
+export { CONDITIONS, refuseIncompleteConditions, startOnEveryDay } from './assignmentRule.js'
 
 const compiler = {
 	fieldsOf: targetFields,
@@ -25,7 +30,11 @@ export function keepConditionsInStep(page) {
 	return keepExpressions(page, compiler)
 }
 
-/** The target's fields, from the meta the builder already read; `undefined` when it cannot be read. */
+export function keepChangedConditionsInStep(page) {
+	return keepChangedExpressions(page, compiler)
+}
+
+// Check and numeric fields compile from their fieldtype; `undefined` falls back to reading the value.
 async function targetFields(doctype) {
 	if (!doctype) return undefined
 	const { meta, loading } = useDoctypeMeta(doctype)

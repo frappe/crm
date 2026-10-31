@@ -1,4 +1,4 @@
-<!-- An assignment rule's condition, stored as the JSON array CRM v1 writes; the builder opens in a dialog, as a form column is too narrow for its rows. -->
+<!-- The builder opens in a dialog: a form column is too narrow for its rows. -->
 <template>
 	<div>
 		<InputLabel v-if="field.label" :label="field.label" :required="required" />
@@ -9,6 +9,7 @@
 			>{{ expression }}</code>
 			<span v-else class="text-p-sm text-ink-gray-5">{{ __('No conditions') }}</span>
 			<Button
+				v-if="!field.readOnly"
 				:label="expression ? __('Edit conditions') : __('Add conditions')"
 				:disabled="!doctype"
 				@click="open = true"
@@ -58,7 +59,6 @@ const emit = defineEmits(['update:modelValue', 'change'])
 
 const open = ref(false)
 const doctype = computed(() => props.page.doc.document_type || '')
-// What runs: the field handler compiles it from the JSON.
 const expression = computed(() => props.page.doc[props.python])
 
 // The tree lives here: the JSON drops a row with no field yet, so reading it back would lose the row.
