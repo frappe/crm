@@ -55,6 +55,36 @@
    "pane": "users",
    "roles": "[\"Sales Manager\", \"System Manager\"]",
    "settings": "[{\"label\": \"Users\", \"keywords\": [\"roles\", \"team\", \"members\", \"add user\", \"remove user\"]}]"
+  },
+  {
+   "binding_type": "Single",
+   "document_type": "WhatsApp Settings",
+   "key": "whatsapp",
+   "label": "WhatsApp",
+   "pane": "whatsapp",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "save_mode": "button"
+  },
+  {
+   "binding_type": "Single",
+   "document_type": "ERPNext CRM Settings",
+   "fields": "[\"enabled\", \"is_erpnext_in_different_site\", \"erpnext_site_url\", \"api_key\", \"api_secret\", \"erpnext_company\", \"create_customer_on_status_change\", \"deal_status\"]",
+   "key": "erpnext",
+   "label": "Integration",
+   "pane": "erpnext",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "save_mode": "button"
+  },
+  {
+   "bindings": "{\"settings\": {\"type\": \"Single\", \"doctype\": \"ERPNext CRM Settings\"}}",
+   "component": "productSync",
+   "fields": "[\"sync_products\"]",
+   "key": "product-sync",
+   "label": "Product sync",
+   "pane": "erpnext",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "save_mode": "button",
+   "settings": "[{\"label\": \"Bidirectional product sync\", \"keywords\": [\"erpnext\", \"items\", \"products\", \"sync now\"]}]"
   }
  ],
  "creation": "2026-10-27 10:30:00.000000",
@@ -62,7 +92,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-31 14:00:00.000000",
+ "modified": "2026-10-31 18:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
@@ -84,6 +114,18 @@
    "icon": "phone",
    "key": "telephony",
    "label": "Telephony"
+  },
+  {
+   "description": "The default WhatsApp accounts CRM sends and receives messages with.",
+   "icon": "message-circle",
+   "key": "whatsapp",
+   "label": "WhatsApp"
+  },
+  {
+   "description": "Quotations, customers and product sync with ERPNext.",
+   "icon": "plug",
+   "key": "erpnext",
+   "label": "ERPNext"
   }
  ],
  "standard": 1,
