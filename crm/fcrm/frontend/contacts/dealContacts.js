@@ -1,6 +1,5 @@
 // What CRM Deal's contacts section does, kept free of the desk's imports so it is unit-tested.
-import { ref } from 'vue'
-import { saveRecord } from '../saveRecord.js'
+import { ServerWrites } from '../serverWrites.js'
 
 const DEAL = 'crm.fcrm.doctype.crm_deal.crm_deal'
 
@@ -33,8 +32,8 @@ export class ContactsEditor {
 	constructor(page, messages) {
 		this.page = page
 		this.messages = messages
-		this.busy = ref(false)
-		this.stale = false
+		this.writes = new ServerWrites(page, messages.stale)
+		this.busy = this.writes.busy
 	}
 
 	get editable() {
@@ -69,37 +68,7 @@ export class ContactsEditor {
 		return contact ? this.add(contact.name) : false
 	}
 
-	async #change(method, contact, done) {
-		if (this.busy.value) return false
-		if (this.stale) {
-			this.page.toast.error(this.messages.stale)
-			return false
-		}
-		this.busy.value = true
-		try {
-			return await this.#write(method, contact, done)
-		} finally {
-			this.busy.value = false
-		}
-	}
-
-	async #write(method, contact, done) {
-		// The server saves the deal: a draft goes first, and the re-read keeps the next save from conflicting.
-		if (!(await saveRecord(this.page))) return false
-		try {
-			await this.page.call(method, { deal: this.page.docname, contact })
-		} catch (error) {
-			this.page.toast.error(error?.message || String(error))
-			return false
-		}
-		// Edits typed during the call sit on the old copy: a re-read would drop them, a save conflicts.
-		if (this.page.isDirty) {
-			this.stale = true
-			this.page.toast.error(this.messages.stale)
-			return true
-		}
-		await this.page.reload()
-		this.page.toast.success(done)
-		return true
+	#change(method, contact, done) {
+		return this.writes.run(method, { deal: this.page.docname, contact }, done)
 	}
 }
