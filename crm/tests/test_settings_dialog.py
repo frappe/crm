@@ -149,7 +149,7 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 
 		self.assertEqual(
 			[(block["key"], block["component"]) for block in users["blocks"]],
-			[("users", "users"), ("invite", "invite")],
+			[("users", "users"), ("invite", "invite"), ("sales-hierarchy", "sales-hierarchy")],
 		)
 		self.assertTrue(
 			all(block["roles"] == ["Sales Manager", "System Manager"] for block in users["blocks"])
@@ -163,7 +163,8 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			self.assertIsNone(self.visible_pane("users"))
 		with set_user(SALES_MANAGER):
 			self.assertEqual(
-				[block["key"] for block in self.visible_pane("users")["blocks"]], ["users", "invite"]
+				[block["key"] for block in self.visible_pane("users")["blocks"]],
+				["users", "invite", "sales-hierarchy"],
 			)
 
 	def test_crm_ships_the_erpnext_pane_with_a_product_sync_block(self):
