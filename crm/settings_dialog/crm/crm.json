@@ -66,6 +66,14 @@
    "settings": "[{\"label\": \"Invite users by email\", \"keywords\": [\"invite\", \"invitation\", \"new user\", \"email\"]}]"
   },
   {
+   "component": "sales-hierarchy",
+   "key": "sales-hierarchy",
+   "label": "Sales hierarchy",
+   "pane": "users",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "settings": "[{\"label\": \"Sales hierarchy\", \"keywords\": [\"reports to\", \"manager\", \"team\", \"tree\", \"reporting\"]}]"
+  },
+  {
    "binding_type": "Single",
    "document_type": "WhatsApp Settings",
    "key": "whatsapp",
@@ -101,7 +109,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-31 19:00:00.000000",
+ "modified": "2026-10-31 21:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
