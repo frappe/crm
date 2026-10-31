@@ -41,9 +41,25 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 
 		self.assertEqual(
 			[(block["key"], block["save_mode"]) for block in general["blocks"]],
-			[("deals", "button"), ("communication", "auto"), ("activity-timeline", "auto")],
+			[("deals", "button"), ("communication", "auto"), ("exchange-rates", "button")],
 		)
+		self.assertEqual(general["blocks"][2]["fields"], ["service_provider", "access_key"])
 		self.assertTrue(all(block["binding"]["doctype"] == "FCRM Settings" for block in general["blocks"]))
+		self.assertTrue(
+			all(block["roles"] == ["Sales Manager", "System Manager"] for block in general["blocks"])
+		)
+
+	def test_only_a_manager_sees_the_general_pane(self):
+		self.make_user(SALES_USER, "Sales User")
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with set_user(SALES_USER):
+			self.assertIsNone(self.visible_pane("general"))
+		with set_user(SALES_MANAGER):
+			self.assertEqual(
+				[block["key"] for block in self.visible_pane("general")["blocks"]],
+				["deals", "communication", "exchange-rates"],
+			)
 
 	def test_crm_ships_the_telephony_pane_on_the_twilio_and_exotel_singles(self):
 		telephony = self.pane("crm", "telephony")
