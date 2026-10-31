@@ -13,14 +13,13 @@ from crm.patches.v1_0 import encrypt_twilio_api_secret
 SECRET = "twilio-test-secret"
 
 
-class FakeTwilio:
-	def __init__(self, account_sid, auth_token):
-		app = SimpleNamespace(sid="AP-test", friendly_name="Frappe CRM")
-		self.api = SimpleNamespace(accounts=lambda sid: SimpleNamespace(fetch=lambda: None))
-		self.new_keys = SimpleNamespace(
-			create=lambda friendly_name: SimpleNamespace(sid="SK-test", secret=SECRET)
-		)
-		self.applications = SimpleNamespace(list=lambda *args: [app], create=lambda **kwargs: app)
+def fake_twilio(account_sid, auth_token):
+	app = SimpleNamespace(sid="AP-test", friendly_name="Frappe CRM")
+	return SimpleNamespace(
+		api=SimpleNamespace(accounts=lambda sid: SimpleNamespace(fetch=lambda: None)),
+		new_keys=SimpleNamespace(create=lambda friendly_name: SimpleNamespace(sid="SK-test", secret=SECRET)),
+		applications=SimpleNamespace(list=lambda *args: [app], create=lambda **kwargs: app),
+	)
 
 
 class TestCRMTwilioSettings(IntegrationTestCase):
@@ -32,7 +31,7 @@ class TestCRMTwilioSettings(IntegrationTestCase):
 		settings = frappe.get_single("CRM Twilio Settings")
 		settings.update({"enabled": 1, "account_sid": "AC-test", "auth_token": "token", "api_key": None})
 
-		with patch("crm.fcrm.doctype.crm_twilio_settings.crm_twilio_settings.Client", FakeTwilio):
+		with patch("crm.fcrm.doctype.crm_twilio_settings.crm_twilio_settings.Client", fake_twilio):
 			settings.save()
 
 		self.assertNotIn(SECRET, (settings.api_secret, self.stored_secret()))
