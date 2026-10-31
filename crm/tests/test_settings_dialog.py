@@ -6,6 +6,7 @@ import os
 from unittest.mock import patch
 
 import frappe
+from frappe.shell.settings import _installed_doctypes as installed_doctypes
 from frappe.shell.settings import resolve_panes
 from frappe.shell.settings_filter import SettingsFilter
 from frappe.tests import IntegrationTestCase
@@ -159,6 +160,58 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			self.assertIsNone(self.visible_pane("users"))
 		with set_user(SALES_MANAGER):
 			self.assertEqual([block["key"] for block in self.visible_pane("users")["blocks"]], ["users"])
+
+	def test_crm_ships_the_erpnext_pane_with_a_product_sync_block(self):
+		erpnext = self.pane("crm", "erpnext")
+
+		self.assertEqual(
+			[(block["key"], block["save_mode"]) for block in erpnext["blocks"]],
+			[("erpnext", "button"), ("product-sync", "button")],
+		)
+		self.assertEqual(erpnext["blocks"][0]["binding"]["doctype"], "ERPNext CRM Settings")
+		self.assertNotIn("sync_products", erpnext["blocks"][0]["fields"])
+		self.assertEqual(erpnext["blocks"][1]["component"], "productSync")
+		self.assertEqual(
+			erpnext["blocks"][1]["bindings"],
+			{"settings": {"type": "Single", "doctype": "ERPNext CRM Settings"}},
+		)
+		self.assertEqual(erpnext["blocks"][1]["fields"], ["sync_products"])
+		self.assertTrue(
+			all(block["roles"] == ["Sales Manager", "System Manager"] for block in erpnext["blocks"])
+		)
+
+	def test_only_a_manager_sees_the_erpnext_pane(self):
+		self.make_user(SALES_USER, "Sales User")
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with set_user(SALES_USER):
+			self.assertIsNone(self.visible_pane("erpnext"))
+		with set_user(SALES_MANAGER):
+			self.assertEqual(
+				[block["key"] for block in self.visible_pane("erpnext")["blocks"]],
+				["erpnext", "product-sync"],
+			)
+
+	def test_the_whatsapp_pane_shows_only_where_frappe_whatsapp_is_installed(self):
+		with patch(
+			"frappe.shell.settings._installed_doctypes",
+			side_effect=lambda blocks: installed_doctypes(blocks) - {"WhatsApp Settings"},
+		):
+			self.assertNotIn(("crm", "whatsapp"), self.pane_addresses())
+
+		with patch(
+			"frappe.shell.settings._installed_doctypes",
+			side_effect=lambda blocks: installed_doctypes(blocks) | {"WhatsApp Settings"},
+		):
+			whatsapp = self.pane("crm", "whatsapp")
+
+		self.assertEqual([block["key"] for block in whatsapp["blocks"]], ["whatsapp"])
+		self.assertEqual(whatsapp["blocks"][0]["binding"]["doctype"], "WhatsApp Settings")
+		self.assertNotIn("fields", whatsapp["blocks"][0])
+		self.assertEqual(whatsapp["blocks"][0]["roles"], ["Sales Manager", "System Manager"])
+
+	def pane_addresses(self):
+		return [(pane["app"], pane["key"]) for pane in resolve_panes()]
 
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)
