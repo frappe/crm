@@ -20,7 +20,7 @@
 import { computed } from 'vue'
 import { Button } from 'frappe-ui'
 import { __ } from 'frappe/i18n'
-import { canEdit, isLegacy, switchToBuilder } from './assignmentRule.js'
+import { canEdit, isLegacy, switchToBuilder } from './conditions.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },

@@ -65,6 +65,61 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			sla.insert()
 
+	def test_validate_dates(self):
+		with self.assertRaisesRegex(frappe.ValidationError, "End Date cannot be before Start Date"):
+			create_test_sla(sla_name="Backwards SLA", start_date="2026-02-01", end_date="2026-01-31")
+
+		sla = create_test_sla(sla_name="One Day SLA", start_date="2026-02-01", end_date="2026-02-01")
+		self.assertTrue(sla.name)
+
+	def test_validate_unique_priorities(self):
+		sla = create_test_sla_with_priorities(sla_name="Repeated Priority SLA")
+		sla.append("priorities", {"priority": "High", "first_response_time": 600})
+
+		with self.assertRaisesRegex(frappe.ValidationError, "Priorities must be unique: High"):
+			sla.save()
+
+	def test_validate_unique_workdays(self):
+		sla = create_test_sla_with_working_hours(sla_name="Repeated Workday SLA")
+		sla.append("working_hours", {"workday": "Monday", "start_time": time(18, 0), "end_time": time(20, 0)})
+
+		with self.assertRaisesRegex(frappe.ValidationError, "Each workday can appear only once: Monday"):
+			sla.save()
+
+	def test_validate_start_before_end(self):
+		for start, end in ((time(17, 0), time(9, 0)), (time(9, 0), time(9, 0))):
+			sla = create_test_sla_with_working_hours(sla_name=f"Inverted Hours SLA {start}-{end}")
+			sla.working_hours[0].start_time = start
+			sla.working_hours[0].end_time = end
+
+			with self.assertRaisesRegex(frappe.ValidationError, "End Time must be after Start Time"):
+				sla.save()
+
+	def test_blank_priorities_reach_the_mandatory_check(self):
+		sla = create_test_sla_with_working_hours(sla_name="Blank Priorities SLA")
+		sla.append("priorities", {"first_response_time": 60})
+		sla.append("priorities", {"first_response_time": 60})
+
+		with self.assertRaises(frappe.MandatoryError):
+			sla.save()
+
+	def test_midnight_read_back_is_still_checked(self):
+		sla = create_test_sla_with_working_hours(sla_name="Midnight SLA")
+		sla.working_hours[0].start_time = time(0, 0)
+		sla.save()
+
+		sla = frappe.get_doc("CRM Service Level Agreement", sla.name)
+		sla.working_hours[0].end_time = time(0, 0)
+		with self.assertRaisesRegex(frappe.ValidationError, "End Time must be after Start Time"):
+			sla.save()
+
+	def test_saved_sla_saves_again(self):
+		"""Times read back from the database are timedeltas; the checks must accept them."""
+		sla = create_test_sla_with_working_hours(sla_name="Reloaded SLA")
+		sla = frappe.get_doc("CRM Service Level Agreement", sla.name)
+		sla.rolling_responses = 1
+		sla.save()
+
 	def test_get_priorities(self):
 		"""Test get_priorities returns dict with priority as key"""
 		sla = create_test_sla_with_priorities()
