@@ -83,18 +83,21 @@ describe('ReachPicker search', () => {
     expect(addRows()).toEqual(['Add new@example.com'])
   })
 
-  it('selects the primary when the list closes but keeps focus, so typing replaces it', async () => {
+  it('selects the primary after Enter on it, so typing replaces it', async () => {
     const input = mountPicker(fakePage())
     await settle()
 
     input.focus()
     await settle()
     input.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
     )
     await settle()
     expect(document.activeElement).toBe(input)
     expect(input.value).toBe('a@example.com')
     expect([input.selectionStart, input.selectionEnd]).toEqual([0, 13])
+
+    await type(input, 'n')
+    expect(addRows()).toEqual(['Add n'])
   })
 })

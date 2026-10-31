@@ -73,11 +73,11 @@ const options = computed(() => [
 	},
 ])
 
-// Combobox puts the primary in its input on open and on a close that keeps focus (Enter on the
-// primary); typing would append to it, so the search empties or the text is selected.
+// Combobox puts the primary in its input on open and after Enter on it, so typing would append to it.
+// The search empties only while it shows the primary (IME text can land before the open), else is selected.
 function startNewValue(open) {
-	if (open) query.value = ''
-	else nextTick(selectSearch)
+	if (!open) nextTick(selectSearch)
+	else if (query.value === (props.modelValue ?? '')) query.value = ''
 }
 
 function rememberInput(event) {
