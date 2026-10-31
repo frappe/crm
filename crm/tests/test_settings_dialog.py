@@ -148,9 +148,12 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		users = self.pane("crm", "users")
 
 		self.assertEqual(
-			[(block["key"], block["component"]) for block in users["blocks"]], [("users", "users")]
+			[(block["key"], block["component"]) for block in users["blocks"]],
+			[("users", "users"), ("invite", "invite")],
 		)
-		self.assertEqual(users["blocks"][0]["roles"], ["Sales Manager", "System Manager"])
+		self.assertTrue(
+			all(block["roles"] == ["Sales Manager", "System Manager"] for block in users["blocks"])
+		)
 
 	def test_only_a_manager_sees_the_users_pane(self):
 		self.make_user(SALES_USER, "Sales User")
@@ -159,7 +162,9 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		with set_user(SALES_USER):
 			self.assertIsNone(self.visible_pane("users"))
 		with set_user(SALES_MANAGER):
-			self.assertEqual([block["key"] for block in self.visible_pane("users")["blocks"]], ["users"])
+			self.assertEqual(
+				[block["key"] for block in self.visible_pane("users")["blocks"]], ["users", "invite"]
+			)
 
 	def test_crm_ships_the_erpnext_pane_with_a_product_sync_block(self):
 		erpnext = self.pane("crm", "erpnext")

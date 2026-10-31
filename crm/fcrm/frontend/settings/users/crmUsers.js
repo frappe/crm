@@ -30,6 +30,11 @@ export function givenRoles(viewer) {
 	return ROLES.filter((role) => mayGive(viewer, role))
 }
 
+/** The CRM role a holder of `roles` acts as: the highest one they hold. */
+export function crmRole(roles) {
+	return ROLES.find((role) => roles.includes(role)) ?? ''
+}
+
 function mayGive(viewer, role) {
 	return viewer.role === 'System Manager' || role === 'Sales User'
 }

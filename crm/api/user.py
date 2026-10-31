@@ -179,6 +179,18 @@ def update_user_role(user: str, new_role: str):
 	user_doc.save(ignore_permissions=True)
 
 
+def after_invitation_accept(invitation, user, user_inserted: bool):
+	"""Give a CRM invitee the CRM roles below the invited one, adding to what they hold."""
+	invited = {row.role for row in invitation.roles}
+	if "System Manager" in invited:
+		user.append_roles("Sales Manager", "Sales User")
+	elif "Sales Manager" in invited:
+		user.append_roles("Sales User")
+	elif user_inserted:
+		update_module_in_user(user, "FCRM")
+	user.save(ignore_permissions=True)
+
+
 @frappe.whitelist()
 def remove_crm_roles_from_user(user: str):
 	"""

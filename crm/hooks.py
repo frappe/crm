@@ -247,6 +247,17 @@ scheduler_events = {
 
 before_tests = "crm.tests.before_tests"
 
+# Invitations
+# -----------
+
+user_invitation = {
+	"allowed_roles": {
+		"System Manager": ["System Manager", "Sales Manager", "Sales User"],
+		"Sales Manager": ["Sales User"],
+	},
+	"after_accept": ["crm.api.user.after_invitation_accept"],
+}
+
 # Overriding Methods
 # ------------------------------
 #

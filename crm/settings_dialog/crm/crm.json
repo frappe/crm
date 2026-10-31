@@ -52,9 +52,18 @@
   {
    "component": "users",
    "key": "users",
+   "label": "Users",
    "pane": "users",
    "roles": "[\"Sales Manager\", \"System Manager\"]",
    "settings": "[{\"label\": \"Users\", \"keywords\": [\"roles\", \"team\", \"members\", \"add user\", \"remove user\"]}]"
+  },
+  {
+   "component": "invite",
+   "key": "invite",
+   "label": "Invite users",
+   "pane": "users",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "settings": "[{\"label\": \"Invite users by email\", \"keywords\": [\"invite\", \"invitation\", \"new user\", \"email\"]}]"
   },
   {
    "binding_type": "Single",
@@ -92,7 +101,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-31 18:00:00.000000",
+ "modified": "2026-10-31 19:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",

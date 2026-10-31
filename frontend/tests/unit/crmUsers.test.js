@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  crmRole,
   givenRoles,
   listedUsers,
   removable,
@@ -79,5 +80,15 @@ describe('listedUsers', () => {
     expect(listedUsers(users, 'ravi')).toEqual([rep])
     expect(listedUsers(users, ' ADMIN@ ')).toEqual([admin])
     expect(listedUsers(users, 'nobody')).toEqual([])
+  })
+})
+
+describe('crmRole', () => {
+  it('reads the highest CRM role among the roles held', () => {
+    expect(crmRole(['All', 'Sales User', 'System Manager'])).toBe(
+      'System Manager',
+    )
+    expect(crmRole(['Sales User', 'Sales Manager'])).toBe('Sales Manager')
+    expect(crmRole(['Guest'])).toBe('')
   })
 })
