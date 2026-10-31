@@ -2,6 +2,7 @@
 <template>
 	<Combobox
 		class="w-full"
+		v-model:query="query"
 		:modelValue="modelValue || null"
 		:label="field.label"
 		:options="options"
@@ -10,6 +11,8 @@
 		:error="error"
 		:disabled="busy"
 		openOnFocus
+		@focus="rememberInput"
+		@update:open="startNewValue"
 		@update:modelValue="choose"
 	>
 		<template #item-add="{ query }">
@@ -19,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { Combobox } from 'frappe-ui'
 import { __ } from 'frappe/i18n'
 import { reachEditor } from './contactReach.js'
@@ -54,6 +57,8 @@ const TEXT = {
 const text = TEXT[props.field.fieldname]
 const editor = reachEditor(props.page, props.field.fieldname, { ...text, stale: STALE })
 const busy = editor.busy
+const query = ref('')
+let input = null
 
 const options = computed(() => [
 	...editor.values().map((value) => ({ label: value, value })),
@@ -67,6 +72,21 @@ const options = computed(() => [
 		onClick: ({ query }) => settle(editor.add(query)),
 	},
 ])
+
+// Combobox puts the primary in its input on open and after Enter on it, so typing would append to it.
+// The search empties only while it shows the primary (IME text can land before the open), else is selected.
+function startNewValue(open) {
+	if (!open) nextTick(selectSearch)
+	else if (query.value === (props.modelValue ?? '')) query.value = ''
+}
+
+function rememberInput(event) {
+	input = event.target
+}
+
+function selectSearch() {
+	if (input && document.activeElement === input) input.select()
+}
 
 function choose(value) {
 	settle(editor.setPrimary(value))
