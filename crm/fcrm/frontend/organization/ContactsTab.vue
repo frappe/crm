@@ -2,9 +2,7 @@
 <template>
 	<LinkedList
 		:page="page"
-		doctype="Contact"
-		field="company_name"
-		:fields="CONTACT_FIELDS"
+		:source="CONTACTS"
 		:columns="columns"
 		:empty="__('No contacts')"
 	>
@@ -26,16 +24,16 @@ import { ListCell } from 'frappe-ui/list'
 import { TimeAgo } from '@framework/ui/ActivityTimeline'
 import { __ } from 'frappe/i18n'
 import LinkedList from './LinkedList.vue'
-import { CONTACT_FIELDS } from './organizationTabs.js'
+import { CONTACTS } from './organizationTabs.js'
 
 defineProps({
 	page: { type: Object, required: true },
 })
 
 const columns = [
-	{ label: __('Name'), width: 'minmax(10rem, 1fr)' },
-	{ label: __('Email'), width: 'minmax(10rem, 1fr)' },
-	{ label: __('Mobile No'), width: '10rem' },
-	{ label: __('Last Modified'), width: '8rem' },
+	{ label: __('Name'), width: 'minmax(0, 1.5fr)' },
+	{ label: __('Email'), width: 'minmax(0, 1.5fr)' },
+	{ label: __('Mobile No'), width: 'minmax(0, 1fr)' },
+	{ label: __('Last Modified'), width: 'minmax(0, 1fr)' },
 ]
 </script>

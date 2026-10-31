@@ -2,9 +2,7 @@
 <template>
 	<LinkedList
 		:page="page"
-		doctype="CRM Deal"
-		field="organization"
-		:fields="DEAL_FIELDS"
+		:source="DEALS"
 		:columns="columns"
 		:empty="__('No deals')"
 	>
@@ -26,11 +24,11 @@
 <script setup>
 import { ListCell } from 'frappe-ui/list'
 import { TimeAgo } from '@framework/ui/ActivityTimeline'
-import { formatCurrency, getFormatDefaults } from '@framework/ui/FormLayout'
+import { useFieldDisplay } from '@framework/ui/FormLayout'
 import { __ } from 'frappe/i18n'
 import { findStatus, statusInk } from '../status/statusChange.js'
 import LinkedList from './LinkedList.vue'
-import { DEAL_FIELDS } from './organizationTabs.js'
+import { DEALS } from './organizationTabs.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
@@ -38,22 +36,21 @@ const props = defineProps({
 })
 
 const columns = [
-	{ label: __('Deal'), width: 'minmax(11rem, 1fr)' },
-	{ label: __('Status'), width: '11rem' },
-	{ label: __('Amount'), width: '9rem', align: 'right' },
-	{ label: __('Deal Owner'), width: '10rem' },
-	{ label: __('Last Modified'), width: '8rem' },
+	{ label: __('Deal'), width: 'minmax(0, 1.4fr)' },
+	{ label: __('Status'), width: 'minmax(0, 1.4fr)' },
+	{ label: __('Amount'), width: 'minmax(0, 1.1fr)', align: 'right' },
+	{ label: __('Deal Owner'), width: 'minmax(0, 1.2fr)' },
+	{ label: __('Last Modified'), width: 'minmax(0, 1fr)' },
 ]
+
+const DEAL_VALUE = { fieldname: 'deal_value', fieldtype: 'Currency', options: 'currency' }
+const display = useFieldDisplay()
 
 function ink(status) {
 	return statusInk(findStatus(props.statuses, status)?.color)
 }
 
 function amount(row) {
-	if (!row.deal_value) return ''
-	return formatCurrency(row.deal_value, {
-		numberFormat: getFormatDefaults().number_format,
-		currency: row.currency,
-	})
+	return display(DEAL_VALUE, row.deal_value, { doc: row })
 }
 </script>

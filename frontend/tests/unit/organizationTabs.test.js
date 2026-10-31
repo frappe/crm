@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
-  CONTACT_FIELDS,
-  DEAL_FIELDS,
+  CONTACTS,
+  DEALS,
   linkedQuery,
   placeOrganizationTabs,
 } from '../../../crm/fcrm/frontend/organization/organizationTabs.js'
@@ -69,18 +69,18 @@ describe('placeOrganizationTabs', () => {
 })
 
 describe('linkedQuery', () => {
-  it("filters deals on the deal's organization, newest change first", () => {
-    expect(linkedQuery(DEAL_FIELDS, 'organization', 'Org 45891')).toEqual({
-      fields: DEAL_FIELDS,
+  it("lists CRM Deals by the deal's organization, newest change first", () => {
+    expect(DEALS.doctype).toBe('CRM Deal')
+    expect(linkedQuery(DEALS, 'Org 45891')).toEqual({
+      fields: DEALS.fields,
       filters: { organization: 'Org 45891' },
       order_by: 'modified desc',
     })
   })
 
-  it("filters contacts on the contact's company", () => {
-    expect(
-      linkedQuery(CONTACT_FIELDS, 'company_name', 'Org 45891').filters,
-    ).toEqual({
+  it("lists Contacts by the contact's company", () => {
+    expect(CONTACTS.doctype).toBe('Contact')
+    expect(linkedQuery(CONTACTS, 'Org 45891').filters).toEqual({
       company_name: 'Org 45891',
     })
   })
