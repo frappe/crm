@@ -1,7 +1,5 @@
 // CRM's global acts on desk v2's shell surface, run from the palette as `shell.crm.<name>`.
 import { __ } from 'frappe/i18n'
-// The shell loads this file at idle on every page: the one place an app's code runs at start.
-import './afterSave'
 
 export default [
 	{
