@@ -3,6 +3,7 @@ import {
   REACH_METHODS,
   ReachEditor,
   placeReachPickers,
+  reachEditor,
 } from '../../../crm/fcrm/frontend/contact/contactReach.js'
 
 const ReachPicker = { name: 'ReachPicker' }
@@ -97,6 +98,19 @@ describe('ReachEditor', () => {
     expect(new ReachEditor(page, 'email_id', MESSAGES).values()).toEqual([])
   })
 
+  it('still offers a primary that no row holds, first', () => {
+    const page = fakePage({
+      doc: {
+        email_id: 'old@example.com',
+        email_ids: [{ email_id: 'a@example.com' }],
+      },
+    })
+    expect(new ReachEditor(page, 'email_id', MESSAGES).values()).toEqual([
+      'old@example.com',
+      'a@example.com',
+    ])
+  })
+
   it('offers to add only a typed value the contact does not have', () => {
     const editor = new ReachEditor(fakePage(), 'email_id', MESSAGES)
     expect(editor.canAdd(' new@example.com ')).toBe(true)
@@ -177,5 +191,15 @@ describe('ReachEditor', () => {
     expect(done).toBe(false)
     expect(page.toast.error).toHaveBeenCalledWith('Invalid Email Address')
     expect(page.reload).not.toHaveBeenCalled()
+  })
+})
+
+describe('reachEditor', () => {
+  it('keeps one editor per page and field, so a stale lock outlives a reopen', () => {
+    const page = fakePage()
+    const editor = reachEditor(page, 'email_id', MESSAGES)
+    expect(reachEditor(page, 'email_id', MESSAGES)).toBe(editor)
+    expect(reachEditor(page, 'mobile_no', MESSAGES)).not.toBe(editor)
+    expect(reachEditor(fakePage(), 'email_id', MESSAGES)).not.toBe(editor)
   })
 })

@@ -13,9 +13,7 @@
 		@update:modelValue="choose"
 	>
 		<template #item-add="{ query }">
-			<span class="truncate">
-				{{ __('Add') }} <span class="font-medium text-ink-gray-8">{{ query.trim() }}</span>
-			</span>
+			<span class="truncate">{{ __('Add {0}', [query.trim()]) }}</span>
 		</template>
 	</Combobox>
 </template>
@@ -24,7 +22,7 @@
 import { computed } from 'vue'
 import { Combobox } from 'frappe-ui'
 import { __ } from 'frappe/i18n'
-import { ReachEditor } from './contactReach.js'
+import { reachEditor } from './contactReach.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
@@ -33,7 +31,7 @@ const props = defineProps({
 	error: { type: [String, Array], default: null },
 })
 
-// A `change` closes the panel's inline editor once the write is done.
+// A `change` closes the panel's inline editor once the write is done; the pick never reaches the draft.
 const emit = defineEmits(['change'])
 
 const STALE = __('This contact changed while you were editing. Reload it to see the change; unsaved edits will be lost.')
@@ -54,7 +52,7 @@ const TEXT = {
 }
 
 const text = TEXT[props.field.fieldname]
-const editor = new ReachEditor(props.page, props.field.fieldname, { ...text, stale: STALE })
+const editor = reachEditor(props.page, props.field.fieldname, { ...text, stale: STALE })
 const busy = editor.busy
 
 const options = computed(() => [

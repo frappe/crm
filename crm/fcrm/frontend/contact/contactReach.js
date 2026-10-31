@@ -6,7 +6,7 @@ export const REACH_METHODS = {
 	add: 'crm.api.contact.create_new',
 }
 
-// Per picker: the child table it reads, that table's value column, and the `field` each method expects.
+// The two methods spell the mobile differently: `mobile_no` to set the primary, `phone` to add one.
 export const REACH = {
 	email_id: { table: 'email_ids', column: 'email_id', primaryAs: 'email', addAs: 'email' },
 	mobile_no: { table: 'phone_nos', column: 'phone', primaryAs: 'mobile_no', addAs: 'phone' },
@@ -22,6 +22,17 @@ export function placeReachPickers(page, component) {
 	}
 }
 
+// The panel unmounts the picker on every close: one editor per page keeps its stale lock across reopens.
+const editors = new WeakMap()
+
+/** The page's editor for one picker, made on first use. */
+export function reachEditor(page, fieldname, messages) {
+	if (!editors.has(page)) editors.set(page, {})
+	const byField = editors.get(page)
+	byField[fieldname] ??= new ReachEditor(page, fieldname, messages)
+	return byField[fieldname]
+}
+
 /** One picker's choices and writes: the primary comes from the contact's rows, a new value is added to them. */
 export class ReachEditor {
 	constructor(page, fieldname, messages) {
@@ -33,13 +44,14 @@ export class ReachEditor {
 		this.busy = this.writes.busy
 	}
 
-	/** The contact's values for this picker, in table order, each once. */
+	/** The contact's values in table order, each once; a primary no row holds still shows, first. */
 	values() {
 		const rows = this.page.doc?.[this.reach.table] ?? []
-		return [...new Set(rows.map((row) => row[this.reach.column]).filter(Boolean))]
+		const current = this.page.doc?.[this.fieldname]
+		const values = [...new Set(rows.map((row) => row[this.reach.column]).filter(Boolean))]
+		return current && !values.includes(current) ? [current, ...values] : values
 	}
 
-	/** Whether the typed value is new to the contact. */
 	canAdd(value) {
 		const typed = value?.trim()
 		return Boolean(typed) && !this.values().includes(typed)
