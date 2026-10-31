@@ -78,6 +78,8 @@ class CRMDeal(Document):
 	# end: auto-generated types
 
 	def before_insert(self):
+		self.add_contact_from_link()
+
 		# apply CRM enrichment (source/organization/contact) when created via a web form
 		from crm.api.form import enrich_form_submission
 
@@ -123,6 +125,13 @@ class CRMDeal(Document):
 				self.status = "Qualification"
 			else:
 				self.status = frappe.get_all("CRM Deal Status", {"type": "Open"}, pluck="name")[0]
+
+	def add_contact_from_link(self):
+		"""Quick Entry sets only the `contact` Link; the deal's contacts are its `contacts` rows."""
+		if self.contact and not any(row.contact == self.contact for row in self.contacts):
+			self.append("contacts", {"contact": self.contact})
+			# insert() fetches link values before before_insert; refetch so the new row gets its email and phone
+			self._validate_links()
 
 	def set_primary_contact(self, contact=None):
 		if not self.contacts:

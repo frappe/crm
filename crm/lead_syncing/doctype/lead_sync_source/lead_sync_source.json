@@ -90,7 +90,7 @@
    "link_fieldname": "source"
   }
  ],
- "modified": "2026-02-23 12:45:55.637376",
+ "modified": "2026-10-31 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Lead Syncing",
  "name": "Lead Sync Source",
@@ -122,6 +122,7 @@
    "write": 1
   }
  ],
+ "quick_entry": 1,
  "row_format": "Dynamic",
  "sort_field": "creation",
  "sort_order": "DESC",

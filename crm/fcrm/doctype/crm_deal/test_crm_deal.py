@@ -430,6 +430,20 @@ class TestCRMDeal(IntegrationTestCase):
 			settings.enable_forecasting = original_value
 			settings.save()
 
+	def test_contact_link_becomes_the_primary_contact(self):
+		"""Quick Entry sets only the `contact` Link"""
+		contact = create_test_contact(first_name="Quick", last_name="Entry", email="quick.entry@example.com")
+		deal = create_test_deal(contact=contact.name, status="Qualification")
+
+		self.assertEqual([(row.contact, row.is_primary) for row in deal.contacts], [(contact.name, 1)])
+		self.assertEqual(deal.email, "quick.entry@example.com")
+
+	def test_create_deal_api_adds_contact_once(self):
+		contact = create_test_contact(first_name="Only", last_name="Once", email="only.once@example.com")
+		deal = frappe.get_doc("CRM Deal", create_deal({"contact": contact.name, "status": "Qualification"}))
+
+		self.assertEqual([row.contact for row in deal.contacts], [contact.name])
+
 	def test_single_contact_auto_primary(self):
 		"""Test that single contact is automatically set as primary"""
 		contact = create_test_contact(first_name="Auto", email="auto@example.com")
