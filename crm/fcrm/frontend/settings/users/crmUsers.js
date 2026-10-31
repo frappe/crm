@@ -30,6 +30,17 @@ export function givenRoles(viewer) {
 	return ROLES.filter((role) => mayGive(viewer, role))
 }
 
+/** The CRM role a holder of `roles` acts as: the highest one they hold. */
+export function crmRole(roles) {
+	return ROLES.find((role) => roles.includes(role)) ?? ''
+}
+
+/** `roles` with the CRM roles each one implies, as `crm.api.user.update_user_role` gives them. */
+export function withImpliedRoles(roles) {
+	const highest = ROLES.findIndex((role) => roles.includes(role))
+	return [...new Set([...roles, ...(highest < 0 ? [] : ROLES.slice(highest))])]
+}
+
 function mayGive(viewer, role) {
 	return viewer.role === 'System Manager' || role === 'Sales User'
 }

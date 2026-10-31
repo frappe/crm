@@ -247,6 +247,17 @@ scheduler_events = {
 
 before_tests = "crm.tests.before_tests"
 
+# Invitations
+# -----------
+
+# frappe's User Invitation reads this for app_name "crm": inviter role → roles it may give
+user_invitation = {
+	"allowed_roles": {
+		"System Manager": ["System Manager", "Sales Manager", "Sales User"],
+		"Sales Manager": ["Sales User"],
+	},
+}
+
 # Overriding Methods
 # ------------------------------
 #
