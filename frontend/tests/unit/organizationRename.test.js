@@ -28,11 +28,12 @@ describe('renameFromOrganizationName', () => {
     expect(page.rename).toHaveBeenCalledWith('Org 45895 Renamed')
   })
 
-  it('does nothing when the name is unchanged', async () => {
+  it('only trims a name that is otherwise unchanged', async () => {
     const page = fakePage(' Org 45895 ')
     await renameFromOrganizationName(page)
     expect(page.rename).not.toHaveBeenCalled()
     expect(page.save).not.toHaveBeenCalled()
+    expect(page.doc.organization_name).toBe('Org 45895')
   })
 
   it('puts the record name back and saves it when the rename is refused after its save', async () => {

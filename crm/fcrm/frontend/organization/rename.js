@@ -1,11 +1,10 @@
 // CRM Organization is named by `organization_name`, so an edit to it renames the record, as CRM v1 does.
 
-/** The `organization_name` field handler: renames the saved record to the edited name. */
 export async function renameFromOrganizationName(page) {
+	if (page.isNew) return
 	const name = (page.doc.organization_name ?? '').trim()
-	if (page.isNew || name === page.docname) return
-	if (name && (await page.rename(name))) return
-	// The rename saved the edited name first; a refused one must not leave it apart from the record's name.
+	if (name && name !== page.docname && (await page.rename(name))) return
+	// `page.rename` saves the edited name first, so a refused rename must put the record's name back.
 	page.doc.organization_name = page.docname
 	if (page.saved.organization_name !== page.docname) await page.save()
 }
