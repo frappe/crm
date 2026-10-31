@@ -8,6 +8,7 @@
    "key": "deals",
    "label": "Deals",
    "pane": "general",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
    "save_mode": "button"
   },
   {
@@ -17,16 +18,18 @@
    "key": "communication",
    "label": "Communication",
    "pane": "general",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
    "save_mode": "auto"
   },
   {
    "binding_type": "Single",
    "document_type": "FCRM Settings",
-   "fields": "[\"crm_timeline_timestamp_format\", \"crm_timeline_sort_order\"]",
-   "key": "activity-timeline",
-   "label": "Activity timeline",
+   "fields": "[\"service_provider\", \"access_key\"]",
+   "key": "exchange-rates",
+   "label": "Exchange rates",
    "pane": "general",
-   "save_mode": "auto"
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "save_mode": "button"
   },
   {
    "binding_type": "Single",
@@ -59,13 +62,13 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-31 13:00:00.000000",
+ "modified": "2026-10-31 14:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
  "panes": [
   {
-   "description": "Forecasting, currency, communication and the activity timeline.",
+   "description": "Forecasting, currency, communication and exchange rates.",
    "icon": "sliders-horizontal",
    "key": "general",
    "label": "General"
