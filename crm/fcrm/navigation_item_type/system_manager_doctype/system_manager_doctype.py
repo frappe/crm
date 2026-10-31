@@ -2,7 +2,7 @@
 # MIT License. See license.txt
 
 """The server half of the `System Manager DocType` navigation item kind: a doctype's list that
-only a System Manager is offered, though other roles may read the doctype (CRM Form Script)."""
+only a System Manager who reads it is offered, though other roles may read it (CRM Form Script)."""
 
 from typing import TYPE_CHECKING
 
@@ -13,4 +13,6 @@ if TYPE_CHECKING:
 
 
 def can_see(items: list[dict], context: "NavigationContext") -> list[dict]:
-	return items if "System Manager" in frappe.get_roles(context.user) else []
+	if "System Manager" not in frappe.get_roles(context.user):
+		return []
+	return [item for item in items if context.may_read(item.get("link_to"))]

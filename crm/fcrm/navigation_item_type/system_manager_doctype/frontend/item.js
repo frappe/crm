@@ -1,4 +1,3 @@
-// The `System Manager DocType` kind: a doctype's list, offered only to a System Manager.
 import { routeFor } from '@shell'
 
 export default {

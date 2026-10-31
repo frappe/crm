@@ -53,7 +53,6 @@ class CRMFormScript(Document):
 		self.set_analysis()
 
 	def set_analysis(self):
-		"""What desk v2 makes of the script: its v1 shape, its status and each v1 call."""
 		analysis = analyse(self.script, self.dt, self.view)
 		self.v1_shape = analysis.shape
 		self.migration_status = migration_status(analysis)

@@ -4,6 +4,7 @@
 """The CRM Form Script list as the report: each row's v1 shape, status and calls (frappe/frappe#45967)."""
 
 import os
+from unittest.mock import patch
 
 import frappe
 from frappe.shell.navigation import resolve_navigation
@@ -103,7 +104,9 @@ class TestFormScriptReport(IntegrationTestCase):
 			self.assertTrue(frappe.db.get_value("CRM Form Script", name, "migration_status"), name)
 
 	def test_the_standard_scripts_need_only_a_rewrite(self):
-		for name in frappe.get_all("CRM Form Script", filters={"is_standard": 1}, pluck="name"):
+		standard = frappe.get_all("CRM Form Script", filters={"is_standard": 1}, pluck="name")
+		self.assertTrue(standard)
+		for name in standard:
 			refresh_analysis(name)
 			self.assertEqual(frappe.db.get_value("CRM Form Script", name, "migration_status"), REWRITE, name)
 
@@ -129,7 +132,9 @@ class TestFormScriptReportPermissions(IntegrationTestCase):
 				fields=["v1_shape", "migration_status"],
 			)
 			self.assertEqual(row, [{"v1_shape": "setupList", "migration_status": REWRITE_WITH_GAPS}], user)
-			self.assertTrue(frappe.get_doc("CRM Form Script", self.script.name).v1_calls, user)
+			doc = frappe.get_doc("CRM Form Script", self.script.name)
+			doc.check_permission("read")
+			self.assertTrue(doc.v1_calls, user)
 			self.assertFalse(frappe.has_permission("CRM Form Script", "write", user=user), user)
 
 	def test_only_a_system_manager_is_offered_the_setup_row(self):
@@ -141,3 +146,20 @@ class TestFormScriptReportPermissions(IntegrationTestCase):
 			frappe.set_user(user)
 			rows = resolve_navigation("crm")["sidebars"].get("module_def_fcrm", [])
 			self.assertEqual("form-scripts" in [row["key"] for row in rows], offered, user)
+
+	def test_a_system_manager_who_cannot_read_form_scripts_is_not_offered_the_row(self):
+		frappe.set_user(self.system_manager)
+
+		with readable_without("CRM Form Script"):
+			rows = resolve_navigation("crm")["sidebars"].get("module_def_fcrm", [])
+
+		self.assertNotIn("form-scripts", [row["key"] for row in rows])
+
+
+def readable_without(doctype: str):
+	from frappe.shell.doctypes import get_readable_doctypes
+
+	return patch(
+		"frappe.shell.doctypes.get_readable_doctypes",
+		return_value=get_readable_doctypes() - {doctype},
+	)

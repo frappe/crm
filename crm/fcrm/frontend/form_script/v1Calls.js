@@ -5,7 +5,6 @@ export const GUIDE = 'https://github.com/frappe/crm/blob/desk-v2/docs/form-scrip
 const NO_COUNTERPART = 'No counterpart'
 const ISSUE = /^https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/issues\/(\d+)$/
 
-/** Adds the section, open, after the people rows; a new script has no calls yet. */
 export function placeCallsSection(page, section) {
 	if (page.isNew) return
 	page.panelSections.add({
@@ -16,7 +15,6 @@ export function placeCallsSection(page, section) {
 	})
 }
 
-/** Each stored call with its guide link, and for no counterpart its gap as a link or a reason. */
 export function callRows(calls = []) {
 	return calls.map((call) => ({
 		name: call.name,

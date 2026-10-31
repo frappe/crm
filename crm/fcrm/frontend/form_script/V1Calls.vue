@@ -1,8 +1,6 @@
-<!-- A CRM Form Script's v1 calls by line, each linking to its guide section, with the gap for one
-     that has no counterpart on desk v2. -->
 <template>
-	<ol v-if="calls.length" class="-mx-2 flex flex-col pb-2">
-		<li v-for="row in calls" :key="row.name" class="flex gap-2 rounded-2 px-2 py-1.5 hover:bg-surface-gray-1">
+	<ol v-if="calls.length" class="flex flex-col pb-2">
+		<li v-for="row in calls" :key="row.name" class="flex gap-2 py-1.5">
 			<span class="w-7 shrink-0 text-right font-mono text-sm tabular-nums text-ink-gray-5">{{ row.line }}</span>
 			<div class="flex min-w-0 flex-col gap-1">
 				<a
