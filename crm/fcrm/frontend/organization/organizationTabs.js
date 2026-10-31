@@ -22,8 +22,3 @@ export function placeOrganizationTabs(page, tabs, readStatuses) {
 	page.tabs.add({ name: 'contacts', icon: 'lucide-contact', ...tabs.contacts })
 	page.tabs.order(['deals', 'contacts'])
 }
-
-/** The list query for `source`'s rows that name the organization, newest change first. */
-export function linkedQuery(source, organization) {
-	return { fields: source.fields, filters: { [source.field]: organization }, order_by: 'modified desc' }
-}

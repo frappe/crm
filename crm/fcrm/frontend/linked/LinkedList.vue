@@ -1,8 +1,8 @@
-<!-- A tab's table of the records that link to the organization, each row opening its record. -->
+<!-- A tab's table of the records that link to the page's record, each row opening its record. -->
 <template>
 	<div class="flex flex-col gap-3 px-[--page-gutter] pb-8 pt-4">
 		<List
-			v-if="list.rows.value.length"
+			v-if="rows.length"
 			:columns="columns.map((column) => column.width)"
 			:rowHeight="40"
 			class="-mx-2 list-row-px-2 list-gap-4"
@@ -16,7 +16,7 @@
 					{{ column.label }}
 				</ListHeaderCell>
 			</ListHeader>
-			<ListRow v-for="row in list.rows.value" :key="row.name" :route="routeFor(source.doctype, row.name)">
+			<ListRow v-for="row in rows" :key="row.name" :route="routeFor(source.doctype, row.name)">
 				<slot :row="row" />
 			</ListRow>
 		</List>
@@ -34,12 +34,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Button, Skeleton } from 'frappe-ui'
 import { List, ListHeader, ListHeaderCell, ListRow } from 'frappe-ui/list'
 import { usePagedList } from '@framework/ui'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
-import { linkedQuery } from './organizationTabs.js'
+import { linkedQuery, uniqueRows } from './linkedQuery.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
@@ -50,4 +51,5 @@ const props = defineProps({
 
 const list = usePagedList(props.source.doctype, () => linkedQuery(props.source, props.page.docname))
 list.reload()
+const rows = computed(() => uniqueRows(list.rows.value))
 </script>

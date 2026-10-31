@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   CONTACTS,
   DEALS,
-  linkedQuery,
   placeOrganizationTabs,
 } from '../../../crm/fcrm/frontend/organization/organizationTabs.js'
+import { linkedQuery } from '../../../crm/fcrm/frontend/linked/linkedQuery.js'
 
 const DealsTab = { name: 'DealsTab' }
 const ContactsTab = { name: 'ContactsTab' }
