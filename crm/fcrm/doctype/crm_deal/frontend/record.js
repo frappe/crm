@@ -1,5 +1,5 @@
 import { addEnrichItem } from "../../../frontend/enrich/index.js";
-import { addStatusControl } from "../../../frontend/status/index.js";
+import { addStatusControl, askReasonForLostStatus } from "../../../frontend/status/index.js";
 
 export default {
 	onRefresh(page) {
@@ -7,4 +7,5 @@ export default {
 		addStatusControl(page);
 		addEnrichItem(page);
 	},
+	status: askReasonForLostStatus,
 };

@@ -2,16 +2,19 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   changeStatus,
   findStatus,
+  keepLostReason,
   statusInk,
   placeStatusControl,
   statusPicker,
 } from '../../../crm/fcrm/frontend/status/statusChange.js'
 
-function fakePage(status, save = () => Promise.resolve()) {
+function fakePage(status, save = () => Promise.resolve(), reason = null) {
   const page = {
+    doctype: 'CRM Deal',
     doc: { status },
     saved: { status },
     toast: { error: vi.fn() },
+    dialog: { form: vi.fn(() => Promise.resolve(reason)) },
     save: vi.fn(() => {
       page.savedWith = page.doc.status
       return save()
@@ -77,6 +80,83 @@ describe('changeStatus', () => {
     await changeStatus(page, { name: 'Negotiation' })
     expect(page.doc.status).toBe('Won')
     expect(page.toast.error).not.toHaveBeenCalled()
+  })
+})
+
+describe('changeStatus to a Lost status', () => {
+  const lost = { name: 'Lost', type: 'Lost' }
+
+  it('asks for the lost reason, then saves it with the status', async () => {
+    const reason = { lost_reason: 'Other', lost_notes: 'Went with a rival' }
+    const page = fakePage('Negotiation', undefined, reason)
+    await changeStatus(page, lost, 'Lost Reason')
+    expect(page.dialog.form).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Lost Reason',
+        doctype: 'CRM Deal',
+        fieldnames: ['lost_reason', 'lost_notes'],
+        required: ['lost_reason'],
+      }),
+    )
+    expect(page.save).toHaveBeenCalledTimes(1)
+    expect(page.doc).toMatchObject({ status: 'Lost', ...reason })
+  })
+
+  it('keeps the old status and saves nothing when the dialog is cancelled', async () => {
+    const page = fakePage('Negotiation', undefined, null)
+    await changeStatus(page, lost)
+    expect(page.save).not.toHaveBeenCalled()
+    expect(page.doc.status).toBe('Negotiation')
+  })
+
+  it('opens the dialog on the reason the record already has', async () => {
+    const page = fakePage('Negotiation', undefined, null)
+    page.doc.lost_reason = 'Pricing'
+    await changeStatus(page, lost)
+    expect(page.dialog.form.mock.calls[0][0].defaults).toEqual({
+      lost_reason: 'Pricing',
+    })
+  })
+
+  it('asks nothing for a status of another type', async () => {
+    const page = fakePage('New')
+    await changeStatus(page, { name: 'Won', type: 'Won' })
+    expect(page.dialog.form).not.toHaveBeenCalled()
+    expect(page.savedWith).toBe('Won')
+  })
+})
+
+describe('keepLostReason', () => {
+  const statuses = [
+    { name: 'Negotiation', type: 'Ongoing' },
+    { name: 'Lost', type: 'Lost' },
+  ]
+
+  function editedPage(status, reason) {
+    const page = fakePage('Negotiation', undefined, reason)
+    page.doc.status = status
+    return page
+  }
+
+  it('writes the reason into the draft without saving', async () => {
+    const page = editedPage('Lost', { lost_reason: 'Pricing', lost_notes: '' })
+    await keepLostReason(page, Promise.resolve(statuses), 'Lost Reason')
+    expect(page.doc).toMatchObject({ status: 'Lost', lost_reason: 'Pricing' })
+    expect(page.save).not.toHaveBeenCalled()
+  })
+
+  it('goes back to the saved status when the dialog is cancelled', async () => {
+    const page = editedPage('Lost', null)
+    await keepLostReason(page, Promise.resolve(statuses))
+    expect(page.doc.status).toBe('Negotiation')
+  })
+
+  it('leaves a status of another type alone', async () => {
+    const page = editedPage('Negotiation', null)
+    page.saved = { status: 'New' }
+    await keepLostReason(page, Promise.resolve(statuses))
+    expect(page.dialog.form).not.toHaveBeenCalled()
+    expect(page.doc.status).toBe('Negotiation')
   })
 })
 

@@ -20,7 +20,7 @@ const INK = {
 
 export const STATUS_FIELDS = ['name', 'color', 'position', 'type']
 
-const STATUS_DOCTYPES = { 'CRM Lead': 'CRM Lead Status', 'CRM Deal': 'CRM Deal Status' }
+export const STATUS_DOCTYPES = { 'CRM Lead': 'CRM Lead Status', 'CRM Deal': 'CRM Deal Status' }
 
 /** Adds `component` in `onRefresh`; a new record keeps `status` in its form, since a pick would insert it. */
 export function placeStatusControl(page, component, readStatuses) {
@@ -49,13 +49,13 @@ export function findStatus(statuses, name) {
 }
 
 /** One pick at a time: a pick during a save would join it and be dropped. */
-export function statusPicker(page) {
+export function statusPicker(page, lostReasonTitle) {
 	const busy = ref(false)
 	async function pick(status) {
 		if (busy.value) return
 		busy.value = true
 		try {
-			await changeStatus(page, status)
+			await changeStatus(page, status, lostReasonTitle)
 		} finally {
 			busy.value = false
 		}
@@ -63,10 +63,12 @@ export function statusPicker(page) {
 	return { busy, pick }
 }
 
-/** Writes `status` on the record and saves; a refused save goes back to the saved status and says why. */
-export async function changeStatus(page, status) {
+/** Writes `status` on the record and saves; a Lost one asks its reason first, and a refused save goes back. */
+export async function changeStatus(page, status, lostReasonTitle) {
 	if (status.name === page.doc.status) return
-	page.doc.status = status.name
+	const reason = await askLostReason(page, status, lostReasonTitle)
+	if (!reason) return
+	Object.assign(page.doc, reason, { status: status.name })
 	try {
 		await page.save()
 	} catch (error) {
@@ -76,5 +78,32 @@ export async function changeStatus(page, status) {
 	}
 }
 
+/** The `status` field handler's job: a Lost status writes its reason, a cancel goes back to the saved status. */
+export async function keepLostReason(page, statuses, lostReasonTitle) {
+	const status = findStatus(await statuses, page.doc.status)
+	const reason = await askLostReason(page, status, lostReasonTitle)
+	if (reason) Object.assign(page.doc, reason)
+	else page.doc.status = page.saved.status
+}
+
+/** The reason for `status`: `{}` when it is not Lost, the dialog's values, or `null` when cancelled. */
+async function askLostReason(page, status, title) {
+	if (status?.type !== 'Lost') return {}
+	return page.dialog.form({
+		title,
+		doctype: page.doctype,
+		fieldnames: LOST_REASON_FIELDS,
+		required: ['lost_reason'],
+		defaults: currentReason(page.doc),
+	})
+}
+
 // The record page's own dialog has told the reader why: a save conflict, or code that does not compile.
 export const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']
+
+const LOST_REASON_FIELDS = ['lost_reason', 'lost_notes']
+
+function currentReason(doc) {
+	const filled = LOST_REASON_FIELDS.filter((fieldname) => doc[fieldname])
+	return Object.fromEntries(filled.map((fieldname) => [fieldname, doc[fieldname]]))
+}
