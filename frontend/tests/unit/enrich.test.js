@@ -12,7 +12,8 @@ function fakePage(overrides = {}) {
     docname: 'CRM-DEAL-45896',
     isNew: false,
     header: { add: vi.fn() },
-    toast: { success: vi.fn() },
+    toast: { success: vi.fn(), error: vi.fn() },
+    save: vi.fn(() => Promise.resolve()),
     cached: vi.fn((key, fetch) => fetch()),
     call: vi.fn(() => ['CRM Lead', 'CRM Deal', 'CRM Organization']),
     ...overrides,
@@ -73,6 +74,26 @@ describe('placeEnrichItem', () => {
 })
 
 describe('enrichRecord', () => {
+  it('saves the draft before it queues, since the server reads the saved website', async () => {
+    const order = []
+    const page = fakePage({
+      save: vi.fn(() => order.push('save')),
+      call: vi.fn(() => order.push('call')),
+    })
+    await enrichRecord(page, 'Enrichment started.')
+    expect(order).toEqual(['save', 'call'])
+  })
+
+  it('queues nothing when the save is refused, and keeps the draft', async () => {
+    const page = fakePage({
+      save: vi.fn(() => Promise.reject(new Error('Invalid website'))),
+    })
+    await enrichRecord(page, 'Enrichment started.')
+    expect(page.toast.error).toHaveBeenCalledWith('Invalid website')
+    expect(page.call).not.toHaveBeenCalled()
+    expect(page.toast.success).not.toHaveBeenCalled()
+  })
+
   it('queues enrichment for the record, then toasts that it started', async () => {
     const page = fakePage({
       call: vi.fn(() => Promise.resolve({ queued: true })),

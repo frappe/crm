@@ -2,12 +2,12 @@
 import { getMeta } from '@framework/ui/api'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
+import { saveRecord } from '../saveRecord.js'
 import {
 	convertLead,
 	leadDefaults,
 	placeConvertButton,
 	requiredDealFields,
-	saveLead,
 	toDialogField,
 } from './convertToDeal.js'
 
@@ -21,7 +21,8 @@ export function addConvertButton(page) {
 }
 
 async function convertToDeal(page) {
-	if (!(await saveLead(page))) return
+	// The server converts the saved lead.
+	if (!(await saveRecord(page))) return
 	const required = requiredDealFields((await getMeta('CRM Deal')).data?.fields)
 	let deal = null
 	await page.dialog.form({

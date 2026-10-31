@@ -109,7 +109,6 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 	if not website:
 		frappe.throw(_("A website is required."), frappe.ValidationError)
 
-	cfg = get_config()
 	if doctype not in enabled_doctypes():
 		frappe.throw(
 			_("Enrichment is not enabled for {0}.").format(doctype),
@@ -125,6 +124,7 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 			frappe.PermissionError,
 		)
 
+	cfg = get_config()
 	result = run_preview(website, cfg=cfg)
 
 	fields: dict = {}

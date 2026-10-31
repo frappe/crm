@@ -1,6 +1,4 @@
 // What CRM Lead's Convert to Deal button does, kept free of the desk's imports so it is unit-tested.
-import { SHOWN_IN_DIALOG } from '../status/statusChange.js'
-
 export const CONVERT_METHOD = 'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal'
 
 const LINK_FIELDS = ['organization', 'contact']
@@ -50,17 +48,6 @@ export function leadDefaults(lead, leadFields, fields) {
 		if (value != null && value !== '') defaults[field.fieldname] = value
 	}
 	return defaults
-}
-
-/** Saves the lead's edits, since the server converts the saved lead; false, with the reason shown, when refused. */
-export async function saveLead(page) {
-	try {
-		await page.save()
-		return true
-	} catch (error) {
-		if (!SHOWN_IN_DIALOG.includes(error?.name)) page.toast.error(error?.message || String(error))
-		return false
-	}
 }
 
 /** Converts the lead with the dialog's values; resolves with the new deal's name. */
