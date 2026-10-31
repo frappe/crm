@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { Avatar, Badge, Button, Dropdown } from 'frappe-ui'
 import { Link, RecordAnchor } from '@framework/ui'
 import { routeFor } from '@shell'
@@ -60,7 +60,7 @@ const editor = new ContactsEditor(props.page, {
 	primary: __('Primary contact set'),
 })
 
-const busy = ref(false)
+const busy = editor.busy
 
 const contacts = computed(() => dealContacts(props.page.doc))
 
@@ -70,34 +70,23 @@ function options(row) {
 			label: __('Set as primary'),
 			icon: 'lucide-star',
 			condition: () => !row.is_primary,
-			onClick: () => run(() => editor.setPrimary(row.contact)),
+			onClick: () => editor.setPrimary(row.contact),
 		},
 		{
 			label: __('Remove'),
 			icon: 'lucide-trash-2',
 			theme: 'red',
-			onClick: () => run(() => editor.remove(row.contact)),
+			onClick: () => editor.remove(row.contact),
 		},
 	]
 }
 
 function add(contact) {
-	if (contact) run(() => editor.add(contact))
+	if (contact) editor.add(contact)
 }
 
-async function create(query) {
-	const values = { first_name: query, company_name: props.page.doc.organization }
-	const contact = await props.page.create('Contact', { values })
-	if (contact) add(contact.name)
-}
-
-async function run(change) {
-	busy.value = true
-	try {
-		await change()
-	} finally {
-		busy.value = false
-	}
+function create(query) {
+	editor.create({ first_name: query, company_name: props.page.doc.organization })
 }
 
 function reach(row) {

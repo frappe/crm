@@ -20,13 +20,16 @@ function fakePage(overrides = {}) {
     docname: 'CRM-DEAL-45886',
     isNew: false,
     perms: { write: 1 },
+    fieldAccess: vi.fn(() => 'write'),
+    isDirty: false,
     doc: {
       contacts: [
         { contact: 'Ana Ruiz', full_name: 'Ana Ruiz', is_primary: 0 },
         { contact: 'Ben Okafor', full_name: 'Ben Okafor', is_primary: 1 },
       ],
     },
-    panelSections: { add: vi.fn() },
+    panelSections: { add: vi.fn(), has: vi.fn(() => true) },
+    create: vi.fn(() => Promise.resolve({ name: 'Dana Walk' })),
     toast: { success: vi.fn(), error: vi.fn() },
     save: vi.fn(() => Promise.resolve()),
     call: vi.fn(() => Promise.resolve(true)),
@@ -42,9 +45,20 @@ describe('placeContactsSection', () => {
     placeContactsSection(page, { label: 'Contacts', component })
     expect(page.panelSections.add).toHaveBeenCalledWith(
       { name: 'contacts', label: 'Contacts', component },
-      { before: FIRST_LAYOUT_SECTION },
+      { before: 'sla_section' },
     )
-    expect(FIRST_LAYOUT_SECTION).toBe('sla_section')
+    expect(page.panelSections.has).toHaveBeenCalledWith(FIRST_LAYOUT_SECTION)
+  })
+
+  it('goes right after the people rows when the layout has no SLA section', () => {
+    const page = fakePage({
+      panelSections: { add: vi.fn(), has: vi.fn(() => false) },
+    })
+    placeContactsSection(page, { label: 'Contacts' })
+    expect(page.panelSections.add).toHaveBeenCalledWith(
+      { name: 'contacts', label: 'Contacts' },
+      { after: 'people' },
+    )
   })
 
   it('adds nothing on a new deal', () => {
@@ -91,6 +105,12 @@ describe('ContactsEditor', () => {
     expect(new ContactsEditor(readOnly, MESSAGES).editable).toBe(false)
   })
 
+  it('edits only when the contacts table is writable for this user', () => {
+    const page = fakePage({ fieldAccess: vi.fn(() => 'read') })
+    expect(new ContactsEditor(page, MESSAGES).editable).toBe(false)
+    expect(page.fieldAccess).toHaveBeenCalledWith('contacts')
+  })
+
   it.each([
     ['add', 'Cara Lim', CONTACT_METHODS.add, MESSAGES.added],
     ['remove', 'Ana Ruiz', CONTACT_METHODS.remove, MESSAGES.removed],
@@ -114,14 +134,6 @@ describe('ContactsEditor', () => {
       expect(page.toast.success).toHaveBeenCalledWith(message)
     },
   )
-
-  it('names the whitelisted crm_deal methods', () => {
-    expect(CONTACT_METHODS).toEqual({
-      add: 'crm.fcrm.doctype.crm_deal.crm_deal.add_contact',
-      remove: 'crm.fcrm.doctype.crm_deal.crm_deal.remove_contact',
-      setPrimary: 'crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact',
-    })
-  })
 
   it('refuses a contact the deal already has, without a call', async () => {
     const page = fakePage()
@@ -156,5 +168,70 @@ describe('ContactsEditor', () => {
     )
     expect(page.reload).not.toHaveBeenCalled()
     expect(page.toast.success).not.toHaveBeenCalled()
+  })
+  it('keeps edits typed during the call: no re-read over a dirty draft', async () => {
+    const page = fakePage()
+    page.call = vi.fn(() => {
+      page.isDirty = true
+      return Promise.resolve(true)
+    })
+    const done = await new ContactsEditor(page, MESSAGES).setPrimary('Ana Ruiz')
+    expect(done).toBe(true)
+    expect(page.reload).not.toHaveBeenCalled()
+    expect(page.toast.success).toHaveBeenCalledWith(MESSAGES.primary)
+  })
+
+  it('runs one write at a time and is busy while it runs', async () => {
+    let finish
+    const page = fakePage({
+      call: vi.fn(() => new Promise((resolve) => (finish = resolve))),
+    })
+    const editor = new ContactsEditor(page, MESSAGES)
+    const first = editor.remove('Ana Ruiz')
+    await vi.waitFor(() => expect(page.call).toHaveBeenCalled())
+    expect(editor.busy.value).toBe(true)
+    expect(await editor.setPrimary('Ana Ruiz')).toBe(false)
+    finish(true)
+    expect(await first).toBe(true)
+    expect(page.call).toHaveBeenCalledTimes(1)
+    expect(editor.busy.value).toBe(false)
+  })
+
+  it('is no longer busy after a refused call', async () => {
+    const page = fakePage({
+      call: vi.fn(() => Promise.reject(new Error('No'))),
+    })
+    const editor = new ContactsEditor(page, MESSAGES)
+    await editor.add('Cara Lim')
+    expect(editor.busy.value).toBe(false)
+  })
+
+  it('creates a contact in Quick Entry, then adds it to the deal', async () => {
+    const page = fakePage()
+    const values = { first_name: 'Dana', company_name: 'Acme Corp' }
+    const done = await new ContactsEditor(page, MESSAGES).create(values)
+    expect(page.create).toHaveBeenCalledWith('Contact', { values })
+    expect(page.call).toHaveBeenCalledWith(CONTACT_METHODS.add, {
+      deal: 'CRM-DEAL-45886',
+      contact: 'Dana Walk',
+    })
+    expect(done).toBe(true)
+  })
+
+  it('adds nothing when Quick Entry is closed without a save', async () => {
+    const page = fakePage({ create: vi.fn(() => Promise.resolve(null)) })
+    const done = await new ContactsEditor(page, MESSAGES).create({})
+    expect(done).toBe(false)
+    expect(page.call).not.toHaveBeenCalled()
+  })
+
+  it('toasts a failed Quick Entry and adds nothing', async () => {
+    const page = fakePage({
+      create: vi.fn(() => Promise.reject(new Error('Not permitted'))),
+    })
+    const done = await new ContactsEditor(page, MESSAGES).create({})
+    expect(done).toBe(false)
+    expect(page.toast.error).toHaveBeenCalledWith('Not permitted')
+    expect(page.call).not.toHaveBeenCalled()
   })
 })
