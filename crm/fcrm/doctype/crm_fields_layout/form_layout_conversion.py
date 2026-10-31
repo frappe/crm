@@ -82,7 +82,8 @@ def strip_tab(tab: dict):
 		]
 		for column in section["columns"]:
 			strip_keys(column)
-			column["fields"] = [name for name in map(fieldname_of, as_list(column.get("fields"))) if name]
+			names = (fieldname_of(field) for field in as_list(column.get("fields")))
+			column["fields"] = [name for name in names if name]
 
 
 def strip_keys(node: dict):
