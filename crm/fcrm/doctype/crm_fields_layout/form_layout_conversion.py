@@ -3,6 +3,7 @@
 
 import copy
 
+import frappe
 from frappe.desk.doctype.form_layout.app_layout import read_app_layout
 from frappe.desk.doctype.form_layout.form_layout import (
 	data_fieldnames,
@@ -83,12 +84,23 @@ def use_app_inline_fields(tabs: list, dt: str):
 	app_layout = read_app_layout(dt, "Quick Entry")
 	if not app_layout:
 		return
-	definitions = {field["fieldname"]: field for field in inline_fields(parse_layout(app_layout.layout))}
+	meta = frappe.get_meta(dt)
+	definitions = {
+		field.get("fieldname"): field
+		for field in inline_fields(parse_layout(app_layout.layout))
+		if is_read_only(meta, field.get("fieldname"))
+	}
 	placed = set()
 	for tab in tabs:
 		for section in tab["sections"]:
 			for column in section["columns"]:
 				column["fields"] = inline_column(column["fields"], definitions, placed)
+
+
+def is_read_only(meta, fieldname) -> bool:
+	# Form Layout refuses an inline field over an editable one, as a site may make `email_id` with Customize Form.
+	field = meta.get_field(fieldname)
+	return not field or bool(field.read_only)
 
 
 def inline_column(fields: list, definitions: dict, placed: set) -> list:

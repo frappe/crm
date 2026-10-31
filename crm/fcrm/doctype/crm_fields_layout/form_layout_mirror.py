@@ -20,7 +20,7 @@ MIRRORED_DOCTYPES = (
 # CRM's layouts on doctypes it does not own name the app, so `/apps/desk` keeps frappe's.
 FOREIGN_LAYOUTS = (("Contact", "Quick Entry"), ("Contact", "Side Panel"), ("Address", "Quick Entry"))
 FOREIGN_LAYOUT_APP = "crm"
-FOREIGN_DOCTYPES = ("Contact", "Address")
+FOREIGN_DOCTYPES = tuple(dict.fromkeys(dt for dt, _ in FOREIGN_LAYOUTS))
 
 
 def mirror_layout(doc):
@@ -51,7 +51,7 @@ def remove_mirrored_layout(doc):
 		frappe.delete_doc("Form Layout", row.name, ignore_permissions=True)
 
 
-def mirror_all_layouts(doctypes: tuple[str, ...] = MIRRORED_DOCTYPES + FOREIGN_DOCTYPES):
+def mirror_all_layouts(doctypes: tuple[str, ...]):
 	for name in frappe.get_all(
 		"CRM Fields Layout",
 		filters={"dt": ("in", doctypes), "type": ("in", list(FORM_LAYOUT_TYPES))},
@@ -67,7 +67,7 @@ def is_mirrored(doc) -> bool:
 
 
 def layout_app(dt: str) -> str | None:
-	return None if dt in MIRRORED_DOCTYPES else FOREIGN_LAYOUT_APP
+	return FOREIGN_LAYOUT_APP if dt in FOREIGN_DOCTYPES else None
 
 
 def write_default_row(dt: str, type: str, layout: list):

@@ -2,7 +2,7 @@
 # See license.txt
 
 import frappe
-from frappe.desk.doctype.form_layout.form_layout import get_form_layouts
+from frappe.desk.doctype.form_layout.form_layout import default_filters, get_form_layouts
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
@@ -31,7 +31,7 @@ ADDRESS_ENTRY = [{"name": "details_section", "columns": [{"name": "details_colum
 def default_rows(dt, type, app=None):
 	return frappe.get_all(
 		"Form Layout",
-		filters={"dt": dt, "type": type, "app": app or ("is", "not set"), "condition": ("is", "not set")},
+		filters=default_filters(dt, type, app),
 		fields=["name", "layout", "modified"],
 	)
 
@@ -215,18 +215,18 @@ class TestForeignLayoutMirror(IntegrationTestCase):
 		self.assertEqual(default_rows("Contact", "Side Panel", app="crm"), [])
 
 	def test_patch_mirrors_contact_and_address_only(self):
+		for dt, type in FOREIGN_LAYOUTS:
+			save_v1_layout(dt, type, CONTACT_PANEL if dt == "Contact" else ADDRESS_ENTRY)
+		frappe.db.delete("Form Layout", {"dt": ("in", ("Contact", "Address"))})
 		lead_rows = frappe.get_all("Form Layout", {"dt": "CRM Lead"}, ["name", "modified"], order_by="name")
 
 		mirror_contact_and_address_layouts_to_form_layout.execute()
 
 		rows = frappe.get_all("Form Layout", {"dt": ("in", ("Contact", "Address"))}, ["dt", "type", "app"])
-		expected = {
-			(dt, type, "crm")
-			for dt, type in frappe.get_all("CRM Fields Layout", fields=["dt", "type"], as_list=True)
-			if (dt, type) in FOREIGN_LAYOUTS
-		}
-		self.assertEqual({(row.dt, row.type, row.app) for row in rows}, expected)
-		self.assertIn(("Contact", "Quick Entry", "crm"), expected)
+		self.assertEqual(
+			{(row.dt, row.type, row.app) for row in rows},
+			{(dt, type, "crm") for dt, type in FOREIGN_LAYOUTS},
+		)
 		after = frappe.get_all("Form Layout", {"dt": "CRM Lead"}, ["name", "modified"], order_by="name")
 		self.assertEqual(after, lead_rows)
 
@@ -241,7 +241,7 @@ class TestMirrorFieldsLayoutsPatch(IntegrationTestCase):
 		expected = {
 			(dt, FORM_LAYOUT_TYPES[type])
 			for dt, type in frappe.get_all("CRM Fields Layout", fields=["dt", "type"], as_list=True)
-			if (dt in MIRRORED_DOCTYPES and type in FORM_LAYOUT_TYPES) or (dt, type) in FOREIGN_LAYOUTS
+			if dt in MIRRORED_DOCTYPES and type in FORM_LAYOUT_TYPES
 		}
 		self.assertEqual(rows, expected)
 		self.assertIn(("CRM Deal", "Details"), rows)
