@@ -2,6 +2,7 @@
 # See license.txt
 
 import frappe
+from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
@@ -164,7 +165,42 @@ class TestFormLayoutConversion(IntegrationTestCase):
 
 		self.assertEqual(frappe.as_json(v1), before)
 
-	def assert_saves_as_form_layout(self, dt, type, tabs):
+	def test_contact_quick_entry_defines_frappes_inline_fields(self):
+		v1 = [section("person_section", ["first_name", "email_id", "mobile_no", "email_id"])]
+
+		tabs = convert_layout("Contact", "Quick Entry", v1)
+
+		fields = tabs[0]["sections"][0]["columns"][0]["fields"]
+		self.assertEqual(fields[0], "first_name")
+		self.assertEqual([field["fieldname"] for field in fields[1:]], ["email_id", "mobile_no"])
+		self.assertEqual(fields[1]["options"], "Email")
+		self.assert_saves_as_form_layout("Contact", "Quick Entry", tabs, app="crm")
+
+	def test_an_editable_email_id_stays_a_fieldname(self):
+		setter = make_property_setter("Contact", "email_id", "read_only", 0, "Check")
+		self.addCleanup(frappe.clear_cache, doctype="Contact")
+		self.addCleanup(setter.delete)
+
+		tabs = convert_layout(
+			"Contact", "Quick Entry", [section("person_section", ["email_id", "mobile_no"])]
+		)
+
+		fields = tabs[0]["sections"][0]["columns"][0]["fields"]
+		self.assertEqual(fields[0], "email_id")
+		self.assertEqual(fields[1]["fieldname"], "mobile_no")
+		self.assert_saves_as_form_layout("Contact", "Quick Entry", tabs, app="crm")
+
+	def test_contact_side_panel_keeps_read_only_fields_as_fieldnames(self):
+		tabs = convert_layout(
+			"Contact", "Side Panel", [section("details_section", ["email_id", "mobile_no"])]
+		)
+
+		self.assertEqual(tabs[0]["sections"][0]["columns"][0]["fields"], ["email_id", "mobile_no"])
+		self.assert_saves_as_form_layout("Contact", "Side Panel", tabs, app="crm")
+
+	def assert_saves_as_form_layout(self, dt, type, tabs, app=None):
 		frappe.db.delete("Form Layout", {"dt": dt, "type": type})
-		row = frappe.get_doc(doctype="Form Layout", dt=dt, type=type, layout=frappe.as_json(tabs)).insert()
+		row = frappe.get_doc(
+			doctype="Form Layout", dt=dt, type=type, app=app, layout=frappe.as_json(tabs)
+		).insert()
 		self.assertEqual(frappe.parse_json(row.layout), tabs)

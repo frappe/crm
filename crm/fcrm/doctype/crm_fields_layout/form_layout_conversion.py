@@ -3,10 +3,14 @@
 
 import copy
 
+import frappe
+from frappe.desk.doctype.form_layout.app_layout import read_app_layout
 from frappe.desk.doctype.form_layout.form_layout import (
 	data_fieldnames,
 	free_name,
+	inline_fields,
 	name_layout_containers,
+	parse_layout,
 	wrap_tabless,
 )
 
@@ -35,6 +39,8 @@ class LayoutConversion:
 			tabs[0]["sections"][:0] = [sla_section(), lost_reason_section()]
 		for tab in tabs:
 			strip_tab(tab)
+		if self.v1_type == "Quick Entry":
+			use_app_inline_fields(tabs, self.dt)
 		name_layout_containers(tabs)
 		rename_clashes(tabs, data_fieldnames(self.dt))
 		return tabs
@@ -71,6 +77,42 @@ def lost_reason_section() -> dict:
 		"dependsOn": "lost_reason",
 		"columns": [{"name": "lost_reason_column", "fields": ["lost_reason", "lost_notes"]}],
 	}
+
+
+def use_app_inline_fields(tabs: list, dt: str):
+	"""Define a field inline where the doctype's own Quick Entry file does, as Contact's read-only `email_id`."""
+	app_layout = read_app_layout(dt, "Quick Entry")
+	if not app_layout:
+		return
+	meta = frappe.get_meta(dt)
+	definitions = {
+		field.get("fieldname"): field
+		for field in inline_fields(parse_layout(app_layout.layout))
+		if is_read_only(meta, field.get("fieldname"))
+	}
+	placed = set()
+	for tab in tabs:
+		for section in tab["sections"]:
+			for column in section["columns"]:
+				column["fields"] = inline_column(column["fields"], definitions, placed)
+
+
+def is_read_only(meta, fieldname) -> bool:
+	# Form Layout refuses an inline field over an editable one, as a site may make `email_id` with Customize Form.
+	field = meta.get_field(fieldname)
+	return not field or bool(field.read_only)
+
+
+def inline_column(fields: list, definitions: dict, placed: set) -> list:
+	# Form Layout refuses an inline field placed twice, so a repeat drops.
+	kept = []
+	for name in fields:
+		if name not in definitions:
+			kept.append(name)
+		elif name not in placed:
+			placed.add(name)
+			kept.append(copy.deepcopy(definitions[name]))
+	return kept
 
 
 def strip_tab(tab: dict):

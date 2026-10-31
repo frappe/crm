@@ -4,6 +4,7 @@
 import json
 
 import frappe
+from frappe.desk.doctype.form_layout.form_layout import default_filters
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
 
@@ -16,6 +17,10 @@ MIRRORED_DOCTYPES = (
 	"FCRM Note",
 	"CRM Call Log",
 )
+# CRM's layouts on doctypes it does not own name the app, so `/apps/desk` keeps frappe's.
+FOREIGN_LAYOUTS = (("Contact", "Quick Entry"), ("Contact", "Side Panel"), ("Address", "Quick Entry"))
+FOREIGN_LAYOUT_APP = "crm"
+FOREIGN_DOCTYPES = tuple(dict.fromkeys(dt for dt, _ in FOREIGN_LAYOUTS))
 
 
 def mirror_layout(doc):
@@ -46,17 +51,23 @@ def remove_mirrored_layout(doc):
 		frappe.delete_doc("Form Layout", row.name, ignore_permissions=True)
 
 
-def mirror_all_layouts():
+def mirror_all_layouts(doctypes: tuple[str, ...]):
 	for name in frappe.get_all(
 		"CRM Fields Layout",
-		filters={"dt": ("in", MIRRORED_DOCTYPES), "type": ("in", list(FORM_LAYOUT_TYPES))},
+		filters={"dt": ("in", doctypes), "type": ("in", list(FORM_LAYOUT_TYPES))},
 		pluck="name",
 	):
 		mirror_layout(frappe.get_doc("CRM Fields Layout", name))
 
 
 def is_mirrored(doc) -> bool:
+	if (doc.dt, doc.type) in FOREIGN_LAYOUTS:
+		return True
 	return doc.dt in MIRRORED_DOCTYPES and doc.type in FORM_LAYOUT_TYPES
+
+
+def layout_app(dt: str) -> str | None:
+	return FOREIGN_LAYOUT_APP if dt in FOREIGN_DOCTYPES else None
 
 
 def write_default_row(dt: str, type: str, layout: list):
@@ -67,7 +78,7 @@ def write_default_row(dt: str, type: str, layout: list):
 	row = (
 		frappe.get_doc("Form Layout", stored.name)
 		if stored
-		else frappe.new_doc("Form Layout", dt=dt, type=type)
+		else frappe.new_doc("Form Layout", dt=dt, type=type, app=layout_app(dt))
 	)
 	row.layout = frappe.as_json(layout)
 	row.omitted = None
@@ -75,10 +86,10 @@ def write_default_row(dt: str, type: str, layout: list):
 
 
 def default_row(dt: str, type: str):
-	"""The oldest row with no condition, the one desk v2 reads first."""
+	"""The oldest row with no condition in the mirror's app scope, the one desk v2 reads first."""
 	rows = frappe.get_all(
 		"Form Layout",
-		filters={"dt": dt, "type": type, "condition": ("is", "not set")},
+		filters=default_filters(dt, type, layout_app(dt)),
 		fields=["name", "layout", "omitted"],
 		order_by="creation asc",
 		limit=1,
