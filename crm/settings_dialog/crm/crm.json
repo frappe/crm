@@ -27,6 +27,24 @@
    "label": "Activity timeline",
    "pane": "general",
    "save_mode": "auto"
+  },
+  {
+   "binding_type": "Single",
+   "document_type": "CRM Twilio Settings",
+   "fields": "[\"enabled\", \"account_sid\", \"auth_token\", \"app_name\", \"record_calls\", \"api_key\", \"api_secret\", \"twiml_sid\"]",
+   "key": "twilio",
+   "label": "Twilio",
+   "pane": "telephony",
+   "save_mode": "button"
+  },
+  {
+   "binding_type": "Single",
+   "document_type": "CRM Exotel Settings",
+   "fields": "[\"enabled\", \"account_sid\", \"api_key\", \"api_token\", \"subdomain\", \"webhook_verify_token\", \"record_call\"]",
+   "key": "exotel",
+   "label": "Exotel",
+   "pane": "telephony",
+   "save_mode": "button"
   }
  ],
  "creation": "2026-10-27 10:30:00.000000",
@@ -34,7 +52,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-27 10:30:00.000000",
+ "modified": "2026-10-31 12:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
@@ -44,6 +62,12 @@
    "icon": "sliders-horizontal",
    "key": "general",
    "label": "General"
+  },
+  {
+   "description": "Twilio and Exotel accounts for calls from CRM.",
+   "icon": "phone",
+   "key": "telephony",
+   "label": "Telephony"
   }
  ],
  "standard": 1,

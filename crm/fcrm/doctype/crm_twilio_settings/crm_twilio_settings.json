@@ -104,6 +104,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "enabled",
    "fieldname": "app_name",
    "fieldtype": "Data",
    "label": "App Name"
@@ -122,7 +123,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-06 15:56:05.387337",
+ "modified": "2026-10-31 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Twilio Settings",
