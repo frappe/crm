@@ -4,7 +4,7 @@ import {
   managerChoices,
   reportsOf,
   treeRows,
-} from '../../../crm/fcrm/frontend/settings/salesHierarchy/hierarchyTree.js'
+} from '../../../crm/fcrm/frontend/settings/sales-hierarchy/hierarchyTree.js'
 
 const users = [
   {

@@ -54,8 +54,8 @@ async function move() {
 			reports_to: manager.value || null,
 		});
 		toast.success(__("{0} moved", [props.row.full_name]));
-		open.value = false;
 		emit("changed");
+		open.value = false;
 	} catch (failure) {
 		error.value = (failure as Error).message;
 	} finally {

@@ -1,4 +1,4 @@
-// The sales hierarchy as the block shows it; the doctype's DocPerms and NestedSet refuse the same and stay the boundary.
+// The rank and placeable-role rules are UI-only, as in CRM v1; the server refuses only loops and duplicate users.
 
 const ROLE_RANK = { 'System Manager': 0, 'Sales Manager': 0, 'Sales User': 1 }
 const PLACEABLE_ROLES = ['Sales Manager', 'Sales User']
@@ -6,9 +6,10 @@ const PLACEABLE_ROLES = ['Sales Manager', 'Sales User']
 /** The rows to draw, parents before their reports, each with its depth and its user's name, image and role. */
 export function treeRows(nodes, users, query = '') {
 	const byUser = new Map(users.map((user) => [user.name, user]))
+	const children = childrenByManager(nodes)
 	const rows = []
 	const visit = (node, depth) => {
-		const children = reportsOf(nodes, node)
+		const reports = children.get(node.name) || []
 		const user = byUser.get(node.user) || {}
 		const row = {
 			...node,
@@ -16,10 +17,10 @@ export function treeRows(nodes, users, query = '') {
 			full_name: user.full_name || node.full_name || node.user,
 			user_image: user.user_image,
 			role: user.role || '',
-			reports: children.length,
+			reports: reports.length,
 		}
 		const start = rows.push(row)
-		children.forEach((child) => visit(child, depth + 1))
+		reports.forEach((child) => visit(child, depth + 1))
 		if (!matches(row, query) && rows.length === start) rows.pop()
 	}
 	roots(nodes).forEach((node) => visit(node, 0))
@@ -28,16 +29,21 @@ export function treeRows(nodes, users, query = '') {
 
 /** The nodes `node` may report to: not itself or one of its own reports, and not ranked below it. */
 export function managerChoices(nodes, node, users) {
-	const below = new Set(subtree(nodes, node).map((each) => each.name))
-	return nodes.filter(
-		(each) => !below.has(each.name) && rankOf(users, each.user) <= rankOf(users, node.user)
-	)
+	const children = childrenByManager(nodes)
+	const below = new Set()
+	const collect = (each) => {
+		below.add(each.name)
+		;(children.get(each.name) || []).forEach(collect)
+	}
+	collect(node)
+	const rank = ranker(users)
+	return nodes.filter((each) => !below.has(each.name) && rank(each.user) <= rank(node.user))
 }
 
 /** The CRM users that may join under `manager` (a node, or null for the top level). */
 export function addCandidates(users, nodes, manager) {
 	const placed = new Set(nodes.map((node) => node.user))
-	const floor = manager ? rankOf(users, manager.user) : 0
+	const floor = manager ? ranker(users)(manager.user) : 0
 	return users.filter(
 		(user) =>
 			PLACEABLE_ROLES.includes(user.role) &&
@@ -55,12 +61,19 @@ function roots(nodes) {
 	return nodes.filter((node) => !node.reports_to || !names.has(node.reports_to))
 }
 
-function subtree(nodes, node) {
-	return [node, ...reportsOf(nodes, node).flatMap((child) => subtree(nodes, child))]
+function childrenByManager(nodes) {
+	const children = new Map()
+	for (const node of nodes) {
+		if (!node.reports_to) continue
+		if (!children.has(node.reports_to)) children.set(node.reports_to, [])
+		children.get(node.reports_to).push(node)
+	}
+	return children
 }
 
-function rankOf(users, name) {
-	return ROLE_RANK[users.find((user) => user.name === name)?.role] ?? 1
+function ranker(users) {
+	const roles = new Map(users.map((user) => [user.name, user.role]))
+	return (name) => ROLE_RANK[roles.get(name)] ?? 1
 }
 
 function matches(row, query) {

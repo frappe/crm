@@ -55,20 +55,19 @@
 					<p class="truncate text-sm text-ink-gray-5">{{ row.user }}</p>
 				</div>
 				<span class="shrink-0 text-base text-ink-gray-6">{{ row.role ? __(row.role) : "" }}</span>
-				<Dropdown v-if="rowActions(row).length" :options="rowActions(row)" align="end">
+				<Dropdown v-if="actions.length" :options="actions.map((act) => act(row))" align="end">
 					<Button
 						icon="lucide-ellipsis"
 						variant="ghost"
 						:label="__('Actions for {0}', [row.full_name])"
 					/>
 				</Dropdown>
-				<span v-else-if="canChange" class="w-7 shrink-0" aria-hidden="true" />
 			</li>
 		</ul>
 		<ErrorMessage v-if="error" class="py-3.5" :message="error" />
 	</template>
 	<AddToHierarchyDialog
-		v-if="nodes"
+		v-if="adding && nodes"
 		v-model="adding"
 		:nodes="nodes"
 		:users="users"
@@ -106,10 +105,10 @@ import {
 } from "@framework/ui/api";
 import { useDocPermissions } from "@framework/ui/useDocPermissions";
 import { __ } from "frappe/i18n";
-import AddToHierarchyDialog from "./salesHierarchy/AddToHierarchyDialog.vue";
-import MoveDialog from "./salesHierarchy/MoveDialog.vue";
-import { reportsOf, treeRows } from "./salesHierarchy/hierarchyTree.js";
-import type { HierarchyNode, HierarchyRow, HierarchyUser } from "./salesHierarchy/types";
+import AddToHierarchyDialog from "./sales-hierarchy/AddToHierarchyDialog.vue";
+import MoveDialog from "./sales-hierarchy/MoveDialog.vue";
+import { reportsOf, treeRows } from "./sales-hierarchy/hierarchyTree.js";
+import type { HierarchyNode, HierarchyRow, HierarchyUser } from "./sales-hierarchy/types";
 
 defineProps<{ bindings: Record<string, never> }>();
 
@@ -126,7 +125,10 @@ const adding = ref(false);
 const moving = ref<HierarchyRow | null>(null);
 
 const rows = computed(() => treeRows(nodes.value ?? [], users.value, query.value));
-const canChange = computed(() => perms.holds("write") || perms.holds("delete"));
+const actions = computed(() => [
+	...(perms.holds("write") ? [moveAction] : []),
+	...(perms.holds("write") && perms.holds("delete") ? [removeAction] : []),
+]);
 const movingOpen = computed({
 	get: () => !!moving.value,
 	set: (open) => !open && (moving.value = null),
@@ -177,19 +179,16 @@ async function readSwitch() {
 	}
 }
 
-function rowActions(row: HierarchyRow) {
-	const actions = [];
-	if (perms.holds("write")) {
-		actions.push({ label: __("Move"), icon: "lucide-move", onClick: () => (moving.value = row) });
-	}
-	if (perms.holds("delete") && (!row.reports || perms.holds("write"))) {
-		actions.push({
-			label: __("Remove from hierarchy"),
-			icon: "lucide-trash-2",
-			onClick: () => confirmRemove(row),
-		});
-	}
-	return actions;
+function moveAction(row: HierarchyRow) {
+	return { label: __("Move"), icon: "lucide-move", onClick: () => (moving.value = row) };
+}
+
+function removeAction(row: HierarchyRow) {
+	return {
+		label: __("Remove from hierarchy"),
+		icon: "lucide-trash-2",
+		onClick: () => confirmRemove(row),
+	};
 }
 
 function confirmRemove(row: HierarchyRow) {

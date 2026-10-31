@@ -12,7 +12,7 @@
 				:placeholder="__('Search users')"
 			/>
 			<p v-else class="text-base text-ink-gray-5">
-				{{ __("Every CRM user who can report to them is already in the hierarchy.") }}
+				{{ __("Every CRM user who can be placed here is already in the hierarchy.") }}
 			</p>
 			<ErrorMessage v-if="error" :message="error" />
 		</div>
@@ -73,12 +73,13 @@ async function add() {
 			added++;
 		}
 		toast.success(added === 1 ? __("1 user added") : __("{0} users added", [added]));
+		emit("changed");
 		open.value = false;
 	} catch (failure) {
 		error.value = (failure as Error).message;
+		if (added) emit("changed");
 	} finally {
 		saving.value = false;
-		if (added) emit("changed");
 	}
 }
 </script>
