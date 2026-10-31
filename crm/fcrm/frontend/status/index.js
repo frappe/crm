@@ -13,7 +13,7 @@ export function askReasonForLostStatus(page) {
 	return keepLostReason(page, readStatuses(STATUS_DOCTYPES[page.doctype]), __('Lost Reason'))
 }
 
-function readStatuses(doctype) {
+export function readStatuses(doctype) {
 	return listDocuments(doctype, { fields: STATUS_FIELDS, order_by: 'position asc', limit: 100 }).then(
 		(reply) => reply.data,
 	)
