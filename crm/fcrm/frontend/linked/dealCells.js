@@ -1,4 +1,3 @@
-// The Status and Amount cells shared by the Deals tabs of Contact and Organization.
 import { useFieldDisplay } from '@framework/ui/FormLayout'
 import { findStatus, statusInk } from '../status/statusChange.js'
 

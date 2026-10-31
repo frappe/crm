@@ -57,10 +57,11 @@ describe('placeDealsTab', () => {
 })
 
 describe('CONTACT_DEALS', () => {
-  it("lists CRM Deals by a contact in the deal's contacts table", () => {
+  it("lists each CRM Deal once by a contact in the deal's contacts table", () => {
     expect(CONTACT_DEALS.doctype).toBe('CRM Deal')
-    expect(linkedQuery(CONTACT_DEALS, 'Contact 45892').filters).toEqual({
-      'contacts.contact': 'Contact 45892',
+    expect(linkedQuery(CONTACT_DEALS, 'Contact 45892')).toMatchObject({
+      filters: { 'contacts.contact': 'Contact 45892' },
+      group_by: 'name',
     })
   })
 })

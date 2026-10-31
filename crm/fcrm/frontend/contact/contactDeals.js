@@ -3,6 +3,7 @@
 export const CONTACT_DEALS = {
 	doctype: 'CRM Deal',
 	field: 'contacts.contact',
+	distinct: true,
 	fields: [
 		'name',
 		'organization',
