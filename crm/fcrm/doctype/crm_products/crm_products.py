@@ -4,6 +4,8 @@
 import frappe
 from frappe.model.document import Document
 
+from crm.fcrm.doctype.crm_form_script.crm_form_script import refresh_analysis
+
 
 class CRMProducts(Document):
 	# begin: auto-generated types
@@ -95,6 +97,7 @@ def create_product_details_script(doctype):
 	if frappe.db.exists("CRM Form Script", name):
 		if frappe.db.get_value("CRM Form Script", name, "script") != script:
 			frappe.db.set_value("CRM Form Script", name, "script", script)
+			refresh_analysis(name)
 		return
 	frappe.get_doc(
 		{

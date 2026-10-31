@@ -5,6 +5,14 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from crm.fcrm.form_script_analysis import Analysis, analyse
+from crm.fcrm.form_script_analysis.patterns import UNKNOWN
+
+NO_COUNTERPART = "No counterpart"
+REWRITE = "Rewrite"
+REWRITE_WITH_GAPS = "Rewrite: has calls with no counterpart"
+UNKNOWN_SHAPE = "Unknown shape"
+
 
 class CRMFormScript(Document):
 	# begin: auto-generated types
@@ -15,10 +23,15 @@ class CRMFormScript(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		from crm.fcrm.doctype.crm_form_script_call.crm_form_script_call import CRMFormScriptCall
+
 		dt: DF.Link
 		enabled: DF.Check
 		is_standard: DF.Check
+		migration_status: DF.Literal["", "Rewrite", "Rewrite: has calls with no counterpart", "Unknown shape"]
 		script: DF.Code | None
+		v1_calls: DF.Table[CRMFormScriptCall]
+		v1_shape: DF.Literal["", "Class-based", "setupForm", "setupList", "Unknown"]
 		view: DF.Literal["Form", "List"]
 	# end: auto-generated types
 
@@ -37,6 +50,42 @@ class CRMFormScript(Document):
 				self.enabled = enabled_value
 			else:
 				frappe.throw(_("You need to be in developer mode to edit a Standard Form Script"))
+		self.set_analysis()
+
+	def set_analysis(self):
+		"""What desk v2 makes of the script: its v1 shape, its status and each v1 call."""
+		analysis = analyse(self.script, self.dt, self.view)
+		self.v1_shape = analysis.shape
+		self.migration_status = migration_status(analysis)
+		self.set(
+			"v1_calls",
+			[
+				{
+					"line": hit.line,
+					"v1_call": hit.call,
+					"verb": hit.verb or NO_COUNTERPART,
+					"catalog_key": hit.key,
+					"gap": hit.gap,
+				}
+				for hit in analysis.hits
+			],
+		)
+
+
+def migration_status(analysis: Analysis) -> str:
+	if analysis.shape == UNKNOWN:
+		return UNKNOWN_SHAPE
+	if any(hit.verb is None for hit in analysis.hits):
+		return REWRITE_WITH_GAPS
+	return REWRITE
+
+
+def refresh_analysis(name: str):
+	"""Rewrites a row's analysis without saving it, for the writers that set its script directly."""
+	doc = frappe.get_doc("CRM Form Script", name)
+	doc.set_analysis()
+	doc.db_update()
+	doc.update_child_table("v1_calls")
 
 
 def get_form_script(dt, view="Form"):

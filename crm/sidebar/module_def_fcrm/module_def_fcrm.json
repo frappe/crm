@@ -7,7 +7,7 @@
  "items": [],
  "link_doctype": "Module Def",
  "link_to": "FCRM",
- "modified": "2026-10-31 16:30:00.000000",
+ "modified": "2026-10-31 18:00:00.000000",
  "modified_by": "Administrator",
  "name": "module_def_fcrm",
  "navigation_items": [
@@ -219,6 +219,19 @@
    "label": "Holiday Lists",
    "link_doctype": "DocType",
    "link_to": "CRM Holiday List",
+   "parent_key": "automation",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "System Manager DocType",
+   "keep_closed": 0,
+   "key": "form-scripts",
+   "label": "Form Scripts",
+   "link_doctype": "DocType",
+   "link_to": "CRM Form Script",
    "parent_key": "automation",
    "switches_app": 0
   },

@@ -368,3 +368,7 @@ standard_dropdown_items = [
 
 # Names a stored Client Script imports; see frappe/frontend/COMPATIBILITY.md.
 import_map = {"crm/lib": "./frontend/lib/index.js"}
+
+navigation_item_resolvers = {
+	"System Manager DocType": "crm.fcrm.navigation_item_type.system_manager_doctype.system_manager_doctype"
+}
