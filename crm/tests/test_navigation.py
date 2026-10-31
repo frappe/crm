@@ -20,22 +20,50 @@ from frappe.tests import IntegrationTestCase
 
 RAIL = ("leads", "deals", "contacts", "organizations", "tasks", "notes", "call-logs", "setup")
 
-# The one sidebar, by the scrubbed address boot files it under -- which is also the string
-# the rail item of type `Sidebar` carries in `link_to`.
+SETUP_ROWS = (
+	"leads",
+	"lead-statuses",
+	"lead-sources",
+	"deals",
+	"deal-statuses",
+	"lost-reasons",
+	"products",
+	"accounts",
+	"industries",
+	"territories",
+	"email",
+	"email-accounts",
+	"email-templates",
+	"automation",
+	"assignment-rules",
+	"sla-policies",
+	"holiday-lists",
+	"lead-syncing",
+	"lead-sync-sources",
+	"failed-lead-syncs",
+)
+
+# What a Sales User reads, by the scrubbed address boot files it under -- which is also the
+# string the rail item of type `Sidebar` carries in `link_to`.
 SIDEBARS = {
-	"module_def_fcrm": (
-		"leads",
-		"lead-statuses",
-		"lead-sources",
-		"deals",
-		"deal-statuses",
-		"lost-reasons",
-		"products",
-		"accounts",
-		"industries",
-		"territories",
-	),
+	"module_def_fcrm": tuple(
+		key
+		for key in SETUP_ROWS
+		if key
+		not in (
+			"email-accounts",
+			"automation",
+			"assignment-rules",
+			"sla-policies",
+			"holiday-lists",
+			"lead-syncing",
+			"lead-sync-sources",
+			"failed-lead-syncs",
+		)
+	)
 }
+
+MANAGER_SIDEBAR = tuple(key for key in SETUP_ROWS if key != "email-accounts")
 
 SETUP_DOCTYPES = (
 	"CRM Lead Status",
@@ -45,6 +73,13 @@ SETUP_DOCTYPES = (
 	"CRM Product",
 	"CRM Industry",
 	"CRM Territory",
+	"Email Account",
+	"Email Template",
+	"Assignment Rule",
+	"CRM Service Level Agreement",
+	"CRM Holiday List",
+	"Lead Sync Source",
+	"Failed Lead Sync Log",
 )
 
 # The rail items that open their list with no panel.
@@ -56,6 +91,7 @@ class TestCRMNavigation(IntegrationTestCase):
 	def setUpClass(cls):
 		super().setUpClass()
 		cls.user = make_desk_user("crm.navigation.test@example.com")
+		cls.manager = make_desk_user("crm.navigation.manager@example.com", "Sales Manager")
 
 	def setUp(self):
 		frappe.set_user(self.user)
@@ -78,6 +114,16 @@ class TestCRMNavigation(IntegrationTestCase):
 			{address: tuple(row["key"] for row in rows) for address, rows in sidebars.items()},
 			SIDEBARS,
 		)
+
+	def test_a_sales_manager_sees_every_setup_list_but_email_accounts(self):
+		frappe.set_user(self.manager)
+
+		rows = resolve_navigation("crm")["sidebars"]["module_def_fcrm"]
+
+		self.assertEqual(tuple(row["key"] for row in rows), MANAGER_SIDEBAR)
+
+	def test_the_setup_sidebar_ships_every_setup_list(self):
+		self.assertEqual(tuple(row.key for row in shipped("Sidebar", "module_def_fcrm")), SETUP_ROWS)
 
 	def test_a_linked_item_names_a_sidebar_this_app_ships(self):
 		"""A typo in `link_to` costs the item its panel and nothing else, so nothing reports it.
@@ -315,8 +361,8 @@ def reimport_shipped_rail():
 	import_file_by_path(path, force=True, ignore_version=True)
 
 
-def make_desk_user(email: str) -> str:
-	"""A Sales User, which is what a person using CRM's rail actually is."""
+def make_desk_user(email: str, role: str = "Sales User") -> str:
+	"""A Sales User by default, which is what a person using CRM's rail actually is."""
 	if frappe.db.exists("User", email):
 		return email
 
@@ -326,7 +372,7 @@ def make_desk_user(email: str) -> str:
 			"email": email,
 			"first_name": "CRM Navigation",
 			"user_type": "System User",
-			"roles": [{"role": "Sales User"}],
+			"roles": [{"role": role}],
 		}
 	).insert(ignore_permissions=True)
 
