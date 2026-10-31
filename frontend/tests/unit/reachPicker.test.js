@@ -18,8 +18,9 @@ vi.mock('frappe-ui', async () => {
   }
 })
 
-const { default: ReachPicker } =
-  await import('../../../crm/fcrm/frontend/contact/ReachPicker.vue')
+const { default: ReachPicker } = await import(
+  '../../../crm/fcrm/frontend/contact/ReachPicker.vue'
+)
 
 function fakePage() {
   return {
