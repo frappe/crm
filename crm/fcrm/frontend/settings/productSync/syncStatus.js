@@ -19,17 +19,20 @@ export function countsLine(status) {
 export function unsyncedLine(status) {
 	const unsynced = status?.unsynced
 	if (!unsynced) return ''
-	const parts = []
-	if (unsynced.items) {
-		parts.push(unsynced.items === 1 ? __('1 item') : __('{0} items', [unsynced.items]))
+	const items = unsynced.items
+	const products = unsynced.sync_products ? unsynced.products : 0
+	if (items && products) {
+		return __('{0} and {1} not yet synced', [itemCount(items), productCount(products)])
 	}
-	if (unsynced.sync_products && unsynced.products) {
-		parts.push(
-			unsynced.products === 1
-				? __('1 product')
-				: __('{0} products', [unsynced.products]),
-		)
-	}
-	if (!parts.length) return ''
-	return __('{0} not yet synced', [parts.join(__(' and '))])
+	if (items) return __('{0} not yet synced', [itemCount(items)])
+	if (products) return __('{0} not yet synced', [productCount(products)])
+	return ''
+}
+
+function itemCount(count) {
+	return count === 1 ? __('1 item') : __('{0} items', [count])
+}
+
+function productCount(count) {
+	return count === 1 ? __('1 product') : __('{0} products', [count])
 }
