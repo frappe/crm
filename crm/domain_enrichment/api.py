@@ -17,7 +17,7 @@ import frappe
 from frappe import _
 from frappe.rate_limiter import rate_limit
 
-from .config import ENABLE_FLAG_BY_DOCTYPE, EnrichmentConfig, get_config
+from .config import enabled_doctypes, get_config
 from .mapper import get_value_for_source_key
 from .pipeline import preview as run_preview
 from .tasks import enqueue_enrichment
@@ -29,14 +29,7 @@ from .tasks import enqueue_enrichment
 ENRICH_RATE_LIMIT = 10
 
 
-def _enabled_doctypes(cfg: EnrichmentConfig) -> list[str]:
-	"""The doctypes enrichment is enabled for, per Settings (allow-list)."""
-	if not cfg.setting("enabled"):
-		return []
-	return [dt for dt, flag in ENABLE_FLAG_BY_DOCTYPE.items() if cfg.setting(flag)]
-
-
-def _enqueue_run(cfg, reference_doctype: str, reference_name: str, website: str) -> dict:
+def _enqueue_run(reference_doctype: str, reference_name: str, website: str) -> dict:
 	"""Validate + enqueue one enrichment run for a target record. Shared by
 	``enrich`` (initial trigger from the record) and ``retry`` (re-run from a Run).
 
@@ -44,7 +37,7 @@ def _enqueue_run(cfg, reference_doctype: str, reference_name: str, website: str)
 	and ``write`` permission on the target. Uses the per-doc ``job_id`` +
 	``deduplicate`` so a second trigger while one is in-flight is a no-op.
 	"""
-	if reference_doctype not in _enabled_doctypes(cfg):
+	if reference_doctype not in enabled_doctypes():
 		frappe.throw(
 			_("Enrichment is not enabled for {0}.").format(reference_doctype),
 			frappe.ValidationError,
@@ -61,6 +54,13 @@ def _enqueue_run(cfg, reference_doctype: str, reference_name: str, website: str)
 
 
 @frappe.whitelist()
+def enrichable_doctypes() -> list[str]:
+	"""The doctypes the record page offers Enrich on. The Settings Single is not readable by
+	sales users, and its on/off toggles are no secret."""
+	return enabled_doctypes()
+
+
+@frappe.whitelist()
 @rate_limit(limit=ENRICH_RATE_LIMIT, seconds=60)
 def enrich(reference_doctype: str, reference_name: str) -> dict:
 	"""Enqueue a full enrichment run for one CRM record, using the record's own
@@ -68,10 +68,9 @@ def enrich(reference_doctype: str, reference_name: str) -> dict:
 
 	Returns ``{queued: bool, job_id: str, website: str}``.
 	"""
-	cfg = get_config()
 	doc = frappe.get_doc(reference_doctype, reference_name)
 	website = (doc.get("website") or "").strip()
-	return _enqueue_run(cfg, reference_doctype, reference_name, website)
+	return _enqueue_run(reference_doctype, reference_name, website)
 
 
 @frappe.whitelist()
@@ -87,10 +86,9 @@ def retry(run: str) -> dict:
 	if not run_doc.reference_doctype or not run_doc.reference_name:
 		frappe.throw(_("This run has no linked record to re-enrich."), frappe.ValidationError)
 
-	cfg = get_config()
 	target = frappe.get_doc(run_doc.reference_doctype, run_doc.reference_name)
 	website = (target.get("website") or "").strip() or (run_doc.source_website or "").strip()
-	return _enqueue_run(cfg, run_doc.reference_doctype, run_doc.reference_name, website)
+	return _enqueue_run(run_doc.reference_doctype, run_doc.reference_name, website)
 
 
 @frappe.whitelist()
@@ -112,7 +110,7 @@ def enrich_preview(website: str, doctype: str = "CRM Deal") -> dict:
 		frappe.throw(_("A website is required."), frappe.ValidationError)
 
 	cfg = get_config()
-	if doctype not in _enabled_doctypes(cfg):
+	if doctype not in enabled_doctypes():
 		frappe.throw(
 			_("Enrichment is not enabled for {0}.").format(doctype),
 			frappe.ValidationError,

@@ -73,6 +73,14 @@ def auto_enrich_enabled_for(doctype: str) -> bool:
 	return bool(_setting(s, "enabled") and _setting(s, "auto_enrich") and flag and _setting(s, flag))
 
 
+def enabled_doctypes() -> list[str]:
+	"""The doctypes enrichment is enabled for (the allow-list): a cheap, Settings-only read."""
+	s = get_settings()
+	if not _setting(s, "enabled"):
+		return []
+	return [dt for dt, flag in ENABLE_FLAG_BY_DOCTYPE.items() if _setting(s, flag)]
+
+
 # Industry classifier thresholds. These are mechanics (how confident the winner
 # must be), not tunable knowledge, so they stay constants. If an admin ever needs
 # to tune them they can be promoted to Settings fields without touching callers.
