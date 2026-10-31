@@ -6,6 +6,7 @@ from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
 from crm.fcrm.doctype.crm_fields_layout.form_layout_mirror import FORM_LAYOUT_TYPES, MIRRORED_DOCTYPES
+from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 from crm.patches.v1_0 import mirror_fields_layouts_to_form_layout
 
 TASK_PANEL = [
@@ -67,17 +68,36 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 		self.assertEqual(after.modified, before.modified)
 
 	def test_v1_lost_reason_rewrite_does_not_write_form_layout(self):
-		v1 = frappe.get_doc("CRM Fields Layout", "CRM Deal-Side Panel")
 		(before,) = default_rows("CRM Deal", "Side Panel")
-		lost_reason = {
-			"name": "lost_reason_section",
-			"columns": [{"name": "lost_reason_column", "fields": ["lost_reason", "lost_notes"]}],
-		}
+		lost = frappe.db.get_value("CRM Deal Status", {"type": "Lost"})
+		open_ = frappe.db.get_value("CRM Deal Status", {"type": ("!=", "Lost")})
 
-		save_v1_layout("CRM Deal", "Side Panel", [lost_reason, *frappe.parse_json(v1.layout)])
+		for status in (lost, open_):
+			add_or_remove_lost_reason_section_in_sidepanel(frappe._dict(doctype="CRM Deal", status=status))
 
+		v1 = frappe.get_doc("CRM Fields Layout", "CRM Deal-Side Panel")
+		self.assertGreater(v1.modified, before.modified)
 		(after,) = default_rows("CRM Deal", "Side Panel")
 		self.assertEqual(after.modified, before.modified)
+
+	def test_a_desk_v2_omitted_list_is_lost_at_the_next_v1_save(self):
+		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
+		(row,) = default_rows("CRM Task", "Side Panel")
+		frappe.db.set_value("Form Layout", row.name, "omitted", '["status"]')
+
+		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
+
+		self.assertIsNone(frappe.db.get_value("Form Layout", row.name, "omitted"))
+
+	def test_moving_a_v1_row_to_another_type_moves_its_mirror(self):
+		doc = save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
+		frappe.db.delete("Form Layout", {"dt": "CRM Task", "type": "Details"})
+
+		doc.type = "Data Fields"
+		doc.save()
+
+		self.assertEqual(default_rows("CRM Task", "Side Panel"), [])
+		self.assertEqual(len(default_rows("CRM Task", "Details")), 1)
 
 	def test_trash_deletes_the_default_row(self):
 		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL).delete()
@@ -90,6 +110,21 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 		save_v1_layout("CRM Task", "Side Panel", [])
 
 		self.assertEqual(default_rows("CRM Task", "Side Panel"), [])
+
+	def test_an_emptied_deal_side_panel_keeps_the_sla_and_lost_reason_sections(self):
+		save_v1_layout("CRM Deal", "Side Panel", [])
+
+		(row,) = default_rows("CRM Deal", "Side Panel")
+		names = [section["name"] for section in frappe.parse_json(row.layout)[0]["sections"]]
+		self.assertEqual(names, ["sla_section", "lost_reason_section"])
+
+	def test_a_malformed_v1_tree_still_mirrors(self):
+		save_v1_layout(
+			"CRM Task", "Side Panel", [{"name": "details_section", "columns": 3, "fields": ["title"]}]
+		)
+
+		(row,) = default_rows("CRM Task", "Side Panel")
+		self.assertEqual(frappe.parse_json(row.layout)[0]["sections"][0]["columns"], [])
 
 	def test_leaves_rows_with_a_condition_alone(self):
 		conditioned = frappe.get_doc(
@@ -113,7 +148,8 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 		save_v1_layout("CRM Deal", "Required Fields", TASK_PANEL)
 
 		self.assertFalse(frappe.db.exists("Form Layout", {"dt": ("in", ("Contact", "Address"))}))
-		self.assertEqual(len(frappe.get_all("Form Layout", {"dt": "CRM Deal"})), 3)
+		types = {row.type for row in frappe.get_all("Form Layout", {"dt": "CRM Deal"}, ["type"])}
+		self.assertEqual(types, {"Quick Entry", "Side Panel", "Details"})
 
 	def test_forecasting_reaches_form_layout(self):
 		settings = frappe.get_single("FCRM Settings")

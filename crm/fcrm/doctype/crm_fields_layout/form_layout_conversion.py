@@ -30,7 +30,7 @@ class LayoutConversion:
 	def convert(self, tree: list) -> list:
 		tabs = wrap_tabless(copy.deepcopy(tree))
 		for tab in tabs:
-			tab["sections"] = [section for section in tab.get("sections") or [] if self.keeps(section)]
+			tab["sections"] = [section for section in as_list(tab.get("sections")) if self.keeps(section)]
 		if self.dt in STATUS_DOCTYPES and self.v1_type == "Side Panel":
 			tabs[0]["sections"][:0] = [sla_section(), lost_reason_section()]
 		for tab in tabs:
@@ -77,15 +77,21 @@ def strip_tab(tab: dict):
 	strip_keys(tab)
 	for section in tab["sections"]:
 		strip_keys(section)
-		section["columns"] = [column for column in section.get("columns") or [] if isinstance(column, dict)]
+		section["columns"] = [
+			column for column in as_list(section.get("columns")) if isinstance(column, dict)
+		]
 		for column in section["columns"]:
 			strip_keys(column)
-			column["fields"] = [name for name in map(fieldname_of, column.get("fields") or []) if name]
+			column["fields"] = [name for name in map(fieldname_of, as_list(column.get("fields"))) if name]
 
 
 def strip_keys(node: dict):
 	for key in V1_ONLY_KEYS:
 		node.pop(key, None)
+
+
+def as_list(value) -> list:
+	return value if isinstance(value, list) else []
 
 
 def fieldname_of(field) -> str | None:
