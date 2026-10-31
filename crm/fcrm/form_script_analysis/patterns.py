@@ -6,6 +6,7 @@ SETUP_LIST = "setupList"
 UNKNOWN = "Unknown"
 
 SCRIPTED = (CLASS, SETUP_FORM, SETUP_LIST)
+LEGACY = (SETUP_FORM, SETUP_LIST)  # given an object of helpers: `$dialog` and `$socket`, no `this`
 ANY = (*SCRIPTED, UNKNOWN)
 
 BARE = r"(?<![\w$.])"
@@ -70,14 +71,17 @@ PATTERNS = _patterns(
 	("toast-error", SCRIPTED, INJECTED + r"toast\.error\b"),
 	("toast-info", SCRIPTED, INJECTED + r"toast\.info\b"),
 	("toast-warning", SCRIPTED, INJECTED + r"toast\.warning\b"),
-	("toast-create", SCRIPTED, INJECTED + r"toast\.create\b|" + BARE + r"createToast\b"),
+	("toast-create", SCRIPTED, INJECTED + r"toast\.create\b"),
+	("toast-create", LEGACY, BARE + r"createToast\b"),
 	("toast-callable", SCRIPTED, INJECTED + r"toast\s*\("),
-	("create-dialog", SCRIPTED, INJECTED + r"createDialog\s*\(|" + BARE + r"\$dialog\s*\("),
-	("form-dialog", SCRIPTED, INJECTED + r"formDialog\s*\("),
+	("create-dialog", (CLASS,), INJECTED + r"createDialog\s*\("),
+	("create-dialog", LEGACY, BARE + r"\$dialog\s*\("),
+	("form-dialog", (CLASS,), INJECTED + r"formDialog\s*\("),
 	("router", SCRIPTED, INJECTED + r"router\.(?!previousRoute\b)"),
 	("router-previous-route", SCRIPTED, INJECTED + r"router\.previousRoute\b"),
-	("socket", SCRIPTED, INJECTED + r"\$?socket\s*\."),
-	("throw-error", (CLASS, SETUP_FORM), INJECTED + r"throwError\s*\("),
+	("socket", (CLASS,), INJECTED + r"socket\s*\."),
+	("socket", LEGACY, BARE + r"\$socket\s*\."),
+	("throw-error", (CLASS,), INJECTED + r"throwError\s*\("),
 	("make-phone-call", (CLASS,), INJECTED + r"crm\.makePhoneCall\b"),
 	("open-settings", (CLASS,), INJECTED + r"crm\.openSettings\b"),
 	("h-helper", (CLASS,), INJECTED + r"h\s*\("),
@@ -109,7 +113,8 @@ PATTERNS = _patterns(
 	("frappe-global", ANY, BARE + r"frappe\."),
 )
 
-# Keys a dialog's own options also use: inside a dialog call they are not header actions.
+# Matched only inside an actions array, and not inside a dialog call, whose options use them too.
+ACTION_ARRAY = re.compile(r"(?<![\w$])actions\s*(?:=|:|\.push\s*(?=\())\s*([\[(])")
 ACTION_PATTERNS = _patterns(
 	("action-group", (CLASS, SETUP_FORM), BARE + r"(?:group|buttonLabel)\s*:"),
 	("action-on-click", (CLASS, SETUP_FORM), BARE + r"onClick\s*[:(]"),
@@ -117,15 +122,18 @@ ACTION_PATTERNS = _patterns(
 DIALOG_CALL = re.compile(INJECTED + r"(createDialog|formDialog)\s*\(|" + BARE + r"(\$dialog)\s*\(")
 DIALOG_HTML = re.compile(BARE + r"html\s*[:,}]")
 
-CLASS_DEFINITION = re.compile(r"\bclass\s+([A-Za-z_$][\w$]*)[^{]*\{")
+CLASS_DEFINITION = re.compile(r"\bclass\s+([A-Za-z_$][\w$]*)[^{};]{0,200}\{")
+# `async`, `static` and `get` before a name need no match: the name alone is followed by its parameters.
 METHOD_DEFINITION = re.compile(
-	r"(?<![\w$.])(?:static\s+|async\s+|get\s+|set\s+|\*\s*)*([A-Za-z_$][\w$]*)\s*(?:\([^()]*\)\s*\{|=\s*(?:async\s*)?(?:\([^()]*\)|[\w$]+)\s*=>)"
+	r"(?<![\w$.])([A-Za-z_$][\w$]*)\s*"
+	r"(?:\((?:[^()]|\([^()]*\))*\)\s*\{|=\s*(?:async\s*)?(?:\([^()]*\)|[\w$]+)\s*=>)"
 )
 NOT_METHODS = {"if", "for", "while", "switch", "catch", "with", "function", "return"}
 THIS_CALL = re.compile(r"\bthis\.([A-Za-z_$][\w$]*)\s*\(")
-TRIGGERED = re.compile(r"\.trigger\(\s*['\"]([\w$]+)")
+TRIGGERED = re.compile(r"\.trigger\(\s*['\"`]([\w$]+)")
 SET_FIELD_PROPERTY = re.compile(r"\bthis\.setFieldProperty\s*(\()")
-SETUP_FORM_CALL = re.compile(r"\bsetupForm\s*\(")
+SETUP_FORM_CALL = re.compile(r"\bsetupForm\(")  # CRM v1 runs a script only if it holds `setupForm(`
 SETUP_LIST_NAME = re.compile(r"\bsetupList\b")
 SETUP_FUNCTION = re.compile(r"\b(setupForm|setupList)\s*(?:=\s*(?:async\s*)?(?:function\s*)?)?(\()")
-RETURN_OBJECT = re.compile(r"\breturn\s*(\{)")
+RETURN_OBJECT = re.compile(r"\breturn\s*\(?\s*(\{)")
+ARROW_OBJECT = re.compile(r"\s*=>\s*\(\s*(\{)")

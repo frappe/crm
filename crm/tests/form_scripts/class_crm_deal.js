@@ -101,7 +101,7 @@ class CRMProducts { // hits: child-class
   }
 
   products_remove() { // hits: row-remove
-    if (!this.rows.length) toast.success(__('No products left')) // hits: remaining-rows, toast-success, translate
+    toast.success(__('{0} products left', [this.rows.length])) // hits: toast-success, translate, remaining-rows
     this.doc.trigger('updateTotal') // hits: doc-trigger
   }
 

@@ -1,12 +1,15 @@
 import re
+import time
 from pathlib import Path
+from unittest.mock import patch
 
+import frappe
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_products.crm_products import get_product_details_script
 from crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings import get_crm_form_script
 from crm.fcrm.doctype.fcrm_settings.fcrm_settings import get_forecasting_script
-from crm.fcrm.form_script_analysis import CATALOG, analyse
+from crm.fcrm.form_script_analysis import CATALOG, analyse, scan
 
 FIXTURES = Path(__file__).parent / "form_scripts"
 FIXTURE_SHAPES = {
@@ -15,6 +18,12 @@ FIXTURE_SHAPES = {
 	"setup_list_crm_lead.js": ("CRM Lead", "List", "setupList"),
 }
 HITS_COMMENT = re.compile(r"// hits: (.*)$")
+READ_LAYOUT = scan._layout
+# CRM Deal's default layouts (crm/install.py), so a site's own layout edits do not change the hits.
+LAYOUTS = {
+	("CRM Deal", "Data Fields"): [{"name": "first_tab", "sections": [{"name": "details_section"}]}],
+	("CRM Deal", "Side Panel"): [{"name": "contacts_section"}, {"name": "organization_section"}],
+}
 
 # The guide links each key as an anchor: a renamed key breaks every link to it.
 CATALOG_KEYS = (
@@ -114,6 +123,14 @@ NO_COUNTERPART = {
 
 
 class TestFormScriptAnalysis(IntegrationTestCase):
+	def setUp(self):
+		layout = patch(
+			"crm.fcrm.form_script_analysis.scan._layout",
+			lambda doctype, layout_type: LAYOUTS.get((doctype, layout_type), []),
+		)
+		layout.start()
+		self.addCleanup(layout.stop)
+
 	def test_catalog_keys_do_not_change(self):
 		self.assertEqual(list(CATALOG), CATALOG_KEYS)
 
@@ -233,6 +250,118 @@ class TestFormScriptAnalysis(IntegrationTestCase):
 		script = "class CRMDeal { onLoad() { createDialog({ actions: [{ group: 1, onClick: () => {} }] }) } }"
 		keys = {hit.key for hit in analyse(script, "CRM Deal", "Form").hits}
 		self.assertEqual(keys, {"on-load", "create-dialog"})
+
+	def test_a_doctype_that_is_gone(self):
+		for doctype in ("No Such Doctype 45966", ""):
+			with self.subTest(doctype=doctype):
+				analysis = analyse("class Foo {\n  onLoad() {}\n  status() {}\n}", doctype, "Form")
+				self.assertEqual(found(analysis), {(1, "child-class"), (2, "unread-handler")})
+
+	def test_row_events_reach_only_the_tables_child_class(self):
+		script = "class CRMDeal {\n  products_add() {}\n}\nclass CRMProducts {\n  contacts_add() {}\n  products_remove() {}\n}"
+		self.assertEqual(found(analyse(script, "CRM Deal", "Form")), {(4, "child-class"), (6, "row-remove")})
+
+	def test_a_broken_layout(self):
+		script = "class CRMDeal { onRender() { this.setFieldProperty('custom_part', 'hidden', 1) } }"
+		get_value = frappe.db.get_value
+		for layout in (
+			"{",
+			'[{"name": "t", "sections": null}]',
+			'[{"sections": ["x"]}]',
+			'[{"name": ["x"]}]',
+			"[1]",
+		):
+
+			def read(doctype, *args, layout=layout, **kwargs):
+				return layout if doctype == "CRM Fields Layout" else get_value(doctype, *args, **kwargs)
+
+			with (
+				self.subTest(layout=layout),
+				patch.object(scan, "_layout", READ_LAYOUT),
+				patch.object(frappe.db, "get_value", read),
+			):
+				keys = {hit.key for hit in analyse(script, "CRM Deal", "Form").hits}
+				self.assertEqual(keys, {"on-render", "set-field-property"})
+
+	def test_unbalanced_and_adversarial_scripts_stay_fast(self):
+		cases = {
+			"unclosed arrows": "function setupForm({ doc }) {\n" + "const f = () => {\n" * 5000,
+			"unclosed calls": "class CRMDeal {\n onLoad() {\n" + "this.setFieldProperty(\n" * 3000,
+			"deep nesting": "class CRMDeal { onLoad() {" + "{" * 3000 + "}" * 3000 + "} }",
+			"modifiers": "class CRMDeal {\n" + "async " * 8000 + "\n}",
+			"class headers": "class a " * 50000,
+			"divisions": "class CRMDeal { onLoad() { x = " + "(a) / " * 5000 + "1 } }",
+		}
+		for name, script in cases.items():
+			with self.subTest(case=name):
+				start = time.monotonic()
+				analyse(script, "CRM Deal", "Form")
+				self.assertLess(time.monotonic() - start, 2)
+
+	def test_regex_literals(self):
+		cases = [
+			"if (x) /'/.test(y); call('a')",
+			"n++ / total; call('a')",
+			"async function f() { await /'/.test(x); call('a') }",
+			"call(/* x */ /'/); call('a')",
+		]
+		for line in cases:
+			with self.subTest(line=line):
+				script = f"function setupForm({{ doc }}) {{\n  {line}\n}}"
+				self.assertIn((2, "call"), found(analyse(script, "CRM Lead", "Form")))
+
+	def test_setup_list_return_forms(self):
+		for script in (
+			"const setupList = ({ list }) => ({ actions: [], bulk_actions: [] })",
+			"function setupList({ list }) { return ({ actions: [], 'bulk_actions': [] }) }",
+		):
+			with self.subTest(script=script):
+				keys = {hit.key for hit in analyse(script, "CRM Lead", "List").hits}
+				self.assertEqual(keys, {"list-actions", "list-bulk-actions"})
+
+	def test_action_keys_count_only_inside_actions(self):
+		script = """class CRMDeal {
+  onLoad() {
+    call('x', { group: 'a', onClick: 1 })
+    this.tabs = [{ component: { render: () => h('button', { onClick: () => {} }) } }]
+    this.actions.push({ group: 'b', onClick: () => {} })
+  }
+}"""
+		keys = {key for line, key in found(analyse(script, "CRM Deal", "Form")) if line in (3, 4, 5)}
+		self.assertEqual(
+			keys, {"call", "tabs", "h-helper", "header-actions", "action-group", "action-on-click"}
+		)
+		actions = {
+			line for line, key in found(analyse(script, "CRM Deal", "Form")) if key.startswith("action-")
+		}
+		self.assertEqual(actions, {5})
+
+	def test_setup_form_needs_its_parenthesis(self):
+		self.assertEqual(analyse("function setupForm ({ doc }) {}", "CRM Lead", "Form").shape, "Unknown")
+
+	def test_helpers_a_shape_is_not_given(self):
+		script = "function setupForm({ doc }) {\n  throwError('x'); createDialog({}); formDialog({}); socket.on()\n}"
+		self.assertEqual(found(analyse(script, "CRM Lead", "Form")), {(1, "legacy-doc")})
+
+	def test_a_class_script_that_also_holds_setup_form(self):
+		script = "class CRMLead {}\nfunction setupForm({ doc }) {\n  updateField('status', 'New')\n  return { actions: [] }\n}"
+		analysis = analyse(script, "CRM Lead", "Form")
+		self.assertEqual(analysis.shape, "Class-based")
+		self.assertEqual(found(analysis), {(2, "legacy-doc"), (3, "update-field"), (4, "header-actions")})
+
+	def test_trigger_reaches_only_the_parent_class(self):
+		script = "class CRMDeal {\n  onLoad() { this.doc.trigger(`after_save`) }\n  after_save() {}\n}\nclass CRMProducts {\n  after_save() {}\n}"
+		hits = found(analyse(script, "CRM Deal", "Form"))
+		self.assertNotIn((3, "unread-handler"), hits)
+		self.assertIn((6, "unread-handler"), hits)
+
+	def test_methods_with_calls_in_default_parameters(self):
+		script = "class CRMDeal {\n  onLoad(a = f()) {}\n}"
+		self.assertEqual(found(analyse(script, "CRM Deal", "Form")), {(2, "on-load")})
+
+	def test_child_class_hit_is_on_the_class_line(self):
+		script = "class CRMDeal {}\nclass CRMProducts\n{\n}"
+		self.assertEqual(found(analyse(script, "CRM Deal", "Form")), {(2, "child-class")})
 
 
 def analyse_fixture(name):
