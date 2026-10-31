@@ -8,6 +8,8 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import random_string
 
+from crm.fcrm.doctype.crm_fields_layout.form_layout_mirror import mirror_layout, remove_mirrored_layout
+
 
 class CRMFieldsLayout(Document):
 	# begin: auto-generated types
@@ -23,7 +25,11 @@ class CRMFieldsLayout(Document):
 		type: DF.Literal["Quick Entry", "Side Panel", "Data Fields", "Grid Row", "Required Fields"]
 	# end: auto-generated types
 
-	pass
+	def on_update(self):
+		mirror_layout(self)
+
+	def on_trash(self):
+		remove_mirrored_layout(self)
 
 
 @frappe.whitelist()
