@@ -77,4 +77,4 @@ export async function changeStatus(page, status) {
 }
 
 // The record page's own dialog has told the reader why: a save conflict, or code that does not compile.
-const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']
+export const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']

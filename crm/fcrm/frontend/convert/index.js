@@ -2,7 +2,14 @@
 import { getMeta } from '@framework/ui/api'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
-import { convertLead, leadDefaults, placeConvertButton, requiredDealFields, saveBeforeConvert } from './convertToDeal.js'
+import {
+	convertLead,
+	leadDefaults,
+	placeConvertButton,
+	requiredDealFields,
+	saveLead,
+	toDialogField,
+} from './convertToDeal.js'
 
 export function addConvertButton(page) {
 	placeConvertButton(page, {
@@ -14,13 +21,13 @@ export function addConvertButton(page) {
 }
 
 async function convertToDeal(page) {
-	await saveBeforeConvert(page)
+	if (!(await saveLead(page))) return
 	const required = requiredDealFields((await getMeta('CRM Deal')).data?.fields)
 	let deal = null
 	await page.dialog.form({
 		title: __('Convert to Deal'),
-		fields: [...linkFields(), ...required],
-		defaults: leadDefaults(page.doc, required),
+		fields: [...linkFields(), ...required.map(toDialogField)],
+		defaults: leadDefaults(page.doc, page.meta?.fields, required),
 		submitLabel: __('Convert'),
 		onSubmit: async (values) => {
 			deal = await convertLead(page, values)
@@ -37,14 +44,14 @@ function linkFields() {
 			fieldtype: 'Link',
 			options: 'CRM Organization',
 			label: __('Organization'),
-			description: __('Leave blank to create one from the lead.'),
+			description: __("Leave blank to use the lead's organization details."),
 		},
 		{
 			fieldname: 'contact',
 			fieldtype: 'Link',
 			options: 'Contact',
 			label: __('Contact'),
-			description: __("Leave blank to create one from the lead's person."),
+			description: __("Leave blank to use the lead's contact details."),
 		},
 	]
 }

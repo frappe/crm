@@ -1,16 +1,16 @@
 // What CRM Lead's Convert to Deal button does, kept free of the desk's imports so it is unit-tested.
+import { SHOWN_IN_DIALOG } from '../status/statusChange.js'
 
 export const CONVERT_METHOD = 'crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal'
 
-// The dialog's own Links: blank, the server creates the organization and the contact from the lead.
-export const LINK_FIELDS = ['organization', 'contact']
+const LINK_FIELDS = ['organization', 'contact']
 
 // A dialog field list cannot draw a grid or a layout break.
 const NOT_INPUTS = ['Table', 'Table MultiSelect', 'Section Break', 'Column Break', 'Tab Break', 'HTML', 'Button']
 
-// Deal fields filled from a lead field of another name; `status` and `organization` are not copied.
 const FROM_LEAD = { deal_owner: 'lead_owner' }
-const NOT_FROM_LEAD = ['status', 'organization']
+// A lead status is not a CRM Deal Status name.
+const NOT_FROM_LEAD = ['status']
 
 /** Adds the button after the status control; a new lead has nothing to convert yet. */
 export function placeConvertButton(page, item) {
@@ -26,23 +26,41 @@ export function requiredDealFields(metaFields) {
 	return (metaFields ?? [])
 		.filter((field) => field.reqd && !field.default)
 		.filter((field) => !LINK_FIELDS.includes(field.fieldname) && !NOT_INPUTS.includes(field.fieldtype))
-		.map(toDialogField)
 }
 
-/** The lead's values for `fields`, so a deal field the lead already holds is not typed twice. */
-export function leadDefaults(lead, fields) {
+/** A meta field as a `page.dialog.form` field, forced mandatory. */
+export function toDialogField(field) {
+	return {
+		fieldname: field.fieldname,
+		fieldtype: field.fieldtype,
+		label: field.label,
+		options: field.options,
+		reqd: 1,
+		depends_on: field.depends_on,
+		description: field.description,
+	}
+}
+
+/** The lead's values for the deal's `fields`, matched as the server copies them, so none is typed twice. */
+export function leadDefaults(lead, leadFields, fields) {
 	const defaults = {}
-	for (const { fieldname } of fields) {
-		if (NOT_FROM_LEAD.includes(fieldname)) continue
-		const value = lead[FROM_LEAD[fieldname] ?? fieldname]
-		if (value != null && value !== '') defaults[fieldname] = value
+	for (const field of fields) {
+		if (NOT_FROM_LEAD.includes(field.fieldname)) continue
+		const value = lead[leadFieldname(field, leadFields ?? [])]
+		if (value != null && value !== '') defaults[field.fieldname] = value
 	}
 	return defaults
 }
 
-/** Saves the lead's edits first, since the server converts the saved lead. */
-export async function saveBeforeConvert(page) {
-	if (page.isDirty) await page.save()
+/** Saves the lead's edits, since the server converts the saved lead; false, with the reason shown, when refused. */
+export async function saveLead(page) {
+	try {
+		await page.save()
+		return true
+	} catch (error) {
+		if (!SHOWN_IN_DIALOG.includes(error?.name)) page.toast.error(error?.message || String(error))
+		return false
+	}
 }
 
 /** Converts the lead with the dialog's values; resolves with the new deal's name. */
@@ -56,16 +74,19 @@ export function convertLead(page, values) {
 	})
 }
 
-function toDialogField(field) {
-	return {
-		fieldname: field.fieldname,
-		fieldtype: field.fieldtype,
-		label: field.label,
-		options: field.options,
-		reqd: 1,
-		depends_on: field.depends_on,
-		description: field.description,
-	}
+// The server's `get_deal_fieldname`, read the other way: a custom field matches one custom lead field by label and type.
+function leadFieldname(dealField, leadFields) {
+	if (FROM_LEAD[dealField.fieldname]) return FROM_LEAD[dealField.fieldname]
+	if (leadFields.some((field) => field.fieldname === dealField.fieldname)) return dealField.fieldname
+	if (!isCustom(dealField)) return null
+	const matches = leadFields.filter(
+		(field) => isCustom(field) && field.label === dealField.label && field.fieldtype === dealField.fieldtype,
+	)
+	return matches.length === 1 ? matches[0].fieldname : null
+}
+
+function isCustom(field) {
+	return Boolean(field.is_custom_field || field.custom || field.fieldname?.startsWith('custom_'))
 }
 
 // An empty value would overwrite what the server copies from the lead.

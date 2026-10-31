@@ -5,15 +5,16 @@ import {
   leadDefaults,
   placeConvertButton,
   requiredDealFields,
-  saveBeforeConvert,
+  saveLead,
+  toDialogField,
 } from '../../../crm/fcrm/frontend/convert/convertToDeal.js'
 
 function fakePage(overrides = {}) {
   return {
     docname: 'CRM-LEAD-0001',
     isNew: false,
-    isDirty: false,
     header: { add: vi.fn() },
+    toast: { error: vi.fn() },
     save: vi.fn(() => Promise.resolve()),
     call: vi.fn(() => Promise.resolve('CRM-DEAL-0001')),
     ...overrides,
@@ -88,26 +89,10 @@ describe('requiredDealFields', () => {
     },
   ]
 
-  it('keeps the fields that are reqd without a default, as dialog fields', () => {
-    expect(requiredDealFields(meta)).toEqual([
-      {
-        fieldname: 'status',
-        fieldtype: 'Link',
-        label: 'Status',
-        options: 'CRM Deal Status',
-        reqd: 1,
-        depends_on: undefined,
-        description: undefined,
-      },
-      {
-        fieldname: 'custom_region',
-        fieldtype: 'Data',
-        label: 'Region',
-        options: undefined,
-        reqd: 1,
-        depends_on: 'eval:1',
-        description: undefined,
-      },
+  it('keeps the fields that are reqd without a default', () => {
+    expect(requiredDealFields(meta).map((field) => field.fieldname)).toEqual([
+      'status',
+      'custom_region',
     ])
   })
 
@@ -122,39 +107,117 @@ describe('requiredDealFields', () => {
   })
 })
 
-describe('leadDefaults', () => {
-  const fields = [
-    { fieldname: 'status' },
-    { fieldname: 'deal_owner' },
-    { fieldname: 'custom_region' },
-    { fieldname: 'industry' },
-  ]
-
-  it("fills each field from the lead's value of the same name, and deal_owner from lead_owner", () => {
-    const lead = {
-      status: 'New',
-      lead_owner: 'a@example.com',
-      custom_region: 'EU',
-      industry: '',
+describe('toDialogField', () => {
+  it('forces the field mandatory and keeps what a dialog field may carry', () => {
+    const field = {
+      fieldname: 'custom_region',
+      fieldtype: 'Data',
+      label: 'Region',
+      reqd: 1,
+      depends_on: 'eval:1',
+      in_list_view: 1,
     }
-    expect(leadDefaults(lead, fields)).toEqual({
-      deal_owner: 'a@example.com',
-      custom_region: 'EU',
+    expect(toDialogField(field)).toEqual({
+      fieldname: 'custom_region',
+      fieldtype: 'Data',
+      label: 'Region',
+      options: undefined,
+      reqd: 1,
+      depends_on: 'eval:1',
+      description: undefined,
     })
   })
 })
 
-describe('saveBeforeConvert', () => {
-  it('saves a lead with unsaved edits', async () => {
-    const page = fakePage({ isDirty: true })
-    await saveBeforeConvert(page)
+describe('leadDefaults', () => {
+  const leadFields = [
+    { fieldname: 'status' },
+    { fieldname: 'lead_owner' },
+    { fieldname: 'industry' },
+    {
+      fieldname: 'custom_lead_region',
+      label: 'Region',
+      fieldtype: 'Data',
+      is_custom_field: 1,
+    },
+    {
+      fieldname: 'custom_tier',
+      label: 'Tier',
+      fieldtype: 'Data',
+      is_custom_field: 1,
+    },
+    {
+      fieldname: 'custom_tier_2',
+      label: 'Tier',
+      fieldtype: 'Data',
+      is_custom_field: 1,
+    },
+  ]
+  const lead = {
+    status: 'New',
+    lead_owner: 'a@example.com',
+    industry: '',
+    custom_lead_region: 'EU',
+    custom_tier: 'Gold',
+    custom_tier_2: 'Silver',
+  }
+  const field = (fieldname, label, fieldtype = 'Data') => ({
+    fieldname,
+    label,
+    fieldtype,
+    is_custom_field: 1,
+  })
+
+  it('fills deal_owner from lead_owner and skips status and empty values', () => {
+    const fields = [
+      { fieldname: 'status' },
+      { fieldname: 'deal_owner' },
+      { fieldname: 'industry' },
+    ]
+    expect(leadDefaults(lead, leadFields, fields)).toEqual({
+      deal_owner: 'a@example.com',
+    })
+  })
+
+  it('fills a custom field from the one custom lead field of its label and type', () => {
+    expect(
+      leadDefaults(lead, leadFields, [field('custom_deal_region', 'Region')]),
+    ).toEqual({
+      custom_deal_region: 'EU',
+    })
+  })
+
+  it('leaves a custom field empty when the label matches no lead field, or more than one', () => {
+    const fields = [
+      field('custom_deal_tier', 'Tier'),
+      field('custom_size', 'Region', 'Int'),
+    ]
+    expect(leadDefaults(lead, leadFields, fields)).toEqual({})
+  })
+})
+
+describe('saveLead', () => {
+  it('saves the lead and answers true', async () => {
+    const page = fakePage()
+    expect(await saveLead(page)).toBe(true)
     expect(page.save).toHaveBeenCalledOnce()
   })
 
-  it('does not save a clean lead', async () => {
-    const page = fakePage()
-    await saveBeforeConvert(page)
-    expect(page.save).not.toHaveBeenCalled()
+  it('answers false and toasts the reason when the save is refused', async () => {
+    const page = fakePage({
+      save: vi.fn(() => Promise.reject(new Error('Invalid email'))),
+    })
+    expect(await saveLead(page)).toBe(false)
+    expect(page.toast.error).toHaveBeenCalledWith('Invalid email')
+  })
+
+  it('does not toast a refusal the page has explained in its own dialog', async () => {
+    const conflict = Object.assign(new Error('Saved by someone else'), {
+      name: 'SaveConflict',
+    })
+    const page = fakePage({ save: vi.fn(() => Promise.reject(conflict)) })
+    expect(await saveLead(page)).toBe(false)
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 })
 
