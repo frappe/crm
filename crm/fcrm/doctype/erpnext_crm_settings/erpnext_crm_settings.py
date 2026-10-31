@@ -11,6 +11,8 @@ from frappe.frappeclient import FrappeClient
 from frappe.model.document import Document
 from frappe.utils import get_url_to_form, get_url_to_list
 
+from crm.fcrm.doctype.crm_form_script.crm_form_script import refresh_analysis
+
 
 def _is_erpnext_installed():
 	return "erpnext" in frappe.get_installed_apps()
@@ -198,6 +200,7 @@ class ERPNextCRMSettings(Document):
 			if frappe.db.exists("CRM Form Script", "Create Quotation from CRM Deal"):
 				script = get_crm_form_script()
 				frappe.db.set_value("CRM Form Script", "Create Quotation from CRM Deal", "script", script)
+				refresh_analysis("Create Quotation from CRM Deal")
 				return True
 			return False
 		except Exception:

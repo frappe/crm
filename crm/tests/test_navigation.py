@@ -38,6 +38,7 @@ SETUP_ROWS = (
 	"assignment-rules",
 	"sla-policies",
 	"holiday-lists",
+	"form-scripts",
 	"lead-syncing",
 	"lead-sync-sources",
 	"failed-lead-syncs",
@@ -56,6 +57,7 @@ SIDEBARS = {
 			"assignment-rules",
 			"sla-policies",
 			"holiday-lists",
+			"form-scripts",
 			"lead-syncing",
 			"lead-sync-sources",
 			"failed-lead-syncs",
@@ -63,7 +65,8 @@ SIDEBARS = {
 	)
 }
 
-MANAGER_SIDEBAR = tuple(key for key in SETUP_ROWS if key != "email-accounts")
+# Form Scripts is offered to a System Manager only, though Sales roles read CRM Form Script.
+MANAGER_SIDEBAR = tuple(key for key in SETUP_ROWS if key not in ("email-accounts", "form-scripts"))
 
 SETUP_DOCTYPES = (
 	"CRM Lead Status",
@@ -78,9 +81,12 @@ SETUP_DOCTYPES = (
 	"Assignment Rule",
 	"CRM Service Level Agreement",
 	"CRM Holiday List",
+	"CRM Form Script",
 	"Lead Sync Source",
 	"Failed Lead Sync Log",
 )
+
+DOCTYPE_KINDS = ("DocType", "System Manager DocType")
 
 # The rail items that open their list with no panel.
 INDEPENDENT = ("leads", "deals", "contacts", "organizations", "tasks", "notes", "call-logs")
@@ -166,7 +172,7 @@ class TestCRMNavigation(IntegrationTestCase):
 		"""
 		for container, address in every_container():
 			for row in shipped(container, address):
-				if row.item_type == "DocType":
+				if row.item_type in DOCTYPE_KINDS:
 					self.assertTrue(frappe.db.exists("DocType", row.link_to), f"{address}/{row.key}")
 
 	def test_every_destination_is_listed_once(self):
@@ -179,7 +185,7 @@ class TestCRMNavigation(IntegrationTestCase):
 			row.link_to
 			for container, address in every_container()
 			for row in shipped(container, address)
-			if row.item_type == "DocType"
+			if row.item_type in DOCTYPE_KINDS
 		]
 
 		self.assertEqual(len(destinations), len(set(destinations)), destinations)

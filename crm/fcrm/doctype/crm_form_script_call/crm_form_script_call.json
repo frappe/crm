@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "creation": "2026-10-31 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "line",
+  "v1_call",
+  "verb",
+  "catalog_key",
+  "gap"
+ ],
+ "fields": [
+  {
+   "fieldname": "line",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Line",
+   "read_only": 1
+  },
+  {
+   "fieldname": "v1_call",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "V1 Call",
+   "read_only": 1
+  },
+  {
+   "fieldname": "verb",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Desk v2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "catalog_key",
+   "fieldtype": "Data",
+   "label": "Guide Anchor",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gap",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Gap",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-31 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Form Script Call",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

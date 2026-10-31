@@ -11,6 +11,11 @@
   "column_break_gboh",
   "enabled",
   "is_standard",
+  "desk_v2_section",
+  "v1_shape",
+  "column_break_desk_v2",
+  "migration_status",
+  "v1_calls",
   "section_break_xeox",
   "script"
  ],
@@ -61,11 +66,47 @@
    "fieldtype": "Check",
    "label": "Is Standard",
    "no_copy": 1
+  },
+  {
+   "fieldname": "desk_v2_section",
+   "fieldtype": "Section Break",
+   "label": "Desk v2"
+  },
+  {
+   "fieldname": "v1_shape",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Shape",
+   "no_copy": 1,
+   "options": "\nClass-based\nsetupForm\nsetupList\nUnknown",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_desk_v2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "migration_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Status",
+   "no_copy": 1,
+   "options": "\nRewrite\nRewrite: has calls with no counterpart\nUnknown shape",
+   "read_only": 1
+  },
+  {
+   "fieldname": "v1_calls",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "label": "V1 Calls",
+   "no_copy": 1,
+   "options": "CRM Form Script Call",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-31 12:00:00.000000",
+ "modified": "2026-10-31 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Form Script",

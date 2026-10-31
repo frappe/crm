@@ -1,0 +1,14 @@
+{
+ "creation": "2026-10-31 12:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Navigation Item Type",
+ "idx": 0,
+ "modified": "2026-10-31 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "System Manager DocType",
+ "owner": "Administrator",
+ "permission_rule": "Custom",
+ "target_doctype": "DocType",
+ "type_name": "System Manager DocType"
+}
