@@ -37,6 +37,15 @@ class CRMOrganization(Document):
 
 		auto_enrich_on_create(self)
 
+	def after_rename(self, old_name, new_name, merge=False):
+		# A contact names its organization in the Data field `company_name`, which a rename does not follow.
+		# Unindexed: an UPDATE by it would lock every contact, so update by name.
+		names = frappe.get_all("Contact", filters={"company_name": old_name}, pluck="name")
+		if not names:
+			return
+		contact = frappe.qb.DocType("Contact")
+		frappe.qb.update(contact).set(contact.company_name, new_name).where(contact.name.isin(names)).run()
+
 	def update_exchange_rate(self):
 		if self.has_value_changed("currency") or not self.exchange_rate:
 			system_currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
