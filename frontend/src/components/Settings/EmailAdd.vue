@@ -93,7 +93,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, onUnmounted, reactive, ref, watch } from 'vue'
 import { createResource, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
@@ -106,6 +106,7 @@ import {
   incomingOutgoingFields,
 } from './emailConfig'
 import EmailProviderIcon from './EmailProviderIcon.vue'
+import { unsavedSettings } from '@/composables/settings'
 
 const emit = defineEmits(['update:step'])
 
@@ -123,6 +124,21 @@ const state = reactive({
   default_outgoing: false,
   create_lead_from_incoming_email: false,
 })
+// a half-filled account keeps the assistant from reopening Settings over it
+watch(
+  () =>
+    [
+      'email_account_name',
+      'email_id',
+      'password',
+      'api_key',
+      'api_secret',
+      'frappe_mail_site',
+    ].some((field) => state[field]),
+  (value) => (unsavedSettings.value = value),
+)
+onUnmounted(() => (unsavedSettings.value = false))
+
 const { capture } = useTelemetry()
 const { completeStep } = useCrmOnboarding()
 

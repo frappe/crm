@@ -622,6 +622,7 @@ import { usersStore } from '@/stores/users'
 import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
+import { assistantChanges } from '@/composables/assistant'
 import { MessageInput, MessageList, useMessages } from '@whatsapp/ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { Avatar, Button, createResource, toast } from 'frappe-ui'
@@ -750,6 +751,18 @@ watch(
   () => messages.messages.length,
   () => nextTick(() => scroll()),
 )
+
+// the assistant added an email here, or changed a note or task: show it without a manual reload
+watch(assistantChanges, (changed) => {
+  if (!changed) return
+  const here = changed.records.some(
+    (r) => r.doctype === props.doctype && r.name === props.docname,
+  )
+  const touched = ['*', 'CRM Task', 'FCRM Note'].some((d) =>
+    changed.doctypes.includes(d),
+  )
+  if (here || touched) all_activities.reload()
+})
 
 onBeforeUnmount(() => {
   $socket.off('docinfo_update', handleDocinfoUpdate)

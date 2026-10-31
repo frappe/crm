@@ -170,7 +170,11 @@ import WorkflowIcon from '~icons/lucide/workflow'
 import { ConfirmDelete } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
 import { usersStore } from '@/stores/users'
-import { disableSettingModalOutsideClick } from '@/composables/settings'
+import {
+  disableSettingModalOutsideClick,
+  settingsRecord,
+  unsavedSettings,
+} from '@/composables/settings'
 import {
   List,
   ListCell,
@@ -213,7 +217,11 @@ const listColumns = [
 
 // While the builder is up, a click outside must not take the settings dialog with it.
 watch(showBuilder, (open) => (disableSettingModalOutsideClick.value = open))
-onUnmounted(() => (disableSettingModalOutsideClick.value = false))
+watch(dirty, (value) => (unsavedSettings.value = value))
+onUnmounted(() => {
+  disableSettingModalOutsideClick.value = false
+  unsavedSettings.value = false
+})
 
 const automations = createListResource({
   doctype: 'Automation Flow',
@@ -270,6 +278,18 @@ function openAutomation(automation) {
   selectedAutomation.value = automation.name
   screen.value = 'detail'
 }
+
+// Settings opened on one automation, such as one the assistant just added
+watch(
+  settingsRecord,
+  (name) => {
+    if (!name) return
+    automations.reload()
+    openAutomation({ name })
+    settingsRecord.value = ''
+  },
+  { immediate: true },
+)
 
 /** Closing the builder always lands back on the list, warning first about unsaved edits. */
 function requestClose() {
