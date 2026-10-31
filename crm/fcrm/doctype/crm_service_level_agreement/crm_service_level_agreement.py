@@ -9,6 +9,7 @@ from frappe.model.document import Document
 from frappe.utils import (
 	add_to_date,
 	get_datetime,
+	get_time,
 	get_weekdays,
 	getdate,
 	now_datetime,
@@ -48,7 +49,30 @@ class CRMServiceLevelAgreement(Document):
 
 	def validate(self):
 		self.validate_default()
+		self.validate_dates()
+		self.validate_priorities()
+		self.validate_working_hours()
 		self.validate_condition()
+
+	def validate_dates(self):
+		if self.start_date and self.end_date and getdate(self.end_date) < getdate(self.start_date):
+			frappe.throw(_("End Date cannot be before Start Date"))
+
+	def validate_priorities(self):
+		duplicates = find_duplicates(row.priority for row in self.priorities)
+		if duplicates:
+			frappe.throw(_("Priorities must be unique: {0}").format(", ".join(duplicates)))
+
+	def validate_working_hours(self):
+		duplicates = find_duplicates(row.workday for row in self.working_hours)
+		if duplicates:
+			frappe.throw(_("Each workday can appear only once: {0}").format(", ".join(duplicates)))
+
+		for row in self.working_hours:
+			if row.start_time and row.end_time and get_time(row.start_time) >= get_time(row.end_time):
+				frappe.throw(
+					_("End Time must be after Start Time for {0} in row {1}").format(_(row.workday), row.idx)
+				)
 
 	def validate_default(self):
 		if self.default:
@@ -357,3 +381,12 @@ class CRMServiceLevelAgreement(Document):
 		for row in holiday_list.holidays:
 			res.append(row.date)
 		return res
+
+
+def find_duplicates(values) -> list[str]:
+	seen, duplicates = set(), []
+	for value in values:
+		if value in seen and value not in duplicates:
+			duplicates.append(value)
+		seen.add(value)
+	return duplicates
