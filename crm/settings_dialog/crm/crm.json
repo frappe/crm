@@ -45,6 +45,13 @@
    "label": "Exotel",
    "pane": "telephony",
    "save_mode": "button"
+  },
+  {
+   "component": "users",
+   "key": "users",
+   "pane": "users",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "settings": "[{\"label\": \"Users\", \"keywords\": [\"roles\", \"team\", \"members\", \"add user\", \"remove user\"]}]"
   }
  ],
  "creation": "2026-10-27 10:30:00.000000",
@@ -52,7 +59,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-31 12:00:00.000000",
+ "modified": "2026-10-31 13:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
@@ -62,6 +69,12 @@
    "icon": "sliders-horizontal",
    "key": "general",
    "label": "General"
+  },
+  {
+   "description": "Who works in CRM and the role each one holds.",
+   "icon": "users",
+   "key": "users",
+   "label": "Users"
   },
   {
    "description": "Twilio and Exotel accounts for calls from CRM.",
