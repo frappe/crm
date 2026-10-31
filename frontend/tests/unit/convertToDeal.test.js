@@ -12,6 +12,7 @@ function fakePage(overrides = {}) {
   return {
     docname: 'CRM-LEAD-0001',
     isNew: false,
+    doc: { converted: 0 },
     header: { add: vi.fn() },
     toast: { error: vi.fn() },
     call: vi.fn(() => Promise.resolve('CRM-DEAL-0001')),
@@ -39,6 +40,12 @@ describe('placeConvertButton', () => {
 
   it('adds nothing on a new lead', () => {
     const page = fakePage({ isNew: true })
+    placeConvertButton(page, { label: 'Convert to Deal' })
+    expect(page.header.add).not.toHaveBeenCalled()
+  })
+
+  it('adds nothing on a lead that is already converted', () => {
+    const page = fakePage({ doc: { converted: 1 } })
     placeConvertButton(page, { label: 'Convert to Deal' })
     expect(page.header.add).not.toHaveBeenCalled()
   })
