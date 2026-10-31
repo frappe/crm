@@ -2,22 +2,36 @@
 # See license.txt
 
 import frappe
+from frappe.desk.doctype.form_layout.form_layout import get_form_layouts
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
-from crm.fcrm.doctype.crm_fields_layout.form_layout_mirror import FORM_LAYOUT_TYPES, MIRRORED_DOCTYPES
+from crm.fcrm.doctype.crm_fields_layout.form_layout_mirror import (
+	FOREIGN_LAYOUTS,
+	FORM_LAYOUT_TYPES,
+	MIRRORED_DOCTYPES,
+)
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
-from crm.patches.v1_0 import mirror_fields_layouts_to_form_layout
+from crm.patches.v1_0 import (
+	mirror_contact_and_address_layouts_to_form_layout,
+	mirror_fields_layouts_to_form_layout,
+)
 
 TASK_PANEL = [
 	{"name": "details_section", "columns": [{"name": "details_column", "fields": ["title", "status"]}]}
 ]
 
+CONTACT_PANEL = [
+	{"name": "details_section", "columns": [{"name": "details_column", "fields": ["first_name", "email_id"]}]}
+]
 
-def default_rows(dt, type):
+ADDRESS_ENTRY = [{"name": "details_section", "columns": [{"name": "details_column", "fields": ["city"]}]}]
+
+
+def default_rows(dt, type, app=None):
 	return frappe.get_all(
 		"Form Layout",
-		filters={"dt": dt, "type": type, "condition": ("is", "not set")},
+		filters={"dt": dt, "type": type, "app": app or ("is", "not set"), "condition": ("is", "not set")},
 		fields=["name", "layout", "modified"],
 	)
 
@@ -140,14 +154,13 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 		conditioned.reload()
 		self.assertEqual(frappe.parse_json(conditioned.layout), TASK_PANEL)
 
-	def test_skips_foreign_doctypes_and_unmoved_types(self):
-		frappe.db.delete("Form Layout", {"dt": ("in", ("Contact", "Address"))})
-		for dt, type in (("Contact", "Quick Entry"), ("Contact", "Side Panel"), ("Address", "Quick Entry")):
-			save_v1_layout(dt, type, TASK_PANEL)
+	def test_skips_unmoved_types(self):
+		frappe.db.delete("Form Layout", {"dt": "Contact"})
+		save_v1_layout("Contact", "Data Fields", CONTACT_PANEL)
 		save_v1_layout("CRM Deal", "Grid Row", TASK_PANEL)
 		save_v1_layout("CRM Deal", "Required Fields", TASK_PANEL)
 
-		self.assertFalse(frappe.db.exists("Form Layout", {"dt": ("in", ("Contact", "Address"))}))
+		self.assertFalse(frappe.db.exists("Form Layout", {"dt": "Contact"}))
 		types = {row.type for row in frappe.get_all("Form Layout", {"dt": "CRM Deal"}, ["type"])}
 		self.assertEqual(types, {"Quick Entry", "Side Panel", "Details"})
 
@@ -166,6 +179,58 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 		self.assertNotIn("forecasted_sales_section", panel.layout)
 
 
+class TestForeignLayoutMirror(IntegrationTestCase):
+	def setUp(self):
+		frappe.db.delete("Form Layout", {"dt": ("in", ("Contact", "Address"))})
+
+	def test_contact_and_address_layouts_name_crm(self):
+		for dt, type in FOREIGN_LAYOUTS:
+			save_v1_layout(dt, type, CONTACT_PANEL if dt == "Contact" else ADDRESS_ENTRY)
+
+		rows = frappe.get_all("Form Layout", {"dt": ("in", ("Contact", "Address"))}, ["dt", "type", "app"])
+		self.assertEqual(
+			{(row.dt, row.type, row.app) for row in rows},
+			{(dt, type, "crm") for dt, type in FOREIGN_LAYOUTS},
+		)
+
+	def test_crm_reads_its_contact_layout_and_desk_reads_frappes(self):
+		save_v1_layout("Contact", "Side Panel", CONTACT_PANEL)
+		(row,) = default_rows("Contact", "Side Panel", app="crm")
+
+		in_crm = get_form_layouts("Contact", "Side Panel", app="crm")["layouts"]
+		in_desk = get_form_layouts("Contact", "Side Panel", app="frappe")["layouts"]
+
+		self.assertEqual([layout["name"] for layout in in_crm], [row.name])
+		self.assertNotIn(row.name, [layout["name"] for layout in in_desk])
+
+	def test_leaves_a_contact_row_naming_no_app_alone(self):
+		own = frappe.get_doc(
+			doctype="Form Layout", dt="Contact", type="Side Panel", layout=frappe.as_json(CONTACT_PANEL)
+		).insert()
+
+		save_v1_layout("Contact", "Side Panel", [{**CONTACT_PANEL[0], "label": "Person"}]).delete()
+
+		own.reload()
+		self.assertEqual(frappe.parse_json(own.layout), CONTACT_PANEL)
+		self.assertEqual(default_rows("Contact", "Side Panel", app="crm"), [])
+
+	def test_patch_mirrors_contact_and_address_only(self):
+		lead_rows = frappe.get_all("Form Layout", {"dt": "CRM Lead"}, ["name", "modified"], order_by="name")
+
+		mirror_contact_and_address_layouts_to_form_layout.execute()
+
+		rows = frappe.get_all("Form Layout", {"dt": ("in", ("Contact", "Address"))}, ["dt", "type", "app"])
+		expected = {
+			(dt, type, "crm")
+			for dt, type in frappe.get_all("CRM Fields Layout", fields=["dt", "type"], as_list=True)
+			if (dt, type) in FOREIGN_LAYOUTS
+		}
+		self.assertEqual({(row.dt, row.type, row.app) for row in rows}, expected)
+		self.assertIn(("Contact", "Quick Entry", "crm"), expected)
+		after = frappe.get_all("Form Layout", {"dt": "CRM Lead"}, ["name", "modified"], order_by="name")
+		self.assertEqual(after, lead_rows)
+
+
 class TestMirrorFieldsLayoutsPatch(IntegrationTestCase):
 	def test_mirrors_every_existing_layout_of_a_crm_doctype(self):
 		frappe.db.delete("Form Layout")
@@ -176,7 +241,7 @@ class TestMirrorFieldsLayoutsPatch(IntegrationTestCase):
 		expected = {
 			(dt, FORM_LAYOUT_TYPES[type])
 			for dt, type in frappe.get_all("CRM Fields Layout", fields=["dt", "type"], as_list=True)
-			if dt in MIRRORED_DOCTYPES and type in FORM_LAYOUT_TYPES
+			if (dt in MIRRORED_DOCTYPES and type in FORM_LAYOUT_TYPES) or (dt, type) in FOREIGN_LAYOUTS
 		}
 		self.assertEqual(rows, expected)
 		self.assertIn(("CRM Deal", "Details"), rows)
