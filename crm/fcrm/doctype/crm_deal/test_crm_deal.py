@@ -15,6 +15,7 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 	remove_contact,
 	set_primary_contact,
 )
+from crm.permissions.test_org_hierarchy import make_user
 
 
 class TestCRMDeal(IntegrationTestCase):
@@ -229,6 +230,72 @@ class TestCRMDeal(IntegrationTestCase):
 		).insert()
 
 		self.assertEqual(frappe.db.get_value("CRM Deal", deal.name, "deal_owner"), "crm.user2@example.com")
+
+	def test_todo_reference_change_requires_deal_access(self):
+		"""Pointing an existing ToDo at a deal is rejected when the user cannot access it"""
+		deal = create_test_deal(organization="Retarget Org", deal_owner="crm.user1@example.com")
+
+		frappe.set_user(create_test_user_without_deal_access())
+		todo = frappe.get_doc(
+			{"doctype": "ToDo", "description": "Unlinked", "allocated_to": frappe.session.user}
+		).insert()
+		todo.reference_type = "CRM Deal"
+		todo.reference_name = deal.name
+		with self.assertRaises(frappe.PermissionError):
+			todo.save()
+
+	def test_todo_reassignment_requires_deal_access(self):
+		"""Moving a deal's ToDo to another user is rejected when the editor cannot access the deal"""
+		user = create_test_user_without_deal_access()
+		todo_name = create_deal_todo(
+			create_test_deal(organization="Reassign ToDo Org"),
+			allocated_to="crm.user1@example.com",
+			assigned_by=user,
+		)
+
+		frappe.set_user(user)
+		todo = frappe.get_doc("ToDo", todo_name)
+		todo.allocated_to = user
+		with self.assertRaises(frappe.PermissionError):
+			todo.save()
+
+	def test_reopening_cancelled_todo_requires_deal_access(self):
+		"""A user removed from a deal cannot reopen their cancelled ToDo to get access back"""
+		user = make_user("todo-reopen@example.com", roles=["Sales User"]).name
+		deal = create_test_deal(organization="Reopen Org", deal_owner="crm.user1@example.com")
+		assign_add({"assign_to": [user], "doctype": "CRM Deal", "name": deal.name})
+		assign_remove("CRM Deal", deal.name, user)
+		todo_name = frappe.db.get_value("ToDo", {"reference_name": deal.name, "allocated_to": user})
+
+		frappe.set_user(user)
+		self.assertFalse(frappe.has_permission("CRM Deal", "read", deal.name))
+		todo = frappe.get_doc("ToDo", todo_name)
+		todo.status = "Open"
+		with self.assertRaises(frappe.PermissionError):
+			todo.save()
+
+	def test_owner_can_reassign_todo(self):
+		"""A user who can access the deal may move its ToDo to another user"""
+		deal = create_test_deal(organization="Owner Reassign Org", deal_owner="crm.user1@example.com")
+		todo_name = create_deal_todo(
+			deal, allocated_to="crm.user1@example.com", assigned_by="crm.user1@example.com"
+		)
+
+		frappe.set_user("crm.user1@example.com")
+		todo = frappe.get_doc("ToDo", todo_name)
+		todo.allocated_to = "crm.user2@example.com"
+		todo.save()
+
+	def test_other_todo_edits_skip_deal_access(self):
+		"""Editing a ToDo without changing its assignment needs no access to the deal"""
+		user = create_test_user_without_deal_access()
+		todo_name = create_deal_todo(create_test_deal(organization="Free Edit Org"), allocated_to=user)
+
+		frappe.set_user(user)
+		todo = frappe.get_doc("ToDo", todo_name)
+		todo.description = "Edited"
+		todo.status = "Closed"
+		todo.save()
 
 	def test_task_unassign_does_not_touch_owner(self):
 		"""Cancelling a CRM Task assignment is a no-op for owner fields"""
@@ -624,6 +691,20 @@ def create_test_user_without_deal_access():
 		user.send_welcome_email = 0
 		user.insert(ignore_permissions=True)
 	return email
+
+
+def create_deal_todo(deal, **kwargs):
+	"""Create an open ToDo on a deal the way assign_to does, past the permission check"""
+	todo = frappe.get_doc(
+		{
+			"doctype": "ToDo",
+			"description": "Assigned",
+			"reference_type": "CRM Deal",
+			"reference_name": deal.name,
+		}
+		| kwargs
+	).insert(ignore_permissions=True)
+	return todo.name
 
 
 def create_test_deal(**kwargs):
