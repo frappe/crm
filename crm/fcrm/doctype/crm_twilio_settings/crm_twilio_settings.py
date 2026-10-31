@@ -4,6 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils.password import set_encrypted_password
 from twilio.rest import Client
 
 
@@ -62,7 +63,7 @@ class CRMTwilioSettings(Document):
 			return
 		new_key = self.create_api_key(twilio)
 		self.api_key = new_key.sid
-		self.api_secret = new_key.secret
+		self.api_secret = store_api_secret(new_key.secret)
 		frappe.db.set_single_value(
 			"CRM Twilio Settings",
 			{"api_key": self.api_key, "api_secret": self.api_secret},
@@ -123,6 +124,12 @@ class CRMTwilioSettings(Document):
 			"twilio_apps",
 			",".join(applications),
 		)
+
+
+def store_api_secret(secret: str) -> str:
+	"""Keep the secret in the password store, as a Password field's save does; return the mask to store in its place."""
+	set_encrypted_password("CRM Twilio Settings", "CRM Twilio Settings", secret, "api_secret")
+	return "*" * len(secret)
 
 
 def get_public_url(path: str | None = None):

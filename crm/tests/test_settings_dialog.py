@@ -7,9 +7,24 @@ from unittest.mock import patch
 
 import frappe
 from frappe.shell.settings import resolve_panes
+from frappe.shell.settings_filter import SettingsFilter
 from frappe.tests import IntegrationTestCase
+from frappe.tests.classes.context_managers import set_user
 
 RECORDS = ("crm", "crm-frappe")
+SALES_USER = "telephony-pane-user@example.com"
+SALES_MANAGER = "telephony-pane-manager@example.com"
+TWILIO_FIELDS = [
+	"enabled",
+	"account_sid",
+	"auth_token",
+	"app_name",
+	"record_calls",
+	"api_key",
+	"api_secret",
+	"twiml_sid",
+]
+TWILIO_TOKENS = ["api_key", "api_secret", "twiml_sid"]
 
 
 class TestCRMSettingsDialog(IntegrationTestCase):
@@ -29,6 +44,52 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			[("deals", "button"), ("communication", "auto"), ("activity-timeline", "auto")],
 		)
 		self.assertTrue(all(block["binding"]["doctype"] == "FCRM Settings" for block in general["blocks"]))
+
+	def test_crm_ships_the_telephony_pane_on_the_twilio_and_exotel_singles(self):
+		telephony = self.pane("crm", "telephony")
+
+		self.assertEqual(
+			[
+				(block["key"], block["binding"]["doctype"], block["save_mode"])
+				for block in telephony["blocks"]
+			],
+			[("twilio", "CRM Twilio Settings", "button"), ("exotel", "CRM Exotel Settings", "button")],
+		)
+		self.assertEqual(telephony["blocks"][0]["fields"], TWILIO_FIELDS)
+
+	def test_twilios_tokens_are_the_fields_it_holds_at_permlevel_1(self):
+		meta = frappe.get_meta("CRM Twilio Settings")
+
+		self.assertEqual(
+			[name for name in TWILIO_FIELDS if meta.get_field(name).permlevel == 1], TWILIO_TOKENS
+		)
+
+	def test_a_sales_manager_sees_the_telephony_pane_with_twilios_tokens(self):
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with set_user(SALES_MANAGER):
+			telephony = self.visible_pane("telephony")
+
+		self.assertEqual([block["key"] for block in telephony["blocks"]], ["twilio", "exotel"])
+		self.assertEqual(telephony["blocks"][0]["fields"], TWILIO_FIELDS)
+		self.assertNotIn("read_only", telephony["blocks"][0])
+
+	def test_a_reader_of_permlevel_0_only_gets_twilio_without_its_tokens(self):
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with (
+			set_user(SALES_MANAGER),
+			patch("frappe.shell.settings_filter.readable_permlevels", return_value={0}),
+		):
+			twilio = self.visible_pane("telephony")["blocks"][0]
+
+		self.assertEqual(twilio["fields"], [name for name in TWILIO_FIELDS if name not in TWILIO_TOKENS])
+
+	def test_a_sales_user_does_not_see_the_telephony_pane(self):
+		self.make_user(SALES_USER, "Sales User")
+
+		with set_user(SALES_USER):
+			self.assertIsNone(self.visible_pane("telephony"))
 
 	def test_crm_adds_a_telephony_block_to_desks_profile_pane(self):
 		profile = self.pane("frappe", "profile")
@@ -51,3 +112,14 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)
+
+	def visible_pane(self, key):
+		panes = SettingsFilter().filter(resolve_panes())["panes"]
+		return next((pane for pane in panes if pane["app"] == "crm" and pane["key"] == key), None)
+
+	def make_user(self, email, role):
+		if not frappe.db.exists("User", email):
+			user = frappe.get_doc(doctype="User", email=email, first_name=role, send_welcome_email=0).insert(
+				ignore_permissions=True
+			)
+			user.add_roles(role)
