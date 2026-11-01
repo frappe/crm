@@ -4,11 +4,14 @@ import frappe
 
 
 def set_status_and_owner(doc, status_doctype: str, owner_field: str):
+	"""Fills the empty status and owner. Reads only, so `get_new_doc` can call it too."""
 	if not doc.status:
 		doc.status = first_status(status_doctype)
 	if not doc.get(owner_field) and created_by_a_user():
 		doc.set(owner_field, frappe.session.user)
-		# after_insert assigns no ToDo for this owner, so an Assignment Rule still assigns the record
+	# Quick Entry sends the prefilled owner back as a plain value, so an owner equal to the creator is
+	# a default too. after_insert then assigns no ToDo and an Assignment Rule still assigns the record.
+	if doc.get(owner_field) == frappe.session.user and created_by_a_user():
 		doc.flags.owner_defaulted = True
 
 

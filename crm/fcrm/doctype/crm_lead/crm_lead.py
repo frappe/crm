@@ -81,6 +81,10 @@ class CRMLead(Document):
 		from crm.api.form import enrich_form_submission
 
 		enrich_form_submission(self)
+		self.set_new_doc_defaults()
+
+	def set_new_doc_defaults(self):
+		"""Called by `get_new_doc` for Quick Entry and by `before_insert`."""
 		set_status_and_owner(self, "CRM Lead Status", "lead_owner")
 
 	def before_validate(self):
@@ -403,7 +407,8 @@ class CRMLead(Document):
 		new_deal.insert(ignore_permissions=True)
 
 		for user in self.get_assigned_users():
-			if user and user != new_deal.deal_owner:
+			# a defaulted owner got no ToDo from after_insert, but the lead's owner has one to carry over
+			if user and (user != new_deal.deal_owner or new_deal.flags.owner_defaulted):
 				new_deal.assign_agent(user)
 
 		return new_deal.name

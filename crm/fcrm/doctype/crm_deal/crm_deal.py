@@ -85,6 +85,10 @@ class CRMDeal(Document):
 		from crm.api.form import enrich_form_submission
 
 		enrich_form_submission(self)
+		self.set_new_doc_defaults()
+
+	def set_new_doc_defaults(self):
+		"""Called by `get_new_doc` for Quick Entry and by `before_insert`."""
 		set_status_and_owner(self, "CRM Deal Status", "deal_owner")
 
 	def before_validate(self):

@@ -3,7 +3,10 @@
 
 import frappe
 from frappe.cache_manager import clear_doctype_map
+from frappe.desk.form.load import get_new_doc
 from frappe.tests import IntegrationTestCase
+
+from crm.fcrm.record_defaults import first_status
 
 RECORDS = {
 	"CRM Lead": {"status_doctype": "CRM Lead Status", "owner_field": "lead_owner"},
@@ -61,6 +64,64 @@ class TestRecordDefaults(IntegrationTestCase):
 
 				self.assertEqual(frappe.db.get_value(doctype, doc.name, record["owner_field"]), RULE_USER)
 				self.assertEqual(get_assignees(doctype, doc.name), [RULE_USER])
+
+	def test_new_doc_read_returns_the_status_and_owner_for_quick_entry(self):
+		for doctype, record in RECORDS.items():
+			with self.subTest(doctype=doctype):
+				frappe.set_user(REP)
+				values = get_new_doc(doctype)
+				frappe.set_user("Administrator")
+
+				self.assertEqual(values["status"], first_status(record["status_doctype"]))
+				self.assertEqual(values[record["owner_field"]], REP)
+
+	def test_new_doc_read_for_a_guest_has_no_owner(self):
+		for doctype, record in RECORDS.items():
+			with self.subTest(doctype=doctype):
+				doc = frappe.new_doc(doctype)
+				frappe.set_user("Guest")
+				doc.set_new_doc_defaults()
+				frappe.set_user("Administrator")
+
+				self.assertFalse(doc.get(record["owner_field"]))
+
+	def test_owner_sent_back_by_quick_entry_is_a_default(self):
+		for doctype, record in RECORDS.items():
+			with self.subTest(doctype=doctype):
+				doc = insert_as(REP, doctype, **{record["owner_field"]: REP})
+
+				self.assertTrue(doc.flags.owner_defaulted)
+				self.assertEqual(get_assignees(doctype, doc.name), [])
+
+	def test_assignment_rule_assigns_a_record_sent_with_the_creator_as_owner(self):
+		for doctype, record in RECORDS.items():
+			with self.subTest(doctype=doctype):
+				make_assignment_rule(doctype, RULE_USER)
+
+				doc = insert_as(REP, doctype, **{record["owner_field"]: REP})
+
+				self.assertEqual(frappe.db.get_value(doctype, doc.name, record["owner_field"]), RULE_USER)
+				self.assertEqual(get_assignees(doctype, doc.name), [RULE_USER])
+
+	def test_owner_other_than_the_creator_is_assigned(self):
+		for doctype, record in RECORDS.items():
+			with self.subTest(doctype=doctype):
+				doc = insert_as(REP, doctype, **{record["owner_field"]: RULE_USER})
+
+				self.assertFalse(doc.flags.owner_defaulted)
+				self.assertEqual(get_assignees(doctype, doc.name), [RULE_USER])
+
+	def test_owner_equal_to_the_session_user_in_a_job_is_assigned(self):
+		for doctype, record in RECORDS.items():
+			with self.subTest(doctype=doctype):
+				frappe.local.job = frappe._dict(method="crm.tests.lead_sync")
+				try:
+					doc = insert_as(REP, doctype, **{record["owner_field"]: REP})
+				finally:
+					frappe.local.job = None
+
+				self.assertFalse(doc.flags.owner_defaulted)
+				self.assertEqual(get_assignees(doctype, doc.name), [REP])
 
 	def test_guest_insert_gets_no_owner(self):
 		for doctype, record in RECORDS.items():
