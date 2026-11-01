@@ -98,12 +98,7 @@ NO_COUNTERPART = {
 		*DEAL,
 		"class CRMDeal {}\nclass CRMProducts { products_remove() { this.selectedRows } }",
 	),
-	"button-field-method": ("CRM Holiday List", "Form", "class CRMHolidayList { add_to_holidays() {} }"),
 	"statuses": (*DEAL, "class CRMDeal { onLoad() { this.statuses = [] } }"),
-	"child-column-property": (
-		*DEAL,
-		"class CRMDeal { onRender() { this.setFieldProperty('products.rate', 'read_only', 1) } }",
-	),
 	"row-property": (
 		*DEAL,
 		"class CRMDeal { onRender() { this.setFieldProperty('products', 'hidden', 1, 'row-1') } }",
@@ -120,6 +115,8 @@ NO_COUNTERPART = {
 	"unread-handler": (*DEAL, "class CRMDeal { afterSubmit() {} }"),
 	"unread-return-key": (*LEAD_FORM, "function setupForm({ doc }) { return { sections: [] } }"),
 }
+# CRM Deal and CRM Lead have no Button field, so no fixture can call this entry.
+BUTTON_FIELD = ("CRM Holiday List", "Form", "class CRMHolidayList { add_to_holidays() {} }")
 
 
 class TestFormScriptAnalysis(IntegrationTestCase):
@@ -145,7 +142,15 @@ class TestFormScriptAnalysis(IntegrationTestCase):
 	def test_fixtures_use_every_entry_with_a_counterpart(self):
 		used = {key for name in FIXTURE_SHAPES for _, key in found(analyse_fixture(name))}
 		with_counterpart = {key for key, entry in CATALOG.items() if entry.verb}
-		self.assertEqual(with_counterpart - used, set())
+		self.assertEqual(with_counterpart - used, {"button-field-method"})
+
+	def test_button_field_method(self):
+		doctype, view, script = BUTTON_FIELD
+		hits = analyse(script, doctype, view).hits
+		self.assertEqual(
+			[(hit.key, hit.verb) for hit in hits],
+			[("button-field-method", CATALOG["button-field-method"].verb)],
+		)
 
 	def test_standard_scripts_fit_page_verbs(self):
 		for name, (script, doctype, keys) in STANDARD_SCRIPTS.items():
@@ -172,7 +177,7 @@ class TestFormScriptAnalysis(IntegrationTestCase):
 
 	def test_every_catalog_entry_has_a_test_hit(self):
 		hit = {key for name in FIXTURE_SHAPES for _, key in found(analyse_fixture(name))}
-		hit |= set(NO_COUNTERPART)
+		hit |= set(NO_COUNTERPART) | {"button-field-method"}
 		self.assertEqual(set(CATALOG) - hit, set())
 
 	def test_toast_gaps_link_the_page_toast_issue(self):
