@@ -15,15 +15,9 @@ const UNREACHABLE = new Set([
 	'JSONDecodeError',
 ])
 
-/** The saved fields a connection to another site needs, by label. */
-function missingFields(saved) {
-	return [
-		[saved.erpnext_site_url, __('site URL')],
-		[saved.api_key, __('API key')],
-		[saved.api_secret, __('API secret')],
-	]
-		.filter(([value]) => !value)
-		.map(([, label]) => label)
+/** The saved fields a connection to another site needs. */
+function isIncomplete(saved) {
+	return !saved.erpnext_site_url || !saved.api_key || !saved.api_secret
 }
 
 /**
@@ -33,12 +27,11 @@ function missingFields(saved) {
  */
 export async function verifyConnection(saved, ask) {
 	if (!saved.is_erpnext_in_different_site) return verifyThisSite(ask)
-	const missing = missingFields(saved)
-	if (missing.length) {
+	if (isIncomplete(saved)) {
 		return failed(
 			'incomplete',
 			__('The connection is incomplete'),
-			__('Save the {0} first.', [missing.join(', ')])
+			__('Fill in and save the site URL, API key and API secret.')
 		)
 	}
 	let companies
@@ -97,21 +90,31 @@ function verifyCompany(saved, companies) {
 }
 
 function explainFailure(error, url) {
-	if (UNREACHABLE.has(error.type)) {
+	if (UNREACHABLE.has(error.type) || error.name === 'AbortError') {
 		return failed(
 			'wrong-url',
 			__('Cannot reach a Frappe site at {0}', [url]),
 			__('Check the site URL.')
 		)
 	}
-	if (error.type === 'FrappeException') {
+	if (error.type === 'FrappeException') return explainRefusal(error, url)
+	return failed('failed', __('Could not verify the connection'), error.message)
+}
+
+/** The site is Frappe and answered with an error: no Company there, or it refused the key (the usual cause). */
+function explainRefusal(error, url) {
+	if (/DoesNotExistError/.test(error.exception || '')) {
 		return failed(
-			'wrong-key',
-			__('{0} refused the API key or secret', [url]),
-			__('Or the key cannot read companies there. Check the key and secret.')
+			'no-erpnext',
+			__('ERPNext is not installed at {0}', [url]),
+			__('The site answered, but it has no Company.')
 		)
 	}
-	return failed('failed', __('Could not verify the connection'), error.message)
+	return failed(
+		'wrong-key',
+		__('{0} refused the request', [url]),
+		__('Check the API key and secret. The key must be able to read companies on an ERPNext site.')
+	)
 }
 
 function failed(state, title, description) {

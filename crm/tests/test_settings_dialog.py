@@ -177,6 +177,11 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		self.assertEqual(erpnext["blocks"][0]["binding"]["doctype"], "ERPNext CRM Settings")
 		self.assertNotIn("sync_products", erpnext["blocks"][0]["fields"])
 		self.assertEqual(erpnext["blocks"][1]["component"], "verifyConnection")
+		self.assertEqual(erpnext["blocks"][1]["bindings"], erpnext["blocks"][2]["bindings"])
+		self.assertEqual(
+			erpnext["blocks"][1]["fields"],
+			["is_erpnext_in_different_site", "erpnext_site_url", "api_key", "api_secret", "erpnext_company"],
+		)
 		self.assertEqual(erpnext["blocks"][2]["component"], "productSync")
 		self.assertEqual(
 			erpnext["blocks"][2]["bindings"],

@@ -80,26 +80,28 @@ const checking = ref(false);
 const unsaved = computed(() =>
 	CONNECTION_FIELDS.some((field) => (settings.doc[field] || "") !== (settings.saved[field] || ""))
 );
-watch(
-	() => CONNECTION_FIELDS.map((field) => settings.saved[field]),
-	() => (result.value = null)
-);
+const savedConnection = () => CONNECTION_FIELDS.map((field) => settings.saved[field]).join("\n");
+watch(savedConnection, () => (result.value = null));
 
-const ask = {
-	isInstalled: () => callMethod<boolean>("is_erpnext_installed"),
-	companies: () => callMethod<{ company_name: string }[]>("get_external_companies"),
-};
-
-async function callMethod<T>(method: string): Promise<T> {
-	const { data } = await runDocumentMethod<T>(DOCTYPE, DOCTYPE, method);
-	return data;
-}
+/** A remote site that never answers would hold the button and a server worker. */
+const ANSWER_WITHIN_MS = 30_000;
 
 async function verify() {
+	const before = savedConnection();
+	const controller = new AbortController();
+	const timer = setTimeout(() => controller.abort(), ANSWER_WITHIN_MS);
+	const callMethod = async <T,>(method: string) =>
+		(await runDocumentMethod<T>(DOCTYPE, DOCTYPE, method, {}, { signal: controller.signal })).data;
 	checking.value = true;
 	try {
-		result.value = await verifyConnection(settings.saved, ask);
+		const outcome = await verifyConnection(settings.saved, {
+			isInstalled: () => callMethod<boolean>("is_erpnext_installed"),
+			companies: () => callMethod<{ company_name: string }[]>("get_external_companies"),
+		});
+		// A save made while the site was answering leaves this outcome about the old connection.
+		if (savedConnection() === before) result.value = outcome;
 	} finally {
+		clearTimeout(timer);
 		checking.value = false;
 	}
 }

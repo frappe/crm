@@ -75,6 +75,25 @@ describe('verifyConnection on another site', () => {
     expect(result.state).toBe('wrong-key')
   })
 
+  it('says ERPNext is missing when the other site has no Company', async () => {
+    const ask = site({})
+    ask.companies = async () => {
+      throw Object.assign(new Error('FrappeException'), {
+        type: 'FrappeException',
+        exception: 'frappe.exceptions.DoesNotExistError: DocType Company not found',
+      })
+    }
+    expect((await verifyConnection(OTHER_SITE, ask)).state).toBe('no-erpnext')
+  })
+
+  it('blames the URL when the site does not answer in time', async () => {
+    const ask = site({})
+    ask.companies = async () => {
+      throw Object.assign(new Error('aborted'), { name: 'AbortError' })
+    }
+    expect((await verifyConnection(OTHER_SITE, ask)).state).toBe('wrong-url')
+  })
+
   it('blames the key when the key sees no company', async () => {
     const result = await verifyConnection(OTHER_SITE, site({ companies: [] }))
     expect(result.state).toBe('wrong-key')
@@ -94,7 +113,7 @@ describe('verifyConnection on another site', () => {
     const ask = site({ companies: [] })
     const result = await verifyConnection({ ...OTHER_SITE, api_key: '', api_secret: '' }, ask)
     expect(result.state).toBe('incomplete')
-    expect(result.description).toContain('API key, API secret')
+    expect(result.description).toContain('API key')
     expect(ask.companies).not.toHaveBeenCalled()
   })
 })
