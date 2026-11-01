@@ -54,12 +54,7 @@ CATALOG = _catalog(
 	Entry("row-remove", "<table>_remove()", "<table>: { onRemove(page) {} }"),
 	Entry("remaining-rows", "this.rows in <table>_remove()", "page.rows(table)"),
 	Entry("removed-rows", "this.selectedRows in <table>_remove()", None, "onRemove gets no removed rows"),
-	Entry(
-		"button-field-method",
-		"A method named like a Button field",
-		None,
-		"The record page makes no Button field clickable; page.fields.update(name, { component }) swaps the control",
-	),
+	Entry("button-field-method", "A method named like a Button field", "<button>(page) {}, run on a click"),
 	# Helpers on `this`
 	Entry("doc-trigger", "this.doc.trigger('method')", "A plain function in the module"),
 	Entry("this-method-call", "this.<method>()", "A plain function in the module"),
@@ -102,8 +97,7 @@ CATALOG = _catalog(
 	Entry(
 		"child-column-property",
 		"setFieldProperty('table.column', ...)",
-		None,
-		"page.fields reaches only the parent's own fields",
+		"page.fields.update('<table>.<column>', {...})",
 	),
 	Entry("row-property", "setFieldProperty(..., rowName)", None, "Only errors are per row: row.setError"),
 	Entry(

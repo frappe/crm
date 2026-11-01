@@ -6,7 +6,7 @@ The reference for every `page` verb in this guide is [Writing a Client Script fo
 
 ## How to read the report
 
-The report is the CRM Form Script list on `/apps/crm`. A System Manager opens it from **Setup → Form Scripts**. Each row shows these columns:
+The report is the CRM Form Script list at `/apps/crm/crm-form-script` on your site: `https://<your site>/apps/crm/crm-form-script`. A System Manager can open it. Each row shows these columns:
 
 - **Shape**: `Class-based`, `setupForm`, `setupList` or `Unknown`. The three shapes have a worked rewrite below. `Unknown` means the script matches no v1 shape. CRM v1 cannot run it either.
 - **Doctype**, **View** and **Enabled**: the row's own fields.
@@ -135,6 +135,7 @@ export default {
     page.panelSections.update('organization_section', { opened: true })
     page.form.tabs.update('first_tab', { label: __('Overview') })
     page.fields.update('probability', { description: __('Set from the status') })
+    page.fields.hide('products.discount_percentage')
     if (page.doc.status === 'Won') page.fields.update('next_step', { component: WonNote })
   },
 
@@ -174,7 +175,7 @@ export default {
 
 What changed, and why:
 
-- `status(page)` runs only when the reader changes the Status field in the form. The status control in CRM's header saves the pick itself and runs no handler. `beforeSave` compares the status with `page.saved.status`, so a pick there also updates the probability.
+- `status(page)` runs only when the reader changes the Status field in the form. The status control in CRM's header saves a pick as a script write, and a script write runs no field handler. To react to every status change, `beforeSave` compares the status with `page.saved.status`. A header pick saves, so `beforeSave` updates the probability for it too.
 - The class methods `updateProbability`, `updateTotal`, `showNextStep` and `editNextStep` are plain functions. `this.doc.trigger('updateProbability')` and `this.showNextStep()` call them with `page`.
 - The actions and the tab moved from `onLoad` to `onRefresh`, because each replay clears the header and the tabs.
 - `hideLabel: true` has no desk v2 key. The **More** dropdown shows its label.
@@ -258,6 +259,8 @@ const count = await page.call('frappe.client.get_count', { doctype: 'CRM Lead' }
 ```
 
 To read server data in `onRefresh`, wrap the call in `page.cached(key, fetcher)`. It returns `undefined` until the fetch lands, then the page replays with the value.
+
+Read `page.cached` before the handler's first `await`, in `onRefresh` and in a field handler too. After an `await`, the page cannot tell which script asks for the value.
 
 <a id="dom-access"></a>
 ### DOM access: `document.`, `querySelector`, `MutationObserver`
@@ -425,7 +428,7 @@ export default {
 
 A script's own write to a field does not run that field's handler. If the v1 script relies on that, call the function yourself.
 
-On `CRM Deal` and `CRM Lead`, the status control in the header writes `status` and saves the record. It runs no `status` handler. To act on every status change, also compare the status with the saved one in `beforeSave`:
+On `CRM Deal` and `CRM Lead`, the status control in the header saves a pick as a script write: it writes `status` and saves the record. A script write runs no field handler, so no `status` handler runs. To act on every status change, also compare the status with the saved one in `beforeSave`. A header pick saves, so `beforeSave` runs for it:
 
 ```js
 export default {
@@ -760,8 +763,6 @@ export default {
 }
 ```
 
-The report lists this call as **No counterpart**. That entry is out of date: desk v2 now runs the handler on a click.
-
 <a id="action-on-click"></a>
 ### `onClick` on an action
 
@@ -817,9 +818,13 @@ page.form.tabs.update('first_tab', { label: 'Overview' })
 <a id="child-column-property"></a>
 ### `setFieldProperty('table.column', ...)`
 
-**Desk v2:** `page.fields` names a child column by its table: `page.fields.update('products.discount', { hidden: true })`. It takes the same keys as a field, and one change reaches every row.
+**Desk v2:** `page.fields` names a child column by its table, `'<table>.<column>'`. `hide`, `show`, `update`, `has` and `get` take that name, with the keys of a field. One change reaches every row: the grid, and the row's form.
 
-The report lists this call as **No counterpart**. That entry is out of date: `page.fields` now reaches a table's columns.
+```js
+page.fields.hide('products.discount_percentage')
+```
+
+`hidden` takes the column out of the grid. `show` does not add a column to the grid: the child's **In List View** fields pick its columns. A change for one row has no verb: see [one row](#row-property).
 
 <a id="row-property"></a>
 ### `setFieldProperty(..., rowName)`, one row

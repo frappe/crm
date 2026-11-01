@@ -33,6 +33,7 @@ class CRMDeal {
     this.setFieldProperty('organization_section', 'opened', true) // hits: panel-section-property
     this.setFieldProperty('first_tab', 'label', __('Overview')) // hits: tab-property, translate
     this.setFieldProperty('status', 'button_color', 'green') // hits: field-props
+    this.setFieldProperty('products.discount_percentage', 'hidden', 1) // hits: child-column-property
     this.setFieldProperties('probability', { description: __('Set from the status') }) // hits: set-field-properties, translate
     if (this.doc.status === 'Won') {
       this.setFieldHtml('next_step', `<p>${__('Deal won')}</p>`) // hits: set-field-html, translate
