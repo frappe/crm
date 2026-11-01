@@ -2,10 +2,20 @@
 import { listDocuments } from '@framework/ui/api'
 import { lostReasonLabels } from './lostReasonLabels.js'
 import StatusControl from './StatusControl.vue'
-import { STATUS_DOCTYPES, STATUS_FIELDS, keepLostReason, placeStatusControl } from './statusChange.js'
+import {
+	STATUS_DOCTYPES,
+	STATUS_FIELDS,
+	keepLostReason,
+	placeLostReasonSection,
+	placeStatusControl,
+} from './statusChange.js'
 
 export function addStatusControl(page) {
 	placeStatusControl(page, StatusControl, readStatuses)
+}
+
+export function addLostReasonSection(page) {
+	placeLostReasonSection(page, readStatuses)
 }
 
 /** The `status` field handler: a Lost status picked in the form asks for its reason. */

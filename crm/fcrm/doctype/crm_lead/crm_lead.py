@@ -366,6 +366,8 @@ class CRMLead(Document):
 			"communication_status",
 			"sla_creation",
 			"status_change_log",
+			"lost_reason",
+			"lost_notes",
 		]
 
 		for field in self.meta.fields:

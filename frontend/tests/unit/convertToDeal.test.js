@@ -184,6 +184,15 @@ describe('leadDefaults', () => {
     })
   })
 
+  it("skips the lead's lost reason, as the server does", () => {
+    const lostFields = [
+      { fieldname: 'lost_reason' },
+      { fieldname: 'lost_notes' },
+    ]
+    const lostLead = { lost_reason: 'Pricing', lost_notes: 'Too high' }
+    expect(leadDefaults(lostLead, lostFields, lostFields)).toEqual({})
+  })
+
   it('fills a custom field from the one custom lead field of its label and type', () => {
     expect(
       leadDefaults(lead, leadFields, [field('custom_deal_region', 'Region')]),
