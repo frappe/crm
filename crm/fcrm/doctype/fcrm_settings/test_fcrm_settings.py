@@ -6,7 +6,10 @@ import json
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.patches.v1_0 import encrypt_exchange_rate_access_key
+
 FORECASTING_FIELDS = ["expected_closure_date", "probability", "expected_deal_value"]
+ACCESS_KEY = "exchange-rate-test-key"
 
 
 class TestFCRMSettings(IntegrationTestCase):
@@ -107,3 +110,33 @@ class TestFCRMSettings(IntegrationTestCase):
 		fields = self.get_quick_entry_fields()
 		for field in FORECASTING_FIELDS:
 			self.assertIn(field, fields)
+
+	def test_the_access_key_is_kept_in_the_password_store(self):
+		settings = frappe.get_single("FCRM Settings")
+		settings.update({"service_provider": "exchangerate-api", "access_key": ACCESS_KEY})
+		settings.save()
+
+		self.assertEqual(frappe.get_single("FCRM Settings").access_key, "*" * len(ACCESS_KEY))
+		self.assertEqual(frappe.get_single("FCRM Settings").get_password("access_key"), ACCESS_KEY)
+		self.assertNotIn(ACCESS_KEY, json.dumps(frappe.get_single("FCRM Settings").as_dict(), default=str))
+
+	def test_the_patch_moves_a_plain_access_key_into_the_password_store(self):
+		frappe.db.set_single_value("FCRM Settings", "access_key", ACCESS_KEY)
+		changed = [["service_provider", None, "exchangerate-api"], ["access_key", None, ACCESS_KEY]]
+		frappe.get_doc(
+			doctype="Version",
+			ref_doctype="FCRM Settings",
+			docname="FCRM Settings",
+			data=json.dumps({"changed": changed}),
+		).insert(ignore_permissions=True)
+
+		encrypt_exchange_rate_access_key.execute()
+		encrypt_exchange_rate_access_key.execute()
+
+		self.assertEqual(frappe.db.get_single_value("FCRM Settings", "access_key"), "*" * len(ACCESS_KEY))
+		self.assertFalse(
+			frappe.get_all(
+				"Version", {"ref_doctype": "FCRM Settings", "data": ["like", f"%{ACCESS_KEY}%"]}, pluck="name"
+			)
+		)
+		self.assertEqual(frappe.get_single("FCRM Settings").get_password("access_key"), ACCESS_KEY)

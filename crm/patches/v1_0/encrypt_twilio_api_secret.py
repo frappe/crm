@@ -12,14 +12,14 @@ def execute():
 	if secret and not is_mask(secret):
 		frappe.db.set_single_value(DOCTYPE, "api_secret", store_api_secret(secret))
 
-	mask_versions()
+	mask_versions(DOCTYPE, "api_secret")
 
 
-def mask_versions():
+def mask_versions(doctype: str, fieldname: str):
 	"""The old controller's key change was tracked too, so its Version rows hold the plain secret."""
-	for name, data in frappe.get_all("Version", {"ref_doctype": DOCTYPE}, ["name", "data"], as_list=True):
+	for name, data in frappe.get_all("Version", {"ref_doctype": doctype}, ["name", "data"], as_list=True):
 		changes = json.loads(data or "{}")
-		changed = [row for row in changes.get("changed", []) if row[0] == "api_secret"]
+		changed = [row for row in changes.get("changed", []) if row[0] == fieldname]
 		if not any(value and not is_mask(value) for row in changed for value in row[1:]):
 			continue
 

@@ -155,7 +155,7 @@
         <div class="flex items-center gap-2">
           <FormControl
             v-model="settings.doc.access_key"
-            type="text"
+            type="password"
             class="w-44"
             :placeholder="__('Enter Access Key')"
             :disabled="!settings.doc?.currency"

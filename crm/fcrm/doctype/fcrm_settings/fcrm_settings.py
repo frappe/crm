@@ -24,7 +24,7 @@ class FCRMSettings(Document):
 
 		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
 
-		access_key: DF.Data | None
+		access_key: DF.Password | None
 		all_day_event_notifications: DF.Table[EventNotifications]
 		auto_mark_replied_on_response: DF.Check
 		auto_reopen_on_new_communication: DF.Check

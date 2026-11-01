@@ -7,6 +7,7 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 
 from crm.api.exchange_rate import (
+	_fetch_exchange_rate,
 	_fetch_from_exchangerate_api,
 	_fetch_from_exchangerate_host,
 	_fetch_from_fawaz_api,
@@ -27,7 +28,7 @@ def _mock_settings(provider: str, access_key: str = "") -> MagicMock:
 	"""Helper: build a fake FCRM Settings single document."""
 	settings = MagicMock()
 	settings.service_provider = provider
-	settings.access_key = access_key
+	settings.get_password.return_value = access_key
 	return settings
 
 
@@ -181,3 +182,20 @@ class TestGetExchangeRate(FrappeTestCase):
 
 		with self.assertRaises(frappe.exceptions.ValidationError):
 			get_exchange_rate("USD", "XYZ")
+
+
+class TestFetchExchangeRate(FrappeTestCase):
+	def tearDown(self):
+		frappe.db.rollback()
+
+	@patch("crm.api.exchange_rate.requests.get")
+	def test_the_lookup_reads_the_access_key_from_the_password_store(self, mock_get):
+		mock_get.return_value = _make_response(True, {"result": "success", "conversion_rate": 83.5})
+		settings = frappe.get_single("FCRM Settings")
+		settings.update({"service_provider": "exchangerate-api", "access_key": "stored-key"})
+		settings.save()
+
+		rate, provider = _fetch_exchange_rate("USD", "INR", "latest")
+
+		self.assertEqual((rate, provider), (83.5, "exchangerate-api"))
+		self.assertIn("/v6/stored-key/pair/USD/INR", mock_get.call_args.args[0])
