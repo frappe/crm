@@ -41,6 +41,13 @@ export default defineConfig({
         ),
       },
       {
+        find: '@shell',
+        replacement: path.resolve(
+          import.meta.dirname,
+          'tests/fixtures/shell.js',
+        ),
+      },
+      {
         find: 'frappe/i18n',
         replacement: path.resolve(
           import.meta.dirname,
