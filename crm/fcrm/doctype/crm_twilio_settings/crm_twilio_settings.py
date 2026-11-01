@@ -31,17 +31,20 @@ class CRMTwilioSettings(Document):
 	friendly_resource_name = "Frappe CRM"  # System creates TwiML app & API keys with this name.
 
 	def validate(self):
-		old_account_sid = frappe.db.get_single_value("CRM Twilio Settings", "account_sid")
-		if self.account_sid != old_account_sid:
-			self.new_sid = True
-		else:
-			self.new_sid = False
-		self.validate_twilio_account()
+		if self.account_sid != frappe.db.get_single_value("CRM Twilio Settings", "account_sid"):
+			# Keys belong to the old account. A disabled save skips on_update, so clear them here.
+			self.api_key = self.api_secret = None
+		if self.enabled and self.credentials_or_enabled_changed():
+			self.validate_twilio_account()
+
+	def credentials_or_enabled_changed(self):
+		return any(self.has_value_changed(field) for field in ("enabled", "account_sid", "auth_token"))
 
 	def on_update(self):
 		# Single doctype records are created in DB at time of installation and those field values are set as null.
 		# This condition make sure that we handle null.
-		if not self.account_sid:
+		# A disabling save must not call Twilio: its credentials may be revoked.
+		if not self.enabled or not self.account_sid:
 			return
 
 		twilio = Client(self.account_sid, self.get_password("auth_token"))
@@ -59,7 +62,7 @@ class CRMTwilioSettings(Document):
 
 	def set_api_credentials(self, twilio):
 		"""Generate Twilio API credentials if not exist and update them."""
-		if self.api_key and self.api_secret and not self.new_sid:
+		if self.api_key and self.api_secret:
 			return
 		new_key = self.create_api_key(twilio)
 		self.api_key = new_key.sid

@@ -26,18 +26,20 @@ class CRMExotelSettings(Document):
 	# end: auto-generated types
 
 	def validate(self):
-		self.verify_credentials()
+		if self.enabled and self.credentials_or_enabled_changed():
+			self.verify_credentials()
+
+	def credentials_or_enabled_changed(self):
+		fields = ("enabled", "subdomain", "account_sid", "api_key", "api_token")
+		return any(self.has_value_changed(field) for field in fields)
 
 	def verify_credentials(self):
-		if self.enabled:
-			response = requests.get(
-				"https://{subdomain}/v1/Accounts/{sid}".format(
-					subdomain=self.subdomain, sid=self.account_sid
-				),
-				auth=(self.api_key, self.get_password("api_token")),
+		response = requests.get(
+			"https://{subdomain}/v1/Accounts/{sid}".format(subdomain=self.subdomain, sid=self.account_sid),
+			auth=(self.api_key, self.get_password("api_token")),
+		)
+		if response.status_code != 200:
+			frappe.throw(
+				_(f"Please enter valid exotel Account SID, API key & API token: {response.reason}"),
+				title=_("Invalid credentials"),
 			)
-			if response.status_code != 200:
-				frappe.throw(
-					_(f"Please enter valid exotel Account SID, API key & API token: {response.reason}"),
-					title=_("Invalid credentials"),
-				)

@@ -22,10 +22,72 @@ def fake_twilio(account_sid, auth_token):
 	)
 
 
+def revoked_twilio(account_sid, auth_token):
+	def reject():
+		raise Exception("Twilio rejected the credentials")
+
+	client = fake_twilio(account_sid, auth_token)
+	client.api = SimpleNamespace(accounts=lambda sid: SimpleNamespace(fetch=reject))
+	client.applications = SimpleNamespace(list=lambda *args: reject(), create=lambda **kwargs: reject())
+	return client
+
+
+CLIENT = "crm.fcrm.doctype.crm_twilio_settings.crm_twilio_settings.Client"
+
+
 class TestCRMTwilioSettings(IntegrationTestCase):
 	def setUp(self):
 		frappe.db.savepoint("twilio_settings_test")
 		self.addCleanup(lambda: frappe.db.rollback(save_point="twilio_settings_test"))
+
+	def save_settings(self, client, **values):
+		settings = frappe.get_single("CRM Twilio Settings")
+		settings.update(values)
+		with patch(CLIENT, side_effect=client) as twilio:
+			settings.save()
+		return twilio
+
+	def test_a_save_that_turns_twilio_off_goes_through_with_revoked_credentials(self):
+		self.save_settings(fake_twilio, enabled=1, account_sid="AC-test", auth_token="token")
+
+		twilio = self.save_settings(revoked_twilio, enabled=0)
+
+		twilio.assert_not_called()
+		self.assertEqual(frappe.db.get_single_value("CRM Twilio Settings", "enabled"), 0)
+
+	def test_enabling_with_bad_credentials_is_refused(self):
+		self.save_settings(fake_twilio, enabled=0, account_sid="AC-test", auth_token="token")
+
+		with self.assertRaisesRegex(frappe.ValidationError, "Invalid Account SID or Auth Token"):
+			self.save_settings(revoked_twilio, enabled=1)
+
+		self.assertEqual(frappe.db.get_single_value("CRM Twilio Settings", "enabled"), 0)
+
+	def test_changing_a_credential_while_enabled_checks_it(self):
+		self.save_settings(fake_twilio, enabled=1, account_sid="AC-test", auth_token="token")
+
+		for field, value in (("account_sid", "AC-other"), ("auth_token", "other-token")):
+			with self.subTest(field=field), self.assertRaises(frappe.ValidationError):
+				self.save_settings(revoked_twilio, **{field: value})
+
+	def test_a_new_account_sid_saved_while_disabled_gets_new_api_keys_on_enabling(self):
+		self.save_settings(fake_twilio, enabled=1, account_sid="AC-test", auth_token="token")
+		self.save_settings(fake_twilio, enabled=0, account_sid="AC-other", auth_token="token")
+		self.assertFalse(frappe.db.get_single_value("CRM Twilio Settings", "api_key"))
+
+		self.save_settings(fake_twilio, enabled=1)
+
+		self.assertEqual(frappe.db.get_single_value("CRM Twilio Settings", "api_key"), "SK-test")
+
+	def test_an_unchanged_enabled_save_does_not_check_the_credentials_again(self):
+		self.save_settings(fake_twilio, enabled=1, account_sid="AC-test", auth_token="token")
+		settings = frappe.get_single("CRM Twilio Settings")
+		settings.load_doc_before_save()
+
+		with patch.object(type(settings), "validate_twilio_account") as check:
+			settings.validate()
+
+		check.assert_not_called()
 
 	def test_the_generated_api_secret_is_kept_in_the_password_store(self):
 		settings = frappe.get_single("CRM Twilio Settings")
