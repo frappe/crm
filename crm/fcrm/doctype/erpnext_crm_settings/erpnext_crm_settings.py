@@ -274,7 +274,7 @@ def _get_unsynced_counts():
 	items = _count_linked("Item", "crm_product_code", is_set=False) if _can_read_items() else 0
 	return {
 		"items": items,
-		"products": frappe.db.count("CRM Product", filters={"erpnext_item_code": ["is", "not set"]}),
+		"products": _count_linked("CRM Product", "erpnext_item_code", is_set=False),
 		"sync_products": bool(settings.sync_products),
 	}
 
@@ -282,7 +282,7 @@ def _get_unsynced_counts():
 def _get_products():
 	rows = frappe.get_all(
 		"CRM Product",
-		fields=["name", "product_code", "product_name", "erpnext_item_code"],
+		fields=_existing_fields("CRM Product", ["name", "product_code", "product_name", "erpnext_item_code"]),
 		limit=20,
 		order_by="modified desc",
 	)
@@ -294,7 +294,7 @@ def _get_products():
 
 
 def _get_synced_items():
-	if not _can_read_items():
+	if not (_can_read_items() and frappe.db.has_column("Item", "crm_product_code")):
 		return {"count": 0, "rows": []}
 	return {
 		"count": _count_linked("Item", "crm_product_code"),
@@ -309,7 +309,7 @@ def _get_synced_items():
 
 
 def _set_product_item_groups(rows):
-	item_codes = [row.erpnext_item_code for row in rows if row.erpnext_item_code]
+	item_codes = [row.get("erpnext_item_code") for row in rows if row.get("erpnext_item_code")]
 	if not item_codes or not _can_read_items():
 		return
 	item_groups = frappe.get_all(
@@ -319,7 +319,11 @@ def _set_product_item_groups(rows):
 	)
 	item_groups = {row.name: row.item_group for row in item_groups}
 	for row in rows:
-		row["item_group"] = item_groups.get(row.erpnext_item_code)
+		row["item_group"] = item_groups.get(row.get("erpnext_item_code"))
+
+
+def _existing_fields(doctype: str, fieldnames: list[str]):
+	return [fieldname for fieldname in fieldnames if frappe.db.has_column(doctype, fieldname)]
 
 
 def _count_linked(doctype: str, fieldname: str, is_set: bool = True):
