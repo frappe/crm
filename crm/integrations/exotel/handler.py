@@ -38,7 +38,7 @@ def handle_request(**kwargs):
 
 		call_payload = kwargs
 
-		frappe.publish_realtime("exotel_call", call_payload)
+		publish_call_event(call_payload)
 		status = call_payload.get("Status")
 		if status == "free":
 			return
@@ -73,6 +73,31 @@ def handle_request(**kwargs):
 	finally:
 		request_log.save(ignore_permissions=True)
 		frappe.db.commit()
+
+
+def publish_call_event(call_payload):
+	if not (user := get_call_event_user(call_payload)):
+		frappe.log_error(
+			title="Exotel call event has no known agent",
+			message=f"CallSid: {call_payload.get('CallSid')}",
+		)
+		return
+
+	frappe.publish_realtime("exotel_call", call_payload, user=user)
+
+
+def get_call_event_user(call_payload):
+	"""The `CRM Telephony Agent` user the event is for: the payload's incoming agent, the
+	callback URL's outgoing agent, or the agent already on the call's log."""
+	call_log = get_call_log(call_payload)
+	candidates = [
+		call_payload.get("AgentEmail"),
+		frappe.request.args.get("agent"),
+		call_log and (call_log.receiver if call_log.type == "Incoming" else call_log.caller),
+	]
+	for candidate in filter(None, candidates):
+		if user := frappe.db.get_value("CRM Telephony Agent", {"user": candidate}, "user"):
+			return user
 
 
 # Outgoing Call

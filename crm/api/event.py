@@ -369,4 +369,12 @@ def _format_time_remaining(before_value, interval):
 
 def _send_system_notification(notification):
 	"""Send system notification for an event"""
-	frappe.publish_realtime("event_notification", notification)
+	for user in _get_event_users(notification):
+		frappe.publish_realtime("event_notification", notification, user=user)
+
+
+def _get_event_users(notification):
+	"""The event's owner and the participants who are enabled users."""
+	emails = notification.get("event_participants") or []
+	participants = frappe.get_all("User", filters={"name": ("in", emails), "enabled": 1}, pluck="name")
+	return {notification.get("owner"), *participants} - {None}
