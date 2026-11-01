@@ -12,6 +12,17 @@ NO_COUNTERPART = "No counterpart"
 REWRITE = "Rewrite"
 REWRITE_WITH_GAPS = "Rewrite: has calls with no counterpart"
 UNKNOWN_SHAPE = "Unknown shape"
+PORTED_BY_CRM = "Ported by CRM"
+
+# The standard rows whose job CRM ships as `record.js` on desk v2; `/crm` still runs the rows.
+PORTED_SCRIPTS = frozenset(
+	{
+		"Product Details Script for CRM Lead",
+		"Product Details Script for CRM Deal",
+		"Forecasting Script",
+		"Create Quotation from CRM Deal",
+	}
+)
 
 
 class CRMFormScript(Document):
@@ -28,7 +39,9 @@ class CRMFormScript(Document):
 		dt: DF.Link
 		enabled: DF.Check
 		is_standard: DF.Check
-		migration_status: DF.Literal["", "Rewrite", "Rewrite: has calls with no counterpart", "Unknown shape"]
+		migration_status: DF.Literal[
+			"", "Rewrite", "Rewrite: has calls with no counterpart", "Unknown shape", "Ported by CRM"
+		]
 		script: DF.Code | None
 		v1_calls: DF.Table[CRMFormScriptCall]
 		v1_shape: DF.Literal["", "Class-based", "setupForm", "setupList", "Unknown"]
@@ -55,7 +68,7 @@ class CRMFormScript(Document):
 	def set_analysis(self):
 		analysis = analyse(self.script, self.dt, self.view)
 		self.v1_shape = analysis.shape
-		self.migration_status = migration_status(analysis)
+		self.migration_status = migration_status(analysis, self.is_ported_by_crm())
 		self.set(
 			"v1_calls",
 			[
@@ -70,8 +83,13 @@ class CRMFormScript(Document):
 			],
 		)
 
+	def is_ported_by_crm(self) -> bool:
+		return bool(self.is_standard) and self.name in PORTED_SCRIPTS
 
-def migration_status(analysis: Analysis) -> str:
+
+def migration_status(analysis: Analysis, ported_by_crm: bool = False) -> str:
+	if ported_by_crm:
+		return PORTED_BY_CRM
 	if analysis.shape == UNKNOWN:
 		return UNKNOWN_SHAPE
 	if any(hit.verb is None for hit in analysis.hits):

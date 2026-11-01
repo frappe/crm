@@ -1,5 +1,6 @@
 import { addConvertButton } from "../../../frontend/convert/index.js";
 import { addEnrichItem } from "../../../frontend/enrich/index.js";
+import { productHandlers } from "../../../frontend/products/index.js";
 import { addLostReasonSection, addStatusControl, askReasonForLostStatus } from "../../../frontend/status/index.js";
 
 export default {
@@ -11,4 +12,5 @@ export default {
 		addEnrichItem(page);
 	},
 	status: askReasonForLostStatus,
+	products: productHandlers,
 };
