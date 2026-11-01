@@ -207,6 +207,7 @@ describe('keepLostReason', () => {
     page.saved = { status: 'Lost' }
     await keepLostReason(page, Promise.resolve(statuses))
     expect(page.panelSections.hide).toHaveBeenCalledWith('lost_reason_section')
+    expect(page.panelSections.show).not.toHaveBeenCalled()
   })
 
   it('follows the saved status back when the dialog is cancelled', async () => {
@@ -235,6 +236,7 @@ describe('placeLostReasonSection', () => {
   it('shows the section while the status is a Lost type', () => {
     const page = recordPage('Unqualified')
     placeLostReasonSection(page, vi.fn())
+    expect(page.panelSections.show).toHaveBeenCalledWith('lost_reason_section')
     expect(page.panelSections.hide).not.toHaveBeenCalled()
   })
 
