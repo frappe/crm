@@ -8,7 +8,7 @@ const NOT_INPUTS = ['Table', 'Table MultiSelect', 'Section Break', 'Column Break
 
 const FROM_LEAD = { deal_owner: 'lead_owner' }
 // A lead status is not a CRM Deal Status name.
-const NOT_FROM_LEAD = ['status']
+const NOT_FROM_LEAD = ['status', 'lost_reason', 'lost_notes']
 
 /** Adds the button after the status control, on a saved lead not yet converted. */
 export function placeConvertButton(page, item) {

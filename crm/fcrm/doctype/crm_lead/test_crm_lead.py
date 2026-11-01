@@ -442,6 +442,25 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(org.organization_name, "API Test Corp")
 		self.assertEqual(org.annual_revenue, 300000)
 
+	def test_convert_to_deal_skips_the_lost_reason(self):
+		"""A lead that was once lost keeps its reason, and its deal starts without one"""
+		if not frappe.db.exists("CRM Lost Reason", "Pricing"):
+			frappe.get_doc({"doctype": "CRM Lost Reason", "lost_reason": "Pricing"}).insert()
+		lead = create_lead(
+			first_name="Once",
+			last_name="Lost",
+			email="once.lost@example.com",
+			lost_reason="Pricing",
+			lost_notes="Too high",
+		)
+
+		deal = frappe.get_doc("CRM Deal", convert_to_deal(lead=lead.name))
+
+		self.assertFalse(deal.lost_reason)
+		self.assertFalse(deal.lost_notes)
+		lead.reload()
+		self.assertEqual((lead.lost_reason, lead.lost_notes), ("Pricing", "Too high"))
+
 	def test_convert_to_deal_api_with_existing_records(self):
 		"""Test convert_to_deal API with existing contact and organization parameters"""
 		# Create existing contact

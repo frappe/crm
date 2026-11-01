@@ -26,7 +26,7 @@ export const STATUS_DOCTYPES = { 'CRM Lead': 'CRM Lead Status', 'CRM Deal': 'CRM
 export function placeStatusControl(page, component, readStatuses) {
 	const doctype = STATUS_DOCTYPES[page.doctype]
 	if (page.isNew || !doctype) return
-	const statuses = page.cached(`statuses:${doctype}`, () => readStatuses(doctype))
+	const statuses = cachedStatuses(page, doctype, readStatuses)
 	page.header.add(
 		{
 			name: 'status',
@@ -36,6 +36,14 @@ export function placeStatusControl(page, component, readStatuses) {
 		},
 		{ before: 'save' },
 	)
+}
+
+/** The Side Panel's Lost Reason shows only while the status is a Lost type; the reason stays stored. */
+export function placeLostReasonSection(page, readStatuses) {
+	const doctype = STATUS_DOCTYPES[page.doctype]
+	if (!doctype) return
+	const statuses = cachedStatuses(page, doctype, readStatuses)
+	showLostReasonFor(page, findStatus(statuses, page.doc.status))
 }
 
 /** The text colour class for a status row's `color`; gray for none or an unknown one. */
@@ -81,17 +89,18 @@ export async function changeStatus(page, status, labels) {
 /** The `status` field handler's job: a Lost status writes its reason, a cancel goes back to the saved status. */
 export async function keepLostReason(page, statuses, labels) {
 	const picked = page.doc.status
-	const status = findStatus(await statuses, picked)
+	const rows = await statuses
 	// A later pick has its own handler, which asks for itself.
 	if (page.doc.status !== picked) return
-	const reason = await askLostReason(page, status, labels)
+	const reason = await askLostReason(page, findStatus(rows, picked), labels)
 	if (reason) Object.assign(page.doc, reason)
 	else page.doc.status = page.saved.status
+	showLostReasonFor(page, findStatus(rows, page.doc.status))
 }
 
 /** The reason for `status`: `{}` when it is not Lost, the dialog's values, or `null` when cancelled. */
 async function askLostReason(page, status, labels) {
-	if (status?.type !== 'Lost') return {}
+	if (!isLost(status)) return {}
 	return page.dialog.form({
 		...labels,
 		doctype: page.doctype,
@@ -105,6 +114,21 @@ async function askLostReason(page, status, labels) {
 export const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']
 
 const LOST_REASON_FIELDS = ['lost_reason', 'lost_notes']
+
+const LOST_REASON_SECTION = 'lost_reason_section'
+
+function cachedStatuses(page, doctype, readStatuses) {
+	return page.cached(`statuses:${doctype}`, () => readStatuses(doctype))
+}
+
+function isLost(status) {
+	return status?.type === 'Lost'
+}
+
+function showLostReasonFor(page, status) {
+	if (isLost(status)) page.panelSections.show(LOST_REASON_SECTION)
+	else page.panelSections.hide(LOST_REASON_SECTION)
+}
 
 function savedValues(page, fieldnames) {
 	return Object.fromEntries(fieldnames.map((fieldname) => [fieldname, page.saved[fieldname]]))

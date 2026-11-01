@@ -3,6 +3,7 @@ import {
   changeStatus,
   findStatus,
   keepLostReason,
+  placeLostReasonSection,
   statusInk,
   placeStatusControl,
   statusPicker,
@@ -20,6 +21,7 @@ function fakePage(status, save = () => Promise.resolve(), reason = null) {
     doc: { status },
     saved: { status },
     toast: { error: vi.fn() },
+    panelSections: { hide: vi.fn(), show: vi.fn() },
     dialog: { form: vi.fn(() => Promise.resolve(reason)) },
     save: vi.fn(() => {
       page.savedWith = page.doc.status
@@ -191,6 +193,84 @@ describe('keepLostReason', () => {
     await keepLostReason(page, Promise.resolve(statuses))
     expect(page.dialog.form).not.toHaveBeenCalled()
     expect(page.doc.status).toBe('Negotiation')
+  })
+
+  it('shows the Lost Reason section once the reason is given', async () => {
+    const page = editedPage('Lost', { lost_reason: 'Pricing' })
+    await keepLostReason(page, Promise.resolve(statuses), labels)
+    expect(page.panelSections.show).toHaveBeenCalledWith('lost_reason_section')
+    expect(page.panelSections.hide).not.toHaveBeenCalled()
+  })
+
+  it('hides the Lost Reason section for a status of another type', async () => {
+    const page = editedPage('Negotiation', null)
+    page.saved = { status: 'Lost' }
+    await keepLostReason(page, Promise.resolve(statuses))
+    expect(page.panelSections.hide).toHaveBeenCalledWith('lost_reason_section')
+    expect(page.panelSections.show).not.toHaveBeenCalled()
+  })
+
+  it('follows the saved status back when the dialog is cancelled', async () => {
+    const page = editedPage('Lost', null)
+    await keepLostReason(page, Promise.resolve(statuses))
+    expect(page.panelSections.hide).toHaveBeenCalledWith('lost_reason_section')
+    expect(page.panelSections.show).not.toHaveBeenCalled()
+  })
+})
+
+describe('placeLostReasonSection', () => {
+  const statuses = [
+    { name: 'Qualified', type: 'Ongoing' },
+    { name: 'Unqualified', type: 'Lost' },
+  ]
+
+  function recordPage(status, doctype = 'CRM Lead') {
+    return {
+      doctype,
+      doc: { status, lost_reason: 'Pricing', lost_notes: 'Too high' },
+      cached: vi.fn(() => statuses),
+      panelSections: { hide: vi.fn(), show: vi.fn() },
+    }
+  }
+
+  it('shows the section while the status is a Lost type', () => {
+    const page = recordPage('Unqualified')
+    placeLostReasonSection(page, vi.fn())
+    expect(page.panelSections.show).toHaveBeenCalledWith('lost_reason_section')
+    expect(page.panelSections.hide).not.toHaveBeenCalled()
+  })
+
+  it('hides it once the status leaves a Lost type, keeping the reason', () => {
+    const page = recordPage('Qualified')
+    placeLostReasonSection(page, vi.fn())
+    expect(page.panelSections.hide).toHaveBeenCalledWith('lost_reason_section')
+    expect(page.doc).toMatchObject({
+      lost_reason: 'Pricing',
+      lost_notes: 'Too high',
+    })
+  })
+
+  it('hides it while the statuses are not read yet', () => {
+    const page = recordPage('Unqualified')
+    page.cached.mockReturnValue(undefined)
+    placeLostReasonSection(page, vi.fn())
+    expect(page.panelSections.hide).toHaveBeenCalledWith('lost_reason_section')
+  })
+
+  it("reads the statuses through the status control's cache key", () => {
+    const page = recordPage('Unqualified', 'CRM Deal')
+    placeLostReasonSection(page, vi.fn())
+    expect(page.cached).toHaveBeenCalledWith(
+      'statuses:CRM Deal Status',
+      expect.any(Function),
+    )
+  })
+
+  it('leaves a doctype with no status doctype alone', () => {
+    const page = recordPage('Unqualified', 'CRM Task')
+    placeLostReasonSection(page, vi.fn())
+    expect(page.cached).not.toHaveBeenCalled()
+    expect(page.panelSections.hide).not.toHaveBeenCalled()
   })
 })
 
