@@ -77,11 +77,13 @@ export async function changeStatus(page, status, labels) {
 	const reason = await askLostReason(page, status, labels)
 	if (!reason) return
 	Object.assign(page.doc, reason, { status: status.name })
+	const picked = { ...page.doc }
 	try {
 		await page.save()
 	} catch (error) {
-		// A conflict reload has already replaced the draft; only a pick still in it goes back.
-		if (page.doc.status === status.name) Object.assign(page.doc, savedValues(page, ['status', ...Object.keys(reason)]))
+		// A conflict reload has already replaced the draft; only a pick still in it goes back, with what `beforeSave` wrote for it.
+		if (page.doc.status === status.name)
+			Object.assign(page.doc, writtenSince(page.doc, picked), savedValues(page, ['status', ...Object.keys(reason)]))
 		if (!SHOWN_IN_DIALOG.includes(error?.name)) page.toast.error(error?.message || String(error))
 	}
 }
@@ -132,6 +134,11 @@ function showLostReasonFor(page, status) {
 
 function savedValues(page, fieldnames) {
 	return Object.fromEntries(fieldnames.map((fieldname) => [fieldname, page.saved[fieldname]]))
+}
+
+function writtenSince(doc, before) {
+	const written = Object.keys(doc).filter((fieldname) => doc[fieldname] !== before[fieldname])
+	return Object.fromEntries(written.map((fieldname) => [fieldname, before[fieldname]]))
 }
 
 function currentReason(doc) {

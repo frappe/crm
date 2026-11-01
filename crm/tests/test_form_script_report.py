@@ -13,11 +13,15 @@ from frappe.utils import get_datetime
 
 from crm.fcrm.doctype.crm_form_script.crm_form_script import (
 	NO_COUNTERPART,
+	PORTED_BY_CRM,
+	PORTED_SCRIPTS,
 	REWRITE,
 	REWRITE_WITH_GAPS,
 	UNKNOWN_SHAPE,
+	migration_status,
 	refresh_analysis,
 )
+from crm.fcrm.form_script_analysis import analyse
 from crm.patches.v1_0.analyse_form_scripts import execute as analyse_every_row
 from crm.tests.test_navigation import make_desk_user
 
@@ -103,12 +107,30 @@ class TestFormScriptReport(IntegrationTestCase):
 		for name in frappe.get_all("CRM Form Script", pluck="name"):
 			self.assertTrue(frappe.db.get_value("CRM Form Script", name, "migration_status"), name)
 
-	def test_the_standard_scripts_need_only_a_rewrite(self):
+	def test_the_standard_scripts_are_ported_by_crm(self):
 		standard = frappe.get_all("CRM Form Script", filters={"is_standard": 1}, pluck="name")
 		self.assertTrue(standard)
 		for name in standard:
 			refresh_analysis(name)
-			self.assertEqual(frappe.db.get_value("CRM Form Script", name, "migration_status"), REWRITE, name)
+			status = PORTED_BY_CRM if name in PORTED_SCRIPTS else REWRITE
+			self.assertEqual(frappe.db.get_value("CRM Form Script", name, "migration_status"), status, name)
+
+	def test_a_ported_name_on_a_site_row_needs_a_rewrite(self):
+		name = "Forecasting Script"
+		if frappe.db.exists("CRM Form Script", name):
+			frappe.db.set_value("CRM Form Script", name, "is_standard", 0)
+			self.addCleanup(frappe.db.set_value, "CRM Form Script", name, "is_standard", 1)
+		else:
+			make_script(name, fixture("class_crm_deal.js"), "CRM Deal")
+
+		refresh_analysis(name)
+
+		self.assertEqual(frappe.db.get_value("CRM Form Script", name, "migration_status"), REWRITE)
+
+	def test_the_ported_scripts_need_only_a_rewrite_by_analysis(self):
+		for name in frappe.get_all("CRM Form Script", filters={"name": ("in", PORTED_SCRIPTS)}, pluck="name"):
+			doc = frappe.get_doc("CRM Form Script", name)
+			self.assertEqual(migration_status(analyse(doc.script, doc.dt, doc.view)), REWRITE, name)
 
 
 class TestFormScriptReportPermissions(IntegrationTestCase):
