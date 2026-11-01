@@ -93,13 +93,14 @@ def _fetch_from_fawaz_api(from_currency: str, to_currency: str, date: str):
 
 
 def _fetch_from_exchangerate_host(settings: FCRMSettings, from_currency: str, to_currency: str, date: str):
-	if not settings.access_key:
+	access_key = settings.get_password("access_key", raise_exception=False)
+	if not access_key:
 		frappe.throw(
 			_("Access Key is required for Service Provider: {0}").format(
 				frappe.bold(settings.service_provider)
 			)
 		)
-	params = {"access_key": settings.access_key, "from": from_currency, "to": to_currency, "amount": 1}
+	params = {"access_key": access_key, "from": from_currency, "to": to_currency, "amount": 1}
 	if date != "latest":
 		params["date"] = date
 	res = requests.get("https://api.exchangerate.host/convert", params=params, timeout=5)
@@ -109,14 +110,15 @@ def _fetch_from_exchangerate_host(settings: FCRMSettings, from_currency: str, to
 
 
 def _fetch_from_exchangerate_api(settings: FCRMSettings, from_currency: str, to_currency: str):
-	if not settings.access_key:
+	access_key = settings.get_password("access_key", raise_exception=False)
+	if not access_key:
 		frappe.throw(
 			_("Access Key is required for Service Provider: {0}").format(
 				frappe.bold(settings.service_provider)
 			)
 		)
 	res = requests.get(
-		f"https://v6.exchangerate-api.com/v6/{settings.access_key}/pair/{from_currency}/{to_currency}",
+		f"https://v6.exchangerate-api.com/v6/{access_key}/pair/{from_currency}/{to_currency}",
 		timeout=5,
 	)
 	if res.ok:
