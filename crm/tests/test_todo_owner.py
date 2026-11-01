@@ -105,6 +105,7 @@ class TestToDoOwnerMirror(FrappeTestCase):
 		todo = frappe.get_doc("ToDo", todo_name)
 		todo.allocated_to = self.attacker
 		todo.save()
+		self.assertEqual(frappe.db.get_value("ToDo", todo_name, "allocated_to"), self.attacker)
 
 	def test_other_todo_edits_skip_deal_access(self):
 		"""Editing a ToDo without changing its assignment needs no access to the deal"""
