@@ -43,8 +43,8 @@ class CRMTwilioSettings(Document):
 	def on_update(self):
 		# Single doctype records are created in DB at time of installation and those field values are set as null.
 		# This condition make sure that we handle null.
-		# A disabling save must not call Twilio: its credentials may be revoked.
-		if not self.enabled or not self.account_sid:
+		# Only enabling or new credentials call Twilio: other saves must work with revoked credentials.
+		if not self.enabled or not self.account_sid or not self.credentials_or_enabled_changed():
 			return
 
 		twilio = Client(self.account_sid, self.get_password("auth_token"))
