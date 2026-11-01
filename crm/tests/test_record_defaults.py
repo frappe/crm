@@ -29,7 +29,7 @@ class TestRecordDefaults(IntegrationTestCase):
 		for doctype, record in RECORDS.items():
 			with self.subTest(doctype=doctype):
 				last = last_open_status(record["status_doctype"])
-				frappe.db.set_value(record["status_doctype"], last, "position", 0)
+				frappe.db.set_value(record["status_doctype"], last, "position", -1)
 
 				self.assertEqual(insert_as(REP, doctype).status, last)
 
@@ -72,6 +72,23 @@ class TestRecordDefaults(IntegrationTestCase):
 
 				self.assertFalse(doc.get(record["owner_field"]))
 				self.assertTrue(doc.status)
+
+	def test_job_import_and_web_form_inserts_get_no_owner(self):
+		for flag in ("job", "in_import", "in_web_form"):
+			for doctype, record in RECORDS.items():
+				with self.subTest(flag=flag, doctype=doctype):
+					if flag == "job":
+						frappe.local.job = frappe._dict(method="crm.tests.lead_sync")
+					else:
+						frappe.flags[flag] = True
+					try:
+						doc = insert_as(REP, doctype)
+					finally:
+						frappe.local.job = None
+						frappe.flags[flag] = False
+
+					self.assertFalse(doc.get(record["owner_field"]))
+					self.assertTrue(doc.status)
 
 
 def insert_as(user, doctype, **values):

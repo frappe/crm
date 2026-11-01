@@ -24,7 +24,7 @@ export function askReasonForLostStatus(page) {
 }
 
 export function readStatuses(doctype) {
-	return listDocuments(doctype, { fields: STATUS_FIELDS, order_by: 'position asc', limit: 100 }).then(
+	return listDocuments(doctype, { fields: STATUS_FIELDS, order_by: 'position asc, creation asc', limit: 100 }).then(
 		(reply) => reply.data,
 	)
 }
