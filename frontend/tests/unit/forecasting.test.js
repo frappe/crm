@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
+  FORECASTING_SCRIPT,
   SINGLE_VALUE_METHOD,
   forecastOnSave,
   forecastProbability,
@@ -22,6 +23,13 @@ function fakePage(options = {}) {
   }
 }
 
+function fakeReads({ scriptEnabled = true } = {}) {
+  return {
+    probabilities: vi.fn(async () => PROBABILITIES),
+    scriptEnabled: vi.fn(async () => scriptEnabled),
+  }
+}
+
 describe('readForecasting', () => {
   it('holds the probabilities under one key', () => {
     const page = fakePage()
@@ -36,24 +44,35 @@ describe('readForecasting', () => {
   it("reads FCRM Settings' switch, then the statuses' probabilities, in one fetch", async () => {
     const page = fakePage()
     page.call = vi.fn(async () => 1)
-    const readProbabilities = vi.fn(async () => PROBABILITIES)
-    readForecasting(page, readProbabilities)
+    const reads = fakeReads()
+    readForecasting(page, reads)
     const [, fetch] = page.cached.mock.calls[0]
     expect(await fetch()).toBe(PROBABILITIES)
     expect(page.call).toHaveBeenCalledWith(SINGLE_VALUE_METHOD, {
       doctype: 'FCRM Settings',
       field: 'enable_forecasting',
     })
+    expect(reads.scriptEnabled).toHaveBeenCalledWith(FORECASTING_SCRIPT)
   })
 
   it('reads no probabilities while forecasting is off', async () => {
     const page = fakePage()
     page.call = vi.fn(async () => 0)
-    const readProbabilities = vi.fn()
-    readForecasting(page, readProbabilities)
+    const reads = fakeReads()
+    readForecasting(page, reads)
     const [, fetch] = page.cached.mock.calls[0]
     expect(await fetch()).toBeNull()
-    expect(readProbabilities).not.toHaveBeenCalled()
+    expect(reads.probabilities).not.toHaveBeenCalled()
+  })
+
+  it('reads no probabilities while the v1 "Forecasting Script" row is disabled', async () => {
+    const page = fakePage()
+    page.call = vi.fn(async () => 1)
+    const reads = fakeReads({ scriptEnabled: false })
+    readForecasting(page, reads)
+    const [, fetch] = page.cached.mock.calls[0]
+    expect(await fetch()).toBeNull()
+    expect(reads.probabilities).not.toHaveBeenCalled()
   })
 })
 

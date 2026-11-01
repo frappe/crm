@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   CUSTOMER_METHOD,
   QUOTATION_METHOD,
+  QUOTATION_SCRIPT,
   openQuotation,
   placeQuotationItems,
 } from '../../../crm/fcrm/frontend/erpnext/quotation.js'
@@ -38,8 +39,8 @@ function fakePage(options = {}) {
 }
 
 /** The fetcher `placeQuotationItems` hands `page.cached`, run as the page would. */
-function readERPNext(page) {
-  placeQuotationItems(page, LABELS)
+function readERPNext(page, scriptEnabled = vi.fn(async () => true)) {
+  placeQuotationItems(page, LABELS, scriptEnabled)
   const [, fetch] = page.cached.mock.calls[0]
   return fetch()
 }
@@ -116,6 +117,14 @@ describe('the ERPNext read', () => {
   it('reads no customer while ERPNext CRM Settings is off', async () => {
     const page = fakePage({ enabled: 0 })
     expect(await readERPNext(page)).toBeNull()
+    expect(page.call).toHaveBeenCalledTimes(1)
+  })
+
+  it('reads no customer while the v1 "Create Quotation from CRM Deal" row is disabled', async () => {
+    const page = fakePage()
+    const scriptEnabled = vi.fn(async () => false)
+    expect(await readERPNext(page, scriptEnabled)).toBeNull()
+    expect(scriptEnabled).toHaveBeenCalledWith(QUOTATION_SCRIPT)
     expect(page.call).toHaveBeenCalledTimes(1)
   })
 
