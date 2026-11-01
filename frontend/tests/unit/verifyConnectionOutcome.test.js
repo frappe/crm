@@ -23,7 +23,10 @@ function site({ companies, failure, installed } = {}) {
 describe('verifyConnection on this site', () => {
   it('is verified when ERPNext is installed', async () => {
     const ask = site({ installed: true })
-    const result = await verifyConnection({ is_erpnext_in_different_site: 0 }, ask)
+    const result = await verifyConnection(
+      { is_erpnext_in_different_site: 0 },
+      ask,
+    )
     expect(result.state).toBe('verified')
     expect(ask.companies).not.toHaveBeenCalled()
   })
@@ -38,7 +41,7 @@ describe('verifyConnection on another site', () => {
   it('is verified when the company is one the site returns', async () => {
     const result = await verifyConnection(
       OTHER_SITE,
-      site({ companies: [{ company_name: 'Acme' }, { company_name: 'Beta' }] })
+      site({ companies: [{ company_name: 'Acme' }, { company_name: 'Beta' }] }),
     )
     expect(result.state).toBe('verified')
     expect(result.title).toContain('https://erp.example.com')
@@ -47,7 +50,7 @@ describe('verifyConnection on another site', () => {
   it('names the wrong company and lists the ones found', async () => {
     const result = await verifyConnection(
       { ...OTHER_SITE, erpnext_company: 'Acm' },
-      site({ companies: [{ company_name: 'Acme' }, { company_name: 'Beta' }] })
+      site({ companies: [{ company_name: 'Acme' }, { company_name: 'Beta' }] }),
     )
     expect(result.state).toBe('wrong-company')
     expect(result.title).toContain('Acm')
@@ -57,7 +60,7 @@ describe('verifyConnection on another site', () => {
   it('treats a missing company as a wrong one', async () => {
     const result = await verifyConnection(
       { ...OTHER_SITE, erpnext_company: '' },
-      site({ companies: [{ company_name: 'Acme' }] })
+      site({ companies: [{ company_name: 'Acme' }] }),
     )
     expect(result.state).toBe('wrong-company')
     expect(result.companies).toEqual(['Acme'])
@@ -66,12 +69,17 @@ describe('verifyConnection on another site', () => {
   it.each(['ConnectionError', 'MissingSchema', 'Timeout', 'JSONDecodeError'])(
     'blames the URL when the request fails with %s',
     async (failure) => {
-      expect((await verifyConnection(OTHER_SITE, site({ failure }))).state).toBe('wrong-url')
-    }
+      expect(
+        (await verifyConnection(OTHER_SITE, site({ failure }))).state,
+      ).toBe('wrong-url')
+    },
   )
 
   it('blames the key when the site refuses the request', async () => {
-    const result = await verifyConnection(OTHER_SITE, site({ failure: 'FrappeException' }))
+    const result = await verifyConnection(
+      OTHER_SITE,
+      site({ failure: 'FrappeException' }),
+    )
     expect(result.state).toBe('wrong-key')
   })
 
@@ -80,7 +88,8 @@ describe('verifyConnection on another site', () => {
     ask.companies = async () => {
       throw Object.assign(new Error('FrappeException'), {
         type: 'FrappeException',
-        exception: 'frappe.exceptions.DoesNotExistError: DocType Company not found',
+        exception:
+          'frappe.exceptions.DoesNotExistError: DocType Company not found',
       })
     }
     expect((await verifyConnection(OTHER_SITE, ask)).state).toBe('no-erpnext')
@@ -102,7 +111,9 @@ describe('verifyConnection on another site', () => {
   it('shows the message of a failure it does not know', async () => {
     const ask = site({})
     ask.companies = async () => {
-      throw Object.assign(new Error('Server went away'), { type: 'OperationalError' })
+      throw Object.assign(new Error('Server went away'), {
+        type: 'OperationalError',
+      })
     }
     const result = await verifyConnection(OTHER_SITE, ask)
     expect(result.state).toBe('failed')
@@ -111,7 +122,10 @@ describe('verifyConnection on another site', () => {
 
   it('names the missing field without asking the site', async () => {
     const ask = site({ companies: [] })
-    const result = await verifyConnection({ ...OTHER_SITE, api_key: '', api_secret: '' }, ask)
+    const result = await verifyConnection(
+      { ...OTHER_SITE, api_key: '', api_secret: '' },
+      ask,
+    )
     expect(result.state).toBe('incomplete')
     expect(result.description).toContain('API key')
     expect(ask.companies).not.toHaveBeenCalled()
