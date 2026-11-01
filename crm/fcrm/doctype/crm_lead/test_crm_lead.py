@@ -128,40 +128,40 @@ class TestCRMLead(IntegrationTestCase):
 
 	def test_update_lead_owner(self):
 		"""Test that updating lead owner assigns and shares with the new owner"""
-		# Create a lead without owner
+		# Create a lead without owner: its creator owns it
 		lead = create_lead(
 			first_name="Owner",
 			last_name="Test",
 			email="ownertest@example.com",
 		)
 
-		self.assertFalse(lead.lead_owner)
+		self.assertEqual(lead.lead_owner, "Administrator")
 
 		# Update lead owner
-		lead.lead_owner = "Administrator"
+		lead.lead_owner = "crm.user2@example.com"
 		lead.save()
 
 		# Verify owner was updated
 		lead.reload()
-		self.assertEqual(lead.lead_owner, "Administrator")
+		self.assertEqual(lead.lead_owner, "crm.user2@example.com")
 
 		# Verify agent was assigned
 		assignees = lead.get_assigned_users()
-		self.assertIn("Administrator", assignees)
+		self.assertIn("crm.user2@example.com", assignees)
 		initial_assignees_count = len(assignees)
 
 		# Verify document was shared with agent
 		docshare = frappe.db.exists(
 			"DocShare",
-			{"user": "Administrator", "share_name": lead.name, "share_doctype": "CRM Lead"},
+			{"user": "crm.user2@example.com", "share_name": lead.name, "share_doctype": "CRM Lead"},
 		)
 		self.assertTrue(docshare)
 
 		# Try to assign the same agent again - should not duplicate
-		lead.assign_agent("Administrator")
+		lead.assign_agent("crm.user2@example.com")
 		assignees_after = lead.get_assigned_users()
 		self.assertEqual(len(assignees_after), initial_assignees_count)
-		self.assertIn("Administrator", assignees_after)
+		self.assertIn("crm.user2@example.com", assignees_after)
 
 		# Share with same agent again - should not duplicate docshare
 		initial_docshares = frappe.get_all(
@@ -169,7 +169,7 @@ class TestCRMLead(IntegrationTestCase):
 			filters={"share_name": lead.name, "share_doctype": "CRM Lead"},
 		)
 		initial_docshare_count = len(initial_docshares)
-		lead.share_with_agent("Administrator")
+		lead.share_with_agent("crm.user2@example.com")
 		after_docshares = frappe.get_all(
 			"DocShare",
 			filters={"share_name": lead.name, "share_doctype": "CRM Lead"},

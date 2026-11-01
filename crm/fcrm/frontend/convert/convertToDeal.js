@@ -50,6 +50,12 @@ export function leadDefaults(lead, leadFields, fields) {
 	return defaults
 }
 
+/** The first CRM Deal Status by `position` for the dialog's `status`, as a new deal starts with it. */
+export function statusDefault(fields, statuses) {
+	if (!statuses?.length || !fields.some((field) => field.fieldname === 'status')) return {}
+	return { status: statuses[0].name }
+}
+
 /** Converts the lead with the dialog's values; resolves with the new deal's name. */
 export function convertLead(page, values) {
 	const { organization, contact, ...deal } = values

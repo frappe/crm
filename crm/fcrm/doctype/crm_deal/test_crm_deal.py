@@ -128,29 +128,29 @@ class TestCRMDeal(IntegrationTestCase):
 
 	def test_update_deal_owner(self):
 		"""Test updating deal owner assigns and shares with new owner"""
-		# Create deal without owner
+		# Create deal without owner: its creator owns it
 		deal = create_test_deal(organization="Update Owner Org")
-		self.assertFalse(deal.deal_owner)
+		self.assertEqual(deal.deal_owner, "Administrator")
 
 		# Update deal owner
-		deal.deal_owner = "Administrator"
+		deal.deal_owner = "crm.user1@example.com"
 		deal.save()
 
 		# Verify assignment and share
 		deal.reload()
-		self.assertEqual(deal.deal_owner, "Administrator")
+		self.assertEqual(deal.deal_owner, "crm.user1@example.com")
 		assignees = deal.get_assigned_users()
-		self.assertIn("Administrator", assignees)
+		self.assertIn("crm.user1@example.com", assignees)
 
 		docshare = frappe.db.exists(
 			"DocShare",
-			{"user": "Administrator", "share_name": deal.name, "share_doctype": "CRM Deal"},
+			{"user": "crm.user1@example.com", "share_name": deal.name, "share_doctype": "CRM Deal"},
 		)
 		self.assertTrue(docshare)
 
 		# Try to assign same agent again - should not duplicate
 		initial_count = len(assignees)
-		deal.assign_agent("Administrator")
+		deal.assign_agent("crm.user1@example.com")
 		assignees_after = deal.get_assigned_users()
 		self.assertEqual(len(assignees_after), initial_count)
 
