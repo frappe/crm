@@ -127,7 +127,9 @@ class TestFormScriptReport(IntegrationTestCase):
 		self.assertEqual(frappe.db.get_value("CRM Form Script", name, "migration_status"), REWRITE)
 
 	def test_a_disabled_standard_script_stays_ported_by_crm(self):
-		for name in frappe.get_all("CRM Form Script", filters={"name": ("in", PORTED_SCRIPTS)}, pluck="name"):
+		names = frappe.get_all("CRM Form Script", filters={"name": ("in", PORTED_SCRIPTS)}, pluck="name")
+		self.assertTrue(names)
+		for name in names:
 			doc = frappe.get_doc("CRM Form Script", name)
 			self.addCleanup(frappe.db.set_value, "CRM Form Script", name, "enabled", doc.enabled)
 			doc.enabled = 0

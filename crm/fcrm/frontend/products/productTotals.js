@@ -8,13 +8,14 @@ export function readProductDetails(page, scriptEnabled) {
 	return page.cached(PRODUCTS_KEY, () => scriptEnabled(`Product Details Script for ${page.doctype}`))
 }
 
-/** The `products` table handlers block: a row prices itself, and the record's totals follow, while the v1 row is enabled. */
-export function productHandlers(scriptEnabled) {
-	// Read before any await: after one, the page cannot tell which script asks.
+/** The `products` table handlers block: a row prices itself, and the record's totals follow, unless the v1 row is disabled. */
+export function productHandlersFor(scriptEnabled) {
 	const whileEnabled =
 		(handler) =>
 		(page, ...args) =>
-			readProductDetails(page, scriptEnabled) ? handler(page, ...args) : undefined
+			// Read before any await: after one, the page cannot tell which script asks. A read not landed prices
+			// anyway, since a skipped total is saved wrong.
+			readProductDetails(page, scriptEnabled) === false ? undefined : handler(page, ...args)
 	return {
 		onAdd: whileEnabled(repriceRow),
 		onRemove: whileEnabled((page) => updateTotals(page.doc)),

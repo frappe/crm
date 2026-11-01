@@ -2,13 +2,13 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   RATE_METHOD,
   priceRow,
-  productHandlers,
+  productHandlersFor,
   readProductDetails,
   updateTotals,
 } from '../../../crm/fcrm/frontend/products/productTotals.js'
 
 const scriptEnabled = vi.fn(async () => true)
-const handlers = productHandlers(scriptEnabled)
+const handlers = productHandlersFor(scriptEnabled)
 
 function fakePage(rows, overrides = {}) {
   const page = {
@@ -85,7 +85,7 @@ describe('updateTotals', () => {
   })
 })
 
-describe('productHandlers', () => {
+describe('productHandlersFor', () => {
   it('prices an added row and updates the totals', () => {
     const row = { qty: 3, rate: 10 }
     const page = fakePage([row])
@@ -196,17 +196,22 @@ describe('readProductDetails', () => {
     )
   })
 
-  it('prices nothing while the v1 row is disabled, or before it is read', async () => {
-    for (const held of [false, undefined]) {
-      const row = { qty: 3, rate: 10, product_code: 'W-1' }
-      const page = fakePage([row], { cached: vi.fn(() => held) })
-      handlers.onAdd(page, row)
-      handlers.qty(page, row)
-      handlers.onRemove(page)
-      await handlers.product_code(page, row)
-      expect(row.amount).toBeUndefined()
-      expect(page.doc.total).toBeUndefined()
-      expect(page.call).not.toHaveBeenCalled()
-    }
+  it('prices nothing while the v1 row is disabled', async () => {
+    const row = { qty: 3, rate: 10, product_code: 'W-1' }
+    const page = fakePage([row], { cached: vi.fn(() => false) })
+    handlers.onAdd(page, row)
+    handlers.qty(page, row)
+    handlers.onRemove(page)
+    await handlers.product_code(page, row)
+    expect(row.amount).toBeUndefined()
+    expect(page.doc.total).toBeUndefined()
+    expect(page.call).not.toHaveBeenCalled()
+  })
+
+  it('prices a row before the read lands, so no total is saved stale', () => {
+    const row = { qty: 3, rate: 10 }
+    const page = fakePage([row], { cached: vi.fn(() => undefined) })
+    handlers.onAdd(page, row)
+    expect(page.doc).toMatchObject({ total: 30, net_total: 30 })
   })
 })

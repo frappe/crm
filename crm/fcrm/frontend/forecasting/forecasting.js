@@ -5,25 +5,19 @@ export const FORECASTING_SCRIPT = 'Forecasting Script'
 
 const FORECASTING_KEY = 'forecasting'
 
-/**
- * Each deal status's probability while FCRM Settings has forecasting on and the v1 "Forecasting Script" row is enabled,
- * else `null`; one key, so one replay fetches every read. `reads` is `{ probabilities, scriptEnabled }`.
- */
-export function readForecasting(page, reads) {
+/** Each deal status's probability while forecasting is on and the v1 row is enabled, else `null`; one key, so one replay fetches every read. */
+export function readForecasting(page, readProbabilities, scriptEnabled) {
 	return page.cached(FORECASTING_KEY, async () => {
-		const [on, enabled] = await Promise.all([
-			page.call(SINGLE_VALUE_METHOD, { doctype: 'FCRM Settings', field: 'enable_forecasting' }),
-			reads.scriptEnabled(FORECASTING_SCRIPT),
-		])
-		return on && enabled ? reads.probabilities() : null
+		const on = await page.call(SINGLE_VALUE_METHOD, { doctype: 'FCRM Settings', field: 'enable_forecasting' })
+		return on && (await scriptEnabled(FORECASTING_SCRIPT)) ? readProbabilities() : null
 	})
 }
 
 /** Runs `handler`, then sets `probability` from the picked status, unless the handler took the pick back. */
-export function forecastProbability(handler, reads) {
+export function forecastProbability(handler, readProbabilities, scriptEnabled) {
 	return async (page) => {
 		// Read before any await: after one, the page cannot tell which script asks.
-		const probabilities = readForecasting(page, reads)
+		const probabilities = readForecasting(page, readProbabilities, scriptEnabled)
 		const picked = page.doc.status
 		await handler(page)
 		if (probabilities && page.doc.status === picked && Object.hasOwn(probabilities, picked))
@@ -32,12 +26,12 @@ export function forecastProbability(handler, reads) {
 }
 
 /** The `beforeSave` handler: a status changed with no `status` handler run, as a header pick saves it, sets `probability` too. */
-export function forecastOnSave(reads) {
+export function forecastOnSave(readProbabilities, scriptEnabled) {
 	return (page) => {
 		const { status, probability } = page.doc
 		// A draft that already moved `probability` (the `status` handler, or the reader) keeps it.
 		if (page.isNew || status === page.saved.status || probability !== page.saved.probability) return
-		const probabilities = readForecasting(page, reads)
+		const probabilities = readForecasting(page, readProbabilities, scriptEnabled)
 		if (probabilities && Object.hasOwn(probabilities, status)) page.doc.probability = probabilities[status]
 	}
 }

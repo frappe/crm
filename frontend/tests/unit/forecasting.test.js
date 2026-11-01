@@ -23,13 +23,6 @@ function fakePage(options = {}) {
   }
 }
 
-function fakeReads({ scriptEnabled = true } = {}) {
-  return {
-    probabilities: vi.fn(async () => PROBABILITIES),
-    scriptEnabled: vi.fn(async () => scriptEnabled),
-  }
-}
-
 describe('readForecasting', () => {
   it('holds the probabilities under one key', () => {
     const page = fakePage()
@@ -41,38 +34,45 @@ describe('readForecasting', () => {
     )
   })
 
-  it("reads FCRM Settings' switch, then the statuses' probabilities, in one fetch", async () => {
+  it("reads FCRM Settings' switch, the v1 row, then the statuses' probabilities, in one fetch", async () => {
     const page = fakePage()
     page.call = vi.fn(async () => 1)
-    const reads = fakeReads()
-    readForecasting(page, reads)
+    const readProbabilities = vi.fn(async () => PROBABILITIES)
+    const scriptEnabled = vi.fn(async () => true)
+    readForecasting(page, readProbabilities, scriptEnabled)
     const [, fetch] = page.cached.mock.calls[0]
     expect(await fetch()).toBe(PROBABILITIES)
     expect(page.call).toHaveBeenCalledWith(SINGLE_VALUE_METHOD, {
       doctype: 'FCRM Settings',
       field: 'enable_forecasting',
     })
-    expect(reads.scriptEnabled).toHaveBeenCalledWith(FORECASTING_SCRIPT)
+    expect(scriptEnabled).toHaveBeenCalledWith(FORECASTING_SCRIPT)
   })
 
-  it('reads no probabilities while forecasting is off', async () => {
+  it('reads neither the v1 row nor the probabilities while forecasting is off', async () => {
     const page = fakePage()
     page.call = vi.fn(async () => 0)
-    const reads = fakeReads()
-    readForecasting(page, reads)
+    const readProbabilities = vi.fn()
+    const scriptEnabled = vi.fn()
+    readForecasting(page, readProbabilities, scriptEnabled)
     const [, fetch] = page.cached.mock.calls[0]
     expect(await fetch()).toBeNull()
-    expect(reads.probabilities).not.toHaveBeenCalled()
+    expect(scriptEnabled).not.toHaveBeenCalled()
+    expect(readProbabilities).not.toHaveBeenCalled()
   })
 
   it('reads no probabilities while the v1 "Forecasting Script" row is disabled', async () => {
     const page = fakePage()
     page.call = vi.fn(async () => 1)
-    const reads = fakeReads({ scriptEnabled: false })
-    readForecasting(page, reads)
+    const readProbabilities = vi.fn()
+    readForecasting(
+      page,
+      readProbabilities,
+      vi.fn(async () => false),
+    )
     const [, fetch] = page.cached.mock.calls[0]
     expect(await fetch()).toBeNull()
-    expect(reads.probabilities).not.toHaveBeenCalled()
+    expect(readProbabilities).not.toHaveBeenCalled()
   })
 })
 

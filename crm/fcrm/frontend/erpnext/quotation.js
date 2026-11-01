@@ -28,11 +28,8 @@ export function placeQuotationItems(page, labels, scriptEnabled) {
 
 /** The deal's customer link while ERPNext CRM Settings and the v1 row are enabled, else `null`; one key, so one replay fetches every read. */
 async function readERPNext(page, scriptEnabled) {
-	const [enabled, scriptOn] = await Promise.all([
-		page.call('frappe.client.get_single_value', { doctype: 'ERPNext CRM Settings', field: 'enabled' }),
-		scriptEnabled(QUOTATION_SCRIPT),
-	])
-	if (!enabled || !scriptOn) return null
+	const enabled = await page.call('frappe.client.get_single_value', { doctype: 'ERPNext CRM Settings', field: 'enabled' })
+	if (!enabled || !(await scriptEnabled(QUOTATION_SCRIPT))) return null
 	// A failed customer lookup still leaves Create Quotation.
 	const customerUrl = await page.call(CUSTOMER_METHOD, { crm_deal: page.docname }).catch(() => '')
 	return { customerUrl }
