@@ -18,7 +18,7 @@ class TestAssignToOwnerSync(IntegrationTestCase):
 	# Deal: test_crm_deal.test_reassignment_moves_owner
 	def test_assigning_without_owner_sets_lead_owner(self):
 		name = create_record("CRM Lead")
-		self.assertIsNone(get_owner("CRM Lead", name))
+		frappe.db.set_value("CRM Lead", name, "lead_owner", None)
 
 		assign("CRM Lead", name, USER1)
 

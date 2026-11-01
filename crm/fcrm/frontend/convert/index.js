@@ -3,11 +3,13 @@ import { getMeta } from '@framework/ui/api'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
 import { saveRecord } from '../saveRecord.js'
+import { readStatuses } from '../status/index.js'
 import {
 	convertLead,
 	leadDefaults,
 	placeConvertButton,
 	requiredDealFields,
+	statusDefault,
 	toDialogField,
 } from './convertToDeal.js'
 
@@ -23,12 +25,13 @@ export function addConvertButton(page) {
 async function convertToDeal(page) {
 	// The server converts the saved lead.
 	if (!(await saveRecord(page))) return
-	const required = requiredDealFields((await getMeta('CRM Deal')).data?.fields)
+	const [meta, statuses] = await Promise.all([getMeta('CRM Deal'), readStatuses('CRM Deal Status')])
+	const required = requiredDealFields(meta.data?.fields)
 	let deal = null
 	await page.dialog.form({
 		title: __('Convert to Deal'),
 		fields: [...linkFields(), ...required.map(toDialogField)],
-		defaults: leadDefaults(page.doc, page.meta?.fields, required),
+		defaults: { ...leadDefaults(page.doc, page.meta?.fields, required), ...statusDefault(required, statuses) },
 		submitLabel: __('Convert'),
 		onSubmit: async (values) => {
 			deal = await convertLead(page, values)

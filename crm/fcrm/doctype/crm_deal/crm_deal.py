@@ -10,6 +10,7 @@ from crm.api.exchange_rate import get_exchange_rate
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import add_status_change_log
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
+from crm.fcrm.record_defaults import set_status_and_owner
 
 
 class CRMDeal(Document):
@@ -84,12 +85,12 @@ class CRMDeal(Document):
 		from crm.api.form import enrich_form_submission
 
 		enrich_form_submission(self)
+		set_status_and_owner(self, "CRM Deal Status", "deal_owner")
 
 	def before_validate(self):
 		self.set_sla()
 
 	def validate(self):
-		self.validate_status()
 		self.set_primary_contact()
 		self.set_primary_email_mobile_no()
 		if not self.is_new() and self.has_value_changed("deal_owner") and self.deal_owner:
@@ -106,7 +107,7 @@ class CRMDeal(Document):
 			self.copy_enrichment_from_organization()
 
 	def after_insert(self):
-		if self.deal_owner:
+		if self.deal_owner and not self.flags.owner_defaulted:
 			if self.deal_owner != frappe.session.user:
 				self.share_with_agent(self.deal_owner)
 			self.assign_agent(self.deal_owner)
@@ -118,13 +119,6 @@ class CRMDeal(Document):
 
 	def before_save(self):
 		self.apply_sla()
-
-	def validate_status(self):
-		if self.is_new() and not self.status:
-			if frappe.db.exists("CRM Deal Status", "Qualification"):
-				self.status = "Qualification"
-			else:
-				self.status = frappe.get_all("CRM Deal Status", {"type": "Open"}, pluck="name")[0]
 
 	def add_contact_from_link(self):
 		"""Quick Entry sets only the `contact` Link; the deal's contacts are its `contacts` rows."""

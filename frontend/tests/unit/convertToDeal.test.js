@@ -5,6 +5,7 @@ import {
   leadDefaults,
   placeConvertButton,
   requiredDealFields,
+  statusDefault,
   toDialogField,
 } from '../../../crm/fcrm/frontend/convert/convertToDeal.js'
 
@@ -241,5 +242,20 @@ describe('convertLead', () => {
       existing_organization: null,
       existing_contact: null,
     })
+  })
+})
+
+describe('statusDefault', () => {
+  const statuses = [{ name: 'Qualification' }, { name: 'Demo/Making' }]
+
+  it('fills the status with the first Deal Status by position', () => {
+    expect(statusDefault([{ fieldname: 'status' }], statuses)).toEqual({
+      status: 'Qualification',
+    })
+  })
+
+  it('fills nothing when the dialog asks for no status, or no status exists', () => {
+    expect(statusDefault([{ fieldname: 'deal_value' }], statuses)).toEqual({})
+    expect(statusDefault([{ fieldname: 'status' }], [])).toEqual({})
   })
 })

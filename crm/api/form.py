@@ -17,6 +17,8 @@ import frappe
 from frappe import _
 from frappe.utils.telemetry import capture
 
+from crm.fcrm.record_defaults import first_status
+
 ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
 FORM_SOURCE = "Web Form"
 FORM_MODULE = "FCRM"
@@ -151,17 +153,6 @@ def _mappable_fields(document_type: str) -> list[dict]:
 	return fields
 
 
-def _default_status(document_type: str) -> str | None:
-	"""The status a new Lead/Deal defaults to — mirrors the doctype controllers so
-	the hidden 'Status' field is pre-filled with the value the CRM would use."""
-	status_dt = "CRM Lead Status" if document_type == "CRM Lead" else "CRM Deal Status"
-	preferred = "New" if document_type == "CRM Lead" else "Qualification"
-	if frappe.db.exists(status_dt, preferred):
-		return preferred
-	rows = frappe.get_all(status_dt, {"type": "Open"}, pluck="name")
-	return rows[0] if rows else None
-
-
 def _seed_visible_fields(document_type: str) -> list[dict]:
 	"""Web-form rows for a new form's visible layout: the curated contact set,
 	arranged into labelled sections and columns (with Section/Column breaks)."""
@@ -218,7 +209,7 @@ def _seed_hidden_fields(document_type: str) -> list[dict]:
 			continue
 		if df.fieldtype in SUPPORTED_FIELDTYPES and df.fieldname not in DENIED_FIELDNAMES:
 			continue  # a fillable mandatory field belongs in the visible layout
-		default = _default_status(document_type) if df.fieldname == "status" else (df.default or "")
+		default = first_status(f"{document_type} Status") if df.fieldname == "status" else (df.default or "")
 		hidden.append(
 			{
 				"fieldname": df.fieldname,
