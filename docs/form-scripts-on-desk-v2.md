@@ -116,19 +116,20 @@ const WonNote = {
 
 export default {
   onRefresh(page) {
-    if (page.isNew) return
-    page.header.add(
-      [
-        { name: 'refresh_probability', label: __('Refresh probability'), display: 'button', run: updateProbability },
-        { name: 'more', label: __('More'), display: 'dropdown' },
-        { name: 'show_next_step', label: __('Show next step'), group: 'more', run: showNextStep },
-        { name: 'edit_next_step', label: __('Edit next step'), group: 'more', run: editNextStep },
-        { name: 'open_settings', label: __('Open settings'), group: 'more', run: (page) => page.openSettings('crm', 'general') },
-        { name: 'all_leads', label: __('All leads'), group: 'more', run: (page) => openList(page, 'crm-lead') },
-      ],
-      { before: 'save' },
-    )
-    page.tabs.add({ name: 'summary', label: __('Summary'), component: Summary })
+    if (!page.isNew) {
+      page.header.add(
+        [
+          { name: 'refresh_probability', label: __('Refresh probability'), display: 'button', run: updateProbability },
+          { name: 'more', label: __('More'), display: 'dropdown' },
+          { name: 'show_next_step', label: __('Show next step'), group: 'more', run: showNextStep },
+          { name: 'edit_next_step', label: __('Edit next step'), group: 'more', run: editNextStep },
+          { name: 'open_settings', label: __('Open settings'), group: 'more', run: (page) => page.openSettings('crm', 'general') },
+          { name: 'all_leads', label: __('All leads'), group: 'more', run: (page) => openList(page, 'crm-lead') },
+        ],
+        { before: 'save' },
+      )
+      page.tabs.add({ name: 'summary', label: __('Summary'), component: Summary })
+    }
 
     if (!page.doc.probability) page.fields.hide('next_step')
     page.form.update('details_section', { label: __('Deal details') })
@@ -177,7 +178,7 @@ What changed, and why:
 
 - `status(page)` runs only when the reader changes the Status field in the form. The status control in CRM's header saves a pick as a script write, and a script write runs no field handler. To react to every status change, `beforeSave` compares the status with `page.saved.status`. A header pick saves, so `beforeSave` updates the probability for it too.
 - The class methods `updateProbability`, `updateTotal`, `showNextStep` and `editNextStep` are plain functions. `this.doc.trigger('updateProbability')` and `this.showNextStep()` call them with `page`.
-- The actions and the tab moved from `onLoad` to `onRefresh`, because each replay clears the header and the tabs.
+- The actions and the tab moved from `onLoad` to `onRefresh`, because each replay clears the header and the tabs. v1 skips them on a new deal, so they sit under `!page.isNew`. The field changes from `onRender` run on a new deal too.
 - `hideLabel: true` has no desk v2 key. The **More** dropdown shows its label.
 - `this.setFieldProperty('status', 'button_color', 'green')` is gone. `status` is a Link field, and `button_color` colors only a Button field, so the line does nothing on CRM v1 either.
 - `this.removeFieldProperty('next_step', 'hidden')` is gone. The condition in `onRefresh` decides on each replay.
@@ -260,7 +261,7 @@ const count = await page.call('frappe.client.get_count', { doctype: 'CRM Lead' }
 
 To read server data in `onRefresh`, wrap the call in `page.cached(key, fetcher)`. It returns `undefined` until the fetch lands, then the page replays with the value.
 
-Read `page.cached` before the handler's first `await`, in `onRefresh` and in a field handler too. After an `await`, the page cannot tell which script asks for the value.
+Read `page.cached` before the handler's first `await`. After an `await`, the page cannot tell which script asks for the value. A field handler can read it too, before its first `await`: it gets the value the page holds, or `undefined`, and the page fetches the key with the next replay.
 
 <a id="dom-access"></a>
 ### DOM access: `document.`, `querySelector`, `MutationObserver`
