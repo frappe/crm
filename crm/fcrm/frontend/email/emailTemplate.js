@@ -1,4 +1,3 @@
-// The query key desk v2 puts on a new record that duplicates another.
 const COPY_OF = '__copy_of'
 
 // CRM v1 copies a template switched off, so a copy goes live only when the admin enables it.

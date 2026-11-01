@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   appendToLead,
+  fillNewAccount,
   startCopyDisabled,
   startNewAccount,
 } from '../../../crm/fcrm/frontend/email/index.js'
@@ -41,6 +42,29 @@ describe('a new email account', () => {
 
     expect(saved.doc).toEqual({})
     expect(desk.doc).toEqual({})
+  })
+})
+
+describe('a new account whose preset turns IMAP on after CRM filled it', () => {
+  it('gets Append To on its folder rows when it saves', () => {
+    const page = fakePage({ use_imap: 0, service: 'GMail' })
+    startNewAccount(page)
+    expect(page.doc.append_to).toBe('CRM Lead')
+
+    page.doc.use_imap = 1
+    page.doc.imap_folder.push({ folder_name: 'Sales' })
+    fillNewAccount(page)
+
+    expect(page.doc.imap_folder.map((row) => row.append_to)).toEqual([
+      'CRM Lead',
+      'CRM Lead',
+    ])
+  })
+
+  it('leaves a saved account alone', () => {
+    const page = fakePage({ use_imap: 1, imap_folder: [{}] }, { isNew: false })
+    fillNewAccount(page)
+    expect(page.doc.imap_folder[0].append_to).toBeUndefined()
   })
 })
 

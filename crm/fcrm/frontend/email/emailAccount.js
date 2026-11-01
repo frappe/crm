@@ -1,6 +1,5 @@
 const LEAD = 'CRM Lead'
 
-// CRM's first sync reads the whole inbox, 100 mails at a time.
 export function startNewAccount(page) {
 	if (!page.isNew || page.app !== 'crm') return
 	if (!page.doc.imap_folder?.length)
@@ -10,7 +9,6 @@ export function startNewAccount(page) {
 	appendToLead(page)
 }
 
-// Only an empty Append To is filled, so a doctype the admin picked stays.
 export function appendToLead(page) {
 	if (page.app !== 'crm') return
 	if (!page.doc.use_imap) {
@@ -19,4 +17,9 @@ export function appendToLead(page) {
 	}
 	for (const row of page.doc.imap_folder ?? [])
 		if (!row.append_to) row.append_to = LEAD
+}
+
+// A preset sets `use_imap` after CRM's handlers ran, whichever script runs first.
+export function fillNewAccount(page) {
+	if (page.isNew) appendToLead(page)
 }
