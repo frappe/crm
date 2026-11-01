@@ -20,6 +20,7 @@ from crm.fcrm.doctype.crm_form_script.crm_form_script import (
 	refresh_analysis,
 )
 from crm.fcrm.form_script_analysis import analyse
+from crm.install import add_default_scripts
 from crm.patches.v1_0.analyse_form_scripts import execute as analyse_every_row
 from crm.tests.test_navigation import make_desk_user
 
@@ -124,6 +125,32 @@ class TestFormScriptReport(IntegrationTestCase):
 		refresh_analysis(name)
 
 		self.assertEqual(frappe.db.get_value("CRM Form Script", name, "migration_status"), REWRITE)
+
+	def test_a_disabled_standard_script_stays_ported_by_crm(self):
+		names = frappe.get_all("CRM Form Script", filters={"name": ("in", PORTED_SCRIPTS)}, pluck="name")
+		self.assertTrue(names)
+		for name in names:
+			doc = frappe.get_doc("CRM Form Script", name)
+			self.addCleanup(frappe.db.set_value, "CRM Form Script", name, "enabled", doc.enabled)
+			doc.enabled = 0
+			doc.save()
+
+			self.assertEqual(
+				frappe.db.get_value("CRM Form Script", name, "migration_status"), PORTED_BY_CRM, name
+			)
+
+	def test_a_migrate_keeps_the_standard_scripts_enabled_flag(self):
+		names = frappe.get_all("CRM Form Script", filters={"name": ("in", PORTED_SCRIPTS)}, pluck="name")
+		self.assertTrue(names)
+		for name in names:
+			enabled = frappe.db.get_value("CRM Form Script", name, "enabled")
+			self.addCleanup(frappe.db.set_value, "CRM Form Script", name, "enabled", enabled)
+			frappe.db.set_value("CRM Form Script", name, "enabled", 0)
+
+		add_default_scripts()
+
+		for name in names:
+			self.assertEqual(frappe.db.get_value("CRM Form Script", name, "enabled"), 0, name)
 
 	def test_the_ported_scripts_need_only_a_rewrite_by_analysis(self):
 		for name in frappe.get_all("CRM Form Script", filters={"name": ("in", PORTED_SCRIPTS)}, pluck="name"):
