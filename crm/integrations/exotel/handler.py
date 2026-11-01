@@ -77,10 +77,7 @@ def handle_request(**kwargs):
 
 def publish_call_event(call_payload):
 	if not (user := get_call_event_user(call_payload)):
-		frappe.log_error(
-			title="Exotel call event has no known agent",
-			message=f"CallSid: {call_payload.get('CallSid')}",
-		)
+		log_unrouted_call_event(call_payload.get("CallSid"))
 		return
 
 	frappe.publish_realtime("exotel_call", call_payload, user=user)
@@ -89,15 +86,29 @@ def publish_call_event(call_payload):
 def get_call_event_user(call_payload):
 	"""The `CRM Telephony Agent` user the event is for: the payload's incoming agent, the
 	callback URL's outgoing agent, or the agent already on the call's log."""
-	call_log = get_call_log(call_payload)
+	call_log = frappe.db.get_value(
+		"CRM Call Log", call_payload.get("CallSid"), ["type", "receiver", "caller"], as_dict=True
+	)
 	candidates = [
 		call_payload.get("AgentEmail"),
 		frappe.request.args.get("agent"),
 		call_log and (call_log.receiver if call_log.type == "Incoming" else call_log.caller),
 	]
-	for candidate in filter(None, candidates):
+	for candidate in candidates:
+		if not (candidate and isinstance(candidate, str)):
+			continue
 		if user := frappe.db.get_value("CRM Telephony Agent", {"user": candidate}, "user"):
 			return user
+
+
+def log_unrouted_call_event(call_sid):
+	"""One Error Log row per call, not per status event."""
+	cache_key = f"exotel_unrouted_call:{call_sid}"
+	if frappe.cache.get_value(cache_key):
+		return
+
+	frappe.cache.set_value(cache_key, 1, expires_in_sec=3600)
+	frappe.log_error(title="Exotel call event has no known agent", message=f"CallSid: {call_sid}")
 
 
 # Outgoing Call

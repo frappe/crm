@@ -7,8 +7,8 @@ from unittest.mock import patch
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from crm.api.event import _send_system_notification
-from crm.integrations.exotel.handler import publish_call_event
+from crm.api.event import _apply_global_notifications_to_events, _send_system_notification
+from crm.integrations.exotel.handler import handle_request, publish_call_event
 from crm.tests.test_password_setup import make_user
 
 
@@ -30,7 +30,7 @@ class TestExotelCallEventTarget(IntegrationTestCase):
 		frappe.db.rollback()
 
 	def set_request_args(self, args):
-		frappe.local.request = SimpleNamespace(args=args)
+		frappe.local.request = SimpleNamespace(args=args, headers={})
 
 	def publish(self, payload):
 		with patch("frappe.publish_realtime") as publish_realtime:
@@ -70,7 +70,53 @@ class TestExotelCallEventTarget(IntegrationTestCase):
 
 		publish_realtime.assert_called_once_with("exotel_call", payload, user=self.agent)
 
+	def test_the_webhook_publishes_to_the_agent_even_for_a_free_status(self):
+		payload = {"CallSid": "c-46113-hook", "Status": "free", "AgentEmail": self.agent}
+
+		with (
+			patch("crm.integrations.exotel.handler.validate_request"),
+			patch("crm.integrations.exotel.handler.is_integration_enabled", return_value=1),
+			patch("crm.integrations.exotel.handler.create_request_log"),
+			patch("crm.integrations.exotel.handler.get_exotel_settings"),
+			patch("frappe.db.commit"),
+			patch("frappe.publish_realtime") as publish_realtime,
+		):
+			handle_request(**payload)
+
+		publish_realtime.assert_called_once_with("exotel_call", payload, user=self.agent)
+
+	def test_a_later_event_on_an_outgoing_call_goes_to_the_call_logs_caller(self):
+		call_log = frappe.new_doc("CRM Call Log")
+		call_log.update({"id": "c-46113-ologs", "type": "Outgoing", "caller": self.agent, "to": "+911"})
+		setattr(call_log, "from", "+912")
+		call_log.insert(ignore_permissions=True)
+		payload = {"CallSid": "c-46113-ologs", "Status": "completed"}
+
+		publish_realtime = self.publish(payload)
+
+		publish_realtime.assert_called_once_with("exotel_call", payload, user=self.agent)
+
+	def test_an_agent_that_is_not_a_string_goes_to_nobody(self):
+		payload = {"CallSid": "c-46113-typed", "AgentEmail": ["!=", ""]}
+
+		with patch("frappe.log_error"):
+			publish_realtime = self.publish(payload)
+
+		publish_realtime.assert_not_called()
+
+	def test_an_unrouted_call_is_logged_once_for_all_its_events(self):
+		frappe.cache.delete_value("exotel_unrouted_call:c-46113-once")
+		payload = {"CallSid": "c-46113-once"}
+
+		with patch("frappe.log_error") as log_error:
+			self.publish(payload)
+			self.publish({**payload, "Status": "completed"})
+
+		log_error.assert_called_once()
+		frappe.cache.delete_value("exotel_unrouted_call:c-46113-once")
+
 	def test_a_payload_with_no_agent_goes_to_nobody_and_is_logged(self):
+		frappe.cache.delete_value("exotel_unrouted_call:c-46113-none")
 		payload = {"CallSid": "c-46113-none", "Direction": "incoming", "CallFrom": "+911234567890"}
 
 		with patch("frappe.log_error") as log_error:
@@ -80,6 +126,7 @@ class TestExotelCallEventTarget(IntegrationTestCase):
 		log_error.assert_called_once()
 		self.assertIn("c-46113-none", log_error.call_args.kwargs["message"])
 		self.assertNotIn("911234567890", log_error.call_args.kwargs["message"])
+		frappe.cache.delete_value("exotel_unrouted_call:c-46113-none")
 
 	def test_an_agent_that_is_not_a_telephony_agent_goes_to_nobody(self):
 		stranger = make_user("exotel-stranger-46113@example.com", roles=["Sales User"]).name
@@ -127,3 +174,24 @@ class TestEventReminderTarget(IntegrationTestCase):
 		publish_realtime = self.send(owner=self.owner, event_participants=[])
 
 		self.assertEqual(self.recipients(publish_realtime), {self.owner})
+
+	def test_a_global_reminder_carries_the_owner_and_participants_it_is_sent_to(self):
+		event = frappe._dict(
+			event_name="EV-46113",
+			subject="Demo",
+			starts_on="2026-11-02 10:00:00",
+			ends_on="2026-11-02 11:00:00",
+			owner=self.owner,
+			description="",
+			all_day_event=0,
+			event_participants=[self.participant],
+		)
+		global_notification = frappe._dict(type="Notification", interval="minutes", before=10, time=None)
+		global_notification._table_type = "regular"
+		settings = frappe._dict(event_notifications=[global_notification], all_day_event_notifications=[])
+
+		with patch("frappe.get_single", return_value=settings):
+			(notification,) = _apply_global_notifications_to_events([event], "minutes")
+		publish_realtime = self.send(**notification)
+
+		self.assertEqual(self.recipients(publish_realtime), {self.owner, self.participant})
