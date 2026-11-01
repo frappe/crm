@@ -13,8 +13,8 @@ export const productHandlers = {
 			product_code: productCode,
 			deal: page.doctype === 'CRM Deal' && !page.isNew ? page.docname : undefined,
 		})
-		// A later pick has its own handler, which prices the row for itself.
-		if (!details || row.product_code !== productCode) return
+		// A removed row throws on read; a later pick has its own handler, which prices the row for itself.
+		if (!details || !page.rows('products').includes(row) || row.product_code !== productCode) return
 		row.product_name = details.product_name
 		row.rate = details.rate ?? 0
 		repriceRow(page, row)
@@ -31,7 +31,7 @@ export function updateTotals(doc) {
 	const netTotal = sum(rows, 'net_amount')
 	const discounted = rows.some((row) => row.discount_percentage > 0)
 	doc.total = total
-	doc.net_total = netTotal || discounted ? netTotal : total
+	doc.net_total = (netTotal || discounted) ? netTotal : total
 }
 
 /** Sets a row's `amount`, `discount_amount` and `net_amount` from its quantity, rate and discount. */

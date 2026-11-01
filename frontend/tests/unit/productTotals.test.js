@@ -7,14 +7,16 @@ import {
 } from '../../../crm/fcrm/frontend/products/index.js'
 
 function fakePage(rows, overrides = {}) {
-  return {
+  const page = {
     doctype: 'CRM Deal',
     docname: 'CRM-DEAL-45968',
     isNew: false,
     doc: { products: rows },
+    rows: () => page.doc.products,
     call: vi.fn(() => Promise.resolve({ product_name: 'Widget', rate: 50 })),
     ...overrides,
   }
+  return page
 }
 
 describe('priceRow', () => {
@@ -149,6 +151,30 @@ describe('productHandlers', () => {
     answer({ product_name: 'Widget', rate: 50 })
     await picking
     expect(row.product_name).toBeUndefined()
+    expect(page.doc.total).toBeUndefined()
+  })
+
+  it('leaves a row removed while the read was out', async () => {
+    const removed = {}
+    const row = new Proxy(
+      { product_code: 'WIDGET', qty: 1 },
+      {
+        get(target, prop) {
+          if (removed.now)
+            throw new Error('this row is no longer in the document')
+          return target[prop]
+        },
+      },
+    )
+    let answer
+    const page = fakePage([row], {
+      call: vi.fn(() => new Promise((resolve) => (answer = resolve))),
+    })
+    const picking = productHandlers.product_code(page, row)
+    page.doc.products = []
+    removed.now = true
+    answer({ product_name: 'Widget', rate: 50 })
+    await expect(picking).resolves.toBeUndefined()
     expect(page.doc.total).toBeUndefined()
   })
 })

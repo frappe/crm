@@ -150,4 +150,18 @@ describe('openQuotation', () => {
     expect(open).not.toHaveBeenCalled()
     expect(page.toast.error).toHaveBeenCalledWith(LABELS.quotationFailed)
   })
+
+  it('toasts a refused call instead of throwing, so the host keeps the draft', async () => {
+    const open = vi.fn()
+    vi.stubGlobal('window', { open })
+    const page = fakePage()
+    page.call = vi.fn(() =>
+      Promise.reject(new Error('ERPNext is not reachable')),
+    )
+    await expect(
+      openQuotation(page, LABELS.quotationFailed),
+    ).resolves.toBeUndefined()
+    expect(open).not.toHaveBeenCalled()
+    expect(page.toast.error).toHaveBeenCalledWith('ERPNext is not reachable')
+  })
 })

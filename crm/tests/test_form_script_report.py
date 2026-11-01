@@ -119,6 +119,7 @@ class TestFormScriptReport(IntegrationTestCase):
 		name = "Forecasting Script"
 		if frappe.db.exists("CRM Form Script", name):
 			frappe.db.set_value("CRM Form Script", name, "is_standard", 0)
+			self.addCleanup(frappe.db.set_value, "CRM Form Script", name, "is_standard", 1)
 		else:
 			make_script(name, fixture("class_crm_deal.js"), "CRM Deal")
 

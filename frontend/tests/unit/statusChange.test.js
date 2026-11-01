@@ -77,6 +77,24 @@ describe('changeStatus', () => {
     )
   })
 
+  it('takes back what `beforeSave` wrote for a refused pick, and keeps the reader edits', async () => {
+    const page = fakePage('Qualification', () => {
+      page.doc.probability = 70
+      return Promise.reject(new Error('Expected Closure Date is mandatory'))
+    })
+    Object.assign(page.doc, {
+      probability: 10,
+      deal_owner: 'walk45968@example.com',
+    })
+    page.saved.probability = 10
+    await changeStatus(page, { name: 'Negotiation' })
+    expect(page.doc).toEqual({
+      status: 'Qualification',
+      probability: 10,
+      deal_owner: 'walk45968@example.com',
+    })
+  })
+
   it('keeps the record a conflict reload brought in, and leaves the message to its dialog', async () => {
     const page = fakePage('Qualification', () => {
       page.doc = { status: 'Won' }

@@ -18,7 +18,7 @@ export function forecastProbability(handler, readProbabilities) {
 		const probabilities = readForecasting(page, readProbabilities)
 		const picked = page.doc.status
 		await handler(page)
-		if (probabilities && page.doc.status === picked && picked in probabilities)
+		if (probabilities && page.doc.status === picked && Object.hasOwn(probabilities, picked))
 			page.doc.probability = probabilities[picked]
 	}
 }
@@ -30,6 +30,6 @@ export function forecastOnSave(readProbabilities) {
 		// A draft that already moved `probability` (the `status` handler, or the reader) keeps it.
 		if (page.isNew || status === page.saved.status || probability !== page.saved.probability) return
 		const probabilities = readForecasting(page, readProbabilities)
-		if (probabilities && status in probabilities) page.doc.probability = probabilities[status]
+		if (probabilities && Object.hasOwn(probabilities, status)) page.doc.probability = probabilities[status]
 	}
 }

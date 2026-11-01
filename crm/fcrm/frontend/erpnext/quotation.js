@@ -34,9 +34,15 @@ async function readERPNext(page) {
 	return { customerUrl }
 }
 
-/** Opens a new ERPNext quotation for the deal in a new tab; the host toasts a refused call. */
+/** Opens a new ERPNext quotation for the deal in a new tab, or toasts why it cannot. */
 export async function openQuotation(page, failedMessage) {
-	const url = await page.call(QUOTATION_METHOD, { crm_deal: page.docname, organization: page.doc.organization })
+	let url
+	try {
+		url = await page.call(QUOTATION_METHOD, { crm_deal: page.docname, organization: page.doc.organization })
+	} catch (error) {
+		// A throw out of the act makes the host reload over the reader's unsaved edits.
+		return page.toast.error(error?.message || failedMessage)
+	}
 	if (url) window.open(url, '_blank')
 	else page.toast.error(failedMessage)
 }
