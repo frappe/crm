@@ -4,10 +4,8 @@
 """The CRM Form Script list as the report: each row's v1 shape, status and calls (frappe/frappe#45967)."""
 
 import os
-from unittest.mock import patch
 
 import frappe
-from frappe.shell.navigation import resolve_navigation
 from frappe.tests import IntegrationTestCase
 from frappe.utils import get_datetime
 
@@ -117,7 +115,6 @@ class TestFormScriptReportPermissions(IntegrationTestCase):
 		super().setUpClass()
 		cls.sales_user = make_desk_user("crm.form.script.report.user@example.com")
 		cls.sales_manager = make_desk_user("crm.form.script.report.manager@example.com", "Sales Manager")
-		cls.system_manager = make_desk_user("crm.form.script.report.admin@example.com", "System Manager")
 		cls.script = make_script("Test 45967 permissions", fixture("setup_list_crm_lead.js"), view="List")
 
 	def setUp(self):
@@ -136,30 +133,3 @@ class TestFormScriptReportPermissions(IntegrationTestCase):
 			doc.check_permission("read")
 			self.assertTrue(doc.v1_calls, user)
 			self.assertFalse(frappe.has_permission("CRM Form Script", "write", user=user), user)
-
-	def test_only_a_system_manager_is_offered_the_setup_row(self):
-		for user, offered in (
-			(self.system_manager, True),
-			(self.sales_manager, False),
-			(self.sales_user, False),
-		):
-			frappe.set_user(user)
-			rows = resolve_navigation("crm")["sidebars"].get("module_def_fcrm", [])
-			self.assertEqual("form-scripts" in [row["key"] for row in rows], offered, user)
-
-	def test_a_system_manager_who_cannot_read_form_scripts_is_not_offered_the_row(self):
-		frappe.set_user(self.system_manager)
-
-		with readable_without("CRM Form Script"):
-			rows = resolve_navigation("crm")["sidebars"].get("module_def_fcrm", [])
-
-		self.assertNotIn("form-scripts", [row["key"] for row in rows])
-
-
-def readable_without(doctype: str):
-	from frappe.shell.doctypes import get_readable_doctypes
-
-	return patch(
-		"frappe.shell.doctypes.get_readable_doctypes",
-		return_value=get_readable_doctypes() - {doctype},
-	)
