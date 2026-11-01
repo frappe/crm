@@ -167,21 +167,22 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 				["users", "invite", "sales-hierarchy"],
 			)
 
-	def test_crm_ships_the_erpnext_pane_with_a_product_sync_block(self):
+	def test_crm_ships_the_erpnext_pane_with_verify_connection_and_product_sync_blocks(self):
 		erpnext = self.pane("crm", "erpnext")
 
 		self.assertEqual(
 			[(block["key"], block["save_mode"]) for block in erpnext["blocks"]],
-			[("erpnext", "button"), ("product-sync", "button")],
+			[("erpnext", "button"), ("verify-connection", "button"), ("product-sync", "button")],
 		)
 		self.assertEqual(erpnext["blocks"][0]["binding"]["doctype"], "ERPNext CRM Settings")
 		self.assertNotIn("sync_products", erpnext["blocks"][0]["fields"])
-		self.assertEqual(erpnext["blocks"][1]["component"], "productSync")
+		self.assertEqual(erpnext["blocks"][1]["component"], "verifyConnection")
+		self.assertEqual(erpnext["blocks"][2]["component"], "productSync")
 		self.assertEqual(
-			erpnext["blocks"][1]["bindings"],
+			erpnext["blocks"][2]["bindings"],
 			{"settings": {"type": "Single", "doctype": "ERPNext CRM Settings"}},
 		)
-		self.assertEqual(erpnext["blocks"][1]["fields"], ["sync_products"])
+		self.assertEqual(erpnext["blocks"][2]["fields"], ["sync_products"])
 		self.assertTrue(
 			all(block["roles"] == ["Sales Manager", "System Manager"] for block in erpnext["blocks"])
 		)
@@ -195,7 +196,7 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		with set_user(SALES_MANAGER):
 			self.assertEqual(
 				[block["key"] for block in self.visible_pane("erpnext")["blocks"]],
-				["erpnext", "product-sync"],
+				["erpnext", "verify-connection", "product-sync"],
 			)
 
 	def test_the_whatsapp_pane_shows_only_where_frappe_whatsapp_is_installed(self):

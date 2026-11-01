@@ -94,6 +94,17 @@
   },
   {
    "bindings": "{\"settings\": {\"type\": \"Single\", \"doctype\": \"ERPNext CRM Settings\"}}",
+   "component": "verifyConnection",
+   "fields": "[\"is_erpnext_in_different_site\", \"erpnext_site_url\", \"api_key\", \"api_secret\", \"erpnext_company\"]",
+   "key": "verify-connection",
+   "label": "Verify connection",
+   "pane": "erpnext",
+   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "save_mode": "button",
+   "settings": "[{\"label\": \"Verify connection\", \"keywords\": [\"erpnext\", \"url\", \"api key\", \"company\", \"test\", \"check\"]}]"
+  },
+  {
+   "bindings": "{\"settings\": {\"type\": \"Single\", \"doctype\": \"ERPNext CRM Settings\"}}",
    "component": "productSync",
    "fields": "[\"sync_products\"]",
    "key": "product-sync",
@@ -109,7 +120,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-10-31 21:00:00.000000",
+ "modified": "2026-11-01 12:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
