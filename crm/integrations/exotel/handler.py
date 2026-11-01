@@ -16,7 +16,7 @@ from crm.integrations.api import get_contact_by_phone_number
 
 
 # Incoming Call
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def handle_request(**kwargs):
 	validate_request()
 	if not is_integration_enabled():
