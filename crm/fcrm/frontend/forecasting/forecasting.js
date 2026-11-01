@@ -2,14 +2,13 @@
 export const SINGLE_VALUE_METHOD = 'frappe.client.get_single_value'
 
 const FORECASTING_KEY = 'forecasting'
-const PROBABILITIES_KEY = 'probabilities:CRM Deal Status'
 
-/** Reads FCRM Settings' switch and, when on, each deal status's probability, so the `status` handler holds them. */
+/** Each deal status's probability while FCRM Settings has forecasting on, else `null`; one key, so one replay fetches both reads. */
 export function readForecasting(page, readProbabilities) {
-	const on = page.cached(FORECASTING_KEY, () =>
-		page.call(SINGLE_VALUE_METHOD, { doctype: 'FCRM Settings', field: 'enable_forecasting' }),
-	)
-	if (on) return page.cached(PROBABILITIES_KEY, readProbabilities)
+	return page.cached(FORECASTING_KEY, async () => {
+		const on = await page.call(SINGLE_VALUE_METHOD, { doctype: 'FCRM Settings', field: 'enable_forecasting' })
+		return on ? readProbabilities() : null
+	})
 }
 
 /** Runs `handler`, then sets `probability` from the picked status, unless the handler took the pick back. */
@@ -21,5 +20,16 @@ export function forecastProbability(handler, readProbabilities) {
 		await handler(page)
 		if (probabilities && page.doc.status === picked && picked in probabilities)
 			page.doc.probability = probabilities[picked]
+	}
+}
+
+/** The `beforeSave` handler: a status changed with no `status` handler run, as a header pick saves it, sets `probability` too. */
+export function forecastOnSave(readProbabilities) {
+	return (page) => {
+		const { status, probability } = page.doc
+		// A draft that already moved `probability` (the `status` handler, or the reader) keeps it.
+		if (page.isNew || status === page.saved.status || probability !== page.saved.probability) return
+		const probabilities = readForecasting(page, readProbabilities)
+		if (probabilities && status in probabilities) page.doc.probability = probabilities[status]
 	}
 }

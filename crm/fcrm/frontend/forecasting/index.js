@@ -1,6 +1,6 @@
 // Forecasting on CRM Deal's record page: a status change sets the deal's probability while FCRM Settings has it on.
 import { listDocuments } from '@framework/ui/api'
-import { forecastProbability as forecastAfter, readForecasting } from './forecasting.js'
+import { forecastProbability as forecastAfter, forecastOnSave, readForecasting } from './forecasting.js'
 
 export function addForecasting(page) {
 	readForecasting(page, readProbabilities)
@@ -10,6 +10,9 @@ export function addForecasting(page) {
 export function forecastProbability(handler) {
 	return forecastAfter(handler, readProbabilities)
 }
+
+/** The `beforeSave` handler: a header status pick sets the deal's probability as a form edit does. */
+export const forecastStatusOnSave = forecastOnSave(readProbabilities)
 
 function readProbabilities() {
 	return listDocuments('CRM Deal Status', { fields: ['name', 'probability'], limit: 100 }).then((reply) =>
