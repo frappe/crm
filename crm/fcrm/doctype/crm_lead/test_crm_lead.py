@@ -566,6 +566,17 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertIn("crm.user2@example.com", deal_assignees)
 		self.assertIn("crm.user1@example.com", deal_assignees)
 
+	def test_owner_converting_their_own_lead_stays_assigned_on_the_deal(self):
+		"""The deal owner is the session user, a defaulted owner, but the lead's ToDo carries over"""
+		lead = create_lead(first_name="Own", lead_owner="crm.user2@example.com")
+
+		frappe.set_user("crm.user2@example.com")
+		deal = frappe.get_doc("CRM Deal", lead.convert_to_deal())
+		frappe.set_user("Administrator")
+
+		self.assertEqual(deal.deal_owner, "crm.user2@example.com")
+		self.assertIn("crm.user2@example.com", deal.get_assigned_users())
+
 	def test_owner_cleared_on_unassign(self):
 		"""Unassigning the current owner clears lead_owner"""
 		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")

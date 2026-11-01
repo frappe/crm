@@ -407,7 +407,8 @@ class CRMLead(Document):
 		new_deal.insert(ignore_permissions=True)
 
 		for user in self.get_assigned_users():
-			if user and user != new_deal.deal_owner:
+			# a defaulted owner got no ToDo from after_insert, but the lead's owner has one to carry over
+			if user and (user != new_deal.deal_owner or new_deal.flags.owner_defaulted):
 				new_deal.assign_agent(user)
 
 		return new_deal.name
