@@ -1,6 +1,6 @@
 # Form Scripts on desk v2
 
-A CRM Form Script runs only on CRM v1, at `/crm`. CRM on desk v2, at `/apps/crm`, does not run it. On desk v2, a script for a record page is a `Client Script` row with `view = Record`. This guide turns a CRM Form Script into that row, one v1 call at a time.
+A CRM Form Script runs only on CRM v1, at `/crm`. CRM on desk v2, at `/apps/crm`, does not run it. On desk v2, a script for a record page is a `Client Script` row with **Apply To** set to `Record`. This guide turns a CRM Form Script into that row, one v1 call at a time.
 
 The reference for every `page` verb in this guide is [Writing a Client Script for the record page](https://github.com/frappe/frappe/blob/desk-v2/frontend/SCRIPTING.md) (`SCRIPTING.md`).
 
@@ -9,7 +9,7 @@ The reference for every `page` verb in this guide is [Writing a Client Script fo
 The report is the CRM Form Script list at `/apps/crm/crm-form-script` on your site: `https://<your site>/apps/crm/crm-form-script`. A System Manager can open it. Each row shows these columns:
 
 - **Shape**: `Class-based`, `setupForm`, `setupList` or `Unknown`. The three shapes have a worked rewrite below. `Unknown` means the script matches no v1 shape. CRM v1 cannot run it either.
-- **Doctype**, **View** and **Enabled**: the row's own fields.
+- **Doctype**, **Apply To** and **Enabled**: the row's own fields.
 - **Status**: what to do with the script.
   - **Rewrite**: every call has a desk v2 counterpart.
   - **Rewrite: has calls with no counterpart**: some calls cannot port. Their sections say what to do.
@@ -20,19 +20,19 @@ Open a row to see its **V1 Calls** section. It lists each call with its line, th
 
 ## How a rewrite and its v1 row live side by side
 
-Keep the v1 row until the cutover. CRM v1 at `/crm` keeps running it, and desk v2 never reads it. The rewrite is a new row. CRM v1 does not run a `Client Script` row with `view = Record`, so the two rows do not clash.
+Keep the v1 row until the cutover. CRM v1 at `/crm` keeps running it, and desk v2 never reads it. The rewrite is a new row. CRM v1 does not run a `Client Script` row with **Apply To** `Record`, so the two rows do not clash.
 
 To add the rewrite:
 
-1. Open the `Client Script` list on `/apps/desk`.
+1. On `/apps/crm`, open Setup › **Client Scripts** (`/apps/crm/client-script`).
 2. Make a new row.
 3. Set **DocType** to the v1 row's doctype, for example `CRM Deal`.
-4. Set **View** to `Record`.
+4. Set **Apply To** to `Record`.
 5. Paste the rewrite into **Script**, and turn on **Enabled**.
 6. Save. A bad module or template stops the save and names its line.
 7. Open a record of that doctype on `/apps/crm`, and check that the rewrite does its v1 job.
 
-A `view = Record` script runs on its doctype in every app, `/apps/desk` too. To limit it to CRM, start each handler with `if (page.app !== 'crm') return`.
+A `Record` script runs on its doctype in every app, `/apps/desk` too. To limit it to CRM, start each handler with `if (page.app !== 'crm') return`.
 
 ## What changes in every script
 
@@ -50,9 +50,9 @@ Each rewrite starts from one fixture in `crm/tests/form_scripts/`. The fixture i
 
 ### A class-based script
 
-The v1 row is a `CRM Form Script` on `CRM Deal`, view `Form`, with a `CRMDeal` class and a `CRMProducts` child class: [`class_crm_deal.js`](../crm/tests/form_scripts/class_crm_deal.js).
+The v1 row is a `CRM Form Script` on `CRM Deal`, **Apply To** `Form`, with a `CRMDeal` class and a `CRMProducts` child class: [`class_crm_deal.js`](../crm/tests/form_scripts/class_crm_deal.js).
 
-The rewrite is a `Client Script` on `CRM Deal`, view `Record`:
+The rewrite is a `Client Script` on `CRM Deal`, **Apply To** `Record`:
 
 ```js
 import { h } from 'vue'
@@ -116,6 +116,7 @@ const WonNote = {
 
 export default {
   onRefresh(page) {
+    if (page.app !== 'crm') return
     if (!page.isNew) {
       page.header.add(
         [
@@ -141,32 +142,44 @@ export default {
   },
 
   async beforeSave(page) {
+    if (page.app !== 'crm') return
+    const { status, probability } = page.doc
+    if (!page.isNew && status !== page.saved.status && probability === page.saved.probability) {
+      await updateProbability(page)
+    }
     if (page.fields.get('probability').reqd && !page.doc.probability) {
       throw new Error(__('Set a probability'))
     }
-    if (page.doc.status !== page.saved.status) await updateProbability(page)
   },
 
   afterSave(page) {
+    if (page.app !== 'crm') return
     page.toast.success(__('Deal saved'))
   },
 
-  status: updateProbability,
+  status(page) {
+    if (page.app !== 'crm') return
+    return updateProbability(page)
+  },
 
   probability(page) {
+    if (page.app !== 'crm') return
     if (page.doc.probability > 100) page.toast.error(__('Probability cannot be above 100'))
   },
 
   products: {
     onAdd(page, row) {
+      if (page.app !== 'crm') return
       row.qty = row.qty || 1
       row.trigger('qty')
     },
     onRemove(page) {
+      if (page.app !== 'crm') return
       page.toast.success(__('{0} products left', [page.rows('products').length]))
       updateTotal(page)
     },
     qty(page, row) {
+      if (page.app !== 'crm') return
       row.amount = row.qty * row.rate
       updateTotal(page)
     },
@@ -176,7 +189,10 @@ export default {
 
 What changed, and why:
 
+- Each handler starts with `if (page.app !== 'crm') return`, so the rewrite does not run on `/apps/desk`.
 - `status(page)` runs only when the reader changes the Status field in the form. The status control in CRM's header saves a pick as a script write, and a script write runs no field handler. To react to every status change, `beforeSave` compares the status with `page.saved.status`. A header pick saves, so `beforeSave` updates the probability for it too.
+- `beforeSave` updates the probability only on a saved deal, and only when the draft did not change it. After a form Status edit, the reader can type a probability before the save. v1 keeps that value, and so does the rewrite. CRM's forecasting port uses the same rule.
+- `beforeSave` updates the probability before the `reqd` check, so the check reads the value the save sends.
 - The class methods `updateProbability`, `updateTotal`, `showNextStep` and `editNextStep` are plain functions. `this.doc.trigger('updateProbability')` and `this.showNextStep()` call them with `page`.
 - The actions and the tab moved from `onLoad` to `onRefresh`, because each replay clears the header and the tabs. v1 skips them on a new deal, so they sit under `!page.isNew`. The field changes from `onRender` run on a new deal too.
 - `hideLabel: true` has no desk v2 key. The **More** dropdown shows its label.
@@ -187,9 +203,9 @@ What changed, and why:
 
 ### A legacy `setupForm` script
 
-The v1 row is a `CRM Form Script` on `CRM Lead`, view `Form`, with a `setupForm` function: [`setup_form_crm_lead.js`](../crm/tests/form_scripts/setup_form_crm_lead.js).
+The v1 row is a `CRM Form Script` on `CRM Lead`, **Apply To** `Form`, with a `setupForm` function: [`setup_form_crm_lead.js`](../crm/tests/form_scripts/setup_form_crm_lead.js).
 
-The rewrite is a `Client Script` on `CRM Lead`, view `Record`:
+The rewrite is a `Client Script` on `CRM Lead`, **Apply To** `Record`:
 
 ```js
 import { __ } from 'frappe/i18n'
@@ -216,14 +232,13 @@ function openList(page, doctype) {
 
 export default {
   onRefresh(page) {
-    if (page.isNew) return
+    if (page.app !== 'crm' || page.isNew) return
     page.header.add(
       [
         { name: 'mark_as_contacted', label: __('Mark as contacted'), display: 'button', run: markAsContacted },
         { name: 'more', label: __('More'), display: 'dropdown' },
         { name: 'check_email', label: __('Check email'), group: 'more', run: checkEmail },
         { name: 'all_deals', label: __('All deals'), group: 'more', run: (page) => openList(page, 'crm-deal') },
-        { name: 'delete_lead', label: __('Delete'), group: 'more', run: (page) => page.run('header.delete') },
       ],
       { before: 'save' },
     )
@@ -236,11 +251,12 @@ What changed, and why:
 - The function's arguments are `page` members: `doc` is `page.doc`, `call` is `page.call`, `toast` is `page.toast`, `router` is `page.router`.
 - The returned `actions` are `page.header.add` calls in `onRefresh`.
 - `updateField('status', 'Contacted')` saves one field at once. The rewrite sets the field, then calls `page.save()`. The save also sends the reader's other unsaved edits.
-- The `$dialog` and `deleteDoc()` pair is `page.run('header.delete')`. The built-in delete asks the reader first, then opens the list.
+- `onRefresh` starts with `if (page.app !== 'crm' || page.isNew) return`, so the rewrite does not run on `/apps/desk`.
+- The v1 **Delete** action is gone. `⋯` already holds the built-in **Delete**, which asks the reader first, then opens the list. A copy of the v1 action shows **Delete** twice.
 
 ### A `setupList` script
 
-The v1 row is a `CRM Form Script` on `CRM Lead`, view `List`, with a `setupList` function: [`setup_list_crm_lead.js`](../crm/tests/form_scripts/setup_list_crm_lead.js).
+The v1 row is a `CRM Form Script` on `CRM Lead`, **Apply To** `List`, with a `setupList` function: [`setup_list_crm_lead.js`](../crm/tests/form_scripts/setup_list_crm_lead.js).
 
 **This script cannot port yet.** Desk v2 has no list script. A script cannot add a list action or a bulk action. That gap is G6, the list beyond columns, on map 4 of [CRM on desk v2 — the build maps and their order](https://github.com/frappe/frappe/issues/45839).
 
@@ -429,13 +445,16 @@ export default {
 
 A script's own write to a field does not run that field's handler. If the v1 script relies on that, call the function yourself.
 
-On `CRM Deal` and `CRM Lead`, the status control in the header saves a pick as a script write: it writes `status` and saves the record. A script write runs no field handler, so no `status` handler runs. To act on every status change, also compare the status with the saved one in `beforeSave`. A header pick saves, so `beforeSave` runs for it:
+On `CRM Deal` and `CRM Lead`, the status control in the header saves a pick as a script write: it writes `status` and saves the record. A script write runs no field handler, so no `status` handler runs. To act on every status change, also compare the status with the saved one in `beforeSave`. A header pick saves, so `beforeSave` runs for it. A draft that already changed the probability keeps it, because the `status` handler or the reader set it:
 
 ```js
 export default {
   status: updateProbability,
   async beforeSave(page) {
-    if (page.doc.status !== page.saved.status) await updateProbability(page)
+    const { status, probability } = page.doc
+    if (!page.isNew && status !== page.saved.status && probability === page.saved.probability) {
+      await updateProbability(page)
+    }
   },
 }
 ```
@@ -924,4 +943,4 @@ const Note = {
 <a id="delete-doc"></a>
 ### `deleteDoc()` (legacy `setupForm`)
 
-**Desk v2:** `page.run('header.delete')`. It runs the built-in delete, which asks the reader first, then opens the list.
+**Desk v2:** the built-in **Delete** in `⋯`. It asks the reader first, then opens the list. Drop a v1 action that only confirms and deletes. Another action that must delete calls `page.run('header.delete')`.
