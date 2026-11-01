@@ -34,7 +34,9 @@ class CRMTwilioSettings(Document):
 		if self.account_sid != frappe.db.get_single_value("CRM Twilio Settings", "account_sid"):
 			# Keys belong to the old account. A disabled save skips on_update, so clear them here.
 			self.api_key = self.api_secret = None
-		if self.enabled and self.credentials_or_enabled_changed():
+		# on_update sees auth_token already masked, so it reads this result.
+		self.flags.twilio_credentials_changed = self.credentials_or_enabled_changed()
+		if self.enabled and self.flags.twilio_credentials_changed:
 			self.validate_twilio_account()
 
 	def credentials_or_enabled_changed(self):
@@ -43,8 +45,8 @@ class CRMTwilioSettings(Document):
 	def on_update(self):
 		# Single doctype records are created in DB at time of installation and those field values are set as null.
 		# This condition make sure that we handle null.
-		# A disabling save must not call Twilio: its credentials may be revoked.
-		if not self.enabled or not self.account_sid:
+		# Only enabling or new credentials call Twilio: other saves must work with revoked credentials.
+		if not self.enabled or not self.account_sid or not self.flags.twilio_credentials_changed:
 			return
 
 		twilio = Client(self.account_sid, self.get_password("auth_token"))

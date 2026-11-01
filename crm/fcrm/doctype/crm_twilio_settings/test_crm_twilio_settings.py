@@ -79,6 +79,26 @@ class TestCRMTwilioSettings(IntegrationTestCase):
 
 		self.assertEqual(frappe.db.get_single_value("CRM Twilio Settings", "api_key"), "SK-test")
 
+	def test_an_enabled_save_of_another_field_makes_no_twilio_call_with_revoked_credentials(self):
+		self.save_settings(fake_twilio, enabled=1, account_sid="AC-test", auth_token="token")
+
+		twilio = self.save_settings(revoked_twilio, record_calls=1)
+
+		twilio.assert_not_called()
+		self.assertEqual(frappe.db.get_single_value("CRM Twilio Settings", "record_calls"), 1)
+
+	def test_enabling_and_changing_a_credential_while_enabled_still_call_twilio(self):
+		self.save_settings(fake_twilio, enabled=0, account_sid="AC-test", auth_token="token")
+
+		for values in ({"enabled": 1}, {"account_sid": "AC-other"}, {"auth_token": "tokex"}):
+			with self.subTest(values=values):
+				frappe.db.set_single_value("CRM Twilio Settings", "twilio_apps", None)
+
+				self.save_settings(fake_twilio, **values)
+
+				apps = frappe.db.get_single_value("CRM Twilio Settings", "twilio_apps")
+				self.assertEqual(apps, "Frappe CRM")
+
 	def test_an_unchanged_enabled_save_does_not_check_the_credentials_again(self):
 		self.save_settings(fake_twilio, enabled=1, account_sid="AC-test", auth_token="token")
 		settings = frappe.get_single("CRM Twilio Settings")
