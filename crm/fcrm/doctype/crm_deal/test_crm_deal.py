@@ -120,11 +120,11 @@ class TestCRMDeal(IntegrationTestCase):
 
 	def test_deal_owner_assignment(self):
 		"""Test that deal owner is assigned on creation"""
-		deal = create_test_deal(organization="Owner Test Org", deal_owner="Administrator")
+		deal = create_test_deal(organization="Owner Test Org", deal_owner="crm.user2@example.com")
 
 		# Verify deal owner is assigned
 		assignees = deal.get_assigned_users()
-		self.assertIn("Administrator", assignees)
+		self.assertIn("crm.user2@example.com", assignees)
 
 	def test_update_deal_owner(self):
 		"""Test updating deal owner assigns and shares with new owner"""
