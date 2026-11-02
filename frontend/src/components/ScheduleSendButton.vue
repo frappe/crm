@@ -18,7 +18,7 @@
       {
         label: __('Schedule send'),
         variant: 'solid',
-        disabled: !pickedTime,
+        disabled: !pickedInFuture,
         onClick: schedulePicked,
       },
     ]"
@@ -26,8 +26,14 @@
     <DateTimePicker
       v-model="pickedTime"
       :placeholder="__('Pick date & time')"
+      :isDateUnavailable="(date) => date.isBefore(dayjs(), 'day')"
     />
-    <ErrorMessage class="mt-2" :message="error" />
+    <ErrorMessage
+      class="mt-2"
+      :message="
+        pickedTime && !pickedInFuture ? __('Pick a time in the future') : ''
+      "
+    />
   </Dialog>
 </template>
 
@@ -57,14 +63,16 @@ const systemTimezone: string | null = getConfig('systemTimezone')
 const openedAt = ref(dayjs())
 const showPicker = ref(false)
 const pickedTime = ref('')
-const error = ref('')
 
 watch(showPicker, (open) => {
-  if (open) {
-    pickedTime.value = ''
-    error.value = ''
-  }
+  if (open) pickedTime.value = ''
 })
+
+// The picker shows the user's own clock, so read its value in their timezone
+const pickedAt = computed(() =>
+  pickedTime.value ? dayjs.tz(pickedTime.value, localTimezone) : null,
+)
+const pickedInFuture = computed(() => !!pickedAt.value?.isAfter(dayjs()))
 
 function at(day: Dayjs, hour: number) {
   return day.hour(hour).minute(0).second(0)
@@ -123,13 +131,9 @@ function schedule(time: Dayjs, confirmed = false) {
 }
 
 function schedulePicked() {
-  // The picker shows the user's own clock, so read its value in their timezone
-  const time = dayjs.tz(pickedTime.value, localTimezone)
-  if (!time.isAfter(dayjs())) {
-    error.value = __('Pick a time in the future')
-    return
-  }
+  // Re-checked here: the time can pass while the dialog sits open
+  if (!pickedInFuture.value) return
   showPicker.value = false
-  schedule(time, true)
+  schedule(pickedAt.value as Dayjs, true)
 }
 </script>

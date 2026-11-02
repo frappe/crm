@@ -1,14 +1,11 @@
 import frappe
 from frappe import _
+from frappe.utils import get_datetime, now_datetime
 
 
 @frappe.whitelist()
 def cancel_scheduled_email(name: str):
-	"""Cancel a scheduled email before it goes out and return it as a draft.
-
-	Deletes the queued email and its Communication. The returned attachments are the
-	files still attached to the lead/deal, so the draft can be sent again with them.
-	"""
+	"""Delete a scheduled email before it goes out and return it as a draft to edit."""
 	communication, queues = get_scheduled_email(name)
 
 	file_urls = frappe.get_all(
@@ -50,11 +47,25 @@ def send_scheduled_email_now(name: str):
 	"""Send a scheduled email right away instead of at its scheduled time."""
 	communication, queues = get_scheduled_email(name)
 
-	communication.db_set({"send_after": None, "delivery_status": "Sending"})
+	communication.db_set(
+		{"send_after": None, "delivery_status": "Sending", "communication_date": now_datetime()}
+	)
 	for queue in queues:
 		frappe.db.set_value("Email Queue", queue, "send_after", None)
 		# Same as sending with `now`; if it can't go out here, the queue retries it
 		frappe.get_doc("Email Queue", queue).send()
+
+
+def stamp_send_time(doc, method=None):
+	"""Date a scheduled email by when it went out, not when it was written."""
+	if doc.delivery_status != "Sent" or not doc.send_after:
+		return
+	# Already stamped: the send happens after send_after, so the date has moved past it
+	if get_datetime(doc.communication_date) >= get_datetime(doc.send_after):
+		return
+	frappe.db.set_value(
+		"Communication", doc.name, "communication_date", now_datetime(), update_modified=False
+	)
 
 
 def get_scheduled_email(name: str):
