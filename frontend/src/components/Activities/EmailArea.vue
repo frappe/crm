@@ -257,11 +257,12 @@ function reply(email, reply_all = false) {
       cc = recipients
     }
 
-    editor.cc = cc ? true : false
-    editor.bcc = bcc ? true : false
+    editor.cc = !!cc?.length
+    editor.bcc = !!bcc?.length
 
-    editor.ccEmails = cc
-    editor.bccEmails = bcc
+    // An email without cc/bcc gives undefined here; the composer needs arrays
+    editor.ccEmails = cc || []
+    editor.bccEmails = bcc || []
   }
 
   let repliedMessage = `<blockquote>${message}</blockquote>`
