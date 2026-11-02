@@ -1,11 +1,17 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.exceptions import FrappeTypeError
 
+<<<<<<< HEAD
 from crm.api.onboarding import get_first_deal, get_first_lead
 from crm.tests import CRMTestCase as FrappeTestCase
+=======
+from crm.api.onboarding import get_first_deal, get_first_lead, should_auto_complete_setup
+>>>>>>> 108f02f (test: cover setup auto-complete on Frappe Cloud v1 and v2)
 
 SALES_USER = "onboarding-rep@example.com"
 
@@ -122,3 +128,30 @@ class TestOnboardingAPI(FrappeTestCase):
 
 		frappe.set_user(SALES_USER)
 		self.assertIsNone(get_first_lead())
+
+
+class TestAutoCompleteSetup(IntegrationTestCase):
+	def setUp(self):
+		patches = {
+			"frappe.is_setup_complete": False,
+			"crm.api.onboarding.apps_need_wizard_input": False,
+			"crm.api.onboarding.has_prefilled_settings": True,
+			"frappe.core.doctype.installed_applications.installed_applications.has_non_admin_user": True,
+			"frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site": False,
+		}
+		for target, value in patches.items():
+			patcher = patch(target, return_value=value)
+			patcher.start()
+			self.addCleanup(patcher.stop)
+
+	def test_runs_on_frappe_cloud_v1(self):
+		with patch("frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site", return_value=True):
+			self.assertTrue(should_auto_complete_setup())
+
+	def test_runs_on_frappe_cloud_v2(self):
+		with patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}):
+			self.assertTrue(should_auto_complete_setup())
+
+	def test_skips_self_hosted_sites(self):
+		with patch.dict(frappe.conf, {"pilot_endpoint": None, "pilot_auth_token": None}):
+			self.assertFalse(should_auto_complete_setup())
