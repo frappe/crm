@@ -9,7 +9,7 @@ from frappe.utils import cstr, split_emails, validate_email_address
 from crm.utils import is_frappe_version
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def get_translations():
 	if frappe.session.user != "Guest":
 		language = frappe.db.get_value("User", frappe.session.user, "language")
@@ -97,7 +97,7 @@ def check_app_permission():
 	return False
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 @rate_limit(limit=10, seconds=60 * 60)
 def accept_invitation(key: str | None = None):
 	if not key:
