@@ -691,8 +691,6 @@ onMounted(() => {
   })
 })
 
-<<<<<<< HEAD
-=======
 // A hash change no longer remounts the page, so links that point at an
 // activity on the page already open (like a mention notification) scroll here.
 watch(
@@ -714,7 +712,6 @@ function scrollToHash(hash) {
   }
 }
 
->>>>>>> 9185e46 (feat: open the notes tab from a note link)
 function handleDocinfoUpdate({ doc, key }) {
   // 'comments' covers comment activity; 'communications' covers new/updated
   // emails (e.g. a reply arriving, or a read-receipt coming in) so the
