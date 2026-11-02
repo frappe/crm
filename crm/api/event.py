@@ -301,8 +301,23 @@ def _send_email_notification(notification, event_start, before_value, interval):
 	"""Send email notification for an event"""
 
 	try:
+		recipients = set()
 		subject = f"Event Reminder: {notification.subject}"
-		recipients = _get_notification_recipients(notification)
+
+		if notification.owner and notification.owner != "Administrator":
+			recipients.add(notification.owner)
+
+		participant_emails = notification.get("event_participants") or []
+		if participant_emails:
+			recipients.update(participant_emails)
+		else:
+			event_doc = frappe.get_doc("Event", notification.event_name)
+			for participant in event_doc.get("event_participants", []):
+				email = getattr(participant, "email", None)
+				if email:
+					recipients.add(email)
+
+		recipients = [email for email in recipients if email]
 
 		if not recipients:
 			return
@@ -354,23 +369,6 @@ def _format_time_remaining(before_value, interval):
 
 def _send_system_notification(notification):
 	"""Send system notification for an event"""
-	for user in _get_notification_recipients(notification):
+	recipients = {notification.get("owner"), *notification.get("event_participants", [])}
+	for user in recipients - {None}:
 		frappe.publish_realtime("event_notification", notification, user=user)
-
-
-def _get_notification_recipients(notification):
-	recipients = set()
-	owner = notification.get("owner")
-
-	if owner and owner != "Administrator":
-		recipients.add(owner)
-
-	participant_emails = notification.get("event_participants") or []
-	if participant_emails:
-		recipients.update(participant_emails)
-	else:
-		event_doc = frappe.get_doc("Event", notification.get("event_name"))
-		for participant in event_doc.get("event_participants", []):
-			recipients.add(getattr(participant, "email", None))
-
-	return [email for email in recipients if email]

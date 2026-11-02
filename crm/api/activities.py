@@ -6,6 +6,7 @@ from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
 from frappe.translate import get_translated_doctypes
+from frappe.utils import get_datetime
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
@@ -139,7 +140,11 @@ def get_deal_activities(name: str):
 			"name": communication.name,
 			"communication_type": communication.communication_type,
 			"communication_date": communication.communication_date or communication.creation,
-			"creation": communication.creation,
+			# a scheduled email belongs where it was sent, not where it was written
+			"creation": max(
+				communication.creation,
+				get_datetime(communication.communication_date or communication.creation),
+			),
 			"data": {
 				"subject": communication.subject,
 				"content": communication.content,
@@ -151,6 +156,7 @@ def get_deal_activities(name: str):
 				"attachments": get_attachments("Communication", communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 				"delivery_status": communication.delivery_status,
+				"send_after": get_send_after(communication),
 			},
 			"is_lead": False,
 		}
@@ -286,7 +292,11 @@ def get_lead_activities(name: str):
 			"name": communication.name,
 			"communication_type": communication.communication_type,
 			"communication_date": communication.communication_date or communication.creation,
-			"creation": communication.creation,
+			# a scheduled email belongs where it was sent, not where it was written
+			"creation": max(
+				communication.creation,
+				get_datetime(communication.communication_date or communication.creation),
+			),
 			"data": {
 				"subject": communication.subject,
 				"content": communication.content,
@@ -298,6 +308,7 @@ def get_lead_activities(name: str):
 				"attachments": get_attachments("Communication", communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 				"delivery_status": communication.delivery_status,
+				"send_after": get_send_after(communication),
 			},
 			"is_lead": True,
 		}
@@ -362,6 +373,13 @@ def get_attachments(doctype: str, name: str):
 		)
 		or []
 	)
+
+
+def get_send_after(communication) -> str | None:
+	# docinfo doesn't fetch send_after, and only a still-scheduled email needs it
+	if communication.delivery_status != "Scheduled":
+		return None
+	return frappe.db.get_value("Communication", communication.name, "send_after")
 
 
 def handle_multiple_versions(versions: list):

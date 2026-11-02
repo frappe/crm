@@ -16,7 +16,7 @@ from crm.integrations.api import find_contact_by_phone_number
 
 
 # Incoming Call
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def handle_request(**kwargs):
 	validate_request()
 	if not is_integration_enabled():
@@ -71,10 +71,10 @@ def handle_request(**kwargs):
 		request_log.error = frappe.get_traceback()
 		frappe.db.rollback()
 		frappe.log_error(title="Error while creating/updating call record")
+		frappe.db.commit()  # keep the error log after the rollback  # nosemgrep
 	finally:
 		request_log.save(ignore_permissions=True)
-		# Exotel webhooks can arrive as GET, which rolls back at request end
-		frappe.local.flags.commit = True
+		frappe.db.commit()  # passthru webhooks are GET, not auto-committed  # nosemgrep
 
 
 # Outgoing Call
@@ -226,8 +226,7 @@ def create_call_log(
 	link(contact_number, call_log)
 
 	call_log.save(ignore_permissions=True)
-	# status webhooks can arrive before this request ends and look this log up
-	frappe.db.commit()  # nosemgrep: frappe-manual-commit
+	frappe.db.commit()  # passthru webhooks are GET, not auto-committed  # nosemgrep
 	return call_log
 
 

@@ -271,6 +271,7 @@ doc_events = {
 			"crm.automation.events.on_communication",
 		],
 		"on_update": ["crm.utils.on_communication_update"],
+		"on_change": ["crm.api.email.stamp_send_time"],
 	},
 	"Comment": {
 		"after_insert": ["crm.utils.on_comment_insert"],

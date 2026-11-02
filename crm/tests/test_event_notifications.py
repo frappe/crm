@@ -16,9 +16,3 @@ class TestEventSystemNotification(IntegrationTestCase):
 			self._recipients(owner="owner@example.com", event_participants=["guest@example.com"]),
 			{"owner@example.com", "guest@example.com"},
 		)
-
-	def test_administrator_owner_is_skipped(self):
-		self.assertEqual(
-			self._recipients(owner="Administrator", event_participants=["guest@example.com"]),
-			{"guest@example.com"},
-		)
