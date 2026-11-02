@@ -1,7 +1,7 @@
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.doc import get_data
+from crm.tests import CRMTestCase
 
 
 def lead_names(filters):
@@ -15,7 +15,7 @@ def lead_names(filters):
 	return [row["name"] for row in result["data"]]
 
 
-class TestCommentsFilter(IntegrationTestCase):
+class TestCommentsFilter(CRMTestCase):
 	"""The Comments filter must search the full comment text, not the `_comments`
 	cache that Frappe truncates to ~100 characters."""
 
