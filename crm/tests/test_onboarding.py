@@ -148,8 +148,18 @@ class TestAutoCompleteSetup(IntegrationTestCase):
 		with patch("frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site", return_value=True):
 			self.assertTrue(should_auto_complete_setup())
 
-	def test_runs_on_frappe_cloud_v2(self):
-		with patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}):
+	def test_skips_frappe_cloud_v1_without_region(self):
+		with (
+			patch("frappe.integrations.frappe_providers.frappecloud_billing.is_fc_site", return_value=True),
+			patch("crm.api.onboarding.has_prefilled_settings", return_value=False),
+		):
+			self.assertFalse(should_auto_complete_setup())
+
+	def test_runs_on_frappe_cloud_v2_without_region(self):
+		with (
+			patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}),
+			patch("crm.api.onboarding.has_prefilled_settings", return_value=False),
+		):
 			self.assertTrue(should_auto_complete_setup())
 
 	def test_skips_self_hosted_sites(self):
