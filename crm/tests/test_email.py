@@ -1,9 +1,9 @@
 import frappe
 from frappe.core.doctype.communication.email import make
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import add_days, now_datetime
+from frappe.utils import add_days, get_datetime, now_datetime
 
-from crm.api.email import cancel_scheduled_email, send_scheduled_email_now
+from crm.api.email import cancel_scheduled_email, send_scheduled_email_now, stamp_send_time
 
 
 class TestCancelScheduledEmail(FrappeTestCase):
@@ -85,6 +85,29 @@ class TestCancelScheduledEmail(FrappeTestCase):
 		self.assertIsNone(frappe.db.get_value("Communication", name, "send_after"))
 		self.assertNotEqual(frappe.db.get_value("Communication", name, "delivery_status"), "Scheduled")
 		self.assertIsNone(frappe.db.get_value("Email Queue", {"communication": name}, "send_after"))
+
+	def test_send_now_dates_email_by_send_time(self):
+		name = self.schedule()
+		frappe.db.set_value("Communication", name, "communication_date", "2026-01-01 10:00:00")
+
+		send_scheduled_email_now(name)
+
+		self.assertGreater(
+			frappe.db.get_value("Communication", name, "communication_date"),
+			get_datetime("2026-01-01 10:00:00"),
+		)
+
+	def test_scheduled_email_dated_when_sent(self):
+		name = self.schedule()
+		written = frappe.db.get_value("Communication", name, "communication_date")
+		doc = frappe.get_doc("Communication", name)
+		doc.delivery_status = "Sent"
+		doc.send_after = add_days(written, -1)
+		doc.communication_date = add_days(written, -2)
+
+		stamp_send_time(doc)
+
+		self.assertGreaterEqual(frappe.db.get_value("Communication", name, "communication_date"), written)
 
 	def test_send_now_refuses_once_sending(self):
 		name = self.schedule()

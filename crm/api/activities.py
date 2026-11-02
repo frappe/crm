@@ -6,6 +6,7 @@ from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
 from frappe.translate import get_translated_doctypes
+from frappe.utils import get_datetime
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 
@@ -140,7 +141,11 @@ def get_deal_activities(name: str):
 			"name": communication.name,
 			"communication_type": communication.communication_type,
 			"communication_date": communication.communication_date or communication.creation,
-			"creation": communication.creation,
+			# a scheduled email belongs where it was sent, not where it was written
+			"creation": max(
+				communication.creation,
+				get_datetime(communication.communication_date or communication.creation),
+			),
 			"data": {
 				"subject": communication.subject,
 				"content": communication.content,
@@ -291,7 +296,11 @@ def get_lead_activities(name: str):
 			"name": communication.name,
 			"communication_type": communication.communication_type,
 			"communication_date": communication.communication_date or communication.creation,
-			"creation": communication.creation,
+			# a scheduled email belongs where it was sent, not where it was written
+			"creation": max(
+				communication.creation,
+				get_datetime(communication.communication_date or communication.creation),
+			),
 			"data": {
 				"subject": communication.subject,
 				"content": communication.content,
