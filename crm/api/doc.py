@@ -895,6 +895,10 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 		frappe.throw(_("Items must be a list"))
 
 	for doc in items:
+		if frappe.db.exists(doctype, doc):
+			frappe.get_doc(doctype, doc).check_permission("delete")
+
+	for doc in items:
 		try:
 			if not frappe.db.exists(doctype, doc):
 				frappe.log_error(f"Document {doctype} {doc} does not exist", "Bulk Delete Error")
