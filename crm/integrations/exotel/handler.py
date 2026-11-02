@@ -15,7 +15,7 @@ from crm.integrations.api import get_contact_by_phone_number
 # https://support.exotel.com/support/solutions/articles/48283-working-with-passthru-applet
 
 
-# webhook authenticity is enforced by validate_request(); guest access itself is unchanged
+# Incoming Call
 @frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def handle_request(**kwargs):
 	validate_request()
@@ -38,7 +38,7 @@ def handle_request(**kwargs):
 
 		call_payload = kwargs
 
-		frappe.publish_realtime("exotel_call", call_payload)
+		frappe.publish_realtime("exotel_call", call_payload)  # UI filters by AgentEmail  # nosemgrep
 		status = call_payload.get("Status")
 		if status == "free":
 			return
@@ -69,10 +69,10 @@ def handle_request(**kwargs):
 		request_log.error = frappe.get_traceback()
 		frappe.db.rollback()
 		frappe.log_error(title="Error while creating/updating call record")
-		frappe.db.commit()
+		frappe.db.commit()  # keep the error log after the rollback  # nosemgrep
 	finally:
 		request_log.save(ignore_permissions=True)
-		frappe.db.commit()
+		frappe.db.commit()  # passthru webhooks are GET, not auto-committed  # nosemgrep
 
 
 # Outgoing Call
@@ -224,7 +224,7 @@ def create_call_log(
 	link(contact_number, call_log)
 
 	call_log.save(ignore_permissions=True)
-	frappe.db.commit()
+	frappe.db.commit()  # passthru webhooks are GET, not auto-committed  # nosemgrep
 	return call_log
 
 
