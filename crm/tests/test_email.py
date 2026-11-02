@@ -77,6 +77,29 @@ class TestCancelScheduledEmail(FrappeTestCase):
 			cancel_scheduled_email(name)
 		self.assertTrue(frappe.db.exists("Communication", name))
 
+	def test_owner_without_email_queue_access_can_cancel(self):
+		name = self.schedule()
+		queue = frappe.db.get_value("Email Queue", {"communication": name})
+		self.assertTrue(frappe.db.exists("Email Queue Recipient", {"parent": queue}))
+		user = frappe.get_doc(
+			{
+				"doctype": "User",
+				"email": "scheduled-send-owner@example.com",
+				"first_name": "Owner",
+				"send_welcome_email": 0,
+				"roles": [{"role": "Sales User"}],
+			}
+		).insert(ignore_permissions=True)
+		frappe.db.set_value("Communication", name, "owner", user.name)
+
+		frappe.set_user(user.name)
+		draft = cancel_scheduled_email(name)
+
+		self.assertEqual(draft["subject"], "Following up")
+		self.assertFalse(frappe.db.exists("Communication", name))
+		self.assertFalse(frappe.db.exists("Email Queue", queue))
+		self.assertFalse(frappe.db.exists("Email Queue Recipient", {"parent": queue}))
+
 	def test_send_now_clears_schedule(self):
 		name = self.schedule()
 
