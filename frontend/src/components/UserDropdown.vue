@@ -55,6 +55,8 @@ import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
+import { useCloudSettings } from '@/composables/cloudSettings'
+import CreditCardIcon from '~icons/lucide/credit-card'
 import { spriteIcon } from '@/utils/spriteIcon'
 import { createResource, Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
@@ -65,6 +67,7 @@ defineProps({
 
 const { settings, brand } = getSettings()
 const { logout } = sessionStore()
+const { available: canManageBilling, open: openBilling } = useCloudSettings()
 const { getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
@@ -143,6 +146,14 @@ function getStandardItem(item) {
         condition: () => !isMobileView.value,
       }
     case 'login_to_fc':
+      if (canManageBilling) {
+        return {
+          icon: markRaw(CreditCardIcon),
+          label: __('Manage Billing'),
+          onClick: () => openBilling(),
+          condition: () => !isMobileView.value,
+        }
+      }
       return {
         icon: h(FrappeCloudIcon),
         label: __(item.label),

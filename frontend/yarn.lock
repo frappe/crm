@@ -1338,6 +1338,11 @@
   version "0.0.0"
   uid ""
 
+"@frappe/cloud-sdk@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@frappe/cloud-sdk/-/cloud-sdk-0.5.0.tgz#f23bbac9c0b45bf4c5f8971bdd2b33a74411ea49"
+  integrity sha512-EW2ztjGQ3Bjyp5F3/HpFAmvdp/yxaX6+5AZpsgP3VDXdCJmpi3VGNhNYR6d/nfhTY+4N4KOHAgY5SJwriqPQhg==
+
 "@headlessui/vue@^1.7.23":
   version "1.7.23"
   resolved "https://registry.yarnpkg.com/@headlessui/vue/-/vue-1.7.23.tgz#7fe19dbeca35de9e6270c82c78c4864e6a6f7391"
