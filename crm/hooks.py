@@ -102,7 +102,10 @@ website_route_rules = [
 # ------------
 
 before_install = "crm.install.before_install"
-after_install = "crm.install.after_install"
+after_install = [
+	"crm.install.after_install",
+	"frappe.search.sqlite_search.build_index_in_background",
+]
 
 # Uninstallation
 # ------------
@@ -431,6 +434,8 @@ after_migrate = [
 	"crm.install.add_web_form_custom_fields",
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 ]
+
+sqlite_search = ["crm.search_sqlite.CRMSearch"]
 
 standard_dropdown_items = [
 	{
