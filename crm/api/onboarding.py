@@ -22,7 +22,15 @@ def should_auto_complete_setup():
 		return False
 	if apps_need_wizard_input():
 		return False
-	return has_prefilled_settings() and has_non_admin_user() and is_fc_site()
+	return has_prefilled_settings() and has_non_admin_user() and (is_fc_site() or is_v2_site())
+
+
+def is_v2_site():
+	try:
+		from frappe.integrations.frappe_providers.cloud_settings import is_v2_site
+	except ImportError:
+		return False
+	return is_v2_site()
 
 
 def apps_need_wizard_input():
