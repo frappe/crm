@@ -119,7 +119,8 @@ def create_call_log(call_details: TwilioCallDetails):
 	link(contact_number, call_log)
 
 	call_log.save(ignore_permissions=True)
-	frappe.db.commit()
+	# status webhooks can arrive before this request ends and look this log up
+	frappe.db.commit()  # nosemgrep: frappe-manual-commit
 	return call_log
 
 

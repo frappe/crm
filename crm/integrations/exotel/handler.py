@@ -38,7 +38,9 @@ def handle_request(**kwargs):
 
 		call_payload = kwargs
 
-		frappe.publish_realtime("exotel_call", call_payload)
+		if call_agent := get_call_agent(call_payload):
+			frappe.publish_realtime("exotel_call", call_payload, user=call_agent)
+
 		status = call_payload.get("Status")
 		if status == "free":
 			return
@@ -69,10 +71,10 @@ def handle_request(**kwargs):
 		request_log.error = frappe.get_traceback()
 		frappe.db.rollback()
 		frappe.log_error(title="Error while creating/updating call record")
-		frappe.db.commit()
 	finally:
 		request_log.save(ignore_permissions=True)
-		frappe.db.commit()
+		# Exotel webhooks can arrive as GET, which rolls back at request end
+		frappe.local.flags.commit = True
 
 
 # Outgoing Call
@@ -224,7 +226,8 @@ def create_call_log(
 	link(contact_number, call_log)
 
 	call_log.save(ignore_permissions=True)
-	frappe.db.commit()
+	# status webhooks can arrive before this request ends and look this log up
+	frappe.db.commit()  # nosemgrep: frappe-manual-commit
 	return call_log
 
 
@@ -246,6 +249,14 @@ def get_call_log(call_payload):
 	call_log_id = call_payload.get("CallSid")
 	if frappe.db.exists("CRM Call Log", call_log_id):
 		return frappe.get_doc("CRM Call Log", call_log_id)
+
+
+def get_call_agent(call_payload):
+	if agent := call_payload.get("AgentEmail") or frappe.request.args.get("agent"):
+		return agent
+
+	if call_log := get_call_log(call_payload):
+		return call_log.receiver if call_log.type == "Incoming" else call_log.caller
 
 
 # Exotel reports call status in lowercase, hyphenated form. Map it onto the

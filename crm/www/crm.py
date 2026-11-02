@@ -19,7 +19,6 @@ def get_context():
 
 	redirect_to_set_password()
 
-	frappe.db.commit()
 	context = frappe._dict()
 	context.boot = get_boot()
 	if frappe.session.user != "Guest":
