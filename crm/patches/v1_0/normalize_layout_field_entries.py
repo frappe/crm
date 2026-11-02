@@ -34,7 +34,7 @@ def normalize_field_entries(layout):
 def _iter_columns(layout):
 	for item in layout:
 		for section in item.get("sections") or [item]:
-			yield from filter(None, section.get("columns") or [])
+			yield from (column for column in section.get("columns") or [] if column)
 
 
 def _get_fieldname(field):
