@@ -152,6 +152,7 @@ def get_deal_activities(name: str):
 				"attachments": get_attachments("Communication", communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 				"delivery_status": communication.delivery_status,
+				"send_after": get_send_after(communication),
 			},
 			"is_lead": False,
 		}
@@ -302,6 +303,7 @@ def get_lead_activities(name: str):
 				"attachments": get_attachments("Communication", communication.name),
 				"read_by_recipient": communication.read_by_recipient,
 				"delivery_status": communication.delivery_status,
+				"send_after": get_send_after(communication),
 			},
 			"is_lead": True,
 		}
@@ -350,6 +352,13 @@ def get_attachments(doctype: str, name: str):
 		)
 		or []
 	)
+
+
+def get_send_after(communication) -> str | None:
+	# docinfo doesn't fetch send_after, and only a still-scheduled email needs it
+	if communication.delivery_status != "Scheduled":
+		return None
+	return frappe.db.get_value("Communication", communication.name, "send_after")
 
 
 def handle_multiple_versions(versions: list):

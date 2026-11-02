@@ -1,0 +1,94 @@
+import frappe
+from frappe.core.doctype.communication.email import make
+from frappe.tests.utils import FrappeTestCase
+from frappe.utils import add_days, now_datetime
+
+from crm.api.email import cancel_scheduled_email, send_scheduled_email_now
+
+
+class TestCancelScheduledEmail(FrappeTestCase):
+	def setUp(self):
+		if not frappe.db.exists("Email Account", {"default_outgoing": 1}):
+			frappe.get_doc(
+				{
+					"doctype": "Email Account",
+					"email_account_name": "_Test Scheduled Send",
+					"email_id": "scheduled-send@example.com",
+					"enable_outgoing": 1,
+					"default_outgoing": 1,
+					"no_smtp_authentication": 1,
+					"smtp_server": "localhost",
+				}
+			).insert(ignore_permissions=True)
+		self.lead = frappe.get_doc(
+			{"doctype": "CRM Lead", "first_name": "Scheduled", "email": "scheduled@example.com"}
+		).insert(ignore_permissions=True)
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback()
+
+	def schedule(self):
+		return make(
+			doctype="CRM Lead",
+			name=self.lead.name,
+			subject="Following up",
+			content="<p>Hi, following up on our call.</p>",
+			recipients="scheduled@example.com",
+			cc="cc@example.com",
+			send_email=1,
+			send_after=add_days(now_datetime(), 1),
+		)["name"]
+
+	def test_cancel_deletes_queue_and_returns_draft(self):
+		name = self.schedule()
+		self.assertEqual(frappe.db.get_value("Communication", name, "delivery_status"), "Scheduled")
+		self.assertTrue(frappe.db.exists("Email Queue", {"communication": name}))
+
+		draft = cancel_scheduled_email(name)
+
+		self.assertFalse(frappe.db.exists("Communication", name))
+		self.assertFalse(frappe.db.exists("Email Queue", {"communication": name}))
+		self.assertEqual(draft["subject"], "Following up")
+		self.assertEqual(draft["recipients"], "scheduled@example.com")
+		self.assertEqual(draft["cc"], "cc@example.com")
+		self.assertIn("following up on our call", draft["content"])
+
+	def test_cancel_refuses_once_sending(self):
+		name = self.schedule()
+		frappe.db.set_value("Email Queue", {"communication": name}, "status", "Sending")
+
+		with self.assertRaises(frappe.ValidationError):
+			cancel_scheduled_email(name)
+		self.assertTrue(frappe.db.exists("Communication", name))
+
+	def test_cancel_refuses_unscheduled_email(self):
+		name = self.schedule()
+		frappe.db.set_value("Communication", name, "delivery_status", "Sent")
+
+		with self.assertRaises(frappe.ValidationError):
+			cancel_scheduled_email(name)
+
+	def test_only_owner_can_cancel(self):
+		name = self.schedule()
+		frappe.db.set_value("Communication", name, "owner", "someone-else@example.com")
+
+		with self.assertRaises(frappe.PermissionError):
+			cancel_scheduled_email(name)
+		self.assertTrue(frappe.db.exists("Communication", name))
+
+	def test_send_now_clears_schedule(self):
+		name = self.schedule()
+
+		send_scheduled_email_now(name)
+
+		self.assertIsNone(frappe.db.get_value("Communication", name, "send_after"))
+		self.assertNotEqual(frappe.db.get_value("Communication", name, "delivery_status"), "Scheduled")
+		self.assertIsNone(frappe.db.get_value("Email Queue", {"communication": name}, "send_after"))
+
+	def test_send_now_refuses_once_sending(self):
+		name = self.schedule()
+		frappe.db.set_value("Email Queue", {"communication": name}, "status", "Sending")
+
+		with self.assertRaises(frappe.ValidationError):
+			send_scheduled_email_now(name)
