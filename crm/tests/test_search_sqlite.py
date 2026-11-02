@@ -2,10 +2,9 @@ import sqlite3
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.search_sqlite import CRMSearch
-from crm.tests import load_crm_user_test_records
+from crm.tests import CRMTestCase, load_crm_user_test_records
 
 SALES_USER = "crm.user1@example.com"
 OTHER_SALES_USER = "crm.user2@example.com"
@@ -16,7 +15,7 @@ class CRMSearchForTest(CRMSearch):
 	INDEX_NAME = "test_crm_search.db"
 
 
-class TestCRMSearch(IntegrationTestCase):
+class TestCRMSearch(CRMTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
@@ -138,7 +137,7 @@ class TestCRMSearch(IntegrationTestCase):
 		locked = sqlite3.OperationalError("database is locked")
 		with (
 			patch("frappe.search.sqlite_search.get_search_classes", return_value=[CRMSearchForTest]),
-			patch.object(CRMSearchForTest, "add_to_queue", side_effect=locked),
+			patch.object(CRMSearchForTest, "add_to_queue", side_effect=locked, create=True),
 			patch.object(CRMSearchForTest, "sql", side_effect=locked),
 		):
 			name = add_comment("CRM Lead", self.own_lead, "lockedmarker")

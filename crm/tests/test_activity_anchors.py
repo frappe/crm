@@ -2,14 +2,13 @@
 # See license.txt
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.activities import get_activities
-from crm.tests import load_crm_user_test_records
+from crm.tests import CRMTestCase, load_crm_user_test_records
 from crm.tests.test_search_sqlite import SALES_USER, add_comment, add_email, add_note, make_deal, make_lead
 
 
-class TestActivityAnchors(IntegrationTestCase):
+class TestActivityAnchors(CRMTestCase):
 	"""Search hits link to `#<name>`, so timeline rows must carry their source document's name."""
 
 	@classmethod

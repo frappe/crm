@@ -2,10 +2,9 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.command_palette import ACTIVITY_LIMIT, _get_recent, _search_all, search
-from crm.tests import load_crm_user_test_records
+from crm.tests import CRMTestCase, load_crm_user_test_records
 from crm.tests.test_search_sqlite import (
 	OTHER_SALES_USER,
 	SALES_USER,
@@ -65,7 +64,7 @@ class TestCommandPalette(TestCase):
 		get_recent.assert_called_once_with({})
 
 
-class TestCommandPaletteActivity(IntegrationTestCase):
+class TestCommandPaletteActivity(CRMTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
