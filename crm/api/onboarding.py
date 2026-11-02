@@ -22,7 +22,10 @@ def should_auto_complete_setup():
 		return False
 	if apps_need_wizard_input():
 		return False
-	return has_prefilled_settings() and has_non_admin_user() and (is_fc_site() or is_v2_site())
+	if is_fc_site():
+		return has_prefilled_settings() and has_non_admin_user()
+	# Frappe Cloud v2 sends no region, and the wizard completes without one
+	return is_v2_site() and has_non_admin_user()
 
 
 def is_v2_site():
