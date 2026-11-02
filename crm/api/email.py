@@ -28,7 +28,7 @@ def cancel_scheduled_email(name: str):
 	)
 
 	for queue in queues:
-		frappe.delete_doc("Email Queue", queue, ignore_permissions=True)
+		frappe.delete_doc("Email Queue", queue, ignore_permissions=True, ignore_on_trash=True)
 	communication.delete(ignore_permissions=True)
 
 	return {
