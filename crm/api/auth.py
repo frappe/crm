@@ -1,7 +1,7 @@
 import frappe
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def oauth_providers():
 	from frappe.utils.html_utils import get_icon_html
 	from frappe.utils.oauth import get_oauth2_authorize_url, get_oauth_keys

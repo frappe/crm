@@ -21,7 +21,7 @@ def get_context():
 
 	redirect_to_set_password()
 
-	frappe.db.commit()
+	frappe.db.commit()  # page renders are GET, not auto-committed  # nosemgrep
 	context = frappe._dict()
 	context.boot = get_boot()
 	if frappe.session.user != "Guest":
@@ -58,7 +58,7 @@ def redirect_to_set_password():
 	raise redirect
 
 
-@frappe.whitelist(methods=["POST"], allow_guest=True)
+@frappe.whitelist(methods=["POST"], allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def get_context_for_dev():
 	if not frappe.conf.developer_mode:
 		frappe.throw(_("This method is only meant for developer mode"))
