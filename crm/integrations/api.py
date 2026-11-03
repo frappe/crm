@@ -65,7 +65,9 @@ def get_calling_media():
 		("Exotel", "CRM Exotel Settings", agent.get("exotel_number")),
 	)
 	media = [
-		medium for medium, settings, number in providers if number and frappe.db.get_single_value(settings, "enabled")
+		medium
+		for medium, settings, number in providers
+		if number and frappe.db.get_single_value(settings, "enabled")
 	]
 	default = agent.get("default_medium")
 	return {"media": media, "default_medium": default if default in media else None}

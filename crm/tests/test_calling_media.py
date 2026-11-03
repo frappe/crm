@@ -18,7 +18,9 @@ class TestCallingMedia(IntegrationTestCase):
 		frappe.db.rollback()
 
 	def make_agent(self, **values):
-		frappe.get_doc(doctype="CRM Telephony Agent", user=self.user, **values).insert(ignore_permissions=True)
+		frappe.get_doc(doctype="CRM Telephony Agent", user=self.user, **values).insert(
+			ignore_permissions=True
+		)
 
 	def enable(self, twilio=0, exotel=0):
 		frappe.db.set_single_value("CRM Twilio Settings", "enabled", twilio)
@@ -52,7 +54,12 @@ class TestCallingMedia(IntegrationTestCase):
 
 	def test_a_call_log_links_to_a_task_whose_name_is_a_number(self):
 		call_log = frappe.get_doc(
-			doctype="CRM Call Log", id="t46116-sid", type="Incoming", status="In Progress", to="+1", **{"from": "+2"}
+			doctype="CRM Call Log",
+			id="t46116-sid",
+			type="Incoming",
+			status="In Progress",
+			to="+1",
+			**{"from": "+2"},
 		).insert(ignore_permissions=True)
 		task = frappe.get_doc(doctype="CRM Task", title="Follow up").insert(ignore_permissions=True)
 
