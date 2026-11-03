@@ -6,7 +6,11 @@ import { MockDevice } from '../../../crm/fcrm/frontend/telephony/mockTwilioDevic
 vi.mock('../../../crm/fcrm/frontend/telephony/callApi.js', () => ({
   callApi: {
     token: vi.fn().mockResolvedValue({ token: 't', mock: true }),
-    contact: vi.fn().mockResolvedValue({ full_name: 'Alice Johnson', lead: 'CRM-LEAD-1', name: 'C-1' }),
+    contact: vi.fn().mockResolvedValue({
+      full_name: 'Alice Johnson',
+      lead: 'CRM-LEAD-1',
+      name: 'C-1',
+    }),
     link: vi.fn().mockResolvedValue(null),
   },
 }))
@@ -14,19 +18,34 @@ vi.mock('../../../crm/fcrm/frontend/telephony/callApi.js', () => ({
 vi.mock('frappe-ui', async () => {
   const { h } = await import('vue')
   return {
-    Avatar: { props: ['label'], render() { return h('div', this.label) } },
+    Avatar: {
+      props: ['label'],
+      render() {
+        return h('div', this.label)
+      },
+    },
     Button: {
       props: ['label'],
       emits: ['click'],
-      render() { return h('button', { 'aria-label': this.label, onClick: () => this.$emit('click') }) },
+      render() {
+        return h('button', {
+          'aria-label': this.label,
+          onClick: () => this.$emit('click'),
+        })
+      },
     },
-    Tooltip: { render() { return h('span', this.$slots.default()) } },
+    Tooltip: {
+      render() {
+        return h('span', this.$slots.default())
+      },
+    },
   }
 })
 vi.mock('@twilio/voice-sdk', () => ({ Device: class {} }))
 
 const settle = async () => {
-  for (let i = 0; i < 5; i++) await new Promise((resolve) => setTimeout(resolve, 0))
+  for (let i = 0; i < 5; i++)
+    await new Promise((resolve) => setTimeout(resolve, 0))
 }
 let root
 let handle
@@ -41,19 +60,41 @@ beforeEach(async () => {
     closable: true,
     keepAlive: false,
     attention: false,
-    open() { this.state = 'open' },
-    minimise() { this.state = 'minimised' },
-    close() { this.state = 'closed' },
-    setTitle(t) { this.title = t },
-    setActions(a) { this.actions = a },
-    setClosable(c) { this.closable = c },
-    setKeepAlive(on) { this.keepAlive = on },
-    setAttention(on) { this.attention = on },
+    open() {
+      this.state = 'open'
+    },
+    minimise() {
+      this.state = 'minimised'
+    },
+    close() {
+      this.state = 'closed'
+    },
+    setTitle(t) {
+      this.title = t
+    },
+    setActions(a) {
+      this.actions = a
+    },
+    setClosable(c) {
+      this.closable = c
+    },
+    setKeepAlive(on) {
+      this.keepAlive = on
+    },
+    setAttention(on) {
+      this.attention = on
+    },
   })
-  shell = { create: vi.fn(), toast: { error: vi.fn() }, router: { push: vi.fn() } }
+  shell = {
+    create: vi.fn(),
+    toast: { error: vi.fn() },
+    router: { push: vi.fn() },
+  }
   root = document.createElement('div')
   document.body.append(root)
-  createApp({ render: () => h(CallWindow, { shell, window: handle }) }).mount(root)
+  createApp({ render: () => h(CallWindow, { shell, window: handle }) }).mount(
+    root,
+  )
   await settle()
 })
 afterEach(() => {
@@ -63,10 +104,16 @@ afterEach(() => {
 })
 
 const ring = async () => {
-  window.__crmTelephonyMock.twilio.ring({ from: '+15550100101', callSid: 'CA1' })
+  window.__crmTelephonyMock.twilio.ring({
+    from: '+15550100101',
+    callSid: 'CA1',
+  })
   await settle()
 }
-const buttons = () => [...root.querySelectorAll('button')].map((b) => b.getAttribute('aria-label') || b.textContent.trim())
+const buttons = () =>
+  [...root.querySelectorAll('button')].map(
+    (b) => b.getAttribute('aria-label') || b.textContent.trim(),
+  )
 const press = async (label) => {
   root.querySelector(`button[aria-label="${label}"]`).click()
   await settle()
@@ -138,14 +185,19 @@ describe('the call window', () => {
   })
 
   it('Note opens Quick Entry with the lead and links the saved note to the call log', async () => {
-    const { callApi } = await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     shell.create.mockResolvedValue({ name: 'N-1' })
     await ring()
     await press('Accept')
     await press('Note')
 
     expect(shell.create).toHaveBeenCalledWith('FCRM Note', {
-      values: { reference_doctype: 'CRM Lead', reference_docname: 'CRM-LEAD-1' },
+      values: {
+        reference_doctype: 'CRM Lead',
+        reference_docname: 'CRM-LEAD-1',
+      },
     })
     expect(callApi.link).toHaveBeenCalledWith('CA1', 'FCRM Note', 'N-1')
   })

@@ -1,10 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MockCall, MockDevice } from '../../../crm/fcrm/frontend/telephony/mockTwilioDevice.js'
-import { createTwilioCall, formatClock } from '../../../crm/fcrm/frontend/telephony/twilioCall.js'
+import {
+  MockCall,
+  MockDevice,
+} from '../../../crm/fcrm/frontend/telephony/mockTwilioDevice.js'
+import {
+  createTwilioCall,
+  formatClock,
+} from '../../../crm/fcrm/frontend/telephony/twilioCall.js'
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-function setup(contact = { full_name: 'Alice Johnson', lead: 'CRM-LEAD-1', name: 'C-1' }) {
+function setup(
+  contact = { full_name: 'Alice Johnson', lead: 'CRM-LEAD-1', name: 'C-1' },
+) {
   const api = {
     token: vi.fn().mockResolvedValue({ token: 't', mock: true }),
     contact: vi.fn().mockResolvedValue(contact),
@@ -14,7 +22,9 @@ function setup(contact = { full_name: 'Alice Johnson', lead: 'CRM-LEAD-1', name:
   return { api, call }
 }
 
-beforeEach(() => vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] }))
+beforeEach(() =>
+  vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] }),
+)
 afterEach(() => {
   vi.useRealTimers()
   delete window.__crmTelephonyMock
@@ -28,8 +38,13 @@ describe('an incoming call', () => {
     window.__crmTelephonyMock.twilio.ring({ from: '+15550100101' })
     expect(call.state.step).toBe('incoming')
     expect(call.isLive()).toBe(true)
-    await vi.waitFor(() => expect(call.state.contact.name).toBe('Alice Johnson'))
-    expect(call.state.contact.record).toEqual({ doctype: 'CRM Lead', name: 'CRM-LEAD-1' })
+    await vi.waitFor(() =>
+      expect(call.state.contact.name).toBe('Alice Johnson'),
+    )
+    expect(call.state.contact.record).toEqual({
+      doctype: 'CRM Lead',
+      name: 'CRM-LEAD-1',
+    })
 
     call.accept()
     expect(call.state.step).toBe('oncall')
@@ -125,7 +140,9 @@ describe('during a call', () => {
     const { api, call } = setup()
     await call.start()
     window.__crmTelephonyMock.twilio.ring({ from: '+1', callSid: 'CA1' })
-    expect(call.linkToCall(call.state.callSid, 'FCRM Note', { name: 'N-1' })).toBeUndefined()
+    expect(
+      call.linkToCall(call.state.callSid, 'FCRM Note', { name: 'N-1' }),
+    ).toBeUndefined()
 
     call.accept()
     await call.linkToCall(call.state.callSid, 'FCRM Note', { name: 'N-1' })
@@ -156,7 +173,11 @@ describe('during a call', () => {
     await dialling
 
     expect(reject).toHaveBeenCalledTimes(1)
-    expect(device.calls.filter((c) => c.parameters.CallSid.startsWith('mock-tw-out'))).toHaveLength(1)
+    expect(
+      device.calls.filter((c) =>
+        c.parameters.CallSid.startsWith('mock-tw-out'),
+      ),
+    ).toHaveLength(1)
     reject.mockRestore()
   })
 
@@ -171,7 +192,9 @@ describe('during a call', () => {
 
 describe('start', () => {
   it('keeps the error and registers no device when the server gives no token', async () => {
-    const api = { token: async () => ({ ok: false, detail: 'Phone number is not mapped' }) }
+    const api = {
+      token: async () => ({ ok: false, detail: 'Phone number is not mapped' }),
+    }
     const call = createTwilioCall({ api, loadDevice: async () => MockDevice })
     vi.spyOn(console, 'error').mockImplementation(() => {})
 
@@ -184,9 +207,16 @@ describe('start', () => {
 
 describe('the device', () => {
   it('is not registered when the window goes away while it loads', async () => {
-    const api = { token: vi.fn().mockResolvedValue({ token: 't', mock: true }), contact: vi.fn(), link: vi.fn() }
+    const api = {
+      token: vi.fn().mockResolvedValue({ token: 't', mock: true }),
+      contact: vi.fn(),
+      link: vi.fn(),
+    }
     let release
-    const call = createTwilioCall({ api, loadDevice: () => new Promise((resolve) => (release = resolve)) })
+    const call = createTwilioCall({
+      api,
+      loadDevice: () => new Promise((resolve) => (release = resolve)),
+    })
     const started = call.start()
     await flush()
 

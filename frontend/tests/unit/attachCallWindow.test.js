@@ -4,8 +4,14 @@ import { attachCallWindow } from '../../../crm/fcrm/frontend/telephony/attachCal
 function attach(media) {
   const shell = { window: vi.fn().mockReturnValue('handle') }
   const loadWindow = vi.fn().mockResolvedValue({ default: 'CallWindow' })
-  const callingMedia = vi.fn().mockResolvedValue({ media, default_medium: null })
-  return { shell, loadWindow, run: () => attachCallWindow(shell, { callingMedia, loadWindow }) }
+  const callingMedia = vi
+    .fn()
+    .mockResolvedValue({ media, default_medium: null })
+  return {
+    shell,
+    loadWindow,
+    run: () => attachCallWindow(shell, { callingMedia, loadWindow }),
+  }
 }
 
 describe('attachCallWindow', () => {
@@ -25,6 +31,9 @@ describe('attachCallWindow', () => {
   it('attaches the 260px phone window for a Twilio user', async () => {
     const { shell, run } = attach(['Twilio', 'Exotel'])
     expect(await run()).toBe('handle')
-    expect(shell.window).toHaveBeenCalledWith('CallWindow', { icon: 'lucide-phone', width: 260 })
+    expect(shell.window).toHaveBeenCalledWith('CallWindow', {
+      icon: 'lucide-phone',
+      width: 260,
+    })
   })
 })
