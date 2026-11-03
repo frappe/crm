@@ -8,6 +8,10 @@ export const callApi = {
   callingMedia: () =>
     ask("crm.integrations.api.get_calling_media", {}, { http: "GET" }),
   token: () => ask("crm.integrations.twilio.api.generate_access_token"),
+  exotelCall: (number) =>
+    ask("crm.integrations.exotel.handler.make_a_call", { to_number: number }),
+  rememberMedium: (medium) =>
+    ask("crm.integrations.api.set_default_calling_medium", { medium }),
   contact: (number) =>
     ask(
       "crm.integrations.api.get_contact_by_phone_number",

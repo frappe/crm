@@ -1,6 +1,8 @@
 import { createApp, h, nextTick, reactive } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import CallWindow from '../../../crm/fcrm/frontend/telephony/CallWindow.vue'
+import { startOutgoingCall } from '../../../crm/fcrm/frontend/telephony/callState.js'
+import { callState } from '../../../crm/fcrm/frontend/telephony/callState.js'
 import { MockDevice } from '../../../crm/fcrm/frontend/telephony/mockTwilioDevice.js'
 
 vi.mock('../../../crm/fcrm/frontend/telephony/callApi.js', () => ({
@@ -12,6 +14,8 @@ vi.mock('../../../crm/fcrm/frontend/telephony/callApi.js', () => ({
       name: 'C-1',
     }),
     link: vi.fn().mockResolvedValue(null),
+    exotelCall: vi.fn().mockResolvedValue({ CallSid: 'X-OUT' }),
+    rememberMedium: vi.fn().mockResolvedValue(null),
   },
 }))
 // frappe-ui's source cannot load in node; these three stand for its Avatar, Button and Tooltip.
@@ -34,6 +38,17 @@ vi.mock('frappe-ui', async () => {
         })
       },
     },
+    Checkbox: {
+      props: ['label', 'modelValue'],
+      emits: ['update:modelValue'],
+      render() {
+        return h('input', {
+          type: 'checkbox',
+          'aria-label': this.label,
+          onChange: (e) => this.$emit('update:modelValue', e.target.checked),
+        })
+      },
+    },
     Tooltip: {
       render() {
         return h('span', this.$slots.default())
@@ -48,10 +63,16 @@ const settle = async () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
 }
 let root
+let app
 let handle
 let shell
 
 beforeEach(async () => {
+  Object.assign(callState, {
+    media: ['Twilio'],
+    defaultMedium: null,
+    liveExotel: null,
+  })
   vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] })
   handle = reactive({
     state: 'closed',
@@ -92,12 +113,19 @@ beforeEach(async () => {
   }
   root = document.createElement('div')
   document.body.append(root)
-  createApp({ render: () => h(CallWindow, { shell, window: handle }) }).mount(
-    root,
-  )
-  await settle()
+  await mountWindow()
 })
+async function mountWindow() {
+  app?.unmount()
+  app = createApp({ render: () => h(CallWindow, { shell, window: handle }) })
+  app.mount(root)
+  await settle()
+}
 afterEach(() => {
+  vi.clearAllMocks()
+  app.unmount()
+  app = null
+  delete globalThis.__testSocket
   root.remove()
   vi.useRealTimers()
   delete window.__crmTelephonyMock
@@ -112,7 +140,7 @@ const ring = async () => {
 }
 const buttons = () =>
   [...root.querySelectorAll('button')].map(
-    (b) => b.getAttribute('aria-label') || b.textContent.trim(),
+    (b) => b.getAttribute('aria-label') || b.textContent.trim()
   )
 const press = async (label) => {
   root.querySelector(`button[aria-label="${label}"]`).click()
@@ -213,5 +241,151 @@ describe('the call window', () => {
     await settle()
     expect(handle.title).toBe('Calling…')
     expect(buttons()).toEqual(['Cancel'])
+  })
+})
+
+describe('the call window with Exotel', () => {
+  let sendEvent
+  const exotelWindow = async (state = {}) => {
+    const handlers = {}
+    globalThis.__testSocket = {
+      on: (event, handler) => (handlers[event] = handler),
+      off: vi.fn(),
+    }
+    sendEvent = (payload) => handlers.exotel_call(payload)
+    Object.assign(callState, { media: ['Exotel'], ...state })
+    await mountWindow()
+  }
+  const inbound = {
+    Direction: 'incoming',
+    CallSid: 'X-IN',
+    CallFrom: '+15550100101',
+  }
+
+  it('rings from the user-scoped event: no call controls, only Note, Task and the lead', async () => {
+    await exotelWindow()
+    sendEvent({ ...inbound, EventType: 'Dial', Status: 'busy' })
+    await settle()
+    expect(handle.state).toBe('open')
+    expect(handle.title).toBe('Incoming call')
+    expect(handle.closable).toBe(false)
+    expect(root.textContent).toContain('Alice Johnson')
+    expect(buttons()).toEqual(['Note', 'Task', 'Lead'])
+  })
+
+  it('after the call it says Call ended and the frame can close', async () => {
+    await exotelWindow()
+    sendEvent({ ...inbound, EventType: 'Dial', Status: 'busy' })
+    sendEvent({
+      ...inbound,
+      CallType: 'completed',
+      DialCallStatus: 'completed',
+      DialCallDuration: '42',
+    })
+    await settle()
+    expect(handle.title).toBe('Call ended')
+    expect(handle.closable).toBe(true)
+    expect(root.textContent).toContain('00:42')
+  })
+
+  it('links a note made during the call to the Exotel call log', async () => {
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
+    shell.create.mockResolvedValue({ name: 'N-9' })
+    await exotelWindow()
+    sendEvent({ ...inbound, EventType: 'Dial', Status: 'busy' })
+    await settle()
+    await press('Note')
+    expect(callApi.link).toHaveBeenCalledWith('X-IN', 'FCRM Note', 'N-9')
+  })
+
+  it('reopens on the live call after a reload', async () => {
+    await exotelWindow({
+      liveExotel: {
+        call_sid: 'X-L',
+        incoming: false,
+        status: 'In Progress',
+        number: '+15550100101',
+        seconds: 75,
+      },
+    })
+    expect(handle.state).toBe('open')
+    expect(handle.title).toBe('On call')
+    expect(root.textContent).toContain('01:15')
+    expect(handle.keepAlive).toBe(true)
+  })
+
+  it('an outgoing call with one medium dials at once: Ringing your phone…', async () => {
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
+    await exotelWindow()
+    await startOutgoingCall('+15550100101')
+    await settle()
+    expect(callApi.exotelCall).toHaveBeenCalledWith('+15550100101')
+    expect(handle.title).toBe('Ringing your phone…')
+    expect(buttons()).toEqual([])
+  })
+})
+
+describe('the medium picker', () => {
+  const both = async (defaultMedium = null) => {
+    globalThis.__testSocket = { on() {}, off() {} }
+    Object.assign(callState, { media: ['Twilio', 'Exotel'], defaultMedium })
+    await mountWindow()
+  }
+
+  it('opens as the first step with one button per medium when there is no default', async () => {
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
+    await both()
+    startOutgoingCall('+15550100101')
+    await settle()
+    expect(handle.state).toBe('open')
+    expect(handle.title).toBe('Call +15550100101')
+    expect(handle.closable).toBe(true)
+    expect(buttons()).toEqual(['Twilio', 'Exotel'])
+    expect(callApi.exotelCall).not.toHaveBeenCalled()
+
+    await press('Exotel')
+    expect(callApi.exotelCall).toHaveBeenCalledWith('+15550100101')
+    expect(callApi.rememberMedium).not.toHaveBeenCalled()
+  })
+
+  it('remembers the choice when asked', async () => {
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
+    await both()
+    startOutgoingCall('+15550100101')
+    await settle()
+    const check = root.querySelector('input[type=checkbox]')
+    check.checked = true
+    check.dispatchEvent(new Event('change'))
+    await press('Exotel')
+    expect(callApi.rememberMedium).toHaveBeenCalledWith('Exotel')
+    expect(callState.defaultMedium).toBe('Exotel')
+  })
+
+  it('skips the picker for a default medium', async () => {
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
+    await both('Exotel')
+    startOutgoingCall('+15550100101')
+    await settle()
+    expect(callApi.exotelCall).toHaveBeenCalledWith('+15550100101')
+    expect(buttons()).toEqual([])
+  })
+
+  it('closing the frame drops the pending number', async () => {
+    await both()
+    startOutgoingCall('+15550100101')
+    await settle()
+    handle.close()
+    await settle()
+    expect(root.textContent.trim()).toBe('')
   })
 })
