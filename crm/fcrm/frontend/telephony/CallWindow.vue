@@ -189,7 +189,8 @@ watchEffect(() => {
 });
 watchEffect(() => props.window.setClosable(state.step === "ended"));
 watchEffect(() => props.window.setKeepAlive(call.isLive()));
-// TODO(#46261): `window.setAttention(ringing)` pulses the pill while the call rings.
+// A minimised pill pulses while a caller waits on us to answer.
+watchEffect(() => props.window.setAttention(state.step === "incoming"));
 
 watch(
   () => state.step,

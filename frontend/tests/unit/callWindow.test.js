@@ -40,6 +40,7 @@ beforeEach(async () => {
     actions: [],
     closable: true,
     keepAlive: false,
+    attention: false,
     open() { this.state = 'open' },
     minimise() { this.state = 'minimised' },
     close() { this.state = 'closed' },
@@ -47,6 +48,7 @@ beforeEach(async () => {
     setActions(a) { this.actions = a },
     setClosable(c) { this.closable = c },
     setKeepAlive(on) { this.keepAlive = on },
+    setAttention(on) { this.attention = on },
   })
   shell = { create: vi.fn(), toast: { error: vi.fn() }, router: { push: vi.fn() } }
   root = document.createElement('div')
@@ -85,6 +87,20 @@ describe('the call window', () => {
     expect(handle.closable).toBe(false)
     expect(root.textContent).toContain('Alice Johnson')
     expect(buttons()).toEqual(['Accept', 'Reject'])
+  })
+
+  it('pulses the pill while a caller waits, and stops once the call is answered or rejected', async () => {
+    await ring()
+    expect(handle.attention).toBe(true)
+
+    await press('Accept')
+    expect(handle.attention).toBe(false)
+  })
+
+  it('stops pulsing when the caller is rejected', async () => {
+    await ring()
+    await press('Reject')
+    expect(handle.attention).toBe(false)
   })
 
   it('on a call it shows the timer, Mute, Note, Task, Lead and Hang up, and mute swaps its icon label', async () => {
