@@ -332,14 +332,20 @@ def _claim_new_recipients(notification, interval, recipients):
 	for recipient in recipients:
 		key = _get_reminder_key(notification, interval, recipient)
 		frappe.db.savepoint("claim_event_reminder")
+		marker = frappe.new_doc("CRM Event Reminder Log")
+		marker.update(
+			{
+				"reminder_key": key,
+				"event": notification.get("event_name"),
+				"recipient": recipient,
+				"sent_on": now_datetime(),
+			}
+		)
+		marker.set_new_name()
+		marker.set_user_and_timestamp()
 		try:
-			frappe.get_doc(
-				doctype="CRM Event Reminder Log",
-				reminder_key=key,
-				event=notification.get("event_name"),
-				recipient=recipient,
-				sent_on=now_datetime(),
-			).insert(ignore_permissions=True)
+			# db_insert skips the realtime list update a normal insert publishes per marker.
+			marker.db_insert()
 		except frappe.DuplicateEntryError:
 			frappe.db.rollback(save_point="claim_event_reminder")
 			continue
