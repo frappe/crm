@@ -1,0 +1,4 @@
+[[files]]
+path = ".pi/SPEC.md"
+description = "Stable form scripting API contracts: script class, lifecycle and field hooks, formDialog and helpers."
+scope = ["frontend/src/data/**", "frontend/src/utils/**", "frontend/src/components/FieldLayout/**", "frontend/src/components/Modals/FieldLayoutDialog*.vue"]

@@ -488,6 +488,21 @@ const contacts = createListResource({
   auto: true,
 })
 
+// Links an existing contact to this organization; `Contact.company_name` is
+// the only tie between the two, and until now it could only be set from the
+// contact's own page.
+async function addContact(contact) {
+  if (!contact) return
+  await call('frappe.client.set_value', {
+    doctype: 'Contact',
+    name: contact,
+    fieldname: 'company_name',
+    value: props.organizationId,
+  })
+  contacts.reload()
+  toast.success(__('Contact added to {0}', [props.organizationId]))
+}
+
 const rows = computed(() => {
   let list = activeTab.value === 'deals' ? deals : contacts
 
