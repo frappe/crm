@@ -14,9 +14,11 @@ to events that don't have custom notifications set. This ensures all events can 
 reminders even if users don't configure them individually.
 """
 
+import hashlib
 from datetime import datetime, timedelta
 
 import frappe
+from frappe.query_builder.functions import Max
 from frappe.utils import add_to_date, now_datetime
 
 
@@ -53,6 +55,7 @@ def _process_event_notifications_by_interval(interval):
 		return
 
 	current_time = now_datetime()
+	scan_until = _get_scan_horizon(interval, current_time)
 	all_events_data = frappe.db.sql(
 		"""
 		SELECT
@@ -76,11 +79,11 @@ def _process_event_notifications_by_interval(interval):
 			FROM `tabEvent Participants`
 			GROUP BY parent
 		) AS ep_all ON ep_all.parent = e.name
-		WHERE (e.starts_on >= %s OR (%s >= e.starts_on AND %s < e.ends_on))
+		WHERE ((e.starts_on >= %s AND e.starts_on <= %s) OR (%s >= e.starts_on AND %s < e.ends_on))
 		AND e.status != 'Cancelled'
 		ORDER BY e.starts_on, e.name
 	""",
-		(interval, current_time, current_time, current_time),
+		(interval, current_time, scan_until, current_time, current_time),
 		as_dict=True,
 	)
 
@@ -123,13 +126,39 @@ def _process_event_notifications_by_interval(interval):
 			if notification.get("notification_type") == "Email":
 				_send_email_notification(notification, event_start, before_value, interval)
 			elif notification.get("notification_type") == "Notification":
-				_send_system_notification(notification)
+				_send_system_notification(notification, interval)
 
 		except Exception as e:
 			frappe.log_error(
 				f"Error processing {interval} notification for event {notification.get('event_name', 'Unknown')}: {e!s}"
 			)
 			continue
+
+
+def _get_scan_horizon(interval, current_time):
+	"""
+	Latest event start whose reminder for this interval can fire now: the longest
+	offset, plus the trigger window, plus a day for all-day events (their trigger
+	is the start date at a time of day).
+	"""
+
+	notifications = frappe.qb.DocType("Event Notifications")
+	longest_offset = (
+		frappe.qb.from_(notifications)
+		.select(Max(notifications.before))
+		.where(notifications.interval == interval)
+		.run()[0][0]
+		or 0
+	)
+	fcrm_settings = frappe.get_single("FCRM Settings")
+	for table in ("event_notifications", "all_day_event_notifications"):
+		for row in fcrm_settings.get(table) or []:
+			if row.interval == interval:
+				longest_offset = max(longest_offset, row.before or 0)
+
+	horizon = add_to_date(current_time, **{interval: longest_offset})
+	horizon = add_to_date(horizon, **_get_trigger_window_duration(interval))
+	return add_to_date(horizon, days=1)
 
 
 def _process_unified_event_data(all_events_data, interval):
@@ -293,6 +322,59 @@ def _split_participant_emails(participant_emails_csv):
 	return [email.strip() for email in participant_emails_csv.split(",") if email and email.strip()]
 
 
+def _claim_new_recipients(notification, interval, recipients):
+	"""
+	Return the recipients that have not had this reminder yet, and record them as sent.
+
+	The marker is per event start, reminder row and recipient. It is written before the
+	send so that overlapping job runs cannot both send.
+	"""
+
+	new_recipients = []
+	for recipient in recipients:
+		key = _get_reminder_key(notification, interval, recipient)
+		frappe.db.savepoint("claim_event_reminder")
+		try:
+			frappe.get_doc(
+				doctype="CRM Event Reminder Log",
+				reminder_key=key,
+				event=notification.get("event_name"),
+				recipient=recipient,
+				sent_on=now_datetime(),
+			).insert(ignore_permissions=True)
+		except frappe.DuplicateEntryError:
+			frappe.db.rollback(save_point="claim_event_reminder")
+			continue
+		new_recipients.append(recipient)
+
+	return new_recipients
+
+
+def _get_reminder_key(notification, interval, recipient):
+	parts = (
+		notification.get("event_name"),
+		notification.get("starts_on"),
+		notification.get("notification_type"),
+		interval,
+		notification.get("before_value"),
+		notification.get("time_of_day"),
+		recipient,
+	)
+	return hashlib.sha256("|".join(map(str, parts)).encode()).hexdigest()
+
+
+def purge_event_reminder_logs():
+	"""Delete the markers of events that are gone or ended more than a day ago."""
+
+	log = frappe.qb.DocType("CRM Event Reminder Log")
+	event = frappe.qb.DocType("Event")
+	cutoff = add_to_date(now_datetime(), days=-1)
+	live_events = (
+		frappe.qb.from_(event).select(event.name).where((event.ends_on > cutoff) | (event.starts_on > cutoff))
+	)
+	frappe.qb.from_(log).delete().where(log.event.notin(live_events)).run()
+
+
 def _send_email_notification(notification, event_start, before_value, interval):
 	"""Send email notification for an event"""
 
@@ -313,7 +395,9 @@ def _send_email_notification(notification, event_start, before_value, interval):
 				if email:
 					recipients.add(email)
 
-		recipients = [email for email in recipients if email]
+		recipients = _claim_new_recipients(
+			notification, interval, sorted(email for email in recipients if email)
+		)
 
 		if not recipients:
 			return
@@ -363,9 +447,9 @@ def _format_time_remaining(before_value, interval):
 	return f"{before_value} {interval_label}"
 
 
-def _send_system_notification(notification):
+def _send_system_notification(notification, interval):
 	"""Send system notification for an event"""
-	for user in _get_event_users(notification):
+	for user in _claim_new_recipients(notification, interval, sorted(_get_event_users(notification))):
 		frappe.publish_realtime("event_notification", notification, user=user)
 
 

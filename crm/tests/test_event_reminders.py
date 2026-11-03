@@ -7,12 +7,18 @@ import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_to_date, now_datetime
 
-from crm.api.event import _get_event_users, trigger_offset_event_notifications
+from crm.api.event import (
+	_get_event_users,
+	purge_event_reminder_logs,
+	trigger_offset_event_notifications,
+)
 from crm.tests.test_password_setup import make_user
 
 
 class TestEventReminders(IntegrationTestCase):
 	def setUp(self):
+		# The job reads every event: park the site's own, so a run never reaches real users.
+		frappe.db.sql("UPDATE `tabEvent` SET status = 'Cancelled'")
 		self.owner = make_user("reminder-owner-3283@example.com", roles=["Sales User"]).name
 		self.participant = make_user("reminder-guest-3283@example.com", roles=["Sales User"]).name
 		self.bystander = make_user("reminder-bystander-3283@example.com", roles=["Sales User"]).name
@@ -111,3 +117,77 @@ class TestEventReminders(IntegrationTestCase):
 		users = _get_event_users({"owner": self.owner, "event_participants": [self.participant]})
 
 		self.assertEqual(users, {self.owner})
+
+	def test_a_reminder_inside_its_window_reaches_each_recipient_once_over_several_runs(self):
+		event = self.make_event(participants=[self.participant])
+
+		recipients = [self.run_scheduler_job(event) for _ in range(3)]
+
+		self.assertCountEqual(recipients[0], [self.owner, self.participant])
+		self.assertEqual(recipients[1:], [[], []])
+
+	def test_an_email_reminder_is_sent_once_over_several_runs(self):
+		event = self.make_event(participants=[self.participant])
+		frappe.db.set_value("Event Notifications", {"parent": event.name}, "type", "Email")
+
+		with patch("frappe.sendmail") as sendmail:
+			for _ in range(3):
+				self.run_scheduler_job(event)
+
+		self.assertEqual(sendmail.call_count, 1)
+
+	def test_an_event_in_progress_gets_its_reminder_once_over_several_runs(self):
+		event = self.make_event(
+			starts_on=add_to_date(now_datetime(), minutes=-30), ends_on=add_to_date(now_datetime(), hours=1)
+		)
+
+		recipients = [self.run_scheduler_job(event) for _ in range(3)]
+
+		self.assertEqual(recipients, [[self.owner], [], []])
+
+	def test_a_rescheduled_event_gets_its_reminder_again(self):
+		event = self.make_event()
+		self.assertEqual(self.run_scheduler_job(event), [self.owner])
+
+		frappe.db.set_value("Event", event.name, "starts_on", add_to_date(now_datetime(), minutes=11))
+
+		self.assertEqual(self.run_scheduler_job(event), [self.owner])
+
+	def test_a_second_reminder_row_is_not_swallowed_by_the_first(self):
+		event = self.make_event()
+		event.reload()
+		event.append("notifications", {"type": "Notification", "before": 11, "interval": "minutes"})
+		event.save(ignore_permissions=True)
+
+		self.assertEqual(self.run_scheduler_job(event), [self.owner, self.owner])
+		self.assertEqual(self.run_scheduler_job(event), [])
+
+	def test_the_scan_leaves_out_events_that_start_after_the_longest_reminder_offset(self):
+		near = self.make_event()
+		far = self.make_event(starts_on=add_to_date(now_datetime(), days=10))
+
+		with patch("crm.api.event._process_unified_event_data", return_value=[]) as process:
+			self.run_scheduler_job(near)
+
+		scanned = {row.event_name for row in process.call_args.args[0]}
+		self.assertIn(near.name, scanned)
+		self.assertNotIn(far.name, scanned)
+
+	def test_purge_keeps_the_markers_of_a_live_event_and_drops_the_rest(self):
+		live = self.make_event()
+		ended = self.make_event(
+			starts_on=add_to_date(now_datetime(), days=-3), ends_on=add_to_date(now_datetime(), days=-2)
+		)
+		self.run_scheduler_job(live)
+		stale = frappe.get_doc(
+			doctype="CRM Event Reminder Log",
+			reminder_key="stale-3306",
+			event=ended.name,
+			recipient=self.owner,
+		).insert(ignore_permissions=True)
+
+		purge_event_reminder_logs()
+
+		kept = frappe.get_all("CRM Event Reminder Log", {"event": live.name}, pluck="name")
+		self.assertEqual(len(kept), 1)
+		self.assertFalse(frappe.db.exists("CRM Event Reminder Log", stale.name))
