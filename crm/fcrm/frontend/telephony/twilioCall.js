@@ -1,5 +1,6 @@
 // The Twilio call's state machine: one device per tab, one call at a time. No DOM, so a test drives it with the fake `Device`.
 import { reactive } from "vue";
+import { __ } from "frappe/i18n";
 
 const DEVICE_OPTIONS = {
   codecPreferences: ["opus", "pcmu"],
@@ -26,6 +27,8 @@ export function createTwilioCall({ api, loadDevice }) {
   let incoming = false;
   let startedAt = 0;
   let timer = null;
+  let connecting = false;
+  let destroyed = false;
 
   function tick() {
     state.seconds = Math.floor((Date.now() - startedAt) / 1000);
@@ -40,14 +43,13 @@ export function createTwilioCall({ api, loadDevice }) {
     try {
       const tokenData = await api.token();
       if (!tokenData?.token)
-        throw new Error(tokenData?.detail || "No access token");
+        throw new Error(tokenData?.detail || __("No access token"));
       const Device = await loadDevice(tokenData);
+      if (destroyed) return;
       device = new Device(tokenData.token, DEVICE_OPTIONS);
       device.on("incoming", onIncoming);
       device.on("error", (error) => (state.error = error.message));
-      device.on("tokenWillExpire", async () =>
-        device.updateToken((await api.token()).token)
-      );
+      device.on("tokenWillExpire", refreshToken);
       if (tokenData.mock && typeof window !== "undefined") {
         window.__crmTelephonyMock = { ...window.__crmTelephonyMock, makeCall };
       }
@@ -55,6 +57,17 @@ export function createTwilioCall({ api, loadDevice }) {
     } catch (error) {
       state.error = error.message;
       console.error("[crm] The Twilio device did not start.", error);
+    }
+  }
+
+  async function refreshToken() {
+    try {
+      const tokenData = await api.token();
+      if (!tokenData?.token) throw new Error(tokenData?.detail);
+      device.updateToken(tokenData.token);
+    } catch (error) {
+      state.error = error.message || "The access token did not refresh";
+      console.error("[crm] The Twilio token did not refresh.", error);
     }
   }
 
@@ -69,11 +82,18 @@ export function createTwilioCall({ api, loadDevice }) {
     });
     state.contact = { name: "", image: "", number, record: null };
     lookup(number);
-    call.on("accept", () => (incoming ? connected() : (state.callSid = sid())));
-    call.on(
-      "messageReceived",
-      ({ content }) => content?.CallStatus === "in-progress" && connected()
-    );
+    // A late event of a call that is over must not touch the next one.
+    call.on("accept", () => {
+      if (next !== call) return;
+      if (incoming) connected();
+      else state.callSid = sid();
+    });
+    if (!isIncoming)
+      call.on(
+        "messageReceived",
+        ({ content }) =>
+          next === call && content?.CallStatus === "in-progress" && connected()
+      );
     for (const event of ["disconnect", "cancel", "reject"])
       call.on(event, () => finish(next));
   }
@@ -84,23 +104,27 @@ export function createTwilioCall({ api, loadDevice }) {
 
   function onIncoming(next) {
     // One call at a time: a second caller hears busy, and the call just ended gives way.
-    if (LIVE.includes(state.step)) return next.reject();
+    if (connecting || LIVE.includes(state.step)) return next.reject();
     begin(next, next.parameters.From, true);
   }
 
   async function makeCall(number) {
-    if (!device || LIVE.includes(state.step)) return;
+    if (!device || connecting || LIVE.includes(state.step)) return;
+    connecting = true;
     try {
       const next = await device.connect({ params: { To: number } });
       begin(next, number, false);
     } catch (error) {
       state.error = error.message;
       throw error;
+    } finally {
+      connecting = false;
     }
   }
 
   function connected() {
-    if (state.step === "oncall") return;
+    if (!call || (state.step !== "incoming" && state.step !== "ringing"))
+      return;
     state.step = "oncall";
     state.callSid = sid();
     startedAt = Date.now();
@@ -162,15 +186,18 @@ export function createTwilioCall({ api, loadDevice }) {
       if (state.step === "ended")
         Object.assign(state, { step: "idle", contact: null, callSid: "" });
     },
-    /** Links a note or task the user made during the call to the call's log. */
-    linkToCall(doctype, doc) {
-      if (!state.callSid || !doc?.name) return;
-      return api.link(state.callSid, doctype, doc.name);
+    /** Links a note or task the user made during the call to the call's log; `callSid` is read before the form opened. */
+    linkToCall(callSid, doctype, doc) {
+      if (!callSid || !doc?.name) return;
+      return api.link(callSid, doctype, doc.name);
     },
     isLive: () => LIVE.includes(state.step),
     destroy() {
+      destroyed = true;
       stopTimer();
       device?.destroy();
+      device = null;
+      call = null;
     },
   };
 }

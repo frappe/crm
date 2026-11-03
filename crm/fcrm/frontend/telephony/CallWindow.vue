@@ -65,6 +65,10 @@ const call = createTwilioCall({
 const { state } = call;
 call.start();
 onBeforeUnmount(call.destroy);
+watch(
+  () => state.error,
+  (message) => message && props.shell.toast.error(message)
+);
 
 const contact = computed(() => state.contact);
 const clock = computed(() => formatClock(state.seconds));
@@ -125,7 +129,7 @@ const extras = computed(() => [
   ...(record.value && record.value.doctype !== "Contact"
     ? [
         {
-          label: __(record.value.doctype === "CRM Deal" ? "Deal" : "Lead"),
+          label: record.value.doctype === "CRM Deal" ? __("Deal") : __("Lead"),
           icon: "lucide-arrow-up-right",
           run: openRecord,
         },
@@ -142,13 +146,15 @@ async function createDuringCall(doctype) {
       }
     : {};
   if (doctype === "CRM Task")
-    values.title = `${__("Follow up with")} ${
-      contact.value.name || contact.value.number
-    }`;
+    values.title = __("Follow up with {0}", [
+      contact.value.name || contact.value.number,
+    ]);
+  // The form can stay open past the call: the log to link is the one this call had.
+  const callSid = state.callSid;
   const doc = await props.shell.create(doctype, { values });
   if (!doc) return;
   try {
-    await call.linkToCall(doctype, doc);
+    await call.linkToCall(callSid, doctype, doc);
   } catch (error) {
     props.shell.toast.error(error.message);
   }

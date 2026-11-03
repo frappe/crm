@@ -65,3 +65,18 @@ class TestCallingMedia(IntegrationTestCase):
 
 		self.assertEqual(link_to_call_log(call_log.name, "CRM Task", str(task.name)), call_log.name)
 		self.assertTrue(frappe.get_doc("CRM Call Log", call_log.name).has_link("CRM Task", str(task.name)))
+
+	def test_a_user_without_a_crm_role_cannot_link_a_call_log(self):
+		call_log = frappe.get_doc(
+			doctype="CRM Call Log",
+			id="t46116-denied",
+			type="Incoming",
+			status="In Progress",
+			to="+1",
+			**{"from": "+2"},
+		).insert(ignore_permissions=True)
+		task = frappe.get_doc(doctype="CRM Task", title="Follow up").insert(ignore_permissions=True)
+		frappe.set_user(make_user("calling-media-denied-46116@example.com", roles=[]).name)
+
+		with self.assertRaises(frappe.PermissionError):
+			link_to_call_log(call_log.name, "CRM Task", str(task.name))
