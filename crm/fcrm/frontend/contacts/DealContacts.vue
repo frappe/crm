@@ -1,69 +1,102 @@
-<!-- CRM Deal's contacts section: the deal's contacts, each opening its record, and a picker that adds one. -->
+<!-- CRM Deal's contacts section: a row per contact that opens to its email and mobile, as v1 draws it. -->
 <template>
-	<div class="flex flex-col gap-2.5">
-		<div v-for="row in contacts" :key="row.contact" class="flex min-w-0 items-center gap-2">
-			<Avatar :label="row.full_name || row.contact" size="lg" />
-			<div class="flex min-w-0 flex-1 flex-col gap-0.5">
-				<div class="flex min-w-0 items-center gap-1.5">
-					<RecordAnchor
-						:href="href(row.contact)"
-						class="truncate text-base font-medium text-ink-gray-8 hover:underline"
-						@open="open(row.contact)"
-					>
-						{{ row.full_name || row.contact }}
-					</RecordAnchor>
-					<Badge v-if="row.is_primary" :label="__('Primary')" theme="gray" variant="subtle" />
-				</div>
-				<span v-if="reach(row)" class="truncate text-sm text-ink-gray-5">{{ reach(row) }}</span>
-			</div>
-			<div v-if="editor.editable" class="flex w-7 shrink-0 justify-end">
-				<Dropdown :options="options(row)" align="end">
+	<div v-if="contacts.length" class="flex flex-col divide-y divide-outline-gray-1">
+		<div v-for="row in contacts" :key="row.contact" class="py-2.5 first:pt-0 last:pb-0">
+			<div class="flex h-7 min-w-0 items-center gap-2">
+				<button
+					type="button"
+					class="flex min-w-0 flex-1 items-center gap-2 text-base text-ink-gray-7"
+					:aria-expanded="isOpen(row)"
+					@click="toggle(row)"
+				>
+					<Avatar :label="row.full_name || row.contact" size="md" />
+					<span class="truncate">{{ row.full_name || row.contact }}</span>
+					<Badge
+						v-if="row.is_primary"
+						class="ml-1 shrink-0"
+						:label="__('Primary')"
+						theme="green"
+						variant="outline"
+					/>
+				</button>
+				<div class="flex shrink-0 items-center">
+					<Dropdown v-if="editor.editable" :options="options(row)" align="end">
+						<Button
+							variant="ghost"
+							icon="lucide-more-horizontal"
+							:label="__('Contact actions')"
+							:disabled="editor.busy.value"
+						/>
+					</Dropdown>
 					<Button
 						variant="ghost"
-						icon="lucide-more-horizontal"
-						:label="__('Contact actions')"
-						:disabled="busy"
+						icon="lucide-arrow-up-right"
+						:label="__('Open contact')"
+						:tooltip="__('Open contact')"
+						:route="routeFor('Contact', row.contact)"
 					/>
-				</Dropdown>
+					<Button
+						variant="ghost"
+						icon="lucide-chevron-right"
+						class="transition-transform"
+						:class="{ 'rotate-90': isOpen(row) }"
+						:label="isOpen(row) ? __('Collapse') : __('Expand')"
+						:aria-expanded="isOpen(row)"
+						@click="toggle(row)"
+					/>
+				</div>
+			</div>
+			<div v-if="isOpen(row)" class="flex flex-col gap-1.5 pt-2 text-base text-ink-gray-8">
+				<DealContactLine
+					v-if="row.email"
+					icon="lucide-mail"
+					:value="row.email"
+					:tooltip="__('Send email to {0}', [row.email])"
+					:action="canEmail(page) ? () => emailContact(page, row.email) : null"
+				/>
+				<DealContactLine
+					v-if="row.mobile_no"
+					icon="lucide-phone"
+					:value="row.mobile_no"
+					:tooltip="__('Call {0}', [row.mobile_no])"
+					:action="canCall() ? () => callContact(page, row.mobile_no) : null"
+				/>
+				<span v-if="!row.email && !row.mobile_no" class="py-3 text-center text-sm text-ink-gray-4">
+					{{ __('No details added') }}
+				</span>
 			</div>
 		</div>
-		<span v-if="!contacts.length" class="text-base text-ink-gray-5">{{ __('No contacts added') }}</span>
-		<Link
-			v-if="editor.editable"
-			:modelValue="null"
-			doctype="Contact"
-			creatable
-			:disabled="busy"
-			:placeholder="__('Add a contact…')"
-			@update:modelValue="add"
-			@create="create"
-		/>
 	</div>
+	<span v-else class="flex h-20 items-center justify-center text-base text-ink-gray-5">
+		{{ __('No contacts added') }}
+	</span>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { Avatar, Badge, Button, Dropdown } from 'frappe-ui'
-import { Link, RecordAnchor } from '@framework/ui'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
-import { ContactsEditor, dealContacts } from './dealContacts.js'
+import DealContactLine from './DealContactLine.vue'
+import { callContact, canCall, canEmail, dealContacts, emailContact } from './dealContacts.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
+	editor: { type: Object, required: true },
 })
-
-const editor = new ContactsEditor(props.page, {
-	duplicate: __('Contact already added'),
-	added: __('Contact added'),
-	removed: __('Contact removed'),
-	primary: __('Primary contact set'),
-	stale: __('Contacts changed while you were editing. Reload the deal to see them; unsaved edits will be lost.'),
-})
-
-const busy = editor.busy
 
 const contacts = computed(() => dealContacts(props.page.doc))
+
+// By contact, not row: a save hands back new row objects.
+const opened = reactive(new Set())
+
+function isOpen(row) {
+	return opened.has(row.contact)
+}
+
+function toggle(row) {
+	if (!opened.delete(row.contact)) opened.add(row.contact)
+}
 
 function options(row) {
 	return [
@@ -71,34 +104,14 @@ function options(row) {
 			label: __('Set as primary'),
 			icon: 'lucide-star',
 			condition: () => !row.is_primary,
-			onClick: () => editor.setPrimary(row.contact),
+			onClick: () => props.editor.setPrimary(row.contact),
 		},
 		{
 			label: __('Remove'),
 			icon: 'lucide-trash-2',
 			theme: 'red',
-			onClick: () => editor.remove(row.contact),
+			onClick: () => props.editor.remove(row.contact),
 		},
 	]
-}
-
-function add(contact) {
-	if (contact) editor.add(contact)
-}
-
-function create(query) {
-	editor.create({ first_name: query, company_name: props.page.doc.organization })
-}
-
-function reach(row) {
-	return [row.email, row.mobile_no].filter(Boolean).join(' · ')
-}
-
-function href(contact) {
-	return props.page.router.resolve(routeFor('Contact', contact)).href
-}
-
-function open(contact) {
-	props.page.router.push(routeFor('Contact', contact))
 }
 </script>

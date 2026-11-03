@@ -1,18 +1,24 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
-  CONTACT_METHODS,
   ContactsEditor,
+  callContact,
+  canCall,
+  canEmail,
+  emailContact,
   FIRST_LAYOUT_SECTION,
   dealContacts,
   placeContactsSection,
 } from '../../../crm/fcrm/frontend/contacts/dealContacts.js'
+import {
+  callState,
+  registerOutgoingStarter,
+} from '../../../crm/fcrm/frontend/telephony/callState.js'
 
 const MESSAGES = {
   duplicate: 'Contact already added',
   added: 'Contact added',
   removed: 'Contact removed',
   primary: 'Primary contact set',
-  stale: 'Contacts changed while you were editing',
 }
 
 function fakePage(overrides = {}) {
@@ -33,8 +39,6 @@ function fakePage(overrides = {}) {
     create: vi.fn(() => Promise.resolve({ name: 'Dana Walk' })),
     toast: { success: vi.fn(), error: vi.fn() },
     save: vi.fn(() => Promise.resolve()),
-    call: vi.fn(() => Promise.resolve(true)),
-    reload: vi.fn(() => Promise.resolve()),
     ...overrides,
   }
 }
@@ -112,110 +116,147 @@ describe('ContactsEditor', () => {
     expect(page.fieldAccess).toHaveBeenCalledWith('contacts')
   })
 
-  it.each([
-    ['add', 'Cara Lim', CONTACT_METHODS.add, MESSAGES.added],
-    ['remove', 'Ana Ruiz', CONTACT_METHODS.remove, MESSAGES.removed],
-    ['setPrimary', 'Ana Ruiz', CONTACT_METHODS.setPrimary, MESSAGES.primary],
-  ])(
-    '%s calls its deal method with the contact, re-reads the page, then toasts',
-    async (verb, contact, method, message) => {
-      const order = []
-      const page = fakePage({
-        save: vi.fn(() => order.push('save')),
-        call: vi.fn(() => order.push('call')),
-        reload: vi.fn(() => order.push('reload')),
-      })
-      const done = await new ContactsEditor(page, MESSAGES)[verb](contact)
-      expect(done).toBe(true)
-      expect(page.call).toHaveBeenCalledWith(method, {
-        deal: 'CRM-DEAL-45886',
-        contact,
-      })
-      expect(order).toEqual(['save', 'call', 'reload'])
-      expect(page.toast.success).toHaveBeenCalledWith(message)
-    },
-  )
+  it('adds a row for the contact to the draft, saves it, then toasts', async () => {
+    const page = fakePage()
+    const done = await new ContactsEditor(page, MESSAGES).add('Cara Lim')
+    expect(done).toBe(true)
+    expect(page.doc.contacts.map((row) => row.contact)).toEqual([
+      'Ana Ruiz',
+      'Ben Okafor',
+      'Cara Lim',
+    ])
+    expect(page.doc.contacts[2]).toEqual({ contact: 'Cara Lim' })
+    expect(page.save).toHaveBeenCalledTimes(1)
+    expect(page.toast.success).toHaveBeenCalledWith(MESSAGES.added)
+  })
 
-  it('refuses a contact the deal already has, without a call', async () => {
+  it('removes the contact’s row from the draft, then saves', async () => {
+    const page = fakePage()
+    await new ContactsEditor(page, MESSAGES).remove('Ana Ruiz')
+    expect(page.doc.contacts.map((row) => row.contact)).toEqual(['Ben Okafor'])
+    expect(page.save).toHaveBeenCalledTimes(1)
+    expect(page.toast.success).toHaveBeenCalledWith(MESSAGES.removed)
+  })
+
+  it('marks only the chosen contact primary, then saves', async () => {
+    const page = fakePage()
+    await new ContactsEditor(page, MESSAGES).setPrimary('Ana Ruiz')
+    expect(
+      page.doc.contacts.map((row) => [row.contact, row.is_primary]),
+    ).toEqual([
+      ['Ana Ruiz', 1],
+      ['Ben Okafor', 0],
+    ])
+    expect(page.toast.success).toHaveBeenCalledWith(MESSAGES.primary)
+  })
+
+  it('saves the draft as the page holds it at save time', async () => {
+    const page = fakePage()
+    page.save = vi.fn(() => {
+      expect(page.doc.contacts.map((row) => row.contact)).toContain('Cara Lim')
+      return Promise.resolve()
+    })
+    await new ContactsEditor(page, MESSAGES).add('Cara Lim')
+    expect(page.save).toHaveBeenCalled()
+  })
+
+  it('refuses a contact the deal already has, without a save', async () => {
     const page = fakePage()
     const done = await new ContactsEditor(page, MESSAGES).add('Ana Ruiz')
     expect(done).toBe(false)
     expect(page.toast.error).toHaveBeenCalledWith(MESSAGES.duplicate)
     expect(page.save).not.toHaveBeenCalled()
-    expect(page.call).not.toHaveBeenCalled()
+    expect(page.doc.contacts).toHaveLength(2)
   })
 
-  it('calls nothing when the draft’s save is refused, and keeps the draft', async () => {
-    const page = fakePage({
-      save: vi.fn(() => Promise.reject(new Error('Probability must be 0-100'))),
+  it.each([
+    ['add', 'Cara Lim'],
+    ['remove', 'Ana Ruiz'],
+    ['setPrimary', 'Ana Ruiz'],
+  ])(
+    'puts the rows back when the save of %s is refused, keeping other edits',
+    async (verb, contact) => {
+      const page = fakePage({
+        save: vi.fn(() => Promise.reject(new Error('Not permitted'))),
+      })
+      const before = page.doc.contacts
+      page.doc.deal_value = 500
+      const done = await new ContactsEditor(page, MESSAGES)[verb](contact)
+      expect(done).toBe(false)
+      expect(page.doc.contacts).toBe(before)
+      expect(before.map((row) => [row.contact, row.is_primary])).toEqual([
+        ['Ana Ruiz', 0],
+        ['Ben Okafor', 1],
+      ])
+      expect(page.doc.deal_value).toBe(500)
+      expect(page.toast.error).toHaveBeenCalledWith('Not permitted')
+      expect(page.toast.success).not.toHaveBeenCalled()
+    },
+  )
+
+  it('leaves a draft that a conflict’s reload replaced as the server sent it', async () => {
+    const page = fakePage()
+    const reloaded = [
+      { contact: 'Eve Tan', full_name: 'Eve Tan', is_primary: 1 },
+    ]
+    page.save = vi.fn(() => {
+      page.doc = { contacts: reloaded }
+      return Promise.reject(
+        Object.assign(new Error('Changed'), { name: 'SaveConflict' }),
+      )
     })
-    const done = await new ContactsEditor(page, MESSAGES).remove('Ana Ruiz')
-    expect(done).toBe(false)
-    expect(page.toast.error).toHaveBeenCalledWith('Probability must be 0-100')
-    expect(page.call).not.toHaveBeenCalled()
-    expect(page.reload).not.toHaveBeenCalled()
+    expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(false)
+    expect(page.doc.contacts).toBe(reloaded)
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 
-  it('toasts a refused call and re-reads nothing', async () => {
-    const page = fakePage({
-      call: vi.fn(() =>
-        Promise.reject(new Error('Not allowed to add contact to Deal')),
-      ),
+  it('saves a dirty draft first, so the contacts change lands on the saved copy', async () => {
+    const page = fakePage({ isDirty: true })
+    const sent = []
+    page.save = vi.fn(() => {
+      sent.push(page.doc.contacts.map((row) => row.contact))
+      page.isDirty = false
+      return Promise.resolve()
     })
-    const done = await new ContactsEditor(page, MESSAGES).add('Cara Lim')
-    expect(done).toBe(false)
-    expect(page.toast.error).toHaveBeenCalledWith(
-      'Not allowed to add contact to Deal',
+    expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(true)
+    expect(sent).toEqual([
+      ['Ana Ruiz', 'Ben Okafor'],
+      ['Ana Ruiz', 'Ben Okafor', 'Cara Lim'],
+    ])
+  })
+
+  it('changes no rows when the dirty draft’s own save is refused', async () => {
+    const page = fakePage({
+      isDirty: true,
+      save: vi.fn(() => Promise.reject(new Error('Mandatory'))),
+    })
+    const before = page.doc.contacts
+    expect(await new ContactsEditor(page, MESSAGES).remove('Ana Ruiz')).toBe(
+      false,
     )
-    expect(page.reload).not.toHaveBeenCalled()
-    expect(page.toast.success).not.toHaveBeenCalled()
-  })
-
-  it('keeps edits typed during the call and asks for a reload instead of a success', async () => {
-    const page = fakePage()
-    page.call = vi.fn(() => {
-      page.isDirty = true
-      return Promise.resolve(true)
-    })
-    const done = await new ContactsEditor(page, MESSAGES).setPrimary('Ana Ruiz')
-    expect(done).toBe(true)
-    expect(page.reload).not.toHaveBeenCalled()
-    expect(page.toast.success).not.toHaveBeenCalled()
-    expect(page.toast.error).toHaveBeenCalledWith(MESSAGES.stale)
-  })
-
-  it('refuses every later write once the page is behind the server', async () => {
-    const page = fakePage()
-    page.call = vi.fn(() => {
-      page.isDirty = true
-      return Promise.resolve(true)
-    })
-    const editor = new ContactsEditor(page, MESSAGES)
-    await editor.remove('Ana Ruiz')
-    expect(await editor.add('Cara Lim')).toBe(false)
-    expect(page.call).toHaveBeenCalledTimes(1)
-    expect(page.toast.error).toHaveBeenLastCalledWith(MESSAGES.stale)
+    expect(page.save).toHaveBeenCalledTimes(1)
+    expect(page.doc.contacts).toBe(before)
+    expect(page.toast.error).toHaveBeenCalledWith('Mandatory')
   })
 
   it('runs one write at a time and is busy while it runs', async () => {
     let finish
     const page = fakePage({
-      call: vi.fn(() => new Promise((resolve) => (finish = resolve))),
+      save: vi.fn(() => new Promise((resolve) => (finish = resolve))),
     })
     const editor = new ContactsEditor(page, MESSAGES)
-    const first = editor.remove('Ana Ruiz')
-    await vi.waitFor(() => expect(page.call).toHaveBeenCalled())
+    const first = editor.add('Cara Lim')
     expect(editor.busy.value).toBe(true)
-    expect(await editor.setPrimary('Ana Ruiz')).toBe(false)
-    finish(true)
+    expect(await editor.remove('Ana Ruiz')).toBe(false)
+    finish()
     expect(await first).toBe(true)
-    expect(page.call).toHaveBeenCalledTimes(1)
     expect(editor.busy.value).toBe(false)
+    expect(page.save).toHaveBeenCalledTimes(1)
   })
 
-  it('is no longer busy after a refused call', async () => {
+  it('is no longer busy after a refused save', async () => {
     const page = fakePage({
-      call: vi.fn(() => Promise.reject(new Error('No'))),
+      save: vi.fn(() => Promise.reject(new Error('Refused'))),
     })
     const editor = new ContactsEditor(page, MESSAGES)
     await editor.add('Cara Lim')
@@ -224,30 +265,73 @@ describe('ContactsEditor', () => {
 
   it('creates a contact in Quick Entry, then adds it to the deal', async () => {
     const page = fakePage()
-    const values = { first_name: 'Dana', company_name: 'Acme Corp' }
+    const values = { first_name: 'Dana', company_name: 'Acme' }
     const done = await new ContactsEditor(page, MESSAGES).create(values)
-    expect(page.create).toHaveBeenCalledWith('Contact', { values })
-    expect(page.call).toHaveBeenCalledWith(CONTACT_METHODS.add, {
-      deal: 'CRM-DEAL-45886',
-      contact: 'Dana Walk',
-    })
     expect(done).toBe(true)
+    expect(page.create).toHaveBeenCalledWith('Contact', { values })
+    expect(page.doc.contacts.at(-1)).toEqual({ contact: 'Dana Walk' })
+    expect(page.save).toHaveBeenCalledTimes(1)
   })
 
   it('adds nothing when Quick Entry is closed without a save', async () => {
     const page = fakePage({ create: vi.fn(() => Promise.resolve(null)) })
-    const done = await new ContactsEditor(page, MESSAGES).create({})
-    expect(done).toBe(false)
-    expect(page.call).not.toHaveBeenCalled()
+    expect(await new ContactsEditor(page, MESSAGES).create({})).toBe(false)
+    expect(page.save).not.toHaveBeenCalled()
   })
 
   it('toasts a failed Quick Entry and adds nothing', async () => {
     const page = fakePage({
-      create: vi.fn(() => Promise.reject(new Error('Not permitted'))),
+      create: vi.fn(() => Promise.reject(new Error('No permission'))),
     })
-    const done = await new ContactsEditor(page, MESSAGES).create({})
-    expect(done).toBe(false)
-    expect(page.toast.error).toHaveBeenCalledWith('Not permitted')
-    expect(page.call).not.toHaveBeenCalled()
+    expect(await new ContactsEditor(page, MESSAGES).create({})).toBe(false)
+    expect(page.toast.error).toHaveBeenCalledWith('No permission')
+    expect(page.save).not.toHaveBeenCalled()
+  })
+})
+
+describe('a contact’s email and mobile', () => {
+  let unregister = () => {}
+  afterEach(() => {
+    unregister()
+    callState.media = []
+  })
+
+  it('dials only while the user has a calling medium', () => {
+    callState.media = []
+    expect(canCall()).toBe(false)
+    callState.media = ['Twilio']
+    expect(canCall()).toBe(true)
+  })
+
+  it('calls the number through the call window', async () => {
+    const start = vi.fn(() => Promise.resolve())
+    unregister = registerOutgoingStarter(start)
+    const page = fakePage()
+    await callContact(page, '+1 555 0101')
+    expect(start).toHaveBeenCalledWith('+1 555 0101')
+    expect(page.toast.error).not.toHaveBeenCalled()
+  })
+
+  it('toasts a call window that is still loading', async () => {
+    const page = fakePage()
+    await callContact(page, '+1 555 0101')
+    expect(page.toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('still loading'),
+    )
+  })
+
+  it('emails only when the deal offers its email writer', () => {
+    const has = vi.fn((name) => name !== 'email')
+    expect(canEmail(fakePage({ composer: { has } }))).toBe(false)
+    expect(has).toHaveBeenCalledWith('email')
+    expect(canEmail(fakePage({ composer: { has: () => true } }))).toBe(true)
+  })
+
+  it('opens the deal’s email writer with the contact in To', () => {
+    const page = fakePage({ composer: { open: vi.fn() } })
+    emailContact(page, 'ana@example.com')
+    expect(page.composer.open).toHaveBeenCalledWith('email', {
+      draft: { to: ['ana@example.com'] },
+    })
   })
 })
