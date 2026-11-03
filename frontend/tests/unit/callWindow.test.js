@@ -215,8 +215,9 @@ describe('the call window', () => {
   })
 
   it('Note opens Quick Entry with the lead and links the saved note to the call log', async () => {
-    const { callApi } =
-      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     shell.create.mockResolvedValue({ name: 'N-1' })
     await ring()
     await press('Accept')
@@ -290,8 +291,9 @@ describe('the call window with Exotel', () => {
   })
 
   it('links a note made during the call to the Exotel call log', async () => {
-    const { callApi } =
-      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     shell.create.mockResolvedValue({ name: 'N-9' })
     await exotelWindow()
     sendEvent({ ...inbound, EventType: 'Dial', Status: 'busy' })
@@ -318,8 +320,9 @@ describe('the call window with Exotel', () => {
   })
 
   it('an outgoing call with one medium dials at once: Ringing your phone…', async () => {
-    const { callApi } =
-      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     await exotelWindow()
     await startOutgoingCall('+15550100101')
     await settle()
@@ -337,8 +340,9 @@ describe('the medium picker', () => {
   }
 
   it('opens as the first step with one button per medium when there is no default', async () => {
-    const { callApi } =
-      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     await both()
     startOutgoingCall('+15550100101')
     await settle()
@@ -354,8 +358,9 @@ describe('the medium picker', () => {
   })
 
   it('remembers the choice when asked', async () => {
-    const { callApi } =
-      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     await both()
     startOutgoingCall('+15550100101')
     await settle()
@@ -368,8 +373,9 @@ describe('the medium picker', () => {
   })
 
   it('skips the picker for a default medium', async () => {
-    const { callApi } =
-      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    const { callApi } = await import(
+      '../../../crm/fcrm/frontend/telephony/callApi.js'
+    )
     await both('Exotel')
     startOutgoingCall('+15550100101')
     await settle()
