@@ -98,6 +98,15 @@ describe('normalizeLinkFilters', () => {
     ).toEqual({ organization: ['=', 'Frappe'] })
   })
 
+  it('exposes the session user to eval: conditions', () => {
+    document.cookie = 'user_id=agent@example.com'
+    expect(
+      normalizeLinkFilters([
+        ['ToDo', 'allocated_to', '=', 'eval:frappe.session.user'],
+      ]),
+    ).toEqual({ allocated_to: ['=', 'agent@example.com'] })
+  })
+
   it('skips eval: conditions that cannot be evaluated', () => {
     // no doc in context → `doc.company` throws → condition dropped
     expect(

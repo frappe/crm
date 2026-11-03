@@ -582,7 +582,22 @@ function getRowFieldObj(field, row) {
   if (rowOverrides) Object.assign(merged, rowOverrides)
 
   merged.disabled = Boolean(merged.read_only || isFetchedFromLink(merged, row))
+  merged.filters ??= getRowLinkFilters(merged, row)
   return merged
+}
+
+function getRowLinkFilters(field, row) {
+  const filters = parseLinkFilters(field.link_filters, {
+    doc: row,
+    parent: parentDoc.value,
+  })
+  if (field.fieldtype !== 'User') return filters
+
+  return {
+    name: ['in', users.data.crmUsers?.map((user) => user.name)],
+    ignore_user_type: 1,
+    ...filters,
+  }
 }
 
 const showRowList = ref(new Array(rows.value?.length || []).fill(false))
@@ -642,16 +657,8 @@ function getFieldObj(field) {
     }
   }
 
-  // Field objects are shared across rows, so only the parent doc is known here
-  const linkFilterContext = { parent: parentDoc.value }
-
   if (field.fieldtype === 'Link' && field.options === 'User') {
     field.fieldtype = 'User'
-    field.link_filters = JSON.stringify({
-      name: ['in', users.data.crmUsers?.map((user) => user.name)],
-      ignore_user_type: 1,
-      ...(parseLinkFilters(field.link_filters, linkFilterContext) || {}),
-    })
   }
 
   field = applyContactOrganizationGrouping(
@@ -662,7 +669,6 @@ function getFieldObj(field) {
 
   const fieldObjWithFilters = {
     ...field,
-    filters: parseLinkFilters(field.link_filters, linkFilterContext),
     placeholder: field.placeholder || field.label,
   }
 

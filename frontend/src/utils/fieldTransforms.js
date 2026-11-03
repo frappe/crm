@@ -1,4 +1,5 @@
 import { _eval, evaluateExpression } from '@/utils/expressions'
+import { getSessionUser } from '@/utils/session'
 
 /**
  * Safely parse link_filters which can be a JSON string or already an object.
@@ -28,8 +29,9 @@ export function parseLinkFilters(linkFilters, context = {}) {
  * `[fieldname, operator, value]`. Non-list input is returned as-is.
  *
  * `eval:` values are evaluated against `context.doc` / `context.parent`
- * (same as Desk's `parse_filters()`). A condition whose expression cannot
- * be evaluated is skipped rather than sent to the server as a literal string.
+ * (same as Desk's `parse_filters()`). The CRM frontend has no `frappe` global,
+ * so expressions only get `frappe.session.user`. A condition whose expression
+ * cannot be evaluated is skipped rather than sent to the server as a literal string.
  *
  * @param {Array|object} linkFilters
  * @param {object} [context]
@@ -48,7 +50,11 @@ export function normalizeLinkFilters(linkFilters, context = {}) {
     if (!fieldname || typeof fieldname !== 'string') continue
     if (typeof value === 'string' && value.startsWith('eval:')) {
       try {
-        value = _eval(value.slice(5), { doc, parent })
+        value = _eval(value.slice(5), {
+          doc,
+          parent,
+          frappe: { session: { user: getSessionUser() } },
+        })
       } catch {
         continue
       }
