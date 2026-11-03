@@ -131,6 +131,7 @@ function reply(email, reply_all = false) {
   }
 
   let repliedMessage = `<blockquote>${message}</blockquote>`
+  let draft = draftBeforeQuote(editor.editor)
 
   editor.editor
     .chain()
@@ -138,11 +139,12 @@ function reply(email, reply_all = false) {
     .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')
-    .insertContentAt(0, { type: 'paragraph' })
+    .insertContentAt(0, draft.length ? draft : { type: 'paragraph' })
     .focus('start')
     .run()
 }
 
+<<<<<<< HEAD
 const status = computed(() => {
   let _status = props.activity?.data?.delivery_status
   let indicator_color = 'red'
@@ -154,6 +156,39 @@ const status = computed(() => {
     indicator_color = 'blue'
   } else if (_status == 'Error') {
     indicator_color = 'red'
+=======
+// Keep what the user already typed, dropping any previously quoted email
+function draftBeforeQuote(editor) {
+  let draft = []
+  let quoted = false
+  editor.state.doc.forEach((node) => {
+    quoted ||= node.type.name === 'blockquote'
+    if (!quoted) draft.push(node.toJSON())
+  })
+  return draft
+}
+
+const email = computed(() => {
+  const { data } = props.activity
+  return {
+    type: 'email',
+    key: props.activity.communication_date,
+    // a scheduled email shows when it goes out ("in 17 hours"), not when it was written
+    timestamp: scheduled.value
+      ? props.activity.data.send_after
+      : props.activity.communication_date,
+    author: { fullname: data.sender_full_name, email: data.sender },
+    data: {
+      subject: data.subject,
+      sender: data.sender,
+      to: data.recipients,
+      cc: data.cc,
+      bcc: data.bcc,
+      content: data.content,
+      deliveryStatus: data.delivery_status,
+      attachments: data.attachments,
+    },
+>>>>>>> d85c3bb (fix: keep typed draft when replying to an email)
   }
   return { label: _status, color: indicator_color }
 })
