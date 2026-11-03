@@ -1,10 +1,17 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
   ContactsEditor,
+  callContact,
+  canCall,
+  emailContact,
   FIRST_LAYOUT_SECTION,
   dealContacts,
   placeContactsSection,
 } from '../../../crm/fcrm/frontend/contacts/dealContacts.js'
+import {
+  callState,
+  registerOutgoingStarter,
+} from '../../../crm/fcrm/frontend/telephony/callState.js'
 
 const MESSAGES = {
   duplicate: 'Contact already added',
@@ -278,5 +285,41 @@ describe('ContactsEditor', () => {
     expect(await new ContactsEditor(page, MESSAGES).create({})).toBe(false)
     expect(page.toast.error).toHaveBeenCalledWith('No permission')
     expect(page.save).not.toHaveBeenCalled()
+  })
+})
+
+describe('a contact’s email and mobile', () => {
+  it('dials only while the user has a calling medium', () => {
+    callState.media = []
+    expect(canCall()).toBe(false)
+    callState.media = ['Twilio']
+    expect(canCall()).toBe(true)
+    callState.media = []
+  })
+
+  it('calls the number through the call window', async () => {
+    const start = vi.fn(() => Promise.resolve())
+    const unregister = registerOutgoingStarter(start)
+    const page = fakePage()
+    await callContact(page, '+1 555 0101')
+    expect(start).toHaveBeenCalledWith('+1 555 0101')
+    expect(page.toast.error).not.toHaveBeenCalled()
+    unregister()
+  })
+
+  it('toasts a call window that is still loading', async () => {
+    const page = fakePage()
+    await callContact(page, '+1 555 0101')
+    expect(page.toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('still loading')
+    )
+  })
+
+  it('opens the deal’s email writer with the contact in To', () => {
+    const page = fakePage({ composer: { open: vi.fn() } })
+    emailContact(page, 'ana@example.com')
+    expect(page.composer.open).toHaveBeenCalledWith('email', {
+      draft: { to: ['ana@example.com'] },
+    })
   })
 })

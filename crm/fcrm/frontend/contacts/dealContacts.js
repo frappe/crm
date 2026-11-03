@@ -1,6 +1,7 @@
 // What CRM Deal's contacts section does, kept free of the desk's imports so it is unit-tested.
 import { ref, toRaw } from 'vue'
 import { saveRecord } from '../saveRecord.js'
+import { callState, startOutgoingCall } from '../telephony/callState.js'
 
 // The layout move puts the SLA section first in every Deal Side Panel (#45882 Q6).
 export const FIRST_LAYOUT_SECTION = 'sla_section'
@@ -18,6 +19,25 @@ export function placeContactsSection(page, section) {
 export function dealContacts(doc) {
 	const rows = (doc?.contacts ?? []).filter((row) => row.contact)
 	return rows.sort((a, b) => Number(Boolean(b.is_primary)) - Number(Boolean(a.is_primary)))
+}
+
+/** Whether a mobile number dials; reactive, since the user's media land after the first paint. */
+export function canCall() {
+	return callState.media.length > 0
+}
+
+/** Dials through the call window, as "Make a call" does; a window still loading is told in a toast. */
+export async function callContact(page, number) {
+	try {
+		await startOutgoingCall(number)
+	} catch (error) {
+		page.toast.error(error?.message || String(error))
+	}
+}
+
+/** Opens the deal's email writer to the contact; an email draft already in memory keeps its To. */
+export function emailContact(page, email) {
+	page.composer.open('email', { draft: { to: [email] } })
 }
 
 /** Edits the draft's contacts table and saves it, one write at a time; each resolves true once saved. */

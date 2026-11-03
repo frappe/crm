@@ -47,14 +47,20 @@
 				</div>
 			</div>
 			<div v-if="isOpen(row)" class="flex flex-col gap-1.5 pt-2 text-base text-ink-gray-8">
-				<div v-if="row.email" class="flex min-w-0 items-center gap-3 py-1 pl-1">
-					<span class="lucide-mail size-4 shrink-0 text-ink-gray-6" aria-hidden="true" />
-					<span class="truncate">{{ row.email }}</span>
-				</div>
-				<div v-if="row.mobile_no" class="flex min-w-0 items-center gap-3 py-1 pl-1">
-					<span class="lucide-phone size-4 shrink-0 text-ink-gray-6" aria-hidden="true" />
-					<span class="truncate">{{ row.mobile_no }}</span>
-				</div>
+				<DealContactLine
+					v-if="row.email"
+					icon="lucide-mail"
+					:value="row.email"
+					:tooltip="__('Send email to {0}', [row.email])"
+					:action="() => emailContact(page, row.email)"
+				/>
+				<DealContactLine
+					v-if="row.mobile_no"
+					icon="lucide-phone"
+					:value="row.mobile_no"
+					:tooltip="__('Call {0}', [row.mobile_no])"
+					:action="canCall() ? () => callContact(page, row.mobile_no) : null"
+				/>
 				<span v-if="!row.email && !row.mobile_no" class="py-3 text-center text-sm text-ink-gray-4">
 					{{ __('No details added') }}
 				</span>
@@ -71,7 +77,8 @@ import { computed, reactive } from 'vue'
 import { Avatar, Badge, Button, Dropdown } from 'frappe-ui'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
-import { dealContacts } from './dealContacts.js'
+import DealContactLine from './DealContactLine.vue'
+import { callContact, canCall, dealContacts, emailContact } from './dealContacts.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },
