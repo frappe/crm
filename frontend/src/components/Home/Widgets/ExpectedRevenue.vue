@@ -29,21 +29,25 @@
       />
     </template>
     <template #empty>
-      <div class="flex flex-col items-start gap-2">
-        <span class="text-p-base text-ink-gray-6">
-          {{ __('Turn on forecasting to see expected revenue.') }}
-        </span>
-        <Button
+      <HomeEmptyState
+        compact
+        :text="__('Turn on forecasting to see expected revenue.')"
+        icon="lucide-trending-up"
+      >
+        <button
           v-if="isAdmin()"
-          size="sm"
-          :label="__('Open settings')"
+          type="button"
+          class="text-sm text-ink-gray-5 underline underline-offset-2 hover:text-ink-gray-7"
           @click="openForecastingSettings"
-        />
-      </div>
+        >
+          {{ __('Open settings') }}
+        </button>
+      </HomeEmptyState>
     </template>
   </NumberCard>
 </template>
 <script setup>
+import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { useHomeWidget } from '@/composables/homeWidget'
 import { activeSettingsPage, showSettings } from '@/composables/settings'

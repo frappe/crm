@@ -31,19 +31,12 @@
       <div v-if="loading" class="flex flex-1 items-center justify-center">
         <LoadingIndicator class="size-4 text-ink-gray-5" />
       </div>
-      <div
+      <HomeEmptyState
         v-else-if="!rows.length"
-        class="flex flex-1 flex-col items-center justify-center gap-3 px-4 pb-10 text-center"
-      >
-        <span
-          class="flex size-8 items-center justify-center rounded-full bg-surface-gray-2"
-        >
-          <span :class="emptyIcon" class="size-4 text-ink-gray-5" />
-        </span>
-        <span class="max-w-64 text-p-base text-ink-gray-6">
-          {{ emptyText }}
-        </span>
-      </div>
+        class="flex-1 px-4 pb-10"
+        :text="emptyText"
+        :icon="emptyIcon"
+      />
       <slot v-else :rows="rows" />
     </div>
 
@@ -61,6 +54,7 @@
   </div>
 </template>
 <script setup>
+import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { Dropdown } from 'frappe-ui'
 import { computed, inject, ref } from 'vue'
