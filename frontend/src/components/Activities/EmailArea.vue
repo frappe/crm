@@ -144,19 +144,6 @@ function reply(email, reply_all = false) {
     .run()
 }
 
-<<<<<<< HEAD
-const status = computed(() => {
-  let _status = props.activity?.data?.delivery_status
-  let indicator_color = 'red'
-  if (['Sent', 'Clicked'].includes(_status)) {
-    indicator_color = 'green'
-  } else if (['Sending', 'Scheduled'].includes(_status)) {
-    indicator_color = 'amber'
-  } else if (['Opened', 'Read'].includes(_status)) {
-    indicator_color = 'blue'
-  } else if (_status == 'Error') {
-    indicator_color = 'red'
-=======
 // Keep what the user already typed, dropping any previously quoted email
 function draftBeforeQuote(editor) {
   let draft = []
@@ -168,27 +155,17 @@ function draftBeforeQuote(editor) {
   return draft
 }
 
-const email = computed(() => {
-  const { data } = props.activity
-  return {
-    type: 'email',
-    key: props.activity.communication_date,
-    // a scheduled email shows when it goes out ("in 17 hours"), not when it was written
-    timestamp: scheduled.value
-      ? props.activity.data.send_after
-      : props.activity.communication_date,
-    author: { fullname: data.sender_full_name, email: data.sender },
-    data: {
-      subject: data.subject,
-      sender: data.sender,
-      to: data.recipients,
-      cc: data.cc,
-      bcc: data.bcc,
-      content: data.content,
-      deliveryStatus: data.delivery_status,
-      attachments: data.attachments,
-    },
->>>>>>> d85c3bb (fix: keep typed draft when replying to an email)
+const status = computed(() => {
+  let _status = props.activity?.data?.delivery_status
+  let indicator_color = 'red'
+  if (['Sent', 'Clicked'].includes(_status)) {
+    indicator_color = 'green'
+  } else if (['Sending', 'Scheduled'].includes(_status)) {
+    indicator_color = 'amber'
+  } else if (['Opened', 'Read'].includes(_status)) {
+    indicator_color = 'blue'
+  } else if (_status == 'Error') {
+    indicator_color = 'red'
   }
   return { label: _status, color: indicator_color }
 })
