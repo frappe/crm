@@ -1,4 +1,4 @@
-// "Make a call": the palette takes a typed number, the Lead and Deal headers offer the record's own.
+// "Make a call": the palette offers the open record's Phone numbers and takes a typed one; the Lead and Deal headers offer their own.
 import { __ } from "frappe/i18n";
 import { callState, startOutgoingCall } from "./callState.js";
 
@@ -15,6 +15,35 @@ const hasMedium = () => callState.media.length > 0;
 export function recordNumbers(doc) {
   const numbers = NUMBER_FIELDS.map((field) => doc?.[field]?.trim()).filter(Boolean);
   return [...new Set(numbers)];
+}
+
+/** A Phone field, or a Data field whose options say Phone. */
+const isPhoneField = ({ fieldtype, options }) =>
+  fieldtype === "Phone" || (fieldtype === "Data" && options === "Phone");
+
+/**
+ * The doc's non-empty Phone values with their field labels, from the doctype's meta (`{ fields }`).
+ * One entry per distinct number, in field order; a number two fields hold has both labels, joined by ", ".
+ * @returns {{ value: string, label: string }[]}
+ */
+export function phoneValues(doc, meta) {
+  const labels = new Map();
+  for (const field of meta?.fields ?? []) {
+    const value = String(doc?.[field.fieldname] ?? "").trim();
+    if (!value || !isPhoneField(field)) continue;
+    labels.set(value, [...(labels.get(value) ?? []), field.label]);
+  }
+  return [...labels].map(([value, names]) => ({ value, label: names.join(", ") }));
+}
+
+/** The open record's Phone values as palette options: the number, with its fields' labels beside it. */
+export function recordPhoneOptions(record) {
+  return phoneValues(record?.doc, record).map(({ value, label }) => ({
+    value,
+    label: value,
+    description: label,
+    icon: "lucide-phone",
+  }));
 }
 
 /** The typed text as the palette's one choice, once it reads as a phone number. */
@@ -37,7 +66,13 @@ export const makeACallAct = {
     get label() {
       return __("Type a phone number");
     },
-    options: (shell, query) => typedNumberOptions(query),
+    options: (shell, query) => {
+      const offered = recordPhoneOptions(shell.record?.());
+      const typed = typedNumberOptions(query).filter(
+        ({ value }) => !offered.some((option) => option.value === value)
+      );
+      return [...offered, ...typed];
+    },
   },
   run: (shell, number) => {
     if (!number) throw new Error(__("Make a call needs a number"));
