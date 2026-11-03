@@ -115,10 +115,8 @@ const isTwilio = computed(() => call.value === calls.Twilio);
 
 const contact = computed(() => state.value.contact);
 const clock = computed(() => formatClock(state.value.seconds));
-const showClock = computed(
-  () =>
-    ["oncall", "ended"].includes(state.value.step) &&
-    state.value.outcome !== "noanswer"
+const showClock = computed(() =>
+  ["oncall", "ended"].includes(state.value.step)
 );
 const ringing = computed(
   () => state.value.step === "incoming" || state.value.step === "ringing"
@@ -263,9 +261,7 @@ function openRecord() {
 }
 
 const STATUS = computed(() => {
-  const { outcome, customerRinging } = state.value;
-  const ended = outcome === "noanswer" ? __("No answer") : __("Call ended");
-  const short = outcome === "noanswer" ? __("No answer") : __("Ended");
+  const { customerRinging } = state.value;
   return {
     incoming: [__("Incoming call"), __("Incoming")],
     ringing: isTwilio.value
@@ -274,7 +270,7 @@ const STATUS = computed(() => {
       ? [__("Calling…"), __("Calling…")]
       : [__("Ringing your phone…"), __("Ringing…")],
     oncall: [__("On call"), clock.value],
-    ended: [ended, short],
+    ended: [__("Call ended"), __("Ended")],
   };
 });
 

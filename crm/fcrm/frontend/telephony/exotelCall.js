@@ -47,7 +47,7 @@ export function readExotelEvent(payload) {
 /**
  * `api` is `{ call, contact }`; `socket` carries the user's `exotel_call` events (the server sends them to that user only).
  * `step` is idle, incoming, ringing (we dialled), oncall or ended (the card stays for a note and a task);
- * `outcome` is "noanswer" for an ended call nobody took, `customerRinging` once our phone answered.
+ * a call nobody took goes straight back to idle, as Twilio's does, and `customerRinging` is set once our phone answered.
  */
 export function createExotelCall({ api, socket }) {
   const state = reactive({
@@ -55,7 +55,6 @@ export function createExotelCall({ api, socket }) {
     contact: null,
     seconds: 0,
     callSid: "",
-    outcome: "",
     customerRinging: false,
     error: "",
   });
@@ -87,7 +86,6 @@ export function createExotelCall({ api, socket }) {
       step,
       seconds: 0,
       callSid,
-      outcome: "",
       customerRinging: false,
       contact: { name: "", image: "", number, record: null },
     });
@@ -117,11 +115,14 @@ export function createExotelCall({ api, socket }) {
       state.step = "oncall";
       state.customerRinging = false;
       startTimer();
-    } else if (event.phase === "ended" || event.phase === "noanswer") {
+    } else if (event.phase === "noanswer") {
+      stopTimer();
+      finished.add(sid);
+      Object.assign(state, { step: "idle", contact: null, callSid: "" });
+    } else if (event.phase === "ended") {
       stopTimer();
       finished.add(sid);
       state.seconds = event.seconds || (startedAt ? state.seconds : 0);
-      state.outcome = event.phase === "noanswer" ? "noanswer" : "";
       state.step = "ended";
     }
   }

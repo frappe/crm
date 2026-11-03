@@ -90,12 +90,16 @@ describe('an incoming call', () => {
     expect(call.isLive()).toBe(false)
   })
 
-  it('a call nobody took ends as No answer', () => {
+  it('a call nobody took, or the caller cancelled, closes the window', () => {
     const { call, send } = setup()
     send(payload(ringing, 'X-IN'))
     send(payload(noAnswer, 'X-IN'))
-    expect(call.state.step).toBe('ended')
-    expect(call.state.outcome).toBe('noanswer')
+    expect(call.state.step).toBe('idle')
+    expect(call.state.contact).toBe(null)
+    expect(call.isLive()).toBe(false)
+
+    send(payload(ringing, 'X-IN'))
+    expect(call.state.step).toBe('idle')
   })
 
   it('a repeated ring of a call that has ended does not bring it back', () => {
