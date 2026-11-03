@@ -617,10 +617,10 @@ const articles = ref([
     title: __('Settings'),
     opened: false,
     subArticles: [
-      { name: 'profile', title: __('Profile') },
+      { name: 'profile-and-preferences', title: __('Profile') },
       { name: 'custom-branding', title: __('Custom Branding') },
       { name: 'home-actions', title: __('Home Actions') },
-      { name: 'invite-users', title: __('Invite Users') },
+      { name: 'inviting-your-team', title: __('Invite Users') },
     ],
   },
   {
@@ -640,7 +640,7 @@ const articles = ref([
   {
     title: __('Capturing Leads'),
     opened: false,
-    subArticles: [{ name: 'web-form', title: __('Web Form') }],
+    subArticles: [{ name: 'capturing-leads/web-form', title: __('Web Form') }],
   },
   {
     title: __('Views'),
