@@ -6,6 +6,8 @@ from twilio.twiml.voice_response import VoiceResponse
 from werkzeug.wrappers import Response
 
 from crm.integrations.api import get_contact_by_phone_number
+from crm.integrations.telephony_mock import twilio as mock_twilio
+from crm.integrations.telephony_mock.mode import is_mock_mode
 
 from .twilio_handler import IncomingCall, Twilio, TwilioCallDetails
 
@@ -35,6 +37,9 @@ def is_enabled():
 @frappe.whitelist()
 def generate_access_token():
 	"""Returns access token that is required to authenticate Twilio Client SDK."""
+	if is_mock_mode():
+		return mock_twilio.access_token()
+
 	twilio = Twilio.connect()
 	if not twilio:
 		return {}

@@ -1,0 +1,16 @@
+{
+	"_synthetic": "Built from Exotel's Calls/connect StatusCallback sample and the fields crm/integrations/exotel/handler.py reads. Not a recorded call.",
+	"payload": {
+		"EventType": "terminal",
+		"Direction": "outbound-api",
+		"Status": "no-answer",
+		"CallSid": "mock-outbound",
+		"From": "+919999900001",
+		"To": "+915550100101",
+		"Legs[0][Status]": "completed",
+		"Legs[1][Status]": "no-answer",
+		"DialCallDuration": "0",
+		"StartTime": "2026-11-03 10:00:00",
+		"EndTime": "2026-11-03 10:00:30"
+	}
+}

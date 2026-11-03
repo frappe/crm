@@ -1,0 +1,17 @@
+{
+	"_synthetic": "Built from Exotel's Passthru applet sample and the fields crm/integrations/exotel/handler.py reads. Not a recorded call.",
+	"payload": {
+		"Direction": "incoming",
+		"CallType": "incomplete",
+		"DialCallStatus": "no-answer",
+		"DialCallDuration": "0",
+		"CallSid": "mock-inbound",
+		"CallFrom": "+915550100101",
+		"From": "+915550100101",
+		"To": "+918880000001",
+		"DialWhomNumber": "+919999900001",
+		"AgentEmail": "agent@example.com",
+		"StartTime": "2026-11-03 10:00:00",
+		"EndTime": "2026-11-03 10:00:30"
+	}
+}
