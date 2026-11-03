@@ -21,7 +21,7 @@
         >
           {{ content }}
         </div>
-        <img v-if="isImage" :src="url" class="m-auto rounded border" />
+        <img v-if="isImage" :src="url" class="m-auto rounded-4 border" />
       </template>
     </Dialog>
   </span>

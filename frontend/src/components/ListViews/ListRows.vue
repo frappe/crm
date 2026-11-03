@@ -49,7 +49,12 @@
 
 <script setup>
 import { useStorage } from '@vueuse/core'
-import { ListRows, ListRow, ListGroupHeader, ListGroupRows } from 'frappe-ui'
+import {
+  ListRows,
+  ListRow,
+  ListGroupHeader,
+  ListGroupRows,
+} from 'frappe-ui/experimental'
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useVisitedRecords } from '@/composables/useVisitedRecords'
 

@@ -16,14 +16,23 @@
     v-model="showChangePasswordModal"
   />
   <AboutModal v-model="showAboutModal" />
+  <NoteViewModal v-if="showNoteView" />
+  <MentionHoverCard />
   <FieldLayoutDialogContainer />
+  <CommandPalette />
+  <SetupFeedback />
 </template>
 <script setup>
+import CommandPalette from '@/components/CommandPalette/CommandPalette.vue'
 import FieldLayoutDialogContainer from '@/components/Modals/FieldLayoutDialogContainer.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
 import CreateDocumentModal from '@/components/Modals/CreateDocumentModal.vue'
 import QuickEntryModal from '@/components/Modals/QuickEntryModal.vue'
 import AboutModal from '@/components/Modals/AboutModal.vue'
+import NoteViewModal from '@/components/Modals/NoteViewModal.vue'
+import MentionHoverCard from '@/components/MentionHoverCard.vue'
+import SetupFeedback from '@/components/Setup/SetupFeedback.vue'
+import { useNoteView } from '@/composables/noteView'
 import {
   showCreateDocumentModal,
   createDocumentDoctype,
@@ -36,4 +45,6 @@ import {
   showAboutModal,
   showChangePasswordModal,
 } from '@/composables/modals'
+
+const { show: showNoteView } = useNoteView()
 </script>

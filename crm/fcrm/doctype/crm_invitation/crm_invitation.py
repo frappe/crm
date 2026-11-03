@@ -5,6 +5,8 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+from crm.api.user import validate_no_role_profile
+
 
 class CRMInvitation(Document):
 	# begin: auto-generated types
@@ -26,10 +28,16 @@ class CRMInvitation(Document):
 
 	def before_insert(self):
 		frappe.utils.validate_email_address(self.email, True)
+		self.validate_existing_user()
 
-		self.key = frappe.generate_hash(length=12)
 		self.invited_by = frappe.session.user
 		self.status = "Pending"
+
+	def validate(self):
+		if self.is_new():
+			validate_can_invite(self.role)
+			# not in before_insert, permlevel fields are reset right after it for users without access
+			self.key = frappe.generate_hash(length=12)
 
 	def after_insert(self):
 		self.invite_via_email()
@@ -63,6 +71,8 @@ class CRMInvitation(Document):
 			frappe.throw(_("Invalid or expired key"))
 
 		user, is_new_user = self.create_user_if_not_exists()
+		if not is_new_user:
+			validate_no_role_profile(user)
 		user.append_roles(self.role)
 		if self.role == "System Manager":
 			user.append_roles("Sales Manager", "Sales User")
@@ -89,6 +99,11 @@ class CRMInvitation(Document):
 		if block_modules:
 			user.set("block_modules", block_modules)
 
+	def validate_existing_user(self):
+		# the invite would be accepted but the role never applied, so fail early
+		if frappe.db.exists("User", self.email):
+			validate_no_role_profile(frappe.get_doc("User", self.email))
+
 	def create_user_if_not_exists(self):
 		if not frappe.db.exists("User", self.email):
 			first_name = self.email.split("@")[0].title()
@@ -103,6 +118,14 @@ class CRMInvitation(Document):
 			return user, True
 
 		return frappe.get_doc("User", self.email), False
+
+
+def validate_can_invite(role: str):
+	if role not in ("System Manager", "Sales Manager", "Sales User"):
+		frappe.throw(_("Cannot invite for this role"), frappe.PermissionError)
+
+	if role != "Sales User" and "System Manager" not in frappe.get_roles():
+		frappe.throw(_("You are not allowed to invite {0}").format(_(role)), frappe.PermissionError)
 
 
 def expire_invitations():

@@ -2,8 +2,11 @@ import { onMounted, onUnmounted } from 'vue'
 
 const STORAGE_KEY = 'app_broadcasts'
 const bus = {
-  send(event, payload) {
+  emit(event, payload) {
     window.dispatchEvent(new CustomEvent(event, { detail: payload }))
+  },
+  send(event, payload) {
+    bus.emit(event, payload)
 
     const broadcasts = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
     broadcasts.push({ event, payload, timestamp: Date.now() })
@@ -41,5 +44,5 @@ export function useBroadcast() {
     listeners.forEach(({ event, handler }) => bus.off(event, handler))
   })
 
-  return { on, send: bus.send }
+  return { emit: bus.emit, on, send: bus.send }
 }

@@ -1,12 +1,11 @@
 <template>
-  <Popover placement="bottom-end">
-    <template #target="{ togglePopover, close }">
+  <Popover side="bottom" align="end" bare>
+    <template #trigger="{ close }">
       <div class="flex items-center">
         <Button
           :label="__('Filter')"
           :class="filters?.size ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
-          @click="togglePopover"
         >
           <template v-if="filters?.size" #suffix>
             <div
@@ -25,9 +24,9 @@
         />
       </div>
     </template>
-    <template #body="{ close }">
+    <template #default="{ close }">
       <div
-        class="my-2 min-w-40 rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="my-2 min-w-40 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
           <template v-if="filters?.size">
@@ -62,9 +61,7 @@
                   <Combobox
                     v-model="f.operator"
                     trigger="button"
-                    :options="
-                      getOperators(f.field.fieldtype, f.field.fieldname)
-                    "
+                    :options="getOperators(f.field)"
                     :placeholder="__('Equals')"
                     @update:modelValue="() => updateOperator(f)"
                   />
@@ -96,9 +93,7 @@
                     <Combobox
                       v-model="f.operator"
                       trigger="button"
-                      :options="
-                        getOperators(f.field.fieldtype, f.field.fieldname)
-                      "
+                      :options="getOperators(f.field)"
                       :placeholder="__('Equals')"
                       @update:modelValue="() => updateOperator(f)"
                     />
@@ -139,7 +134,7 @@
                   class="!text-ink-gray-5"
                   variant="ghost"
                   :label="__('Add Filter')"
-                  iconLeft="plus"
+                  iconLeft="lucide-plus"
                   @click="setOpen(!open)"
                 />
               </template>
@@ -160,11 +155,13 @@
 <script setup>
 import FilterIcon from '@/components/Icons/FilterIcon.vue'
 import Link from '@/components/Controls/Link.vue'
+import LinkMultiSelect from '@/components/Controls/LinkMultiSelect.vue'
 import DurationInput from '@/components/Controls/DurationInput.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import {
   Combobox,
   FormControl,
+  MultiSelect,
   createResource,
   Popover,
   DatePicker,
@@ -174,6 +171,11 @@ import {
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 import { getFormat } from '@/utils'
+import {
+  isMultiValueFilter,
+  supportsTreeFilter,
+  toFilterValueArray,
+} from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -284,18 +286,22 @@ function convertFilters(data, allFilters) {
     }
 
     if (field) {
+      const operator = oppositeOperatorMap[value[0]]
       f.push({
         field,
         fieldname: key,
-        operator: oppositeOperatorMap[value[0]],
-        value: value[1],
+        operator,
+        value: isMultiValueFilter(field, operator)
+          ? toFilterValueArray(value[1])
+          : value[1],
       })
     }
   }
   return new Set(f)
 }
 
-function getOperators(fieldtype, fieldname) {
+function getOperators(field) {
+  const { fieldtype, fieldname } = field
   let options = []
   if (typeString.includes(fieldtype)) {
     options.push(
@@ -358,6 +364,12 @@ function getOperators(fieldtype, fieldname) {
         { label: __('Is'), value: 'is' },
       ],
     )
+    if (supportsTreeFilter(field)) {
+      options.push({
+        label: __('Descendants of (inclusive)'),
+        value: 'descendants of (inclusive)',
+      })
+    }
   }
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: __('Equals'), value: 'equals' }])
@@ -430,6 +442,21 @@ function getValueControl(f) {
       modelValue: f.value,
       'onUpdate:modelValue': (v) => updateValue(v, f),
     })
+  } else if (isMultiValueFilter(field, operator)) {
+    if (typeLink.includes(fieldtype)) {
+      return h(LinkMultiSelect, {
+        doctype: options,
+        modelValue: f.value,
+        'onUpdate:modelValue': (v) => updateValue(v, f),
+      })
+    }
+    const _options =
+      fieldtype == 'Check' ? ['Yes', 'No'] : getSelectOptions(options)
+    return h(MultiSelect, {
+      options: _options.map((o) => ({ label: o, value: o })),
+      modelValue: f.value,
+      'onUpdate:modelValue': (v) => updateValue(v, f),
+    })
   } else if (['like', 'not like', 'in', 'not in'].includes(operator)) {
     return h(FormControl, { type: 'text' })
   } else if (typeSelect.includes(fieldtype) || typeCheck.includes(fieldtype)) {
@@ -479,7 +506,10 @@ function getValueControl(f) {
   }
 }
 
-function getDefaultValue(field) {
+function getDefaultValue(field, operator) {
+  if (isMultiValueFilter(field, operator)) {
+    return []
+  }
   if (typeSelect.includes(field.fieldtype)) {
     return getSelectOptions(field.options)[0]
   }
@@ -511,16 +541,18 @@ function getSelectOptions(options) {
 
 function setfilter(data) {
   if (!data) return
+  const operator = getDefaultOperator(data.fieldtype)
   filters.value.add({
     field: {
       label: data.label,
       fieldname: data.fieldname,
       fieldtype: data.fieldtype,
       options: data.options,
+      is_tree: data.is_tree,
     },
     fieldname: data.fieldname,
-    operator: getDefaultOperator(data.fieldtype),
-    value: getDefaultValue(data),
+    operator,
+    value: getDefaultValue(data, operator),
   })
   apply()
 }
@@ -529,15 +561,17 @@ function updateFilter(data, index) {
   if (!data?.fieldname) return
 
   filters.value.delete(Array.from(filters.value)[index])
+  const operator = getDefaultOperator(data.fieldtype)
   filters.value.add({
     fieldname: data.fieldname,
-    operator: getDefaultOperator(data.fieldtype),
-    value: getDefaultValue(data),
+    operator,
+    value: getDefaultValue(data, operator),
     field: {
       label: data.label,
       fieldname: data.fieldname,
       fieldtype: data.fieldtype,
       options: data.options,
+      is_tree: data.is_tree,
     },
   })
   apply()
@@ -569,7 +603,7 @@ function updateValue(value, filter) {
 }
 
 function updateOperator(filter) {
-  filter.value = getDefaultValue(filter.field)
+  filter.value = getDefaultValue(filter.field, filter.operator)
 
   if (filter.operator === 'is' || filter.operator === 'is not') {
     filter.value = 'set'
@@ -618,6 +652,9 @@ function placeholder(f) {
   if (f.operator === 'between') {
     return __('01/01/2022 to 01/31/2022')
   } else if (f.operator === 'in' || f.operator === 'not in') {
+    if (isMultiValueFilter(f.field, f.operator)) {
+      return __('Select values')
+    }
     if (typeNumber.includes(f.field.fieldtype)) {
       return __('100, 200, 300')
     }
@@ -664,6 +701,7 @@ const operatorMap = {
   '<=': '<=',
   between: 'between',
   timespan: 'timespan',
+  'descendants of (inclusive)': 'descendants of (inclusive)',
 }
 
 const oppositeOperatorMap = {
@@ -684,6 +722,7 @@ const oppositeOperatorMap = {
   '<=': '<=',
   between: 'between',
   timespan: 'timespan',
+  'descendants of (inclusive)': 'descendants of (inclusive)',
 }
 
 const timespanOptions = [

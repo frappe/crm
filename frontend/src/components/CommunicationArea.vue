@@ -1,5 +1,18 @@
 <template>
-  <div class="flex justify-between gap-3 border-t px-4 py-2.5">
+  <div class="relative flex justify-between gap-3 border-t px-4 py-2.5">
+    <div
+      v-if="showEmailBox || showCommentBox"
+      class="group absolute inset-x-0 -top-1 z-10 flex h-2 cursor-row-resize touch-none items-center"
+      @pointerdown="startResize"
+      @pointermove="resize"
+      @pointerup="stopResize"
+      @pointercancel="stopResize"
+    >
+      <div
+        class="h-0.5 w-full bg-surface-gray-4 opacity-0 transition-opacity group-hover:opacity-100"
+        :class="{ 'opacity-100': resizing }"
+      />
+    </div>
     <div class="flex gap-1.5">
       <Button
         variant="ghost"
@@ -23,6 +36,7 @@
   </div>
   <div
     v-show="showEmailBox"
+    ref="emailPanel"
     @keydown.ctrl.enter.capture.stop="submitEmail"
     @keydown.meta.enter.capture.stop="submitEmail"
   >
@@ -36,6 +50,7 @@
         onClick: submitEmail,
         disabled: emailEmpty,
       }"
+      :scheduleSend="scheduleEmail"
       :discardButtonProps="{
         onClick: async () => {
           await deleteAttachedFiles()
@@ -50,6 +65,7 @@
         },
       }"
       :editable="showEmailBox"
+      :height="clampedEditorHeight"
       :doctype="doctype"
       :subject="subject"
       :placeholder="
@@ -59,6 +75,7 @@
   </div>
   <div
     v-show="showCommentBox"
+    ref="commentPanel"
     @keydown.ctrl.enter.capture.stop="submitComment"
     @keydown.meta.enter.capture.stop="submitComment"
   >
@@ -80,6 +97,7 @@
         },
       }"
       :editable="showCommentBox"
+      :height="clampedEditorHeight"
       :doctype="doctype"
       :placeholder="__('@John, can you please check this?')"
     />
@@ -91,10 +109,15 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
-import { isContentEmpty } from '@/utils'
+import { isContentEmpty, htmlToText } from '@/utils'
+import { createDialog } from '@/utils/dialogs'
+import {
+  getEmailSubject,
+  loadUserEmailSubjects,
+} from '@/composables/emailSubject'
 import { usersStore } from '@/stores/users'
-import { useStorage } from '@vueuse/core'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useStorage, useWindowSize } from '@vueuse/core'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { call, createResource, toast } from 'frappe-ui'
 import { ref, watch, computed } from 'vue'
 
@@ -108,7 +131,6 @@ const reload = defineModel('reload', { type: Boolean })
 const emit = defineEmits(['scroll'])
 
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
 const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
@@ -130,6 +152,47 @@ const newComment = useStorage(
 const newEmailEditor = ref(null)
 const newCommentEditor = ref(null)
 
+const MIN_EDITOR_HEIGHT = 112
+const MAX_EDITOR_HEIGHT_RATIO = 0.6
+
+const emailPanel = ref(null)
+const commentPanel = ref(null)
+const editorHeight = useStorage('communicationEditorHeight', 0)
+const { height: windowHeight } = useWindowSize()
+const resizing = ref(false)
+let dragStart = null
+
+const clampedEditorHeight = computed(
+  () => editorHeight.value && clampEditorHeight(editorHeight.value),
+)
+
+function clampEditorHeight(height) {
+  const max = windowHeight.value * MAX_EDITOR_HEIGHT_RATIO
+  return Math.round(Math.min(Math.max(height, MIN_EDITOR_HEIGHT), max))
+}
+
+function startResize(event) {
+  const panel = showEmailBox.value ? emailPanel.value : commentPanel.value
+  const editor = panel?.querySelector('[data-resizable-editor]')
+  if (!editor) return
+  event.preventDefault()
+  event.currentTarget.setPointerCapture(event.pointerId)
+  dragStart = { y: event.clientY, height: editor.offsetHeight }
+  resizing.value = true
+}
+
+function resize(event) {
+  if (!dragStart) return
+  editorHeight.value = clampEditorHeight(
+    dragStart.height + dragStart.y - event.clientY,
+  )
+}
+
+function stopResize() {
+  dragStart = null
+  resizing.value = false
+}
+
 const attachments = useStorage(
   `attachments-${getUser().email}-${props.doctype}-${doc.value.name}`,
   [],
@@ -142,14 +205,14 @@ const attachments = useStorage(
   },
 )
 
-const subject = computed(() => {
-  let prefix = ''
-  if (doc.value?.lead_name) {
-    prefix = doc.value.lead_name
-  } else if (doc.value?.organization) {
-    prefix = doc.value.organization
-  }
-  return `${prefix} (#${doc.value.name})`
+loadUserEmailSubjects()
+
+const subject = computed(() => getEmailSubject(props.doctype, doc.value))
+
+// Subject format may load after mount; update it unless the user already typed one
+watch(subject, (value, oldValue) => {
+  const editor = newEmailEditor.value
+  if (editor && editor.subject === oldValue) editor.subject = value
 })
 
 const signature = createResource({
@@ -203,7 +266,11 @@ const emailEmpty = computed(
     isContentEmpty(newEmail.value) || !newEmailEditor.value?.toEmails?.length,
 )
 
-async function sendMail() {
+const emailBlocked = computed(
+  () => emailEmpty.value || newEmailEditor.value?.sendBlocked,
+)
+
+async function sendMail(sendAfter = null) {
   let fromEmail = newEmailEditor.value.fromEmail || getUser().email
   let recipients = newEmailEditor.value.toEmails
   let subject = newEmailEditor.value.subject
@@ -225,6 +292,7 @@ async function sendMail() {
     send_email: 1,
     sender: fromEmail,
     sender_full_name: getUser()?.full_name || undefined,
+    send_after: sendAfter || undefined,
   })
 }
 
@@ -265,7 +333,7 @@ async function deleteAttachedFiles() {
 }
 
 async function submitEmail() {
-  if (emailEmpty.value) return
+  if (emailBlocked.value) return
   showEmailBox.value = false
   // toast.promise returns the toast id (not the promise), so await the send
   // itself — otherwise the reload below fires before the email is committed and
@@ -276,17 +344,54 @@ async function submitEmail() {
     success: __('Email sent'),
     error: (e) => e?.messages?.[0] || __('Failed to send email!'),
   })
+  if (await afterSend(sending))
+    capture('email_sent', { doctype: props.doctype })
+}
+
+function scheduleEmail(sendAfter, label, confirmed) {
+  if (emailBlocked.value) return
+  if (confirmed) return confirmSchedule(sendAfter, label)
+  createDialog({
+    title: __('Schedule email?'),
+    message: __('It will be sent on {0}.', [label]),
+    actions: [
+      {
+        label: __('Schedule'),
+        variant: 'solid',
+        onClick: ({ close }) => {
+          close()
+          confirmSchedule(sendAfter, label)
+        },
+      },
+    ],
+  })
+}
+
+async function confirmSchedule(sendAfter, label) {
+  showEmailBox.value = false
+  const scheduling = sendMail(sendAfter)
+  toast.promise(scheduling, {
+    loading: __('Scheduling email...'),
+    success: __('Email scheduled for {0}', [label]),
+    error: (e) => e?.messages?.[0] || __('Failed to schedule email!'),
+  })
+  if (await afterSend(scheduling)) {
+    capture('email_scheduled', { doctype: props.doctype })
+  }
+}
+
+// Clears the draft and refreshes the timeline once the email is saved
+async function afterSend(sending) {
   try {
     await sending
   } catch {
-    return
+    return false
   }
   newEmail.value = ''
   attachments.value = []
   reload.value = true
   emit('scroll')
-  capture('email_sent', { doctype: props.doctype })
-  updateOnboardingStep('send_first_email')
+  return true
 }
 
 async function submitComment() {
@@ -308,7 +413,6 @@ async function submitComment() {
   reload.value = true
   emit('scroll')
   capture('comment_sent', { doctype: props.doctype })
-  updateOnboardingStep('add_first_comment')
 }
 
 function toggleEmailBox() {
@@ -325,9 +429,59 @@ function toggleCommentBox() {
   showCommentBox.value = !showCommentBox.value
 }
 
+// Callable from outside (e.g. the command palette); setting the exposed ref
+// from a parent doesn't write through to .value, so open via a method.
+function openCommentBox() {
+  if (showEmailBox.value) showEmailBox.value = false
+  showCommentBox.value = true
+}
+
+function openEmailBox() {
+  if (showCommentBox.value) showCommentBox.value = false
+  showEmailBox.value = true
+}
+
+// A composer holding only the signature counts as empty
+const hasDraft = computed(() => {
+  const text = (html) => htmlToText(html || '').replace(/\s+/g, '')
+  const content = text(newEmail.value)
+  return (
+    !!attachments.value.length ||
+    (!!content && content !== text(signature.data))
+  )
+})
+
+// Puts a cancelled scheduled email back in the composer
+function restoreDraft(draft) {
+  const split = (emails) =>
+    emails
+      ? emails
+          .split(',')
+          .map((e) => e.trim())
+          .filter(Boolean)
+      : []
+  const editor = newEmailEditor.value
+  // The draft already carries its signature
+  signatureAdded.value = true
+  editor.subject = draft.subject
+  editor.toEmails = split(draft.recipients)
+  editor.ccEmails = split(draft.cc)
+  editor.bccEmails = split(draft.bcc)
+  editor.cc = !!editor.ccEmails.length
+  editor.bcc = !!editor.bccEmails.length
+  editor.replyAddresses = [draft.sender?.match(/<(.+)>/)?.[1] || draft.sender]
+  attachments.value = draft.attachments
+  newEmail.value = draft.content
+  openEmailBox()
+}
+
 defineExpose({
   show: showEmailBox,
   showComment: showCommentBox,
   editor: newEmailEditor,
+  openCommentBox,
+  openEmailBox,
+  hasDraft,
+  restoreDraft,
 })
 </script>

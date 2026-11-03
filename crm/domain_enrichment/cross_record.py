@@ -103,7 +103,7 @@ def copy_enrichment_from_organization(target_doc) -> list[str]:
 		# configured "Always refresh") so the link-time copy never
 		# overwrites or clears user-entered data. apply_to_document mutates target_doc
 		# in place and does NOT save (the caller's save persists it).
-		return mapper.apply_to_document(target_doc, result, cfg, fill_empty_only=True)
+		return mapper.filled_labels(mapper.apply_to_document(target_doc, result, cfg, fill_empty_only=True))
 	except Exception:
 		frappe.log_error(
 			title="Domain Enrichment: Org -> Lead/Deal copy failed",

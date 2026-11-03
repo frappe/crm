@@ -52,14 +52,15 @@ runs:
           shell: bash
           run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
 
-        - name: Cache pip
+        - name: Cache pip and uv
           uses: actions/cache@v4
           with:
-              path: ~/.cache/pip
-              key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
+              path: |
+                  ~/.cache/pip
+                  ~/.cache/uv
+              key: ${{ runner.os }}-py-deps-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
               restore-keys: |
-                  ${{ runner.os }}-pip-
-                  ${{ runner.os }}-
+                  ${{ runner.os }}-py-deps-
 
         - name: Cache node modules
           uses: actions/cache@v4
@@ -86,6 +87,41 @@ runs:
               restore-keys: |
                   ${{ runner.os }}-yarn-
 
+        - name: Clone frappe
+          shell: bash
+          run: git clone https://github.com/frappe/frappe --branch "${{ inputs.frappe-branch }}" --depth 1 ~/frappe
+
+        # Keyed on schema files, not commits: frappe merges many times a day without touching them.
+        - name: Database snapshot key
+          id: snapshot-key
+          shell: bash
+          env:
+              FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
+              INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
+          run: |
+              frappe=$(git -C ~/frappe ls-tree -r HEAD | grep -E '\.json$|/hooks\.py$|patches\.txt$' | sha256sum | cut -c1-16)
+              whatsapp=$(git ls-remote https://github.com/frappe/whatsapp HEAD | cut -c1-12)
+              erpnext=none
+              if [ "$INSTALL_ERPNEXT" = "true" ]; then
+                  erpnext=$(git ls-remote https://github.com/frappe/erpnext "refs/heads/$FRAPPE_BRANCH" | cut -c1-12)
+              fi
+              crm="${{ hashFiles('.github/helper/install.sh', '.github/helper/site_config.json', 'crm/**/*.json', 'crm/hooks.py', 'crm/install.py', 'crm/patches.txt', 'crm/mcp.py', 'crm/domain_enrichment/install.py', 'crm/fcrm/doctype/crm_dashboard/crm_dashboard.py', 'crm/fcrm/doctype/crm_products/crm_products.py', 'crm/fcrm/doctype/fcrm_settings/fcrm_settings.py') }}"
+              echo "key=db-snapshot-$FRAPPE_BRANCH-$frappe-$whatsapp-$erpnext-${crm:0:16}" >> "$GITHUB_OUTPUT"
+
+        # Scheduled runs always install fresh, so install-time changes the key misses still get caught.
+        - name: Restore database snapshot
+          id: db-snapshot
+          if: github.event_name != 'schedule'
+          uses: actions/cache/restore@v4
+          with:
+              path: ~/db-snapshot
+              key: ${{ steps.snapshot-key.outputs.key }}
+
+        - name: Install system packages
+          uses: ./.github/actions/apt-install
+          with:
+              packages: redis-server mariadb-client libmariadb-dev
+
         - name: Install bench dependencies
           shell: bash
           env:
@@ -93,3 +129,10 @@ runs:
               INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
               FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
+
+        - name: Save database snapshot
+          if: steps.db-snapshot.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v4
+          with:
+              path: ~/db-snapshot
+              key: ${{ steps.snapshot-key.outputs.key }}

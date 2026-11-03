@@ -1,43 +1,49 @@
 <template>
-  <Dialog v-model:open="show" :size="'3xl'">
-    <template #body>
-      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Lead') }}
-            </h3>
+  <Dialog v-model:open="show" :size="'3xl'" bare>
+    <template #default>
+      <div class="flex max-h-[calc(100dvh-6rem)] flex-col">
+        <div class="flex min-h-0 flex-1 flex-col bg-surface-elevation-2 pt-5">
+          <div class="mb-5 flex items-center justify-between px-4 sm:px-6">
+            <div>
+              <Dialog.Title as-child>
+                <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                  {{ __('Create Lead') }}
+                </h3>
+              </Dialog.Title>
+            </div>
+            <div class="flex items-center gap-1">
+              <Button
+                v-if="isManager() && !isMobileView"
+                variant="ghost"
+                class="w-7"
+                :tooltip="__('Edit Fields Layout')"
+                :icon="EditIcon"
+                @click="openQuickEntryModal"
+              />
+              <Dialog.Close as-child>
+                <Button
+                  :aria-label="__('Close')"
+                  variant="ghost"
+                  class="w-7"
+                  icon="lucide-x"
+                />
+              </Dialog.Close>
+            </div>
           </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
+          <div class="min-h-0 flex-1 overflow-y-auto px-4 pb-6 sm:px-6">
+            <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
+            <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
           </div>
         </div>
-        <div>
-          <FieldLayout v-if="tabs.data" :tabs="tabs.data" :data="lead.doc" />
-          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
-        </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isLeadCreating"
-            @click="createNewLead"
-          />
+        <div class="px-4 pb-7 pt-4 sm:px-6">
+          <div class="flex flex-row-reverse gap-2">
+            <Button
+              variant="solid"
+              :label="__('Create')"
+              :loading="isLeadCreating"
+              @click="createNewLead"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -52,8 +58,9 @@ import { statusesStore } from '@/stores/statuses'
 import { sessionStore } from '@/stores/session'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { createResource } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { useCrmOnboarding } from '@/composables/onboarding'
+import { Dialog, createResource } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { computed, onMounted, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -65,7 +72,7 @@ const props = defineProps({
 const { user } = sessionStore()
 const { getUser, isManager } = usersStore()
 const { getLeadStatus, statusOptions } = statusesStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 
 const show = defineModel({ type: Boolean })
 const router = useRouter()
@@ -160,7 +167,7 @@ async function createNewLead() {
         show.value = false
         lead.doc = {}
         router.push({ name: 'Lead', params: { leadId: data.name } })
-        updateOnboardingStep('create_first_lead', true, false, () => {
+        completeStep('create_first_lead', () => {
           localStorage.setItem('firstLead' + user, data.name)
         })
       },

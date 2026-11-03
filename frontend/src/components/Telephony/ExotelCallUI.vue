@@ -39,7 +39,7 @@
     </div>
     <div
       v-show="showCallPopup"
-      class="fixed z-20 w-[280px] min-h-44 flex gap-2 flex-col rounded-lg bg-surface-gray-10 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
+      class="fixed z-20 w-[280px] min-h-44 flex gap-2 flex-col rounded-6 bg-surface-gray-10 p-4 pt-2.5 text-ink-gray-2 shadow-2xl"
       :style="style"
       @click.stop
     >
@@ -413,7 +413,6 @@ function makeOutgoingCall(number) {
 function setup() {
   $socket.on('exotel_call', (data) => {
     callData.value = data
-    console.log(data)
 
     callStatus.value = updateStatus(data)
     const { user } = sessionStore()

@@ -102,7 +102,7 @@ The heart of the knowledge base. One record = one rule.
 | `target_value` | The label a match emits (tech name, network). Ignored for `Industry`. |
 | `industry` | (Industry rules only) the linked `CRM Industry` a match classifies to. |
 | `weight` | Multiplier on the hit count (industry scoring). |
-| `match_scope` | `Headline` / `Full Text` / `HTML` / `Headers` / `URL` — which slice of the page the rule matches. |
+| `match_scope` | `Headline` / `Full Text` / `HTML` / `URL` — which slice of the page the rule matches. |
 | `patterns` (child) | One or more `pattern` strings; `is_regex` toggles substring vs. regex. Substrings are matched case-insensitively. |
 
 ### 3. CRM Enrichment Field Mapping
