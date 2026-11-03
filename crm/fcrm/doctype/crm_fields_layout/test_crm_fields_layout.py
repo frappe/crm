@@ -15,6 +15,7 @@ from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepane
 from crm.patches.v1_0 import (
 	mirror_contact_and_address_layouts_to_form_layout,
 	mirror_fields_layouts_to_form_layout,
+	set_lead_quick_entry_dialog_size,
 )
 
 TASK_PANEL = [
@@ -26,6 +27,8 @@ CONTACT_PANEL = [
 ]
 
 ADDRESS_ENTRY = [{"name": "details_section", "columns": [{"name": "details_column", "fields": ["city"]}]}]
+
+LEAD_ENTRY = [{"name": "details_section", "columns": [{"name": "details_column", "fields": ["first_name"]}]}]
 
 
 def default_rows(dt, type, app=None):
@@ -253,3 +256,31 @@ class TestMirrorFieldsLayoutsPatch(IntegrationTestCase):
 		mirror_fields_layouts_to_form_layout.execute()
 
 		self.assertEqual(frappe.get_all("Form Layout", fields=["name", "modified"], order_by="name"), before)
+
+
+class TestQuickEntryDialogSize(IntegrationTestCase):
+	def setUp(self):
+		frappe.db.delete("Form Layout", {"dt": ("in", ("CRM Lead", "CRM Deal")), "type": "Quick Entry"})
+
+	def size_of(self, dt):
+		(row,) = default_rows(dt, "Quick Entry")
+		return frappe.db.get_value("Form Layout", row.name, "dialog_size")
+
+	def test_a_new_lead_quick_entry_row_opens_at_3xl(self):
+		save_v1_layout("CRM Lead", "Quick Entry", LEAD_ENTRY)
+		save_v1_layout("CRM Deal", "Quick Entry", LEAD_ENTRY)
+
+		self.assertEqual(self.size_of("CRM Lead"), "3xl")
+		self.assertFalse(self.size_of("CRM Deal"))
+
+	def test_patch_sizes_a_blank_lead_row_and_keeps_a_chosen_size(self):
+		save_v1_layout("CRM Lead", "Quick Entry", LEAD_ENTRY)
+		(row,) = default_rows("CRM Lead", "Quick Entry")
+		frappe.db.set_value("Form Layout", row.name, "dialog_size", None)
+
+		set_lead_quick_entry_dialog_size.execute()
+		self.assertEqual(self.size_of("CRM Lead"), "3xl")
+
+		frappe.db.set_value("Form Layout", row.name, "dialog_size", "5xl")
+		set_lead_quick_entry_dialog_size.execute()
+		self.assertEqual(self.size_of("CRM Lead"), "5xl")
