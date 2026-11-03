@@ -94,6 +94,7 @@ def _process_event_notifications_by_interval(interval):
 	notifications = _process_unified_event_data(all_events_data, interval)
 
 	for notification in notifications:
+		frappe.db.savepoint("send_event_reminder")
 		try:
 			event_start = notification.get("starts_on")
 			event_end = notification.get("ends_on")
@@ -129,6 +130,8 @@ def _process_event_notifications_by_interval(interval):
 				_send_system_notification(notification, interval)
 
 		except Exception as e:
+			# Drop the markers of a reminder that did not go out, so the next run retries it.
+			frappe.db.rollback(save_point="send_event_reminder")
 			frappe.log_error(
 				f"Error processing {interval} notification for event {notification.get('event_name', 'Unknown')}: {e!s}"
 			)
@@ -137,9 +140,9 @@ def _process_event_notifications_by_interval(interval):
 
 def _get_scan_horizon(interval, current_time):
 	"""
-	Latest event start whose reminder for this interval can fire now: the longest
-	offset, plus the trigger window, plus a day for all-day events (their trigger
-	is the start date at a time of day).
+	Latest event start whose reminder for this interval can fire now: the longest offset
+	(event and CRM Settings rows share one table), the trigger window, and a day for
+	all-day events, whose trigger is the start date at a time of day.
 	"""
 
 	notifications = frappe.qb.DocType("Event Notifications")
@@ -150,11 +153,6 @@ def _get_scan_horizon(interval, current_time):
 		.run()[0][0]
 		or 0
 	)
-	fcrm_settings = frappe.get_single("FCRM Settings")
-	for table in ("event_notifications", "all_day_event_notifications"):
-		for row in fcrm_settings.get(table) or []:
-			if row.interval == interval:
-				longest_offset = max(longest_offset, row.before or 0)
 
 	horizon = add_to_date(current_time, **{interval: longest_offset})
 	horizon = add_to_date(horizon, **_get_trigger_window_duration(interval))
@@ -427,6 +425,7 @@ def _send_email_notification(notification, event_start, before_value, interval):
 		)
 
 	except Exception as e:
+		frappe.db.rollback(save_point="send_event_reminder")
 		frappe.log_error(f"Failed to send email for event {notification.event_name}: {e!s}")
 
 
