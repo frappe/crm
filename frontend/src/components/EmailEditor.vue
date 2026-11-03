@@ -178,12 +178,20 @@
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
-            <Button
-              variant="solid"
-              v-bind="submitButtonProps || {}"
-              :disabled="submitButtonProps?.disabled || sendBlocked"
-              :label="`${__('Send')} (${submitShortcutLabel})`"
-            />
+            <div class="flex">
+              <Button
+                variant="solid"
+                v-bind="submitButtonProps || {}"
+                :class="{ 'rounded-r-none': scheduleSend }"
+                :disabled="submitButtonProps?.disabled || sendBlocked"
+                :label="`${__('Send')} (${submitShortcutLabel})`"
+              />
+              <ScheduleSendButton
+                v-if="scheduleSend"
+                :disabled="submitButtonProps?.disabled || sendBlocked"
+                @schedule="scheduleSend"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -198,6 +206,7 @@
 
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
+import ScheduleSendButton from '@/components/ScheduleSendButton.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
@@ -230,6 +239,8 @@ const props = defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  // (sendAfter, label, confirmed) => void; shows the schedule-send menu next to Send
+  scheduleSend: { type: Function, default: null },
   height: { type: Number, default: 0 },
 })
 
