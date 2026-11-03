@@ -191,6 +191,7 @@ function reply(email, reply_all = false) {
   }
 
   let repliedMessage = `<blockquote>${message}</blockquote>`
+  let draft = draftBeforeQuote(editor.editor)
 
   editor.editor
     .chain()
@@ -198,9 +199,20 @@ function reply(email, reply_all = false) {
     .updateAttributes('paragraph', { class: 'reply-to-content' })
     .insertContent(repliedMessage)
     .focus('all')
-    .insertContentAt(0, { type: 'paragraph' })
+    .insertContentAt(0, draft.length ? draft : { type: 'paragraph' })
     .focus('start')
     .run()
+}
+
+// Keep what the user already typed, dropping any previously quoted email
+function draftBeforeQuote(editor) {
+  let draft = []
+  let quoted = false
+  editor.state.doc.forEach((node) => {
+    quoted ||= node.type.name === 'blockquote'
+    if (!quoted) draft.push(node.toJSON())
+  })
+  return draft
 }
 
 const email = computed(() => {
