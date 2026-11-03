@@ -1,5 +1,5 @@
 // What CRM Deal's contacts section does, kept free of the desk's imports so it is unit-tested.
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import { saveRecord } from '../saveRecord.js'
 
 // The layout move puts the SLA section first in every Deal Side Panel (#45882 Q6).
@@ -32,7 +32,7 @@ export class ContactsEditor {
 		return Boolean(this.page.perms?.write) && this.page.fieldAccess('contacts') === 'write'
 	}
 
-	// The server's validate fetches the row's name, email and mobile and sets the deal's primary ones.
+	// The server fills the row's name, email and mobile from the Contact on save.
 	add(contact) {
 		if (dealContacts(this.page.doc).some((row) => row.contact === contact)) {
 			this.page.toast.error(this.messages.duplicate)
@@ -71,18 +71,25 @@ export class ContactsEditor {
 	async #write(change, done) {
 		if (this.busy.value) return false
 		this.busy.value = true
-		const before = this.page.doc.contacts ?? []
-		this.page.doc.contacts = change(before)
 		try {
-			if (await saveRecord(this.page)) {
-				this.page.toast.success(done)
-				return true
-			}
-			// A refused save leaves the draft: only the rows this write changed go back.
-			this.page.doc.contacts = before
-			return false
+			// A running save would take this change in and then drop it for the server's copy.
+			if (this.page.isDirty && !(await saveRecord(this.page))) return false
+			return await this.#save(change, done)
 		} finally {
 			this.busy.value = false
 		}
+	}
+
+	async #save(change, done) {
+		const before = this.page.doc.contacts ?? []
+		const after = change(before)
+		this.page.doc.contacts = after
+		if (await saveRecord(this.page)) {
+			this.page.toast.success(done)
+			return true
+		}
+		// A conflict's reload replaces the draft: put the rows back only on the draft this write changed.
+		if (toRaw(this.page.doc.contacts) === toRaw(after)) this.page.doc.contacts = before
+		return false
 	}
 }

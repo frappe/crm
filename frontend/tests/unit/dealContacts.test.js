@@ -186,6 +186,51 @@ describe('ContactsEditor', () => {
     }
   )
 
+  it('leaves a draft that a conflict’s reload replaced as the server sent it', async () => {
+    const page = fakePage()
+    const reloaded = [
+      { contact: 'Eve Tan', full_name: 'Eve Tan', is_primary: 1 },
+    ]
+    page.save = vi.fn(() => {
+      page.doc = { contacts: reloaded }
+      return Promise.reject(
+        Object.assign(new Error('Changed'), { name: 'SaveConflict' })
+      )
+    })
+    expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(false)
+    expect(page.doc.contacts).toBe(reloaded)
+    expect(page.toast.error).not.toHaveBeenCalled()
+  })
+
+  it('saves a dirty draft first, so the contacts change lands on the saved copy', async () => {
+    const page = fakePage({ isDirty: true })
+    const sent = []
+    page.save = vi.fn(() => {
+      sent.push(page.doc.contacts.map((row) => row.contact))
+      page.isDirty = false
+      return Promise.resolve()
+    })
+    expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(true)
+    expect(sent).toEqual([
+      ['Ana Ruiz', 'Ben Okafor'],
+      ['Ana Ruiz', 'Ben Okafor', 'Cara Lim'],
+    ])
+  })
+
+  it('changes no rows when the dirty draft’s own save is refused', async () => {
+    const page = fakePage({
+      isDirty: true,
+      save: vi.fn(() => Promise.reject(new Error('Mandatory'))),
+    })
+    const before = page.doc.contacts
+    expect(await new ContactsEditor(page, MESSAGES).remove('Ana Ruiz')).toBe(
+      false
+    )
+    expect(page.save).toHaveBeenCalledTimes(1)
+    expect(page.doc.contacts).toBe(before)
+    expect(page.toast.error).toHaveBeenCalledWith('Mandatory')
+  })
+
   it('runs one write at a time and is busy while it runs', async () => {
     let finish
     const page = fakePage({
