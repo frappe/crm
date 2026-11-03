@@ -98,6 +98,15 @@ describe('an incoming call', () => {
     expect(call.state.outcome).toBe('noanswer')
   })
 
+  it('a repeated ring of a call that has ended does not bring it back', () => {
+    const { call, send } = setup()
+    send(payload(ringing, 'X-IN'))
+    send(payload(completed, 'X-IN'))
+    call.dismiss()
+    send(payload(ringing, 'X-IN'))
+    expect(call.state.step).toBe('idle')
+  })
+
   it('a second call and the events of a call this tab does not follow change nothing', () => {
     const { call, send } = setup()
     send(payload(completed, 'X-OTHER'))
@@ -157,6 +166,16 @@ describe('an outgoing call', () => {
     api.call.mockRejectedValue(new Error('Exotel Number Missing'))
     await expect(call.makeCall('+915550100101')).rejects.toThrow()
     expect(call.state.step).toBe('idle')
+    expect(call.state.error).toBe('Exotel Number Missing')
+  })
+
+  it('clears the last dial error, so the same failure is told again', async () => {
+    const { api, call } = setup()
+    api.call.mockRejectedValue(new Error('Exotel Number Missing'))
+    await expect(call.makeCall('+915550100101')).rejects.toThrow()
+    const dial = call.makeCall('+915550100101')
+    expect(call.state.error).toBe('')
+    await expect(dial).rejects.toThrow()
     expect(call.state.error).toBe('Exotel Number Missing')
   })
 

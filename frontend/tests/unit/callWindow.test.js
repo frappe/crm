@@ -314,6 +314,7 @@ describe('the call window with Exotel', () => {
     expect(handle.title).toBe('On call')
     expect(root.textContent).toContain('01:15')
     expect(handle.keepAlive).toBe(true)
+    expect(callState.liveExotel).toBeNull()
   })
 
   it('an outgoing call with one medium dials at once: Ringing your phone…', async () => {

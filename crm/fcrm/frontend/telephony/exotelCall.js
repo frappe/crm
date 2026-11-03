@@ -63,6 +63,7 @@ export function createExotelCall({ api, socket }) {
   let timer = null;
   let dialling = false;
   let held = [];
+  const finished = new Set();
 
   function tick() {
     state.seconds = Math.floor((Date.now() - startedAt) / 1000);
@@ -109,7 +110,7 @@ export function createExotelCall({ api, socket }) {
     const idle = !LIVE.includes(state.step);
     // One call at a time. Events of a call this tab did not start are ours only when it rings in.
     if (idle && event.phase === "ringing" && event.incoming)
-      return begin("incoming", event.number, sid);
+      return !finished.has(sid) && begin("incoming", event.number, sid);
     if (idle || sid !== state.callSid) return;
     if (event.phase === "customer") state.customerRinging = true;
     else if (event.phase === "oncall") {
@@ -118,6 +119,7 @@ export function createExotelCall({ api, socket }) {
       startTimer();
     } else if (event.phase === "ended" || event.phase === "noanswer") {
       stopTimer();
+      finished.add(sid);
       state.seconds = event.seconds || (startedAt ? state.seconds : 0);
       state.outcome = event.phase === "noanswer" ? "noanswer" : "";
       state.step = "ended";
@@ -139,6 +141,7 @@ export function createExotelCall({ api, socket }) {
       if (dialling || LIVE.includes(state.step)) return;
       dialling = true;
       held = [];
+      state.error = "";
       begin("ringing", number, "");
       try {
         const details = await api.call(number);

@@ -126,3 +126,16 @@ class TestCallingMedia(IntegrationTestCase):
 
 		with self.assertRaises(frappe.PermissionError):
 			link_to_call_log(call_log.name, "CRM Task", str(task.name))
+
+	def test_a_ring_with_no_end_event_ages_out_sooner_than_a_call_in_progress(self):
+		self.make_agent(exotel_number="+918880000001")
+		self.enable(exotel=1)
+		self.make_exotel_log("t46118-ring", receiver=self.user)
+		self.make_exotel_log("t46118-busy", type="Outgoing", status="In Progress", caller=self.user)
+		for sid in ("t46118-ring", "t46118-busy"):
+			frappe.db.set_value("CRM Call Log", sid, "creation", frappe.utils.add_to_date(None, minutes=-10))
+
+		self.assertEqual(get_calling_media()["live_exotel_call"]["call_sid"], "t46118-busy")
+
+		frappe.db.set_value("CRM Call Log", "t46118-busy", "status", "Completed")
+		self.assertIsNone(get_calling_media()["live_exotel_call"])

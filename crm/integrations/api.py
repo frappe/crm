@@ -80,12 +80,14 @@ def get_calling_media():
 
 
 LIVE_EXOTEL_CALL_WINDOW = timedelta(hours=1)
+LIVE_EXOTEL_RINGING_WINDOW = timedelta(minutes=3)
 
 
 def get_live_exotel_call():
 	"""The session user's Exotel call that has not ended, so a reloaded tab can reopen on it.
 
-	The call lives on the agent's phone; its log is the only record. A log that no end event ever closed ages out.
+	The call lives on the agent's phone; its log is the only record. A log that no end event ever closed ages out:
+	a ring after minutes, a call in progress after an hour (a busy or cancelled call is saved as "Ringing" for good).
 	"""
 	user = frappe.session.user
 	logs = frappe.get_all(
@@ -98,11 +100,12 @@ def get_live_exotel_call():
 		or_filters={"receiver": user, "caller": user},
 		fields=["name", "type", "status", "from", "to", "creation"],
 		order_by="creation desc",
-		limit=1,
+		limit=5,
 	)
-	if not logs:
+	ringing_since = now_datetime() - LIVE_EXOTEL_RINGING_WINDOW
+	log = next((log for log in logs if log.status != "Ringing" or log.creation > ringing_since), None)
+	if not log:
 		return None
-	log = logs[0]
 	incoming = log.type == "Incoming"
 	return {
 		"call_sid": log.name,

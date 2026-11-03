@@ -106,6 +106,7 @@ onBeforeUnmount(() =>
 
 const call = computed(
   () =>
+    controllers.find((controller) => controller.isLive()) ||
     controllers.find((controller) => controller.state.step !== "idle") ||
     controllers[0]
 );
@@ -323,8 +324,10 @@ watch(
 );
 
 // After a reload the phone call went on: Exotel reopens on it.
-if (calls.Exotel && callState.liveExotel)
+if (calls.Exotel && callState.liveExotel) {
   calls.Exotel.restore(callState.liveExotel);
+  callState.liveExotel = null;
+}
 </script>
 
 <style>
