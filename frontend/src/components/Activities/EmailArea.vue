@@ -24,8 +24,20 @@
           variant="subtle"
           :theme="status.color"
         />
-        <TimelineTimestamp :date="activity.communication_date" />
-        <div class="flex gap-0.5">
+        <TimelineTimestamp
+          :date="
+            scheduled ? activity.data.send_after : activity.communication_date
+          "
+        />
+        <Dropdown v-if="scheduled" :options="scheduledActions" align="end">
+          <Button
+            variant="ghost"
+            icon="lucide-ellipsis"
+            :aria-label="__('Scheduled email actions')"
+            :loading="busy"
+          />
+        </Dropdown>
+        <div v-else class="flex gap-0.5">
           <Button
             :tooltip="__('Reply')"
             variant="ghost"
@@ -69,53 +81,18 @@
         :label="a.file_name"
         :url="a.file_url"
       />
-<<<<<<< HEAD
     </div>
   </div>
-=======
-      <Dropdown v-if="scheduled" :options="scheduledActions" align="end">
-        <Button
-          variant="ghost"
-          icon="lucide-ellipsis"
-          :aria-label="__('Scheduled email actions')"
-          :loading="busy"
-        />
-      </Dropdown>
-      <Button
-        v-if="!scheduled"
-        :tooltip="__('Reply')"
-        variant="ghost"
-        class="text-ink-gray-7"
-        :icon="ReplyIcon"
-        @click="reply(activity.data)"
-      />
-      <Button
-        v-if="!scheduled"
-        :tooltip="__('Reply All')"
-        variant="ghost"
-        :icon="ReplyAllIcon"
-        class="text-ink-gray-7"
-        @click="reply(activity.data, true)"
-      />
-    </template>
-  </EmailItem>
->>>>>>> 5ed4ba4 (feat: schedule send for emails)
 </template>
 <script setup>
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
-<<<<<<< HEAD
 import AttachmentItem from '@/components/AttachmentItem.vue'
 import EmailContent from '@/components/Activities/EmailContent.vue'
-import { Badge } from 'frappe-ui'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
-import { reactive, computed } from 'vue'
-=======
 import { createDialog } from '@/utils/dialogs'
-import { EmailItem } from '@framework/ui/components/ActivityTimeline'
 import { Badge, Dropdown, call, dayjsLocal, toast } from 'frappe-ui'
 import { reactive, computed, ref } from 'vue'
->>>>>>> 5ed4ba4 (feat: schedule send for emails)
 
 const props = defineProps({
   activity: { type: Object, default: () => ({}) },
@@ -278,7 +255,6 @@ function reply(email, reply_all = false) {
     .run()
 }
 
-<<<<<<< HEAD
 const status = computed(() => {
   let _status = props.activity?.data?.delivery_status
   let indicator_color = 'red'
@@ -290,28 +266,6 @@ const status = computed(() => {
     indicator_color = 'blue'
   } else if (_status == 'Error') {
     indicator_color = 'red'
-=======
-const email = computed(() => {
-  const { data } = props.activity
-  return {
-    type: 'email',
-    key: props.activity.communication_date,
-    // a scheduled email shows when it goes out ("in 17 hours"), not when it was written
-    timestamp: scheduled.value
-      ? props.activity.data.send_after
-      : props.activity.communication_date,
-    author: { fullname: data.sender_full_name, email: data.sender },
-    data: {
-      subject: data.subject,
-      sender: data.sender,
-      to: data.recipients,
-      cc: data.cc,
-      bcc: data.bcc,
-      content: data.content,
-      deliveryStatus: data.delivery_status,
-      attachments: data.attachments,
-    },
->>>>>>> 5ed4ba4 (feat: schedule send for emails)
   }
   return { label: _status, color: indicator_color }
 })

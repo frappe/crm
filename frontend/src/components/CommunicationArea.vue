@@ -109,16 +109,8 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
-<<<<<<< HEAD
-import { isContentEmpty } from '@/utils'
-=======
 import { isContentEmpty, htmlToText } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
-import {
-  getEmailSubject,
-  loadUserEmailSubjects,
-} from '@/composables/emailSubject'
->>>>>>> 5ed4ba4 (feat: schedule send for emails)
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
