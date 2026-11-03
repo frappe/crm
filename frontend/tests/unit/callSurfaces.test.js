@@ -16,7 +16,11 @@ const { default: dealList } = await import(
 describe('Make a call on a phone field', () => {
   it('places the act on every Phone control', () => {
     expect(fieldActions).toEqual([
-      { fieldtype: 'Phone', act: 'shell.crm.make_a_call' },
+      {
+        fieldtype: 'Phone',
+        act: 'shell.crm.make_a_call',
+        quickActionLabel: 'Call',
+      },
     ])
   })
 })

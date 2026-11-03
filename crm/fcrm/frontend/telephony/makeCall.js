@@ -1,21 +1,14 @@
-// "Make a call": the palette offers the open record's Phone numbers and takes a typed one; the Lead and Deal headers offer their own.
+// "Make a call": the palette offers the open record's Phone numbers and takes a typed one; the shell offers them on the record from `field-actions.js`.
 import { __ } from "frappe/i18n";
 import { callState, startOutgoingCall } from "./callState.js";
 
 export const MAKE_A_CALL = "shell.crm.make_a_call";
 
-const NUMBER_FIELDS = ["mobile_no", "phone"];
 const MIN_DIGITS = 3;
 const MAX_DIGITS = 15;
 
 /** Reads the reactive call state, so a user whose media arrive after the first paint is offered the act then. */
 const hasMedium = () => callState.media.length > 0;
-
-/** The record's distinct numbers, mobile first. */
-export function recordNumbers(doc) {
-  const numbers = NUMBER_FIELDS.map((field) => doc?.[field]?.trim()).filter(Boolean);
-  return [...new Set(numbers)];
-}
 
 /** A Phone field, or a Data field whose options say Phone. */
 const isPhoneField = ({ fieldtype, options }) =>
@@ -79,29 +72,3 @@ export const makeACallAct = {
     return startOutgoingCall(number);
   },
 };
-
-const countOf = (page) => recordNumbers(page.doc).length;
-
-/** Adds the `⋯` entries on a saved record: one that calls its only number, one that asks when it has two. */
-export function addCallItem(page) {
-  if (page.isNew) return;
-  // `palette: false`: the palette lists the Desk act `shell.crm.make_a_call`, so the header entry would double it.
-  const item = { name: "make_a_call", label: __("Make a call"), icon: "lucide-phone", palette: false };
-  // `when` reads the draft, so a number typed or cleared before the save changes the entry offered.
-  page.header.add({
-    ...item,
-    when: (page) => hasMedium() && countOf(page) === 1,
-    run: (page) => page.run(MAKE_A_CALL, recordNumbers(page.doc)[0]),
-  });
-  page.header.add({
-    ...item,
-    name: "make_a_call_from",
-    when: (page) => hasMedium() && countOf(page) > 1,
-    argument: {
-      label: __("Numbers"),
-      options: (page) =>
-        recordNumbers(page.doc).map((number) => ({ value: number, label: number })),
-    },
-    run: (page, number) => page.run(MAKE_A_CALL, number),
-  });
-}
