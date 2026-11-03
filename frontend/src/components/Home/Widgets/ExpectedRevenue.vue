@@ -27,7 +27,7 @@
     :delta="delta"
     deltaSuffix="%"
     :deltaFormat="formatPercentChange"
-    :sparkline="{ data: data.sparkline || [] }"
+    :sparkline="{ data: data.value ? data.sparkline : [] }"
   >
     <template #title-suffix>
       <Tooltip
