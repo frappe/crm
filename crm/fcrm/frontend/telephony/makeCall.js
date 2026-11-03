@@ -50,7 +50,8 @@ const countOf = (page) => recordNumbers(page.doc).length;
 /** Adds the `⋯` entries on a saved record: one that calls its only number, one that asks when it has two. */
 export function addCallItem(page) {
   if (page.isNew) return;
-  const item = { name: "make_a_call", label: __("Make a call"), icon: "lucide-phone" };
+  // `palette: false`: the palette lists the Desk act `shell.crm.make_a_call`, so the header entry would double it.
+  const item = { name: "make_a_call", label: __("Make a call"), icon: "lucide-phone", palette: false };
   // `when` reads the draft, so a number typed or cleared before the save changes the entry offered.
   page.header.add({
     ...item,

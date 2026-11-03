@@ -109,6 +109,13 @@ describe('the record header entries', () => {
     expect([one.when(page), pick.when(page)]).toEqual([false, false])
   })
 
+  it('keeps both entries out of the palette, which lists the act', () => {
+    const page = pageOf({ phone: '222' })
+    addCallItem(page)
+    const { make_a_call: one, make_a_call_from: pick } = added(page)
+    expect([one.palette, pick.palette]).toEqual([false, false])
+  })
+
   it('calls the only number with no question', () => {
     const page = pageOf({ phone: '222' })
     addCallItem(page)
