@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
-const { default: fieldActions } =
-  await import('../../../crm/fcrm/frontend/field-actions.js')
-const { callRowAction } =
-  await import('../../../crm/fcrm/frontend/telephony/callRowAction.js')
-const { default: leadList } =
-  await import('../../../crm/fcrm/doctype/crm_lead/frontend/list.js')
-const { default: dealList } =
-  await import('../../../crm/fcrm/doctype/crm_deal/frontend/list.js')
+const { default: fieldActions } = await import(
+  '../../../crm/fcrm/frontend/field-actions.js'
+)
+const { callRowAction } = await import(
+  '../../../crm/fcrm/frontend/telephony/callRowAction.js'
+)
+const { default: leadList } = await import(
+  '../../../crm/fcrm/doctype/crm_lead/frontend/list.js'
+)
+const { default: dealList } = await import(
+  '../../../crm/fcrm/doctype/crm_deal/frontend/list.js'
+)
 
 describe('Make a call on a phone field', () => {
   it('places the act on every Phone control', () => {
