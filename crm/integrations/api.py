@@ -139,6 +139,8 @@ def link_to_call_log(call_sid: str, doctype: str, docname: str):
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
 	call_log.link_with_reference_doc(doctype, docname)
 	call_log.save(ignore_permissions=True)
+	# The v2 client reads a null body as a failed call.
+	return call_log.name
 
 
 @frappe.whitelist()

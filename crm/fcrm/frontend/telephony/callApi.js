@@ -18,6 +18,7 @@ export const callApi = {
     ask("crm.integrations.api.link_to_call_log", {
       call_sid: callSid,
       doctype,
-      docname,
+      // A CRM Task's name is a number; the method types it as a string.
+      docname: String(docname),
     }),
 };
