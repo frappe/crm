@@ -8,23 +8,17 @@
     >
       <span :class="icon" class="size-4 text-ink-gray-5" />
     </span>
-    <div
-      class="flex min-w-0 flex-col gap-0.5"
-      :class="compact ? 'items-start' : 'items-center'"
+    <span
+      class="min-w-0 text-p-base text-ink-gray-6"
+      :class="{ 'max-w-64 text-balance': !compact }"
     >
-      <span
-        class="text-p-base text-ink-gray-6"
-        :class="{ 'max-w-64 text-balance': !compact }"
-      >
-        {{ text }}
-      </span>
-      <slot />
-    </div>
+      <slot>{{ text }}</slot>
+    </span>
   </div>
 </template>
 <script setup>
 defineProps({
-  text: { type: String, required: true },
+  text: { type: String, default: '' },
   icon: { type: String, required: true },
   compact: { type: Boolean, default: false },
 })

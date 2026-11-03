@@ -8,7 +8,7 @@
     :delta="data.delta"
     deltaSuffix="%"
     :deltaFormat="formatPercentChange"
-    :sparkline="{ data: data.sparkline || [] }"
+    :sparkline="{ data: data.value ? data.sparkline : [] }"
   >
     <template #caption>
       <PeriodPicker

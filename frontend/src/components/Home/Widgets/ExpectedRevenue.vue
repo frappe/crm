@@ -1,8 +1,27 @@
 <template>
+  <HomeEmptyState
+    v-if="resource.data && !data.forecasting"
+    compact
+    class="rounded-4 border border-outline-gray-1 bg-surface-elevation-2 px-4 py-3"
+    icon="lucide-trending-up"
+  >
+    {{ beforeCta }}
+    <button
+      v-if="isAdmin()"
+      type="button"
+      class="text-ink-gray-8 underline underline-offset-2 hover:text-ink-gray-9"
+      @click="openForecastingSettings"
+    >
+      {{ __('Turn on forecasting') }}
+    </button>
+    <template v-else>{{ __('Turn on forecasting') }}</template>
+    {{ afterCta }}
+  </HomeEmptyState>
   <NumberCard
+    v-else
     :title="__('Expected revenue')"
     :loading="!resource.data"
-    :value="data.forecasting ? data.value : null"
+    :value="data.value ?? null"
     :prefix="data.currency"
     :format="formatCompactNumber"
     :delta="delta"
@@ -21,28 +40,12 @@
         <span class="lucide-info size-[0.9em] text-ink-gray-5" />
       </Tooltip>
     </template>
-    <template v-if="data.forecasting" #caption>
+    <template #caption>
       <PeriodPicker
         :period="config?.period"
         :labels="comparisonLabels"
         @change="(period) => emit('update:config', { ...config, period })"
       />
-    </template>
-    <template #empty>
-      <HomeEmptyState
-        compact
-        :text="__('Turn on forecasting to see expected revenue.')"
-        icon="lucide-trending-up"
-      >
-        <button
-          v-if="isAdmin()"
-          type="button"
-          class="text-sm text-ink-gray-5 underline underline-offset-2 hover:text-ink-gray-7"
-          @click="openForecastingSettings"
-        >
-          {{ __('Open settings') }}
-        </button>
-      </HomeEmptyState>
     </template>
   </NumberCard>
 </template>
@@ -80,6 +83,10 @@ const delta = computed(() => {
   if (delta != null) return delta
   return sparkline?.[0] === 0 && value > 0 ? Infinity : null
 })
+
+const [beforeCta, afterCta] = __('{0} to see expected revenue.', []).split(
+  '{0}',
+)
 
 function openForecastingSettings() {
   activeSettingsPage.value = 'Dashboard'
