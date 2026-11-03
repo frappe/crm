@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "autoname": "field:reminder_key",
+ "creation": "2026-11-03 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "reminder_key",
+  "event",
+  "recipient",
+  "sent_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "reminder_key",
+   "fieldtype": "Data",
+   "label": "Reminder Key",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "event",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Event",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "recipient",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Recipient",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sent_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Sent On",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-11-03 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Event Reminder Log",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "System Manager"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
