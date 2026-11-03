@@ -4,6 +4,8 @@ from frappe import _
 from frappe.integrations.utils import create_request_log
 
 from crm.integrations.api import get_contact_by_phone_number
+from crm.integrations.telephony_mock import exotel as mock_exotel
+from crm.integrations.telephony_mock.mode import is_mock_mode
 
 # Endpoints for webhook
 
@@ -142,18 +144,16 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 
 	call_log_creation_failed = False
 	try:
-		response = requests.post(
-			endpoint,
-			data={
-				"From": from_number,
-				"To": to_number,
-				"CallerId": caller_id,
-				"Record": "true" if record_call else "false",
-				"StatusCallback": get_status_updater_url(),
-				"StatusCallbackEvents[0]": "terminal",
-				"StatusCallbackEvents[1]": "answered",
-			},
-		)
+		data = {
+			"From": from_number,
+			"To": to_number,
+			"CallerId": caller_id,
+			"Record": "true" if record_call else "false",
+			"StatusCallback": get_status_updater_url(),
+			"StatusCallbackEvents[0]": "terminal",
+			"StatusCallbackEvents[1]": "answered",
+		}
+		response = mock_exotel.connect_call(data) if is_mock_mode() else requests.post(endpoint, data=data)
 		response.raise_for_status()
 	except requests.exceptions.HTTPError:
 		if exc := response.json().get("RestException"):
@@ -177,6 +177,9 @@ def make_a_call(to_number: str, from_number: str | None = None, caller_id: str |
 			frappe.db.commit()
 			call_log_creation_failed = True
 
+		if is_mock_mode() and not call_log_creation_failed:
+			mock_exotel.post_outbound_ringing(call_payload.get("Sid"))
+
 	call_details = response.json().get("Call", {})
 	call_details["CallSid"] = call_details.get("Sid", "")
 	call_details["call_log_creation_failed"] = call_log_creation_failed
@@ -196,6 +199,9 @@ def get_exotel_endpoint(action=None, version="v1"):
 
 
 def get_all_exophones():
+	if is_mock_mode():
+		return mock_exotel.get_exophones()
+
 	endpoint = get_exotel_endpoint("IncomingPhoneNumbers", "v2_beta")
 	response = requests.get(endpoint)
 	return [phone.get("friendly_name") for phone in response.json().get("incoming_phone_numbers", [])]

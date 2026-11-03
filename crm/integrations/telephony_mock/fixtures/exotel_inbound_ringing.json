@@ -1,0 +1,18 @@
+{
+	"_synthetic": "Built from Exotel's Passthru applet sample and the fields crm/integrations/exotel/handler.py reads. Not a recorded call.",
+	"payload": {
+		"EventType": "Dial",
+		"Direction": "incoming",
+		"Status": "busy",
+		"CallType": "call-attempt",
+		"CallSid": "mock-inbound",
+		"CallFrom": "+915550100101",
+		"From": "+915550100101",
+		"To": "+918880000001",
+		"DialWhomNumber": "+919999900001",
+		"AgentEmail": "agent@example.com",
+		"Created": "2026-11-03 10:00:00",
+		"flow_id": "100001",
+		"tenant_id": "10001"
+	}
+}

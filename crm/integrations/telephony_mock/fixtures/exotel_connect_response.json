@@ -1,0 +1,15 @@
+{
+	"_synthetic": "Built from Exotel's Calls/connect.json sample. Not a recorded call.",
+	"payload": {
+		"Call": {
+			"Sid": "mock-outbound",
+			"AccountSid": "mock-exotel",
+			"From": "+919999900001",
+			"To": "+915550100101",
+			"PhoneNumberSid": "+918880000001",
+			"Status": "in-progress",
+			"Direction": "outbound-api",
+			"StartTime": "2026-11-03 10:00:00"
+		}
+	}
+}
