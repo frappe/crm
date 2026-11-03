@@ -261,3 +261,17 @@ class TestEventReminders(IntegrationTestCase):
 		purge_event_reminder_logs()
 
 		self.assertFalse(frappe.db.exists("CRM Event Reminder Log", "gone-3306"))
+
+	def test_a_reminder_fires_near_the_far_edge_of_its_window(self):
+		event = self.make_event(starts_on=add_to_date(now_datetime(), minutes=14))
+
+		self.assertEqual(self.run_scheduler_job(event), [self.owner])
+
+	def test_a_failed_realtime_send_leaves_no_marker_so_the_next_run_sends_it(self):
+		event = self.make_event(participants=[self.participant])
+
+		with patch("frappe.publish_realtime", side_effect=Exception("socket down")):
+			trigger_offset_event_notifications()
+		self.assertFalse(frappe.db.count("CRM Event Reminder Log", {"event": event.name}))
+
+		self.assertCountEqual(self.run_scheduler_job(event), [self.owner, self.participant])
