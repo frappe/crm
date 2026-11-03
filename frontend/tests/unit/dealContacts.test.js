@@ -50,7 +50,7 @@ describe('placeContactsSection', () => {
     placeContactsSection(page, { label: 'Contacts', component })
     expect(page.panelSections.add).toHaveBeenCalledWith(
       { name: 'contacts', label: 'Contacts', component },
-      { before: 'sla_section' }
+      { before: 'sla_section' },
     )
     expect(page.panelSections.has).toHaveBeenCalledWith(FIRST_LAYOUT_SECTION)
   })
@@ -62,7 +62,7 @@ describe('placeContactsSection', () => {
     placeContactsSection(page, { label: 'Contacts' })
     expect(page.panelSections.add).toHaveBeenCalledWith(
       { name: 'contacts', label: 'Contacts' },
-      { after: 'people' }
+      { after: 'people' },
     )
   })
 
@@ -142,7 +142,7 @@ describe('ContactsEditor', () => {
     const page = fakePage()
     await new ContactsEditor(page, MESSAGES).setPrimary('Ana Ruiz')
     expect(
-      page.doc.contacts.map((row) => [row.contact, row.is_primary])
+      page.doc.contacts.map((row) => [row.contact, row.is_primary]),
     ).toEqual([
       ['Ana Ruiz', 1],
       ['Ben Okafor', 0],
@@ -191,7 +191,7 @@ describe('ContactsEditor', () => {
       expect(page.doc.deal_value).toBe(500)
       expect(page.toast.error).toHaveBeenCalledWith('Not permitted')
       expect(page.toast.success).not.toHaveBeenCalled()
-    }
+    },
   )
 
   it('leaves a draft that a conflict’s reload replaced as the server sent it', async () => {
@@ -202,7 +202,7 @@ describe('ContactsEditor', () => {
     page.save = vi.fn(() => {
       page.doc = { contacts: reloaded }
       return Promise.reject(
-        Object.assign(new Error('Changed'), { name: 'SaveConflict' })
+        Object.assign(new Error('Changed'), { name: 'SaveConflict' }),
       )
     })
     expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(false)
@@ -232,7 +232,7 @@ describe('ContactsEditor', () => {
     })
     const before = page.doc.contacts
     expect(await new ContactsEditor(page, MESSAGES).remove('Ana Ruiz')).toBe(
-      false
+      false,
     )
     expect(page.save).toHaveBeenCalledTimes(1)
     expect(page.doc.contacts).toBe(before)
@@ -316,7 +316,7 @@ describe('a contact’s email and mobile', () => {
     const page = fakePage()
     await callContact(page, '+1 555 0101')
     expect(page.toast.error).toHaveBeenCalledWith(
-      expect.stringContaining('still loading')
+      expect.stringContaining('still loading'),
     )
   })
 
