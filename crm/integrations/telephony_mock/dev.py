@@ -23,7 +23,7 @@ EXOTEL_SETTINGS = {
 	"api_key": "mock-exotel-key",
 	"api_token": "mock-exotel-token",
 	"subdomain": "api.exotel.com",
-	"webhook_verify_token": "mock-exotel-webhook-token",
+	"webhook_verify_token": "",  # setup_walk makes a random one
 }
 SETTINGS = {"CRM Twilio Settings": TWILIO_SETTINGS, "CRM Exotel Settings": EXOTEL_SETTINGS}
 PASSWORDS = ("api_secret", "auth_token", "api_token")
@@ -35,8 +35,9 @@ def setup_walk(user="Administrator", default_medium=None):
 	require_mock_mode()
 	for doctype, values in SETTINGS.items():
 		refuse_real_credentials(doctype, values)
-	for doctype, values in SETTINGS.items():
-		write_settings(doctype, values)
+	write_settings("CRM Twilio Settings", TWILIO_SETTINGS)
+	# A fresh secret each time: a fixed key on a guest endpoint would outlive a copied site.
+	write_settings("CRM Exotel Settings", EXOTEL_SETTINGS | {"webhook_verify_token": frappe.generate_hash()})
 
 	refuse_real_agent(user)
 	agent = (
@@ -44,7 +45,7 @@ def setup_walk(user="Administrator", default_medium=None):
 		if frappe.db.exists("CRM Telephony Agent", user)
 		else frappe.new_doc("CRM Telephony Agent")
 	)
-	agent.update({"user": user, "default_medium": default_medium or ""} | AGENT)
+	agent.update({"user": user} | AGENT | ({"default_medium": default_medium} if default_medium else {}))
 	agent.save(ignore_permissions=True)
 	frappe.db.commit()
 
@@ -52,8 +53,8 @@ def setup_walk(user="Administrator", default_medium=None):
 def teardown_walk(user="Administrator"):
 	"""Removes what `setup_walk` and the helpers made: the agent row, the settings and the `mock-` call logs."""
 	require_mock_mode()
+	# Blank the mock values and keep the row: the user may have had one before the mock.
 	if frappe.db.get_value("CRM Telephony Agent", user, "twilio_number") == AGENT["twilio_number"]:
-		# Blank the mock values, keep the row: the user may have had one before the mock.
 		for fieldname in (*AGENT, "default_medium"):
 			frappe.db.set_value("CRM Telephony Agent", user, fieldname, "")
 	for doctype, values in SETTINGS.items():
@@ -69,9 +70,12 @@ def teardown_walk(user="Administrator"):
 
 
 def refuse_real_credentials(doctype, values):
-	current = frappe.db.get_single_value(doctype, "account_sid")
-	if current and current != values["account_sid"]:
-		frappe.throw(f"{doctype} holds real credentials; the mock will not overwrite them")
+	for fieldname in ("account_sid", "api_key", "twiml_sid"):
+		if fieldname not in values:
+			continue
+		current = frappe.db.get_single_value(doctype, fieldname)
+		if current and current != values.get(fieldname):
+			frappe.throw(f"{doctype} holds real credentials; the mock will not overwrite them")
 
 
 def refuse_real_agent(user):

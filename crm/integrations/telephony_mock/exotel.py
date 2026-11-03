@@ -87,6 +87,9 @@ def send_event(call_sid, event):
 		frappe.throw(_("Unknown Exotel event {0}").format(event))
 
 	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	if not (call_sid.startswith("mock-") and call_log.telephony_medium == "Exotel"):
+		frappe.throw(_("{0} is not a mock Exotel call").format(call_sid))
+
 	incoming = call_log.type == "Incoming"
 	agent = call_log.receiver if incoming else call_log.caller
 	customer = call_log.get("from") if incoming else call_log.to

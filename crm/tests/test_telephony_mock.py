@@ -8,6 +8,7 @@ from frappe.tests import IntegrationTestCase
 
 from crm.integrations.exotel import handler
 from crm.integrations.telephony_mock import dev, exotel
+from crm.integrations.telephony_mock import twilio as twilio_mock
 from crm.integrations.telephony_mock.mode import MOCK_TWILIO_TOKEN, is_mock_mode
 from crm.integrations.twilio.api import generate_access_token
 from crm.tests.test_password_setup import make_user
@@ -164,3 +165,65 @@ class TestExotelMock(IntegrationTestCase):
 			exotel.send_event(sid, "outbound_completed")
 
 		self.assertEqual(frappe.db.get_value("CRM Call Log", sid, "status"), "Completed")
+
+
+class TestTelephonyDevHelpers(IntegrationTestCase):
+	def setUp(self):
+		self.user = make_user("exotel-mock-dev-46112@example.com", roles=["Sales User"]).name
+		self.patches = [patch.dict(frappe.conf, MOCK_ON), patch("frappe.db.commit")]
+		for p in self.patches:
+			p.start()
+
+	def tearDown(self):
+		for p in reversed(self.patches):
+			p.stop()
+		frappe.db.rollback()
+
+	def test_setup_twice_then_teardown_leaves_a_blank_agent_and_disabled_settings(self):
+		dev.setup_walk(user=self.user)
+		dev.setup_walk(user=self.user)
+		self.assertEqual(frappe.db.get_single_value("CRM Exotel Settings", "enabled"), 1)
+		dev.teardown_walk(user=self.user)
+
+		agent = frappe.db.get_value("CRM Telephony Agent", self.user, ["twilio_number", "exotel_number"])
+		self.assertEqual(agent, ("", ""))
+		self.assertEqual(frappe.db.get_single_value("CRM Twilio Settings", "enabled"), 0)
+		self.assertFalse(frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token"))
+
+	def test_the_webhook_key_is_not_the_same_on_every_site(self):
+		dev.setup_walk(user=self.user)
+		first = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
+		dev.setup_walk(user=self.user)
+
+		self.assertTrue(first)
+		self.assertNotEqual(first, frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token"))
+
+	def test_a_replay_refuses_a_call_that_is_not_a_mock_exotel_call(self):
+		dev.setup_walk(user=self.user)
+		call_log = frappe.new_doc("CRM Call Log")
+		call_log.update({"id": "real-46112", "type": "Incoming", "receiver": self.user, "to": "+911"})
+		setattr(call_log, "from", "+912")
+		call_log.insert(ignore_permissions=True)
+
+		with self.assertRaises(frappe.ValidationError):
+			exotel.send_event("real-46112", "inbound_completed")
+
+	def test_the_whitelisted_helpers_need_system_manager(self):
+		frappe.set_user(self.user)
+		self.addCleanup(frappe.set_user, "Administrator")
+		for helper in (lambda: dev.ring_exotel(), lambda: dev.record_twilio_call("+15550100177")):
+			with self.assertRaises(frappe.PermissionError):
+				helper()
+
+	def test_a_twilio_call_log_is_made_by_the_real_code(self):
+		dev.setup_walk(user=self.user)
+		frappe.set_user(self.user)
+		self.addCleanup(frappe.set_user, "Administrator")
+		sid = twilio_mock.record_call(self.user, "+15550100177")
+
+		call_log = frappe.get_doc("CRM Call Log", sid)
+		self.assertEqual(
+			(call_log.type, call_log.caller, call_log.telephony_medium), ("Outgoing", self.user, "Twilio")
+		)
+		with self.assertRaises(frappe.ValidationError):
+			twilio_mock.record_call(self.user, "+15550100177", "Outgoin")

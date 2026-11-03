@@ -16,6 +16,9 @@ def record_call(agent, customer, call_type="Outgoing"):
 	from crm.integrations.twilio.api import create_call_log
 	from crm.integrations.twilio.twilio_handler import Twilio, TwilioCallDetails
 
+	if call_type not in ("Outgoing", "Incoming"):
+		frappe.throw(_("call_type is Outgoing or Incoming"))
+
 	number = frappe.db.get_value("CRM Telephony Agent", agent, "twilio_number")
 	if not number:
 		frappe.throw(_("{0} has no Twilio number").format(agent))
