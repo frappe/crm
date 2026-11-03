@@ -1,11 +1,13 @@
 import ipaddress
 import socket
+from datetime import timedelta
 from urllib.parse import urlparse, urlunparse
 
 import frappe
 import requests
 from frappe import _
 from frappe.query_builder import Order
+from frappe.utils import now_datetime
 from pypika.functions import Replace
 from werkzeug.wrappers import Response
 
@@ -70,7 +72,48 @@ def get_calling_media():
 		if number and frappe.db.get_single_value(settings, "enabled")
 	]
 	default = agent.get("default_medium")
-	return {"media": media, "default_medium": default if default in media else None}
+	return {
+		"media": media,
+		"default_medium": default if default in media else None,
+		"live_exotel_call": get_live_exotel_call() if "Exotel" in media else None,
+	}
+
+
+LIVE_EXOTEL_CALL_WINDOW = timedelta(hours=1)
+LIVE_EXOTEL_RINGING_WINDOW = timedelta(minutes=3)
+
+
+def get_live_exotel_call():
+	"""The session user's Exotel call that has not ended, so a reloaded tab can reopen on it.
+
+	The call lives on the agent's phone; its log is the only record. A log that no end event ever closed ages out:
+	a ring after minutes, a call in progress after an hour (a busy or cancelled call is saved as "Ringing" for good).
+	"""
+	user = frappe.session.user
+	logs = frappe.get_all(
+		"CRM Call Log",
+		filters={
+			"telephony_medium": "Exotel",
+			"status": ["in", ["Ringing", "In Progress"]],
+			"creation": [">", now_datetime() - LIVE_EXOTEL_CALL_WINDOW],
+		},
+		or_filters={"receiver": user, "caller": user},
+		fields=["name", "type", "status", "from", "to", "creation"],
+		order_by="creation desc",
+		limit=5,
+	)
+	ringing_since = now_datetime() - LIVE_EXOTEL_RINGING_WINDOW
+	log = next((log for log in logs if log.status != "Ringing" or log.creation > ringing_since), None)
+	if not log:
+		return None
+	incoming = log.type == "Incoming"
+	return {
+		"call_sid": log.name,
+		"incoming": incoming,
+		"status": log.status,
+		"number": log["from"] if incoming else log.to,
+		"seconds": int((now_datetime() - log.creation).total_seconds()),
+	}
 
 
 def get_user_default_calling_medium():

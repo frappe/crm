@@ -34,6 +34,13 @@ export default defineConfig({
         ),
       },
       {
+        find: '@framework/ui/socket',
+        replacement: path.resolve(
+          import.meta.dirname,
+          'tests/fixtures/frameworkSocket.js',
+        ),
+      },
+      {
         find: '@framework/ui/api',
         replacement: path.resolve(
           import.meta.dirname,

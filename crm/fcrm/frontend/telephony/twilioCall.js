@@ -1,6 +1,7 @@
 // The Twilio call's state machine: one device per tab, one call at a time. No DOM, so a test drives it with the fake `Device`.
 import { reactive } from "vue";
 import { __ } from "frappe/i18n";
+import { lookupContact } from "./contactRecord.js";
 
 const DEVICE_OPTIONS = {
   codecPreferences: ["opus", "pcmu"],
@@ -148,23 +149,8 @@ export function createTwilioCall({ api, loadDevice }) {
 
   async function lookup(number) {
     try {
-      const found = await api.contact(number);
-      if (state.contact?.number !== number) return;
-      const doctype = found.deal
-        ? "CRM Deal"
-        : found.lead
-        ? "CRM Lead"
-        : found.name
-        ? "Contact"
-        : "";
-      state.contact = {
-        name: found.full_name || "",
-        image: found.image || "",
-        number,
-        record: doctype
-          ? { doctype, name: found.deal || found.lead || found.name }
-          : null,
-      };
+      const contact = await lookupContact(api, number);
+      if (state.contact?.number === number) state.contact = contact;
     } catch (error) {
       console.error("[crm] The caller lookup failed.", error);
     }
