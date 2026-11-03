@@ -1,0 +1,74 @@
+// "Make a call": the palette takes a typed number, the Lead and Deal headers offer the record's own.
+import { __ } from "frappe/i18n";
+import { callState, startOutgoingCall } from "./callState.js";
+
+export const MAKE_A_CALL = "shell.crm.make_a_call";
+
+const NUMBER_FIELDS = ["mobile_no", "phone"];
+const MIN_DIGITS = 3;
+
+/** Reads the reactive call state, so a user whose media arrive after the first paint is offered the act then. */
+const hasMedium = () => callState.media.length > 0;
+
+/** The record's distinct numbers, mobile first. */
+export function recordNumbers(doc) {
+  const numbers = NUMBER_FIELDS.map((field) => doc?.[field]?.trim()).filter(Boolean);
+  return [...new Set(numbers)];
+}
+
+/** The typed text as the palette's one choice, once it reads as a phone number. */
+export function typedNumberOptions(query) {
+  const number = query.trim();
+  const digits = number.replace(/\D/g, "").length;
+  if (!/^\+?[\d\s().-]+$/.test(number) || digits < MIN_DIGITS) return [];
+  return [{ value: number, label: number, icon: "lucide-phone" }];
+}
+
+/** The shell act: `value` is the number the palette's argument step picked. */
+export const makeACallAct = {
+  name: "make_a_call",
+  get label() {
+    return __("Make a call");
+  },
+  icon: "lucide-phone",
+  when: hasMedium,
+  argument: {
+    get label() {
+      return __("Type a phone number");
+    },
+    options: (shell, query) => typedNumberOptions(query),
+  },
+  run: (shell, number) => {
+    if (!number) throw new Error(__("Make a call needs a number"));
+    return startOutgoingCall(number);
+  },
+};
+
+/** Adds the `⋯` entry on a saved record with a number; with two numbers it asks which to call. */
+export function addCallItem(page) {
+  if (page.isNew) return;
+  const numbers = recordNumbers(page.doc);
+  if (!numbers.length) return;
+  const item = {
+    name: "make_a_call",
+    get label() {
+      return __("Make a call");
+    },
+    icon: "lucide-phone",
+    when: hasMedium,
+  };
+  const single = numbers.length === 1;
+  page.header.add(
+    single
+      ? { ...item, run: (page) => page.run(MAKE_A_CALL, recordNumbers(page.doc)[0]) }
+      : {
+          ...item,
+          argument: {
+            label: __("Numbers"),
+            options: (page) =>
+              recordNumbers(page.doc).map((number) => ({ value: number, label: number })),
+          },
+          run: (page, number) => page.run(MAKE_A_CALL, number),
+        },
+  );
+}

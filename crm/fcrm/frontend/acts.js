@@ -1,8 +1,10 @@
 // CRM's global acts on desk v2's shell surface, run from the palette as `shell.crm.<name>`.
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
+import { makeACallAct } from './telephony/makeCall.js'
 
 export default [
+	makeACallAct,
 	{
 		name: 'log_a_call',
 		get label() {
