@@ -52,7 +52,7 @@
 					icon="lucide-mail"
 					:value="row.email"
 					:tooltip="__('Send email to {0}', [row.email])"
-					:action="() => emailContact(page, row.email)"
+					:action="canEmail(page) ? () => emailContact(page, row.email) : null"
 				/>
 				<DealContactLine
 					v-if="row.mobile_no"
@@ -78,7 +78,7 @@ import { Avatar, Badge, Button, Dropdown } from 'frappe-ui'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
 import DealContactLine from './DealContactLine.vue'
-import { callContact, canCall, dealContacts, emailContact } from './dealContacts.js'
+import { callContact, canCall, canEmail, dealContacts, emailContact } from './dealContacts.js'
 
 const props = defineProps({
 	page: { type: Object, required: true },

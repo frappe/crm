@@ -35,6 +35,11 @@ export async function callContact(page, number) {
 	}
 }
 
+/** Whether the deal offers its email writer: not without the email right, nor once a script hides it. */
+export function canEmail(page) {
+	return page.composer.has('email')
+}
+
 /** Opens the deal's email writer to the contact; an email draft already in memory keeps its To. */
 export function emailContact(page, email) {
 	page.composer.open('email', { draft: { to: [email] } })

@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   ContactsEditor,
   callContact,
   canCall,
+  canEmail,
   emailContact,
   FIRST_LAYOUT_SECTION,
   dealContacts,
@@ -289,22 +290,26 @@ describe('ContactsEditor', () => {
 })
 
 describe('a contact’s email and mobile', () => {
+  let unregister = () => {}
+  afterEach(() => {
+    unregister()
+    callState.media = []
+  })
+
   it('dials only while the user has a calling medium', () => {
     callState.media = []
     expect(canCall()).toBe(false)
     callState.media = ['Twilio']
     expect(canCall()).toBe(true)
-    callState.media = []
   })
 
   it('calls the number through the call window', async () => {
     const start = vi.fn(() => Promise.resolve())
-    const unregister = registerOutgoingStarter(start)
+    unregister = registerOutgoingStarter(start)
     const page = fakePage()
     await callContact(page, '+1 555 0101')
     expect(start).toHaveBeenCalledWith('+1 555 0101')
     expect(page.toast.error).not.toHaveBeenCalled()
-    unregister()
   })
 
   it('toasts a call window that is still loading', async () => {
@@ -313,6 +318,13 @@ describe('a contact’s email and mobile', () => {
     expect(page.toast.error).toHaveBeenCalledWith(
       expect.stringContaining('still loading')
     )
+  })
+
+  it('emails only when the deal offers its email writer', () => {
+    const has = vi.fn((name) => name !== 'email')
+    expect(canEmail(fakePage({ composer: { has } }))).toBe(false)
+    expect(has).toHaveBeenCalledWith('email')
+    expect(canEmail(fakePage({ composer: { has: () => true } }))).toBe(true)
   })
 
   it('opens the deal’s email writer with the contact in To', () => {
