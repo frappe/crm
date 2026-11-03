@@ -358,7 +358,7 @@ def _get_reminder_key(notification, interval, recipient):
 		notification.get("time_of_day"),
 		recipient,
 	)
-	return hashlib.sha256("|".join(map(str, parts)).encode()).hexdigest()
+	return hashlib.sha256("|".join(str(part) for part in parts).encode()).hexdigest()
 
 
 def purge_event_reminder_logs():
