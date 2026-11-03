@@ -7,7 +7,12 @@ import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_to_date, now_datetime
 
-from crm.api.event import purge_event_reminder_logs, trigger_offset_event_notifications
+from crm.api.event import (
+	purge_event_reminder_logs,
+	trigger_daily_event_notifications,
+	trigger_offset_event_notifications,
+	trigger_weekly_event_notifications,
+)
 from crm.tests.test_password_setup import make_user
 
 
@@ -29,7 +34,15 @@ class TestEventReminders(IntegrationTestCase):
 		).insert(ignore_permissions=True)
 		return {"reference_doctype": "Contact", "reference_docname": contact.name, "email": email}
 
-	def make_event(self, participants=(), customers=(), notifications=True, starts_on=None, **fields):
+	def make_event(
+		self,
+		participants=(),
+		customers=(),
+		notifications=True,
+		starts_on=None,
+		reminder=(10, "minutes"),
+		**fields,
+	):
 		event = frappe.get_doc(
 			doctype="Event",
 			subject="Reminder 3283",
@@ -43,7 +56,7 @@ class TestEventReminders(IntegrationTestCase):
 				*customers,
 			],
 			**fields,
-			notifications=[{"type": "Notification", "before": 10, "interval": "minutes"}]
+			notifications=[{"type": "Notification", "before": reminder[0], "interval": reminder[1]}]
 			if notifications
 			else [],
 		).insert(ignore_permissions=True)
@@ -180,3 +193,63 @@ class TestEventReminders(IntegrationTestCase):
 		kept = frappe.get_all("CRM Event Reminder Log", {"event": live.name}, pluck="name")
 		self.assertEqual(len(kept), 1)
 		self.assertFalse(frappe.db.exists("CRM Event Reminder Log", stale.name))
+
+	def test_reminders_in_every_interval_still_fire_under_the_scan_bound(self):
+		for reminder, lead in [
+			((2, "hours"), {"hours": 2}),
+			((1, "days"), {"days": 1}),
+			((2, "weeks"), {"weeks": 2}),
+		]:
+			with self.subTest(reminder=reminder):
+				event = self.make_event(reminder=reminder, starts_on=add_to_date(now_datetime(), **lead))
+				recipients = []
+				with patch("frappe.publish_realtime") as publish_realtime:
+					for job in (
+						trigger_offset_event_notifications,
+						trigger_daily_event_notifications,
+						trigger_weekly_event_notifications,
+					):
+						job()
+				recipients = [
+					call.kwargs["user"]
+					for call in publish_realtime.call_args_list
+					if isinstance(call.args[1], dict) and call.args[1].get("event_name") == event.name
+				]
+				self.assertEqual(recipients, [self.owner])
+
+	def test_a_participant_added_between_runs_gets_the_reminder_and_the_owner_does_not_get_it_twice(self):
+		event = self.make_event()
+		self.assertEqual(self.run_scheduler_job(event), [self.owner])
+
+		event.reload()
+		event.append(
+			"event_participants",
+			{"reference_doctype": "User", "reference_docname": self.participant, "email": self.participant},
+		)
+		event.save(ignore_permissions=True)
+
+		self.assertEqual(self.run_scheduler_job(event), [self.participant])
+
+	def test_a_failed_email_leaves_no_marker_so_the_next_run_sends_it(self):
+		event = self.make_event(participants=[self.participant])
+		frappe.db.set_value("Event Notifications", {"parent": event.name}, "type", "Email")
+
+		with patch("frappe.sendmail", side_effect=Exception("no outgoing account")):
+			self.run_scheduler_job(event)
+		self.assertFalse(frappe.db.count("CRM Event Reminder Log", {"event": event.name}))
+
+		with patch("frappe.sendmail") as sendmail:
+			self.run_scheduler_job(event)
+		self.assertEqual(sendmail.call_count, 1)
+
+	def test_purge_drops_the_markers_of_an_event_that_no_longer_exists(self):
+		frappe.get_doc(
+			doctype="CRM Event Reminder Log",
+			reminder_key="gone-3306",
+			event="EV-gone-3306",
+			recipient=self.owner,
+		).insert(ignore_permissions=True)
+
+		purge_event_reminder_logs()
+
+		self.assertFalse(frappe.db.exists("CRM Event Reminder Log", "gone-3306"))
