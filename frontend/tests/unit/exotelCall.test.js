@@ -22,13 +22,11 @@ function setup() {
   }
   const api = {
     call: vi.fn().mockResolvedValue({ CallSid: 'X-OUT' }),
-    contact: vi
-      .fn()
-      .mockResolvedValue({
-        full_name: 'Alice Johnson',
-        lead: 'CRM-LEAD-1',
-        name: 'C-1',
-      }),
+    contact: vi.fn().mockResolvedValue({
+      full_name: 'Alice Johnson',
+      lead: 'CRM-LEAD-1',
+      name: 'C-1',
+    }),
     link: vi.fn().mockResolvedValue(null),
   }
   const call = createExotelCall({ api, socket })
@@ -37,7 +35,7 @@ function setup() {
 }
 
 beforeEach(() =>
-  vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] })
+  vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'Date'] }),
 )
 afterEach(() => vi.useRealTimers())
 
@@ -65,7 +63,7 @@ describe('reading an Exotel event', () => {
 
   it('ignores an event that changes nothing', () => {
     expect(
-      readExotelEvent({ Direction: 'incoming', Status: 'free' })
+      readExotelEvent({ Direction: 'incoming', Status: 'free' }),
     ).toBeNull()
     expect(readExotelEvent({})).toBeNull()
   })
@@ -79,7 +77,7 @@ describe('an incoming call', () => {
     expect(call.state.callSid).toBe('X-IN')
     expect(call.isLive()).toBe(true)
     await vi.waitFor(() =>
-      expect(call.state.contact.name).toBe('Alice Johnson')
+      expect(call.state.contact.name).toBe('Alice Johnson'),
     )
     expect(call.state.contact.record).toEqual({
       doctype: 'CRM Lead',
