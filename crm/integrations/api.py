@@ -44,6 +44,35 @@ def is_call_integration_enabled():
 	}
 
 
+@frappe.whitelist()
+def get_calling_media():
+	"""The media desk v2's call window may use for the session user, and the user's default.
+
+	A medium counts when its site settings are enabled and the user's `CRM Telephony Agent` row
+	holds that medium's number. One read of two singles' flags and one row; nothing is cached.
+	"""
+	agent = (
+		frappe.db.get_value(
+			"CRM Telephony Agent",
+			frappe.session.user,
+			["twilio_number", "exotel_number", "default_medium"],
+			as_dict=True,
+		)
+		or {}
+	)
+	providers = (
+		("Twilio", "CRM Twilio Settings", agent.get("twilio_number")),
+		("Exotel", "CRM Exotel Settings", agent.get("exotel_number")),
+	)
+	media = [
+		medium
+		for medium, settings, number in providers
+		if number and frappe.db.get_single_value(settings, "enabled")
+	]
+	default = agent.get("default_medium")
+	return {"media": media, "default_medium": default if default in media else None}
+
+
 def get_user_default_calling_medium():
 	if not frappe.db.exists("CRM Telephony Agent", frappe.session.user):
 		return None
@@ -95,6 +124,25 @@ def add_note_to_call_log(call_sid: str, note: dict):
 	call_log.save(ignore_permissions=True)
 
 	return _note
+
+
+LINKABLE_FROM_A_CALL = ("FCRM Note", "CRM Task")
+
+
+@frappe.whitelist()
+def link_to_call_log(call_sid: str, doctype: str, docname: str):
+	"""Link a note or task the user made during a call to the call's log."""
+	if doctype not in LINKABLE_FROM_A_CALL:
+		frappe.throw(_("A call log links only to a note or a task"), frappe.ValidationError)
+	if not frappe.has_permission("CRM Call Log", "write", call_sid):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+	frappe.has_permission(doctype, "read", docname, throw=True)
+
+	call_log = frappe.get_doc("CRM Call Log", call_sid)
+	call_log.link_with_reference_doc(doctype, docname)
+	call_log.save(ignore_permissions=True)
+	# The v2 client reads a null body as a failed call.
+	return call_log.name
 
 
 @frappe.whitelist()

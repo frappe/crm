@@ -40,6 +40,14 @@ export default defineConfig({
           'tests/fixtures/frameworkApi.js',
         ),
       },
+      // The desk resolves it from the framework's node_modules, where `crm/desk.package.json` declares it.
+      {
+        find: '@twilio/voice-sdk',
+        replacement: path.resolve(
+          import.meta.dirname,
+          'node_modules/@twilio/voice-sdk',
+        ),
+      },
       {
         find: '@shell',
         replacement: path.resolve(
