@@ -12,7 +12,7 @@ describe('loadTwilioDevice', () => {
 
     const Device = await loadTwilioDevice(
       { token: 't', mock: true },
-      loadVoiceSdk
+      loadVoiceSdk,
     )
 
     expect(Device).toBe(MockDevice)

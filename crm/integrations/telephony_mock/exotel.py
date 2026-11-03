@@ -106,17 +106,17 @@ def replay(payload, agent):
 	from crm.integrations.exotel.handler import handle_request
 
 	key = frappe.db.get_single_value("CRM Exotel Settings", "webhook_verify_token")
-	args = {"key": key} | ({"agent": agent} if agent else {})
-	with request_args(args):
+	query = {"key": key} | ({"agent": agent} if agent else {})
+	with request_query(query):
 		handle_request(**payload)
 	return payload
 
 
 @contextmanager
-def request_args(args):
+def request_query(query):
 	"""The handler reads the query string from `frappe.request`, which a bench command or a nested call lacks."""
 	previous = getattr(frappe.local, "request", None)
-	frappe.local.request = SimpleNamespace(args=args, headers={})
+	frappe.local.request = SimpleNamespace(args=query, headers={})
 	try:
 		yield
 	finally:

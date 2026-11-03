@@ -47,7 +47,6 @@ def setup_walk(user="Administrator", default_medium=None):
 	)
 	agent.update({"user": user} | AGENT | ({"default_medium": default_medium} if default_medium else {}))
 	agent.save(ignore_permissions=True)
-	frappe.db.commit()
 
 
 def teardown_walk(user="Administrator"):
@@ -66,7 +65,6 @@ def teardown_walk(user="Administrator"):
 	frappe.db.delete(
 		"Integration Request", {"integration_request_service": "Exotel", "data": ["like", "%mock-%"]}
 	)
-	frappe.db.commit()
 
 
 def refuse_real_credentials(doctype, values):
