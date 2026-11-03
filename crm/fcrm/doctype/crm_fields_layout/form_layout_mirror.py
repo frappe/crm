@@ -21,6 +21,7 @@ MIRRORED_DOCTYPES = (
 FOREIGN_LAYOUTS = (("Contact", "Quick Entry"), ("Contact", "Side Panel"), ("Address", "Quick Entry"))
 FOREIGN_LAYOUT_APP = "crm"
 FOREIGN_DOCTYPES = tuple(dict.fromkeys(dt for dt, _ in FOREIGN_LAYOUTS))
+QUICK_ENTRY_DIALOG_SIZES = {"CRM Lead": "3xl"}
 
 
 def mirror_layout(doc):
@@ -78,11 +79,25 @@ def write_default_row(dt: str, type: str, layout: list):
 	row = (
 		frappe.get_doc("Form Layout", stored.name)
 		if stored
-		else frappe.new_doc("Form Layout", dt=dt, type=type, app=layout_app(dt))
+		else frappe.new_doc(
+			"Form Layout", dt=dt, type=type, app=layout_app(dt), dialog_size=dialog_size(dt, type)
+		)
 	)
 	row.layout = frappe.as_json(layout)
 	row.omitted = None
 	row.save(ignore_permissions=True)
+
+
+def set_dialog_sizes():
+	"""Give each sized doctype's default Quick Entry row its size, unless the site chose one."""
+	for dt, size in QUICK_ENTRY_DIALOG_SIZES.items():
+		row = default_row(dt, "Quick Entry")
+		if row and not row.dialog_size:
+			frappe.db.set_value("Form Layout", row.name, "dialog_size", size)
+
+
+def dialog_size(dt: str, type: str) -> str | None:
+	return QUICK_ENTRY_DIALOG_SIZES.get(dt) if type == "Quick Entry" else None
 
 
 def default_row(dt: str, type: str):
@@ -90,7 +105,7 @@ def default_row(dt: str, type: str):
 	rows = frappe.get_all(
 		"Form Layout",
 		filters=default_filters(dt, type, layout_app(dt)),
-		fields=["name", "layout", "omitted"],
+		fields=["name", "layout", "omitted", "dialog_size"],
 		order_by="creation asc",
 		limit=1,
 	)
