@@ -149,7 +149,7 @@ class TestEventReminderTarget(IntegrationTestCase):
 
 	def send(self, **notification):
 		with patch("frappe.publish_realtime") as publish_realtime:
-			_send_system_notification(frappe._dict(notification))
+			_send_system_notification(frappe._dict(notification), "minutes")
 		return publish_realtime
 
 	def recipients(self, publish_realtime):
