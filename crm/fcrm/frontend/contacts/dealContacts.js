@@ -1,13 +1,6 @@
 // What CRM Deal's contacts section does, kept free of the desk's imports so it is unit-tested.
-import { ServerWrites } from '../serverWrites.js'
-
-const DEAL = 'crm.fcrm.doctype.crm_deal.crm_deal'
-
-export const CONTACT_METHODS = {
-	add: `${DEAL}.add_contact`,
-	remove: `${DEAL}.remove_contact`,
-	setPrimary: `${DEAL}.set_primary_contact`,
-}
+import { ref } from 'vue'
+import { saveRecord } from '../saveRecord.js'
 
 // The layout move puts the SLA section first in every Deal Side Panel (#45882 Q6).
 export const FIRST_LAYOUT_SECTION = 'sla_section'
@@ -27,33 +20,40 @@ export function dealContacts(doc) {
 	return rows.sort((a, b) => Number(Boolean(b.is_primary)) - Number(Boolean(a.is_primary)))
 }
 
-/** The add, remove and set-primary writes, one at a time; each resolves true once it is done. */
+/** Edits the draft's contacts table and saves it, one write at a time; each resolves true once saved. */
 export class ContactsEditor {
 	constructor(page, messages) {
 		this.page = page
 		this.messages = messages
-		this.writes = new ServerWrites(page, messages.stale)
-		this.busy = this.writes.busy
+		this.busy = ref(false)
 	}
 
 	get editable() {
 		return Boolean(this.page.perms?.write) && this.page.fieldAccess('contacts') === 'write'
 	}
 
+	// The server's validate fetches the row's name, email and mobile and sets the deal's primary ones.
 	add(contact) {
 		if (dealContacts(this.page.doc).some((row) => row.contact === contact)) {
 			this.page.toast.error(this.messages.duplicate)
 			return Promise.resolve(false)
 		}
-		return this.#change(CONTACT_METHODS.add, contact, this.messages.added)
+		return this.#write((rows) => [...rows, { contact }], this.messages.added)
 	}
 
 	remove(contact) {
-		return this.#change(CONTACT_METHODS.remove, contact, this.messages.removed)
+		return this.#write(
+			(rows) => rows.filter((row) => row.contact !== contact),
+			this.messages.removed
+		)
 	}
 
 	setPrimary(contact) {
-		return this.#change(CONTACT_METHODS.setPrimary, contact, this.messages.primary)
+		const mark = (row) => ({
+			...row,
+			is_primary: row.contact === contact ? 1 : 0,
+		})
+		return this.#write((rows) => rows.map(mark), this.messages.primary)
 	}
 
 	/** Creates a contact in its Quick Entry, then adds it; false when nothing was saved. */
@@ -68,7 +68,21 @@ export class ContactsEditor {
 		return contact ? this.add(contact.name) : false
 	}
 
-	#change(method, contact, done) {
-		return this.writes.run(method, { deal: this.page.docname, contact }, done)
+	async #write(change, done) {
+		if (this.busy.value) return false
+		this.busy.value = true
+		const before = this.page.doc.contacts ?? []
+		this.page.doc.contacts = change(before)
+		try {
+			if (await saveRecord(this.page)) {
+				this.page.toast.success(done)
+				return true
+			}
+			// A refused save leaves the draft: only the rows this write changed go back.
+			this.page.doc.contacts = before
+			return false
+		} finally {
+			this.busy.value = false
+		}
 	}
 }
