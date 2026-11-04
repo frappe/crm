@@ -1,7 +1,7 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  CALL_WINDOW_APP,
   callState,
-  registerOutgoingStarter,
 } from '../../../crm/fcrm/frontend/telephony/callState.js'
 import {
   MAKE_A_CALL,
@@ -11,12 +11,8 @@ import {
   typedNumberOptions,
 } from '../../../crm/fcrm/frontend/telephony/makeCall.js'
 
-let unregister = () => {}
-
 afterEach(() => {
   callState.media = []
-  unregister()
-  unregister = () => {}
 })
 
 describe('the Make a call act', () => {
@@ -138,15 +134,20 @@ describe('the Make a call act', () => {
     expect(typedNumberOptions(query)).toEqual([])
   })
 
-  it('starts the outgoing call to the number it was given', () => {
-    const start = vi.fn()
-    unregister = registerOutgoingStarter(start)
-    makeACallAct.run({}, '+15550100')
-    expect(start).toHaveBeenCalledWith('+15550100')
+  it('asks the call window to dial the number it was given', () => {
+    const open = vi.fn()
+    const shell = { windowOf: vi.fn(() => ({ open })) }
+    makeACallAct.run(shell, '+15550100')
+    expect(shell.windowOf).toHaveBeenCalledWith(CALL_WINDOW_APP)
+    expect(open).toHaveBeenCalledWith({ dial: { number: '+15550100' } })
   })
 
-  it('says so when the call window has not mounted yet', () => {
-    expect(() => makeACallAct.run({}, '+15550100')).toThrow(/still loading/)
+  it('asks anew for the same number a second time', () => {
+    const open = vi.fn()
+    const shell = { windowOf: () => ({ open }) }
+    makeACallAct.run(shell, '+15550100')
+    makeACallAct.run(shell, '+15550100')
+    expect(open.mock.calls[0][0].dial).not.toBe(open.mock.calls[1][0].dial)
   })
 
   it('refuses to run without a number', () => {

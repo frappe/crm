@@ -69,6 +69,6 @@ export const makeACallAct = {
   },
   run: (shell, number) => {
     if (!number) throw new Error(__("Make a call needs a number"));
-    return startOutgoingCall(number);
+    startOutgoingCall(shell, number);
   },
 };

@@ -16,9 +16,12 @@ const payload = (fixture, sid) => ({ ...fixture.payload, CallSid: sid })
 
 function setup() {
   const handlers = {}
-  const socket = {
-    on: vi.fn((event, handler) => (handlers[event] = handler)),
-    off: vi.fn(),
+  const off = vi.fn()
+  const realtime = {
+    on: vi.fn((event, handler) => {
+      handlers[event] = handler
+      return off
+    }),
   }
   const api = {
     call: vi.fn().mockResolvedValue({ CallSid: 'X-OUT' }),
@@ -29,9 +32,15 @@ function setup() {
     }),
     link: vi.fn().mockResolvedValue(null),
   }
-  const call = createExotelCall({ api, socket })
+  const call = createExotelCall({ api, realtime })
   call.start()
-  return { api, call, socket, send: (event) => handlers.exotel_call(event) }
+  return {
+    api,
+    call,
+    realtime,
+    off,
+    send: (event) => handlers.exotel_call(event),
+  }
 }
 
 beforeEach(() =>
@@ -232,7 +241,8 @@ it('links a note or task to the call log, and leaves a call with no log alone', 
 })
 
 it('stops listening when the window goes', () => {
-  const { call, socket } = setup()
+  const { call, realtime, off } = setup()
+  expect(realtime.on).toHaveBeenCalledWith('exotel_call', expect.any(Function))
   call.destroy()
-  expect(socket.off).toHaveBeenCalledWith('exotel_call', expect.any(Function))
+  expect(off).toHaveBeenCalled()
 })

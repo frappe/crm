@@ -9,10 +9,7 @@ import {
   dealContacts,
   placeContactsSection,
 } from '../../../crm/fcrm/frontend/contacts/dealContacts.js'
-import {
-  callState,
-  registerOutgoingStarter,
-} from '../../../crm/fcrm/frontend/telephony/callState.js'
+import { callState } from '../../../crm/fcrm/frontend/telephony/callState.js'
 
 const MESSAGES = {
   duplicate: 'Contact already added',
@@ -290,9 +287,7 @@ describe('ContactsEditor', () => {
 })
 
 describe('a contact’s email and mobile', () => {
-  let unregister = () => {}
   afterEach(() => {
-    unregister()
     callState.media = []
   })
 
@@ -303,21 +298,22 @@ describe('a contact’s email and mobile', () => {
     expect(canCall()).toBe(true)
   })
 
-  it('calls the number through the call window', async () => {
-    const start = vi.fn(() => Promise.resolve())
-    unregister = registerOutgoingStarter(start)
-    const page = fakePage()
+  it('calls the number through the make-a-call act', async () => {
+    const page = fakePage({ run: vi.fn(() => Promise.resolve()) })
     await callContact(page, '+1 555 0101')
-    expect(start).toHaveBeenCalledWith('+1 555 0101')
+    expect(page.run).toHaveBeenCalledWith(
+      'shell.crm.make_a_call',
+      '+1 555 0101',
+    )
     expect(page.toast.error).not.toHaveBeenCalled()
   })
 
-  it('toasts a call window that is still loading', async () => {
-    const page = fakePage()
+  it('toasts an act the shell refuses', async () => {
+    const page = fakePage({
+      run: vi.fn(() => Promise.reject(new Error('No calling medium'))),
+    })
     await callContact(page, '+1 555 0101')
-    expect(page.toast.error).toHaveBeenCalledWith(
-      expect.stringContaining('still loading'),
-    )
+    expect(page.toast.error).toHaveBeenCalledWith('No calling medium')
   })
 
   it('emails only when the deal offers its email writer', () => {

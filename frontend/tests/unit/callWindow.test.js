@@ -1,9 +1,9 @@
-import { createApp, h, nextTick, reactive } from 'vue'
+import { createApp, h, nextTick, reactive, ref } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import CallWindow from '../../../crm/fcrm/frontend/telephony/CallWindow.vue'
 import {
   callState,
-  startOutgoingCall,
+  startOutgoingCall as requestCall,
 } from '../../../crm/fcrm/frontend/telephony/callState.js'
 import { MockDevice } from '../../../crm/fcrm/frontend/telephony/mockTwilioDevice.js'
 
@@ -68,6 +68,9 @@ let root
 let app
 let handle
 let shell
+let request
+let events
+const startOutgoingCall = (number) => requestCall(shell, number)
 
 beforeEach(async () => {
   Object.assign(callState, {
@@ -83,7 +86,8 @@ beforeEach(async () => {
     closable: true,
     keepAlive: false,
     attention: false,
-    open() {
+    open(props) {
+      if (props) request.value = props
       this.state = 'open'
     },
     minimise() {
@@ -108,7 +112,16 @@ beforeEach(async () => {
       this.attention = on
     },
   })
+  request = ref({})
+  events = {}
   shell = {
+    windowOf: () => handle,
+    realtime: {
+      on: vi.fn((event, handler) => {
+        events[event] = handler
+        return vi.fn(() => delete events[event])
+      }),
+    },
     create: vi.fn(),
     toast: { error: vi.fn() },
     router: { push: vi.fn() },
@@ -119,7 +132,9 @@ beforeEach(async () => {
 })
 async function mountWindow() {
   app?.unmount()
-  app = createApp({ render: () => h(CallWindow, { shell, window: handle }) })
+  app = createApp({
+    render: () => h(CallWindow, { shell, window: handle, ...request.value }),
+  })
   app.mount(root)
   await settle()
 }
@@ -127,7 +142,6 @@ afterEach(() => {
   vi.clearAllMocks()
   app.unmount()
   app = null
-  delete globalThis.__testSocket
   root.remove()
   vi.useRealTimers()
   delete window.__crmTelephonyMock
@@ -215,9 +229,8 @@ describe('the call window', () => {
   })
 
   it('Note opens Quick Entry with the lead and links the saved note to the call log', async () => {
-    const { callApi } = await import(
-      '../../../crm/fcrm/frontend/telephony/callApi.js'
-    )
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
     shell.create.mockResolvedValue({ name: 'N-1' })
     await ring()
     await press('Accept')
@@ -249,12 +262,7 @@ describe('the call window', () => {
 describe('the call window with Exotel', () => {
   let sendEvent
   const exotelWindow = async (state = {}) => {
-    const handlers = {}
-    globalThis.__testSocket = {
-      on: (event, handler) => (handlers[event] = handler),
-      off: vi.fn(),
-    }
-    sendEvent = (payload) => handlers.exotel_call(payload)
+    sendEvent = (payload) => events.exotel_call(payload)
     Object.assign(callState, { media: ['Exotel'], ...state })
     await mountWindow()
   }
@@ -291,9 +299,8 @@ describe('the call window with Exotel', () => {
   })
 
   it('links a note made during the call to the Exotel call log', async () => {
-    const { callApi } = await import(
-      '../../../crm/fcrm/frontend/telephony/callApi.js'
-    )
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
     shell.create.mockResolvedValue({ name: 'N-9' })
     await exotelWindow()
     sendEvent({ ...inbound, EventType: 'Dial', Status: 'busy' })
@@ -320,9 +327,8 @@ describe('the call window with Exotel', () => {
   })
 
   it('an outgoing call with one medium dials at once: Ringing your phone…', async () => {
-    const { callApi } = await import(
-      '../../../crm/fcrm/frontend/telephony/callApi.js'
-    )
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
     await exotelWindow()
     await startOutgoingCall('+15550100101')
     await settle()
@@ -332,17 +338,30 @@ describe('the call window with Exotel', () => {
   })
 })
 
+describe('the realtime listener', () => {
+  it('is dropped with the window', async () => {
+    const off = vi.fn()
+    shell.realtime.on.mockReturnValue(off)
+    Object.assign(callState, { media: ['Exotel'] })
+    await mountWindow()
+    expect(shell.realtime.on).toHaveBeenCalledWith(
+      'exotel_call',
+      expect.any(Function),
+    )
+    app.unmount()
+    expect(off).toHaveBeenCalled()
+  })
+})
+
 describe('the medium picker', () => {
   const both = async (defaultMedium = null) => {
-    globalThis.__testSocket = { on() {}, off() {} }
     Object.assign(callState, { media: ['Twilio', 'Exotel'], defaultMedium })
     await mountWindow()
   }
 
   it('opens as the first step with one button per medium when there is no default', async () => {
-    const { callApi } = await import(
-      '../../../crm/fcrm/frontend/telephony/callApi.js'
-    )
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
     await both()
     startOutgoingCall('+15550100101')
     await settle()
@@ -358,9 +377,8 @@ describe('the medium picker', () => {
   })
 
   it('remembers the choice when asked', async () => {
-    const { callApi } = await import(
-      '../../../crm/fcrm/frontend/telephony/callApi.js'
-    )
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
     await both()
     startOutgoingCall('+15550100101')
     await settle()
@@ -373,14 +391,35 @@ describe('the medium picker', () => {
   })
 
   it('skips the picker for a default medium', async () => {
-    const { callApi } = await import(
-      '../../../crm/fcrm/frontend/telephony/callApi.js'
-    )
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
     await both('Exotel')
     startOutgoingCall('+15550100101')
     await settle()
     expect(callApi.exotelCall).toHaveBeenCalledWith('+15550100101')
     expect(buttons()).toEqual([])
+  })
+
+  it('dials a request made before the window mounted', async () => {
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    app.unmount()
+    Object.assign(callState, { media: ['Exotel'] })
+    handle.open({ dial: { number: '+15550100101' } })
+    await mountWindow()
+    expect(callApi.exotelCall).toHaveBeenCalledWith('+15550100101')
+  })
+
+  it('closes the window the act opened when the dial fails', async () => {
+    const { callApi } =
+      await import('../../../crm/fcrm/frontend/telephony/callApi.js')
+    callApi.exotelCall.mockRejectedValueOnce(new Error('No agent number'))
+    Object.assign(callState, { media: ['Exotel'] })
+    await mountWindow()
+    startOutgoingCall('+15550100101')
+    await settle()
+    expect(shell.toast.error).toHaveBeenCalledWith('No agent number')
+    expect(handle.state).toBe('closed')
   })
 
   it('closing the frame drops the pending number', async () => {
