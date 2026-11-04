@@ -48,11 +48,13 @@ jobs:
             - name: Resolve frappe branch for base
               id: frappe
               run: |
-                  # Stable lanes run on frappe version-15; develop tracks frappe develop.
+                  # version-16 lanes run on frappe version-16, other stable lanes on version-15; develop tracks frappe develop.
                   case "$BASE_BRANCH" in
-                      main|main-hotfix) echo "branch=version-15" >> "$GITHUB_OUTPUT" ;;
-                      *)                echo "branch=develop"    >> "$GITHUB_OUTPUT" ;;
+                      version-16|version-16-hotfix)                  BRANCH=version-16 ;;
+                      main|main-hotfix|version-15|version-15-hotfix) BRANCH=version-15 ;;
+                      *)                                             BRANCH=develop ;;
                   esac
+                  echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
 
             - name: Setup Python
               uses: actions/setup-python@v6
