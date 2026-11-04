@@ -1,5 +1,6 @@
 {
-	"branches": ["main"],
+	"branches": ["version-16"],
+	"tagFormat": "v16-${version}",
 	"plugins": [
 		"@semantic-release/commit-analyzer", {
 			"preset": "angular"
