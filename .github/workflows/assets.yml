@@ -1,12 +1,12 @@
 name: Pre-build assets
 
-# The release commit semantic-release pushes to main, version-15 or version-16 (on_release.yml)
+# The release commit semantic-release pushes to main or version-16 (on_release.yml)
 # is also advertised in frappe/marketplace as that branch's stable release, once its assets exist.
 
 on:
   push:
     # develop needs the whatsapp app at build time, which the Pilot build does not check out yet.
-    branches: [main, version-15, version-16]
+    branches: [main, version-16]
 
 # Release PRs edit the same marketplace entry, so run one at a time per branch.
 concurrency:
