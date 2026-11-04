@@ -12,10 +12,12 @@ on:
             - "**.csv"
             - "**.po"
             - "**.pot"
-    # Seeds main-hotfix caches; scheduled runs only ever run on develop.
+    # Seeds hotfix-lane caches; scheduled runs only ever run on develop.
     push:
         branches:
             - main-hotfix
+            - version-15-hotfix
+            - version-16-hotfix
         paths-ignore:
             - "**.css"
             - "**.js"
@@ -47,12 +49,13 @@ jobs:
               id: resolve
               run: |
                   BASE="${{ github.base_ref || github.ref_name }}"
-                  # develop tracks frappe develop; the stable lane ships frappe 15 and 16.
-                  if [ "$BASE" = "develop" ]; then
-                      echo 'branches=["develop"]' >> "$GITHUB_OUTPUT"
-                  else
-                      echo 'branches=["version-15","version-16"]' >> "$GITHUB_OUTPUT"
-                  fi
+                  # develop tracks frappe develop; version-NN lanes pin their frappe; main ships 15 and 16.
+                  case "$BASE" in
+                      develop)     echo 'branches=["develop"]' ;;
+                      version-15*) echo 'branches=["version-15"]' ;;
+                      version-16*) echo 'branches=["version-16"]' ;;
+                      *)           echo 'branches=["version-15","version-16"]' ;;
+                  esac >> "$GITHUB_OUTPUT"
 
     test:
         name: Tests (frappe ${{ matrix.frappe-branch }})
@@ -84,7 +87,7 @@ jobs:
                   node-version: "24"
                   type: "server"
                   # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
-                  install-erpnext: ${{ (env.CRM_BRANCH == 'main-hotfix' || env.CRM_BRANCH == 'main') && matrix.frappe-branch != 'version-16' }}
+                  install-erpnext: ${{ env.CRM_BRANCH != 'develop' && matrix.frappe-branch == 'version-15' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
