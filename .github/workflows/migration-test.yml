@@ -48,10 +48,11 @@ jobs:
             - name: Resolve frappe branch for base
               id: frappe
               run: |
-                  # Stable lanes run on the latest frappe v15 release; develop tracks frappe develop.
+                  # version-16 lanes run on the latest frappe v16 release, other stable lanes on v15; develop tracks frappe develop.
                   case "$BASE_BRANCH" in
-                      main|main-hotfix) BRANCH=version-15 ;;
-                      *)                BRANCH=develop ;;
+                      version-16|version-16-hotfix)                  BRANCH=version-16 ;;
+                      main|main-hotfix|version-15|version-15-hotfix) BRANCH=version-15 ;;
+                      *)                                             BRANCH=develop ;;
                   esac
                   echo "branch=$(bash pr-crm/.github/helper/frappe_ref.sh "$BRANCH")" >> "$GITHUB_OUTPUT"
 
