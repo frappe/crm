@@ -258,7 +258,7 @@ def get_reference_summary(deal, lead):
 
 	fields = ["organization", "lead_name", "first_name", "last_name", "status"]
 	record = frappe.db.get_value(doctype, name, fields, as_dict=True) or {}
-	full_name = " ".join(filter(None, [record.get("first_name"), record.get("last_name")]))
+	full_name = " ".join(part for part in [record.get("first_name"), record.get("last_name")] if part)
 	person = record.get("lead_name") or full_name
 	organization = record.get("organization")
 	# A deal is named by its organization, a lead by its person; the other one is the subtitle.
