@@ -376,7 +376,6 @@ async function saveHolidayList() {
 
   const values = toDocValues(holidayData.value)
   const oldName = holidayScreen.value.name
-  let name = oldName
   saving.value = true
   try {
     if (!oldName) {
@@ -386,27 +385,25 @@ async function saveHolidayList() {
       toast.success(__('Holiday list created'))
       holidayScreen.value = { ...holidayScreen.value, name: doc.name }
     } else {
-      // Renamed first so the values below land on the doc under its new name.
-      if (values.holiday_list_name !== oldName) {
-        name = await call<string>('frappe.client.rename_doc', {
-          doctype: 'CRM Holiday List',
-          old_name: oldName,
-          new_name: values.holiday_list_name,
-        })
-      }
+      // rename_doc sets holiday_list_name, and runs last so a rejected save keeps the old name.
+      const { holiday_list_name: newName, ...fields } = values
       await call('frappe.client.set_value', {
         doctype: 'CRM Holiday List',
-        name,
-        fieldname: values,
+        name: oldName,
+        fieldname: fields,
       })
-      toast.success(__('Holiday list updated'))
-      if (name !== oldName) {
+      if (newName !== oldName) {
+        const name = await call<string>('frappe.client.rename_doc', {
+          doctype: 'CRM Holiday List',
+          old_name: oldName,
+          new_name: newName,
+        })
         holidayScreen.value = { ...holidayScreen.value, name }
       } else {
         await getHolidayList.reload()
       }
+      toast.success(__('Holiday list updated'))
     }
-    holidayListResource.reload()
   } catch (err) {
     const message = (err as FrappeResourceError | undefined)?.messages?.[0]
     toast.error(
@@ -414,10 +411,9 @@ async function saveHolidayList() {
         ? htmlToText(message)
         : __('Some error occurred while saving the holiday list'),
     )
-    // A rename that went through before the failure still moves the screen.
-    if (name !== oldName) holidayScreen.value = { ...holidayScreen.value, name }
   } finally {
     saving.value = false
+    holidayListResource.reload()
   }
 }
 
