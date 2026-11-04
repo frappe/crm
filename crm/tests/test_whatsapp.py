@@ -5,13 +5,43 @@ from unittest.mock import MagicMock, patch
 
 import frappe
 
-from crm.api.whatsapp import notify_agent, validate
+from crm.api.whatsapp import notify_agent, on_update, validate
 from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestWhatsAppHooks(FrappeTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
+
+	# --- on_update() ---
+
+	def test_on_update_publishes_to_reference_doc_room(self):
+		doc = MagicMock(reference_doctype="CRM Lead", reference_name="LEAD-0001")
+
+		with (
+			patch("crm.api.whatsapp.frappe.publish_realtime") as publish,
+			patch("crm.api.whatsapp.notify_agent"),
+		):
+			on_update(doc, None)
+
+		publish.assert_called_once_with(
+			"whatsapp_message",
+			{"reference_doctype": "CRM Lead", "reference_name": "LEAD-0001"},
+			doctype="CRM Lead",
+			docname="LEAD-0001",
+		)
+
+	def test_on_update_does_not_broadcast_without_reference(self):
+		doc = MagicMock(reference_doctype=None, reference_name=None)
+
+		with (
+			patch("crm.api.whatsapp.frappe.publish_realtime") as publish,
+			patch("crm.api.whatsapp.notify_agent") as notify,
+		):
+			on_update(doc, None)
+
+		publish.assert_not_called()
+		notify.assert_called_once_with(doc)
 
 	# --- validate() ---
 
