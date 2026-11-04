@@ -47,13 +47,16 @@ def validate(doc, method):
 
 
 def on_update(doc, method):
-	frappe.publish_realtime(
-		"whatsapp_message",
-		{
-			"reference_doctype": doc.reference_doctype,
-			"reference_name": doc.reference_name,
-		},
-	)
+	if doc.reference_doctype and doc.reference_name:
+		frappe.publish_realtime(
+			"whatsapp_message",
+			{
+				"reference_doctype": doc.reference_doctype,
+				"reference_name": doc.reference_name,
+			},
+			doctype=doc.reference_doctype,
+			docname=doc.reference_name,
+		)
 
 	notify_agent(doc)
 
