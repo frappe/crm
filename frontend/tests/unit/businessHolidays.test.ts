@@ -6,8 +6,106 @@ import {
   getRecurringDates,
   getRepetitionText,
   inferRecurringHolidays,
+  reconcileWeeklyOffs,
 } from '@/components/Settings/BusinessHolidays/utils'
-import type { RecurringHoliday } from '@/components/Settings/BusinessHolidays/types'
+import {
+  holidayData,
+  holidayDataErrors,
+  removeHoliday,
+  resetHolidayData,
+  resetHolidayDataErrors,
+} from '@/components/Settings/BusinessHolidays/store'
+import type {
+  Holiday,
+  RecurringHoliday,
+} from '@/components/Settings/BusinessHolidays/types'
+
+describe('reconcileWeeklyOffs', () => {
+  const weeklyOff = (date: string, description = 'Sunday'): Holiday => ({
+    date,
+    description,
+    weekly_off: 1,
+  })
+  const marchSundays = [
+    '2026-03-01',
+    '2026-03-08',
+    '2026-03-15',
+    '2026-03-22',
+    '2026-03-29',
+  ].map((date) => weeklyOff(date))
+  const reconcile = (holidays: Holiday[], rules: RecurringHoliday[] = []) =>
+    reconcileWeeklyOffs(holidays, rules, '2026-03-01', '2026-03-31')
+
+  it('infers an every-week rule when desk rows cover the whole range', () => {
+    expect(reconcile(marchSundays)).toEqual({
+      recurring_holidays: [everySunday],
+      holidays: marchSundays,
+    })
+  })
+
+  it('keeps desk rows for only some weeks as single holidays', () => {
+    const rows = [
+      weeklyOff('2026-03-14', 'Saturday'),
+      weeklyOff('2026-03-28', 'Saturday'),
+    ]
+    const form = reconcile(rows)
+    expect(form.recurring_holidays).toEqual([])
+    expect(form.holidays).toEqual(
+      rows.map((row) => ({ ...row, weekly_off: 0 })),
+    )
+    expect(
+      buildHolidays(
+        form.holidays,
+        form.recurring_holidays,
+        '2026-03-01',
+        '2026-03-31',
+      ).map((row) => row.date),
+    ).toEqual(['2026-03-14', '2026-03-28'])
+  })
+
+  it('keeps a stored rule that matches its rows, around a single holiday', () => {
+    const rows = [
+      ...marchSundays.filter((row) => row.date !== '2026-03-08'),
+      { date: '2026-03-08', description: 'Holi', weekly_off: 0 as const },
+    ]
+    expect(reconcile(rows, [everySunday]).recurring_holidays).toEqual([
+      everySunday,
+    ])
+  })
+
+  it('drops a stored rule when a row was deleted in desk', () => {
+    const rows = marchSundays.filter((row) => row.date !== '2026-03-15')
+    const form = reconcile(rows, [everySunday])
+    expect(form.recurring_holidays).toEqual([])
+    expect(form.holidays.map((row) => row.date)).toEqual(
+      rows.map((row) => row.date),
+    )
+  })
+
+  it('keeps a weekly-off row added in desk for a day with no rule', () => {
+    const extra = weeklyOff('2026-03-07', 'Saturday')
+    const form = reconcile([...marchSundays, extra], [everySunday])
+    expect(form.recurring_holidays).toEqual([everySunday])
+    expect(form.holidays).toContainEqual({ ...extra, weekly_off: 0 })
+  })
+})
+
+describe('holidays error', () => {
+  it('clears once the holiday outside the range is removed', () => {
+    resetHolidayData()
+    resetHolidayDataErrors()
+    Object.assign(holidayData.value, {
+      from_date: '2026-03-01',
+      to_date: '2026-03-31',
+      holidays: [{ date: '2026-03-10', description: 'Holi', weekly_off: 0 }],
+    })
+    holidayDataErrors.value.holidays = 'Holi is outside the date range'
+
+    removeHoliday(holidayData.value.holidays[0])
+
+    expect(holidayDataErrors.value.holidays).toBe('')
+  })
+})
 
 const everySunday: RecurringHoliday = {
   day: 'Sunday',

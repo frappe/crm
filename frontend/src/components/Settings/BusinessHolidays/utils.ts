@@ -1,6 +1,7 @@
 import { dayjs } from 'frappe-ui'
 import type {
   Holiday,
+  HolidayListForm,
   RecurringHoliday,
   RepetitionPattern,
   Weekday,
@@ -130,6 +131,48 @@ export function inferRecurringHolidays(
     day,
     repetition: { ...emptyRepetition(), all: true },
   }))
+}
+
+// A rule rebuilds its weekday's rows on the next edit, and SLAs read those rows.
+// So a rule that would change them is dropped, and its rows stay as single holidays.
+export function reconcileWeeklyOffs(
+  holidays: Holiday[],
+  storedRules: RecurringHoliday[],
+  fromDate: string,
+  toDate: string,
+): Pick<HolidayListForm, 'holidays' | 'recurring_holidays'> {
+  const singles = new Set(
+    holidays.filter((row) => !row.weekly_off).map((row) => row.date),
+  )
+  const weeklyOffs = holidays
+    .filter((row) => row.weekly_off && !singles.has(row.date))
+    .map((row) => row.date)
+
+  const candidates = storedRules.length
+    ? storedRules
+    : inferRecurringHolidays(holidays)
+  const rules = candidates.filter((rule) => {
+    const expected = getRecurringDates(fromDate, toDate, rule).filter(
+      (date) => !singles.has(date),
+    )
+    const actual = weeklyOffs.filter(
+      (date) => dayjs(date).day() === DAY_INDEX[rule.day],
+    )
+    return (
+      expected.length === actual.length &&
+      expected.every((date) => actual.includes(date))
+    )
+  })
+
+  const covered = new Set(rules.map((rule) => DAY_INDEX[rule.day]))
+  return {
+    recurring_holidays: rules,
+    holidays: holidays.map((row) =>
+      row.weekly_off && !covered.has(dayjs(row.date).day())
+        ? { ...row, weekly_off: 0 }
+        : row,
+    ),
+  }
 }
 
 // Six weeks of seven days, Sunday first; days outside the month are null.

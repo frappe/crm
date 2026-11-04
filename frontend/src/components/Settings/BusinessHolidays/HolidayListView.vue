@@ -232,7 +232,7 @@ import type {
   HolidayModalState,
   RecurringHoliday,
 } from './types'
-import { inferRecurringHolidays, sortHolidays } from './utils'
+import { reconcileWeeklyOffs, sortHolidays } from './utils'
 
 const holidayListResource = inject('holidayListResource') as HolidayListResource
 
@@ -279,8 +279,7 @@ function toForm(doc: HolidayListDoc): HolidayListForm {
     description: doc.description || '',
     from_date: doc.from_date,
     to_date: doc.to_date,
-    holidays,
-    recurring_holidays: rules.length ? rules : inferRecurringHolidays(holidays),
+    ...reconcileWeeklyOffs(holidays, rules, doc.from_date, doc.to_date),
   }
 }
 

@@ -89,6 +89,7 @@ export function updateWeeklyOffDates() {
     from_date,
     to_date,
   )
+  if (holidayDataErrors.value.holidays) validateHoliday('holidays')
 }
 
 // Adds a single holiday, or replaces the one being edited; returns an error, empty on success.
