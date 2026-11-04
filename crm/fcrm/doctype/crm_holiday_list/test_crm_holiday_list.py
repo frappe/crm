@@ -6,6 +6,8 @@ import json
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.fcrm.doctype.crm_holiday_list.crm_holiday_list import save_holiday_list
+
 RECURRING = [{"day": "Sunday", "repetition": {"all": True}}]
 
 
@@ -47,3 +49,24 @@ class TestCRMHolidayList(IntegrationTestCase):
 	def test_rejects_holiday_outside_range(self):
 		doc = make_holiday_list(holidays=[{"date": "2027-01-01", "description": "New Year"}])
 		self.assertRaises(frappe.ValidationError, doc.insert)
+
+	def test_save_holiday_list_saves_and_renames(self):
+		doc = make_holiday_list().insert()
+		name = save_holiday_list(
+			doc.name, {"holiday_list_name": "_Test Renamed List", "description": "Office closures"}
+		)
+
+		self.assertEqual(name, "_Test Renamed List")
+		self.assertEqual(frappe.db.get_value("CRM Holiday List", name, "description"), "Office closures")
+
+	def test_save_holiday_list_keeps_fields_when_rename_fails(self):
+		doc = make_holiday_list().insert()
+		make_holiday_list(holiday_list_name="_Test Other List").insert()
+
+		self.assertRaises(
+			frappe.ValidationError,
+			save_holiday_list,
+			doc.name,
+			{"holiday_list_name": "_Test Other List", "description": "Office closures"},
+		)
+		self.assertFalse(frappe.db.get_value("CRM Holiday List", doc.name, "description"))

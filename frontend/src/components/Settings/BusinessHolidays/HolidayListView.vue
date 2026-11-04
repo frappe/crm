@@ -23,7 +23,10 @@
       <Button
         :label="__('Save')"
         variant="solid"
-        :disabled="!isDirty && Boolean(holidayScreen.name)"
+        :disabled="
+          Boolean(getHolidayList.error) ||
+          (!isDirty && Boolean(holidayScreen.name))
+        "
         :loading="saving || getHolidayList.loading"
         @click="saveHolidayList()"
       />
@@ -34,6 +37,12 @@
         class="flex items-center h-full justify-center"
       >
         <LoadingIndicator class="w-4" />
+      </div>
+      <div
+        v-else-if="getHolidayList.error"
+        class="flex items-center h-full justify-center"
+      >
+        <ErrorMessage :message="__('Could not load this holiday list')" />
       </div>
       <div v-else>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -366,6 +375,7 @@ function toDocValues(form: HolidayListForm) {
 }
 
 async function saveHolidayList() {
+  if (getHolidayList.error) return
   const errors = validateHoliday()
   if (Object.values(errors).some(Boolean)) {
     toast.error(
@@ -385,19 +395,11 @@ async function saveHolidayList() {
       toast.success(__('Holiday list created'))
       holidayScreen.value = { ...holidayScreen.value, name: doc.name }
     } else {
-      // rename_doc sets holiday_list_name, and runs last so a rejected save keeps the old name.
-      const { holiday_list_name: newName, ...fields } = values
-      await call('frappe.client.set_value', {
-        doctype: 'CRM Holiday List',
-        name: oldName,
-        fieldname: fields,
-      })
-      if (newName !== oldName) {
-        const name = await call<string>('frappe.client.rename_doc', {
-          doctype: 'CRM Holiday List',
-          old_name: oldName,
-          new_name: newName,
-        })
+      const name = await call<string>(
+        'crm.fcrm.doctype.crm_holiday_list.crm_holiday_list.save_holiday_list',
+        { name: oldName, values },
+      )
+      if (name !== oldName) {
         holidayScreen.value = { ...holidayScreen.value, name }
       } else {
         await getHolidayList.reload()
