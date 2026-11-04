@@ -70,26 +70,7 @@ jobs:
             - name: Resolve frappe branch for base
               id: frappe
               run: |
-<<<<<<< HEAD
-<<<<<<< HEAD
-                  # Stable lanes run on the latest frappe v15 release; develop tracks frappe develop.
-                  case "$BASE_BRANCH" in
-                      main|main-hotfix) BRANCH=version-15 ;;
-                      *)                BRANCH=develop ;;
-                  esac
-                  echo "branch=$(bash pr-crm/.github/helper/frappe_ref.sh "$BRANCH")" >> "$GITHUB_OUTPUT"
-=======
-                  # version-16 lanes run on frappe version-16, other stable lanes on version-15; develop tracks frappe develop.
-                  case "$BASE_BRANCH" in
-                      version-16|version-16-hotfix)                  BRANCH=version-16 ;;
-                      main|main-hotfix|version-15|version-15-hotfix) BRANCH=version-15 ;;
-                      *)                                             BRANCH=develop ;;
-                  esac
-                  echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
->>>>>>> 70d750f (ci: run migration test on version-15 and version-16 lanes)
-=======
-                  echo "branch=${{ matrix.frappe-branch }}" >> "$GITHUB_OUTPUT"
->>>>>>> c09a665 (ci: run migration test on frappe v15 and v16 for main lanes)
+                  echo "branch=$(bash pr-crm/.github/helper/frappe_ref.sh "${{ matrix.frappe-branch }}")" >> "$GITHUB_OUTPUT"
 
             - name: Setup Python
               uses: actions/setup-python@v6
