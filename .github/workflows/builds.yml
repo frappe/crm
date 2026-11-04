@@ -40,10 +40,10 @@ jobs:
 
       - name: Set Branch
         run: |
-          # version-NN branches and their vNN-* release tags build their own line; the rest build main.
+          # version-NN branches and their vNN.x.y release tags build their own line; the rest build main.
           case "$GITHUB_REF_NAME" in
-            version-15|v15-*) BRANCH=version-15 FRAPPE_BRANCH=version-15 IMAGE_TAG=version-15 ;;
-            version-16|v16-*) BRANCH=version-16 FRAPPE_BRANCH=version-16 IMAGE_TAG=version-16 ;;
+            version-15|v15.*) BRANCH=version-15 FRAPPE_BRANCH=version-15 IMAGE_TAG=version-15 ;;
+            version-16|v16.*) BRANCH=version-16 FRAPPE_BRANCH=version-16 IMAGE_TAG=version-16 ;;
             *)                BRANCH=main       FRAPPE_BRANCH=version-15 IMAGE_TAG=stable ;;
           esac
           export APPS_JSON='[{"url": "https://github.com/frappe/whatsapp","branch": "main"},{"url": "https://github.com/frappe/crm","branch": "'"$BRANCH"'"}]'
