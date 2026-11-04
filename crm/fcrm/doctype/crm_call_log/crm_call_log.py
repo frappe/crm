@@ -246,7 +246,31 @@ def get_call_log(name: str):
 
 	call["_tasks"] = tasks
 	call["_notes"] = notes
+	call["_reference"] = get_reference_summary(call.get("_deal"), call.get("_lead"))
 	return call
+
+
+def get_reference_summary(deal, lead):
+	"""The deal or lead a call links to, named as the call summary shows it. The caller checked read access."""
+	doctype, name = ("CRM Deal", deal) if deal else ("CRM Lead", lead)
+	if not name:
+		return None
+
+	fields = ["organization", "lead_name", "first_name", "last_name", "status"]
+	record = frappe.db.get_value(doctype, name, fields, as_dict=True) or {}
+	full_name = " ".join(part for part in [record.get("first_name"), record.get("last_name")] if part)
+	person = record.get("lead_name") or full_name
+	organization = record.get("organization")
+	# A deal is named by its organization, a lead by its person; the other one is the subtitle.
+	names = [organization, person] if deal else [person, organization]
+	title, *rest = [value for value in names if value] or [name]
+	return {
+		"doctype": doctype,
+		"name": name,
+		"title": title,
+		"subtitle": rest[0] if rest else None,
+		"status": record.get("status"),
+	}
 
 
 @frappe.whitelist()
