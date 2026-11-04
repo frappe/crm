@@ -20,10 +20,32 @@ concurrency:
     cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+    setup:
+        name: Resolve frappe matrix
+        runs-on: ubuntu-latest
+        outputs:
+            frappe-branches: ${{ steps.resolve.outputs.branches }}
+        steps:
+            - name: Resolve frappe branches from base branch
+              id: resolve
+              run: |
+                  # develop tracks frappe develop; version-NN lanes pin their frappe; main ships 15 and 16.
+                  case "${{ github.base_ref || github.ref_name }}" in
+                      version-15|version-15-hotfix) echo 'branches=["version-15"]' ;;
+                      version-16|version-16-hotfix) echo 'branches=["version-16"]' ;;
+                      main|main-hotfix)             echo 'branches=["version-15","version-16"]' ;;
+                      *)                            echo 'branches=["develop"]' ;;
+                  esac >> "$GITHUB_OUTPUT"
+
     migrate:
-        name: Upgrade base branch -> PR
+        name: Upgrade base branch -> PR (frappe ${{ matrix.frappe-branch }})
+        needs: setup
         runs-on: ubuntu-latest
         timeout-minutes: 60
+        strategy:
+            fail-fast: false
+            matrix:
+                frappe-branch: ${{ fromJson(needs.setup.outputs.frappe-branches) }}
 
         services:
             mysql:
@@ -48,12 +70,7 @@ jobs:
             - name: Resolve frappe branch for base
               id: frappe
               run: |
-                  # Stable lanes run on the latest frappe v15 release; develop tracks frappe develop.
-                  case "$BASE_BRANCH" in
-                      main|main-hotfix) BRANCH=version-15 ;;
-                      *)                BRANCH=develop ;;
-                  esac
-                  echo "branch=$(bash pr-crm/.github/helper/frappe_ref.sh "$BRANCH")" >> "$GITHUB_OUTPUT"
+                  echo "branch=$(bash pr-crm/.github/helper/frappe_ref.sh "${{ matrix.frappe-branch }}")" >> "$GITHUB_OUTPUT"
 
             - name: Setup Python
               uses: actions/setup-python@v6
