@@ -1,3 +1,4 @@
+import { addActivityRows } from "../../../frontend/activity/index.js";
 import { addConvertButton } from "../../../frontend/convert/index.js";
 import { addEnrichItem } from "../../../frontend/enrich/index.js";
 import { addProductDetails, productHandlers } from "../../../frontend/products/index.js";
@@ -6,6 +7,7 @@ import { addLostReasonSection, addStatusControl, askReasonForLostStatus } from "
 export default {
 	onRefresh(page) {
 		page.tabs.order(["activity", "emails"]);
+		addActivityRows(page);
 		addStatusControl(page);
 		addLostReasonSection(page);
 		addConvertButton(page);

@@ -1,3 +1,4 @@
+import { addActivityRows } from "../../../frontend/activity/index.js";
 import { addContactsSection } from "../../../frontend/contacts/index.js";
 import { addEnrichItem } from "../../../frontend/enrich/index.js";
 import { addQuotationItems } from "../../../frontend/erpnext/index.js";
@@ -8,6 +9,7 @@ import { addLostReasonSection, addStatusControl, askReasonForLostStatus } from "
 export default {
 	onRefresh(page) {
 		page.tabs.order(["activity", "emails"]);
+		addActivityRows(page);
 		addStatusControl(page);
 		addLostReasonSection(page);
 		addEnrichItem(page);
