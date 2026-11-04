@@ -1,14 +1,18 @@
 name: UI Tests
 
-# E2E (Playwright) suite. Heavy gate: runs on the main-hotfix staging lane
-# before promoting to main, plus on demand. Develop stays on the fast lane.
+# E2E (Playwright) suite. Heavy gate: runs on the hotfix staging lanes
+# before promoting to their stable branch, plus on demand. Develop stays on the fast lane.
 on:
   push:
     branches:
       - main-hotfix
+      - version-15-hotfix
+      - version-16-hotfix
   pull_request:
     branches:
       - main-hotfix
+      - version-15-hotfix
+      - version-16-hotfix
   workflow_dispatch:
 
 concurrency:
@@ -16,7 +20,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  FRAPPE_BRANCH: version-16
+  FRAPPE_BRANCH: ${{ startsWith(github.base_ref || github.ref_name, 'version-15') && 'version-15' || 'version-16' }}
   BENCH_USE_UV: "1"
 
 jobs:
