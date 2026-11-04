@@ -219,7 +219,11 @@ def get_call_log(name: str):
 		note = frappe.get_cached_doc("FCRM Note", call.get("note")).as_dict()
 		notes.append(note)
 
-	if call.get("reference_doctype") and call.get("reference_docname"):
+	if (
+		call.get("reference_doctype")
+		and call.get("reference_docname")
+		and frappe.has_permission(call.get("reference_doctype"), "read", call.get("reference_docname"))
+	):
 		if call.get("reference_doctype") == "CRM Lead":
 			call["_lead"] = call.get("reference_docname")
 		elif call.get("reference_doctype") == "CRM Deal":
@@ -227,9 +231,7 @@ def get_call_log(name: str):
 
 	if call.get("links"):
 		for link in call.get("links"):
-			if link.get("link_doctype") in ("CRM Task", "FCRM Note") and not frappe.has_permission(
-				link.get("link_doctype"), "read", link.get("link_name")
-			):
+			if not frappe.has_permission(link.get("link_doctype"), "read", link.get("link_name")):
 				continue
 			if link.get("link_doctype") == "CRM Task":
 				task = frappe.get_cached_doc("CRM Task", link.get("link_name")).as_dict()

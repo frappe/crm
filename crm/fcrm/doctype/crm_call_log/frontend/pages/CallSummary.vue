@@ -82,7 +82,7 @@
 				</button>
 			</div>
 		</div>
-		<div class="flex items-center gap-2">
+		<div v-if="canWrite" class="flex items-center gap-2">
 			<Button :label="__('Edit')" icon-left="lucide-pencil" @click="edit" />
 			<Button
 				:label="__('Add Note')"
@@ -130,6 +130,8 @@ const adding = ref('')
 const recordingFailed = ref(false)
 
 const doc = computed(() => props.page.doc)
+// Linking a note or task writes to the call log.
+const canWrite = computed(() => Boolean(props.page.perms.write))
 const isIncoming = computed(() => doc.value.type === 'Incoming')
 const reference = computed(() => {
 	const [doctype, name, label] = log.value._deal
