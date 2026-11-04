@@ -86,8 +86,8 @@ jobs:
                   python-version: "3.14"
                   node-version: "24"
                   type: "server"
-                  # erpnext: stable lanes only
-                  install-erpnext: ${{ env.CRM_BRANCH != 'develop' }}
+                  # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
+                  install-erpnext: ${{ env.CRM_BRANCH != 'develop' && matrix.frappe-branch == 'version-15' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
 
             - name: Run server tests
