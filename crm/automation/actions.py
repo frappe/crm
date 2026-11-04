@@ -11,13 +11,19 @@ from typing import ClassVar
 
 import frappe
 from frappe import _
-from frappe.automation_engine.actions.base import (
-	USER_CONTROL,
-	AutomationAction,
-	AutomationParamError,
-	render_value,
-)
-from frappe.automation_engine.actions.core import resolve_recipients
+
+try:
+	from frappe.automation_engine.actions.base import (
+		USER_CONTROL,
+		AutomationAction,
+		AutomationParamError,
+		render_value,
+	)
+	from frappe.automation_engine.actions.core import resolve_recipients
+except ImportError:  # automation engine ships with frappe v16+
+	USER_CONTROL = render_value = resolve_recipients = None
+	AutomationAction = object
+	AutomationParamError = Exception
 
 from crm.automation.scoring import adjust_lead_score, set_lead_temperature, temperature_options
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal, existing_deal
