@@ -63,6 +63,9 @@ export const resetSlaData = () => {
   }
 }
 
+// Set by another settings page to open an SLA policy when this tab mounts.
+export const slaToReopen = ref(null)
+
 export const slaDataErrors = ref({
   sla_name: '',
   enabled: '',

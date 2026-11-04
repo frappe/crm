@@ -253,7 +253,7 @@ import {
   Switch,
   toast,
 } from 'frappe-ui'
-import { inject, onUnmounted, ref, watch } from 'vue'
+import { inject, onUnmounted, provide, ref, watch } from 'vue'
 import SettingsLayoutBase from '../../Layouts/SettingsLayoutBase.vue'
 import {
   resetSlaDataErrors,
@@ -269,6 +269,7 @@ import SlaHolidays from './SlaHolidays.vue'
 import SlaPriorityList from './SlaPriorityList.vue'
 
 const isDirty = ref(false)
+provide('slaIsDirty', isDirty)
 const initialData = ref(null)
 const useNewUI = ref(true)
 const isOldSla = ref(false)
