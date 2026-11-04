@@ -11,7 +11,11 @@ fields behind them.
 """
 
 import frappe
-from frappe.automation_engine.relationships import AutomationRelationshipProvider
+
+try:
+	from frappe.automation_engine.relationships import AutomationRelationshipProvider
+except ImportError:  # automation engine ships with frappe v16+
+	AutomationRelationshipProvider = object
 
 COMMUNICATION_REFERENCE_DOCTYPES = ["CRM Lead", "CRM Deal"]
 
