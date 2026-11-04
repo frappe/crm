@@ -137,16 +137,24 @@ describe('activityItem gutter icons', () => {
   const at = { creation: '2026-11-01 10:15:00' }
 
   it('takes the icons CRM v1 draws for a task, a note and a call', () => {
-    expect(activityItem({ source: task, name: 'T1', ...at }, Row).icon).toBe('lucide-circle-check-big')
-    expect(activityItem({ source: note, name: 'N1', ...at }, Row).icon).toBe('lucide-file-text')
-    expect(activityItem({ source: call, name: 'C1', type: 'Outgoing', ...at }, Row).icon).toBe(
-      'lucide-phone-outgoing',
+    expect(activityItem({ source: task, name: 'T1', ...at }, Row).icon).toBe(
+      'lucide-circle-check-big',
     )
+    expect(activityItem({ source: note, name: 'N1', ...at }, Row).icon).toBe(
+      'lucide-file-text',
+    )
+    expect(
+      activityItem({ source: call, name: 'C1', type: 'Outgoing', ...at }, Row)
+        .icon,
+    ).toBe('lucide-phone-outgoing')
   })
 
   it('shows a missed and a declined call by its outcome, not its direction', () => {
     const icon = (status) =>
-      activityItem({ source: call, name: 'C1', type: 'Incoming', status, ...at }, Row).icon
+      activityItem(
+        { source: call, name: 'C1', type: 'Incoming', status, ...at },
+        Row,
+      ).icon
     expect(icon('No Answer')).toBe('lucide-phone-missed')
     expect(icon('Busy')).toBe('lucide-phone-off')
   })
