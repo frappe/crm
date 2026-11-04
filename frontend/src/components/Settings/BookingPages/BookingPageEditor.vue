@@ -324,7 +324,7 @@
                                   variant="solid"
                                   :label="__('Apply')"
                                   :disabled="!copyTargets.length"
-                                  @click="(copyTimes(day), close())"
+                                  @click="copyTimes(day), close()"
                                 />
                               </div>
                             </template>
@@ -603,12 +603,12 @@
                 "
               />
               <p
-                v-if="invalidEmbeddingDomains.length"
+                v-if="invalidDomains.length"
                 class="mt-1.5 text-xs text-ink-red-5"
               >
                 {{
                   __('Not a valid domain and will be ignored: {0}', [
-                    invalidEmbeddingDomains.join(', '),
+                    invalidDomains.join(', '),
                   ])
                 }}
               </p>
@@ -670,6 +670,18 @@ import LucideEye from '~icons/lucide/eye'
 import LucideSettings from '~icons/lucide/settings'
 import LucideShare2 from '~icons/lucide/share-2'
 import { ROUTE_PREFIX, pageUrl, slugify } from './bookingPages'
+import {
+  copyHours,
+  embedSnippet,
+  endTimeOptions as endTimes,
+  googleConnectHref,
+  hhmm,
+  hoursErrors as rowErrors,
+  hoursFor as dayHours,
+  invalidEmbeddingDomains,
+  moveStart,
+  nextRange,
+} from './bookingPageRules'
 
 type RowValue = string | number | undefined
 
@@ -818,17 +830,14 @@ const googleAction = computed(() => {
       : null
   }
   if (!iNeedGoogle.value) return null
-  const href = google.value.my_calendar
-    ? `/app/google-calendar/${encodeURIComponent(google.value.my_calendar)}`
-    : '/app/google-calendar/new?' +
-      new URLSearchParams({
-        user: me,
-        calendar_name: getUser().full_name || me,
-        enable: '1',
-        pull_from_google_calendar: '1',
-        push_to_google_calendar: '1',
-      })
-  return { label: __('Connect Google Calendar'), href }
+  return {
+    label: __('Connect Google Calendar'),
+    href: googleConnectHref(
+      google.value.my_calendar,
+      me,
+      getUser().full_name || me,
+    ),
+  }
 })
 
 const dirty = ref(false)
@@ -891,90 +900,26 @@ function setRow(row: Row, field: string, value: RowValue) {
 
 // Weekly hours
 
-function hhmm(value: RowValue): string {
-  if (!value) return ''
-  const [h, m] = String(value).split(':')
-  return `${h.padStart(2, '0')}:${(m || '00').padStart(2, '0')}`
-}
-
 // A day can have more than one row, for split hours like 10–1 and 2–6
 function hoursFor(day: string): Row[] {
-  return (doc.value?.availability || [])
-    .filter((r) => r.workday === day)
-    .sort((a, b) => hhmm(a.start_time).localeCompare(hhmm(b.start_time)))
+  return dayHours(doc.value?.availability || [], day)
 }
 
 // the same checks the server runs on save, shown under the offending row
-const hoursErrors = computed(() => {
-  const errors = new Map<Row, string>()
-  for (const day of WEEKDAYS) {
-    let latestEnd = ''
-    for (const row of hoursFor(day)) {
-      const start = hhmm(row.start_time)
-      const end = hhmm(row.end_time)
-      if (start >= end) {
-        errors.set(row, __('End time must be after the start time'))
-      } else if (start < latestEnd) {
-        errors.set(row, __('Times overlap with another set of times'))
-      }
-      if (end > latestEnd) latestEnd = end
-    }
-  }
-  return errors
-})
+const hoursErrors = computed(() =>
+  rowErrors(doc.value?.availability || [], WEEKDAYS),
+)
 
-const LAST_MINUTE = 23 * 60 + 45
-
-function minutes(value: RowValue): number {
-  const [h, m] = hhmm(value).split(':').map(Number)
-  return h * 60 + (m || 0)
-}
-
-function toTime(total: number): string {
-  const h = String(Math.floor(total / 60)).padStart(2, '0')
-  const m = String(total % 60).padStart(2, '0')
-  return `${h}:${m}`
-}
-
-function formatDuration(total: number): string {
-  if (total < 60) return __('{0} mins', [total])
-  const hours = total / 60
-  return hours === 1 ? __('1 hr') : __('{0} hrs', [+hours.toFixed(2)])
-}
-
-function formatClock(total: number): string {
-  const h = Math.floor(total / 60)
-  const m = String(total % 60).padStart(2, '0')
-  return `${h % 12 || 12}:${m} ${h < 12 ? 'am' : 'pm'}`
-}
-
-// like Google: end times start after the start time and show the length
 function endTimeOptions(row: Row) {
-  const start = minutes(row.start_time)
-  const options = []
-  for (let t = start + 15; t <= LAST_MINUTE; t += 15) {
-    options.push({
-      value: toTime(t),
-      label: `${formatClock(t)} (${formatDuration(t - start)})`,
-    })
-  }
-  return options
+  return endTimes(row.start_time)
 }
 
 function setTime(row: Row, field: 'start_time' | 'end_time', value: string) {
   if (!value) return
   if (field === 'start_time') {
-    // a start past the end pushes the end along, keeping the range's length
-    const length = Math.max(minutes(row.end_time) - minutes(row.start_time), 15)
-    const start = Math.min(minutes(value), LAST_MINUTE - 15)
-    setRow(row, 'start_time', `${toTime(start)}:00`)
-    if (start >= minutes(row.end_time)) {
-      setRow(
-        row,
-        'end_time',
-        `${toTime(Math.min(start + length, LAST_MINUTE))}:00`,
-      )
-    }
+    const moved = moveStart(row, value)
+    setRow(row, 'start_time', moved.start_time)
+    if (moved.end_time) setRow(row, 'end_time', moved.end_time)
     return
   }
   setRow(row, field, `${hhmm(value)}:00`)
@@ -995,15 +940,8 @@ function toggleDay(day: string, on: boolean) {
 // the new range starts an hour after the day's last one ends
 function addHours(day: string) {
   if (!doc.value) return
-  const last = hoursFor(day).at(-1)
-  const from = Math.min(
-    Number(hhmm(last?.end_time || '08:00').split(':')[0]) + 1,
-    22,
-  )
-  const pad = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`
-  doc.value.availability.push(
-    newRow(day, pad(from), pad(Math.min(from + 2, 23))),
-  )
+  const [start, end] = nextRange(hoursFor(day).at(-1))
+  doc.value.availability.push(newRow(day, start, end))
   dirty.value = true
 }
 
@@ -1024,14 +962,12 @@ function toggleCopyTarget(day: string, on: boolean) {
 
 function copyTimes(day: string) {
   if (!doc.value) return
-  const source = hoursFor(day)
-  const targets = new Set(copyTargets.value)
-  doc.value.availability = [
-    ...doc.value.availability.filter((r) => !targets.has(String(r.workday))),
-    ...[...targets].flatMap((d) =>
-      source.map((r) => newRow(d, String(r.start_time), String(r.end_time))),
-    ),
-  ]
+  doc.value.availability = copyHours(
+    doc.value.availability,
+    day,
+    copyTargets.value,
+    newRow,
+  )
   dirty.value = true
 }
 
@@ -1085,28 +1021,14 @@ const publicUrl = computed(() => (doc.value ? pageUrl(doc.value.route) : ''))
 const embeddingDomains = computed(() =>
   (doc.value?.allowed_embedding_domains || '').split(/\s+/).filter(Boolean),
 )
-// mirrors ALLOWED_EMBEDDING_DOMAIN_RE in crm/www/crm_form.py, which drops anything else
-const EMBEDDING_DOMAIN_RE =
-  /^(https?:\/\/)?(\*\.)?[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::\d+)?$/
-const invalidEmbeddingDomains = computed(() =>
-  embeddingDomains.value.filter((d) => !EMBEDDING_DOMAIN_RE.test(d)),
+const invalidDomains = computed(() =>
+  invalidEmbeddingDomains(doc.value?.allowed_embedding_domains),
 )
-// the script grows or shrinks the iframe to fit each step, so it never scrolls inside
-const iframeSnippet = computed(() => {
-  if (!doc.value) return ''
-  const route = doc.value.route
-  const id = `crm-book-${route}`
-  const origin = new URL(publicUrl.value).origin
-  return [
-    `<iframe id="${id}" src="${publicUrl.value}?embed=1" width="100%" height="720" style="border:0" title="${doc.value?.title || 'Book a meeting'}"></iframe>`,
-    '<script>',
-    '  addEventListener("message", (e) => {',
-    `    if (e.origin === "${origin}" && e.data?.type === "crm-book:height" && e.data.route === "${route}")`,
-    `      document.getElementById("${id}").style.height = e.data.height + "px";`,
-    '  });',
-    '</' + 'script>',
-  ].join('\n')
-})
+const iframeSnippet = computed(() =>
+  doc.value
+    ? embedSnippet(publicUrl.value, doc.value.route, doc.value.title)
+    : '',
+)
 
 function openPage() {
   if (doc.value) window.open(pageUrl(doc.value.route), '_blank')
