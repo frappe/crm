@@ -729,3 +729,43 @@ class TestBooking(FrappeTestCase):
 		self.assertEqual(google_status(HOSTS)["unconnected"], [])
 		frappe.set_user(HOSTS[0])
 		self.assertEqual(google_status([HOSTS[0]])["my_calendar"], HOSTS[0])
+
+	def test_a_host_another_booking_is_holding_cant_be_booked(self):
+		from crm.api import booking as api
+
+		other = frappe.cache.lock(frappe.cache.make_key(f"crm_booking_host:{HOSTS[0]}"), timeout=10)
+		other.acquire()
+		try:
+			with patch.object(api, "HOST_LOCK_SECONDS", 1), self.assertRaises(SlotUnavailableError):
+				self.book_as_guest(self.at(9))
+		finally:
+			other.release()
+		# the same transaction can book the host again without waiting on itself
+		self.book_as_guest(self.at(9))
+		self.book_as_guest(self.at(10), "second@example.com")
+
+	def test_conditional_fields_hold_without_the_page(self):
+		form = frappe.get_doc("Web Form", self.page.web_form)
+		form.append("web_form_fields", {"fieldname": "organization", "fieldtype": "Data", "label": "Company"})
+		form.append(
+			"web_form_fields",
+			{
+				"fieldname": "website",
+				"fieldtype": "Data",
+				"label": "Website",
+				"mandatory_depends_on": 'eval:doc.organization == "Acme"',
+			},
+		)
+		form.append(
+			"web_form_fields",
+			{"fieldname": "job_title", "fieldtype": "Data", "label": "Role", "depends_on": "organization"},
+		)
+		form.save(ignore_permissions=True)
+
+		# "required if" holds for an API call that never ran the page's script
+		with self.assertRaises(frappe.ValidationError):
+			self.book_as_guest(self.at(9), values={"organization": "Acme"})
+		# an answer to a field the form hides is ignored
+		booking = self.booking_for(self.book_as_guest(self.at(9), values={"job_title": "CEO"}))
+		self.assertNotIn("Role", frappe.parse_json(booking.answers))
+		self.assertFalse(frappe.db.get_value("CRM Lead", booking.reference_docname, "job_title"))

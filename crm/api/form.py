@@ -604,6 +604,7 @@ def enrich_form_submission(doc):
 	if doc.doctype not in ALLOWED_DOCTYPES:
 		return
 
+	_check_form_answers(doc)
 	_apply_hidden_defaults(doc)
 
 	# stamp the source so form records are identifiable/filterable
@@ -634,6 +635,35 @@ def enrich_form_submission(doc):
 		contact = create_contact(doc)
 		if contact:
 			doc.append("contacts", {"contact": contact, "is_primary": 1})
+
+
+def _check_form_answers(doc):
+	"""Enforce the form's required fields, including "required if" ones, as the page
+	shows them. The framework's accept() only checks what the doctype itself makes
+	mandatory, so a direct API call could otherwise skip the form's own rules."""
+	from crm.utils.form_conditions import check_form_values
+
+	web_form = frappe.form_dict.get("web_form")
+	doc_type = web_form and frappe.db.get_value("Web Form", web_form, "doc_type")
+	# the posted form name is client-controlled; only a form for this doctype counts
+	if doc_type != doc.doctype:
+		return
+	fields = frappe.get_all(
+		"Web Form Field",
+		filters={"parent": web_form, "parenttype": "Web Form"},
+		fields=[
+			"fieldname",
+			"fieldtype",
+			"label",
+			"reqd",
+			"depends_on",
+			"mandatory_depends_on",
+			"read_only_depends_on",
+		],
+		order_by="idx",
+	)
+	fields = [f for f in fields if f.fieldname and doc.meta.has_field(f.fieldname)]
+	check_form_values(fields, {f.fieldname: doc.get(f.fieldname) for f in fields})
 
 
 def _apply_hidden_defaults(doc):

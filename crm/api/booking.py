@@ -361,27 +361,33 @@ def clean_form_values(page, values: dict) -> tuple[dict, dict]:
 	and as label → answer (name and contact details left out) for the meeting
 	description and emails.
 
-	Only the form's own fields are taken. Required fields are enforced here unless a
-	condition can hide them, which only the page evaluates."""
+	Only the form's own fields are taken, and only those the form shows for these
+	answers. Required fields, including "required if" ones, are enforced here with
+	the same conditions the page evaluates."""
+	from crm.utils.form_conditions import check_form_values, field_visible
+
 	form = booking_form(page)
 	if not form:
 		return {}, {}
-	doc_values, answers = {}, {}
-	for f in form.web_form_fields:
-		if f.fieldtype in ("Section Break", "Column Break"):
-			continue
+	fields = [f for f in form.web_form_fields if f.fieldtype not in ("Section Break", "Column Break")]
+	answered = {}
+	for f in fields:
 		value = values.get(f.fieldname)
-		value = cint(value) if f.fieldtype == "Check" else str(value or "").strip()[:2000]
-		if f.reqd and not f.depends_on and not value:
-			frappe.throw(_("Please fill in: {0}").format(f.label or f.fieldname))
-		if f.fieldtype == "Select" and value and value not in (f.options or "").split("\n"):
+		answered[f.fieldname] = cint(value) if f.fieldtype == "Check" else str(value or "").strip()[:2000]
+	check_form_values(fields, answered)
+
+	doc_values, answers = {}, {}
+	for f in fields:
+		value = answered[f.fieldname]
+		if not value or not field_visible(f, answered):
+			continue
+		if f.fieldtype == "Select" and value not in (f.options or "").split("\n"):
 			frappe.throw(_("Please pick an option for: {0}").format(f.label or f.fieldname))
-		if f.fieldtype == "Link" and value and value not in link_values(f.options):
+		if f.fieldtype == "Link" and value not in link_values(f.options):
 			frappe.throw(_("Please pick an option for: {0}").format(f.label or f.fieldname))
-		if value:
-			doc_values[f.fieldname] = value
-			if f.fieldname not in CONTACT_FIELDS:
-				answers[f.label or f.fieldname] = _("Yes") if f.fieldtype == "Check" else value
+		doc_values[f.fieldname] = value
+		if f.fieldname not in CONTACT_FIELDS:
+			answers[f.label or f.fieldname] = _("Yes") if f.fieldtype == "Check" else value
 	return doc_values, answers
 
 
@@ -396,9 +402,11 @@ def lock_hosts(hosts: list[str]):
 	"""Serialise bookings per host so two visitors can't take the same slot.
 
 	A named lock in Redis, held until the booking commits or rolls back, so the
-	free/busy checks and Google calls inside it don't hold database row locks."""
+	free/busy checks and Google calls inside it don't hold database row locks.
+	A transaction that already holds a host's lock carries on with it."""
+	held = held_host_locks()
 	locks = []
-	for host in sorted(set(hosts)):
+	for host in sorted(set(hosts) - set(held)):
 		lock = frappe.cache.lock(
 			frappe.cache.make_key(f"crm_booking_host:{host}"),
 			timeout=HOST_LOCK_SECONDS,
@@ -408,13 +416,26 @@ def lock_hosts(hosts: list[str]):
 			release_locks(locks)
 			frappe.throw(_("That time was just taken. Please pick another one."), exc=SlotUnavailableError)
 		locks.append(lock)
-	frappe.db.after_commit.add(lambda: release_locks(locks))
-	frappe.db.after_rollback.add(lambda: release_locks(locks))
+		held[host] = lock
+	if locks:
+		frappe.db.after_commit.add(lambda: release_locks(locks))
+		frappe.db.after_rollback.add(lambda: release_locks(locks))
+
+
+def held_host_locks() -> dict:
+	"""Host → lock this request holds until its transaction ends."""
+	if not hasattr(frappe.local, "crm_booking_host_locks"):
+		frappe.local.crm_booking_host_locks = {}
+	return frappe.local.crm_booking_host_locks
 
 
 def release_locks(locks):
 	from redis.exceptions import LockError
 
+	held = held_host_locks()
+	for host, lock in list(held.items()):
+		if lock in locks:
+			del held[host]
 	for lock in locks:
 		try:
 			lock.release()
