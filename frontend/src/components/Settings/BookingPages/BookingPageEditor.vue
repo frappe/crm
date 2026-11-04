@@ -191,7 +191,7 @@
                     <span v-if="othersUnconnected.length">
                       {{
                         __(
-                          'Not connected yet: {0}. Each host connects their own.',
+                          'Not connected yet: {0}. They each connect their own calendar by opening this page.',
                           [othersUnconnected.join(', ')],
                         )
                       }}
@@ -324,7 +324,7 @@
                                   variant="solid"
                                   :label="__('Apply')"
                                   :disabled="!copyTargets.length"
-                                  @click="copyTimes(day), close()"
+                                  @click="(copyTimes(day), close())"
                                 />
                               </div>
                             </template>
@@ -801,12 +801,12 @@ const googleNote = computed(() => {
   }
   if (iNeedGoogle.value) {
     return __(
-      'Connect your Google Calendar so your Google meetings block booked times and bookings get Meet links.',
+      'Connect Google Calendar to avoid double bookings and automatically generate Google Meet links for meetings.',
     )
   }
   return othersUnconnected.value.length
     ? __(
-        "Hosts with Google Calendar connected don't get booked over their Google meetings, and their bookings get Meet links.",
+        'Hosts who connect Google Calendar avoid double bookings and automatically get Google Meet links for meetings.',
       )
     : ''
 })
