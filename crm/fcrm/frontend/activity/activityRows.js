@@ -71,13 +71,21 @@ export function activityItem(row, component) {
 		name: `${source.key}:${row.name}`,
 		timestamp,
 		component,
+		icon: ICONS[source.key](row),
 		props: { doctype: source.doctype, record: String(row.name), timestamp, ...ROW_PROPS[source.key](row) },
 	}
 }
 
+// The gutter icons CRM v1's activity tab uses: a call's depends on its direction and outcome.
+const ICONS = {
+	task: () => 'lucide-circle-check-big',
+	note: () => 'lucide-file-text',
+	call: (row) => CALL_STATUS_ICONS[row.status] ?? (row.type === 'Incoming' ? 'lucide-phone-incoming' : 'lucide-phone-outgoing'),
+}
+const CALL_STATUS_ICONS = { 'No Answer': 'lucide-phone-missed', Busy: 'lucide-phone-off' }
+
 const ROW_PROPS = {
 	task: (row) => ({
-		icon: 'lucide-circle-check-big',
 		label: __('Task'),
 		title: row.title,
 		detail: [row.status, row.priority, row.due_date && __('Due {0}', [row.due_date.slice(0, 10)])]
@@ -85,13 +93,11 @@ const ROW_PROPS = {
 			.join(' · '),
 	}),
 	note: (row) => ({
-		icon: 'lucide-notebook-pen',
 		label: __('Note'),
 		title: row.title || plainText(row.content),
 		detail: '',
 	}),
 	call: (row) => ({
-		icon: row.type === 'Incoming' ? 'lucide-phone-incoming' : 'lucide-phone-outgoing',
 		label: row.type === 'Incoming' ? __('Incoming call') : __('Outgoing call'),
 		title: [row.from, row.to].filter(Boolean).join(' → '),
 		detail: [row.status, row.duration && durationText(row.duration)].filter(Boolean).join(' · '),
