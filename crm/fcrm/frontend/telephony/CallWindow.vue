@@ -62,22 +62,21 @@
 import {
   computed,
   onBeforeUnmount,
-  onMounted,
   ref,
   watch,
   watchEffect,
 } from "vue";
 import { Avatar, Button, Checkbox, Tooltip } from "frappe-ui";
-import { getSocketInstance } from "@framework/ui/socket";
 import { routeFor } from "@shell";
 import { __ } from "frappe/i18n";
 import { callApi } from "./callApi.js";
-import { callState, registerOutgoingStarter } from "./callState.js";
+import { callState } from "./callState.js";
 import { createExotelCall } from "./exotelCall.js";
 import { createTwilioCall, formatClock } from "./twilioCall.js";
 import { loadTwilioDevice } from "./twilioDevice.js";
 
-const props = defineProps({ shell: Object, window: Object });
+// `dial` is the request an act made through `shell.windowOf`, possibly before this window mounted.
+const props = defineProps({ shell: Object, window: Object, dial: Object });
 
 // One call controller per enabled medium; the card shows whichever has a call.
 const calls = {};
@@ -90,7 +89,7 @@ if (callState.media.includes("Twilio"))
 if (callState.media.includes("Exotel"))
   calls.Exotel = createExotelCall({
     api: { ...callApi, call: callApi.exotelCall },
-    socket: getSocketInstance(),
+    realtime: props.shell.realtime,
   });
 const controllers = Object.values(calls);
 controllers.forEach((controller) => {
@@ -141,7 +140,9 @@ async function dial(medium, number) {
   try {
     await calls[medium].makeCall(number);
   } catch {
-    // The controller put the message in its `error`, which toasts.
+    // The controller put the message in its `error`, which toasts; the window the act opened has nothing to show.
+    if (controllers.every((controller) => controller.state.step === "idle"))
+      props.window.close();
   }
 }
 
@@ -158,7 +159,9 @@ async function choose(medium) {
   return dial(medium, number);
 }
 
-onMounted(() => onBeforeUnmount(registerOutgoingStarter(startOutgoing)));
+watch(() => props.dial, (request) => request && startOutgoing(request.number), {
+  immediate: true,
+});
 
 // Exotel shows the controls of the phone call only as far as the record: Note, Task and the lead or deal. It has no
 // "connected" event for a call coming in, so those show from the first ring.

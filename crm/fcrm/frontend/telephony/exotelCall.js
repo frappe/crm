@@ -45,11 +45,11 @@ export function readExotelEvent(payload) {
 }
 
 /**
- * `api` is `{ call, contact }`; `socket` carries the user's `exotel_call` events (the server sends them to that user only).
+ * `api` is `{ call, contact }`; `realtime` is `shell.realtime`, which carries the user's `exotel_call` events (the server sends them to that user only).
  * `step` is idle, incoming, ringing (we dialled), oncall or ended (the card stays for a note and a task);
  * a call nobody took goes straight back to idle, as Twilio's does, and `customerRinging` is set once our phone answered.
  */
-export function createExotelCall({ api, socket }) {
+export function createExotelCall({ api, realtime }) {
   const state = reactive({
     step: "idle",
     contact: null,
@@ -61,6 +61,7 @@ export function createExotelCall({ api, socket }) {
   let startedAt = 0;
   let timer = null;
   let dialling = false;
+  let stopListening = () => {};
   let held = [];
   const finished = new Set();
 
@@ -135,7 +136,7 @@ export function createExotelCall({ api, socket }) {
   return {
     state,
     start() {
-      socket?.on("exotel_call", onEvent);
+      stopListening = realtime.on("exotel_call", onEvent);
     },
     /** Dials `number` through Exotel; events that arrive before the answer names the call wait for it. */
     async makeCall(number) {
@@ -179,7 +180,7 @@ export function createExotelCall({ api, socket }) {
     isLive: () => LIVE.includes(state.step),
     destroy() {
       stopTimer();
-      socket?.off("exotel_call", onEvent);
+      stopListening();
     },
   };
 }

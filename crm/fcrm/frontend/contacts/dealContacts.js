@@ -1,7 +1,8 @@
 // What CRM Deal's contacts section does, kept free of the desk's imports so it is unit-tested.
 import { ref, toRaw } from 'vue'
 import { saveRecord } from '../saveRecord.js'
-import { callState, startOutgoingCall } from '../telephony/callState.js'
+import { callState } from '../telephony/callState.js'
+import { MAKE_A_CALL } from '../telephony/makeCall.js'
 
 // The layout move puts the SLA section first in every Deal Side Panel (#45882 Q6).
 export const FIRST_LAYOUT_SECTION = 'sla_section'
@@ -26,10 +27,10 @@ export function canCall() {
 	return callState.media.length > 0
 }
 
-/** Dials through the call window, as "Make a call" does; a window still loading is told in a toast. */
+/** Dials through the call window, as "Make a call" does; a refused act is told in a toast. */
 export async function callContact(page, number) {
 	try {
-		await startOutgoingCall(number)
+		await page.run(MAKE_A_CALL, number)
 	} catch (error) {
 		page.toast.error(error?.message || String(error))
 	}
