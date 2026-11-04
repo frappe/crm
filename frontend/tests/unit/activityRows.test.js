@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   activityItem,
   fetchActivityRows,
-  referenceNames,
 } from '../../../crm/fcrm/frontend/activity/activityRows.js'
 
 vi.mock('frappe/i18n', () => ({
@@ -14,38 +13,58 @@ const task = { doctype: 'CRM Task', key: 'task' }
 const note = { doctype: 'FCRM Note', key: 'note' }
 const call = { doctype: 'CRM Call Log', key: 'call' }
 
-describe('referenceNames', () => {
-  it("lists a deal's own name and its lead's", () => {
-    expect(
-      referenceNames({ docname: 'CRM-DEAL-1', doc: { lead: 'CRM-LEAD-1' } }),
-    ).toEqual(['CRM-DEAL-1', 'CRM-LEAD-1'])
-  })
-
-  it('lists a lead by its own name', () => {
-    expect(referenceNames({ docname: 'CRM-LEAD-1', doc: {} })).toEqual([
-      'CRM-LEAD-1',
-    ])
-  })
-})
-
 describe('fetchActivityRows', () => {
-  it('reads each source filtered by the names, and keeps the rows of a source the user can read', async () => {
-    const page = {
-      call: vi.fn((method, args) =>
-        args.doctype === 'FCRM Note'
-          ? Promise.reject(new Error('Not permitted'))
-          : Promise.resolve([{ name: args.doctype }]),
+  const reads = (page) =>
+    page.call.mock.calls.filter(
+      ([method]) => method === 'frappe.client.get_list',
+    )
+  const pageFor = (doc, call) => ({
+    doctype: 'CRM Deal',
+    docname: 'D1',
+    doc,
+    call: vi.fn(call),
+  })
+
+  it("reads each source by the record's own name and the lead's, when the user can read the lead", async () => {
+    const page = pageFor({ lead: 'L1' }, (method, args) =>
+      Promise.resolve(
+        method === 'frappe.client.has_permission'
+          ? { has_permission: true }
+          : [{ name: args.doctype }],
       ),
-    }
-    const rows = await fetchActivityRows(page, ['A', 'B'])()
-    expect(page.call).toHaveBeenCalledTimes(3)
-    expect(page.call.mock.calls[0][1]).toMatchObject({
-      filters: { reference_docname: ['in', ['A', 'B']] },
+    )
+    const rows = await fetchActivityRows(page)()
+    expect(reads(page)).toHaveLength(3)
+    expect(reads(page)[0][1].filters).toEqual({
+      reference_doctype: ['in', ['CRM Deal', 'CRM Lead']],
+      reference_docname: ['in', ['D1', 'L1']],
     })
-    expect(rows.map((row) => [row.name, row.source.key])).toEqual([
-      ['CRM Task', 'task'],
-      ['CRM Call Log', 'call'],
-    ])
+    expect(rows.map((row) => row.source.key)).toEqual(['task', 'note', 'call'])
+  })
+
+  it("leaves out the lead's records when the user cannot read the lead", async () => {
+    const page = pageFor({ lead: 'L1' }, (method) =>
+      Promise.resolve(
+        method === 'frappe.client.has_permission'
+          ? { has_permission: false }
+          : [],
+      ),
+    )
+    await fetchActivityRows(page)()
+    expect(reads(page)[0][1].filters.reference_docname).toEqual(['in', ['D1']])
+  })
+
+  it('draws no rows for a source the user cannot read, and lets any other failure reject', async () => {
+    const refuse = pageFor({}, (method, args) =>
+      args.doctype === 'FCRM Note'
+        ? Promise.reject({ status: 403 })
+        : Promise.resolve([{ name: args.doctype }]),
+    )
+    const rows = await fetchActivityRows(refuse)()
+    expect(rows.map((row) => row.source.key)).toEqual(['task', 'call'])
+
+    const broken = pageFor({}, () => Promise.reject(new Error('Network down')))
+    await expect(fetchActivityRows(broken)()).rejects.toThrow('Network down')
   })
 })
 
@@ -111,5 +130,15 @@ describe('activityItem', () => {
       title: '+1 → +2',
       detail: 'Completed · 1m 15s',
     })
+  })
+})
+
+describe('activityItem names', () => {
+  it("keeps a task's numeric name as the string the row takes", () => {
+    const item = activityItem(
+      { source: task, name: 12, title: 'x', creation: '2026-11-01 10:15:00' },
+      Row,
+    )
+    expect(item).toMatchObject({ name: 'task:12', props: { record: '12' } })
   })
 })
