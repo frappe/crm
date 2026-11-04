@@ -188,6 +188,7 @@ def parse_call_log(call):
 
 @frappe.whitelist()
 def get_call_log(name: str):
+	frappe.has_permission("CRM Call Log", "read", name, throw=True)
 	call = frappe.get_cached_doc(
 		"CRM Call Log",
 		name,
@@ -214,7 +215,7 @@ def get_call_log(name: str):
 	notes = []
 	tasks = []
 
-	if call.get("note"):
+	if call.get("note") and frappe.has_permission("FCRM Note", "read", call.get("note")):
 		note = frappe.get_cached_doc("FCRM Note", call.get("note")).as_dict()
 		notes.append(note)
 
@@ -226,6 +227,10 @@ def get_call_log(name: str):
 
 	if call.get("links"):
 		for link in call.get("links"):
+			if link.get("link_doctype") in ("CRM Task", "FCRM Note") and not frappe.has_permission(
+				link.get("link_doctype"), "read", link.get("link_name")
+			):
+				continue
 			if link.get("link_doctype") == "CRM Task":
 				task = frappe.get_cached_doc("CRM Task", link.get("link_name")).as_dict()
 				tasks.append(task)
