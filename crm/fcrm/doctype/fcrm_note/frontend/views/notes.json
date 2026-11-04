@@ -1,0 +1,9 @@
+{
+ "default": true,
+ "label": "Notes",
+ "settings": {
+  "body_field": "content",
+  "title_field": "title"
+ },
+ "type": "Cards"
+}
