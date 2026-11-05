@@ -82,14 +82,11 @@ fi
 bench setup requirements --dev
 
 bench start &>> ~/frappe-bench/bench_start.log &
-CI=Yes bench build --app frappe &
-build_pid=$!
+# Emails resolve CSS through assets.json; tests never load the built bundles.
+mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
 
 if [ -f "${DB_SNAPSHOT}/test_site.sql.gz" ]; then
     restore_site
 else
     install_site
 fi
-
-# A restored snapshot finishes before the build; tests need its assets.json
-wait "$build_pid"
