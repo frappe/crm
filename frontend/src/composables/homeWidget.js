@@ -1,3 +1,4 @@
+import { usersStore } from '@/stores/users'
 import { createResource } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
@@ -35,4 +36,18 @@ export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
   })
   watch([homeVersion, tab, () => config().doctype], () => resource.reload())
   return resource
+}
+
+export function useBrief() {
+  const { isManager } = usersStore()
+  const tab = ref(isManager() ? 'team' : 'mine')
+  const showAll = ref(false)
+  const resource = createResource({
+    url: 'crm.api.home.get_brief',
+    makeParams: () => ({ tab: tab.value, show_all: showAll.value ? 1 : 0 }),
+    auto: true,
+  })
+  watch(tab, () => (showAll.value = false))
+  watch([homeVersion, tab, showAll], () => resource.reload())
+  return { tab, showAll, resource }
 }

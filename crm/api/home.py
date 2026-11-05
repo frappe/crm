@@ -2,6 +2,8 @@ import frappe
 from frappe import _
 
 from crm.api.digest import OPT_OUT_KEY
+from crm.fcrm.doctype.crm_dashboard.ask_flow import flow_available, start_flow_chat
+from crm.fcrm.doctype.crm_dashboard.brief import get_brief as build_brief
 from crm.fcrm.doctype.crm_dashboard.home_layout import (
 	DEFAULT_PERIOD,
 	WIDGETS,
@@ -91,6 +93,28 @@ def get_counts() -> dict:
 		"follow_ups_due": FollowUpsDue(FOLLOW_UP_DOCTYPES, mine).count(),
 		"new_leads": NewLeads(("CRM Lead",), mine).count(),
 	}
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_brief(tab: str = "mine", show_all: int = 0) -> dict:
+	return build_brief(frappe.session.user, tab, bool(int(show_all)))
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_ask_flow() -> dict:
+	mine = Mine(frappe.session.user)
+	return {
+		"available": flow_available(),
+		"replies_waiting": RepliesWaiting(FOLLOW_UP_DOCTYPES, mine).count(),
+	}
+
+
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def ask_flow(message: str) -> dict:
+	return {"session": start_flow_chat(message)}
 
 
 @frappe.whitelist()

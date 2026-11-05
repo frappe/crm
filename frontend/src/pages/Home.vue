@@ -11,32 +11,10 @@
         />
       </template>
       <template #right-header>
-        <template v-if="!editing">
-          <Button
-            :label="__('Edit')"
-            iconLeft="lucide-pen-line"
-            @click="edit()"
-          />
-          <Dropdown v-if="isAdmin()" :options="defaultOptions">
-            <Button
-              icon="lucide-more-horizontal"
-              :tooltip="__('Role defaults')"
-            />
-          </Dropdown>
-        </template>
-        <template v-else>
-          <Dropdown :options="catalogOptions">
-            <Button
-              :label="__('Widget')"
-              iconLeft="lucide-plus"
-              :disabled="!availableWidgets.length"
-            />
-          </Dropdown>
-          <Button
-            :label="resetLabel"
-            iconLeft="lucide-undo-2"
-            @click="reset()"
-          />
+        <Dropdown align="end" :options="widgetMenu">
+          <Button :label="__('Widget')" iconLeft="lucide-plus" />
+        </Dropdown>
+        <template v-if="editing">
           <Button :label="__('Cancel')" @click="cancel()" />
           <Button
             variant="solid"
@@ -45,15 +23,36 @@
             @click="save()"
           />
         </template>
+        <Dropdown v-else-if="isAdmin()" :options="defaultOptions">
+          <Button
+            icon="lucide-more-horizontal"
+            :tooltip="__('Role defaults')"
+          />
+        </Dropdown>
       </template>
     </LayoutHeader>
 
     <div class="flex flex-1 flex-col overflow-y-auto">
-      <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col">
-        <HomeHeader v-if="target === 'mine'" />
+      <div
+        class="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-8 px-6 pb-12 pt-9"
+      >
+        <template v-if="target === 'mine'">
+          <HomeHeader
+            :count="brief.data?.total"
+            :team="briefTab === 'team'"
+            :flow="askFlow.data?.available"
+          />
+          <AskFlow :resource="askFlow" :team="isManager()" />
+          <Brief
+            v-model:tab="briefTab"
+            v-model:showAll="briefShowAll"
+            :resource="brief"
+          />
+        </template>
         <DashboardGrid
           v-if="visibleItems.length"
           v-model="visibleItems"
+          class="-mx-2 !flex-none !overflow-visible !p-0"
           :editing="editing"
           dragHandle=".home-drag-handle"
         >
@@ -115,18 +114,27 @@
 
 <script setup>
 import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
+import AskFlow from '@/components/Home/AskFlow.vue'
+import Brief from '@/components/Home/Brief.vue'
 import HomeHeader from '@/components/Home/HomeHeader.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import { getWidget } from '@/components/Home/widgets'
+import { useBrief } from '@/composables/homeWidget'
 import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
-import { Badge, Dropdown, Tooltip, usePageMeta } from 'frappe-ui'
+import {
+  Badge,
+  Dropdown,
+  Tooltip,
+  createResource,
+  usePageMeta,
+} from 'frappe-ui'
 import { computed, provide } from 'vue'
 
 const { brand } = getSettings()
-const { isAdmin } = usersStore()
+const { isAdmin, isManager } = usersStore()
 
 const {
   target,
@@ -135,6 +143,7 @@ const {
   dirty,
   visibleItems,
   availableWidgets,
+  full,
   load,
   edit,
   cancel,
@@ -147,6 +156,10 @@ const {
 load()
 
 provide('homeEditing', editing)
+
+const { tab: briefTab, showAll: briefShowAll, resource: brief } = useBrief()
+
+const askFlow = createResource({ url: 'crm.api.home.get_ask_flow', auto: true })
 
 const defaultLabels = {
   agent: __('Agent default'),
@@ -166,16 +179,46 @@ const defaultOptions = [
   },
 ]
 
-const catalogOptions = computed(() =>
-  availableWidgets.value.map((widget) => ({
-    label: __(widget.label),
-    onClick: () => addWidget(widget),
-  })),
-)
-
 const resetLabel = computed(() =>
   target.value === 'mine' ? __('Reset to default') : __('Reset to built-in'),
 )
+
+const widgetMenu = computed(() => {
+  const widgets = availableWidgets.value.map((widget) => ({
+    label: __(widget.label),
+    icon: widget.icon,
+    onClick: () => addWidget(widget),
+  }))
+  return [
+    {
+      group: __('Widgets'),
+      options: full.value
+        ? [
+            {
+              label: __('Home holds 3 widgets. Remove one to add another.'),
+              disabled: true,
+            },
+          ]
+        : widgets,
+    },
+    {
+      group: __('Layout'),
+      hideLabel: true,
+      options: [
+        ...(editing.value
+          ? []
+          : [
+              {
+                label: __('Arrange and resize widgets'),
+                icon: 'lucide-layout-dashboard',
+                onClick: () => edit(),
+              },
+            ]),
+        { label: resetLabel.value, icon: 'lucide-rotate-ccw', onClick: reset },
+      ],
+    },
+  ]
+})
 
 usePageMeta(() => ({ title: __('Home'), icon: brand.favicon }))
 </script>

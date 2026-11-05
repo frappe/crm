@@ -38,6 +38,8 @@ RECORD_TYPES = {
 
 
 class Widget:
+	row_limit = ROW_LIMIT
+
 	def __init__(self, doctypes: tuple, scope: Mine | Team):
 		self.doctypes = doctypes
 		self.scope = scope
@@ -57,10 +59,12 @@ class RecordWidget(Widget):
 		for doctype in self.doctypes:
 			table = frappe.qb.DocType(doctype)
 			query = self.query(doctype, table).select(*self.fields(doctype, table), self.sort_term(table))
-			for row in query.orderby(Field(self.sort_field), order=order).limit(ROW_LIMIT).run(as_dict=True):
+			for row in (
+				query.orderby(Field(self.sort_field), order=order).limit(self.row_limit).run(as_dict=True)
+			):
 				rows.append({**row, "doctype": doctype})
 		rows.sort(key=lambda row: row[self.sort_field], reverse=self.descending)
-		return self.decorate(rows[:ROW_LIMIT])
+		return self.decorate(rows[: self.row_limit])
 
 	def count(self) -> int:
 		return sum(self._count(doctype) for doctype in self.doctypes)
@@ -182,7 +186,7 @@ class TaskWidget(Widget):
 	def rows(self) -> list:
 		task = self.task
 		query = self.query().select(*self.FIELDS, task.reference_doctype, task.reference_docname)
-		rows = self.order(query).limit(ROW_LIMIT).run(as_dict=True)
+		rows = self.order(query).limit(self.row_limit).run(as_dict=True)
 		set_reference_titles(rows)
 		return rows
 
