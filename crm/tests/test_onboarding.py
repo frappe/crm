@@ -6,12 +6,8 @@ from unittest.mock import patch
 import frappe
 from frappe.exceptions import FrappeTypeError
 
-<<<<<<< HEAD
-from crm.api.onboarding import get_first_deal, get_first_lead
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from crm.api.onboarding import get_first_deal, get_first_lead, should_auto_complete_setup
->>>>>>> 108f02f (test: cover setup auto-complete on Frappe Cloud v1 and v2)
+from crm.tests import CRMTestCase as FrappeTestCase
 
 SALES_USER = "onboarding-rep@example.com"
 
@@ -130,7 +126,7 @@ class TestOnboardingAPI(FrappeTestCase):
 		self.assertIsNone(get_first_lead())
 
 
-class TestAutoCompleteSetup(IntegrationTestCase):
+class TestAutoCompleteSetup(FrappeTestCase):
 	def setUp(self):
 		patches = {
 			"frappe.is_setup_complete": False,
