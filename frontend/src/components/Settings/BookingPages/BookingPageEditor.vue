@@ -44,12 +44,10 @@
       <LoadingIndicator class="w-4" />
     </div>
     <div v-else class="bp-tabs flex-1 overflow-y-auto px-6 pb-8">
+      <ErrorMessage v-if="error" class="mt-2 mb-2" :message="error" />
       <Tabs v-model="activeTab" as="div" :tabs="tabs">
         <template #tab-panel="{ tab }">
-          <!-- SETUP TAB -->
-          <div v-if="tab.value === 'setup'" class="pt-5">
-            <ErrorMessage v-if="error" class="mb-4" :message="error" />
-
+          <div v-if="tab.value === 'details'" class="pt-5">
             <!-- Details -->
             <section class="flex flex-col gap-4">
               <div class="grid grid-cols-2 gap-4">
@@ -207,9 +205,10 @@
                 />
               </div>
             </section>
-
+          </div>
+          <div v-else-if="tab.value === 'availability'" class="pt-5">
             <!-- Weekly hours -->
-            <section class="mt-8">
+            <section>
               <SectionTitle
                 :title="__('Weekly hours')"
                 :description="
@@ -324,7 +323,7 @@
                                   variant="solid"
                                   :label="__('Apply')"
                                   :disabled="!copyTargets.length"
-                                  @click="copyTimes(day), close()"
+                                  @click="(copyTimes(day), close())"
                                 />
                               </div>
                             </template>
@@ -402,105 +401,9 @@
                 />
               </div>
             </section>
-
-            <!-- Form: the page's own web form, in the Forms field editor -->
-            <section class="mt-8">
-              <SectionTitle
-                :title="__('Form')"
-                :description="
-                  __(
-                    'What people fill in after picking a time. Answers go to the {0}.',
-                    [recordLabel],
-                  )
-                "
-              />
-              <FormBuilderPanel
-                v-if="doc.web_form"
-                ref="formBuilder"
-                :name="doc.web_form"
-                embedded
-                :locked-fields="['email']"
-              />
-            </section>
-
-            <!-- After booking -->
-            <section class="mt-8">
-              <SectionTitle :title="__('After booking')" />
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center justify-between gap-4">
-                  <div>
-                    <div class="text-p-base-medium text-ink-gray-7">
-                      {{ __('Create a {0} for new people', [recordLabel]) }}
-                    </div>
-                    <div class="text-p-sm text-ink-gray-5">
-                      {{
-                        __(
-                          'Bookings from someone already in the CRM link to their lead or deal. Otherwise a {0} is created and assigned to the host.',
-                          [recordLabel],
-                        )
-                      }}
-                    </div>
-                  </div>
-                  <Switch
-                    size="sm"
-                    :model-value="Boolean(doc.create_lead)"
-                    @update:model-value="
-                      (v: boolean) => set('create_lead', v ? 1 : 0)
-                    "
-                  />
-                </div>
-                <div v-if="doc.create_lead" class="w-1/2">
-                  <div class="mb-1.5 text-sm text-ink-gray-5">
-                    {{ __('Source') }}
-                  </div>
-                  <Link
-                    doctype="CRM Lead Source"
-                    :model-value="doc.lead_source"
-                    :placeholder="__('None')"
-                    @update:model-value="(v: string) => set('lead_source', v)"
-                  />
-                </div>
-                <FormControl
-                  :model-value="doc.event_title"
-                  type="text"
-                  :label="__('Meeting title')"
-                  :placeholder="__('{page} ({guest})')"
-                  :description="
-                    __(
-                      'How the meeting is named on the calendar. Use {guest}, {host}, {page} or a form field like {organization_name}.',
-                    )
-                  "
-                  @update:model-value="(v: string) => set('event_title', v)"
-                />
-                <FormControl
-                  :model-value="doc.confirmation_message"
-                  type="textarea"
-                  :label="__('Confirmation message')"
-                  :placeholder="
-                    __(
-                      'Shown after someone books, and added to their confirmation email',
-                    )
-                  "
-                  @update:model-value="
-                    (v: string) => set('confirmation_message', v)
-                  "
-                />
-                <FormControl
-                  :model-value="doc.guest_reminder || 'No reminder'"
-                  type="select"
-                  :label="__('Remind guest')"
-                  :options="reminderOptions"
-                  :description="
-                    __(
-                      'An email before the meeting, with links to reschedule or cancel.',
-                    )
-                  "
-                  @update:model-value="(v: string) => set('guest_reminder', v)"
-                />
-              </div>
-            </section>
           </div>
-          <!-- SHARE TAB -->
+          <!-- The form tab is rendered below, outside the panel -->
+          <div v-else-if="tab.value === 'form'" />
           <div v-else class="flex flex-col pt-5">
             <p v-if="!doc.enabled" class="mb-5 text-p-sm text-ink-gray-5">
               {{
@@ -626,6 +529,105 @@
           </div>
         </template>
       </Tabs>
+      <!-- Kept mounted so unsaved form edits survive switching tabs -->
+      <div v-show="activeTab === 'form'" class="pt-5">
+        <!-- Form: the page's own web form, in the Forms field editor -->
+        <section>
+          <SectionTitle
+            :title="__('Form')"
+            :description="
+              __(
+                'What people fill in after picking a time. Answers go to the {0}.',
+                [recordLabel],
+              )
+            "
+          />
+          <FormBuilderPanel
+            v-if="doc.web_form"
+            ref="formBuilder"
+            :name="doc.web_form"
+            embedded
+            :locked-fields="['email']"
+          />
+        </section>
+
+        <!-- After booking -->
+        <section class="mt-8">
+          <SectionTitle :title="__('After booking')" />
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <div class="text-p-base-medium text-ink-gray-7">
+                  {{ __('Create a {0} for new people', [recordLabel]) }}
+                </div>
+                <div class="text-p-sm text-ink-gray-5">
+                  {{
+                    __(
+                      'Bookings from someone already in the CRM link to their lead or deal. Otherwise a {0} is created and assigned to the host.',
+                      [recordLabel],
+                    )
+                  }}
+                </div>
+              </div>
+              <Switch
+                size="sm"
+                :model-value="Boolean(doc.create_lead)"
+                @update:model-value="
+                  (v: boolean) => set('create_lead', v ? 1 : 0)
+                "
+              />
+            </div>
+            <div v-if="doc.create_lead" class="w-1/2">
+              <div class="mb-1.5 text-sm text-ink-gray-5">
+                {{ __('Source') }}
+              </div>
+              <Link
+                doctype="CRM Lead Source"
+                :model-value="doc.lead_source"
+                :placeholder="__('None')"
+                @update:model-value="(v: string) => set('lead_source', v)"
+              />
+            </div>
+            <FormControl
+              :model-value="doc.event_title"
+              type="text"
+              :label="__('Meeting title')"
+              :placeholder="__('{page} ({guest})')"
+              :description="
+                __(
+                  'How the meeting is named on the calendar. Use {guest}, {host}, {page} or a form field like {organization_name}.',
+                )
+              "
+              @update:model-value="(v: string) => set('event_title', v)"
+            />
+            <FormControl
+              :model-value="doc.confirmation_message"
+              type="textarea"
+              :label="__('Confirmation message')"
+              :placeholder="
+                __(
+                  'Shown after someone books, and added to their confirmation email',
+                )
+              "
+              @update:model-value="
+                (v: string) => set('confirmation_message', v)
+              "
+            />
+            <FormControl
+              :model-value="doc.guest_reminder || 'No reminder'"
+              type="select"
+              :label="__('Remind guest')"
+              :options="reminderOptions"
+              :description="
+                __(
+                  'An email before the meeting, with links to reschedule or cancel.',
+                )
+              "
+              @update:model-value="(v: string) => set('guest_reminder', v)"
+            />
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
@@ -668,6 +670,8 @@ import LucideCopy from '~icons/lucide/copy'
 import LucideExternalLink from '~icons/lucide/external-link'
 import LucideEye from '~icons/lucide/eye'
 import LucideSettings from '~icons/lucide/settings'
+import LucideClock from '~icons/lucide/clock'
+import LucideFileText from '~icons/lucide/file-text'
 import LucideShare2 from '~icons/lucide/share-2'
 import { ROUTE_PREFIX, pageUrl, slugify } from './bookingPages'
 import {
@@ -723,9 +727,11 @@ interface BookingPageDoc {
 
 const props = defineProps<{ name: string }>()
 
-const activeTab = ref('setup')
+const activeTab = ref('details')
 const tabs = [
-  { value: 'setup', label: __('Setup'), iconLeft: LucideSettings },
+  { value: 'details', label: __('Details'), iconLeft: LucideSettings },
+  { value: 'availability', label: __('Availability'), iconLeft: LucideClock },
+  { value: 'form', label: __('Booking form'), iconLeft: LucideFileText },
   { value: 'share', label: __('Share'), iconLeft: LucideShare2 },
 ]
 const emit = defineEmits<{ back: [] }>()
