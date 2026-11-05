@@ -20,7 +20,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 )
 from crm.fcrm.doctype.crm_dashboard.recent_activity import RecentActivity
 from crm.fcrm.doctype.crm_dashboard.sales_widgets import SALES_WIDGET_DATA
-from crm.fcrm.doctype.crm_dashboard.team_widgets import TEAM_WIDGET_DATA
+from crm.fcrm.doctype.crm_dashboard.team_widgets import TEAM_TABBED_WIDGETS, TEAM_WIDGET_DATA
 from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 from crm.utils import sales_user_only
 
@@ -130,8 +130,15 @@ def get_widget_data(
 
 
 def get_tab_data(widget: str, tab: str, doctype: str = "Both", user: str | None = None) -> dict:
-	if widget not in TABBED_WIDGETS:
+	user = user or frappe.session.user
+	if widget not in TABBED_WIDGETS and widget not in TEAM_TABBED_WIDGETS:
 		frappe.throw(_("Home widget {0} has no tabs").format(widget))
 	if doctype not in DOCTYPES:
 		frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(widget))
-	return TABBED_WIDGETS[widget](DOCTYPES[doctype], Mine(user or frappe.session.user), tab).summary()
+	if widget in TABBED_WIDGETS:
+		return TABBED_WIDGETS[widget](DOCTYPES[doctype], Mine(user), tab).summary()
+	if role_for(user) != "manager":
+		frappe.throw(
+			_("Home widget {0} is only available to managers").format(widget), frappe.PermissionError
+		)
+	return TEAM_TABBED_WIDGETS[widget](DOCTYPES[doctype], Team(user), tab).summary()

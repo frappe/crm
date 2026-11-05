@@ -1,20 +1,32 @@
 <template>
   <HomeWidget
     :title="__('Team workload')"
-    :subtitle="__('Per person, for leads and deals created in the period')"
     :resource="resource"
     :emptyText="__('No one is on your team yet.')"
     emptyIcon="lucide-users"
   >
+    <template #subtitle>
+      <div class="flex min-w-0 items-center gap-1 text-base text-ink-gray-5">
+        <span class="truncate">{{ __('Leads and deals created in') }}</span>
+        <PeriodPicker
+          class="h-5 shrink-0 text-base"
+          :period="config?.period"
+          @change="(period) => emit('update:config', { ...config, period })"
+        />
+      </div>
+    </template>
     <template #tabs>
-      <PeriodPicker
-        class="h-6 text-base"
-        :period="config?.period"
-        @change="(period) => emit('update:config', { ...config, period })"
-      />
+      <HomeTabs v-model="filter" :tabs="filters" :counts="filterCounts" />
     </template>
     <template #default="{ rows }">
-      <HomeTable :columns="columns" :rows="visible(rows)">
+      <HomeEmptyState
+        v-if="!filtered(rows).length"
+        compact
+        class="flex-1 px-4"
+        icon="lucide-check"
+        :text="__('No one here right now.')"
+      />
+      <HomeTable v-else :columns="columns" :rows="visible(filtered(rows))">
         <template #first_response_time="{ column, row }">
           <Tooltip :text="slaHint(row)">
             <div
@@ -40,7 +52,9 @@
   </HomeWidget>
 </template>
 <script setup>
+import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeTable from '@/components/Home/HomeTable.vue'
+import HomeTabs from '@/components/Home/HomeTabs.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { homeColumns } from '@/components/Home/columns'
@@ -74,7 +88,7 @@ const columns = [
   stat('overdue_follow_ups', __('Overdue'), __('Overdue follow-ups'), '3.5rem'),
   stat(
     'no_next_step',
-    __('Going cold'),
+    __('No next step'),
     __('Open leads and deals with no follow-up and no activity in 7 days'),
     '5rem',
   ),
@@ -86,6 +100,33 @@ const columns = [
     (seconds) => shortDuration(seconds) || '—',
   ),
 ]
+
+const filter = ref('everyone')
+
+const filters = [
+  { label: __('Everyone'), value: 'everyone' },
+  { label: __('Over SLA'), value: 'over_sla' },
+  { label: __('Overdue'), value: 'overdue' },
+]
+
+const filterRules = {
+  everyone: () => true,
+  over_sla: (row) => missedSla(row),
+  overdue: (row) => row.overdue_follow_ups > 0,
+}
+
+const filterCounts = computed(() =>
+  Object.fromEntries(
+    Object.entries(filterRules).map(([key, rule]) => [
+      key,
+      members.value.filter(rule).length,
+    ]),
+  ),
+)
+
+function filtered(rows) {
+  return rows.filter(filterRules[filter.value])
+}
 
 function missedSla(row) {
   return row.sla_met < row.sla_total

@@ -1,6 +1,6 @@
 <template>
   <NumberCard
-    :title="__('Won')"
+    :title="isManager() ? __('Won by your team') : __('Deals won')"
     :loading="!resource.data"
     :value="data.value ?? null"
     :prefix="data.currency"
@@ -25,6 +25,9 @@ import { formatPercentChange } from '@/utils/home'
 import { formatCompactNumber } from '@/utils/numberFormat'
 import { NumberCard } from 'frappe-ui/charts'
 import { computed } from 'vue'
+import { usersStore } from '@/stores/users'
+
+const { isManager } = usersStore()
 
 const props = defineProps({ config: { type: Object, default: null } })
 

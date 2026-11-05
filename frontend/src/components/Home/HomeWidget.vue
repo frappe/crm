@@ -20,7 +20,9 @@
             />
           </Dropdown>
         </div>
-        <span class="truncate text-base text-ink-gray-5">{{ subtitle }}</span>
+        <slot name="subtitle">
+          <span class="truncate text-base text-ink-gray-5">{{ subtitle }}</span>
+        </slot>
       </div>
       <div v-if="$slots.tabs" class="shrink-0">
         <slot name="tabs" />

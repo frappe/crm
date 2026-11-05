@@ -3,7 +3,7 @@ from unittest.mock import patch
 import frappe
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
-from crm.api.home import get_widget_data
+from crm.api.home import get_tab_data, get_widget_data
 from crm.fcrm.doctype.crm_dashboard import team_widgets
 from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, PERIOD_DAYS
 from crm.fcrm.doctype.crm_dashboard.home_widgets import NoNextStep, RepliesWaiting
@@ -31,6 +31,9 @@ class TeamWidgetTestCase(HomeWidgetTestCase):
 
 	def team(self, widget, user=MANAGER, doctype="Both", period=None):
 		return get_widget_data(widget, doctype, user, period)
+
+	def merged(self, tab, user=MANAGER, doctype="Both"):
+		return get_tab_data("overdue_and_unassigned", tab, doctype, user)
 
 
 class TestTeamScope(TeamWidgetTestCase):
@@ -76,15 +79,15 @@ class TestTeamOverdueFollowUps(TeamWidgetTestCase):
 		self.follow_up(add_days(now_datetime(), -1), assigned_to=OUTSIDER)
 		self.follow_up(add_days(now_datetime(), -1), status="Done")
 
-		rows = self.team("team_overdue_follow_ups")["rows"]
+		rows = self.merged("overdue")["rows"]
 		self.assertEqual(
 			[(row["name"], row["assigned_to"]) for row in rows], [(reports, AGENT), (mine, MANAGER)]
 		)
 
 	def test_manager_outside_the_hierarchy_sees_every_sales_user(self):
-		before = self.team("team_overdue_follow_ups", BOSS)["total"]
+		before = self.merged("overdue", BOSS)["total"]
 		self.follow_up(add_days(now_datetime(), -1), assigned_to=OUTSIDER)
-		self.assertEqual(self.team("team_overdue_follow_ups", BOSS)["total"], before + 1)
+		self.assertEqual(self.merged("overdue", BOSS)["total"], before + 1)
 
 
 class TestUnassigned(TeamWidgetTestCase):
@@ -100,9 +103,9 @@ class TestUnassigned(TeamWidgetTestCase):
 		self.unassigned(status=self.ongoing_lead)
 		self.unassigned(converted=1)
 
-		rows = names(self.team("unassigned", BOSS))
+		rows = names(self.merged("unassigned", BOSS))
 		self.assertEqual(rows[: rows.index(older) + 1], [deal, newer, older])
-		self.assertNotIn(deal, names(self.team("unassigned", BOSS, "Lead")))
+		self.assertNotIn(deal, names(self.merged("unassigned", BOSS, "Lead")))
 
 	def test_count_stops_at_the_cap(self):
 		def team_lead_without_assignee():
@@ -111,13 +114,13 @@ class TestUnassigned(TeamWidgetTestCase):
 		with patch.object(team_widgets, "UNASSIGNED_CAP", 2):
 			team_lead_without_assignee()
 			team_lead_without_assignee()
-			self.assertEqual(self.summary(), (2, False))
+			self.assertEqual(self.summary(), 2)
 			team_lead_without_assignee()
-			self.assertEqual(self.summary(), (2, True))
+			self.assertEqual(self.summary(), 2)
 
 	def summary(self):
-		data = self.team("unassigned")
-		return data["total"], data["more"]
+		data = self.merged("unassigned")
+		return data["total"]
 
 
 class TestTeamOverview(TeamWidgetTestCase):
@@ -235,3 +238,14 @@ def overview_key(scope, period=DEFAULT_PERIOD):
 
 def hierarchy_node(user, **kwargs):
 	return frappe.get_doc({"doctype": "CRM Sales Hierarchy", "user": user, **kwargs}).insert().name
+
+
+class TestOverdueAndUnassigned(TeamWidgetTestCase):
+	def test_counts_both_tabs(self):
+		make_lead(status=self.open_lead, lead_owner=AGENT)
+		data = self.merged("unassigned", BOSS)
+		self.assertEqual(set(data["counts"]), {"overdue", "unassigned"})
+
+	def test_only_managers_can_read_it(self):
+		with self.assertRaises(frappe.PermissionError):
+			self.merged("overdue", AGENT)

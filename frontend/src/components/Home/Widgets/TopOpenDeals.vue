@@ -1,6 +1,6 @@
 <template>
   <HomeWidget
-    :title="__('Top open deals')"
+    :title="__('Largest open deals')"
     :subtitle="__('Your biggest open deals by value')"
     :resource="resource"
     :viewAll="{ name: 'Deals' }"

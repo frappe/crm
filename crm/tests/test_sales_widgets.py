@@ -5,6 +5,7 @@ from crm.api.dashboard import get_forecasted_revenue
 from crm.api.home import get_widget_data
 from crm.tests.test_home import AGENT, MANAGER
 from crm.tests.test_home_widgets import HomeWidgetTestCase, status
+from crm.tests.test_team_widgets import BOSS, OUTSIDER, TeamWidgetTestCase
 
 
 class SalesWidgetTestCase(HomeWidgetTestCase):
@@ -131,3 +132,15 @@ class TestForecast(SalesWidgetTestCase):
 		rows = {row["month"]: row for row in get_forecasted_revenue(user=AGENT)["data"]}
 		self.assertIn(key, rows)
 		self.assertIn(rows[key]["forecasted"], ("", 0))
+
+
+class TestWonByTeam(SalesWidgetTestCase, TeamWidgetTestCase):
+	def test_a_manager_in_the_hierarchy_counts_only_their_team(self):
+		self.closed(100, self.won, deal_owner=OUTSIDER)
+		self.assertEqual(self.widget("won_this_month", MANAGER)["value"], 0)
+		self.closed(100, self.won, deal_owner=AGENT)
+		self.assertGreater(self.widget("won_this_month", MANAGER)["value"], 0)
+
+	def test_a_manager_outside_the_hierarchy_counts_everyone(self):
+		self.closed(100, self.won, deal_owner=OUTSIDER)
+		self.assertGreater(self.widget("won_this_month", BOSS)["value"], 0)

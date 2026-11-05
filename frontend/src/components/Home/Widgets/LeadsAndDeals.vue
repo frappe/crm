@@ -34,9 +34,9 @@ const props = defineProps({
 const emit = defineEmits(['update:config'])
 
 const titles = {
-  Both: __('Needs your attention'),
-  Lead: __('Leads needing attention'),
-  Deal: __('Deals needing attention'),
+  Both: __('My leads and deals'),
+  Lead: __('My leads'),
+  Deal: __('My deals'),
 }
 
 const filter = computed(() =>

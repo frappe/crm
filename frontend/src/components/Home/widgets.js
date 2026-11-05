@@ -6,98 +6,107 @@ const lazy = (name) =>
 // Keys match WIDGETS in home_layout.py; sizes are DashboardGrid units (20 columns, 42px rows,
 // 16px gutter), sized to fit content. List rows are 40px with 1px dividers:
 // border 2 + title and subtitle 75 + column header 40 + 6 rows (245) + footer 32 = 394 ≤ 10 × 42 − 16.
-// Team replies waiting has five columns, so it defaults to full width. Task tables need the full
-// width for their title, record and assignee, so minW stops them from being resized narrower.
+// Team replies waiting has five columns, so it defaults to full width. My tasks is 15 × 8 with 4 rows and can shrink to
+// 12 columns, with two cards (4 rows high each) stacked beside it to match its height.
+export const MAX_WIDGETS = 3
+
 export const widgets = [
   {
     key: 'tasks',
     label: 'My tasks',
-    size: { w: 20, h: 10 },
-    minW: 20,
+    icon: 'lucide-square-check',
+    size: { w: 15, h: 8 },
+    minW: 12,
+    minH: 8,
     component: lazy('Tasks'),
   },
   {
     key: 'leads_and_deals',
-    label: 'Needs your attention',
+    label: 'My leads and deals',
+    icon: 'lucide-mail',
     size: { w: 10, h: 10 },
     component: lazy('LeadsAndDeals'),
   },
   {
     key: 'leads',
-    label: 'Leads needing attention',
+    label: 'My leads',
+    icon: 'lucide-user',
     size: { w: 10, h: 10 },
     component: lazy('Leads'),
   },
   {
     key: 'deals',
-    label: 'Deals needing attention',
+    label: 'My deals',
+    icon: 'lucide-handshake',
     size: { w: 10, h: 10 },
     component: lazy('Deals'),
   },
   {
     key: 'recently_opened',
     label: 'Recent activity',
+    icon: 'lucide-clock',
     size: { w: 10, h: 10 },
     component: lazy('RecentlyOpened'),
   },
   {
     key: 'no_next_step',
-    label: 'Going cold',
+    label: 'No next step',
+    icon: 'lucide-calendar-x',
     size: { w: 10, h: 10 },
     component: lazy('NoNextStep'),
   },
   {
     key: 'funnel_conversion',
     label: 'Sales funnel',
+    icon: 'lucide-filter',
     size: { w: 20, h: 10 },
     component: lazy('FunnelConversion'),
   },
   {
     key: 'won_this_month',
-    label: 'Won',
-    size: { w: 10, h: 4 },
+    label: 'Deals won',
+    icon: 'lucide-trophy',
+    size: { w: 5, h: 4 },
     component: lazy('WonThisMonth'),
   },
   {
     key: 'expected_revenue',
     label: 'Expected revenue',
-    size: { w: 10, h: 4 },
+    icon: 'lucide-trending-up',
+    size: { w: 5, h: 4 },
     component: lazy('ExpectedRevenue'),
   },
   {
     key: 'top_open_deals',
-    label: 'Top open deals',
+    label: 'Largest open deals',
+    icon: 'lucide-zap',
     size: { w: 10, h: 10 },
     component: lazy('TopOpenDeals'),
   },
   {
     key: 'team_overview',
     label: 'Team workload',
-    size: { w: 10, h: 10 },
+    icon: 'lucide-users',
+    size: { w: 15, h: 10 },
+    minH: 10,
     managerOnly: true,
     component: lazy('TeamOverview'),
   },
   {
     key: 'team_replies_waiting',
-    label: 'Waiting on your team',
+    label: 'Team replies waiting',
+    icon: 'lucide-inbox',
     size: { w: 20, h: 10 },
     managerOnly: true,
     component: lazy('TeamRepliesWaiting'),
   },
   {
-    key: 'team_overdue_follow_ups',
-    label: 'Missed follow-ups',
-    size: { w: 20, h: 10 },
-    minW: 20,
-    managerOnly: true,
-    component: lazy('TeamOverdueFollowUps'),
-  },
-  {
-    key: 'unassigned',
-    label: 'Needs an owner',
+    key: 'overdue_and_unassigned',
+    label: 'Overdue and unassigned',
+    icon: 'lucide-calendar-clock',
     size: { w: 10, h: 10 },
     managerOnly: true,
-    component: lazy('Unassigned'),
+    component: lazy('OverdueAndUnassigned'),
   },
 ]
 
@@ -121,7 +130,7 @@ export function catalog({ manager, items }, registry = widgets) {
 
 export function newItem(widget, items) {
   const y = Math.max(0, ...items.map(({ layout }) => layout.y + layout.h))
-  return withMinWidth(
+  return withMinSize(
     {
       name: widget.key,
       config: {},
@@ -131,13 +140,15 @@ export function newItem(widget, items) {
   )
 }
 
-// The grid reads minW from the layout; the server drops it on save.
-export function withMinWidth(item, registry = widgets) {
-  const minW = getWidget(item.name, registry)?.minW
-  return minW ? { ...item, layout: { ...item.layout, minW } } : item
+// The grid reads minW and minH from the layout; the server drops them on save.
+export function withMinSize(item, registry = widgets) {
+  const { minW, minH } = getWidget(item.name, registry) || {}
+  if (!minW && !minH) return item
+  const minimums = { ...(minW && { minW }), ...(minH && { minH }) }
+  return { ...item, layout: { ...item.layout, ...minimums } }
 }
 
-// The grid adds its own keys (moved, minW) to each layout, so only what the server stores counts.
+// The grid adds its own keys (moved, minW, minH) to each layout, so only what the server stores counts.
 export function persistedLayout(items) {
   return JSON.stringify(
     items.map(({ name, config, layout: { x, y, w, h } }) => ({

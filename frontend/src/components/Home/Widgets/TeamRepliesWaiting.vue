@@ -1,6 +1,6 @@
 <template>
   <HomeWidget
-    :title="__('Waiting on your team')"
+    :title="__('Team replies waiting')"
     :subtitle="__('Customers whose last message has no reply from your team')"
     :resource="resource"
     :config="config"

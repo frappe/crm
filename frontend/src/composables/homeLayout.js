@@ -1,9 +1,10 @@
 import {
+  MAX_WIDGETS,
   catalog,
   isRegistered,
   newItem,
   persistedLayout,
-  withMinWidth,
+  withMinSize,
 } from '@/components/Home/widgets'
 import { usersStore } from '@/stores/users'
 import { copy } from '@/utils'
@@ -46,12 +47,16 @@ export function useHomeLayout() {
     },
   })
 
+  const full = computed(() => items.value.length >= MAX_WIDGETS)
+
   const availableWidgets = computed(() =>
-    catalog({
-      manager:
-        target.value === 'mine' ? isManager() : target.value === 'manager',
-      items: items.value,
-    }),
+    full.value
+      ? []
+      : catalog({
+          manager:
+            target.value === 'mine' ? isManager() : target.value === 'manager',
+          items: items.value,
+        }),
   )
 
   const dirty = computed(
@@ -69,7 +74,7 @@ export function useHomeLayout() {
   }
 
   function apply(home) {
-    saved.value = home.layout.map((item) => withMinWidth(item))
+    saved.value = home.layout.map((item) => withMinSize(item))
     items.value = copy(saved.value)
   }
 
@@ -105,8 +110,11 @@ export function useHomeLayout() {
     }
   }
 
-  function addWidget(widget) {
+  async function addWidget(widget) {
     items.value = [...items.value, newItem(widget, items.value)]
+    if (editing.value) return
+    await save()
+    items.value = copy(saved.value)
   }
 
   async function updateConfig(item, config) {
@@ -123,6 +131,7 @@ export function useHomeLayout() {
     dirty,
     visibleItems,
     availableWidgets,
+    full,
     load,
     edit,
     cancel,

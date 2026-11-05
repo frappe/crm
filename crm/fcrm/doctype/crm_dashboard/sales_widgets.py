@@ -14,6 +14,7 @@ from frappe.utils import getdate, now_datetime
 
 from crm.api.dashboard import get_base_currency_symbol, get_funnel_conversion
 from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, period_days, role_for
+from crm.fcrm.doctype.crm_dashboard.home_scope import Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT, Widget
 
 TREND_POINTS = 8
@@ -52,7 +53,15 @@ class FunnelConversion(SalesWidget):
 
 
 class Won(SalesWidget):
-	"""Value won over the period, against the period before it."""
+	"""Value won over the period, against the period before it. A manager in the Sales Hierarchy counts
+	their team's deals, unlike the other sales widgets."""
+
+	def deals(self, *types):
+		query = super().deals(*types)
+		if self.owner:
+			return query
+		team = Team(self.scope.user)
+		return query if team.sees_everyone else query.where(self.deal.deal_owner.isin(team.members or [None]))
 
 	def summary(self) -> dict:
 		start = self.today - timedelta(days=self.days - 1)

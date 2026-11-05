@@ -14,6 +14,7 @@ DOCTYPE_OPTIONS = ("Lead", "Deal", "Both")
 PERIOD_DAYS = {"last_week": 7, "last_month": 30, "last_3_months": 90}
 DEFAULT_PERIOD = "last_month"
 GRID_COLUMNS = 20
+MAX_WIDGETS = 3
 
 
 @dataclass(frozen=True)
@@ -22,11 +23,12 @@ class Widget:
 	doctype_setting: bool = True
 	period_setting: bool = False
 	min_w: int = 1
+	min_h: int = 1
 
 
-# Task widgets need the full width for their title, record and assignee.
+# My tasks leaves room beside it for two stacked cards.
 WIDGETS = {
-	"tasks": Widget(doctype_setting=False, min_w=GRID_COLUMNS),
+	"tasks": Widget(doctype_setting=False, min_w=12, min_h=8),
 	"leads_and_deals": Widget(),
 	"leads": Widget(doctype_setting=False),
 	"deals": Widget(doctype_setting=False),
@@ -36,10 +38,9 @@ WIDGETS = {
 	"won_this_month": Widget(doctype_setting=False, period_setting=True),
 	"expected_revenue": Widget(doctype_setting=False, period_setting=True),
 	"top_open_deals": Widget(doctype_setting=False),
-	"team_overview": Widget(manager_only=True, doctype_setting=False, period_setting=True),
+	"team_overview": Widget(manager_only=True, doctype_setting=False, period_setting=True, min_h=10),
 	"team_replies_waiting": Widget(manager_only=True),
-	"team_overdue_follow_ups": Widget(manager_only=True, min_w=GRID_COLUMNS),
-	"unassigned": Widget(manager_only=True),
+	"overdue_and_unassigned": Widget(manager_only=True, doctype_setting=False),
 }
 
 
@@ -132,6 +133,9 @@ def validate_layout(layout, role: str) -> list:
 	if not isinstance(layout, list):
 		frappe.throw(_("Home layout must be a list of widgets"))
 
+	if len(layout) > MAX_WIDGETS:
+		frappe.throw(_("Home can hold up to {0} widgets").format(MAX_WIDGETS))
+
 	seen = set()
 	items = []
 	for item in layout:
@@ -148,20 +152,23 @@ def validate_layout(layout, role: str) -> list:
 
 
 def allowed_items(layout: list, role: str) -> list:
-	return [
-		_widen(item)
+	allowed = [
+		_fit_minimum(item)
 		for item in layout
 		if item.get("name") in WIDGETS and (role == "manager" or not WIDGETS[item["name"]].manager_only)
 	]
+	return allowed[:MAX_WIDGETS]
 
 
-# Layouts saved before a widget had a minimum width still render, at that width.
-def _widen(item: dict) -> dict:
-	min_w = WIDGETS[item["name"]].min_w
+# Layouts saved before a widget had a minimum size still render, at that size.
+def _fit_minimum(item: dict) -> dict:
+	widget = WIDGETS[item["name"]]
 	layout = item.get("layout") or {}
-	if layout.get("w", min_w) >= min_w:
-		return item
-	return {**item, "layout": {**layout, "x": 0, "w": min_w}}
+	if layout.get("w", widget.min_w) < widget.min_w:
+		layout = {**layout, "x": 0, "w": widget.min_w}
+	if layout.get("h", widget.min_h) < widget.min_h:
+		layout = {**layout, "h": widget.min_h}
+	return {**item, "layout": layout} if layout != item.get("layout") else item
 
 
 def load(layout: str | None) -> list:
@@ -204,8 +211,9 @@ def _position(item: dict) -> dict:
 	)
 	if not valid:
 		frappe.throw(_("Home widget {0} has an invalid position").format(item["name"]))
-	if layout["w"] < WIDGETS[item["name"]].min_w:
-		frappe.throw(_("Home widget {0} must span the full width").format(item["name"]))
+	widget = WIDGETS[item["name"]]
+	if layout["w"] < widget.min_w or layout["h"] < widget.min_h:
+		frappe.throw(_("Home widget {0} is smaller than its minimum size").format(item["name"]))
 	return {**{k: layout[k] for k in keys}, "i": item["name"]}
 
 
@@ -221,26 +229,17 @@ def _item(
 
 def agent_default() -> list:
 	return [
-		_item("tasks", 0, 0, w=20),
-		_item("won_this_month", 0, 10, w=5, h=3, period="last_3_months"),
-		_item("expected_revenue", 5, 10, w=5, h=3, period="last_3_months"),
-		_item("no_next_step", 10, 10, h=13, doctype="Lead"),
-		_item("leads_and_deals", 0, 13),
-		_item("funnel_conversion", 0, 23, w=12, period="last_3_months"),
-		_item("top_open_deals", 12, 23, w=8),
+		_item("tasks", 0, 0, w=15, h=8),
+		_item("expected_revenue", 15, 0, w=5, h=4, period="last_3_months"),
+		_item("won_this_month", 15, 4, w=5, h=4, period="last_3_months"),
 	]
 
 
 def manager_default() -> list:
 	return [
-		_item("tasks", 0, 0, w=20, h=9),
-		_item("team_overview", 0, 9, w=20, h=9, period="last_month"),
-		_item("won_this_month", 0, 18, w=8, h=3),
-		_item("unassigned", 8, 18, w=12, h=11),
-		_item("expected_revenue", 0, 21, w=8, h=3),
-		_item("top_open_deals", 0, 24, w=8, h=14),
-		_item("funnel_conversion", 8, 29, w=12, h=9),
-		_item("team_replies_waiting", 0, 38, w=20, h=9),
+		_item("team_overview", 0, 0, w=15, h=10),
+		_item("won_this_month", 15, 0, w=5, h=5),
+		_item("expected_revenue", 15, 5, w=5, h=5),
 	]
 
 

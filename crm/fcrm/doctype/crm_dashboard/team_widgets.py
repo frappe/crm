@@ -5,6 +5,7 @@ import json
 import operator
 from datetime import timedelta
 from functools import reduce
+from typing import ClassVar
 
 import frappe
 from frappe.query_builder import Case, Field
@@ -18,6 +19,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NoNextStep,
 	RecordWidget,
 	RepliesWaiting,
+	TabbedWidget,
 	TaskWidget,
 	Widget,
 )
@@ -50,9 +52,8 @@ class Unassigned(NewLeads):
 	def filtered(self, doctype: str, table):
 		return super().filtered(doctype, table).where(Coalesce(table._assign, "").isin(("", "[]")))
 
-	def summary(self) -> dict:
-		total = self.count()
-		return {"rows": self.rows(), "total": min(total, UNASSIGNED_CAP), "more": total > UNASSIGNED_CAP}
+	def count(self) -> int:
+		return min(super().count(), UNASSIGNED_CAP)
 
 	def _count(self, doctype: str) -> int:
 		table = frappe.qb.DocType(doctype)
@@ -171,12 +172,16 @@ class TeamOverview(Widget):
 		return owned.union(assigned)
 
 
+class OverdueAndUnassigned(TabbedWidget):
+	TABS: ClassVar[dict] = {"overdue": TeamOverdueFollowUps, "unassigned": Unassigned}
+
+
 TEAM_WIDGET_DATA = {
 	"team_overview": TeamOverview,
 	"team_replies_waiting": TeamRepliesWaiting,
-	"team_overdue_follow_ups": TeamOverdueFollowUps,
-	"unassigned": Unassigned,
 }
+
+TEAM_TABBED_WIDGETS = {"overdue_and_unassigned": OverdueAndUnassigned}
 
 
 def set_owners(rows: list):

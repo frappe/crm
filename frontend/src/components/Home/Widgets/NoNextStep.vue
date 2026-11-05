@@ -1,6 +1,6 @@
 <template>
   <HomeWidget
-    :title="__('Going cold')"
+    :title="__('No next step')"
     :subtitle="
       __('Open leads and deals with no follow-up and no activity in 7 days')
     "
