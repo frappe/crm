@@ -23,7 +23,16 @@ def before_tests():
 		frappe.flags.ignore_chart_of_accounts = True
 		ensure_erpnext_fixtures()
 
+	skip_test_records_of_other_apps()
 	load_crm_user_test_records()
+
+
+def skip_test_records_of_other_apps():
+	"""Stop test record generation from walking into DocTypes of apps other than frappe and crm."""
+	own_modules = frappe.get_module_list("frappe") + frappe.get_module_list("crm")
+	other_doctypes = frappe.get_all("DocType", filters={"module": ["not in", own_modules]}, pluck="name")
+	for doctype in other_doctypes:
+		frappe.local.test_objects.setdefault(doctype, [])
 
 
 def ensure_erpnext_fixtures():
