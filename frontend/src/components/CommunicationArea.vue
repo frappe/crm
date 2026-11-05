@@ -62,6 +62,7 @@
           newEmailEditor.cc = false
           newEmailEditor.bcc = false
           newEmail = ''
+          followUpIn = null
         },
       }"
       :editable="showEmailBox"
@@ -71,7 +72,11 @@
       :placeholder="
         __('Hi John, \n\nCan you please provide more details on this...')
       "
-    />
+    >
+      <template #actions>
+        <FollowUpAfterSend v-model="followUpIn" />
+      </template>
+    </EmailEditor>
   </div>
   <div
     v-show="showCommentBox"
@@ -106,11 +111,14 @@
 
 <script setup>
 import EmailEditor from '@/components/EmailEditor.vue'
+import FollowUpAfterSend from '@/components/FollowUp/FollowUpAfterSend.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import { isContentEmpty, htmlToText } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
+import { followUpPresets } from '@/utils/task'
+import { createFollowUp } from '@/composables/followUp'
 import {
   getEmailSubject,
   loadUserEmailSubjects,
@@ -134,6 +142,7 @@ const { getUser } = usersStore()
 const { capture } = useTelemetry()
 
 const showEmailBox = ref(false)
+const followUpIn = ref(null)
 const showCommentBox = ref(false)
 const newEmail = useStorage(
   `emailBoxContent-${getUser().email}-${props.doctype}-${doc.value.name}`,
@@ -335,6 +344,7 @@ async function deleteAttachedFiles() {
 async function submitEmail() {
   if (emailBlocked.value) return
   showEmailBox.value = false
+  const emailSubject = newEmailEditor.value.subject
   // toast.promise returns the toast id (not the promise), so await the send
   // itself — otherwise the reload below fires before the email is committed and
   // the new email is missing from the refetched list.
@@ -344,7 +354,7 @@ async function submitEmail() {
     success: __('Email sent'),
     error: (e) => e?.messages?.[0] || __('Failed to send email!'),
   })
-  if (await afterSend(sending))
+  if (await afterSend(sending, emailSubject))
     capture('email_sent', { doctype: props.doctype })
 }
 
@@ -369,19 +379,20 @@ function scheduleEmail(sendAfter, label, confirmed) {
 
 async function confirmSchedule(sendAfter, label) {
   showEmailBox.value = false
+  const emailSubject = newEmailEditor.value.subject
   const scheduling = sendMail(sendAfter)
   toast.promise(scheduling, {
     loading: __('Scheduling email...'),
     success: __('Email scheduled for {0}', [label]),
     error: (e) => e?.messages?.[0] || __('Failed to schedule email!'),
   })
-  if (await afterSend(scheduling)) {
+  if (await afterSend(scheduling, emailSubject)) {
     capture('email_scheduled', { doctype: props.doctype })
   }
 }
 
 // Clears the draft and refreshes the timeline once the email is saved
-async function afterSend(sending) {
+async function afterSend(sending, emailSubject) {
   try {
     await sending
   } catch {
@@ -389,9 +400,27 @@ async function afterSend(sending) {
   }
   newEmail.value = ''
   attachments.value = []
+  await followUpAfterSend(emailSubject)
   reload.value = true
   emit('scroll')
   return true
+}
+
+async function followUpAfterSend(emailSubject) {
+  const preset = followUpPresets().find((p) => p.key === followUpIn.value)
+  if (!preset) return
+  followUpIn.value = null
+  try {
+    await createFollowUp({
+      doctype: props.doctype,
+      docname: doc.value.name,
+      title: __('Follow up on: {0}', [emailSubject]),
+      dueDate: preset.date,
+    })
+    capture('follow_up_created', { doctype: props.doctype, source: 'email' })
+  } catch {
+    toast.error(__('Email sent, but the follow-up could not be added'))
+  }
 }
 
 async function submitComment() {

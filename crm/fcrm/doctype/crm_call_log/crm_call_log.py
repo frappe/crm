@@ -5,6 +5,7 @@ import frappe
 from frappe import _, generate_hash
 from frappe.model.document import Document
 
+from crm.api.interactions import record
 from crm.integrations.api import get_contact_by_phone_number
 from crm.utils import seconds_to_duration
 
@@ -52,6 +53,12 @@ class CRMCallLog(Document):
 			self.id = generate_hash(length=12)
 		if not self.telephony_medium:
 			self.telephony_medium = "Manual"
+
+	def on_update(self):
+		if self.type == "Outgoing" and self.status == "Completed":
+			at = self.end_time or self.start_time or self.creation
+			for doctype, docname in self.get_crm_references().items():
+				record(doctype, docname, "Outbound", at)
 
 	@staticmethod
 	def default_list_data():
@@ -137,6 +144,16 @@ class CRMCallLog(Document):
 			return
 
 		self.append("links", {"link_doctype": reference_doctype, "link_name": reference_name})
+
+	def get_crm_references(self) -> dict[str, str]:
+		"""Manual logs set the reference; telephony integrations add links."""
+		references = {}
+		if self.reference_doctype in ("CRM Lead", "CRM Deal") and self.reference_docname:
+			references[self.reference_doctype] = self.reference_docname
+		for link in self.links:
+			if link.link_doctype in ("CRM Lead", "CRM Deal"):
+				references.setdefault(link.link_doctype, link.link_name)
+		return references
 
 	def as_dict(self, *args, **kwargs):
 		d = super().as_dict(*args, **kwargs)
@@ -232,7 +249,7 @@ def get_call_log(name: str):
 	if not frappe.has_permission("CRM Call Log", "read", name):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
-	call = frappe.get_cached_doc(
+	doc = frappe.get_cached_doc(
 		"CRM Call Log",
 		name,
 		fields=[
@@ -251,25 +268,19 @@ def get_call_log(name: str):
 			"reference_docname",
 			"creation",
 		],
-	).as_dict()
-
-	call = parse_call_log(call)
+	)
+	call = parse_call_log(doc.as_dict())
 
 	note_names = [call["note"]] if call.get("note") else []
 	task_names = []
-	references = {}
-
-	if call.get("reference_doctype") in ("CRM Lead", "CRM Deal") and call.get("reference_docname"):
-		references[call["reference_doctype"]] = call["reference_docname"]
-
 	for link in call.get("links") or []:
 		link_doctype, link_name = link.get("link_doctype"), link.get("link_name")
 		if link_doctype == "CRM Task":
 			task_names.append(link_name)
 		elif link_doctype == "FCRM Note":
 			note_names.append(link_name)
-		elif link_doctype in ("CRM Lead", "CRM Deal"):
-			references.setdefault(link_doctype, link_name)
+
+	references = doc.get_crm_references()
 
 	call["_notes"] = get_permitted_docs("FCRM Note", note_names)
 	call["_tasks"] = get_permitted_docs("CRM Task", task_names)

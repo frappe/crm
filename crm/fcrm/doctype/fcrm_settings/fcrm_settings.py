@@ -35,6 +35,7 @@ class FCRMSettings(Document):
 		default_calendar_view: DF.Literal["Daily", "Weekly", "Monthly"]
 		dropdown_items: DF.Table[CRMDropdownItem]
 		enable_forecasting: DF.Check
+		enable_morning_digest: DF.Check
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
 		service_provider: DF.Literal[

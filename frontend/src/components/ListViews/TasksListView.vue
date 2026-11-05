@@ -42,11 +42,15 @@
       doctype="CRM Task"
     >
       <div v-if="column.key === 'due_date' && item">
-        <Tooltip :text="item && formatDate(item, 'ddd, MMM D, YYYY | hh:mm a')">
+        <Tooltip
+          :text="
+            formatTaskDue({ due_date: item, all_day: row.all_day }, 'long')
+          "
+        >
           <div class="flex items-center gap-2 truncate text-base">
             <div><CalendarIcon /></div>
             <div class="truncate">
-              {{ formatDate(item, 'D MMM, hh:mm a') }}
+              {{ formatTaskDue({ due_date: item, all_day: row.all_day }) }}
             </div>
           </div>
         </Tooltip>
@@ -191,12 +195,8 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
-import {
-  formatDate,
-  isTranslatable,
-  formatDuration,
-  sanitizeHTML,
-} from '@/utils'
+import { isTranslatable, formatDuration, sanitizeHTML } from '@/utils'
+import { formatTaskDue } from '@/utils/task'
 import { Dropdown, Tooltip } from 'frappe-ui'
 import {
   ListView,

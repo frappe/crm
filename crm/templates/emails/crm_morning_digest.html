@@ -1,0 +1,44 @@
+<div style="max-width: 560px; color: #171717; font-size: 14px; line-height: 20px">
+	<p style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 600">
+		{{ _("Good morning, {0}").format(first_name | e) if first_name else _("Good morning") }}
+	</p>
+	<p style="margin: 4px 0 0; color: #525252">{{ date }}</p>
+
+	{% for section in sections if section.total %}
+	<p style="margin: 28px 0 8px; font-size: 14px; font-weight: 600">
+		{{ section.title }}
+		<span style="color: #737373; font-weight: 400">&nbsp;{{ section.total }}</span>
+	</p>
+	<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse">
+		{% for item in section["items"] %}
+		<tr>
+			<td style="padding: 8px 0; border-top: 1px solid #ededed">
+				<a href="{{ item.url }}" style="color: #171717; font-weight: 500; text-decoration: none">
+					{{ item.title | e }}
+				</a>
+				<div style="margin-top: 2px; font-size: 13px; color: {{ '#b42318' if item.overdue else '#525252' }}">
+					{{ item.detail | e }}
+				</div>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% if section.more %}
+	<p style="margin: 6px 0 0; font-size: 13px">
+		<a href="{{ home_url }}" style="color: #525252">{{ _("and {0} more").format(section.more) }}</a>
+	</p>
+	{% endif %}
+	{% endfor %}
+
+	<p style="margin: 32px 0 0">
+		<a
+			href="{{ home_url }}"
+			style="display: inline-block; padding: 8px 16px; border-radius: 8px; background: #171717; color: #ffffff; font-weight: 500; text-decoration: none"
+		>
+			{{ _("Open CRM Home") }}
+		</a>
+	</p>
+	<p style="margin: 32px 0 0; font-size: 12px; line-height: 18px; color: #737373">
+		{{ _("You can turn off this email in CRM under Settings, Profile.") }}
+	</p>
+</div>

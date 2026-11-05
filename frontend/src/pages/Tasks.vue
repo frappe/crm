@@ -220,6 +220,7 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, sanitizeHTML } from '@/utils'
+import { formatTaskDue } from '@/utils/task'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
@@ -326,6 +327,10 @@ function parseRows(rows, columns = []) {
 
       if (fieldType && fieldType == 'Percent') {
         _rows[row] = getFormattedPercent(row, task)
+      }
+
+      if (row == 'due_date' && view_type === 'kanban') {
+        _rows[row] = formatTaskDue(task)
       }
 
       if (['modified', 'creation'].includes(row)) {

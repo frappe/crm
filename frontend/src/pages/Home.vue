@@ -1,0 +1,224 @@
+<template>
+  <div class="flex h-full flex-col overflow-hidden">
+    <LayoutHeader>
+      <template #left-header>
+        <ViewBreadcrumbs routeName="Home" />
+        <Badge
+          v-if="target !== 'mine'"
+          :label="defaultLabels[target]"
+          theme="orange"
+          variant="subtle"
+        />
+      </template>
+      <template #right-header>
+        <Dropdown align="end" :options="widgetMenu">
+          <Button :label="__('Widget')" iconLeft="lucide-plus" />
+        </Dropdown>
+        <template v-if="editing">
+          <Button :label="__('Cancel')" @click="cancel()" />
+          <Button
+            variant="solid"
+            :label="__('Save')"
+            :disabled="!dirty"
+            @click="save()"
+          />
+        </template>
+        <Dropdown v-else-if="isAdmin()" :options="defaultOptions">
+          <Button
+            icon="lucide-more-horizontal"
+            :tooltip="__('Role defaults')"
+          />
+        </Dropdown>
+      </template>
+    </LayoutHeader>
+
+    <div class="flex flex-1 flex-col overflow-y-auto">
+      <div
+        class="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-8 px-6 pb-12 pt-9"
+      >
+        <template v-if="target === 'mine'">
+          <HomeHeader
+            :count="brief.data?.total"
+            :team="briefTab === 'team'"
+            :flow="askFlow.data?.available"
+          />
+          <AskFlow :resource="askFlow" :team="isManager()" />
+          <Brief
+            v-model:tab="briefTab"
+            v-model:showAll="briefShowAll"
+            :resource="brief"
+          />
+        </template>
+        <DashboardGrid
+          v-if="visibleItems.length"
+          v-model="visibleItems"
+          class="-mx-2 !flex-none !overflow-visible !p-0"
+          :editing="editing"
+          dragHandle=".home-drag-handle"
+        >
+          <template #item="{ item, remove }">
+            <div class="relative h-full w-full">
+              <component
+                :is="getWidget(item.name).component"
+                class="h-full w-full"
+                :class="{ 'pointer-events-none select-none': editing }"
+                :config="item.config"
+                @update:config="(config) => updateConfig(item, config)"
+              />
+              <template v-if="editing">
+                <div
+                  class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
+                />
+                <div class="absolute right-2 top-1.5 flex items-center gap-0.5">
+                  <Tooltip :text="__('Drag to move')">
+                    <span
+                      class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
+                      :aria-label="__('Drag to move')"
+                    >
+                      <span
+                        class="lucide-grip-vertical size-4"
+                        aria-hidden="true"
+                      />
+                    </span>
+                  </Tooltip>
+                  <Button
+                    variant="ghost"
+                    icon="lucide-x"
+                    :tooltip="__('Remove')"
+                    @click="remove"
+                  />
+                </div>
+              </template>
+            </div>
+          </template>
+        </DashboardGrid>
+        <div
+          v-else-if="!loading"
+          class="flex flex-1 flex-col items-center justify-center gap-1 p-5 text-center"
+        >
+          <span class="text-base-medium text-ink-gray-8">
+            {{ __('Nothing on Home yet') }}
+          </span>
+          <span class="text-p-base text-ink-gray-6">
+            {{
+              availableWidgets.length
+                ? __('Add widgets to see what needs you next.')
+                : __('Widgets will appear here once they are available.')
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
+import AskFlow from '@/components/Home/AskFlow.vue'
+import Brief from '@/components/Home/Brief.vue'
+import HomeHeader from '@/components/Home/HomeHeader.vue'
+import LayoutHeader from '@/components/LayoutHeader.vue'
+import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
+import { getWidget } from '@/components/Home/widgets'
+import { useBrief } from '@/composables/homeWidget'
+import { useHomeLayout } from '@/composables/homeLayout'
+import { getSettings } from '@/stores/settings'
+import { usersStore } from '@/stores/users'
+import {
+  Badge,
+  Dropdown,
+  Tooltip,
+  createResource,
+  usePageMeta,
+} from 'frappe-ui'
+import { computed, provide } from 'vue'
+
+const { brand } = getSettings()
+const { isAdmin, isManager } = usersStore()
+
+const {
+  target,
+  loading,
+  editing,
+  dirty,
+  visibleItems,
+  availableWidgets,
+  full,
+  load,
+  edit,
+  cancel,
+  save,
+  reset,
+  addWidget,
+  updateConfig,
+} = useHomeLayout()
+
+load()
+
+provide('homeEditing', editing)
+
+const { tab: briefTab, showAll: briefShowAll, resource: brief } = useBrief()
+
+const askFlow = createResource({ url: 'crm.api.home.get_ask_flow', auto: true })
+
+const defaultLabels = {
+  agent: __('Agent default'),
+  manager: __('Manager default'),
+}
+
+const defaultOptions = [
+  {
+    label: __('Edit agent default'),
+    icon: 'lucide-user',
+    onClick: () => edit('agent'),
+  },
+  {
+    label: __('Edit manager default'),
+    icon: 'lucide-users',
+    onClick: () => edit('manager'),
+  },
+]
+
+const resetLabel = computed(() =>
+  target.value === 'mine' ? __('Reset to default') : __('Reset to built-in'),
+)
+
+const widgetMenu = computed(() => {
+  const widgets = availableWidgets.value.map((widget) => ({
+    label: __(widget.label),
+    icon: widget.icon,
+    onClick: () => addWidget(widget),
+  }))
+  return [
+    {
+      group: __('Widgets'),
+      options: full.value
+        ? [
+            {
+              label: __('Home holds 3 widgets. Remove one to add another.'),
+              disabled: true,
+            },
+          ]
+        : widgets,
+    },
+    {
+      group: __('Layout'),
+      hideLabel: true,
+      options: [
+        ...(editing.value
+          ? []
+          : [
+              {
+                label: __('Arrange and resize widgets'),
+                icon: 'lucide-layout-dashboard',
+                onClick: () => edit(),
+              },
+            ]),
+        { label: resetLabel.value, icon: 'lucide-rotate-ccw', onClick: reset },
+      ],
+    },
+  ]
+})
+
+usePageMeta(() => ({ title: __('Home'), icon: brand.favicon }))
+</script>

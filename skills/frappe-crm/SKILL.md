@@ -22,7 +22,7 @@ CRM tracks sales in two documents. A `CRM Lead` is a prospect that is not yet qu
 - Read a timeline: call `crm.api.activities.get_activities` with `name` (a lead or deal). It returns field changes, emails, comments, calls, notes, tasks and attachments.
 - Change deal contacts: call `add_contact`, `remove_contact` or `set_primary_contact` in `crm.fcrm.doctype.crm_deal.crm_deal`, each with `deal` and `contact`.
 - Add a comment: call `crm.api.comment.add_comment` with `reference_doctype`, `reference_name` and `content` (HTML).
-- Send an email: call `frappe.core.doctype.communication.email.make` with `doctype`, `name`, `recipients`, `subject`, `content` and `send_email: 1`.
+- Send an email: call `frappe.core.doctype.communication.email.make` through `run_action`, with `doctype`, `name`, `recipients`, `subject`, `content` and `send_email: 1` in `args`. See section 4 first.
 - Assign an owner: set `lead_owner` or `deal_owner`. CRM then shares the document with that user and assigns it to them.
 - Create a lead from a call: call `crm.fcrm.doctype.crm_call_log.crm_call_log.create_lead_from_call_log` with `call_log` and `lead_details`.
 
@@ -33,3 +33,15 @@ CRM tracks sales in two documents. A `CRM Lead` is a prospect that is not yet qu
 - **A `Lost` status needs `lost_reason`.** When `lost_reason` is `Other`, `lost_notes` is also required.
 - **Forecasting can make deal fields mandatory.** When it is on in `FCRM Settings`, every deal save needs `expected_deal_value` and `expected_closure_date`.
 - **Statuses are site data.** Do not assume `New`, `Qualified` or `Won` exist. Read the status doctypes.
+
+## 4. Questions about work to do
+
+- **Who is waiting on a reply.** `awaiting_reply_since` is set on `CRM Lead` and `CRM Deal`. Leave out leads with `converted = 1` and records whose status type is not `Open` or `Ongoing`. One record is one count, so two records for one person count twice.
+- **Reading a conversation.** `get_activities` does not list WhatsApp. On sites with the WhatsApp app, also read `WA Message` by `reference_doctype` and `reference_docname`.
+- **Listing records.** Call `read_records` or `run_report`, so the user gets a table. Do not write the records out as text.
+- **Sending email.** `send_email: 1` sends at once. Show the draft in your reply first. When the user agrees, send it through `run_action`, so the approval shows the recipients, subject and content. Do not send from `execute`, because its approval shows only your description.
+- **Facts with no field.** "Renewal", "at risk" and contract dates have no field. They can come only from a message or a note, so say which one you read. Do not infer them.
+- **Follow-ups.** `CRM Task` keeps no completion date and no old due dates, so "missed" cannot be worked out. Say "due and still open". All-day tasks are overdue after their day ends.
+- **Team questions.** Count a record for its owner, or its first assignee if it has no owner, and never for both. A manager in the Sales Hierarchy sees only their subtree, and does not see leads with no owner or assignee.
+- **Response time.** `first_response_time` and `first_responded_on` are wrong for WhatsApp and calls, and mix working hours with wall-clock time. To find records nobody answered in time, use `response_by` in the past with `first_responded_on` and `last_outbound_at` both empty.
+- **Pipeline.** `status_change_log` on a deal holds each move with `from`, `to` and `to_date`. Order stages by `CRM Deal Status.position`. Treat `Lost` and `On Hold` as exits, not steps. The open row, with no `to_date`, gives the time in the current stage.
