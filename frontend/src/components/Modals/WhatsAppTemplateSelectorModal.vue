@@ -59,18 +59,32 @@
           />
         </div>
       </div>
-      <div v-else class="mt-4">
-        <div class="flex h-56 flex-col items-center justify-center">
-          <div class="text-lg text-ink-gray-6">
-            {{ __('No Templates Found') }}
-          </div>
-          <Button
-            :label="__('Create New')"
-            class="mt-4"
-            @click="newWhatsAppTemplate"
-          />
-        </div>
-      </div>
+      <EmptyState
+        v-else-if="search"
+        class="mt-4 !h-56"
+        name="WhatsApp Templates"
+        :title="__('No matching templates')"
+        :description="__('Try a different name or language.')"
+        :icon="WhatsAppIcon"
+        top="25%"
+        width="lg"
+      />
+      <EmptyState
+        v-else
+        class="mt-4 !h-64"
+        name="WhatsApp Templates"
+        :title="__('No WhatsApp templates yet')"
+        :description="
+          __(
+            'Templates are pre-approved messages you can send to start a conversation on WhatsApp.',
+          )
+        "
+        :icon="WhatsAppIcon"
+        top="15%"
+        width="lg"
+        docsLink="https://docs.frappe.io/crm/whatsapp"
+        :onCreate="isManager() ? newWhatsAppTemplate : null"
+      />
       <!-- in the body rather than `#actions`, whose padding leaves a band of space under the grid -->
       <div class="mt-4 flex items-center justify-between gap-4">
         <ErrorMessage :message="sendError || missingRecipientError" />
@@ -89,6 +103,8 @@
 </template>
 
 <script setup>
+import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
+import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { showSettings, activeSettingsPage } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { usersStore } from '@/stores/users'

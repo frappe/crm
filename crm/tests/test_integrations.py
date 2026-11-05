@@ -667,6 +667,53 @@ def create_test_call_log(**kwargs):
 	return call_log
 
 
+class TestExotelRealtimeRouting(IntegrationTestCase):
+	def setUp(self):
+		frappe.db.set_single_value("CRM Exotel Settings", "enabled", 1)
+		frappe.db.set_single_value("CRM Exotel Settings", "webhook_verify_token", "test-token")
+
+	def _exotel_call_recipients(self, args=None, **payload):
+		request = frappe._dict(args={"key": "test-token", **(args or {})}, headers={})
+		with (
+			patch.object(frappe.local, "request", request, create=True),
+			patch("frappe.publish_realtime") as publish,
+			patch.object(frappe.db, "commit"),
+		):
+			handle_request(**payload)
+		return [call.kwargs.get("user") for call in publish.call_args_list if call.args[0] == "exotel_call"]
+
+	def test_call_event_goes_only_to_the_agent_email(self):
+		recipients = self._exotel_call_recipients(
+			CallSid="test-routing-email", Status="free", AgentEmail="Administrator"
+		)
+		self.assertEqual(recipients, ["Administrator"])
+
+	def test_call_event_goes_to_the_agent_in_the_webhook_url(self):
+		recipients = self._exotel_call_recipients(
+			args={"agent": "Administrator"}, CallSid="test-routing-arg", Status="free"
+		)
+		self.assertEqual(recipients, ["Administrator"])
+
+	def test_call_event_is_not_broadcast_without_an_agent(self):
+		self.assertEqual(self._exotel_call_recipients(CallSid="test-routing-none", Status="free"), [])
+
+	def test_later_call_event_falls_back_to_the_agent_on_the_call_log(self):
+		call_sid = "test-routing-log"
+		frappe.db.delete("CRM Call Log", {"id": call_sid})
+		self.addCleanup(frappe.db.delete, "CRM Call Log", {"id": call_sid})
+
+		self._exotel_call_recipients(
+			CallSid=call_sid,
+			Direction="incoming",
+			CallFrom="+0987654321",
+			To="+1234567890",
+			DialWhomNumber="+1234567890",
+			AgentEmail="Administrator",
+		)
+		recipients = self._exotel_call_recipients(CallSid=call_sid, Direction="incoming", To="+1234567890")
+		self.assertEqual(recipients, ["Administrator"])
+
+
 class TestFindByPhone(IntegrationTestCase):
 	"""find_by_phone matches a number however it was stored or received."""
 

@@ -1,3 +1,5 @@
+import frappe
+
 app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
@@ -100,7 +102,10 @@ website_route_rules = [
 # ------------
 
 before_install = "crm.install.before_install"
-after_install = "crm.install.after_install"
+after_install = [
+	"crm.install.after_install",
+	"frappe.search.sqlite_search.build_index_in_background",
+]
 
 # Uninstallation
 # ------------
@@ -240,6 +245,10 @@ extend_doctype_class = {
 	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
 }
 
+# Frappe v15, still supported on main-hotfix, has no extend_doctype_class
+if int(frappe.__version__.split(".")[0]) < 16:
+	override_doctype_class["Data Import"] = "crm.overrides.data_import.DataImportV15"
+
 # Document Events
 # ---------------
 # Hook on document methods and events
@@ -262,6 +271,7 @@ doc_events = {
 			"crm.automation.events.on_communication",
 		],
 		"on_update": ["crm.utils.on_communication_update"],
+		"on_change": ["crm.api.email.stamp_send_time"],
 	},
 	"Comment": {
 		"after_insert": ["crm.utils.on_comment_insert"],
@@ -343,6 +353,7 @@ scheduler_events = {
 	],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",
+		"crm.api.event.purge_event_reminder_logs",
 		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
 		"crm.telemetry.capture_feature_state",
@@ -440,6 +451,8 @@ after_migrate = [
 	"crm.install.add_web_form_custom_fields",
 	"crm.install.add_assignment_index",
 ]
+
+sqlite_search = ["crm.search_sqlite.CRMSearch"]
 
 standard_dropdown_items = [
 	{

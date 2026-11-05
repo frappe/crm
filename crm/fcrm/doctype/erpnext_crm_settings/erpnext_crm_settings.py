@@ -713,7 +713,7 @@ def create_customer_from_deal(doc, erpnext_crm_settings):
 
 	if customer_name:
 		frappe.db.set_value("CRM Deal", doc.name, "erpnext_customer", customer_name)
-		frappe.publish_realtime("crm_customer_created")
+		frappe.publish_realtime("crm_customer_created", user=frappe.session.user)
 
 	return customer_name
 

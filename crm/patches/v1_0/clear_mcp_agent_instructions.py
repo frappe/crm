@@ -1,6 +1,7 @@
 import frappe
 
-AGENT_INSTRUCTIONS = """Frappe CRM tracks sales in CRM Lead (unqualified prospects) and CRM Deal (qualified opportunities).
+# Text that crm.patches.v1_0.set_mcp_agent_instructions wrote. Agent guidance now ships as skills/frappe-crm.
+SEEDED_AGENT_INSTRUCTIONS = """Frappe CRM tracks sales in CRM Lead (unqualified prospects) and CRM Deal (qualified opportunities).
 - Convert a lead with call_method crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal, args {"lead": "<name>"}. Do not create a CRM Deal from lead data yourself.
 - Valid statuses are the records in CRM Lead Status and CRM Deal Status. Their type field (Open, Ongoing, On Hold, Won, Lost) gives the meaning.
 - Notes are FCRM Note and tasks are CRM Task. Link both to a lead or deal through reference_doctype and reference_docname.
@@ -9,10 +10,8 @@ AGENT_INSTRUCTIONS = """Frappe CRM tracks sales in CRM Lead (unqualified prospec
 - Organizations are CRM Organization. People are Contact."""
 
 
-def set_agent_instructions():
-	# MCP Settings ships with Frappe v17; the field belongs to the site admin once set.
+def execute():
 	if not frappe.db.exists("DocType", "MCP Settings"):
 		return
-	if frappe.db.get_single_value("MCP Settings", "agent_instructions"):
-		return
-	frappe.db.set_single_value("MCP Settings", "agent_instructions", AGENT_INSTRUCTIONS)
+	if frappe.db.get_single_value("MCP Settings", "agent_instructions") == SEEDED_AGENT_INSTRUCTIONS:
+		frappe.db.set_single_value("MCP Settings", "agent_instructions", "")

@@ -103,8 +103,12 @@ export const availabilityStore = defineStore('crm-availability', () => {
     )
   }
 
-  // statuses can be renamed, recategorised or disabled while a tab is open
-  $socket.on('crm_availability_statuses_updated', () => statuses.reload())
+  // statuses can be renamed, recategorised or disabled while a tab is open;
+  // a rename also changes users' crm_availability
+  $socket.on('crm_availability_statuses_updated', () => {
+    statuses.reload()
+    users.reload()
+  })
 
   // events sent while the tab was offline are lost, so refetch after reconnecting
   $socket.io.on('reconnect', () => {

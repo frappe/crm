@@ -4,11 +4,24 @@
     v-model:showFilesUploader="showFilesUploader"
     v-model:emailBox="emailBox"
     :title="title"
+    :label="currentTab?.label"
     :doc="doc"
     :modalRef="modalRef"
+    :tabs="tabs"
+    :customPane="Boolean(tabComponent)"
   />
   <FadedScrollableDiv class="flex flex-col h-full overflow-y-auto">
-    <QuotationsList v-if="title == 'Quotations'" :deal="docname" />
+    <div v-if="tabComponent" class="flex flex-col h-full">
+      <component
+        :is="tabComponent"
+        :key="currentTab.value"
+        :doctype="doctype"
+        :docname="docname"
+        :doc="doc"
+        :tab="currentTab"
+      />
+    </div>
+    <QuotationsList v-else-if="title == 'Quotations'" :deal="docname" />
     <div
       v-else-if="all_activities?.loading"
       class="flex flex-1 flex-col items-center justify-center gap-3 text-2xl-medium text-ink-gray-4"
@@ -64,6 +77,7 @@
         <div
           v-for="note in activities"
           :key="note.name"
+          :id="note.name"
           @click="openNote(note, { edit: () => modalRef.showNote(note) })"
         >
           <NoteArea
@@ -209,9 +223,14 @@
           </div>
           <div
             v-if="activity.activity_type == 'communication'"
+            :id="activity.name"
             class="pb-5 mt-px"
           >
-            <EmailArea :activity="activity" :emailBox="emailBox" />
+            <EmailArea
+              :activity="activity"
+              :emailBox="emailBox"
+              @reload="all_activities.reload()"
+            />
           </div>
           <div
             v-else-if="activity.activity_type == 'comment'"
@@ -492,7 +511,7 @@
   </FadedScrollableDiv>
   <div>
     <CommunicationArea
-      v-if="['Emails', 'Comments', 'Activity'].includes(title)"
+      v-if="!tabComponent && ['Emails', 'Comments', 'Activity'].includes(title)"
       ref="emailBox"
       v-model="doc"
       v-model:reload="reload_email"
@@ -500,7 +519,7 @@
       @scroll="scroll"
     />
     <div
-      v-if="title == 'WhatsApp' && !hasMobileNumber"
+      v-if="!tabComponent && title == 'WhatsApp' && !hasMobileNumber"
       class="mx-3 mb-2.5 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7 sm:mx-10"
     >
       <span
@@ -510,7 +529,7 @@
       {{ __('Add a mobile number to send WhatsApp messages.') }}
     </div>
     <MessageInput
-      v-else-if="title == 'WhatsApp'"
+      v-else-if="!tabComponent && title == 'WhatsApp'"
       v-bind="messages"
       class="mx-3 mb-2.5 sm:mx-10"
       :sender-name="senderName"
@@ -601,6 +620,7 @@ import AllModals from '@/components/Activities/AllModals.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import TimelineTimestamp from '@/components/Activities/TimelineTimestamp.vue'
 import { startCase } from '@/utils'
+import { parseActivityHash } from '@/utils/activityHash'
 import { globalStore } from '@/stores/global'
 import { usersStore } from '@/stores/users'
 import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
@@ -664,16 +684,21 @@ const showFilesUploader = ref(false)
 const fieldLayoutTabIndex = ref(0)
 const fieldLayoutTabName = ref('')
 
-const title = computed(
-  () =>
-    props.tabs?.find((tab) => tab.value === activeTab.value)?.name ||
-    'Activity',
+const currentTab = computed(
+  () => props.tabs?.find((tab) => tab.value === activeTab.value) || null,
 )
+
+const title = computed(() => currentTab.value?.name || 'Activity')
+
+const tabComponent = computed(() => currentTab.value?.component || null)
 
 const changeTabTo = (tabName) => {
   if (!props.tabs?.some((tab) => tab.value === tabName)) return
   activeTab.value = tabName
 }
+
+// Data loads after mount, so the first load is what lands on a linked row.
+let linkedRowOnLoad = linkedRow(route.hash)
 
 const all_activities = createResource({
   url: 'crm.api.activities.get_activities',
@@ -683,7 +708,11 @@ const all_activities = createResource({
   transform: ([versions, calls, notes, tasks, attachments]) => {
     return { versions, calls, notes, tasks, attachments }
   },
-  onSuccess: () => nextTick(() => scroll()),
+  onSuccess: () =>
+    nextTick(() => {
+      scroll(linkedRowOnLoad)
+      linkedRowOnLoad = null
+    }),
   onError: (error) => {
     toast.error(error.messages?.[0] || __('Failed to load activities'))
   },
@@ -711,6 +740,7 @@ const senderName = computed(
 const messages = useMessages({
   references,
   to: () => doc.value?.mobile_no,
+  enabled: whatsappEnabled,
 })
 
 watch(
@@ -744,8 +774,14 @@ watch(
   (hash) => hash && scrollToHash(hash),
 )
 
+function linkedRow(hash) {
+  const { anchor } = parseActivityHash(hash)
+  if (!anchor || props.tabs?.some((tab) => tab.value === anchor)) return null
+  return anchor
+}
+
 function scrollToHash(hash) {
-  const id = hash.slice(1) || null
+  const id = parseActivityHash(hash).anchor || null
   let tabNames = props.tabs?.map((tab) => tab.name)
   if (!tabNames?.includes(id)) {
     scroll(id)

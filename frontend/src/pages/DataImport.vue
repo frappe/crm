@@ -1,27 +1,30 @@
 <template>
-  <LayoutHeader>
-    <template #left-header>
-      <Breadcrumbs :items="breadcrumbs" />
-    </template>
-  </LayoutHeader>
-  <div class="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col p-5">
-    <DataImportWizard
-      :dataImport="dataImport"
-      @open-list="openList"
-      @open-record="openRecord"
-      @open-imports="openImports"
-      @new-import="newImport"
-    />
-  </div>
+  <LegacyDataImport v-if="!dataImport" />
+  <template v-else>
+    <LayoutHeader>
+      <template #left-header>
+        <Breadcrumbs :items="breadcrumbs" />
+      </template>
+    </LayoutHeader>
+    <div class="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col p-5">
+      <DataImportWizard
+        :dataImport="dataImport"
+        @open-list="openList"
+        @open-record="openRecord"
+        @open-imports="openImports"
+        @new-import="newImport"
+      />
+    </div>
+  </template>
 </template>
 
 <script setup lang="ts">
 import LayoutHeader from '@/components/LayoutHeader.vue'
+import LegacyDataImport from '@/components/LegacyDataImport.vue'
 import { importListQuery } from '@/utils/dataImport'
-import {
-  DataImportWizard,
-  useDataImport,
-} from '@framework/ui/components/DataImport'
+// Frappe v15 ships only the older DataImport, so these may be missing; a named
+// import would fail the build there
+import * as dataImportUi from '@framework/ui/components/DataImport'
 import { getSettings } from '@/stores/settings'
 import { Breadcrumbs, usePageMeta, type BreadcrumbsProps } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
@@ -65,7 +68,10 @@ usePageMeta(() => {
 })
 
 const name = ref<string | null>((route.params.importName as string) || null)
-const dataImport = useDataImport(name, {
+const { DataImportWizard, useDataImport } = dataImportUi as Partial<
+  typeof dataImportUi
+>
+const dataImport = useDataImport?.(name, {
   doctype: () => (route.params.doctype as string) || undefined,
 })
 
@@ -82,7 +88,7 @@ watch(
 
 const breadcrumbs = computed(() => {
   const doctype =
-    dataImport.doc.value.reference_doctype || (route.params.doctype as string)
+    dataImport?.doc.value.reference_doctype || (route.params.doctype as string)
   const page = crmPages[doctype]
   const title = page?.title || doctype
   return [
@@ -97,7 +103,7 @@ function openList(doctype: string) {
   if (page) {
     router.push({
       name: page.list,
-      query: importListQuery(dataImport.doc.value),
+      query: importListQuery(dataImport!.doc.value),
     })
   }
 }

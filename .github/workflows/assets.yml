@@ -1,16 +1,37 @@
 name: Pre-build assets
 
+# The release commit semantic-release pushes to main, version-15 or version-16 (on_release.yml)
+# is also advertised in frappe/marketplace as that branch's stable release, once its assets exist.
+
 on:
   push:
     # develop needs the whatsapp app at build time, which the Pilot build does not check out yet.
-    branches: [main]
+    branches: [main, version-15, version-16]
+
+# Release PRs edit the same marketplace entry, so run one at a time per branch.
+concurrency:
+  group: assets-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   assets:
     name: Pre-build assets
     uses: frappe/pilot/.github/workflows/app-assets.yml@develop
     with:
-      # main supports Frappe v15 and v16; Pilot benches run v16 or later.
-      frappe-branch: version-16
+      # main supports Frappe v15 and v16, and Pilot benches run v16 or later; version-NN builds on its own frappe.
+      frappe-branch: ${{ github.ref_name == 'main' && 'version-16' || github.ref_name }}
     permissions:
       contents: write
+
+  marketplace:
+    name: Open the marketplace release PR
+    needs: assets
+    if: startsWith(github.event.head_commit.message, 'chore(release):')
+    uses: frappe/marketplace/.github/workflows/publish-release.yml@main
+    with:
+      app: crm
+      branch: ${{ github.ref_name }}
+      commit: ${{ github.sha }}
+      channel: stable
+    secrets:
+      registry_token: ${{ secrets.MARKETPLACE_PR_TOKEN }}

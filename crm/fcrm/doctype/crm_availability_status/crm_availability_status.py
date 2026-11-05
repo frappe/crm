@@ -56,6 +56,9 @@ class CRMAvailabilityStatus(Document):
 	def after_delete(self):
 		publish_statuses_updated()
 
+	def after_rename(self, old, new, merge=False):
+		publish_statuses_updated()
+
 	def ensure_another_active_status(self):
 		# users with no status count as Active, so one must always be pickable
 		if not frappe.db.exists(

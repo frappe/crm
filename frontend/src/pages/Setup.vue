@@ -187,13 +187,17 @@ async function finishSetup(skipped) {
 
 async function markSetupDone() {
   try {
+    localStorage.setItem(SETUP_DONE_KEY, '1')
+  } catch (error) {
+    console.error('Failed to cache setup status', error)
+  }
+  try {
     await call('frappe.client.set_value', {
       doctype: 'FCRM Settings',
       name: 'FCRM Settings',
       fieldname: 'setup_completed',
       value: 1,
     })
-    localStorage.setItem(SETUP_DONE_KEY, '1')
   } catch (error) {
     console.error('Failed to save setup status', error)
   }

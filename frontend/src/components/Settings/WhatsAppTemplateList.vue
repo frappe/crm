@@ -40,6 +40,8 @@
           __('Create one, or sync the templates already on your Meta account.')
         "
         :icon="WhatsAppIcon"
+        docsLink="https://docs.frappe.io/crm/whatsapp"
+        @create="emit('create')"
       />
       <div v-else class="-mx-2 overflow-y-auto">
         <template
@@ -97,7 +99,7 @@ import {
 } from 'frappe-ui'
 import { computed, onMounted, ref } from 'vue'
 
-const emit = defineEmits(['edit'])
+const emit = defineEmits(['edit', 'create'])
 
 const search = ref('')
 const confirmDelete = ref(false)

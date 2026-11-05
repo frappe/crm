@@ -9,10 +9,11 @@ jobs:
   regenerate-pot-file:
     name: Regenerate POT file
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        branch: ["develop", "main-hotfix"]
+        branch: ["develop", "main-hotfix", "version-15-hotfix", "version-16-hotfix"]
     permissions:
       contents: write
 

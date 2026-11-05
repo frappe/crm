@@ -22,6 +22,18 @@
              active row's shadow. Widen the scroll box to the sidebar edges and
              pad the content back in so the shadow has room. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
+          <SidebarItem :label="__('Search')" @click="onSearchClick">
+            <template #prefix>
+              <LucideSearch class="size-4 text-ink-gray-7" />
+            </template>
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Search') }}
+            </span>
+            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
+              K
+            </KeyboardShortcut>
+          </SidebarItem>
+
           <SidebarItem
             id="notifications-btn"
             :label="__('Notifications')"
@@ -109,10 +121,11 @@
               :afterSignup="() => capture('signup_from_demo_site')"
             />
             <TrialBanner
-              v-if="isFCSite"
+              v-if="isFCSite && !isCloudSettingsAvailable()"
               :isSidebarCollapsed="isCollapsed"
               :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
             />
+            <TrialCard v-if="!isCollapsed" />
             <GettingStartedBanner
               v-if="!isOnboardingStepsCompleted"
               :isSidebarCollapsed="isCollapsed"
@@ -196,6 +209,9 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import Notifications from '@/components/Notifications.vue'
+import KeyboardShortcut from '@/components/KeyboardShortcut.vue'
+import LucideSearch from '~icons/lucide/search'
+import { openCommandPalette } from '@/composables/useCommandPalette'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
 import {
@@ -208,11 +224,14 @@ import {
   showSettings,
   activeSettingsPage,
   mobileSidebarOpened,
+  closeMobileSidebar,
 } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
 import { SignupBanner } from '@framework/ui/components/SignupBanner'
 import { TrialBanner } from '@framework/ui/components/TrialBanner'
+import TrialCard from '@/components/Layouts/TrialCard.vue'
+import { isCloudSettingsAvailable } from '@/composables/cloudSettings'
 import {
   HelpModal,
   GettingStartedBanner,
@@ -353,6 +372,11 @@ watch(
   () => [route.name, route.query.view],
   () => (activeItem.value = currentRouteKey()),
 )
+
+function onSearchClick() {
+  if (props.mobile) closeMobileSidebar(openCommandPalette)
+  else openCommandPalette()
+}
 
 function onNotificationsClick(event) {
   if (props.mobile) {
@@ -593,10 +617,10 @@ const articles = ref([
     title: __('Settings'),
     opened: false,
     subArticles: [
-      { name: 'profile', title: __('Profile') },
+      { name: 'profile-and-preferences', title: __('Profile') },
       { name: 'custom-branding', title: __('Custom Branding') },
       { name: 'home-actions', title: __('Home Actions') },
-      { name: 'invite-users', title: __('Invite Users') },
+      { name: 'inviting-your-team', title: __('Invite Users') },
     ],
   },
   {
@@ -616,7 +640,7 @@ const articles = ref([
   {
     title: __('Capturing Leads'),
     opened: false,
-    subArticles: [{ name: 'web-form', title: __('Web Form') }],
+    subArticles: [{ name: 'capturing-leads/web-form', title: __('Web Form') }],
   },
   {
     title: __('Views'),

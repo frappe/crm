@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - version-15
+      - version-16
     tags:
       - "*"
 
@@ -38,13 +40,16 @@ jobs:
 
       - name: Set Branch
         run: |
-          export APPS_JSON='[{"url": "https://github.com/frappe/whatsapp","branch": "main"},{"url": "https://github.com/frappe/crm","branch": "main"}]'
+          # version-NN branches and their vNN.x.y release tags build their own line; the rest build main.
+          case "$GITHUB_REF_NAME" in
+            version-15|v15.*) BRANCH=version-15 FRAPPE_BRANCH=version-15 IMAGE_TAG=version-15 ;;
+            version-16|v16.*) BRANCH=version-16 FRAPPE_BRANCH=version-16 IMAGE_TAG=version-16 ;;
+            *)                BRANCH=main       FRAPPE_BRANCH=version-15 IMAGE_TAG=stable ;;
+          esac
+          export APPS_JSON='[{"url": "https://github.com/frappe/whatsapp","branch": "main"},{"url": "https://github.com/frappe/crm","branch": "'"$BRANCH"'"}]'
           echo "APPS_JSON_BASE64=$(echo $APPS_JSON | base64 -w 0)" >> $GITHUB_ENV
-          echo "FRAPPE_BRANCH=version-15" >> $GITHUB_ENV
-
-      - name: Set Image Tag
-        run: |
-          echo "IMAGE_TAG=stable" >> $GITHUB_ENV
+          echo "FRAPPE_BRANCH=$FRAPPE_BRANCH" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
         with:

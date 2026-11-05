@@ -25,6 +25,7 @@
         </button>
         <ComboboxInput
           ref="inputRef"
+          :display-value="() => commandPaletteQuery"
           :placeholder="__('Search records or type a command...')"
           class="w-full border-none bg-transparent py-3.5 pe-4 ps-3 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
           autofocus

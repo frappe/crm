@@ -125,6 +125,8 @@ function onMapped(mappings) {
   })
   withBusy(async () => {
     await saveMapping(mappings)
+    // a fully successful import can't be retried without duplicating its rows
+    if (result.value?.status !== 'Success') result.value = null
     stage.value = 'review'
   })
 }

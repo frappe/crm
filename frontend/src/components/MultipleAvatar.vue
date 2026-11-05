@@ -17,7 +17,7 @@
           />
           <AvailabilityDot
             :user="avatars[0].name"
-            class="absolute -bottom-px -right-px ring-2 ring-[--surface-base]"
+            class="absolute bottom-0 right-0 ring-2 ring-[--surface-base]"
           />
         </span>
         <div class="truncate" :class="labelClass">{{ avatars[0].label }}</div>
@@ -42,7 +42,7 @@
         />
         <AvailabilityDot
           :user="avatar.name"
-          class="absolute -bottom-px -right-px ring-2 ring-[--surface-base]"
+          class="absolute bottom-0 right-0 ring-2 ring-[--surface-base]"
         />
       </span>
     </Tooltip>

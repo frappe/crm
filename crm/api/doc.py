@@ -99,11 +99,16 @@ def get_filterable_fields(doctype: str):
 		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
 	]
 
+	# nested set doctypes, found the same way frappe's boot builds `nested_set_doctypes`;
+	# Link fields to them can use the "descendants of" filter operators
+	tree_doctypes = set(frappe.get_all("DocField", {"fieldname": "lft"}, pluck="parent"))
+
 	for field in standard_fields + meta.get("fields", []):
 		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
 			field["name"] = field.get("fieldname")
 			field["label"] = _(field.get("label"))
 			field["value"] = field.get("fieldname")
+			field["is_tree"] = field.get("fieldtype") == "Link" and field.get("options") in tree_doctypes
 			fields.append(field)
 
 	return fields
@@ -253,6 +258,41 @@ def update_in_standard_filter(fieldname, doctype, value):
 		)
 
 
+def apply_comments_filter(doctype, filters):
+	"""Match the Comments filter against the Comment doctype instead of `_comments`.
+
+	`_comments` is a cache Frappe keeps on the parent doc and it only stores the
+	first ~100 characters of each comment, so `like` on it misses later text.
+	"""
+	value = filters.get("_comments")
+	if not isinstance(value, list | tuple) or len(value) != 2:
+		return
+
+	operator, text = str(value[0]).lower(), value[1]
+	if operator not in ("like", "not like"):
+		return
+
+	commented = frappe.get_all(
+		"Comment",
+		filters={"reference_doctype": doctype, "comment_type": "Comment", "content": ["like", text]},
+		pluck="reference_name",
+		distinct=True,
+		limit_page_length=0,
+	)
+	filters.pop("_comments")
+
+	if "name" not in filters:
+		filters["name"] = ["in" if operator == "like" else "not in", commented]
+		return
+
+	# a "name" filter is already set, keep it and combine both
+	scoped = set(
+		frappe.get_all(doctype, filters={"name": filters["name"]}, pluck="name", limit_page_length=0)
+	)
+	names = scoped & set(commented) if operator == "like" else scoped - set(commented)
+	filters["name"] = ["in", list(names)]
+
+
 @frappe.whitelist()
 def get_data(
 	doctype: str,
@@ -295,6 +335,8 @@ def get_data(
 	if default_filters:
 		default_filters = frappe.parse_json(default_filters)
 		filters.update(default_filters)
+
+	apply_comments_filter(doctype, filters)
 
 	is_default = True
 	data = []
@@ -610,7 +652,7 @@ def get_records_based_on_order(doctype, rows, filters, page_length, order):
 
 
 @frappe.whitelist()
-def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_permissions: bool = False):
+def remove_assignments(doctype: str, name: str, assignees: str | list):
 	assignees = frappe.parse_json(assignees)
 
 	if not assignees:
@@ -623,7 +665,6 @@ def remove_assignments(doctype: str, name: str, assignees: str | list, ignore_pe
 			todo=None,
 			assign_to=assign_to,
 			status="Cancelled",
-			ignore_permissions=ignore_permissions,
 		)
 
 
@@ -637,6 +678,11 @@ def add_seen(doctype: str, name: str):
 
 @frappe.whitelist()
 def get_assigned_users(doctype: str, name: str | int, default_assigned_to: str | None = None):
+	frappe.get_doc(doctype, name).check_permission("read")
+	return get_assignees(doctype, name, default_assigned_to)
+
+
+def get_assignees(doctype, name, default_assigned_to=None):
 	assigned_users = frappe.get_all(
 		"ToDo",
 		fields=["allocated_to"],
@@ -712,6 +758,15 @@ def get_linked_docs_of_document(doctype: str, docname: str):
 	except frappe.DoesNotExistError:
 		return []
 
+	doc.check_permission("read")
+	return [
+		d
+		for d in get_linked_docs_data(doc)
+		if frappe.has_permission(d["reference_doctype"], "read", d["reference_docname"])
+	]
+
+
+def get_linked_docs_data(doc):
 	linked_docs = get_linked_docs(doc)
 	dynamic_linked_docs = get_dynamic_linked_docs(doc)
 
@@ -850,12 +905,16 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 		frappe.throw(_("Items must be a list"))
 
 	for doc in items:
+		if frappe.db.exists(doctype, doc):
+			frappe.get_doc(doctype, doc).check_permission("delete")
+
+	for doc in items:
 		try:
 			if not frappe.db.exists(doctype, doc):
 				frappe.log_error(f"Document {doctype} {doc} does not exist", "Bulk Delete Error")
 				continue
 
-			linked_docs = get_linked_docs_of_document(doctype, doc)
+			linked_docs = get_linked_docs_data(frappe.get_doc(doctype, doc))
 			for linked_doc in linked_docs:
 				if not linked_doc.get("reference_doctype") or not linked_doc.get("reference_docname"):
 					continue

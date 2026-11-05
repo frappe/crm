@@ -8,7 +8,7 @@
     <AvailabilityDot
       v-if="!hideStatus"
       :user="user"
-      class="absolute -bottom-px -right-px ring-2 ring-[--surface-base]"
+      class="absolute bottom-0 right-0 ring-2 ring-[--surface-base]"
       :class="dotSize"
     />
   </span>
