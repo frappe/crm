@@ -58,6 +58,11 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, 'src'),
+        // ahead of '@framework/ui': the island lives outside ui/src
+        '@framework/ui/island': path.resolve(
+          import.meta.dirname,
+          '../../frappe/ui/island',
+        ),
         // point at the package src dir (not index.ts) so subpath imports like
         // `@whatsapp/ui/components/Messages` resolve to a real file
         '@whatsapp/ui': path.resolve(
