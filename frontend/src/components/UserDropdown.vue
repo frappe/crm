@@ -126,18 +126,21 @@ function dropdownItemObj(item) {
   return {
     icon: _item.icon,
     label: __(_item.label),
-    onClick: () =>
-      window.open(
-        safeRoute(_item.route),
-        _item.open_in_new_window ? '_blank' : '',
-      ),
+    onClick: () => {
+      const route = safeRoute(_item.route)
+      if (route) window.open(route, _item.open_in_new_window ? '_blank' : '')
+    },
   }
 }
 
 function safeRoute(route) {
-  if (typeof route !== 'string') return ''
-  if (/^\s*(javascript|data|vbscript):/i.test(route)) return ''
-  return route
+  if (typeof route !== 'string' || !route) return ''
+  try {
+    const url = new URL(route, window.location.origin)
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : ''
+  } catch {
+    return ''
+  }
 }
 
 function getStandardItem(item) {
