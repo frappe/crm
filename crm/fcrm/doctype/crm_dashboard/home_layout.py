@@ -14,7 +14,6 @@ DOCTYPE_OPTIONS = ("Lead", "Deal", "Both")
 PERIOD_DAYS = {"last_week": 7, "last_month": 30, "last_3_months": 90}
 DEFAULT_PERIOD = "last_month"
 GRID_COLUMNS = 20
-MAX_WIDGETS = 3
 
 
 @dataclass(frozen=True)
@@ -133,9 +132,6 @@ def validate_layout(layout, role: str) -> list:
 	if not isinstance(layout, list):
 		frappe.throw(_("Home layout must be a list of widgets"))
 
-	if len(layout) > MAX_WIDGETS:
-		frappe.throw(_("Home can hold up to {0} widgets").format(MAX_WIDGETS))
-
 	seen = set()
 	items = []
 	for item in layout:
@@ -152,12 +148,11 @@ def validate_layout(layout, role: str) -> list:
 
 
 def allowed_items(layout: list, role: str) -> list:
-	allowed = [
+	return [
 		_fit_minimum(item)
 		for item in layout
 		if item.get("name") in WIDGETS and (role == "manager" or not WIDGETS[item["name"]].manager_only)
 	]
-	return allowed[:MAX_WIDGETS]
 
 
 # Layouts saved before a widget had a minimum size still render, at that size.

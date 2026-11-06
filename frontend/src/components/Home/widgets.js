@@ -8,8 +8,6 @@ const lazy = (name) =>
 // border 2 + title and subtitle 75 + column header 40 + 6 rows (245) + footer 32 = 394 ≤ 10 × 42 − 16.
 // Team replies waiting has five columns, so it defaults to full width. My tasks is 15 × 8 with 4 rows and can shrink to
 // 12 columns, with two cards (4 rows high each) stacked beside it to match its height.
-export const MAX_WIDGETS = 3
-
 export const widgets = [
   {
     key: 'tasks',

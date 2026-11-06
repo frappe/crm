@@ -1,5 +1,4 @@
 import {
-  MAX_WIDGETS,
   catalog,
   isRegistered,
   newItem,
@@ -47,16 +46,12 @@ export function useHomeLayout() {
     },
   })
 
-  const full = computed(() => items.value.length >= MAX_WIDGETS)
-
   const availableWidgets = computed(() =>
-    full.value
-      ? []
-      : catalog({
-          manager:
-            target.value === 'mine' ? isManager() : target.value === 'manager',
-          items: items.value,
-        }),
+    catalog({
+      manager:
+        target.value === 'mine' ? isManager() : target.value === 'manager',
+      items: items.value,
+    }),
   )
 
   const dirty = computed(
@@ -131,7 +126,6 @@ export function useHomeLayout() {
     dirty,
     visibleItems,
     availableWidgets,
-    full,
     load,
     edit,
     cancel,

@@ -143,7 +143,6 @@ const {
   dirty,
   visibleItems,
   availableWidgets,
-  full,
   load,
   edit,
   cancel,
@@ -190,17 +189,7 @@ const widgetMenu = computed(() => {
     onClick: () => addWidget(widget),
   }))
   return [
-    {
-      group: __('Widgets'),
-      options: full.value
-        ? [
-            {
-              label: __('Home holds 3 widgets. Remove one to add another.'),
-              disabled: true,
-            },
-          ]
-        : widgets,
-    },
+    ...(widgets.length ? [{ group: __('Widgets'), options: widgets }] : []),
     {
       group: __('Layout'),
       hideLabel: true,

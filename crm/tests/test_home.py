@@ -208,17 +208,6 @@ class TestHomeLayout(IntegrationTestCase):
 		self.assertGreaterEqual(tasks["w"], WIDGETS["tasks"].min_w)
 		self.assertGreaterEqual(tasks["h"], WIDGETS["tasks"].min_h)
 
-	def test_home_holds_three_widgets(self):
-		frappe.set_user(AGENT)
-		four = [widget(name) for name in ("leads", "deals", "no_next_step", "recently_opened")]
-		with self.assertRaises(frappe.ValidationError):
-			save_layout(four)
-
-		save_layout(four[:3])
-		name = frappe.db.get_value("CRM Dashboard", {"user": AGENT})
-		frappe.db.set_value("CRM Dashboard", name, "layout", json.dumps(four))
-		self.assertEqual(len(get_layout()["layout"]), 3)
-
 	def test_manager_default_has_team_workload_beside_two_stacked_cards(self):
 		layout = {item["name"]: item["layout"] for item in manager_default()}
 		positions = {
