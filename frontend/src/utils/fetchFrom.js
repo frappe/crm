@@ -50,11 +50,12 @@ export function getSourceFieldnames(fields) {
 
 /**
  * Whether a field is currently filled by a fetch and should not be edited.
- * Desk locks a fetched field only while its link has a value, see
- * read_only_because_of_fetch_from in
+ * Desk locks a fetched field only while its link has a value, and never locks
+ * a `fetch_if_empty` field, see read_only_because_of_fetch_from in
  * frappe/public/js/frappe/form/controls/base_input.js
  */
 export function isFetchedFromLink(field, doc) {
+  if (field.fetch_if_empty) return false
   const link = getFetchSource(field.fetch_from)?.link
   return Boolean(link && doc[link])
 }
