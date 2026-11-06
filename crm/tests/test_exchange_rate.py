@@ -7,6 +7,7 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 
 from crm.api.exchange_rate import (
+	_fetch_from_allratestoday,
 	_fetch_from_exchangerate_api,
 	_fetch_from_exchangerate_host,
 	_fetch_from_fawaz_api,
@@ -15,7 +16,7 @@ from crm.api.exchange_rate import (
 )
 
 
-def _make_response(ok: bool, json_data: dict) -> MagicMock:
+def _make_response(ok: bool, json_data: dict | list) -> MagicMock:
 	"""Helper: build a fake requests.Response."""
 	mock = MagicMock()
 	mock.ok = ok
@@ -148,6 +149,35 @@ class TestFetchFromExchangeRateApi(FrappeTestCase):
 		settings = _mock_settings("exchangerate-api", access_key="bad_key")
 
 		rate = _fetch_from_exchangerate_api(settings, "USD", "INR")
+
+		self.assertIsNone(rate)
+
+
+class TestFetchFromAllRatesToday(FrappeTestCase):
+	@patch("crm.api.exchange_rate.requests.get")
+	def test_returns_rate_on_success(self, mock_get):
+		mock_get.return_value = _make_response(
+			True, [{"source": "USD", "target": "INR", "rate": 83.5, "time": "2026-10-22T12:00:00Z"}]
+		)
+		settings = _mock_settings("allratestoday", access_key="test_key")
+
+		rate = _fetch_from_allratestoday(settings, "USD", "INR")
+
+		self.assertEqual(rate, 83.5)
+		self.assertEqual(mock_get.call_args.kwargs["headers"], {"Authorization": "Bearer test_key"})
+
+	def test_raises_when_access_key_missing(self):
+		settings = _mock_settings("allratestoday", access_key="")
+
+		with self.assertRaises(frappe.exceptions.ValidationError):
+			_fetch_from_allratestoday(settings, "USD", "INR")
+
+	@patch("crm.api.exchange_rate.requests.get")
+	def test_returns_none_when_response_not_ok(self, mock_get):
+		mock_get.return_value = _make_response(False, {"error": "Invalid API key"})
+		settings = _mock_settings("allratestoday", access_key="bad_key")
+
+		rate = _fetch_from_allratestoday(settings, "USD", "INR")
 
 		self.assertIsNone(rate)
 
