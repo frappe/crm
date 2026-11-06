@@ -20,6 +20,7 @@ class FCRMSettings(Document):
 
 	if TYPE_CHECKING:
 		from frappe.desk.doctype.event_notifications.event_notifications import EventNotifications
+		from frappe.core.doctype.has_role.has_role import HasRole
 		from frappe.types import DF
 
 		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
@@ -41,6 +42,7 @@ class FCRMSettings(Document):
 			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
 		]
 		update_timestamp_on_new_communication: DF.Check
+		view_all_roles: DF.TableMultiSelect[HasRole]
 	# end: auto-generated types
 
 	@frappe.whitelist()

@@ -14,6 +14,16 @@ def hierarchy_enabled() -> bool:
 	return bool(frappe.db.get_single_value("FCRM Settings", "enable_sales_hierarchy"))
 
 
+# ptypes a non-Sales Manager "view all" role may exercise on records it does not own
+_VIEW_ALL_PTYPES = ("read", "select")
+
+
+def _view_all_roles(roles) -> set[str]:
+	"""Roles of the user that FCRM Settings > "Roles that see all Leads and Deals" lists."""
+	settings = frappe.get_cached_doc("FCRM Settings")  # invalidated on save
+	return {d.role for d in settings.view_all_roles}.intersection(roles)
+
+
 def _permission_query_conditions(user: str | None, doctype: str):
 	if not user:
 		user = frappe.session.user
@@ -27,8 +37,8 @@ def _permission_query_conditions(user: str | None, doctype: str):
 
 	in_tree = hierarchy_enabled() and _in_hierarchy(user)
 
-	# Sales Manager outside the tree retains the default ie sees everything
-	if "Sales Manager" in roles and not in_tree:
+	# A view-all role outside the tree sees everything (Sales Manager by default)
+	if _view_all_roles(roles) and not in_tree:
 		return ""
 
 	owner_field = _OWNER_FIELD[doctype]
@@ -85,8 +95,13 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 		return True
 
 	in_tree = hierarchy_enabled() and _in_hierarchy(user)
-	if "Sales Manager" in roles and not in_tree:
-		return True
+	view_all = _view_all_roles(roles)
+	if view_all and not in_tree:
+		# Sales Manager keeps its historical bypass for every ptype. Any other
+		# role listed in the setting only lifts the row filter for read/select;
+		# writes still need ownership or assignment (plus DocPerm).
+		if "Sales Manager" in view_all or ptype in _VIEW_ALL_PTYPES:
+			return True
 
 	conditions = _permission_query_conditions(user, doctype)
 	DT = frappe.qb.DocType(doctype)
