@@ -26,6 +26,31 @@ add_to_apps_screen = [
 
 get_site_info = "crm.activation.get_site_info"
 
+# CRM setup actions for Flow's assistant, used by skills/crm-onboarding
+flow_tools = [
+	"crm.flow_tools.setup_status",
+	"crm.flow_tools.publish_web_form",
+	"crm.flow_tools.add_fields",
+	"crm.flow_tools.show_fields",
+	"crm.flow_tools.connect_email",
+	"crm.flow_tools.convert_lead",
+	"crm.flow_tools.invite_team",
+	"crm.flow_tools.assign_new_leads",
+	"crm.flow_tools.set_currency",
+	"crm.flow_tools.clear_sample_data",
+	"crm.flow_tools.add_automation",
+	"crm.flow_tools.my_day",
+	"crm.flow_tools.sales_health",
+	"crm.flow_tools.send_email",
+	"crm.flow_tools.add_note",
+	"crm.flow_tools.add_task",
+	"crm.flow_tools.update_task",
+	"crm.flow_tools.find_records",
+]
+
+# Flow leads a new chat with "Set up my CRM" only while setup is unfinished
+flow_starter_conditions = {"crm-onboarding": "crm.flow_tools.setup_unfinished"}
+
 export_python_type_annotations = True
 require_type_annotated_api_methods = True
 

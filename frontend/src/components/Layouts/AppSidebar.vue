@@ -142,6 +142,16 @@
             </template>
           </SidebarItem>
           <SidebarItem
+            v-if="!mobile && flowInstalled"
+            :label="__('Flow')"
+            :active="assistantOpen"
+            @click="assistantOpen = !assistantOpen"
+          >
+            <template #prefix>
+              <LucideSparkles class="size-4 text-ink-gray-7" />
+            </template>
+          </SidebarItem>
+          <SidebarItem
             v-if="isOnboardingStepsCompleted"
             :label="__('Help')"
             @click="toggleHelpModal"
@@ -189,6 +199,7 @@
 
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
+import LucideSparkles from '~icons/lucide/sparkles'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
@@ -223,6 +234,8 @@ import { sessionStore } from '@/stores/session'
 import {
   showSettings,
   activeSettingsPage,
+  settingsRecord,
+  settingsOpenCount,
   mobileSidebarOpened,
   closeMobileSidebar,
 } from '@/composables/settings'
@@ -244,6 +257,11 @@ import { useTelemetry } from '@framework/ui/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
+import {
+  assistantOpen,
+  checkFlowInstalled,
+  flowInstalled,
+} from '@/composables/assistant'
 import { useCrmOnboarding } from '@/composables/onboarding'
 import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -254,7 +272,24 @@ const props = defineProps({
 
 const route = useRoute()
 
+// ?settings=<English page label> opens Settings on that page, e.g. ?settings=Accounts, and
+// &record=<name> opens that record on it
+watch(
+  () => route.query.settings,
+  (page) => {
+    if (!page) return
+    showSettings.value = true
+    activeSettingsPage.value = __(page)
+    settingsRecord.value = route.query.record || ''
+    settingsOpenCount.value++
+    const { settings, record, ...query } = route.query
+    router.replace({ query })
+  },
+  { immediate: true },
+)
+
 const { getPinnedViews, getPublicViews } = viewsStore()
+checkFlowInstalled()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
@@ -385,6 +420,11 @@ function onNotificationsClick(event) {
     toggleNotificationPanel()
   }
 }
+
+// the assistant and the getting-started panel share the right edge
+watch(assistantOpen, (open) => {
+  if (open) showHelpModal.value = false
+})
 
 function toggleHelpModal() {
   showHelpModal.value = minimize.value ? true : !showHelpModal.value
