@@ -120,9 +120,11 @@ def accept_invitation(key: str | None = None):
 			# which logs them in and redirects to /crm once the password is set
 			user = frappe.get_doc("User", invitation.email)
 			frappe.local.response["location"] = user._reset_password()
-		else:
-			frappe.local.login_manager.login_as(invitation.email)
+		elif frappe.session.user == invitation.email:
 			frappe.local.response["location"] = "/crm"
+		else:
+			# an existing user must sign in as themselves; the key alone grants no session
+			frappe.local.response["location"] = "/login"
 
 
 @frappe.whitelist()
