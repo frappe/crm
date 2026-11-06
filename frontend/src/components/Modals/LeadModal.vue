@@ -60,7 +60,7 @@ import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
-import { Dialog, createResource } from 'frappe-ui'
+import { Dialog, call, createResource, toast } from 'frappe-ui'
 import { useDocument } from '@/data/document'
 import { computed, onMounted, ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -170,6 +170,7 @@ async function createNewLead() {
         completeStep('create_first_lead', () => {
           localStorage.setItem('firstLead' + user, data.name)
         })
+        warnAboutDuplicates(data.name)
       },
       onError(err) {
         isLeadCreating.value = false
@@ -181,6 +182,17 @@ async function createNewLead() {
       },
     },
   )
+}
+
+function warnAboutDuplicates(leadName) {
+  // best effort: the lead is already created, so a failed check stays silent
+  call('crm.api.lead.find_duplicate_leads', { lead_name: leadName })
+    .then((duplicates) => {
+      if (!duplicates.length) return
+      const names = duplicates.map((d) => d.lead_name || d.name).join(', ')
+      toast.warning(__('Possible duplicate with: {0}', [names]))
+    })
+    .catch(() => {})
 }
 
 function openQuickEntryModal() {

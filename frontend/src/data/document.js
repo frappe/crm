@@ -50,6 +50,13 @@ export function unmarkDocumentAsDeleted(doctype, docname) {
   intentionallyDeletedDocs.delete(`${doctype}:${docname}`)
 }
 
+export function reloadDocument(doctype, docname) {
+  if (!doctype || !docname) return
+  documentsCache[doctype]?.[docname]?.reload?.()
+  assigneesCache[doctype]?.[docname]?.reload?.()
+  permissionsCache[doctype]?.[docname]?.reload?.()
+}
+
 export function useDocument(doctype, docname, resourceOverrides = {}) {
   if (typeof docname === 'number') docname = String(docname)
   const { setupScript, scripts } = getScript(doctype)

@@ -16,6 +16,7 @@
             :size="size"
           />
           <AvailabilityDot
+            v-if="!hideStatus"
             :user="avatars[0].name"
             class="absolute bottom-0 right-0 ring-2 ring-[--surface-base]"
           />
@@ -41,6 +42,7 @@
           :size="size"
         />
         <AvailabilityDot
+          v-if="!hideStatus"
           :user="avatar.name"
           class="absolute bottom-0 right-0 ring-2 ring-[--surface-base]"
         />
@@ -57,6 +59,7 @@ const props = defineProps({
   avatars: { type: Array, default: () => [] },
   size: { type: String, default: 'md' },
   labelClass: { type: String, default: '' },
+  hideStatus: { type: Boolean, default: false },
 })
 const reverseAvatars = computed(() => [...props.avatars].reverse())
 </script>

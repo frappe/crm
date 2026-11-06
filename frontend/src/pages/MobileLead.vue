@@ -164,6 +164,7 @@ import { isMobileView } from '@/composables/settings'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useVisitedRecords } from '@/composables/useVisitedRecords'
+import { useMergedLeadRedirect } from '@/composables/useMergedLeadRedirect'
 import {
   createResource,
   Dropdown,
@@ -201,6 +202,8 @@ const {
   scripts,
   error,
 } = useDocument('CRM Lead', props.leadId)
+
+useMergedLeadRedirect(() => document.doc, props.leadId)
 
 const doc = computed(() => document.doc || {})
 const isLeadConversionDisabled = computed(
