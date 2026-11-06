@@ -58,6 +58,7 @@ import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { useCloudSettings } from '@/composables/cloudSettings'
 import CreditCardIcon from '~icons/lucide/credit-card'
 import { spriteIcon } from '@/utils/spriteIcon'
+import { sanitizeHTML } from '@/utils'
 import { createResource, Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
@@ -114,7 +115,7 @@ function dropdownItemObj(item) {
   let _item = JSON.parse(JSON.stringify(item))
   let icon = _item.icon || 'external-link'
   if (typeof icon === 'string' && icon.startsWith('<svg')) {
-    icon = markRaw(h('div', { innerHTML: icon }))
+    icon = markRaw(h('div', { innerHTML: sanitizeHTML(icon) }))
   }
   _item.icon = spriteIcon(icon)
 
@@ -126,8 +127,17 @@ function dropdownItemObj(item) {
     icon: _item.icon,
     label: __(_item.label),
     onClick: () =>
-      window.open(_item.route, _item.open_in_new_window ? '_blank' : ''),
+      window.open(
+        safeRoute(_item.route),
+        _item.open_in_new_window ? '_blank' : '',
+      ),
   }
+}
+
+function safeRoute(route) {
+  if (typeof route !== 'string') return ''
+  if (/^\s*(javascript|data|vbscript):/i.test(route)) return ''
+  return route
 }
 
 function getStandardItem(item) {
