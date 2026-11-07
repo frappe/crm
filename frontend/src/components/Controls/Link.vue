@@ -23,6 +23,7 @@
       :disabled="attrs.disabled"
       :placement="attrs.placement"
       :filterable="false"
+      :loading="isSearching"
     >
       <template #target="{ open, togglePopover }">
         <slot name="target" v-bind="{ open, togglePopover }" />
@@ -201,6 +202,18 @@ const groupedOptions = createResource({
   method: 'GET',
   params: searchParams(text.value, props.filters),
   transform: toOptions,
+})
+
+// Until the search for the current text has answered, an empty list says nothing
+// about the results. `text` only catches up with the query after the debounce.
+const isSearching = computed(() => {
+  if (!props.doctype) return false
+  return (
+    (autocomplete.value?.query || '') !== text.value ||
+    options.loading ||
+    groupedOptions.loading ||
+    (!options.data && !options.error)
+  )
 })
 
 const autocompleteOptions = computed(() => {
