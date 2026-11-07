@@ -144,6 +144,7 @@ permission_query_conditions = {
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
+	"FCRM Note": "crm.fcrm.doctype.fcrm_note.fcrm_note.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -151,6 +152,7 @@ has_permission = {
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.has_permission",
+	"FCRM Note": "crm.fcrm.doctype.fcrm_note.fcrm_note.has_permission",
 }
 
 # Automation Engine
