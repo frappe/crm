@@ -10,6 +10,7 @@ from frappe.permissions import add_permission, update_permission_property
 from crm.domain_enrichment.install import seed_default_rules_and_mappings
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
+from crm.permissions.data_import import CRM_IMPORT_DOCTYPES
 
 
 def before_install():
@@ -683,7 +684,6 @@ def create_assignment_rule_custom_fields():
 		frappe.clear_cache(doctype="Assignment Rule")
 
 
-CRM_IMPORT_DOCTYPES = ("CRM Lead", "CRM Deal", "CRM Organization", "CRM Task", "CRM Call Log")
 DATA_IMPORT_PERMS = {
 	"Sales Manager": ("write", "create", "delete"),
 	"Sales User": ("write", "create"),
