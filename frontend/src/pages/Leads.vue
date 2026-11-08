@@ -23,7 +23,7 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
-    :filters="{ converted: 0 }"
+    :filters="{ converted: 0, is_duplicate: 0 }"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
       groupSummary: true,

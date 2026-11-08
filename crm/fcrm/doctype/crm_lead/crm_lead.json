@@ -45,6 +45,8 @@
   "converted",
   "lead_score",
   "lead_temperature",
+  "is_duplicate",
+  "merged_into",
   "products_tab",
   "products",
   "section_break_ggwh",
@@ -239,6 +241,22 @@
    "in_standard_filter": 1,
    "label": "Lead Temperature",
    "options": "\nCold\nWarm\nHot"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_duplicate",
+   "fieldtype": "Check",
+   "label": "Is Duplicate",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "merged_into",
+   "fieldtype": "Link",
+   "label": "Merged Into",
+   "no_copy": 1,
+   "options": "CRM Lead",
+   "read_only": 1
   },
   {
    "fieldname": "person_tab",
@@ -482,8 +500,14 @@
  "grid_page_length": 50,
  "image_field": "image",
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-08-10 05:00:00.000000",
+ "links": [
+  {
+   "group": "Merged Leads",
+   "link_doctype": "CRM Lead",
+   "link_fieldname": "merged_into"
+  }
+ ],
+ "modified": "2026-10-22 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

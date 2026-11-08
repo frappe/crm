@@ -201,6 +201,9 @@ def find_by_phone(phone_number: str) -> list[dict]:
 
 	Not permission-filtered: a caller exposing this over HTTP must check access itself.
 	"""
+	# crm_lead imports this module through crm.api.whatsapp
+	from crm.fcrm.doctype.crm_lead.crm_lead import existing_deal, resolve_merged_lead
+
 	target = normalize_phone(phone_number)
 	digits = phone_search_digits(phone_number)
 	if not target or not digits:
@@ -230,6 +233,24 @@ def find_by_phone(phone_number: str) -> list[dict]:
 			None,
 		)
 		if matching_phone:
+			# A merged lead's number belongs to the lead it was merged into, or to the
+			# deal that lead became once converted.
+			live_name = resolve_merged_lead(lead.name)
+			if live_name != lead.name:
+				lead = frappe.db.get_value(
+					"CRM Lead", live_name, ["name", "lead_name", "image", "converted"], as_dict=True
+				)
+				deal = lead.converted and existing_deal(lead.name)
+				if deal:
+					add(
+						deals,
+						"CRM Deal",
+						deal,
+						title=lead.lead_name,
+						image=lead.image,
+						matching_phone=matching_phone,
+					)
+					continue
 			add(
 				leads,
 				"CRM Lead",
