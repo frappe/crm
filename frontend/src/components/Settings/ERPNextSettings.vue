@@ -125,7 +125,6 @@
             class="-mx-2"
           >
             <div
-              v-if="erpnextCRMSettingsResource.isERPNextInstalled.data"
               class="flex gap-5 border-b border-outline-elevation-2 px-2 mb-3"
               role="tablist"
             >
@@ -262,6 +261,25 @@
                 >
                   {{ __('Sync Now') }}
                 </Button>
+              </div>
+              <div class="h-px border-t border-outline-elevation-2" />
+              <div class="flex items-center justify-between py-3 px-2 gap-4">
+                <div class="flex flex-col">
+                  <div class="text-p-base-medium text-ink-gray-7">
+                    {{ __('Sync ERPNext Customers') }}
+                  </div>
+                  <div class="text-p-sm text-ink-gray-5">
+                    {{
+                      __(
+                        'Automatically create and update CRM organizations from ERPNext company customers.',
+                      )
+                    }}
+                  </div>
+                </div>
+                <Switch
+                  v-model="erpnextCRMSettingsResource.doc.sync_customers"
+                  size="sm"
+                />
               </div>
               <div class="h-px border-t border-outline-elevation-2" />
               <div class="flex items-center justify-between py-3 px-2">
@@ -422,6 +440,17 @@
                 </div>
               </div>
             </div>
+            <CustomerReconciliation
+              v-if="activeSettingsTab === 'customers'"
+              :settings-dirty="isDirty"
+              :erpnext-site-url="
+                erpnextCRMSettingsResource.isERPNextInstalled.data
+                  ? ''
+                  : erpnextCRMSettingsResource.originalDoc?.erpnext_site_url ||
+                    ''
+              "
+              class="px-2"
+            />
           </div>
         </div>
         <!--  Disabled state -->
@@ -469,6 +498,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import CustomerReconciliation from './CustomerReconciliation.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
@@ -516,10 +546,13 @@ const erpnextCRMSettingsResource = createDocumentResource({
 const activeSettingsTab = ref('general')
 const activeProductSyncLogTab = ref('products')
 
-const settingsTabs = [
+const settingsTabs = computed(() => [
   { name: 'general', label: 'General Settings' },
-  { name: 'logs', label: 'Logs' },
-]
+  ...(erpnextCRMSettingsResource.isERPNextInstalled.data
+    ? [{ name: 'logs', label: 'Logs' }]
+    : []),
+  { name: 'customers', label: 'Customers' },
+])
 
 const productSyncStatus = createResource({
   url: 'crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.get_product_sync_status',
@@ -621,6 +654,7 @@ const isDirty = computed(() => {
     'create_customer_on_status_change',
     'deal_status',
     'sync_products',
+    'sync_customers',
   ]
 
   return fields.some((field) => oldData[field] !== newData[field])
@@ -637,6 +671,7 @@ const saveSettings = async () => {
       create_customer_on_status_change:
         erpnextCRMSettingsResource.doc.create_customer_on_status_change,
       sync_products: erpnextCRMSettingsResource.doc.sync_products,
+      sync_customers: erpnextCRMSettingsResource.doc.sync_customers,
       erpnext_company: erpnextCRMSettingsResource.doc.erpnext_company,
       deal_status: erpnextCRMSettingsResource.doc.deal_status,
       erpnext_site_url: erpnextCRMSettingsResource.doc.erpnext_site_url,
