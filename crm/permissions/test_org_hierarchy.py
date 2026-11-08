@@ -6,6 +6,7 @@ from frappe.tests import IntegrationTestCase
 from frappe.utils.nestedset import rebuild_tree
 
 from crm.api.activities import get_activities
+from crm.install import add_default_view_all_roles
 from crm.permissions.org_hierarchy import (
 	get_lead_permission_query_conditions,
 	has_deal_permission,
@@ -41,6 +42,7 @@ class TestOrgHierarchy(IntegrationTestCase):
 		settings = frappe.get_single("FCRM Settings")
 		settings.enable_sales_hierarchy = 1
 		settings.save(ignore_permissions=True)
+		add_default_view_all_roles()
 
 	@classmethod
 	def tearDownClass(cls):
@@ -51,6 +53,8 @@ class TestOrgHierarchy(IntegrationTestCase):
 
 	def tearDown(self):
 		frappe.db.rollback(save_point="test_org_hierarchy")
+		# rollback does not invalidate the cached settings doc
+		frappe.clear_document_cache("FCRM Settings", "FCRM Settings")
 
 	# ------------------------------------------------------------------
 	# hierarchy_enabled
@@ -199,6 +203,39 @@ class TestOrgHierarchy(IntegrationTestCase):
 		finally:
 			settings.enable_sales_hierarchy = 1
 			settings.save(ignore_permissions=True)
+
+	# ------------------------------------------------------------------
+	# Configurable view-all roles
+	# ------------------------------------------------------------------
+
+	def _set_view_all_roles(self, roles):
+		settings = frappe.get_single("FCRM Settings")
+		settings.set("view_all_roles", [])
+		for role in roles:
+			settings.append("view_all_roles", {"role": role})
+		settings.save(ignore_permissions=True)
+
+	def test_custom_view_all_role_reads_any_lead_but_cannot_write(self):
+		make_user("reader@hier.test", roles=["Sales User"])
+		if not frappe.db.exists("Role", "Lead Reader"):
+			frappe.get_doc({"doctype": "Role", "role_name": "Lead Reader"}).insert(ignore_permissions=True)
+		frappe.get_doc("User", "reader@hier.test").add_roles("Lead Reader")
+		lead = make_lead("rep1@hier.test")
+		self.assertFalse(has_lead_permission(lead, "read", "reader@hier.test"))
+
+		self._set_view_all_roles(["Sales Manager", "Lead Reader"])
+		self.assertTrue(has_lead_permission(lead, "read", "reader@hier.test"))
+		self.assertFalse(has_lead_permission(lead, "write", "reader@hier.test"))
+		self.assertFalse(get_lead_permission_query_conditions("reader@hier.test"))
+
+	def test_removing_sales_manager_from_view_all_roles_restricts_it(self):
+		make_user("solo.mgr@hier.test", roles=["Sales Manager"])
+		lead = make_lead("rep1@hier.test")
+		self.assertTrue(has_lead_permission(lead, "read", "solo.mgr@hier.test"))
+
+		self._set_view_all_roles([])
+		self.assertFalse(has_lead_permission(lead, "read", "solo.mgr@hier.test"))
+		self.assertTrue(get_lead_permission_query_conditions("solo.mgr@hier.test"))
 
 
 def make_user(email, roles=None):
