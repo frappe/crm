@@ -27,6 +27,18 @@ inputs:
 runs:
     using: composite
     steps:
+        - name: Install app under test
+          shell: bash
+          working-directory: ${{ inputs.bench-path }}
+          run: |
+              export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+              export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+              systemctl --user start pilot-mariadb.service
+              # The cached bench never contains this app, so every run installs
+              # fresh PR code. Dependencies were installed during provisioning.
+              pilot get-app "${GITHUB_WORKSPACE}" --branch "${GITHUB_SHA}" --skip-assets
+              pilot install-app "${{ inputs.site }}" "${{ inputs.app }}"
+
         - name: Run Tests
           shell: bash
           working-directory: ${{ inputs.bench-path }}

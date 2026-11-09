@@ -25,6 +25,7 @@ runs:
     using: composite
     steps:
         - name: Setup Python
+          id: python
           uses: actions/setup-python@v6
           with:
               python-version: ${{ inputs.python-version }}
@@ -58,26 +59,30 @@ runs:
               restore-keys: |
                   ${{ runner.os }}-py-deps-
 
-        - name: Cache node modules
-          uses: actions/cache@v4
-          env:
-              cache-name: cache-node-modules
-          with:
-              path: ~/.npm
-              key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: |
-                  ${{ runner.os }}-build-${{ env.cache-name }}-
-                  ${{ runner.os }}-build-
-                  ${{ runner.os }}-
-
-        - name: Get yarn cache directory path
-          id: yarn-cache-dir-path
+        # Keyed on dependency schema, not commits: the app under test is
+        # installed fresh every run, so its code never needs to invalidate this.
+        - name: Compute bench cache key
+          id: bench-key
           shell: bash
-          run: echo "dir=$(yarn cache dir)" >> "${GITHUB_OUTPUT}"
+          env:
+              FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
+              INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
+          run: |
+              git clone --depth 1 --filter=blob:none "https://github.com/frappe/frappe" --branch "${FRAPPE_BRANCH}" ~/frappe-schema
+              frappe=$(git -C ~/frappe-schema ls-tree -r HEAD | grep -E '\.json$|/hooks\.py$|patches\.txt$' | sha256sum | cut -c1-16)
+              rm -rf ~/frappe-schema
+              whatsapp=$(git ls-remote https://github.com/frappe/whatsapp HEAD | cut -c1-12)
+              erpnext=none
+              if [ "$INSTALL_ERPNEXT" = "true" ]; then
+                  erpnext=$(git ls-remote https://github.com/frappe/erpnext "refs/heads/$FRAPPE_BRANCH" | cut -c1-12)
+              fi
+              echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-$frappe-$whatsapp-$erpnext-py${{ steps.python.outputs.python-version }}" >> "$GITHUB_OUTPUT"
 
-        - name: Cache yarn
-          uses: actions/cache@v4
+        - name: Restore Pilot bench
+          id: bench-cache
+          uses: actions/cache/restore@v4
           with:
+<<<<<<< HEAD
               path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
               key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
               restore-keys: |
@@ -114,6 +119,13 @@ runs:
               key: ${{ steps.snapshot-key.outputs.key }}
 =======
 >>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
+=======
+              path: |
+                  ~/pilot/benches
+                  ~/pilot/databases
+                  ~/.config/systemd/user
+              key: ${{ steps.bench-key.outputs.key }}
+>>>>>>> 9d12085 (ci: cache the provisioned pilot bench)
 
         - name: Install system packages
           uses: ./.github/actions/apt-install
@@ -126,5 +138,15 @@ runs:
               TYPE: ${{ inputs.type }}
               INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
               FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
+              PILOT_CACHE_HIT: ${{ steps.bench-cache.outputs.cache-hit }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
 
+        - name: Save Pilot bench
+          if: steps.bench-cache.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v4
+          with:
+              path: |
+                  ~/pilot/benches
+                  ~/pilot/databases
+                  ~/.config/systemd/user
+              key: ${{ steps.bench-key.outputs.key }}
