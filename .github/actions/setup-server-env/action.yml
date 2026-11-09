@@ -50,23 +50,14 @@ runs:
 
         # Keyed on dependency schema, not commits: the app under test is
         # installed fresh every run, so its code never needs to invalidate this.
+        # Stable key on purpose: dependency drift is detected after restore by
+        # comparing each app's checkout against its remote, so schema churn in
+        # frappe no longer forces a full reprovision.
         - name: Compute bench cache key
           id: bench-key
           shell: bash
-          env:
-              FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
-              INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
           run: |
-              git clone --depth 1 --filter=blob:none "https://github.com/frappe/frappe" --branch "${FRAPPE_BRANCH}" ~/frappe-schema
-              frappe=$(git -C ~/frappe-schema ls-tree -r HEAD | grep -E '\.json$|/hooks\.py$|patches\.txt$' | sha256sum | cut -c1-16)
-              rm -rf ~/frappe-schema
-              whatsapp=$(git ls-remote https://github.com/frappe/whatsapp HEAD | cut -c1-12)
-              erpnext=none
-              if [ "$INSTALL_ERPNEXT" = "true" ]; then
-                  erpnext=$(git ls-remote https://github.com/frappe/erpnext "refs/heads/$FRAPPE_BRANCH" | cut -c1-12)
-              fi
-              echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-$frappe-$whatsapp-$erpnext" >> "$GITHUB_OUTPUT"
-              echo "prefix=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-" >> "$GITHUB_OUTPUT"
+              echo "key=${{ runner.os }}-pilot-bench-crm-${{ inputs.frappe-branch }}-py3.14-extdb-erpnext-${{ inputs.install-erpnext }}" >> "$GITHUB_OUTPUT"
 
         - name: Restore Pilot bench
           id: bench-cache
@@ -78,8 +69,6 @@ runs:
                   ~/.config/systemd/user
                   ~/db-snapshot
               key: ${{ steps.bench-key.outputs.key }}
-              restore-keys: |
-                  ${{ steps.bench-key.outputs.prefix }}
 
         - name: Install bench dependencies
           shell: bash
@@ -87,12 +76,11 @@ runs:
               TYPE: ${{ inputs.type }}
               INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
               FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
-              PILOT_CACHE_PRIMARY: ${{ steps.bench-key.outputs.key }}
-              PILOT_CACHE_MATCHED: ${{ steps.bench-cache.outputs.cache-matched-key }}
+              PILOT_CACHE_HIT: ${{ steps.bench-cache.outputs.cache-hit }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
 
         - name: Save Pilot bench
-          if: steps.bench-cache.outputs.cache-hit != 'true' || steps.bench-cache.outputs.cache-matched-key != steps.bench-key.outputs.key
+          if: steps.bench-cache.outputs.cache-hit != 'true'
           uses: actions/cache/save@v4
           with:
               path: |

@@ -5,20 +5,21 @@
 # dumped to ~/db-snapshot on a cache miss; the app under test is installed
 # per-run afterwards, so cached runs always test fresh PR code.
 #
-# Cache hits come in two flavors, told apart by PILOT_CACHE_PRIMARY (the key
-# for this run's dependencies) vs PILOT_CACHE_MATCHED (the key that was found):
-# exact hits restore and go; prefix-fallback hits refresh framework code,
-# reinstall requirements and migrate the restored site forward instead of
-# paying for a full reprovision.
+# The cache key is stable (branch + python + erpnext flag): dependency drift is
+# detected after restore by comparing each app's checkout against its remote.
+# Code-only drift is a `git reset`; schema/requirements drift also reinstalls
+# requirements and migrates the restored site forward. Only a truly absent
+# cache pays for a full provision.
 #
-# Expects from the caller: FRAPPE_BRANCH, INSTALL_ERPNEXT, PILOT_CACHE_PRIMARY,
-# PILOT_CACHE_MATCHED (empty when nothing was restored).
+# Expects from the caller: FRAPPE_BRANCH, INSTALL_ERPNEXT, PILOT_CACHE_HIT
+# ("true" when a bench was restored, anything else provisions from scratch).
 
 set -eo pipefail
 
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
 BENCH_NAME="frappe-bench"
 BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
+PILOT_CACHE_HIT="${PILOT_CACHE_HIT:-}"
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_ROOT_PASSWORD="root"
@@ -41,13 +42,6 @@ pilot -b "$BENCH_NAME" init --skip-frontend
 
 cd "$BENCH_PATH"
 
-# uv is used by pilot/suite CI for the test extras
-pip_apps=(-e "apps/frappe[test]" -e apps/whatsapp)
-if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-  pip_apps+=(-e apps/erpnext)
-fi
-uv pip install --python env/bin/python "${pip_apps[@]}"
-
 pilot get-app https://github.com/frappe/whatsapp --skip-assets
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
   pilot get-app https://github.com/frappe/erpnext --branch "$FRAPPE_BRANCH" --skip-assets
@@ -63,6 +57,12 @@ printf '[client]\nskip-ssl\n' > ~/.my.cnf
 mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
 mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
+# uv is used by pilot/suite CI for the test extras
+pip_apps=(-e "apps/frappe[test]" -e apps/whatsapp)
+if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+  pip_apps+=(-e apps/erpnext)
+fi
+
 restore_snapshot() {
   db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
   db_user=$(python3 -c "import json; c = json.load(open('sites/test_site/site_config.json')); print(c.get('db_user') or c['db_name'])")
@@ -73,7 +73,11 @@ restore_snapshot() {
   gunzip -c "$HOME/db-snapshot/test_site.sql.gz" | mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" "$db_name"
 }
 
-if [ -z "$PILOT_CACHE_MATCHED" ]; then
+# Files whose change means more than new code: reinstall requirements and
+# migrate the restored site instead of reprovisioning the bench.
+SCHEMA_PATHS=( '*.json' 'hooks.py' 'patches.txt' '*requirements*.txt' 'pyproject.toml' 'setup.py' 'setup.cfg' )
+
+if [ "$PILOT_CACHE_HIT" != "true" ]; then
   APPS="frappe whatsapp"
   if [ "${INSTALL_ERPNEXT}" = "true" ]; then
     APPS="frappe whatsapp erpnext"
@@ -87,20 +91,30 @@ if [ -z "$PILOT_CACHE_MATCHED" ]; then
   cp sites/test_site/site_config.json "$HOME/db-snapshot/site_config.json"
   mariadb-dump --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" \
     --single-transaction --quick "$db_name" | gzip > "$HOME/db-snapshot/test_site.sql.gz"
-elif [ "$PILOT_CACHE_MATCHED" != "$PILOT_CACHE_PRIMARY" ]; then
-  restore_snapshot
-  # Framework moved under a cached bench: pull the new code, reinstall
-  # requirements and migrate the restored site forward instead of rebuilding.
-  git -C apps/frappe fetch --depth 1 origin "$FRAPPE_BRANCH"
-  git -C apps/frappe reset --hard FETCH_HEAD
-  git -C apps/whatsapp fetch --depth 1 origin HEAD
-  git -C apps/whatsapp reset --hard FETCH_HEAD
-  if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-    git -C apps/erpnext fetch --depth 1 origin "$FRAPPE_BRANCH"
-    git -C apps/erpnext reset --hard FETCH_HEAD
-  fi
   uv pip install --python env/bin/python "${pip_apps[@]}"
-  pilot frappe --site test_site migrate
 else
   restore_snapshot
+  # Bring cached dependency code up to its remote. Code-only drift is a fast
+  # reset; schema/requirements drift also reinstalls and migrates forward.
+  schema_drift=""
+  refresh_app() {
+    local current remote_sha
+    current=$(git -C "apps/$1" rev-parse HEAD)
+    remote_sha=$(git ls-remote "$(git -C "apps/$1" remote get-url origin)" "$2" | cut -f1)
+    [ "$current" != "$remote_sha" ] || return 0
+    git -C "apps/$1" fetch --depth 1 origin "$2"
+    if ! git -C "apps/$1" diff --quiet HEAD FETCH_HEAD -- "${SCHEMA_PATHS[@]}"; then
+      schema_drift=1
+    fi
+    git -C "apps/$1" reset --quiet --hard FETCH_HEAD
+  }
+  refresh_app frappe "refs/heads/$FRAPPE_BRANCH"
+  refresh_app whatsapp HEAD
+  if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    refresh_app erpnext "refs/heads/$FRAPPE_BRANCH"
+  fi
+  uv pip install --python env/bin/python "${pip_apps[@]}"
+  if [ -n "$schema_drift" ]; then
+    pilot frappe --site test_site migrate
+  fi
 fi
