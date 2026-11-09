@@ -79,15 +79,14 @@ jobs:
                   export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
                   curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/${PILOT_VERSION}/install.sh" | sh -s -- --version "$PILOT_VERSION"
                   pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
-                  pilot -b frappe-bench init --skip-frontend
+                  pilot -b frappe-bench init
                   uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
-                  pilot get-app https://github.com/frappe/whatsapp --skip-assets
-                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
+                  pilot get-app https://github.com/frappe/whatsapp
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
                   pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
                   curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
                     http://127.0.0.1:7000/api/v1/health
-                  pilot new-site test_site --admin-password admin --apps frappe whatsapp crm --skip-assets
-                  mkdir -p "$BENCH_PATH/sites/assets" && echo '{}' > "$BENCH_PATH/sites/assets/assets.json"
+                  pilot new-site test_site --admin-password admin --apps frappe whatsapp crm
 
             - name: Upgrade CRM to PR code and migrate
               working-directory: /home/runner/pilot/benches/frappe-bench
@@ -95,4 +94,5 @@ jobs:
                   # Swap the installed (base branch) code for the PR code, keep the git dir.
                   rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
                   pilot setup requirements
+                  pilot build --app crm
                   pilot frappe --site test_site migrate
