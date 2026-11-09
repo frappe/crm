@@ -65,7 +65,8 @@ runs:
               if [ "$INSTALL_ERPNEXT" = "true" ]; then
                   erpnext=$(git ls-remote https://github.com/frappe/erpnext "refs/heads/$FRAPPE_BRANCH" | cut -c1-12)
               fi
-              echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-$frappe-$whatsapp-$erpnext-py3.14-extdb" >> "$GITHUB_OUTPUT"
+              echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-$frappe-$whatsapp-$erpnext" >> "$GITHUB_OUTPUT"
+          echo "prefix=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-" >> "$GITHUB_OUTPUT"
 
         - name: Restore Pilot bench
           id: bench-cache
@@ -115,7 +116,12 @@ runs:
                   ~/.config/systemd/user
                   ~/db-snapshot
               key: ${{ steps.bench-key.outputs.key }}
+<<<<<<< HEAD
 >>>>>>> 9d12085 (ci: cache the provisioned pilot bench)
+=======
+              restore-keys: |
+                  ${{ steps.bench-key.outputs.prefix }}
+>>>>>>> f2f78fd (ci: prefix-fallback cache key with migrate-on-drift)
 
         - name: Install bench dependencies
           shell: bash
@@ -123,11 +129,12 @@ runs:
               TYPE: ${{ inputs.type }}
               INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
               FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
-              PILOT_CACHE_HIT: ${{ steps.bench-cache.outputs.cache-hit }}
+              PILOT_CACHE_PRIMARY: ${{ steps.bench-key.outputs.key }}
+              PILOT_CACHE_MATCHED: ${{ steps.bench-cache.outputs.cache-matched-key }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
 
         - name: Save Pilot bench
-          if: steps.bench-cache.outputs.cache-hit != 'true'
+          if: steps.bench-cache.outputs.cache-hit != 'true' || steps.bench-cache.outputs.cache-matched-key != steps.bench-key.outputs.key
           uses: actions/cache/save@v4
           with:
               path: |
