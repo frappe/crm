@@ -76,6 +76,7 @@ jobs:
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
                   export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+                  printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
                   curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
                   pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
                   pilot -b frappe-bench init

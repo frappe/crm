@@ -7,6 +7,7 @@ BENCH_NAME="frappe-bench"
 BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
 
 export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
 
 curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
 

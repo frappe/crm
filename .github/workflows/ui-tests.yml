@@ -92,6 +92,7 @@ jobs:
       - name: Setup Pilot bench
         run: |
           export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+          printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
           echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$GITHUB_ENV"
           curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
           [ -d "$HOME/pilot/benches/frappe-bench" ] || pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
