@@ -1,10 +1,10 @@
 name: Run CRM Server Tests
-description: Execute bench tests for the CRM app with optional coverage collection.
+description: Execute pilot tests for the CRM app with optional coverage collection.
 inputs:
     bench-path:
         description: Absolute path to the bench directory
         required: false
-        default: "/home/runner/frappe-bench"
+        default: "/home/runner/pilot/benches/frappe-bench"
     site:
         description: Bench site on which to run tests
         required: false
@@ -34,9 +34,9 @@ runs:
               TYPE: ${{ inputs.type }}
               CI_BUILD_ID: ${{ inputs.ci-build-id }}
           run: |
-              bench --site "${{ inputs.site }}" set-config allow_tests true
+              pilot frappe --site "${{ inputs.site }}" set-config allow_tests true
               if [ "${{ inputs.enable-coverage }}" = "true" ]; then
-                  bench --site "${{ inputs.site }}" run-tests --app "${{ inputs.app }}" --coverage
+                  pilot frappe --site "${{ inputs.site }}" run-tests --app "${{ inputs.app }}" --coverage
               else
-                  bench --site "${{ inputs.site }}" run-tests --app "${{ inputs.app }}"
+                  pilot frappe --site "${{ inputs.site }}" run-tests --app "${{ inputs.app }}"
               fi
