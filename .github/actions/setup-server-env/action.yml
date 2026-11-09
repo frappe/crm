@@ -65,7 +65,7 @@ runs:
               if [ "$INSTALL_ERPNEXT" = "true" ]; then
                   erpnext=$(git ls-remote https://github.com/frappe/erpnext "refs/heads/$FRAPPE_BRANCH" | cut -c1-12)
               fi
-              echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-$frappe-$whatsapp-$erpnext-py3.14" >> "$GITHUB_OUTPUT"
+              echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-$frappe-$whatsapp-$erpnext-py3.14-extdb" >> "$GITHUB_OUTPUT"
 
         - name: Restore Pilot bench
           id: bench-cache
@@ -75,13 +75,8 @@ runs:
                   ~/pilot/benches
                   ~/pilot/databases
                   ~/.config/systemd/user
+                  ~/db-snapshot
               key: ${{ steps.bench-key.outputs.key }}
-
-        - name: Install system packages
-          if: steps.bench-cache.outputs.cache-hit != 'true'
-          uses: ./.github/actions/apt-install
-          with:
-              packages: libmariadb-dev
 
         - name: Install bench dependencies
           shell: bash
@@ -100,4 +95,5 @@ runs:
                   ~/pilot/benches
                   ~/pilot/databases
                   ~/.config/systemd/user
+                  ~/db-snapshot
               key: ${{ steps.bench-key.outputs.key }}
