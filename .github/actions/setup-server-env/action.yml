@@ -44,10 +44,6 @@ runs:
               node-version: ${{ inputs.node-version }}
               check-latest: true
 
-        - name: Install Yarn
-          shell: bash
-          run: npm install -g yarn
-
         - name: Add to hosts file
           shell: bash
           run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
@@ -87,6 +83,7 @@ runs:
               restore-keys: |
                   ${{ runner.os }}-yarn-
 
+<<<<<<< HEAD
         - name: Clone frappe
           shell: bash
           run: git clone https://github.com/frappe/frappe --branch "$(bash .github/helper/frappe_ref.sh "${{ inputs.frappe-branch }}")" --depth 1 ~/frappe
@@ -115,11 +112,13 @@ runs:
           with:
               path: ~/db-snapshot
               key: ${{ steps.snapshot-key.outputs.key }}
+=======
+>>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 
         - name: Install system packages
           uses: ./.github/actions/apt-install
           with:
-              packages: redis-server mariadb-client libmariadb-dev
+              packages: libmariadb-dev
 
         - name: Install bench dependencies
           shell: bash
@@ -129,9 +128,3 @@ runs:
               FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
 
-        - name: Save database snapshot
-          if: steps.db-snapshot.outputs.cache-hit != 'true'
-          uses: actions/cache/save@v4
-          with:
-              path: ~/db-snapshot
-              key: ${{ steps.snapshot-key.outputs.key }}

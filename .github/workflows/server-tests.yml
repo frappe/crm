@@ -67,15 +67,6 @@ jobs:
             matrix:
                 frappe-branch: ${{ fromJson(needs.setup.outputs.frappe-branches) }}
 
-        services:
-            mysql:
-                image: mariadb:10.6
-                env:
-                    MYSQL_ROOT_PASSWORD: root
-                ports:
-                    - 3306:3306
-                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-
         steps:
             - name: Clone
               uses: actions/checkout@v6
@@ -101,7 +92,7 @@ jobs:
             - name: Run server tests
               uses: ./.github/actions/run-server-tests
               with:
-                  bench-path: "/home/runner/frappe-bench"
+                  bench-path: "/home/runner/pilot/benches/frappe-bench"
                   site: "test_site"
                   app: "crm"
                   enable-coverage: "true"
@@ -112,6 +103,6 @@ jobs:
               if: github.base_ref == 'develop' || github.ref_name == 'develop'
               uses: ./.github/actions/publish-codecov
               with:
-                  files: /home/runner/frappe-bench/sites/coverage.xml
+                  files: /home/runner/pilot/benches/frappe-bench/sites/coverage.xml
                   fail-ci-if-error: "false"
                   token: ${{ secrets.CODECOV_TOKEN }}

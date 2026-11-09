@@ -2,34 +2,43 @@
 
 set -eo pipefail
 
-cd ~ || ex
+# Pilot-based backend test setup. Server tests never serve web pages,
+# so frontend work is skipped entirely (prebuilt frappe assets only).
+# Mirrors frappe/suite#1181 and frappe/pilot#744.
 
-export BENCH_USE_UV=1
-
-# Frappe (and erpnext) branch to test against; set by CI matrix, defaults to develop.
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
+<<<<<<< HEAD
 FRAPPE_REF=$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}")
+=======
+PILOT_VERSION="v0.0.99-pre-alpha"
+BENCH_NAME="frappe-bench"
+BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
+>>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 
-# Restored from cache by setup-server-env when the schema is unchanged.
-DB_SNAPSHOT="${DB_SNAPSHOT:-$HOME/db-snapshot}"
+export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
 
+<<<<<<< HEAD
 pip install frappe-bench
 [ -d ~/frappe ] || git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_REF}" --depth 1
 bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
+=======
+curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/${PILOT_VERSION}/install.sh" | sh -s -- --version "$PILOT_VERSION"
+>>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 
-mkdir ~/frappe-bench/sites/test_site
+pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
+pilot -b "$BENCH_NAME" init --skip-frontend
 
-cp -r "${GITHUB_WORKSPACE}/.github/helper/site_config.json" ~/frappe-bench/sites/test_site/site_config.json
+BENCH_DIR="$BENCH_PATH"
+cd "$BENCH_DIR"
 
-# The MariaDB 11.4+ client requires SSL by default; the mariadb:10.6 service has none.
-printf '[client]\nskip-ssl\n' > ~/.my.cnf
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+# uv is used by pilot/suite CI for the test extras
+uv pip install --python env/bin/python -e "apps/frappe[test]"
 
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER 'test_frappe'@'localhost' IDENTIFIED BY 'test_frappe'"
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE test_frappe"
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO 'test_frappe'@'localhost'"
+# Server tests never load the built frontend, so skip asset setup.
+pilot get-app https://github.com/frappe/whatsapp --skip-assets
+pilot get-app "$GITHUB_WORKSPACE" --branch "$GITHUB_SHA" --skip-assets
 
+<<<<<<< HEAD
 mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "FLUSH PRIVILEGES"
 
 install_whktml() {
@@ -79,10 +88,23 @@ YARN_IGNORE_SCRIPTS=true bench get-app --skip-assets crm "${GITHUB_WORKSPACE}"
 # Only pull erpnext when the integration is under test, to keep other runs fast.
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
     bench get-app --skip-assets erpnext --branch "$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}" erpnext)"
+=======
+APPS="frappe whatsapp crm"
+if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    pilot get-app https://github.com/frappe/erpnext --branch "$FRAPPE_BRANCH" --skip-assets
+    APPS="frappe whatsapp erpnext crm"
+>>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 fi
 
-bench setup requirements --dev
+# Start pilot services in background (caller waits on health)
+pilot -b "$BENCH_NAME" start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+  http://127.0.0.1:7000/api/v1/health
 
+# shellcheck disable=SC2086
+pilot new-site test_site --admin-password admin --apps $APPS --skip-assets
+
+<<<<<<< HEAD
 bench start &>> ~/frappe-bench/bench_start.log &
 CI=Yes bench build --app frappe &
 build_pid=$!
@@ -95,3 +117,9 @@ fi
 
 # A restored snapshot finishes before the build; tests need its assets.json
 wait "$build_pid"
+=======
+# Emails resolve CSS through assets.json; tests never load the built bundles.
+mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
+
+pilot frappe --site test_site set-config allow_tests true
+>>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
