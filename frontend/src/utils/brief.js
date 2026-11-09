@@ -34,12 +34,6 @@ export function briefSummary({ count, team, flow }) {
     : `${things}.`
 }
 
-export function briefShowAllLabel({ showAll, shown, available = 0 }) {
-  if (showAll) return __('Show less')
-  if (available <= shown) return ''
-  return __('{0} of {1} · Show all', [shown, available])
-}
-
 export function briefTitle(item, { name = (user) => user } = {}) {
   switch (item.kind) {
     case 'waiting':

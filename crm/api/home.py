@@ -97,8 +97,8 @@ def get_counts() -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_brief(tab: str = "mine", show_all: int = 0) -> dict:
-	return build_brief(frappe.session.user, tab, bool(int(show_all)))
+def get_brief(tab: str = "mine") -> dict:
+	return build_brief(frappe.session.user, tab)
 
 
 @frappe.whitelist()

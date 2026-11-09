@@ -43,11 +43,7 @@
             :flow="askFlow.data?.available"
           />
           <AskFlow :resource="askFlow" :team="isManager()" />
-          <Brief
-            v-model:tab="briefTab"
-            v-model:showAll="briefShowAll"
-            :resource="brief"
-          />
+          <Brief v-model:tab="briefTab" :resource="brief" />
         </template>
         <DashboardGrid
           v-if="visibleItems.length"
@@ -156,7 +152,7 @@ load()
 
 provide('homeEditing', editing)
 
-const { tab: briefTab, showAll: briefShowAll, resource: brief } = useBrief()
+const { tab: briefTab, resource: brief } = useBrief()
 
 const askFlow = createResource({ url: 'crm.api.home.get_ask_flow', auto: true })
 

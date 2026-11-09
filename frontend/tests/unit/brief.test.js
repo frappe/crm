@@ -8,7 +8,6 @@ import {
   briefIcon,
   briefPerson,
   briefRoute,
-  briefShowAllLabel,
   briefSummary,
   briefTitle,
   flowSessionUrl,
@@ -51,24 +50,6 @@ describe('briefSummary', () => {
 
   it('says so when nothing is due', () => {
     expect(briefSummary({ count: 0 })).toBe('Nothing needs you today')
-  })
-})
-
-describe('briefShowAllLabel', () => {
-  it('always says how many are shown', () => {
-    expect(briefShowAllLabel({ shown: 5, available: 107 })).toBe(
-      '5 of 107 · Show all',
-    )
-  })
-
-  it('is empty when everything is shown', () => {
-    expect(briefShowAllLabel({ shown: 3, available: 3 })).toBe('')
-  })
-
-  it('offers to collapse once expanded', () => {
-    expect(
-      briefShowAllLabel({ showAll: true, shown: 50, available: 107 }),
-    ).toBe('Show less')
   })
 })
 

@@ -41,13 +41,11 @@ export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
 export function useBrief() {
   const { isManager } = usersStore()
   const tab = ref(isManager() ? 'team' : 'mine')
-  const showAll = ref(false)
   const resource = createResource({
     url: 'crm.api.home.get_brief',
-    makeParams: () => ({ tab: tab.value, show_all: showAll.value ? 1 : 0 }),
+    makeParams: () => ({ tab: tab.value }),
     auto: true,
   })
-  watch(tab, () => (showAll.value = false))
-  watch([homeVersion, tab, showAll], () => resource.reload())
-  return { tab, showAll, resource }
+  watch([homeVersion, tab], () => resource.reload())
+  return { tab, resource }
 }

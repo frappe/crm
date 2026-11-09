@@ -27,7 +27,6 @@ from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 
 NEW_FOR_YOU_DAYS = 7
 NO_SLA_WAIT_DAYS = 2
-SHOW_ALL_LIMIT = 50
 MINE_SLOTS = {"waiting": 2, "follow_ups": 2, "new": 1}
 TEAM_SLOTS = {"clients": 3, "people": 2}
 
@@ -148,19 +147,16 @@ class MineBrief:
 	def __init__(self, user: str):
 		self.scope = Mine(user)
 
-	def widgets(self, row_limit: int = ROW_LIMIT) -> dict:
-		widgets = {
+	def widgets(self) -> dict:
+		return {
 			"waiting": WaitingOnMe(FOLLOW_UP_DOCTYPES, self.scope),
 			"tasks": FollowUpsDue(FOLLOW_UP_DOCTYPES, self.scope),
 			"idle": NoNextStepNotListed(FOLLOW_UP_DOCTYPES, self.scope),
 			"new": NewForYou(("CRM Lead",), self.scope),
 		}
-		for widget in widgets.values():
-			widget.row_limit = row_limit
-		return widgets
 
-	def summary(self, show_all: bool = False) -> dict:
-		widgets = self.widgets(SHOW_ALL_LIMIT if show_all else ROW_LIMIT)
+	def summary(self) -> dict:
+		widgets = self.widgets()
 		counts = {key: widget.count() for key, widget in widgets.items()}
 		rows = {
 			"waiting": [{**row, "kind": "waiting"} for row in widgets["waiting"].rows()],
@@ -170,11 +166,10 @@ class MineBrief:
 			],
 			"new": new_items(widgets["new"].rows(), counts["new"]),
 		}
-		shown = rows if show_all else allocate(rows, MINE_SLOTS)
+		shown = allocate(rows, MINE_SLOTS)
 		set_last_emails(shown["waiting"])
 		items = [item for group in shown.values() for item in group]
-		available = counts["waiting"] + counts["tasks"] + counts["idle"] + bool(counts["new"])
-		return {"items": items, "total": headline(counts), "available": available}
+		return {"items": items, "total": headline(counts)}
 
 	def count(self) -> int:
 		return headline({key: widget.count() for key, widget in self.widgets().items()})
@@ -206,10 +201,8 @@ class TeamBrief:
 	def __init__(self, user: str):
 		self.scope = Team(user)
 
-	def summary(self, show_all: bool = False) -> dict:
+	def summary(self) -> dict:
 		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope)
-		if show_all:
-			clients.row_limit = SHOW_ALL_LIMIT
 		rows = [{**row, "kind": "client"} for row in clients.rows()]
 		ownerless = self.ownerless()
 		if ownerless:
@@ -218,12 +211,10 @@ class TeamBrief:
 			rows = [*past, ownerless, *rest]
 		people = [*self.workload(), *self.overdue_people()]
 		total = clients.count() + bool(ownerless) + len(people)
-		shown = {"clients": rows, "people": people}
-		if not show_all:
-			shown = allocate(shown, TEAM_SLOTS)
+		shown = allocate({"clients": rows, "people": people}, TEAM_SLOTS)
 		set_last_emails(shown["clients"])
 		items = [*shown["clients"], *shown["people"]]
-		return {"items": items, "total": total, "available": total}
+		return {"items": items, "total": total}
 
 	def count(self) -> int:
 		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope).count()
@@ -312,15 +303,15 @@ def last_email(doctype: str, name: str):
 	return emails[0] if emails and emails[0].date else None
 
 
-def get_brief(user: str, tab: str = "mine", show_all: bool = False) -> dict:
+def get_brief(user: str, tab: str = "mine") -> dict:
 	if role_for(user) != "manager":
 		if tab != "mine":
 			frappe.throw(_("The team brief is only available to managers"), frappe.PermissionError)
-		return MineBrief(user).summary(show_all)
+		return MineBrief(user).summary()
 
 	if tab not in ("team", "mine"):
 		frappe.throw(_("Unknown brief tab {0}").format(tab))
 	active, other = (TeamBrief, MineBrief) if tab == "team" else (MineBrief, TeamBrief)
-	brief = active(user).summary(show_all)
+	brief = active(user).summary()
 	brief["counts"] = {tab: brief["total"], "mine" if tab == "team" else "team": other(user).count()}
 	return brief

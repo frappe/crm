@@ -51,7 +51,7 @@ class TestMineBrief(HomeWidgetTestCase):
 
 	def test_a_quiet_day_has_no_groups(self):
 		brief = self.brief()
-		self.assertEqual(brief, {"items": [], "total": 0, "available": 0})
+		self.assertEqual(brief, {"items": [], "total": 0})
 
 	def test_waiting_items_go_oldest_first(self):
 		newer = self.lead(awaiting_reply_since=add_days(now_datetime(), -1))
@@ -64,14 +64,6 @@ class TestMineBrief(HomeWidgetTestCase):
 		brief = self.brief()
 		self.assertEqual(len(brief["items"]), 5)
 		self.assertEqual(brief["total"], 7)
-		self.assertEqual(brief["available"], 7)
-
-	def test_show_all_lists_more_than_five(self):
-		for _ in range(7):
-			self.lead(awaiting_reply_since=now_datetime())
-		brief = MineBrief(AGENT).summary(show_all=True)
-		self.assertEqual(len(brief["items"]), 7)
-		self.assertEqual(brief["available"], 7)
 
 	def test_idle_records_count_only_when_there_is_room_to_show_them(self):
 		for _ in range(9):
@@ -79,7 +71,6 @@ class TestMineBrief(HomeWidgetTestCase):
 		brief = self.brief()
 		self.assertEqual(len(of_kind(brief, "no_next_step")), 5)
 		self.assertEqual(brief["total"], 5)
-		self.assertEqual(brief["available"], 9)
 
 	def test_a_waiting_record_past_its_deadline_is_flagged(self):
 		past = self.lead(

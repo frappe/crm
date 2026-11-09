@@ -8,27 +8,17 @@
         <span class="text-sm text-ink-gray-5">
           {{
             tab === 'team'
-              ? __('From team replies, tasks and SLAs')
-              : __('From replies, tasks and your SLA')
+              ? __('The most urgent items across your team')
+              : __('Your most urgent items')
           }}
         </span>
       </div>
-      <div class="flex items-center gap-3">
-        <HomeTabs
-          v-if="isManager()"
-          v-model="tab"
-          :tabs="tabs"
-          :counts="resource.data?.counts"
-        />
-        <button
-          v-if="showAllLabel"
-          type="button"
-          class="min-w-28 text-right text-sm tabular-nums text-ink-gray-7 hover:underline"
-          @click="showAll = !showAll"
-        >
-          {{ showAllLabel }}
-        </button>
-      </div>
+      <HomeTabs
+        v-if="isManager()"
+        v-model="tab"
+        :tabs="tabs"
+        :counts="resource.data?.counts"
+      />
     </div>
 
     <div
@@ -123,7 +113,6 @@ import {
   briefIcon,
   briefPerson,
   briefRoute,
-  briefShowAllLabel,
   briefTitle,
 } from '@/utils/brief'
 import { formatDate } from '@/utils'
@@ -136,7 +125,6 @@ const props = defineProps({
 })
 
 const tab = defineModel('tab', { type: String, required: true })
-const showAll = defineModel('showAll', { type: Boolean, default: false })
 
 const { getUser, isManager } = usersStore()
 
@@ -146,14 +134,6 @@ const tabs = [
 ]
 
 const items = computed(() => props.resource.data?.items || [])
-
-const showAllLabel = computed(() =>
-  briefShowAllLabel({
-    showAll: showAll.value,
-    shown: items.value.length,
-    available: props.resource.data?.available,
-  }),
-)
 
 function fullName(user) {
   return getUser(user)?.full_name || user
