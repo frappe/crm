@@ -83,7 +83,7 @@ jobs:
               id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
-                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb" >> "$GITHUB_OUTPUT"
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb2" >> "$GITHUB_OUTPUT"
 
             - name: Restore Pilot bench
               id: bench-cache
@@ -113,6 +113,7 @@ jobs:
                   fi
                   pilot -b frappe-bench init --skip-frontend
                   export BENCH_PATH=/home/runner/pilot/benches/frappe-bench
+                  cd "$BENCH_PATH"
                   uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
                   pilot get-app https://github.com/frappe/whatsapp --skip-assets
                   pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
@@ -124,7 +125,7 @@ jobs:
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
                   if [ "${{ steps.bench-cache.outputs.cache-hit }}" != 'true' ]; then
-                    pilot new-site test_site --admin-password admin --apps frappe whatsapp crm --skip-assets
+                    pilot -b frappe-bench new-site test_site --admin-password admin --apps frappe whatsapp crm --skip-assets
                     # Emails resolve CSS through assets.json; tests never load the built bundles.
                     mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
                     db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
@@ -154,6 +155,7 @@ jobs:
                       uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]" -e "$BENCH_PATH/apps/whatsapp"
                     fi
                   fi
+                  test -d sites/test_site || { echo "site dir missing after setup" >&2; exit 1; }
 
             - name: Save Pilot bench
               if: steps.bench-cache.outputs.cache-hit != 'true'
