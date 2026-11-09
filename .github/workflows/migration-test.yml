@@ -1,0 +1,97 @@
+name: Migration
+
+# Verifies that an existing site on the PR's base branch can `bench migrate`
+# to the PR code. Catches broken patches / schema changes before release.
+
+on:
+    pull_request:
+        paths-ignore:
+            - "**.css"
+            - "**.js"
+            - "**.md"
+            - "**.html"
+            - "**.csv"
+            - "**.po"
+            - "**.pot"
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+    setup:
+        name: Resolve frappe matrix
+        runs-on: ubuntu-latest
+        outputs:
+            frappe-branches: ${{ steps.resolve.outputs.branches }}
+        steps:
+            - name: Resolve frappe branches from base branch
+              id: resolve
+              run: |
+                  # develop tracks frappe develop; version-NN lanes pin their frappe; main ships 15 and 16.
+                  case "${{ github.base_ref || github.ref_name }}" in
+                      version-15|version-15-hotfix) echo 'branches=["version-15"]' ;;
+                      version-16|version-16-hotfix) echo 'branches=["version-16"]' ;;
+                      main|main-hotfix)             echo 'branches=["version-15","version-16"]' ;;
+                      *)                            echo 'branches=["develop"]' ;;
+                  esac >> "$GITHUB_OUTPUT"
+
+    migrate:
+        name: Upgrade base branch -> PR (frappe ${{ matrix.frappe-branch }})
+        needs: setup
+        runs-on: ubuntu-latest
+        timeout-minutes: 60
+        strategy:
+            fail-fast: false
+            matrix:
+                frappe-branch: ${{ fromJson(needs.setup.outputs.frappe-branches) }}
+
+        env:
+            BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+            BENCH_PATH: /home/runner/pilot/benches/frappe-bench
+
+        steps:
+            - name: Checkout PR code
+              uses: actions/checkout@v6
+              with:
+                  path: pr-crm
+
+            - name: Resolve frappe branch for base
+              id: frappe
+              run: |
+                  echo "branch=${{ matrix.frappe-branch }}" >> "$GITHUB_OUTPUT"
+
+            - name: Setup Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: "24"
+
+            - name: Setup Pilot bench
+              run: |
+                  echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
+                  export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+                  curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
+                  pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
+                  pilot -b frappe-bench init
+                  uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
+                  pilot get-app https://github.com/frappe/whatsapp
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+                  pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+                  curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+                    http://127.0.0.1:7000/api/v1/health
+                  pilot new-site test_site --admin-password admin --apps frappe whatsapp crm
+
+            - name: Upgrade CRM to PR code and migrate
+              working-directory: /home/runner/pilot/benches/frappe-bench
+              run: |
+                  # Swap the installed (base branch) code for the PR code, keep the git dir.
+                  rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
+                  pilot setup requirements
+                  pilot build --app crm
+                  pilot frappe --site test_site migrate
