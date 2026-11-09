@@ -63,6 +63,7 @@ jobs:
                   echo "branch=${{ matrix.frappe-branch }}" >> "$GITHUB_OUTPUT"
 
             - name: Setup Python
+              id: python
               uses: actions/setup-python@v6
               with:
                   python-version: "3.14"
@@ -72,28 +73,78 @@ jobs:
               with:
                   node-version: "24"
 
-            - name: Setup Pilot bench
+            - name: Compute bench cache key
+              id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
+                  git clone --depth 1 --filter=blob:none https://github.com/frappe/frappe --branch "${{ steps.frappe.outputs.branch }}" ~/frappe-schema
+                  frappe=$(git -C ~/frappe-schema ls-tree -r HEAD | grep -E '\.json$|/hooks\.py$|patches\.txt$' | sha256sum | cut -c1-16)
+                  rm -rf ~/frappe-schema
+                  whatsapp=$(git ls-remote https://github.com/frappe/whatsapp HEAD | cut -c1-12)
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-$frappe-$whatsapp-py${{ steps.python.outputs.python-version }}" >> "$GITHUB_OUTPUT"
+
+            - name: Restore Pilot bench
+              id: bench-cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/pilot/databases
+                      ~/.config/systemd/user
+                  key: ${{ steps.bench-key.outputs.key }}
+
+            - name: Install system packages
+              uses: ./pr-crm/.github/actions/apt-install
+              with:
+                  packages: libmariadb-dev
+
+            - name: Setup Pilot bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+              run: |
                   export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
                   printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
+                  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
                   curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
-                  pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
-                  pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+                  if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
+                    pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
+                    pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+                  fi
                   pilot -b frappe-bench init
+                  export BENCH_PATH=/home/runner/pilot/benches/frappe-bench
                   uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
                   pilot get-app https://github.com/frappe/whatsapp
-                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
                   pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
                   curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
                     http://127.0.0.1:7000/api/v1/health
-                  pilot new-site test_site --admin-password admin --apps frappe whatsapp crm
+                  if [ "${{ steps.bench-cache.outputs.cache-hit }}" != 'true' ]; then
+                    pilot new-site test_site --admin-password admin --apps frappe whatsapp
+                    systemctl --user stop pilot-mariadb.service
+                  fi
 
-            - name: Upgrade CRM to PR code and migrate
+            - name: Save Pilot bench
+              if: steps.bench-cache.outputs.cache-hit != 'true'
+              uses: actions/cache/save@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/pilot/databases
+                      ~/.config/systemd/user
+                  key: ${{ steps.bench-key.outputs.key }}
+
+            - name: Install base CRM and migrate to PR code
               working-directory: /home/runner/pilot/benches/frappe-bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
               run: |
+                  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+                  systemctl --user start pilot-mariadb.service
+                  # Base code installs fresh every run; the cached bench never contains crm.
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+                  pilot install-app test_site crm
                   # Swap the installed (base branch) code for the PR code, keep the git dir.
                   rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
                   pilot setup requirements
+                  # Source-build the PR code: this job is the repo's asset-build check.
                   pilot build --app crm
                   pilot frappe --site test_site migrate
