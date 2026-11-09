@@ -15,6 +15,7 @@ BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
 >>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 
 export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
 
 <<<<<<< HEAD
 <<<<<<< HEAD
