@@ -62,12 +62,6 @@ jobs:
               run: |
                   echo "branch=${{ matrix.frappe-branch }}" >> "$GITHUB_OUTPUT"
 
-            - name: Setup Python
-              id: python
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.14"
-
             - name: Setup Node
               uses: actions/setup-node@v6
               with:
@@ -81,7 +75,7 @@ jobs:
                   frappe=$(git -C ~/frappe-schema ls-tree -r HEAD | grep -E '\.json$|/hooks\.py$|patches\.txt$' | sha256sum | cut -c1-16)
                   rm -rf ~/frappe-schema
                   whatsapp=$(git ls-remote https://github.com/frappe/whatsapp HEAD | cut -c1-12)
-                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-$frappe-$whatsapp-py${{ steps.python.outputs.python-version }}" >> "$GITHUB_OUTPUT"
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-$frappe-$whatsapp-py3.14" >> "$GITHUB_OUTPUT"
 
             - name: Restore Pilot bench
               id: bench-cache
