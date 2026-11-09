@@ -47,6 +47,15 @@ jobs:
             matrix:
                 frappe-branch: ${{ fromJson(needs.setup.outputs.frappe-branches) }}
 
+        services:
+            mysql:
+                image: mariadb:11.8
+                env:
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
+                options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
         env:
             BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
             BENCH_PATH: /home/runner/pilot/benches/frappe-bench
@@ -74,7 +83,7 @@ jobs:
               id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
-                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase" >> "$GITHUB_OUTPUT"
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb" >> "$GITHUB_OUTPUT"
 
             - name: Restore Pilot bench
               id: bench-cache
@@ -82,14 +91,9 @@ jobs:
               with:
                   path: |
                       ~/pilot/benches
-                      ~/pilot/databases
                       ~/.config/systemd/user
+                      ~/db-snapshot
                   key: ${{ steps.bench-key.outputs.key }}
-
-            - name: Install system packages
-              uses: ./pr-crm/.github/actions/apt-install
-              with:
-                  packages: libmariadb-dev
 
             - name: Setup Pilot bench
               env:
@@ -97,11 +101,15 @@ jobs:
               run: |
                   export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
                   printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
-                  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-                  curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
+                  curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
                   if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
                     pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
                     pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+                    pilot -b frappe-bench set-bench-config mariadb_existing true
+                    pilot -b frappe-bench set-bench-config mariadb_host 127.0.0.1
+                    pilot -b frappe-bench set-bench-config mariadb_port 3306
+                    pilot -b frappe-bench set-bench-config mariadb_admin_user root
+                    pilot -b frappe-bench set-bench-config mariadb_password root
                   fi
                   pilot -b frappe-bench init --skip-frontend
                   export BENCH_PATH=/home/runner/pilot/benches/frappe-bench
@@ -111,11 +119,19 @@ jobs:
                   pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
                   curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
                     http://127.0.0.1:7000/api/v1/health
+                  # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+                  printf '[client]\nskip-ssl\n' > ~/.my.cnf
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
                   if [ "${{ steps.bench-cache.outputs.cache-hit }}" != 'true' ]; then
                     pilot new-site test_site --admin-password admin --apps frappe whatsapp crm --skip-assets
                     # Emails resolve CSS through assets.json; tests never load the built bundles.
                     mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
-                    systemctl --user stop pilot-mariadb.service
+                    db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+                    mkdir -p "$HOME/db-snapshot"
+                    cp sites/test_site/site_config.json "$HOME/db-snapshot/site_config.json"
+                    mariadb-dump --host 127.0.0.1 --port 3306 -u root -proot \
+                      --single-transaction --quick "$db_name" | gzip > "$HOME/db-snapshot/test_site.sql.gz"
                   else
                     # Bring cached dependency code up to its remote. Code-only drift
                     # is a fast reset; schema/requirements drift also reinstalls.
@@ -145,8 +161,8 @@ jobs:
               with:
                   path: |
                       ~/pilot/benches
-                      ~/pilot/databases
                       ~/.config/systemd/user
+                      ~/db-snapshot
                   key: ${{ steps.bench-key.outputs.key }}
 
             - name: Install base CRM and migrate to PR code
@@ -154,8 +170,17 @@ jobs:
               env:
                   BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
               run: |
-                  export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-                  systemctl --user start pilot-mariadb.service
+                  export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+                  # Fresh container DB every run: recreate the user, restore the
+                  # dependency snapshot, then swap in PR code and migrate.
+                  db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+                  db_user=$(python3 -c "import json; c = json.load(open('sites/test_site/site_config.json')); print(c.get('db_user') or c['db_name'])")
+                  db_password=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_password'])")
+                  printf '[client]\nskip-ssl\n' > ~/.my.cnf
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$db_name\`"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER IF NOT EXISTS '${db_user}'@'%' IDENTIFIED BY '${db_password}'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '${db_user}'@'%'"
+                  gunzip -c "$HOME/db-snapshot/test_site.sql.gz" | mariadb --host 127.0.0.1 --port 3306 -u root -proot "$db_name"
                   # The cached site already has base crm installed; swap in the PR
                   # code over it and migrate. Fresh PR code every run, no reinstall.
                   rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
