@@ -156,7 +156,7 @@ jobs:
                   export XDG_RUNTIME_DIR="/run/user/$(id -u)"
                   systemctl --user start pilot-mariadb.service
                   # Base code installs fresh every run; the cached bench never contains crm.
-                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
                   pilot install-app test_site crm
                   # Swap the installed (base branch) code for the PR code, keep the git dir.
                   rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
