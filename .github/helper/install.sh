@@ -30,6 +30,7 @@ curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" |
 >>>>>>> c19df28 (ci: track pilot develop, drop version pin)
 
 pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
+pilot -b "$BENCH_NAME" set-bench-config admin_allow_site_to_pilot_communication false
 pilot -b "$BENCH_NAME" init --skip-frontend
 
 BENCH_DIR="$BENCH_PATH"

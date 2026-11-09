@@ -120,6 +120,7 @@ jobs:
           curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
           [ -d "$HOME/pilot/benches/frappe-bench" ] || pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
           pilot -b frappe-bench init
+          pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
         env:
           CI: "Yes"
 >>>>>>> 98d7803 (ci: run migration and ui tests on pilot)
