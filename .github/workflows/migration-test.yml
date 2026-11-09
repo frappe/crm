@@ -121,15 +121,15 @@ jobs:
                     # (The final migrate below covers any schema drift.)
                     drifted=""
                     refresh_app() {
-                      local current remote_sha
-                      current=$(git -C "apps/$1" rev-parse HEAD)
-                      remote_sha=$(git ls-remote "$(git -C "apps/$1" remote get-url origin)" "$2" | cut -f1)
+                      local current remote_sha app_path="$BENCH_PATH/apps/$1"
+                      current=$(git -C "$app_path" rev-parse HEAD)
+                      remote_sha=$(git ls-remote "$(git -C "$app_path" remote get-url origin)" "$2" | cut -f1)
                       [ "$current" != "$remote_sha" ] || return 0
-                      git -C "apps/$1" fetch --depth 1 origin "$2"
-                      if ! git -C "apps/$1" diff --quiet HEAD FETCH_HEAD -- '*.json' 'hooks.py' 'patches.txt' '*requirements*.txt' 'pyproject.toml' 'setup.py' 'setup.cfg'; then
+                      git -C "$app_path" fetch --depth 1 origin "$2"
+                      if ! git -C "$app_path" diff --quiet HEAD FETCH_HEAD -- '*.json' 'hooks.py' 'patches.txt' '*requirements*.txt' 'pyproject.toml' 'setup.py' 'setup.cfg'; then
                         drifted=1
                       fi
-                      git -C "apps/$1" reset --quiet --hard FETCH_HEAD
+                      git -C "$app_path" reset --quiet --hard FETCH_HEAD
                     }
                     refresh_app frappe "refs/heads/${{ steps.frappe.outputs.branch }}"
                     refresh_app whatsapp HEAD
