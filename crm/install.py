@@ -5,10 +5,12 @@ import json
 import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+from frappe.permissions import add_permission, update_permission_property
 
 from crm.domain_enrichment.install import seed_default_rules_and_mappings
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
+from crm.permissions.data_import import CRM_IMPORT_DOCTYPES
 
 
 def before_install():
@@ -36,6 +38,7 @@ def after_install(force=False):
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
+	add_data_import_permissions()
 	seed_default_rules_and_mappings()
 	frappe.db.commit()  # persist seeded defaults, also run from restore_defaults  # nosemgrep
 
@@ -694,3 +697,22 @@ def create_assignment_rule_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Assignment Rule")
+
+
+DATA_IMPORT_PERMS = {
+	"Sales Manager": ("write", "create", "delete"),
+	"Sales User": ("write", "create"),
+}
+
+
+def add_data_import_permissions():
+	for role, ptypes in DATA_IMPORT_PERMS.items():
+		if not frappe.db.exists("Custom DocPerm", {"parent": "Data Import", "role": role, "permlevel": 0}):
+			add_permission("Data Import", role, 0)
+			for ptype in ptypes:
+				update_permission_property("Data Import", role, 0, ptype, 1)
+
+		# CRM doctypes grant import in their JSON, but custom perms on a site override it
+		customized = [dt for dt in CRM_IMPORT_DOCTYPES if frappe.db.exists("Custom DocPerm", {"parent": dt})]
+		for doctype in ("Contact", *customized):
+			update_permission_property(doctype, role, 0, "import", 1)
