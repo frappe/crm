@@ -21,7 +21,6 @@ concurrency:
 
 env:
   FRAPPE_BRANCH: develop
-  PILOT_VERSION: v0.0.99-pre-alpha
 
 jobs:
   ui-tests:
@@ -90,11 +89,11 @@ jobs:
             ~/.config/systemd/user
           key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}
 
-      - name: Setup Pilot bench (full assets for E2E)
+      - name: Setup Pilot bench
         run: |
           export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
           echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$GITHUB_ENV"
-          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/${PILOT_VERSION}/install.sh" | sh -s -- --version "$PILOT_VERSION"
+          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
           [ -d "$HOME/pilot/benches/frappe-bench" ] || pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
           pilot -b frappe-bench init
         env:

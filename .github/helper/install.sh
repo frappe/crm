@@ -2,18 +2,13 @@
 
 set -eo pipefail
 
-# Pilot-based backend test setup. Server tests never serve web pages,
-# so frontend work is skipped entirely (prebuilt frappe assets only).
-# Mirrors frappe/suite#1181 and frappe/pilot#744.
-
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
-PILOT_VERSION="v0.0.99-pre-alpha"
 BENCH_NAME="frappe-bench"
 BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
 
 export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
 
-curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/${PILOT_VERSION}/install.sh" | sh -s -- --version "$PILOT_VERSION"
+curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
 
 pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
 pilot -b "$BENCH_NAME" init --skip-frontend
@@ -24,7 +19,6 @@ cd "$BENCH_DIR"
 # uv is used by pilot/suite CI for the test extras
 uv pip install --python env/bin/python -e "apps/frappe[test]"
 
-# Server tests never load the built frontend, so skip asset setup.
 pilot get-app https://github.com/frappe/whatsapp --skip-assets
 pilot get-app "$GITHUB_WORKSPACE" --branch "$GITHUB_SHA" --skip-assets
 
