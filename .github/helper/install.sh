@@ -12,6 +12,7 @@ printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
 curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
 
 pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
+pilot -b "$BENCH_NAME" set-bench-config admin_allow_site_to_pilot_communication false
 pilot -b "$BENCH_NAME" init --skip-frontend
 
 BENCH_DIR="$BENCH_PATH"
