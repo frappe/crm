@@ -74,7 +74,7 @@ jobs:
               id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
-                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14" >> "$GITHUB_OUTPUT"
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase" >> "$GITHUB_OUTPUT"
 
             - name: Restore Pilot bench
               id: bench-cache
@@ -107,11 +107,12 @@ jobs:
                   export BENCH_PATH=/home/runner/pilot/benches/frappe-bench
                   uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
                   pilot get-app https://github.com/frappe/whatsapp --skip-assets
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
                   pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
                   curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
                     http://127.0.0.1:7000/api/v1/health
                   if [ "${{ steps.bench-cache.outputs.cache-hit }}" != 'true' ]; then
-                    pilot new-site test_site --admin-password admin --apps frappe whatsapp --skip-assets
+                    pilot new-site test_site --admin-password admin --apps frappe whatsapp crm --skip-assets
                     # Emails resolve CSS through assets.json; tests never load the built bundles.
                     mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
                     systemctl --user stop pilot-mariadb.service
@@ -155,10 +156,8 @@ jobs:
               run: |
                   export XDG_RUNTIME_DIR="/run/user/$(id -u)"
                   systemctl --user start pilot-mariadb.service
-                  # Base code installs fresh every run; the cached bench never contains crm.
-                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
-                  pilot install-app test_site crm
-                  # Swap the installed (base branch) code for the PR code, keep the git dir.
+                  # The cached site already has base crm installed; swap in the PR
+                  # code over it and migrate. Fresh PR code every run, no reinstall.
                   rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
                   pilot setup requirements
                   pilot frappe --site test_site migrate
