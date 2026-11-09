@@ -27,13 +27,21 @@ inputs:
 runs:
     using: composite
     steps:
-        - name: Install app under test
+        - name: Restore database snapshot and install app under test
           shell: bash
           working-directory: ${{ inputs.bench-path }}
           run: |
-              export XDG_RUNTIME_DIR="/run/user/$(id -u)"
               export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
-              systemctl --user start pilot-mariadb.service
+              # Fresh container DB every run: recreate the user, restore the
+              # dependency-only dump, then install the app under test.
+              db_name=$(python3 -c "import json; print(json.load(open('sites/${{ inputs.site }}/site_config.json'))['db_name'])")
+              db_user=$(python3 -c "import json; c = json.load(open('sites/${{ inputs.site }}/site_config.json')); print(c.get('db_user') or c['db_name'])")
+              db_password=$(python3 -c "import json; print(json.load(open('sites/${{ inputs.site }}/site_config.json'))['db_password'])")
+              printf '[client]\nskip-ssl\n' > ~/.my.cnf
+              mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$db_name\`"
+              mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER IF NOT EXISTS '${db_user}'@'%' IDENTIFIED BY '${db_password}'"
+              mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '${db_user}'@'%'"
+              gunzip -c "$HOME/db-snapshot/test_site.sql.gz" | mariadb --host 127.0.0.1 --port 3306 -u root -proot "$db_name"
               # The cached bench never contains this app, so every run installs
               # fresh PR code. Dependencies were installed during provisioning.
               pilot get-app "${GITHUB_WORKSPACE}" --branch "${GITHUB_SHA}" --skip-assets

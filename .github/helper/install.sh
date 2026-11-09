@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Provision-only: prepares the cached Pilot bench (framework + dependency apps
-# + dependency-only site). The app under test is installed per-run afterwards,
-# so cached runs always test fresh PR code. Run `save` (actions/cache) after
-# this on a cache miss, before anything installs crm.
+# Provision-only: installs pilot, creates the bench, builds the framework and
+# dependency apps, and creates the dependency-only site. The site database is
+# dumped to ~/db-snapshot on a cache miss; the app under test is installed
+# per-run afterwards, so cached runs always test fresh PR code.
 #
 # Expects from the caller: FRAPPE_BRANCH, INSTALL_ERPNEXT, PILOT_CACHE_HIT
 # ("true" when the bench was restored, anything else provisions from scratch).
@@ -24,12 +24,18 @@ BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
 >>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 =======
 PILOT_CACHE_HIT="${PILOT_CACHE_HIT:-}"
+<<<<<<< HEAD
 >>>>>>> 9d12085 (ci: cache the provisioned pilot bench)
+=======
+DB_HOST="127.0.0.1"
+DB_PORT="3306"
+DB_ROOT_PASSWORD="root"
+>>>>>>> 17f8ed0 (ci: external mariadb service with snapshot restore)
 
 export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
 printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
-export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 pip install frappe-bench
@@ -41,10 +47,18 @@ curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/${PILOT_VERSION}/inst
 =======
 curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
 >>>>>>> c19df28 (ci: track pilot develop, drop version pin)
+=======
+curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci -s -- --ci
+>>>>>>> 17f8ed0 (ci: external mariadb service with snapshot restore)
 
 if [ ! -d "$BENCH_PATH" ]; then
   pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
   pilot -b "$BENCH_NAME" set-bench-config admin_allow_site_to_pilot_communication false
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_existing true
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_host "$DB_HOST"
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_port 3306
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_admin_user root
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_password "$DB_ROOT_PASSWORD"
 fi
 pilot -b "$BENCH_NAME" init --skip-frontend
 
@@ -149,6 +163,11 @@ pilot frappe --site test_site set-config allow_tests true
 >>>>>>> 1401ab8 (ci: use pilot with skip-frontend/skip-assets for server tests)
 =======
 if [ "$PILOT_CACHE_HIT" != "true" ]; then
+  # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+  printf '[client]\nskip-ssl\n' > ~/.my.cnf
+  mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
+  mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+
   APPS="frappe whatsapp"
   if [ "${INSTALL_ERPNEXT}" = "true" ]; then
     APPS="frappe whatsapp erpnext"
@@ -157,7 +176,11 @@ if [ "$PILOT_CACHE_HIT" != "true" ]; then
   pilot new-site test_site --admin-password admin --apps $APPS --skip-assets
   # Emails resolve CSS through assets.json; tests never load the built bundles.
   mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
-  # Stop MariaDB so the cache gets a consistent data directory.
-  systemctl --user stop pilot-mariadb.service
+
+  mkdir -p "$HOME/db-snapshot"
+  db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+  cp sites/test_site/site_config.json "$HOME/db-snapshot/site_config.json"
+  mariadb-dump --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" \
+    --single-transaction --quick "$db_name" | gzip > "$HOME/db-snapshot/test_site.sql.gz"
 fi
 >>>>>>> 9d12085 (ci: cache the provisioned pilot bench)
