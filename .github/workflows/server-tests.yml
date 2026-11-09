@@ -74,7 +74,6 @@ jobs:
             - name: Setup environment
               uses: ./.github/actions/setup-server-env
               with:
-                  python-version: "3.14"
                   node-version: "24"
                   type: "server"
                   # erpnext: stable lanes only
