@@ -21,7 +21,7 @@ DB_ROOT_PASSWORD="root"
 export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
 printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci -s -- --ci
+curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
 
 if [ ! -d "$BENCH_PATH" ]; then
   pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
