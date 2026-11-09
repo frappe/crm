@@ -15,18 +15,8 @@
         />
       </div>
     </template>
-    <template #tabs>
-      <HomeTabs v-model="filter" :tabs="filters" :counts="filterCounts" />
-    </template>
     <template #default="{ rows }">
-      <HomeEmptyState
-        v-if="!filtered(rows).length"
-        compact
-        class="flex-1 px-4"
-        icon="lucide-check"
-        :text="__('No one here right now.')"
-      />
-      <HomeTable v-else :columns="columns" :rows="visible(filtered(rows))">
+      <HomeTable v-model:sort="sort" :columns="columns" :rows="visible(rows)">
         <template #first_response_time="{ column, row }">
           <Tooltip :text="slaHint(row)">
             <div
@@ -52,15 +42,13 @@
   </HomeWidget>
 </template>
 <script setup>
-import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeTable from '@/components/Home/HomeTable.vue'
-import HomeTabs from '@/components/Home/HomeTabs.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
 import { usersStore } from '@/stores/users'
-import { shortDuration } from '@/utils/home'
+import { shortDuration, sortRows } from '@/utils/home'
 import { Tooltip } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
@@ -83,50 +71,30 @@ const stat = (key, label, tooltip, width, format = String) => ({
 
 const columns = [
   { ...homeColumns.user('user', __('Member')), width: 'minmax(0,1fr)' },
-  stat('open', __('Open'), __('Open leads and deals'), '2.25rem'),
-  stat('replies_waiting', __('Replies'), __('Awaiting reply'), '3rem'),
-  stat('overdue_follow_ups', __('Overdue'), __('Overdue follow-ups'), '3.5rem'),
+  stat('open', __('Open'), __('Open leads and deals'), '3rem'),
+  stat('replies_waiting', __('Replies'), __('Awaiting reply'), '3.75rem'),
+  stat(
+    'overdue_follow_ups',
+    __('Overdue'),
+    __('Overdue follow-ups'),
+    '4.25rem',
+  ),
   stat(
     'no_next_step',
     __('No next step'),
     __('Open leads and deals with no follow-up and no activity in 7 days'),
-    '5rem',
+    '5.75rem',
   ),
   stat(
     'first_response_time',
     __('First response'),
     __('Average first response time, in red when an SLA was missed'),
-    '6rem',
+    '6.75rem',
     (seconds) => shortDuration(seconds) || '—',
   ),
 ]
 
-const filter = ref('everyone')
-
-const filters = [
-  { label: __('Everyone'), value: 'everyone' },
-  { label: __('Over SLA'), value: 'over_sla' },
-  { label: __('Overdue'), value: 'overdue' },
-]
-
-const filterRules = {
-  everyone: () => true,
-  over_sla: (row) => missedSla(row),
-  overdue: (row) => row.overdue_follow_ups > 0,
-}
-
-const filterCounts = computed(() =>
-  Object.fromEntries(
-    Object.entries(filterRules).map(([key, rule]) => [
-      key,
-      members.value.filter(rule).length,
-    ]),
-  ),
-)
-
-function filtered(rows) {
-  return rows.filter(filterRules[filter.value])
-}
+const sort = ref({ key: 'open', descending: true })
 
 function missedSla(row) {
   return row.sla_met < row.sla_total
@@ -148,10 +116,14 @@ const expanded = ref(false)
 const members = computed(() => resource.data?.rows || [])
 
 function visible(rows) {
-  const busiestFirst = rows
+  const byName = rows
     .map((row) => ({ ...row, name: row.user }))
-    .sort((a, b) => b.open - a.open || fullName(a).localeCompare(fullName(b)))
-  return expanded.value ? busiestFirst : busiestFirst.slice(0, VISIBLE_MEMBERS)
+    .sort((a, b) => fullName(a).localeCompare(fullName(b)))
+  const { key } = sort.value
+  const sorted = sortRows(byName, sort.value, (row) =>
+    key === 'user' ? fullName(row) : row[key],
+  )
+  return expanded.value ? sorted : sorted.slice(0, VISIBLE_MEMBERS)
 }
 
 function fullName(row) {

@@ -48,6 +48,27 @@ export function shortDuration(seconds) {
     .join(' ')
 }
 
+// Number columns are right aligned and start with the highest first.
+export function nextSort(sort, column) {
+  if (sort.key === column.key) return { ...sort, descending: !sort.descending }
+  return { key: column.key, descending: column.align === 'right' }
+}
+
+// Rows without a value go last in either direction.
+export function sortRows(rows, { descending }, valueOf) {
+  const direction = descending ? -1 : 1
+  return [...rows].sort((a, b) => {
+    const [first, second] = [valueOf(a), valueOf(b)]
+    if (first == null || second == null) {
+      return (first == null) - (second == null)
+    }
+    return (
+      direction *
+      (typeof first === 'string' ? first.localeCompare(second) : first - second)
+    )
+  })
+}
+
 // A percentage over a near-empty start says nothing past "much more"; the arrow carries the sign.
 export function formatPercentChange(value) {
   return value > 999 ? '999+' : String(Math.round(value))

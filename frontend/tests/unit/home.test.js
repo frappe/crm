@@ -1,13 +1,76 @@
 import {
   formatPercentChange,
   greetingFor,
+  nextSort,
   recordListRoute,
   recordRoute,
   recordTitle,
   shortDuration,
+  sortRows,
 } from '@/utils/home'
 
 const at = (hour) => new Date(2026, 9, 23, hour)
+
+describe('nextSort', () => {
+  const open = { key: 'open', align: 'right' }
+
+  it('starts number columns with the highest first', () => {
+    expect(nextSort({ key: 'user', descending: false }, open)).toEqual({
+      key: 'open',
+      descending: true,
+    })
+  })
+
+  it('starts text columns from A', () => {
+    expect(
+      nextSort({ key: 'open', descending: true }, { key: 'user' }),
+    ).toEqual({ key: 'user', descending: false })
+  })
+
+  it('flips the direction on a second click', () => {
+    expect(nextSort({ key: 'open', descending: true }, open)).toEqual({
+      key: 'open',
+      descending: false,
+    })
+  })
+})
+
+describe('sortRows', () => {
+  const value = (row) => row.time
+
+  it('sorts both ways', () => {
+    const rows = [{ time: 2 }, { time: 9 }, { time: 5 }]
+    expect(sortRows(rows, { descending: true }, value).map(value)).toEqual([
+      9, 5, 2,
+    ])
+    expect(sortRows(rows, { descending: false }, value).map(value)).toEqual([
+      2, 5, 9,
+    ])
+  })
+
+  it('keeps rows without a value last in either direction', () => {
+    const rows = [{ time: null }, { time: 3 }, { time: 7 }]
+    expect(sortRows(rows, { descending: true }, value).map(value)).toEqual([
+      7,
+      3,
+      null,
+    ])
+    expect(sortRows(rows, { descending: false }, value).map(value)).toEqual([
+      3,
+      7,
+      null,
+    ])
+  })
+
+  it('sorts names alphabetically', () => {
+    const name = (row) => row.name
+    const rows = [{ name: 'Ravi' }, { name: 'Asha' }]
+    expect(sortRows(rows, { descending: false }, name).map(name)).toEqual([
+      'Asha',
+      'Ravi',
+    ])
+  })
+})
 
 describe('greetingFor', () => {
   it('follows the time of day', () => {
