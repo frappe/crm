@@ -32,8 +32,7 @@ runs:
           working-directory: ${{ inputs.bench-path }}
           run: |
               export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
-              # The cached bench never contains this app, so every run installs
-              # fresh PR code. The site database was restored during provisioning.
+              # Fresh PR code every run; the cached bench never contains this app.
               pilot get-app "${GITHUB_WORKSPACE}" --branch "${GITHUB_SHA}" --skip-assets
               pilot install-app "${{ inputs.site }}" "${{ inputs.app }}"
 

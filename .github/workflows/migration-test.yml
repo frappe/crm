@@ -76,9 +76,7 @@ jobs:
               with:
                   node-version: "24"
 
-            # Stable key on purpose: dependency drift is detected after restore
-            # by comparing each app's checkout against its remote (see below),
-            # so frappe schema churn no longer forces a full reprovision.
+            # Stable key; drift is handled post-restore like server tests.
             - name: Compute bench cache key
               id: bench-key
               run: |
@@ -134,9 +132,7 @@ jobs:
                     mariadb-dump --host 127.0.0.1 --port 3306 -u root -proot \
                       --single-transaction --quick "$db_name" | gzip > "$HOME/db-snapshot/test_site.sql.gz"
                   else
-                    # Bring cached dependency code up to its remote. Code-only drift
-                    # is a fast reset; schema/requirements drift also reinstalls.
-                    # (The final migrate below covers any schema drift.)
+                    # Fast-forward cached checkouts; the final migrate covers schema drift.
                     drifted=""
                     refresh_app() {
                       local current remote_sha app_path="$BENCH_PATH/apps/$1"
@@ -167,7 +163,7 @@ jobs:
                       ~/db-snapshot
                   key: ${{ steps.bench-key.outputs.key }}
 
-            - name: Install base CRM and migrate to PR code
+            - name: Restore snapshot and migrate PR code
               working-directory: /home/runner/pilot/benches/frappe-bench
               env:
                   BASE_BRANCH: ${{ github.base_ref || github.ref_name }}

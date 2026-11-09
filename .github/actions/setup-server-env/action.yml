@@ -48,11 +48,7 @@ runs:
               restore-keys: |
                   ${{ runner.os }}-py-deps-
 
-        # Keyed on dependency schema, not commits: the app under test is
-        # installed fresh every run, so its code never needs to invalidate this.
-        # Stable key on purpose: dependency drift is detected after restore by
-        # comparing each app's checkout against its remote, so schema churn in
-        # frappe no longer forces a full reprovision.
+        # Stable key; drift is detected post-restore (see install.sh), so schema churn never forces a reprovision.
         - name: Compute bench cache key
           id: bench-key
           shell: bash
