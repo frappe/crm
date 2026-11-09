@@ -38,6 +38,7 @@ printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 pip install frappe-bench
 [ -d ~/frappe ] || git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_REF}" --depth 1
 bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
@@ -50,6 +51,9 @@ curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" |
 =======
 curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci -s -- --ci
 >>>>>>> 17f8ed0 (ci: external mariadb service with snapshot restore)
+=======
+curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
+>>>>>>> 0d11eaa (ci: fix duplicated install.sh flags)
 
 if [ ! -d "$BENCH_PATH" ]; then
   pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
