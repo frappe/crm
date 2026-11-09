@@ -67,15 +67,14 @@ jobs:
               with:
                   node-version: "24"
 
+            # Stable key on purpose: dependency drift is detected after restore
+            # by comparing each app's checkout against its remote (see below),
+            # so frappe schema churn no longer forces a full reprovision.
             - name: Compute bench cache key
               id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
-                  git clone --depth 1 --filter=blob:none https://github.com/frappe/frappe --branch "${{ steps.frappe.outputs.branch }}" ~/frappe-schema
-                  frappe=$(git -C ~/frappe-schema ls-tree -r HEAD | grep -E '\.json$|/hooks\.py$|patches\.txt$' | sha256sum | cut -c1-16)
-                  rm -rf ~/frappe-schema
-                  whatsapp=$(git ls-remote https://github.com/frappe/whatsapp HEAD | cut -c1-12)
-                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-$frappe-$whatsapp-py3.14" >> "$GITHUB_OUTPUT"
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14" >> "$GITHUB_OUTPUT"
 
             - name: Restore Pilot bench
               id: bench-cache
@@ -116,6 +115,27 @@ jobs:
                     # Emails resolve CSS through assets.json; tests never load the built bundles.
                     mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
                     systemctl --user stop pilot-mariadb.service
+                  else
+                    # Bring cached dependency code up to its remote. Code-only drift
+                    # is a fast reset; schema/requirements drift also reinstalls.
+                    # (The final migrate below covers any schema drift.)
+                    drifted=""
+                    refresh_app() {
+                      local current remote_sha
+                      current=$(git -C "apps/$1" rev-parse HEAD)
+                      remote_sha=$(git ls-remote "$(git -C "apps/$1" remote get-url origin)" "$2" | cut -f1)
+                      [ "$current" != "$remote_sha" ] || return 0
+                      git -C "apps/$1" fetch --depth 1 origin "$2"
+                      if ! git -C "apps/$1" diff --quiet HEAD FETCH_HEAD -- '*.json' 'hooks.py' 'patches.txt' '*requirements*.txt' 'pyproject.toml' 'setup.py' 'setup.cfg'; then
+                        drifted=1
+                      fi
+                      git -C "apps/$1" reset --quiet --hard FETCH_HEAD
+                    }
+                    refresh_app frappe "refs/heads/${{ steps.frappe.outputs.branch }}"
+                    refresh_app whatsapp HEAD
+                    if [ -n "$drifted" ]; then
+                      uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]" -e "$BENCH_PATH/apps/whatsapp"
+                    fi
                   fi
 
             - name: Save Pilot bench
