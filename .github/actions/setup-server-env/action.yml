@@ -66,7 +66,7 @@ runs:
                   erpnext=$(git ls-remote https://github.com/frappe/erpnext "refs/heads/$FRAPPE_BRANCH" | cut -c1-12)
               fi
               echo "key=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-$frappe-$whatsapp-$erpnext" >> "$GITHUB_OUTPUT"
-          echo "prefix=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-" >> "$GITHUB_OUTPUT"
+              echo "prefix=${{ runner.os }}-pilot-bench-crm-$FRAPPE_BRANCH-py3.14-extdb-" >> "$GITHUB_OUTPUT"
 
         - name: Restore Pilot bench
           id: bench-cache
