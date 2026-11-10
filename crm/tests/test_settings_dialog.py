@@ -10,6 +10,8 @@ from frappe.desk.doctype.settings_dialog.settings_dialog import SettingsDialog
 from frappe.desk.settings_rules import SettingsRules
 from frappe.shell.settings import resolve_panes
 from frappe.shell.settings_filter import SettingsFilter
+from frappe.shell.settings import merge_settings
+from frappe.shell.settings_sidebar import filter_sidebar
 from frappe.shell.settings_sidebar_text import assert_settings_sidebar
 from frappe.tests import IntegrationTestCase
 from frappe.tests.classes.context_managers import set_user
@@ -17,6 +19,7 @@ from frappe.tests.classes.context_managers import set_user
 RECORDS = ("crm", "crm-frappe")
 SALES_USER = "telephony-pane-user@example.com"
 SALES_MANAGER = "telephony-pane-manager@example.com"
+SYSTEM_MANAGER = "regional-block-manager@example.com"
 TWILIO_FIELDS = [
 	"enabled",
 	"account_sid",
@@ -68,6 +71,26 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 				[block["key"] for block in self.visible_pane("general")["blocks"]],
 				["deals", "communication", "exchange-rates"],
 			)
+
+	def test_general_places_the_regional_block_after_exchange_rates(self):
+		self.assertEqual(
+			self.sidebar_blocks("crm/general"),
+			[
+				"crm/general/deals",
+				"crm/general/communication",
+				"crm/general/exchange-rates",
+				"desk/system/regional",
+			],
+		)
+
+	def test_only_a_system_manager_sees_the_regional_block_in_general(self):
+		self.make_user(SALES_MANAGER, "Sales Manager")
+		self.make_user(SYSTEM_MANAGER, "System Manager")
+
+		with set_user(SALES_MANAGER):
+			self.assertNotIn("desk/system/regional", self.sidebar_blocks("crm/general"))
+		with set_user(SYSTEM_MANAGER):
+			self.assertEqual(self.sidebar_blocks("crm/general")[-1], "desk/system/regional")
 
 	def test_crm_ships_the_telephony_pane_on_the_twilio_and_exotel_singles(self):
 		telephony = self.pane("crm", "telephony")
@@ -240,6 +263,14 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 
 	def pane(self, app, key):
 		return next(pane for pane in resolve_panes() if pane["app"] == app and pane["key"] == key)
+
+	def sidebar_blocks(self, pane):
+		"""The blocks CRM's sidebar lists under `pane` for the session user."""
+		resolved = merge_settings()
+		panes = SettingsFilter().filter(resolved.panes)["panes"]
+		sidebar = filter_sidebar(resolved.sidebars["crm"], panes)
+		entries = [entry for group in sidebar["groups"] for entry in group["panes"]]
+		return next((entry["blocks"] for entry in entries if entry["pane"] == pane), [])
 
 	def visible_pane(self, key, app="crm"):
 		panes = SettingsFilter().filter(resolve_panes())["panes"]

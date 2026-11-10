@@ -28,6 +28,14 @@
    "desk/system"
   ],
   "panes": {
+   "crm/general": {
+    "blocks": [
+     "crm/general/deals",
+     "crm/general/communication",
+     "crm/general/exchange-rates",
+     "desk/system/regional"
+    ]
+   },
    "desk/profile": {
     "blocks": [
      "desk/profile/photo",
@@ -318,7 +326,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-11-10 14:00:00.000000",
+ "modified": "2026-11-10 18:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
