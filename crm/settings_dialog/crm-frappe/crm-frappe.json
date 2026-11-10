@@ -2,23 +2,87 @@
  "app": "crm",
  "blocks": [
   {
-   "bindings": "{\"agent\": {\"type\": \"Record\", \"doctype\": \"CRM Telephony Agent\", \"resolver\": \"session_user\"}}",
+   "bindings": {
+    "agent": {
+     "doctype": "CRM Telephony Agent",
+     "resolver": "session_user",
+     "type": "Record"
+    }
+   },
    "component": "telephony",
-   "fields": "[\"mobile_no\", \"default_medium\", \"call_receiving_device\", \"twilio_number\", \"exotel_number\"]",
    "key": "telephony",
+   "kind": "Component",
    "label": "Telephony",
    "pane": "profile",
    "save_mode": "auto",
-   "settings": "[{\"label\": \"Mobile No.\", \"keywords\": [\"phone\", \"mobile number\"]}, {\"label\": \"Default Medium\", \"keywords\": [\"calling medium\", \"telephony\"]}, {\"label\": \"Device\", \"keywords\": [\"call receiving device\", \"telephony\"]}, {\"label\": \"Twilio Number\", \"keywords\": [\"telephony\", \"calls\"]}, {\"label\": \"Exotel Number\", \"keywords\": [\"telephony\", \"calls\"]}]"
+   "saves_fields": [
+    "mobile_no",
+    "default_medium",
+    "call_receiving_device",
+    "twilio_number",
+    "exotel_number"
+   ],
+   "search_entries": [
+    {
+     "keywords": [
+      "phone",
+      "mobile number"
+     ],
+     "label": "Mobile No."
+    },
+    {
+     "keywords": [
+      "calling medium",
+      "telephony"
+     ],
+     "label": "Default Medium"
+    },
+    {
+     "keywords": [
+      "call receiving device",
+      "telephony"
+     ],
+     "label": "Device"
+    },
+    {
+     "keywords": [
+      "telephony",
+      "calls"
+     ],
+     "label": "Twilio Number"
+    },
+    {
+     "keywords": [
+      "telephony",
+      "calls"
+     ],
+     "label": "Exotel Number"
+    }
+   ]
   },
   {
-   "anchors": "[{\"after\": \"email\"}]",
+   "anchors": [
+    {
+     "after": "email"
+    }
+   ],
    "component": "email-accounts",
    "description": "The email accounts linked to you. An administrator links them on each Email Account.",
    "key": "email-accounts",
+   "kind": "Component",
    "label": "Email accounts",
    "pane": "profile",
-   "settings": "[{\"label\": \"Outgoing accounts\", \"keywords\": [\"send from\", \"sender\", \"inbox\", \"awaiting password\"]}]"
+   "search_entries": [
+    {
+     "keywords": [
+      "send from",
+      "sender",
+      "inbox",
+      "awaiting password"
+     ],
+     "label": "Outgoing accounts"
+    }
+   ]
   }
  ],
  "creation": "2026-10-27 10:30:00.000000",

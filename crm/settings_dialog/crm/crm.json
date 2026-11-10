@@ -4,38 +4,72 @@
   {
    "binding_type": "Single",
    "document_type": "FCRM Settings",
-   "fields": "[\"enable_forecasting\", \"enable_sales_hierarchy\", \"auto_update_expected_deal_value\", \"currency\"]",
+   "fields": [
+    "enable_forecasting",
+    "enable_sales_hierarchy",
+    "auto_update_expected_deal_value",
+    "currency"
+   ],
    "key": "deals",
+   "kind": "Generated",
    "label": "Deals",
    "pane": "general",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "button"
   },
   {
    "binding_type": "Single",
    "document_type": "FCRM Settings",
-   "fields": "[\"update_timestamp_on_new_communication\", \"auto_mark_replied_on_response\", \"auto_reopen_on_new_communication\"]",
+   "fields": [
+    "update_timestamp_on_new_communication",
+    "auto_mark_replied_on_response",
+    "auto_reopen_on_new_communication"
+   ],
    "key": "communication",
+   "kind": "Generated",
    "label": "Communication",
    "pane": "general",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "auto"
   },
   {
    "binding_type": "Single",
    "document_type": "FCRM Settings",
-   "fields": "[\"service_provider\", \"access_key\"]",
+   "fields": [
+    "service_provider",
+    "access_key"
+   ],
    "key": "exchange-rates",
+   "kind": "Generated",
    "label": "Exchange rates",
    "pane": "general",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "button"
   },
   {
    "binding_type": "Single",
    "document_type": "CRM Twilio Settings",
-   "fields": "[\"enabled\", \"account_sid\", \"auth_token\", \"app_name\", \"record_calls\", \"api_key\", \"api_secret\", \"twiml_sid\"]",
+   "fields": [
+    "enabled",
+    "account_sid",
+    "auth_token",
+    "app_name",
+    "record_calls",
+    "api_key",
+    "api_secret",
+    "twiml_sid"
+   ],
    "key": "twilio",
+   "kind": "Generated",
    "label": "Twilio",
    "pane": "telephony",
    "save_mode": "button"
@@ -43,8 +77,17 @@
   {
    "binding_type": "Single",
    "document_type": "CRM Exotel Settings",
-   "fields": "[\"enabled\", \"account_sid\", \"api_key\", \"api_token\", \"subdomain\", \"webhook_verify_token\", \"record_call\"]",
+   "fields": [
+    "enabled",
+    "account_sid",
+    "api_key",
+    "api_token",
+    "subdomain",
+    "webhook_verify_token",
+    "record_call"
+   ],
    "key": "exotel",
+   "kind": "Generated",
    "label": "Exotel",
    "pane": "telephony",
    "save_mode": "button"
@@ -52,67 +95,176 @@
   {
    "component": "users",
    "key": "users",
+   "kind": "Component",
    "label": "Users",
    "pane": "users",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
-   "settings": "[{\"label\": \"Users\", \"keywords\": [\"roles\", \"team\", \"members\", \"add user\", \"remove user\"]}]"
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
+   "search_entries": [
+    {
+     "keywords": [
+      "roles",
+      "team",
+      "members",
+      "add user",
+      "remove user"
+     ],
+     "label": "Users"
+    }
+   ]
   },
   {
    "component": "invite",
    "key": "invite",
+   "kind": "Component",
    "label": "Invite users",
    "pane": "users",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
-   "settings": "[{\"label\": \"Invite users by email\", \"keywords\": [\"invite\", \"invitation\", \"new user\", \"email\"]}]"
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
+   "search_entries": [
+    {
+     "keywords": [
+      "invite",
+      "invitation",
+      "new user",
+      "email"
+     ],
+     "label": "Invite users by email"
+    }
+   ]
   },
   {
    "component": "sales-hierarchy",
    "key": "sales-hierarchy",
+   "kind": "Component",
    "label": "Sales hierarchy",
    "pane": "users",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
-   "settings": "[{\"label\": \"Sales hierarchy\", \"keywords\": [\"reports to\", \"manager\", \"team\", \"tree\", \"reporting\"]}]"
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
+   "search_entries": [
+    {
+     "keywords": [
+      "reports to",
+      "manager",
+      "team",
+      "tree",
+      "reporting"
+     ],
+     "label": "Sales hierarchy"
+    }
+   ]
   },
   {
    "binding_type": "Single",
    "document_type": "WhatsApp Settings",
    "key": "whatsapp",
+   "kind": "Generated",
    "label": "WhatsApp",
    "pane": "whatsapp",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "button"
   },
   {
    "binding_type": "Single",
    "document_type": "ERPNext CRM Settings",
-   "fields": "[\"enabled\", \"is_erpnext_in_different_site\", \"erpnext_site_url\", \"api_key\", \"api_secret\", \"erpnext_company\", \"create_customer_on_status_change\", \"deal_status\"]",
+   "fields": [
+    "enabled",
+    "is_erpnext_in_different_site",
+    "erpnext_site_url",
+    "api_key",
+    "api_secret",
+    "erpnext_company",
+    "create_customer_on_status_change",
+    "deal_status"
+   ],
    "key": "erpnext",
+   "kind": "Generated",
    "label": "Integration",
    "pane": "erpnext",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "button"
   },
   {
-   "bindings": "{\"settings\": {\"type\": \"Single\", \"doctype\": \"ERPNext CRM Settings\"}}",
+   "bindings": {
+    "settings": {
+     "doctype": "ERPNext CRM Settings",
+     "type": "Single"
+    }
+   },
    "component": "verifyConnection",
-   "fields": "[\"is_erpnext_in_different_site\", \"erpnext_site_url\", \"api_key\", \"api_secret\", \"erpnext_company\"]",
    "key": "verify-connection",
+   "kind": "Component",
    "label": "Verify connection",
    "pane": "erpnext",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "button",
-   "settings": "[{\"label\": \"Verify connection\", \"keywords\": [\"erpnext\", \"url\", \"api key\", \"company\", \"test\", \"check\"]}]"
+   "saves_fields": [
+    "is_erpnext_in_different_site",
+    "erpnext_site_url",
+    "api_key",
+    "api_secret",
+    "erpnext_company"
+   ],
+   "search_entries": [
+    {
+     "keywords": [
+      "erpnext",
+      "url",
+      "api key",
+      "company",
+      "test",
+      "check"
+     ],
+     "label": "Verify connection"
+    }
+   ]
   },
   {
-   "bindings": "{\"settings\": {\"type\": \"Single\", \"doctype\": \"ERPNext CRM Settings\"}}",
+   "bindings": {
+    "settings": {
+     "doctype": "ERPNext CRM Settings",
+     "type": "Single"
+    }
+   },
    "component": "productSync",
-   "fields": "[\"sync_products\"]",
    "key": "product-sync",
+   "kind": "Component",
    "label": "Product sync",
    "pane": "erpnext",
-   "roles": "[\"Sales Manager\", \"System Manager\"]",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
    "save_mode": "button",
-   "settings": "[{\"label\": \"Bidirectional product sync\", \"keywords\": [\"erpnext\", \"items\", \"products\", \"sync now\"]}]"
+   "saves_fields": [
+    "sync_products"
+   ],
+   "search_entries": [
+    {
+     "keywords": [
+      "erpnext",
+      "items",
+      "products",
+      "sync now"
+     ],
+     "label": "Bidirectional product sync"
+    }
+   ]
   }
  ],
  "creation": "2026-10-27 10:30:00.000000",
