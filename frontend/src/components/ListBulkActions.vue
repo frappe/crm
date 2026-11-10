@@ -35,8 +35,9 @@ import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { call, toast } from 'frappe-ui'
+import { createToast, scriptToast } from '@/utils/scriptToast'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -85,7 +86,7 @@ function convertToDeal(selections, unselectAll) {
       {
         label: __('Convert'),
         variant: 'solid',
-        onClick: (close) => {
+        onClick: ({ close }) => {
           capture('bulk_convert_to_deal')
           Array.from(selections).forEach((name) => {
             call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
@@ -142,7 +143,7 @@ function clearAssignments(selections, unselectAll) {
         label: __('Clear Assignment'),
         variant: 'solid',
         theme: 'red',
-        onClick: (close) => {
+        onClick: ({ close }) => {
           capture('bulk_clear_assignment')
           call('frappe.desk.form.assign_to.remove_multiple', {
             doctype: props.doctype,
@@ -206,8 +207,8 @@ function bulkActions(selections, unselectAll) {
           selections,
           unselectAll,
           call,
-          createToast: toast.create,
-          toast,
+          createToast,
+          toast: scriptToast,
           $dialog,
           router,
         }),
@@ -233,8 +234,6 @@ onMounted(async () => {
   let customization = await setupListCustomizations(list.value.data, {
     list: list.value,
     call,
-    createToast: toast.create,
-    toast,
     $dialog,
     $socket,
     router,

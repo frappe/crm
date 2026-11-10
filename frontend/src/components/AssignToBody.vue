@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-2 my-2 w-[470px] rounded-lg bg-surface-elevation-2 shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
+    class="flex flex-col gap-2 my-2 w-[min(470px,calc(100vw-1rem))] rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black p-3 ring-opacity-5 focus:outline-none"
   >
     <div class="text-base text-ink-gray-5">{{ __('Assign To') }}</div>
     <Link
@@ -17,7 +17,7 @@
     >
       <template #target="{ togglePopover }">
         <div
-          class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-lg bg-surface-gray-2 cursor-text"
+          class="w-full min-h-12 flex flex-wrap items-center gap-1.5 p-1.5 pb-5 rounded-6 bg-surface-gray-2 cursor-text"
           @click.stop="togglePopover"
         >
           <Tooltip
@@ -75,8 +75,9 @@
 import UserAvatar from '@/components/UserAvatar.vue'
 import Link from '@/components/Controls/Link.vue'
 import { usersStore } from '@/stores/users'
-import { Tooltip, Switch, createResource } from 'frappe-ui'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { availabilityStore } from '@/stores/availability'
+import { Tooltip, Switch, createResource, toast } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, watch } from 'vue'
 
 const props = defineProps({
@@ -95,6 +96,7 @@ const assignToMe = ref(false)
 const error = ref('')
 
 const { users, getUser } = usersStore()
+const availability = availabilityStore()
 
 const removeValue = (value) => {
   if (value === getUser('').name) {
@@ -119,6 +121,18 @@ const addValue = (value) => {
   }
   if (!assignees.value.find((assignee) => assignee.name === value)) {
     assignees.value.push(obj)
+    warnIfUnreachable(value)
+  }
+}
+
+function warnIfUnreachable(user) {
+  if (user === getUser('').name) return
+  const category = availability.userStatus(user)?.category
+  const name = getUser(user).full_name
+  if (category === 'Away') {
+    toast.warning(__('{0} is away right now', [name]))
+  } else if (category === 'Unavailable') {
+    toast.warning(__('{0} is unavailable right now', [name]))
   }
 }
 

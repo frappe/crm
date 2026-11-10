@@ -22,6 +22,7 @@ class CRMViewSettings(Document):
 		dt: DF.Link | None
 		filters: DF.Code | None
 		group_by_field: DF.Data | None
+		group_by_settings: DF.Code | None
 		icon: DF.Data | None
 		is_default: DF.Check
 		is_standard: DF.Check
@@ -74,6 +75,7 @@ def create(view: dict):
 	doc.filters = json.dumps(view.filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
+	doc.group_by_settings = dump_group_by_settings(view.group_by_settings)
 	doc.column_field = view.column_field
 	doc.title_field = view.title_field
 	doc.kanban_columns = json.dumps(view.kanban_columns)
@@ -109,6 +111,7 @@ def update(view: dict):
 	doc.filters = json.dumps(filters)
 	doc.order_by = view.order_by
 	doc.group_by_field = view.group_by_field
+	doc.group_by_settings = dump_group_by_settings(view.group_by_settings)
 	doc.column_field = view.column_field
 	doc.title_field = view.title_field
 	doc.kanban_columns = json.dumps(kanban_columns)
@@ -201,17 +204,23 @@ def sync_default_columns(view):
 def set_as_default(name: str | int | None = None, type: str | None = None, doctype: str | None = None):
 	if name:
 		frappe.db.set_value("CRM View Settings", name, "is_default", 1)
+		doctype = doctype or frappe.db.get_value("CRM View Settings", name, "dt")
 	else:
 		doc = create_or_update_standard_view({"type": type, "doctype": doctype, "is_default": 1})
 		name = doc.name
 
-	# remove default from other views of same user
+	# remove default from other views of same user and same doctype
 	frappe.db.set_value(
 		"CRM View Settings",
-		{"name": ("!=", name), "user": frappe.session.user, "is_default": 1},
+		{"name": ("!=", name), "user": frappe.session.user, "is_default": 1, "dt": doctype},
 		"is_default",
 		0,
 	)
+
+
+def dump_group_by_settings(value):
+	"""Store the grouping as JSON text, from the list's object or a saved view's stored text."""
+	return json.dumps(parse_json(value)) if value else None
 
 
 @frappe.whitelist()
@@ -247,13 +256,16 @@ def create_or_update_standard_view(view: dict):
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by or "modified desc"
 		doc.group_by_field = view.group_by_field or "owner"
+		doc.group_by_settings = dump_group_by_settings(view.group_by_settings)
 		doc.column_field = view.column_field
 		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)
 		doc.kanban_fields = json.dumps(kanban_fields)
 		doc.columns = json.dumps(columns)
 		doc.rows = json.dumps(rows)
-		doc.is_default = view.is_default or False
+		# Only set_as_default changes the default; routine view saves leave it as is
+		if view.is_default:
+			doc.is_default = 1
 		doc.save()
 	else:
 		doc = frappe.new_doc("CRM View Settings")
@@ -274,6 +286,7 @@ def create_or_update_standard_view(view: dict):
 		doc.filters = json.dumps(filters)
 		doc.order_by = view.order_by or "modified desc"
 		doc.group_by_field = view.group_by_field or "owner"
+		doc.group_by_settings = dump_group_by_settings(view.group_by_settings)
 		doc.column_field = view.column_field
 		doc.title_field = view.title_field
 		doc.kanban_columns = json.dumps(kanban_columns)

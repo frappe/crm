@@ -5,7 +5,7 @@
         {{ __('General Settings') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
-        {{ __('Configure general settings for your application') }}
+        {{ __('Configure general settings for your application.') }}
       </p>
     </div>
 
@@ -18,7 +18,7 @@
           <div class="text-p-sm text-ink-gray-5 truncate">
             {{
               __(
-                'Update the modified timestamp on new email communication & comments for leads & deals',
+                'Update the modified timestamp on new emails, messages & comments for leads & deals',
               )
             }}
           </div>

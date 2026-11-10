@@ -24,11 +24,11 @@
       <li
         v-for="user in filtered"
         :key="user.value"
-        class="flex items-center gap-2 rounded p-1.5 mb-1 px-2 cursor-pointer hover:bg-surface-gray-1"
+        class="flex items-center gap-2 rounded-4 p-1.5 mb-1 px-2 cursor-pointer hover:bg-surface-gray-1"
         :class="{ 'bg-surface-gray-3': isSelected(user) }"
         @click="toggle(user)"
       >
-        <Avatar :image="user.user_image" :label="user.full_name" size="lg" />
+        <UserAvatar :user="user.email" size="lg" />
         <div class="flex flex-col items-start min-w-0 flex-1">
           <span class="text-ink-gray-8 truncate text-sm-medium">
             {{ user.full_name }}
@@ -67,7 +67,8 @@
 </template>
 
 <script setup>
-import { Avatar, LoadingIndicator, TextInput } from 'frappe-ui'
+import UserAvatar from '@/components/UserAvatar.vue'
+import { LoadingIndicator, TextInput } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
 const props = defineProps({

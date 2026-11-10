@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:availability_status",
+ "creation": "2026-10-16 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "availability_status",
+  "category",
+  "enabled",
+  "column_break_avst",
+  "color",
+  "position"
+ ],
+ "fields": [
+  {
+   "fieldname": "availability_status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Status",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "Active",
+   "description": "Assignment rules prefer Active users, then Away, and use Unavailable users only when no one else is in the rule.",
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Active\nAway\nUnavailable",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "column_break_avst",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "gray",
+   "fieldname": "color",
+   "fieldtype": "Select",
+   "label": "Color",
+   "options": "black\ngray\nblue\ngreen\nred\npink\norange\namber\nyellow\ncyan\nteal\nviolet\npurple"
+  },
+  {
+   "default": "1",
+   "fieldname": "position",
+   "fieldtype": "Int",
+   "label": "Position"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-16 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Availability Status",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "position",
+ "sort_order": "ASC",
+ "states": [],
+ "translated_doctype": 1
+}

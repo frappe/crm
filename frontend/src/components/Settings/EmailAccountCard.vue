@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-between px-2 py-3 border-outline-elevation-2 cursor-pointer hover:bg-surface-sidebar rounded"
+    class="flex items-center justify-between px-2 py-3 border-outline-elevation-2 cursor-pointer hover:bg-surface-sidebar rounded-4"
   >
     <!-- avatar and name -->
     <div class="flex items-center justify-between gap-2">

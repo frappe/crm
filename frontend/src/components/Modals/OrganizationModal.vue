@@ -1,12 +1,14 @@
 <template>
-  <Dialog v-model:open="show" :size="'xl'">
-    <template #body>
+  <Dialog v-model:open="show" :size="'xl'" bare>
+    <template #default>
       <div class="px-4 pt-5 pb-6 bg-surface-elevation-2 sm:px-6">
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('New Organization') }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ __('New Organization') }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
             <Button
@@ -17,12 +19,14 @@
               :icon="EditIcon"
               @click="openQuickEntryModal"
             />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                variant="ghost"
+                class="w-7"
+                icon="lucide-x"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <FieldLayout
@@ -42,15 +46,6 @@
             :loading="loading"
             @click="createOrganization"
           />
-          <Button
-            class="w-full"
-            :label="__('Enrich')"
-            :loading="isEnriching"
-            :disabled="!organization.doc.website"
-            :tooltip="__('Fill fields from the company website')"
-            iconLeft="zap"
-            @click="enrichFromWebsite"
-          />
         </div>
       </div>
     </template>
@@ -65,8 +60,8 @@ import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { useTelemetry } from 'frappe-ui/frappe'
-import { call, createResource, toast } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { Dialog, call, createResource } from 'frappe-ui'
 import { ref, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -89,52 +84,6 @@ const error = ref(null)
 
 const { document: organization, triggerOnBeforeCreate } =
   useDocument('CRM Organization')
-
-const isEnriching = ref(false)
-
-// Prefill the form from the company website (Domain Enrichment) — synchronous,
-// no document is created until the user clicks Create.
-async function enrichFromWebsite() {
-  const website = (organization.doc.website || '').trim()
-  if (!website) {
-    toast.warning(__('Enter a Website first.'))
-    return
-  }
-  capture('enrichment_quick_triggered', {
-    doctype: 'CRM Organization',
-    source: 'create_modal',
-  })
-  isEnriching.value = true
-  try {
-    const { fields, notes } = await call(
-      'crm.domain_enrichment.api.enrich_preview',
-      { website, doctype: 'CRM Organization' },
-    )
-    // Fill-empty semantics: never clobber values the user already typed in the
-    // modal — only set fields that are currently empty on organization.doc.
-    const filled = Object.keys(fields || {}).filter((key) => {
-      const current = organization.doc[key]
-      if (current === undefined || current === null || current === '') {
-        organization.doc[key] = fields[key]
-        return true
-      }
-      return false
-    })
-    if (filled.length) {
-      toast.success(
-        __('Filled {0} field(s) from the website.', [filled.length]),
-      )
-    } else {
-      toast.info(
-        notes?.[0] || __('Nothing could be extracted from this website.'),
-      )
-    }
-  } catch (e) {
-    toast.error(e.messages?.[0] || __('Could not enrich from the website.'))
-  } finally {
-    isEnriching.value = false
-  }
-}
 
 async function createOrganization() {
   loading.value = true
@@ -204,7 +153,9 @@ const tabs = createResource({
 })
 
 onMounted(() => {
-  organization.doc.no_of_employees = '1-10'
+  if (!props.data?.no_of_employees) {
+    organization.doc.no_of_employees = '1-10'
+  }
   Object.assign(organization.doc, props.data)
 })
 

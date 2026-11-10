@@ -13,6 +13,7 @@
     type="select"
     :options="filter.options"
     :placeholder="filter.label"
+    side="bottom"
     @update:modelValue="updateFilter(filter, $event)"
   />
   <Link
@@ -26,7 +27,7 @@
     :is="filter.fieldtype === 'Date' ? DatePicker : DateTimePicker"
     v-else-if="['Date', 'Datetime'].includes(filter.fieldtype)"
     class="border-none"
-    :value="filter.value"
+    :model-value="filter.value"
     :placeholder="filter.label"
     :format="
       filter.fieldtype === 'Date'

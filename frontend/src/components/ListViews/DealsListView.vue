@@ -81,11 +81,10 @@
             />
           </div>
           <div v-else-if="column.key === 'deal_owner'">
-            <Avatar
+            <UserAvatar
               v-if="item.full_name"
               class="flex items-center"
-              :image="item.user_image"
-              :label="item.full_name"
+              :user="item.name"
               size="sm"
             />
           </div>
@@ -250,6 +249,7 @@
 </template>
 
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
@@ -259,17 +259,15 @@ import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
 import WebsiteLink from '@/components/ListViews/WebsiteLink.vue'
 import { isTranslatable, formatDuration } from '@/utils'
+import { Avatar, Dropdown, Tooltip } from 'frappe-ui'
 import {
-  Avatar,
   ListView,
   ListHeader,
   ListHeaderItem,
   ListRowItem,
   ListSelectBanner,
   ListFooter,
-  Dropdown,
-  Tooltip,
-} from 'frappe-ui'
+} from 'frappe-ui/experimental'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'

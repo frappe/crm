@@ -9,7 +9,9 @@
 **Simplify Sales, Amplify Relationships**
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/frappe/crm)](https://github.com/frappe/crm/releases)
-
+[![Frontend](https://github.com/frappe/crm/actions/workflows/frontend-tests.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/frontend-tests.yml)
+[![Migration](https://github.com/frappe/crm/actions/workflows/migration-test.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/migration-test.yml)
+[![Server](https://github.com/frappe/crm/actions/workflows/server-tests.yml/badge.svg)](https://github.com/frappe/crm/actions/workflows/server-tests.yml)
 <div>
     <picture>
         <source media="(prefers-color-scheme: dark)" srcset=".github/screenshots/FrappeCRMHeroImage.png">
@@ -143,6 +145,7 @@ The script will set up a production-ready instance of Frappe CRM with all the ne
 1. In the frappe-bench directory, run `bench start` and keep it running.
 1. Open a new terminal session and cd into `frappe-bench` directory and run following commands:
     ```sh
+    $ bench get-app whatsapp
     $ bench get-app crm
     $ bench new-site sitename.localhost --install-app crm
     $ bench browse sitename.localhost --user Administrator

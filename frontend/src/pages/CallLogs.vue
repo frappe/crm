@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createCallLog"
       />
     </template>
@@ -52,6 +52,15 @@
     v-else-if="callLogs.data && !rows.length"
     name="Call Logs"
     :icon="PhoneIcon"
+    :title="__('No call logs yet')"
+    :description="
+      __(
+        'Calls made through Twilio or Exotel are logged here, along with calls you log by hand on a lead or deal.',
+      )
+    "
+    :filtered="!!Object.keys(callLogs.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/call-log"
+    @create="createCallLog()"
   />
   <CallLogDetailModal
     v-model="showCallLogDetailModal"
@@ -70,7 +79,7 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import CallLogDetailModal from '@/components/Modals/CallLogDetailModal.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getCallLogDetail } from '@/utils/callLog'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { createResource } from 'frappe-ui'
 import { computed, ref, onMounted } from 'vue'
 

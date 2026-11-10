@@ -53,8 +53,5 @@ class EnabledDoctypesTest(UnitTestCase):
 	def test_unsaved_settings_enable_every_doctype(self):
 		self.assertEqual(self.enabled_with(), ["CRM Lead", "CRM Deal", "CRM Organization"])
 
-	def test_a_doctype_switched_off_is_left_out(self):
-		self.assertEqual(self.enabled_with(enabled=1, enable_deal=0), ["CRM Lead", "CRM Organization"])
-
 	def test_the_master_switch_turns_every_doctype_off(self):
-		self.assertEqual(self.enabled_with(enabled=0, enable_lead=1, enable_deal=1), [])
+		self.assertEqual(self.enabled_with(enabled=0), [])

@@ -1,79 +1,77 @@
 <template>
-  <Dialog v-model:open="show" :size="'3xl'">
-    <template #body>
-      <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
-        <div class="mb-5 flex items-center justify-between">
-          <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Create Deal') }}
-            </h3>
-          </div>
-          <div class="flex items-center gap-1">
-            <Button
-              v-if="isManager() && !isMobileView"
-              variant="ghost"
-              class="w-7"
-              :tooltip="__('Edit Fields Layout')"
-              :icon="EditIcon"
-              @click="openQuickEntryModal"
-            />
-            <Button
-              variant="ghost"
-              class="w-7"
-              icon="lucide-x"
-              @click="show = false"
-            />
-          </div>
-        </div>
-        <div>
-          <div
-            v-if="hasOrganizationSections || hasContactSections"
-            class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3"
-          >
-            <div
-              v-if="hasOrganizationSections"
-              class="flex items-center gap-3 text-sm text-ink-gray-5"
-            >
-              <div>{{ __('Choose Existing Organization') }}</div>
-              <Switch v-model="chooseExistingOrganization" />
+  <Dialog v-model:open="show" :size="'3xl'" bare>
+    <template #default>
+      <div class="flex max-h-[calc(100dvh-6rem)] flex-col">
+        <div class="flex min-h-0 flex-1 flex-col bg-surface-elevation-2 pt-5">
+          <div class="mb-5 flex items-center justify-between px-4 sm:px-6">
+            <div>
+              <Dialog.Title as-child>
+                <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                  {{ __('Create Deal') }}
+                </h3>
+              </Dialog.Title>
             </div>
-            <div
-              v-if="hasContactSections"
-              class="flex items-center gap-3 text-sm text-ink-gray-5"
-            >
-              <div>{{ __('Choose Existing Contact') }}</div>
-              <Switch v-model="chooseExistingContact" />
+            <div class="flex items-center gap-1">
+              <Button
+                v-if="isManager() && !isMobileView"
+                variant="ghost"
+                class="w-7"
+                :tooltip="__('Edit Fields Layout')"
+                :icon="EditIcon"
+                @click="openQuickEntryModal"
+              />
+              <Dialog.Close as-child>
+                <Button
+                  :aria-label="__('Close')"
+                  variant="ghost"
+                  class="w-7"
+                  icon="lucide-x"
+                />
+              </Dialog.Close>
             </div>
           </div>
-          <div
-            v-if="hasOrganizationSections || hasContactSections"
-            class="h-px w-full border-t my-5"
-          />
-          <FieldLayout
-            v-if="tabs.data?.length"
-            :tabs="tabs.data"
-            :data="deal.doc"
-            doctype="CRM Deal"
-          />
-          <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
+          <div class="min-h-0 flex-1 overflow-y-auto px-4 pb-6 sm:px-6">
+            <div
+              v-if="hasOrganizationSections || hasContactSections"
+              class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3"
+            >
+              <div
+                v-if="hasOrganizationSections"
+                class="flex items-center gap-3 text-sm text-ink-gray-5"
+              >
+                <div>{{ __('Choose Existing Organization') }}</div>
+                <Switch v-model="chooseExistingOrganization" />
+              </div>
+              <div
+                v-if="hasContactSections"
+                class="flex items-center gap-3 text-sm text-ink-gray-5"
+              >
+                <div>{{ __('Choose Existing Contact') }}</div>
+                <Switch v-model="chooseExistingContact" />
+              </div>
+            </div>
+            <div
+              v-if="hasOrganizationSections || hasContactSections"
+              class="h-px w-full border-t my-5"
+            />
+            <FieldLayout
+              v-if="tabs.data?.length"
+              :tabs="tabs.data"
+              :data="deal.doc"
+              doctype="CRM Deal"
+            />
+            <ErrorMessage v-if="error" class="mt-4" :message="__(error)" />
+          </div>
         </div>
-      </div>
-      <div class="px-4 pb-7 pt-4 sm:px-6">
-        <div class="flex flex-row-reverse gap-2">
-          <Button
-            variant="solid"
-            :label="__('Create')"
-            :loading="isDealCreating"
-            @click="createDeal"
-          />
-          <Button
-            :label="__('Enrich')"
-            :loading="isEnriching"
-            :disabled="!deal.doc.website"
-            :tooltip="__('Fill fields from the company website')"
-            iconLeft="zap"
-            @click="enrichFromWebsite"
-          />
+        <div class="px-4 pb-7 pt-4 sm:px-6">
+          <div class="flex flex-row-reverse gap-2">
+            <Button
+              variant="solid"
+              :label="__('Create')"
+              :loading="isDealCreating"
+              @click="createDeal"
+            />
+          </div>
         </div>
       </div>
     </template>
@@ -88,8 +86,8 @@ import { statusesStore } from '@/stores/statuses'
 import { isMobileView } from '@/composables/settings'
 import { showQuickEntryModal, quickEntryProps } from '@/composables/modals'
 import { useDocument } from '@/data/document'
-import { useTelemetry } from 'frappe-ui/frappe'
-import { Switch, createResource, call, toast } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { Dialog, Switch, createResource } from 'frappe-ui'
 import { computed, ref, onMounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -110,73 +108,9 @@ const hasOrganizationSections = ref(true)
 const hasContactSections = ref(true)
 
 const isDealCreating = ref(false)
-const isEnriching = ref(false)
 const chooseExistingContact = ref(false)
 const chooseExistingOrganization = ref(false)
 const { capture } = useTelemetry()
-
-// Prefill the form from the company website (Domain Enrichment) — synchronous,
-// no document is created until the user clicks Create.
-async function enrichFromWebsite() {
-  const website = (deal.doc.website || '').trim()
-  if (!website) {
-    toast.warning(__('Enter a Website first.'))
-    return
-  }
-  capture('enrichment_quick_triggered', {
-    doctype: 'CRM Deal',
-    source: 'create_modal',
-  })
-  isEnriching.value = true
-  try {
-    const { fields, notes } = await call(
-      'crm.domain_enrichment.api.enrich_preview',
-      { website, doctype: 'CRM Deal' },
-    )
-    // Fill-empty semantics: never clobber values the user already typed in the
-    // modal — only set fields that are currently empty on deal.doc.
-    const filled = Object.keys(fields || {}).filter((key) => {
-      const current = deal.doc[key]
-      if (current === undefined || current === null || current === '') {
-        deal.doc[key] = fields[key]
-        return true
-      }
-      return false
-    })
-    if (filled.length) {
-      toast.success(
-        __('Filled {0} field(s) from the website.', [filled.length]),
-      )
-    } else {
-      toast.info(
-        notes?.[0] || __('Nothing could be extracted from this website.'),
-      )
-    }
-  } catch (e) {
-    toast.error(e.messages?.[0] || __('Could not enrich from the website.'))
-  } finally {
-    isEnriching.value = false
-  }
-}
-
-watch(
-  [chooseExistingOrganization, chooseExistingContact],
-  ([organization, contact]) => {
-    tabs.data.forEach((tab) => {
-      tab.sections.forEach((section) => {
-        if (section.name === 'organization_section') {
-          section.hidden = !organization
-        } else if (section.name === 'organization_details_section') {
-          section.hidden = organization
-        } else if (section.name === 'contact_section') {
-          section.hidden = !contact
-        } else if (section.name === 'contact_details_section') {
-          section.hidden = contact
-        }
-      })
-    })
-  },
-)
 
 const tabs = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_fields_layout',
@@ -217,6 +151,26 @@ const tabs = createResource({
     })
   },
 })
+
+watch(
+  [chooseExistingOrganization, chooseExistingContact, () => tabs.data],
+  ([organization, contact]) => {
+    tabs.data?.forEach((tab) => {
+      tab.sections.forEach((section) => {
+        if (section.name === 'organization_section') {
+          section.hidden = !organization
+        } else if (section.name === 'organization_details_section') {
+          section.hidden = organization
+        } else if (section.name === 'contact_section') {
+          section.hidden = !contact
+        } else if (section.name === 'contact_details_section') {
+          section.hidden = contact
+        }
+      })
+    })
+  },
+  { immediate: true },
+)
 
 const dealStatuses = computed(() => statusOptions('deal'))
 
@@ -290,6 +244,8 @@ function openQuickEntryModal() {
 onMounted(() => {
   deal.doc.no_of_employees = '1-10'
   Object.assign(deal.doc, props.defaults)
+  chooseExistingOrganization.value = Boolean(props.defaults.organization)
+  chooseExistingContact.value = Boolean(props.defaults.contact)
 
   if (!deal.doc.deal_owner) {
     deal.doc.deal_owner = getUser().name

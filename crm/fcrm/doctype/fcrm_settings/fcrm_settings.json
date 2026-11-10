@@ -34,7 +34,7 @@
   "all_day_event_notifications",
   "dropdown_items_tab",
   "dropdown_items",
-  "persona_captured"
+  "setup_completed"
  ],
  "fields": [
   {
@@ -167,7 +167,7 @@
   },
   {
    "default": "1",
-   "description": "Update the modified timestamp on new email communication & comment for leads & deals",
+   "description": "Update the modified timestamp on new emails, messages & comments for leads & deals",
    "fieldname": "update_timestamp_on_new_communication",
    "fieldtype": "Check",
    "label": "Update timestamp on new communication"
@@ -214,11 +214,11 @@
   },
   {
    "default": "0",
-   "description": "Set once the first admin completes the onboarding persona questionnaire",
-   "fieldname": "persona_captured",
+   "description": "Set once the first admin finishes or skips the setup flow",
+   "fieldname": "setup_completed",
    "fieldtype": "Check",
    "hidden": 1,
-   "label": "Persona Captured"
+   "label": "Setup Completed"
   }
  ],
  "index_web_pages_for_search": 1,
