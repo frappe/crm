@@ -28,21 +28,31 @@
     :items="showDeleteDocModal.items"
     :reload="reload"
   />
+  <BulkEmailModal
+    v-if="showBulkEmailModal"
+    v-model="showBulkEmailModal"
+    :doctype="props.doctype"
+    :selectedValues="selectedValues"
+    @reload="reload"
+  />
 </template>
 
 <script setup>
 import EditValueModal from '@/components/Modals/EditValueModal.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
+import BulkEmailModal from '@/components/Modals/BulkEmailModal.vue'
 import { setupListCustomizations } from '@/utils'
 import { globalStore } from '@/stores/global'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { call, toast } from 'frappe-ui'
 import { createToast, scriptToast } from '@/utils/scriptToast'
+import { usersStore } from '@/stores/users'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
   doctype: { type: String, default: '' },
+  currentTab: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -53,6 +63,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['reload'])
+
 const list = defineModel({ type: Object })
 
 const router = useRouter()
@@ -61,6 +73,7 @@ const { $dialog, $socket } = globalStore()
 const { capture } = useTelemetry()
 
 const showEditModal = ref(false)
+const showBulkEmailModal = ref(false)
 const selectedValues = ref([])
 const unselectAllAction = ref(() => {})
 const showDeleteDocModal = ref({
@@ -77,7 +90,7 @@ function editValues(selections, unselectAll) {
 function convertToDeal(selections, unselectAll) {
   $dialog({
     title: __('Convert to Deal'),
-    message: __('Are you sure you want to convert {0} lead(s) to deal(s)?', [
+    message: __('Are you sure you want to convert {0} item(s) to deal(s)?', [
       selections.size,
     ]),
     variant: 'solid',
@@ -86,22 +99,70 @@ function convertToDeal(selections, unselectAll) {
       {
         label: __('Convert'),
         variant: 'solid',
-        onClick: ({ close }) => {
+        onClick: async ({ close }) => {
           capture('bulk_convert_to_deal')
-          Array.from(selections).forEach((name) => {
-            call('crm.fcrm.doctype.crm_lead.crm_lead.convert_to_deal', {
-              lead: name,
-            }).then(() => {
-              toast.success(__('Converted Successfully'))
-              list.value.reload()
-              unselectAll()
-              close()
+          try {
+            const res = await call('crm.api.daily_allocation.bulk_convert_to_deal', {
+              doctype: props.doctype,
+              names: Array.from(selections),
             })
-          })
+            if (res.converted > 0) {
+              toast.success(__('Successfully converted {0} record(s) to deal(s).', [res.converted]))
+            }
+            if (res.errors && res.errors.length) {
+              toast.warning(res.errors[0])
+            }
+            reload(unselectAll)
+            close()
+          } catch (err) {
+            toast.error(err.message || __('Failed to convert to deal'))
+          }
         },
       },
     ],
   })
+}
+
+function openBulkEmail(selections, unselectAll) {
+  selectedValues.value = selections
+  unselectAllAction.value = unselectAll
+  showBulkEmailModal.value = true
+}
+
+const crmLeadStatuses = [
+  'New',
+  'Contacted',
+  'Nurture',
+  'Qualified',
+  'Converted',
+  'Unqualified',
+  'Junk',
+]
+
+function getChangeStatusOptions(selections, unselectAll) {
+  return crmLeadStatuses.map((st) => ({
+    label: __(st),
+    onClick: () => changeProspectStatus(selections, st, unselectAll),
+  }))
+}
+
+async function changeProspectStatus(selections, newStatus, unselectAll) {
+  try {
+    const res = await call('crm.api.daily_allocation.change_prospect_status', {
+      doctype: props.doctype,
+      names: Array.from(selections),
+      status: newStatus,
+    })
+    if (res.updated > 0) {
+      toast.success(__('Updated CRM Lead status to {0} for {1} prospect(s)', [newStatus, res.updated]))
+    }
+    if (res.skipped > 0) {
+      toast.warning(__('Skipped {0} record(s) without linked CRM Lead', [res.skipped]))
+    }
+    reload(unselectAll)
+  } catch (error) {
+    toast.error(error.message || __('Failed to update status'))
+  }
 }
 
 function deleteValues(selections, unselectAll) {
@@ -160,11 +221,81 @@ function clearAssignments(selections, unselectAll) {
   })
 }
 
+function markAsDropped(selections, unselectAll) {
+  $dialog({
+    title: __('Mark as Dropped'),
+    message: __(
+      'Are you sure you want to mark {0} contact(s) as Dropped? They will appear only in the Dropped tab.',
+      [selections.size],
+    ),
+    variant: 'solid',
+    theme: 'red',
+    actions: [
+      {
+        label: __('Mark as Dropped'),
+        variant: 'solid',
+        theme: 'red',
+        onClick: async ({ close }) => {
+          capture('bulk_mark_dropped')
+          try {
+            const res = await call('crm.api.contact.mark_contacts_dropped', {
+              names: JSON.stringify(Array.from(selections)),
+              dropped: 1,
+            })
+            toast.success(res?.message || __('Marked as Dropped'))
+            reload(unselectAll)
+            close()
+          } catch (err) {
+            toast.error(err.message || __('Failed to mark contacts as dropped'))
+          }
+        },
+      },
+    ],
+  })
+}
+
+function restoreContacts(selections, unselectAll) {
+  $dialog({
+    title: __('Restore to Unassigned'),
+    message: __(
+      'Are you sure you want to restore {0} contact(s) to Unassigned?',
+      [selections.size],
+    ),
+    variant: 'solid',
+    theme: 'blue',
+    actions: [
+      {
+        label: __('Restore'),
+        variant: 'solid',
+        theme: 'blue',
+        onClick: async ({ close }) => {
+          capture('bulk_restore_dropped')
+          try {
+            const res = await call('crm.api.contact.mark_contacts_dropped', {
+              names: JSON.stringify(Array.from(selections)),
+              dropped: 0,
+            })
+            toast.success(res?.message || __('Restored to Unassigned'))
+            reload(unselectAll)
+            close()
+          } catch (err) {
+            toast.error(err.message || __('Failed to restore contacts'))
+          }
+        },
+      },
+    ],
+  })
+}
+
 const customBulkActions = ref([])
 const customListActions = ref([])
 
 function bulkActions(selections, unselectAll) {
   let actions = []
+  const { isAdmin, isManager } = usersStore()
+  const isSuperOrManager = isAdmin() || isManager()
+  const restrictedDeleteDocs = ['Contact', 'CRM Organization', 'CRM Lead', 'CRM Daily Allocation']
+  const canDelete = !restrictedDeleteDocs.includes(props.doctype) || isAdmin()
 
   if (!props.options.hideEdit) {
     actions.push({
@@ -173,14 +304,14 @@ function bulkActions(selections, unselectAll) {
     })
   }
 
-  if (!props.options.hideDelete) {
+  if (!props.options.hideDelete && canDelete) {
     actions.push({
       label: __('Delete'),
       onClick: () => deleteValues(selections, unselectAll),
     })
   }
 
-  if (!props.options.hideAssign) {
+  if (!props.options.hideAssign && isSuperOrManager) {
     actions.push({
       label: __('Assign To'),
       onClick: () => assignValues(selections, unselectAll),
@@ -191,11 +322,35 @@ function bulkActions(selections, unselectAll) {
     })
   }
 
-  if (props.doctype === 'CRM Lead') {
+  if (props.doctype === 'CRM Lead' || props.doctype === 'Contact') {
     actions.push({
       label: __('Convert to Deal'),
       onClick: () => convertToDeal(selections, unselectAll),
     })
+  }
+
+  actions.push({
+    label: __('Bulk Email'),
+    onClick: () => openBulkEmail(selections, unselectAll),
+  })
+
+  actions.push({
+    label: __('Change Status'),
+    submenu: getChangeStatusOptions(selections, unselectAll),
+  })
+
+  if (props.doctype === 'Contact' && isSuperOrManager) {
+    if (props.currentTab === 'dropped') {
+      actions.push({
+        label: __('Restore to Unassigned'),
+        onClick: () => restoreContacts(selections, unselectAll),
+      })
+    } else {
+      actions.push({
+        label: __('Mark as Dropped'),
+        onClick: () => markAsDropped(selections, unselectAll),
+      })
+    }
   }
 
   customBulkActions.value.forEach((action) => {
@@ -227,6 +382,7 @@ function reload(unselectAll) {
   unselectAllAction.value?.()
   unselectAll?.()
   list.value?.reload()
+  emit('reload')
 }
 
 onMounted(async () => {

@@ -124,40 +124,14 @@
         />
       </div>
     </Resizer>
-    <Tabs
-      v-model="activeTab"
-      as="div"
-      :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
-    >
-      <template #tab-label="{ tab }">{{ __(tab.label) }}</template>
-      <template #tab-suffix="{ tab, active }">
-        <Badge
-          :class="[active ? 'bg-surface-gray-10' : 'bg-gray-600']"
-          variant="solid"
-          theme="gray"
-          size="sm"
-        >
-          {{ tab.count }}
-        </Badge>
-      </template>
-      <template #tab-panel="{ tab }">
-        <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
-          class="mt-4"
-          :rows="rows"
-          :columns="columns"
-          :options="{ selectable: false, showTooltip: false }"
-        />
-
-        <EmptyState
-          v-if="!rows.length"
-          :icon="tab.iconLeft"
-          name="Deals"
-          :description="__('Use New Deal to create a deal for this contact.')"
-        />
-      </template>
-    </Tabs>
+    <ContactActivities
+      ref="contactActivitiesRef"
+      :contact="contact.doc"
+      :contactId="props.contactId"
+      :dealRows="rows"
+      :dealColumns="columns"
+      @newDeal="openDealModal"
+    />
   </div>
   <ErrorPage
     v-else-if="errorTitle"
@@ -189,6 +163,7 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
+import ContactActivities from '@/components/ContactActivities/ContactActivities.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { validateIsImageFile, setupCustomizations } from '@/utils'
 import { useContactFields } from '@/composables/useContactFields'
@@ -296,6 +271,7 @@ usePageMeta(() => {
 const showDeleteLinkedDocModal = ref(false)
 const showDealModal = ref(false)
 const dealDefaults = ref({})
+const contactActivitiesRef = ref(null)
 
 // company_name is free text, so only pick an existing organization; otherwise the deal creates one
 async function openDealModal() {

@@ -47,7 +47,23 @@
     >
       <ListRowItem :item="item" :align="column.align" class="overflow-hidden">
         <template #prefix>
-          <div v-if="column.key === 'full_name'">
+          <div
+            v-if="column.key === '_assign'"
+            class="flex items-center gap-1.5 truncate"
+          >
+            <MultipleAvatar
+              v-if="Array.isArray(item) && item.length"
+              :avatars="item"
+              size="sm"
+            />
+            <span
+              v-if="Array.isArray(item) && item.length"
+              class="truncate text-sm font-medium text-ink-gray-9 dark:text-ink-white"
+            >
+              {{ item.map((a) => a.label || a.name).join(', ') }}
+            </span>
+          </div>
+          <div v-else-if="column.key === 'full_name'">
             <Avatar
               v-if="item.label"
               class="flex items-center"
@@ -169,12 +185,12 @@
     ref="listBulkActionsRef"
     v-model="list"
     doctype="Contact"
-    :options="{
-      hideAssign: true,
-    }"
+    :currentTab="currentTab"
+    @reload="emit('reload')"
   />
 </template>
 <script setup>
+import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
@@ -197,6 +213,7 @@ import { useRoute } from 'vue-router'
 defineProps({
   rows: { type: Array, required: true },
   columns: { type: Array, required: true },
+  currentTab: { type: String, default: 'unassigned' },
   options: {
     type: Object,
     default: () => ({
@@ -217,6 +234,7 @@ const emit = defineEmits([
   'applyLikeFilter',
   'likeDoc',
   'selectionsChanged',
+  'reload',
 ])
 
 const route = useRoute()

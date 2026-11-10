@@ -21,6 +21,7 @@ def after_install(force=False):
 	add_default_communication_statuses()
 	add_default_fields_layout(force)
 	add_property_setter()
+	add_contact_custom_fields()
 	add_email_template_custom_fields()
 	add_email_account_custom_field()
 	add_web_form_custom_fields()
@@ -327,6 +328,26 @@ def add_email_account_custom_field():
 		)
 
 		frappe.clear_cache(doctype="Email Account")
+
+
+def add_contact_custom_fields():
+	meta = frappe.get_meta("Contact")
+	fields = [
+		{
+			"default": "0",
+			"fieldname": "custom_is_dropped",
+			"fieldtype": "Check",
+			"label": "Is Dropped",
+			"insert_after": "status",
+		},
+	]
+	fields = [field for field in fields if not meta.has_field(field["fieldname"])]
+	if not fields:
+		return
+
+	click.secho("* Installing Custom Fields in Contact")
+	create_custom_fields({"Contact": fields})
+	frappe.clear_cache(doctype="Contact")
 
 
 def add_web_form_custom_fields():

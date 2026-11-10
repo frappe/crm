@@ -16,12 +16,45 @@
       />
     </template>
   </LayoutHeader>
+
+  <!-- Organizations Status Tabs -->
+  <div class="border-b border-outline-gray-2 bg-surface-base px-3 sm:px-5">
+    <div class="flex items-center gap-6 overflow-x-auto">
+      <button
+        v-for="tab in tabs"
+        :key="tab.value"
+        type="button"
+        class="flex items-center gap-2 border-b-2 py-3 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none"
+        :class="[
+          activeTab === tab.value
+            ? 'border-surface-gray-9 text-ink-gray-9 font-semibold dark:border-ink-white dark:text-ink-white'
+            : 'border-transparent text-ink-gray-5 hover:text-ink-gray-8 dark:text-ink-gray-4 dark:hover:text-ink-white',
+        ]"
+        @click="setTab(tab.value)"
+      >
+        <span>{{ tab.label }}</span>
+        <Badge
+          variant="solid"
+          size="sm"
+          :class="[
+            activeTab === tab.value
+              ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-7 dark:text-ink-white'
+              : 'bg-surface-gray-2 text-ink-gray-7 dark:bg-surface-gray-8 dark:text-ink-gray-3',
+          ]"
+        >
+          {{ tab.count }}
+        </Badge>
+      </button>
+    </div>
+  </div>
+
   <ViewControls
     ref="viewControls"
     v-model="organizations"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
+    :filters="activeTabFilters"
     doctype="CRM Organization"
   />
   <OrganizationsListView
@@ -37,6 +70,7 @@
       rowCount: organizations.data.row_count,
       totalCount: organizations.data.total_count,
     }"
+    @reload="fetchTabCounts"
     @loadMore="() => loadMore++"
     @columnWidthUpdated="() => triggerResize++"
     @updatePageCount="(count) => (updatedPageCount = count)"
@@ -55,7 +89,7 @@
     :description="
       __('Organizations are the companies your contacts and deals belong to.')
     "
-    :filtered="!!Object.keys(organizations.params?.filters || {}).length"
+    :filtered="!!Object.keys(organizations.params?.filters || {}).length || activeTab !== 'all'"
     docsLink="https://docs.frappe.io/crm/organization"
     importDoctype="CRM Organization"
     @create="showOrganizationModal = true"
@@ -76,11 +110,16 @@ import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
 import { formatDate, website } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { ref, computed } from 'vue'
+import { Badge, createResource } from 'frappe-ui'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import EmptyState from '../components/ListViews/EmptyState.vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Organization')
+
+const route = useRoute()
+const router = useRouter()
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
@@ -91,6 +130,102 @@ const loadMore = ref(1)
 const triggerResize = ref(1)
 const updatedPageCount = ref(20)
 const viewControls = ref(null)
+
+// 1. Active Tab (default: all)
+const activeTab = ref(
+  ['all', 'active', 'inactive'].includes(route.query.tab)
+    ? route.query.tab
+    : 'all',
+)
+
+// 2. Dynamic Counts for the tabs
+const tabCounts = ref({
+  all: 0,
+  active: 0,
+  inactive: 0,
+})
+
+const tabCountsResource = createResource({
+  url: 'crm.api.organization.get_organization_tab_counts',
+  auto: true,
+  onSuccess: (data) => {
+    if (data) {
+      tabCounts.value = {
+        all: data.all ?? 0,
+        active: data.active ?? 0,
+        inactive: data.inactive ?? 0,
+      }
+    }
+  },
+})
+
+function fetchTabCounts() {
+  tabCountsResource.reload()
+}
+
+onMounted(() => {
+  fetchTabCounts()
+})
+
+watch(
+  () => organizations.value?.data,
+  () => {
+    fetchTabCounts()
+  },
+)
+
+watch(showOrganizationModal, (val) => {
+  if (!val) {
+    fetchTabCounts()
+  }
+})
+
+const tabs = computed(() => [
+  {
+    label: __('All'),
+    value: 'all',
+    count: tabCounts.value.all,
+  },
+  {
+    label: __('Active'),
+    value: 'active',
+    count: tabCounts.value.active,
+  },
+  {
+    label: __('Inactive'),
+    value: 'inactive',
+    count: tabCounts.value.inactive,
+  },
+])
+
+function setTab(tab) {
+  if (activeTab.value === tab) return
+  activeTab.value = tab
+  router.replace({
+    query: {
+      ...route.query,
+      tab: tab === 'all' ? undefined : tab,
+    },
+  })
+  fetchTabCounts()
+  nextTick(() => {
+    viewControls.value?.reload?.()
+  })
+}
+
+// 3. Mutually exclusive active tab filters
+const activeTabFilters = computed(() => {
+  if (activeTab.value === 'active') {
+    return {
+      status: 'Active',
+    }
+  } else if (activeTab.value === 'inactive') {
+    return {
+      status: 'Inactive',
+    }
+  }
+  return {}
+})
 
 const rows = computed(() => {
   if (
@@ -139,6 +274,8 @@ const rows = computed(() => {
         }
       } else if (row === 'website') {
         _rows[row] = website(organization.website)
+      } else if (row === 'status') {
+        _rows[row] = organization.status || 'Active'
       } else if (['modified', 'creation'].includes(row)) {
         _rows[row] = timestampCell(organization[row])
       }
