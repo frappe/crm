@@ -215,6 +215,21 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 				["users", "invite", "sales-hierarchy"],
 			)
 
+	def test_crm_ships_a_forms_pane_for_sales_and_system_managers(self):
+		forms = self.pane("crm", "forms")
+
+		self.assertEqual([(block["key"], block["component"]) for block in forms["blocks"]], [("forms", "forms")])
+		self.assertEqual(forms["blocks"][0]["roles"], ["Sales Manager", "System Manager"])
+
+	def test_only_a_manager_sees_the_forms_pane(self):
+		self.make_user(SALES_USER, "Sales User")
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with set_user(SALES_USER):
+			self.assertIsNone(self.visible_pane("forms"))
+		with set_user(SALES_MANAGER):
+			self.assertEqual([block["key"] for block in self.visible_pane("forms")["blocks"]], ["forms"])
+
 	def test_crm_ships_the_erpnext_pane_with_verify_connection_and_product_sync_blocks(self):
 		erpnext = self.pane("crm", "erpnext")
 
