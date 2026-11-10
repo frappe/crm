@@ -1,7 +1,7 @@
 <!-- ERPNext connection check: asks ERPNext, on this site or the saved one, and names the URL, key or company that is wrong. -->
 <template>
 	<div v-if="settings.loading" aria-hidden="true">
-		<div class="flex items-center gap-8 border-b border-outline-gray-1 py-3.5">
+		<div class="flex items-center gap-8 py-3.5">
 			<Skeleton class="h-4 w-36 rounded-1" />
 			<Skeleton class="ml-auto h-7 w-28 rounded-4" />
 		</div>

@@ -1,11 +1,7 @@
 <!-- ERPNext product sync: the two-way switch, the sync status read on open and after a sync, and Sync now. -->
 <template>
 	<div v-if="settings.loading" aria-hidden="true">
-		<div
-			v-for="row in 2"
-			:key="row"
-			class="flex items-center gap-8 border-b border-outline-gray-1 py-3.5 last:border-b-0"
-		>
+		<div v-for="row in 2" :key="row" class="flex items-center gap-8 py-3.5">
 			<Skeleton class="h-4 w-36 rounded-1" />
 			<Skeleton class="ml-auto h-7 w-24 rounded-4" />
 		</div>
@@ -17,11 +13,7 @@
 		{{ __("Product sync runs once the integration is on and ERPNext is on this site.") }}
 	</p>
 	<template v-else>
-		<div
-			v-if="twoWay"
-			data-fieldname="sync_products"
-			class="border-b border-outline-gray-1"
-		>
+		<div v-if="twoWay" data-fieldname="sync_products">
 			<SettingsRow
 				:title="__('Bidirectional product sync')"
 				:description="
