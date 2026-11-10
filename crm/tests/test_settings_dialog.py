@@ -218,7 +218,9 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 	def test_crm_ships_a_forms_pane_for_sales_and_system_managers(self):
 		forms = self.pane("crm", "forms")
 
-		self.assertEqual([(block["key"], block["component"]) for block in forms["blocks"]], [("forms", "forms")])
+		self.assertEqual(
+			[(block["key"], block["component"]) for block in forms["blocks"]], [("forms", "forms")]
+		)
 		self.assertEqual(forms["blocks"][0]["roles"], ["Sales Manager", "System Manager"])
 
 	def test_only_a_manager_sees_the_forms_pane(self):
