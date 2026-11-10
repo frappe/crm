@@ -85,7 +85,7 @@
  "doctype": "Settings Dialog",
  "extends": "frappe",
  "idx": 0,
- "modified": "2026-10-31 14:10:00.000000",
+ "modified": "2026-11-10 20:30:00.000000",
  "modified_by": "Administrator",
  "name": "crm-frappe",
  "owner": "Administrator",
