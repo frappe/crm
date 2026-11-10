@@ -1,11 +1,7 @@
 <!-- The person's CRM Telephony Agent, with each provider's rows only while that provider is on. -->
 <template>
 	<div v-if="loading" aria-hidden="true">
-		<div
-			v-for="row in rows.length"
-			:key="row"
-			class="flex items-center gap-8 border-b border-outline-gray-1 py-3.5 last:border-b-0"
-		>
+		<div v-for="row in rows.length" :key="row" class="flex items-center gap-8 py-3.5">
 			<Skeleton class="h-4 w-36 rounded-1" />
 			<Skeleton class="ml-auto h-7 w-56 rounded-4" />
 		</div>
@@ -20,12 +16,7 @@
 		>
 			{{ __("No {0} for you yet. The first change creates it.", [__(DOCTYPE)]) }}
 		</p>
-		<div
-			v-for="field in fields"
-			:key="field.fieldname"
-			:data-fieldname="field.fieldname"
-			class="border-b border-outline-gray-1 last:border-b-0"
-		>
+		<div v-for="field in fields" :key="field.fieldname" :data-fieldname="field.fieldname">
 			<SettingsRow
 				:title="__(field.label || field.fieldname)"
 				:description="field.description && __(field.description)"
