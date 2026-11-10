@@ -11,7 +11,7 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="showOrganizationModal = true"
       />
     </template>
@@ -51,6 +51,14 @@
     v-else-if="organizations.data && !rows.length"
     name="Organizations"
     :icon="OrganizationsIcon"
+    :title="__('No organizations yet')"
+    :description="
+      __('Organizations are the companies your contacts and deals belong to.')
+    "
+    :filtered="!!Object.keys(organizations.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/organization"
+    importDoctype="CRM Organization"
+    @create="showOrganizationModal = true"
   />
   <OrganizationModal
     v-if="showOrganizationModal"

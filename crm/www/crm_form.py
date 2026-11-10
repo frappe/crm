@@ -42,6 +42,8 @@ def get_context(context):
 	except Exception:
 		context.csrf_token = ""
 	context.web_form_name = doc.name
+	# posted with the values so accept() resolves the doctype even under overrides (e.g. Payments)
+	context.form_doctype = doc.doc_type
 	# ?embed=1 (set by the iframe snippet) strips the page chrome so the form sits
 	# flush inside the host page instead of showing our own card-on-gray-background
 	context.embed = frappe.form_dict.get("embed") in ("1", "true", "yes")
@@ -120,7 +122,7 @@ def _link_field_options(doctype: str) -> list[dict]:
 			frappe.set_user("Guest")  # nosemgrep — session fully restored in finally
 			rows = _query()
 		finally:
-			frappe.set_user(current_user)
+			frappe.set_user(current_user)  # nosemgrep: frappe-setuser
 			# set_user() clobbers sid (→ username) and wipes data; put the real ones
 			# back so the request doesn't persist a corrupted session (see #logout).
 			frappe.session.sid = saved_sid

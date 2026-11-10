@@ -123,7 +123,7 @@ onMounted(() => {
   if (!props.option?.value) {
     editMode.value = true
     isNew.value = true
-    nextTick(() => inputRef.value?.el?.focus())
+    nextTick(() => inputRef.value?.focus())
   }
 })
 
@@ -141,7 +141,7 @@ const selectRowOnKey = (e) => {
 const toggleEditMode = () => {
   editMode.value = !editMode.value
   if (editMode.value) {
-    nextTick(() => inputRef.value?.el?.focus())
+    nextTick(() => inputRef.value?.focus())
   }
 }
 
@@ -166,7 +166,7 @@ const saveOption = async () => {
   const error = props.validate?.(value)
   if (error) {
     errorMessage.value = error
-    nextTick(() => inputRef.value?.el?.focus())
+    nextTick(() => inputRef.value?.focus())
     return
   }
 
@@ -179,14 +179,14 @@ const saveOption = async () => {
     // A failed save stays editable instead of showing the value as saved
     if (!saved) {
       errorMessage.value = __('Could not save, try again')
-      nextTick(() => inputRef.value?.el?.focus())
+      nextTick(() => inputRef.value?.focus())
       return
     }
     editMode.value = false
     isNew.value = false
   } catch {
     errorMessage.value = __('Could not save, try again')
-    nextTick(() => inputRef.value?.el?.focus())
+    nextTick(() => inputRef.value?.focus())
   } finally {
     saving.value = false
   }

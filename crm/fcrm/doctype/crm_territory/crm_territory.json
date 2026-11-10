@@ -70,6 +70,7 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Parent CRM Territory",
+   "link_filters": "[[\"CRM Territory\",\"is_group\",\"=\",1]]",
    "options": "CRM Territory"
   },
   {

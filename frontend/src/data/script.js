@@ -2,8 +2,9 @@ import { globalStore } from '@/stores/global'
 import { getMeta } from '@/stores/meta'
 import { getClassNames, createDocProxy } from '@/utils/scriptHelpers'
 import { renderFieldLayoutDialog } from '@/utils/renderFieldLayoutDialog'
+import { scriptToast } from '@/utils/scriptToast'
 import { call, createListResource, toast } from 'frappe-ui'
-import { reactive } from 'vue'
+import { h, reactive } from 'vue'
 import router from '@/router'
 
 const doctypeScripts = reactive({})
@@ -68,11 +69,12 @@ export function getScript(doctype, view = 'Form') {
     const { $dialog, $socket } = globalStore()
 
     helpers.createDialog = $dialog
-    helpers.toast = toast
+    helpers.toast = scriptToast
     helpers.socket = $socket
     helpers.router = router
     helpers.call = call
     helpers.formDialog = renderFieldLayoutDialog
+    helpers.h = h
 
     helpers.throwError = (message) => {
       toast.error(message || __('An error occurred'))
@@ -182,6 +184,7 @@ export function getScript(doctype, view = 'Form') {
   ) {
     document.actions = document.actions || []
     document.statuses = document.statuses || []
+    document.tabs = document.tabs || []
 
     let instance = new FormClass()
 
@@ -341,6 +344,40 @@ export function getScript(doctype, view = 'Form') {
             return
           }
           this._originalDocumentContext.statuses = newValue
+        },
+      })
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(FormClass.prototype, 'tabs')) {
+      Object.defineProperty(FormClass.prototype, 'tabs', {
+        configurable: true,
+        enumerable: true,
+        get() {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for tabs getter.',
+            )
+            return []
+          }
+
+          return this._originalDocumentContext.tabs
+        },
+        set(newValue) {
+          if (!this._originalDocumentContext) {
+            console.warn(
+              'CRM Script: _originalDocumentContext not found on instance for tabs setter.',
+            )
+            return
+          }
+          if (!Array.isArray(newValue)) {
+            console.warn(
+              'CRM Script: "tabs" property must be an array. Value was not set.',
+              newValue,
+            )
+            this._originalDocumentContext.tabs = []
+            return
+          }
+          this._originalDocumentContext.tabs = newValue
         },
       })
     }

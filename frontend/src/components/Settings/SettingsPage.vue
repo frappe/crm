@@ -1,6 +1,6 @@
 <template>
-  <div class="flex h-full flex-col gap-6">
-    <div class="flex justify-between">
+  <div class="flex flex-col gap-6" :class="embedded ? '' : 'h-full'">
+    <div v-if="!hideHeader" class="flex justify-between">
       <div class="flex flex-col gap-1 w-9/12">
         <div class="flex gap-1 items-center">
           <Button
@@ -19,34 +19,42 @@
             {{ title || __(doctype) }}
           </h2>
           <Badge
-            v-if="data.isDirty"
+            v-if="isDirty"
             :label="__('Not Saved')"
             variant="subtle"
-            theme="orange"
+            theme="amber"
           />
         </div>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
+        <!-- Nothing to save until something changes, so don't offer it. -->
         <Button
-          :loading="data.save.loading"
-          :label="__('Update')"
+          v-if="isDirty"
+          :loading="saving"
+          :label="__('Save')"
           variant="solid"
-          @click="data.save.submit()"
+          @click="save"
         />
       </div>
     </div>
-    <div v-if="!data.get.loading" class="flex-1 overflow-y-auto">
+    <!-- p-1/-m-1 leaves the scroll box a little slack beyond the content, so a
+         focused control's ring isn't clipped by the edge it sits flush against.
+         `overflow-y-auto` clips horizontally too, which is where it shows. -->
+    <div
+      v-if="!loading"
+      :class="embedded ? '' : 'flex-1 overflow-y-auto p-1 -m-1'"
+    >
       <FieldLayout
-        v-if="data?.doc && tabs"
+        v-if="doc && tabs"
         :tabs="tabs"
-        :data="data.doc"
+        :data="doc"
         :doctype="doctype"
       />
     </div>
     <div v-else class="flex flex-1 items-center justify-center">
       <LoadingIndicator class="size-8" />
     </div>
-    <ErrorMessage :message="data.save.error" />
+    <ErrorMessage :message="error" />
   </div>
 </template>
 <script setup>
@@ -60,13 +68,22 @@ import {
   ErrorMessage,
 } from 'frappe-ui'
 import { getRandom } from '@/utils'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 
 const props = defineProps({
   doctype: { type: String, required: true },
   title: { type: String, default: '' },
   successMessage: { type: String, default: 'Updated successfully' },
   back: { type: Function, default: null },
+  // When true, drop the full-height/own-scroll layout so the page sizes to its
+  // content and can be stacked inside a parent that owns the scroll.
+  embedded: { type: Boolean, default: false },
+  // When true, skip the title/Update header so a parent can own it. The parent
+  // drives saving through the exposed `save`/`isDirty`.
+  hideHeader: { type: Boolean, default: false },
+  // Fieldnames to leave out of the rendered form, for values the page owns
+  // through a purpose-built control elsewhere.
+  excludeFields: { type: Array, default: () => [] },
 })
 
 const fields = createResource({
@@ -79,11 +96,15 @@ const fields = createResource({
   auto: true,
 })
 
+// Document resources are cached by doctype+name, so this page keeps its unsaved
+// edits when it is unmounted and remounted — which Tabs does on every switch.
+// `auto` would defeat that: the cache reloads an auto resource on every lookup,
+// overwriting the edits. Fetch once instead, only when there is nothing yet.
 const data = createDocumentResource({
   doctype: props.doctype,
   name: props.doctype,
   fields: ['*'],
-  auto: true,
+  auto: false,
   setValue: {
     onSuccess: () => {
       toast.success(__(props.successMessage))
@@ -94,10 +115,27 @@ const data = createDocumentResource({
   },
 })
 
+onMounted(() => {
+  if (!data.doc) data.get.fetch()
+})
+
+const doc = computed(() => data.doc)
+const loading = computed(() => Boolean(data.get.loading) && !data.doc)
+const isDirty = computed(() => Boolean(data.isDirty))
+const saving = computed(() => Boolean(data.save.loading))
+const error = computed(() => data.save.error)
+
+function save() {
+  data.save.submit()
+}
+
 const tabs = computed(() => {
   if (!fields.data) return []
   let _tabs = []
-  let fieldsData = fields.data
+  let fieldsData = fields.data.filter(
+    (field) => !props.excludeFields.includes(field.fieldname),
+  )
+  if (!fieldsData.length) return []
 
   if (fieldsData[0].type != 'Tab Break') {
     let _sections = []
@@ -143,6 +181,19 @@ const tabs = computed(() => {
     }
   })
 
+  // Excluding a field can empty the column it sat in. Columns are flex-1, so an
+  // empty one would still hold its share of the row's width.
+  _tabs.forEach((tab) =>
+    tab.sections.forEach(
+      (section) =>
+        (section.columns = section.columns.filter(
+          (column) => column.fields.length,
+        )),
+    ),
+  )
+
   return _tabs
 })
+
+defineExpose({ isDirty, saving, save })
 </script>

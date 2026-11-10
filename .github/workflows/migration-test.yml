@@ -16,8 +16,8 @@ on:
     workflow_dispatch:
 
 concurrency:
-    group: migration-${{ github.event.number || github.ref }}
-    cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
     migrate:
@@ -37,6 +37,7 @@ jobs:
         env:
             BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
             BENCH_PATH: /home/runner/frappe-bench
+            BENCH_USE_UV: "1"
 
         steps:
             - name: Checkout PR code
@@ -75,11 +76,13 @@ jobs:
               with:
                   node-version: "24"
 
-            - name: Install system dependencies
-              run: |
-                  sudo apt update
-                  sudo apt install -y libcups2-dev redis-server mariadb-client libmariadb-dev
-                  npm install -g yarn
+            - name: Install system packages
+              uses: ./pr-crm/.github/actions/apt-install
+              with:
+                  packages: redis-server mariadb-client libmariadb-dev
+
+            - name: Install yarn
+              run: npm install -g yarn
 
             - name: Configure database
               run: |
@@ -105,10 +108,12 @@ jobs:
                   mkdir sites/test_site
                   cp "${GITHUB_WORKSPACE}/pr-crm/.github/helper/site_config.json" sites/test_site/site_config.json
                   sed -i 's/watch:/# watch:/g; s/schedule:/# schedule:/g; s/socketio:/# socketio:/g; s/redis_socketio:/# redis_socketio:/g' Procfile
-                  bench get-app crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
+                  bench get-app --skip-assets whatsapp
+                  YARN_IGNORE_SCRIPTS=true bench get-app --skip-assets crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
                   bench setup requirements --dev
                   bench start &>> "$BENCH_PATH/bench_start.log" &
-                  CI=Yes bench build --app frappe &
+                  # Emails resolve CSS through assets.json; tests never load the built bundles.
+                  mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
                   bench --site test_site reinstall --yes
                   bench --verbose --site test_site install-app crm
 

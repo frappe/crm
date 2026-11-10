@@ -16,10 +16,11 @@ reported over realtime.
 from __future__ import annotations
 
 import frappe
+from frappe.utils.background_jobs import is_job_enqueued
 from frappe.utils.telemetry import capture
 
 from .config import _setting, auto_enrich_enabled_for, get_config, get_settings
-from .mapper import apply_to_document
+from .mapper import apply_to_document, filled_labels
 from .pipeline import PROGRESS_STEPS
 from .pipeline import run as run_pipeline
 
@@ -61,12 +62,14 @@ def write_run(
 	result=None,
 	started_on=None,
 	notes: str = "",
+	changes=None,
 ):
 	"""Persist exactly one ``CRM Enrichment Run`` from an ``EnrichmentResult``.
 
 	The single point of run-history writing -- storage stays swappable behind it.
 	When ``result`` is given the summary fields + ``raw_json`` (full ``to_dict()``)
-	are populated; otherwise a bare Run (status/website) is written.
+	are populated; otherwise a bare Run (status/website) is written. ``changes`` (the
+	mapper's ``FieldChange`` list) is stored as ``CRM Enrichment Run Change`` rows.
 	"""
 	doc = frappe.new_doc("CRM Enrichment Run")
 	doc.reference_doctype = reference_doctype
@@ -93,8 +96,24 @@ def write_run(
 		if not notes and result.notes:
 			doc.notes = "\n".join(result.notes)
 
+	for change in changes or []:
+		doc.append(
+			"changes",
+			{
+				"fieldname": change.fieldname,
+				"old_value": change.old_value,
+				"new_value": change.new_value,
+			},
+		)
+
 	doc.insert(ignore_permissions=True)
 	return doc.name
+
+
+def enrichment_job_id(reference_doctype: str, reference_name: str) -> str:
+	"""The fixed per-record job id: dedupes enqueues and lets callers check for an
+	in-flight run with ``is_job_enqueued``."""
+	return f"domain-enrich-{reference_doctype}-{reference_name}"
 
 
 def enqueue_enrichment(
@@ -112,7 +131,11 @@ def enqueue_enrichment(
 	"""
 	s = get_settings()
 	timeout = int(_setting(s, "request_timeout")) * int(_setting(s, "max_pages")) + 60
-	job_id = f"domain-enrich-{reference_doctype}-{reference_name}"
+	job_id = enrichment_job_id(reference_doctype, reference_name)
+	# A job for this record is already in flight (maybe another user's), so the
+	# dedup would skip ours: report it as not queued.
+	if is_job_enqueued(job_id):
+		return {"queued": False, "job_id": job_id, "website": website}
 	frappe.enqueue(
 		"crm.domain_enrichment.tasks.run_enrichment",
 		queue="long",
@@ -191,9 +214,16 @@ def run_enrichment(
 
 		doc = frappe.get_doc(reference_doctype, reference_name)
 		doc.check_permission("write")
-		filled_fields = apply_to_document(doc, result, cfg)
-		if filled_fields:
+		# Drop changes that only differ in type (9000 vs "9000"), so the toast's
+		# filled fields, which decide whether Undo shows, match the stored rows.
+		changes = [
+			change
+			for change in apply_to_document(doc, result, cfg)
+			if frappe.utils.cstr(change.old_value) != frappe.utils.cstr(change.new_value)
+		]
+		if changes:
 			doc.save()
+		filled_fields = filled_labels(changes)
 
 		write_run(
 			reference_doctype,
@@ -202,6 +232,7 @@ def run_enrichment(
 			status="Completed",
 			result=result,
 			started_on=started_on,
+			changes=changes,
 		)
 
 		_publish(

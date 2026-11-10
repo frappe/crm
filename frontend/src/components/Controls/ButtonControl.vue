@@ -3,7 +3,7 @@
     :label="__(label)"
     :theme="theme"
     :variant="variant"
-    :icon-left="lucide - icon"
+    :icon-left="iconLeft"
     :disabled="disabled"
     v-bind="$attrs"
     @click.stop="emit('click', $event)"
@@ -34,9 +34,11 @@ export function getButtonVariant(buttonColor) {
 </script>
 
 <script setup>
+import Icon from '@/components/Icon.vue'
 import { Button } from 'frappe-ui'
+import { computed, h } from 'vue'
 
-defineProps({
+const props = defineProps({
   label: { type: String, required: true },
   icon: { type: String, default: null },
   theme: { type: String, default: 'gray' },
@@ -45,4 +47,9 @@ defineProps({
 })
 
 const emit = defineEmits(['click'])
+
+// Tailwind only makes a lucide-* class for names written in the source, so runtime names use the sprite
+const iconLeft = computed(
+  () => props.icon && (() => h(Icon, { icon: props.icon })),
+)
 </script>

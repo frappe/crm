@@ -1,3 +1,5 @@
+import frappe
+
 app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
@@ -11,7 +13,7 @@ app_icon_route = "/crm"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["whatsapp"]
 add_to_apps_screen = [
 	{
 		"name": "crm",
@@ -95,14 +97,16 @@ website_route_rules = [
 # Setup wizard
 # setup_wizard_requires = "assets/crm/js/setup_wizard.js"
 # setup_wizard_stages = "crm.setup.setup_wizard.setup_wizard.get_setup_stages"
-setup_wizard_complete = "crm.demo.api.create_demo_data"
 # setup_wizard_test = "crm.setup.setup_wizard.test_setup_wizard.run_setup_wizard_test"
 
 # Installation
 # ------------
 
 before_install = "crm.install.before_install"
-after_install = "crm.install.after_install"
+after_install = [
+	"crm.install.after_install",
+	"frappe.search.sqlite_search.build_index_in_background",
+]
 
 # Uninstallation
 # ------------
@@ -140,13 +144,92 @@ permission_query_conditions = {
 	"CRM Lead": "crm.permissions.org_hierarchy.get_lead_permission_query_conditions",
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
+	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
 }
 
 has_permission = {
 	"CRM Lead": "crm.permissions.org_hierarchy.has_lead_permission",
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
+	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.has_permission",
 }
+
+# Automation Engine
+# ---------------
+# CRM relationships, actions and events available to Automation Flows
+
+automation_relationships = ["crm.automation.relationships.CRMRelationshipProvider"]
+
+automation_actions = [
+	"crm.automation.actions.AdjustLeadScore",
+	"crm.automation.actions.SetLeadTemperature",
+	"crm.automation.actions.ConvertLeadToDeal",
+	"crm.automation.actions.SendEmailToRecord",
+	"crm.automation.actions.SendCRMNotification",
+]
+
+# Correlation options are the keys `crm.automation.events` actually emits, offered to the
+# builder so waiting on an event never means hand-writing a Jinja expression.
+MESSAGE_CORRELATIONS = [
+	{"label": "This email thread", "value": "{{ doc.message_id or doc.name }}"},
+	{
+		"label": "This lead or deal",
+		"value": "{{ doc.reference_doctype }}:{{ doc.reference_name }}",
+	},
+]
+RECORD_CORRELATION = [{"label": "This record", "value": "{{ doc.name }}"}]
+
+# `subject` names the record an event is about, so a flow triggers on that record rather than
+# on whatever document the emitter held. Either a fixed doctype with the payload key holding
+# its name, or the payload keys for a reference that may be a Lead or a Deal.
+REFERENCE_SUBJECT = {
+	"doctype_key": "reference_doctype",
+	"name_key": "reference_name",
+	"doctypes": ["CRM Lead", "CRM Deal"],
+}
+LEAD_SUBJECT = {"doctype": "CRM Lead", "name_key": "lead"}
+DEAL_SUBJECT = {"doctype": "CRM Deal", "name_key": "deal"}
+
+automation_events = [
+	{
+		"crm.prospect_message_sent": {
+			"label": "We emailed the prospect",
+			"subject": REFERENCE_SUBJECT,
+			"correlation_options": MESSAGE_CORRELATIONS,
+		},
+		"crm.prospect_message_received": {
+			"label": "The prospect replied",
+			"subject": REFERENCE_SUBJECT,
+			"correlation_options": MESSAGE_CORRELATIONS,
+		},
+		"crm.lead_qualified": {"label": "Lead was qualified", "subject": LEAD_SUBJECT},
+		"crm.lead_converted": {
+			"label": "Lead became a deal",
+			"subject": LEAD_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.deal_stage_changed": {
+			"label": "Deal changed stage",
+			"subject": DEAL_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.deal_won": {
+			"label": "Deal was won",
+			"subject": DEAL_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.deal_lost": {
+			"label": "Deal was lost",
+			"subject": DEAL_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+		"crm.task_overdue": {
+			"label": "Task went overdue",
+			"subject": REFERENCE_SUBJECT,
+			"correlation_options": RECORD_CORRELATION,
+		},
+	}
+]
 
 # DocType Class
 # ---------------
@@ -156,6 +239,16 @@ override_doctype_class = {
 	"Contact": "crm.overrides.contact.CustomContact",
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
+
+# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
+extend_doctype_class = {
+	"Data Import": ["crm.overrides.data_import.DataImportListView"],
+	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
+}
+
+# Frappe v15, still supported on main-hotfix, has no extend_doctype_class
+if int(frappe.__version__.split(".")[0]) < 16:
+	override_doctype_class["Data Import"] = "crm.overrides.data_import.DataImportV15"
 
 # Document Events
 # ---------------
@@ -174,25 +267,48 @@ doc_events = {
 		"on_update": ["crm.api.todo.on_update"],
 	},
 	"Communication": {
-		"after_insert": ["crm.utils.on_communication_insert"],
+		"after_insert": [
+			"crm.utils.on_communication_insert",
+			"crm.automation.events.on_communication",
+		],
 		"on_update": ["crm.utils.on_communication_update"],
+		"on_change": ["crm.api.email.stamp_send_time"],
 	},
 	"Comment": {
 		"after_insert": ["crm.utils.on_comment_insert"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
-	"WhatsApp Message": {
+	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
-		"on_update": ["crm.api.whatsapp.on_update"],
+		"on_submit": ["crm.api.whatsapp.update_reference_modified"],
+		"on_update": [
+			"crm.api.whatsapp.notify_agent",
+			"crm.automation.events.on_whatsapp_message",
+		],
 	},
 	"CRM Deal": {
 		"on_update": [
-			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext"
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
+			"crm.automation.events.on_deal_update",
 		],
+	},
+	"CRM Lead": {
+		"on_update": ["crm.automation.events.on_lead_update"],
 	},
 	"Sales Order": {
 		"before_validate": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
+		],
+	},
+	"Quotation": {
+		"after_insert": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+		"on_update": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+		"on_trash": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
 		],
 	},
 	"Item": {
@@ -216,16 +332,25 @@ doc_events = {
 	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
+		"validate": ["crm.api.availability.validate_user"],
+		"on_update": ["crm.api.availability.on_user_update"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
 }
+
+# The whatsapp app has no role model of its own; this gates its whitelisted
+# endpoints on CRM's sales roles.
+whatsapp_access_guard = ["crm.api.whatsapp.validate_access"]
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
 	"all": ["crm.api.event.trigger_offset_event_notifications"],
-	"hourly": ["crm.api.event.trigger_hourly_event_notifications"],
+	"hourly": [
+		"crm.api.event.trigger_hourly_event_notifications",
+		"crm.automation.events.emit_overdue_tasks",
+	],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",
 		"crm.api.event.purge_event_reminder_logs",
@@ -324,6 +449,8 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
+on_session_creation = ["crm.api.onboarding.complete_setup_for_fc_site"]
+
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
 	"crm.api.whatsapp.add_roles",
@@ -331,6 +458,8 @@ after_migrate = [
 	"crm.install.add_default_scripts",
 	"crm.install.add_web_form_custom_fields",
 ]
+
+sqlite_search = ["crm.search_sqlite.CRMSearch"]
 
 standard_dropdown_items = [
 	{

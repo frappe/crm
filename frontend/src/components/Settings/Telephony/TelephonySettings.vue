@@ -11,11 +11,11 @@
             v-if="isDirty"
             :label="__('Not Saved')"
             variant="subtle"
-            theme="orange"
+            theme="amber"
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Configure telephony settings for your CRM') }}
+          {{ __('Configure telephony settings for your CRM.') }}
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">

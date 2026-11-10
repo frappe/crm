@@ -1,17 +1,28 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
+from frappe.utils import add_to_date
 
 from crm.integrations.api import (
 	add_note_to_call_log,
 	add_task_to_call_log,
+	find_contact_by_phone_number,
+	find_contact_lead_or_deal_from_number,
 	get_contact_by_phone_number,
 	get_contact_lead_or_deal_from_number,
 	get_user_default_calling_medium,
 	is_call_integration_enabled,
 	set_default_calling_medium,
+)
+from crm.integrations.exotel.handler import (
+	EXOTEL_CALL_STATUSES,
+	get_call_log_status,
+	handle_request,
+	normalize_call_status,
 )
 
 
@@ -496,6 +507,151 @@ class TestIntegrations(IntegrationTestCase):
 		self.assertIsNone(doctype)
 
 
+class TestExotelCallStatus(IntegrationTestCase):
+	"""Exotel reports status in its own vocabulary, CRM Call Log status is a Select."""
+
+	def get_status_options(self):
+		return frappe.get_meta("CRM Call Log").get_field("status").options.split("\n")
+
+	def test_every_mapped_status_is_a_valid_option(self):
+		"""Whatever we map to has to exist in the Select, or the call log won't save"""
+		options = self.get_status_options()
+		for status in EXOTEL_CALL_STATUSES.values():
+			self.assertIn(status, options)
+
+	def test_normalize_call_status_handles_exotel_casing(self):
+		self.assertEqual(normalize_call_status("no-answer"), "No Answer")
+		self.assertEqual(normalize_call_status("in-progress"), "In Progress")
+		self.assertEqual(normalize_call_status("No_Answer"), "No Answer")
+		self.assertEqual(normalize_call_status(" Completed "), "Completed")
+		self.assertEqual(normalize_call_status("cancelled"), "Canceled")
+
+	def test_normalize_call_status_treats_empty_values_as_unset(self):
+		"""A leg that never connected has no status, rather than an unknown one"""
+		for status in (None, "", "null", "NULL", "undefined"):
+			self.assertIsNone(normalize_call_status(status))
+
+	def test_normalize_call_status_logs_unknown_status(self):
+		"""An unknown status means the mapping is stale, so leave a trace instead of guessing"""
+		# Error Log may live outside the main database, so delete through the document API
+		for name in frappe.get_all(
+			"Error Log", filters={"method": "Unknown Exotel call status"}, pluck="name"
+		):
+			frappe.delete_doc("Error Log", name, ignore_permissions=True)
+
+		self.assertIsNone(normalize_call_status("some-new-exotel-status"))
+
+		error_logs = frappe.get_all(
+			"Error Log", filters={"method": "Unknown Exotel call status"}, pluck="error"
+		)
+		self.assertEqual(len(error_logs), 1)
+		self.assertIn("some-new-exotel-status", error_logs[0])
+
+	def test_incoming_no_answer_without_matching_call_type(self):
+		"""The status reported in #824, which used to be passed through as "no-answer" """
+		status = get_call_log_status({"CallType": "client-hangup", "DialCallStatus": "no-answer"})
+		self.assertEqual(status, "No Answer")
+
+		status = get_call_log_status({"Status": "no-answer"})
+		self.assertEqual(status, "No Answer")
+
+	def test_incoming_null_status_is_unset(self):
+		"""Caller hung up before any agent leg connected"""
+		status = get_call_log_status({"CallType": "client-hangup", "DialCallStatus": "null"})
+		self.assertIsNone(status)
+
+	def restore_exotel_settings(self, original):
+		# The webhook handler commits, so a rollback no longer undoes the settings written above.
+		for field in ("enabled", "webhook_verify_token"):
+			frappe.db.set_single_value("CRM Exotel Settings", field, original.get(field))
+		frappe.db.commit()  # nosemgrep
+
+	def test_first_event_without_status_still_creates_call_log(self):
+		"""Status is mandatory on the call log, but a status-less first event must not be dropped.
+
+		Frappe fills an unset Select with its first option on insert, so the log
+		comes out as "Initiated" rather than failing the mandatory check.
+		"""
+		call_sid = "test-exotel-no-status"
+		frappe.db.delete("CRM Call Log", {"id": call_sid})
+		self.addCleanup(self.restore_exotel_settings, frappe.get_single("CRM Exotel Settings").as_dict())
+		frappe.db.set_single_value("CRM Exotel Settings", "enabled", 1)
+		frappe.db.set_single_value("CRM Exotel Settings", "webhook_verify_token", "test-token")
+		self.addCleanup(frappe.db.delete, "CRM Call Log", {"id": call_sid})
+
+		request = frappe._dict(args={"key": "test-token"}, headers={})
+		with patch.object(frappe.local, "request", request, create=True):
+			handle_request(
+				CallSid=call_sid,
+				Direction="incoming",
+				CallFrom="+0987654321",
+				To="+1234567890",
+				DialWhomNumber="+1234567890",
+				CallType="client-hangup",
+				DialCallStatus="null",
+			)
+
+		self.assertEqual(frappe.db.get_value("CRM Call Log", {"id": call_sid}, "status"), "Initiated")
+
+	def test_incoming_call_type_overrides_are_preserved(self):
+		cases = [
+			({"CallType": "incomplete", "DialCallStatus": "no-answer"}, "No Answer"),
+			({"CallType": "incomplete", "DialCallStatus": "failed"}, "Failed"),
+			({"CallType": "client-hangup", "DialCallStatus": "canceled"}, "Canceled"),
+			# a completed call is completed regardless of what the leg reported
+			({"CallType": "completed", "DialCallStatus": "busy"}, "Completed"),
+			# busy means it is still ringing on another leg
+			({"CallType": "incomplete", "DialCallStatus": "busy"}, "Ringing"),
+		]
+		for payload, expected in cases:
+			with self.subTest(payload=payload):
+				self.assertEqual(get_call_log_status(payload), expected)
+
+	def test_dial_call_status_takes_precedence_over_status(self):
+		payload = {"DialCallStatus": "completed", "Status": "no-answer"}
+		self.assertEqual(get_call_log_status(payload), "Completed")
+
+	def test_outgoing_statuses_are_mapped(self):
+		cases = [
+			("completed", "Completed"),
+			("in-progress", "In Progress"),
+			("no-answer", "No Answer"),
+			("failed", "Failed"),
+			# these used to fall through and be passed on as-is
+			("canceled", "Canceled"),
+			("queued", "Queued"),
+			("ringing", "Ringing"),
+			("initiated", "Initiated"),
+			# busy means it is still ringing on another leg
+			("busy", "Ringing"),
+		]
+		for direction in ("outbound-api", "outbound-dial"):
+			for reported, expected in cases:
+				with self.subTest(direction=direction, status=reported):
+					status = get_call_log_status({"Status": reported}, direction=direction)
+					self.assertEqual(status, expected)
+
+	def test_every_status_is_valid_or_unset(self):
+		"""No payload should ever produce a status the Select would reject"""
+		options = self.get_status_options()
+		payloads = [
+			{},
+			{"Status": "null"},
+			{"Status": "some-new-exotel-status"},
+			{"CallType": "client-hangup", "DialCallStatus": "null"},
+		]
+		for reported in EXOTEL_CALL_STATUSES:
+			payloads.append({"Status": reported})
+			payloads.append({"CallType": "incomplete", "DialCallStatus": reported})
+
+		for direction in ("inbound", "outbound-api", "outbound-dial"):
+			for payload in payloads:
+				with self.subTest(direction=direction, payload=payload):
+					status = get_call_log_status(payload, direction=direction)
+					if status is not None:
+						self.assertIn(status, options)
+
+
 def create_test_call_log(**kwargs):
 	"""Helper function to create a CRM Call Log for testing"""
 	import uuid
@@ -516,3 +672,183 @@ def create_test_call_log(**kwargs):
 	call_log = frappe.get_doc(data)
 	call_log.insert()
 	return call_log
+
+
+class TestFindByPhone(IntegrationTestCase):
+	"""find_by_phone matches a number however it was stored or received."""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def _lead(self, mobile_no: str, **fields):
+		return frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Find",
+				"last_name": frappe.generate_hash(length=5),
+				"mobile_no": mobile_no,
+				"lead_owner": "Administrator",
+				**fields,
+			}
+		).insert()
+
+	def _contact(self, mobile_no: str):
+		contact = frappe.get_doc(
+			{"doctype": "Contact", "first_name": "Find", "last_name": frappe.generate_hash(length=5)}
+		)
+		contact.append("phone_nos", {"phone": mobile_no, "is_primary_mobile_no": 1})
+		return contact.insert()
+
+	def _names(self, matches):
+		return [(match["doctype"], match["docname"]) for match in matches]
+
+	def test_lead_is_found_from_every_spelling(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("+91 98765 43210")
+		for spelling in ("919876543210", "+919876543210", "9876543210", "+91-98765-43210"):
+			self.assertEqual(self._names(find_by_phone(spelling)), [("CRM Lead", lead.name)], spelling)
+
+	def test_lead_stored_without_country_code_is_found_from_meta_id(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("9876543211")
+		self.assertEqual(self._names(find_by_phone("919876543211")), [("CRM Lead", lead.name)])
+
+	def test_foreign_number_is_found(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("+1 415 555 2671")
+		self.assertEqual(self._names(find_by_phone("14155552671")), [("CRM Lead", lead.name)])
+
+	def test_lead_phone_field_counts_too(self):
+		from crm.integrations.api import find_by_phone
+
+		lead = self._lead("", phone="+91 98765 43212")
+		self.assertEqual(self._names(find_by_phone("919876543212")), [("CRM Lead", lead.name)])
+
+	def test_converted_lead_is_skipped(self):
+		from crm.integrations.api import find_by_phone
+
+		self._lead("+91 98765 43213", converted=1)
+		self.assertEqual(find_by_phone("919876543213"), [])
+
+	def test_deal_comes_before_lead_before_contact(self):
+		from crm.integrations.api import find_by_phone
+
+		contact = self._contact("+91 98765 43214")
+		lead = self._lead("+91 98765 43214")
+		org = frappe.get_doc(
+			{"doctype": "CRM Organization", "organization_name": frappe.generate_hash(length=6)}
+		).insert()
+		deal = frappe.get_doc(
+			{"doctype": "CRM Deal", "organization": org.name, "deal_owner": "Administrator"}
+		)
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.insert()
+
+		matches = find_by_phone("919876543214")
+
+		self.assertEqual(
+			self._names(matches),
+			[("CRM Deal", deal.name), ("CRM Lead", lead.name), ("Contact", contact.name)],
+		)
+		self.assertEqual(matches[0]["contact"], contact.name)
+
+	def test_a_different_number_that_shares_digits_does_not_match(self):
+		from crm.integrations.api import find_by_phone
+
+		self._lead("+91 98765 43215")
+		self.assertEqual(find_by_phone("+1 987 654 3215"), [])
+
+	def test_resolver_wrappers_keep_their_shape(self):
+		from crm.integrations.api import get_contact_by_phone_number, get_contact_lead_or_deal_from_number
+
+		lead = self._lead("+91 98765 43216")
+		self.assertEqual(get_contact_lead_or_deal_from_number("919876543216"), (lead.name, "CRM Lead"))
+		found = get_contact_by_phone_number("919876543216")
+		self.assertEqual(found["lead"], lead.name)
+		self.assertEqual(found["name"], lead.name)
+		self.assertEqual(found["full_name"], lead.lead_name)
+		self.assertEqual(get_contact_by_phone_number("+9999999999"), {"mobile_no": "+9999999999"})
+
+
+SALES_USER = "phone-lookup-rep@example.com"
+
+
+class TestPhoneLookupPermissions(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		if not frappe.db.exists("User", SALES_USER):
+			user = frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": SALES_USER,
+					"first_name": "Phone Lookup Rep",
+					"send_welcome_email": 0,
+				}
+			).insert(ignore_permissions=True)
+			user.add_roles("Sales User")
+
+	def setUp(self):
+		frappe.db.savepoint("test_phone_lookup")
+		self.lead = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Hidden",
+				"mobile_no": "+91 98765 11111",
+				"lead_owner": "Administrator",
+			}
+		).insert()
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback(save_point="test_phone_lookup")
+		super().tearDown()
+
+	def test_lookups_hide_a_lead_the_user_cannot_read(self):
+		frappe.set_user(SALES_USER)
+		self.assertFalse(frappe.has_permission("CRM Lead", "read", self.lead.name))
+
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111"), {"mobile_no": "+91 98765 11111"})
+		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (None, None))
+
+	def test_server_side_lookups_still_find_the_lead(self):
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(
+			find_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
+		)
+
+	def test_lookups_find_a_lead_the_user_can_read(self):
+		frappe.db.set_value("CRM Lead", self.lead.name, "lead_owner", SALES_USER)
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(
+			get_contact_lead_or_deal_from_number("+91 98765 11111"), (self.lead.name, "CRM Lead")
+		)
+
+	def test_lookups_skip_a_newer_hidden_lead_for_an_older_readable_one(self):
+		readable = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Visible",
+				"mobile_no": "+91 98765 11111",
+				"lead_owner": SALES_USER,
+			}
+		).insert()
+		frappe.db.set_value(
+			"CRM Lead",
+			self.lead.name,
+			"modified",
+			add_to_date(readable.modified, hours=1),
+			update_modified=False,
+		)
+		frappe.set_user(SALES_USER)
+
+		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
+		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], readable.name)
+		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (readable.name, "CRM Lead"))

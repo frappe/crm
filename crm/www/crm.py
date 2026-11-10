@@ -19,7 +19,7 @@ def get_context():
 
 	redirect_to_set_password()
 
-	frappe.db.commit()
+	frappe.db.commit()  # page renders are GET, not auto-committed  # nosemgrep
 	context = frappe._dict()
 	context.boot = get_boot()
 	if frappe.session.user != "Guest":
@@ -56,7 +56,7 @@ def redirect_to_set_password():
 	raise redirect
 
 
-@frappe.whitelist(methods=["POST"], allow_guest=True)
+@frappe.whitelist(methods=["POST"], allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def get_context_for_dev():
 	if not frappe.conf.developer_mode:
 		frappe.throw(_("This method is only meant for developer mode"))
@@ -77,6 +77,7 @@ def get_boot():
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"demo_data_created": frappe.db.get_default("crm_demo_data_created") == "1",
 			"is_fc_site": is_fc_site(),
+			"cloud_settings": get_cloud_settings(),
 			"translated_doctypes": get_translated_doctypes(),
 			"translated_messages": get_messages_for_boot(),
 			"timezone": {
@@ -87,6 +88,15 @@ def get_boot():
 			"state_options": get_state_options(),
 		}
 	)
+
+
+def get_cloud_settings() -> dict:
+	"""Cloud Settings boot context, enabled for System Managers on Frappe Cloud v2 sites."""
+	try:
+		from frappe.integrations.frappe_providers.cloud_settings import get_boot_context
+	except ImportError:
+		return {"enabled": False}
+	return get_boot_context()
 
 
 def get_state_options() -> dict[str, list[str]]:

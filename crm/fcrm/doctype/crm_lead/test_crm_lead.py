@@ -1,6 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.form.assign_to import add as assign_add
@@ -461,6 +463,21 @@ class TestCRMLead(IntegrationTestCase):
 		lead.reload()
 		self.assertEqual((lead.lost_reason, lead.lost_notes), ("Pricing", "Too high"))
 
+	def test_cannot_convert_lost_lead_to_deal(self):
+		"""Lost leads cannot be converted to deals."""
+		if not frappe.db.exists("CRM Lost Reason", "Not interested"):
+			frappe.get_doc({"doctype": "CRM Lost Reason", "lost_reason": "Not interested"}).insert()
+
+		for status in ("Junk", "Unqualified"):
+			with self.subTest(status=status):
+				lead = create_lead(first_name=status, status=status, lost_reason="Not interested")
+				with self.assertRaisesRegex(
+					frappe.ValidationError, f"Cannot convert a lead with status {status}"
+				):
+					convert_to_deal(lead=lead.name)
+				lead.reload()
+				self.assertFalse(lead.converted)
+
 	def test_convert_to_deal_api_with_existing_records(self):
 		"""Test convert_to_deal API with existing contact and organization parameters"""
 		# Create existing contact
@@ -531,6 +548,22 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(deal.annual_revenue, 750000)
 		self.assertEqual(deal.job_title, "CEO")
 
+	def test_no_of_employees_propagated_to_organization_on_conversion(self):
+		"""Test that no_of_employees on lead is copied to the organization created on conversion"""
+		lead = create_lead(
+			first_name="Employees",
+			last_name="Test",
+			email="employeestest@example.com",
+			organization="Employees Test Inc",
+			no_of_employees="201-500",
+		)
+
+		deal_name = lead.convert_to_deal()
+		deal = frappe.get_doc("CRM Deal", deal_name)
+
+		org = frappe.get_doc("CRM Organization", deal.organization)
+		self.assertEqual(org.no_of_employees, "201-500")
+
 	def test_custom_fields_copied_to_deal_by_label(self):
 		"""Custom Lead fields map to matching custom Deal fields."""
 		create_lead_deal_custom_fields()
@@ -577,6 +610,19 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertEqual(deal.deal_owner, "crm.user2@example.com")
 		self.assertIn("crm.user2@example.com", deal.get_assigned_users())
 
+	def test_deal_owner_kept_on_conversion_with_co_assignees(self):
+		"""Transferring co-assignees must not take ownership of the converted deal."""
+		lead = create_lead(first_name="KeepOwner", lead_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
+		lead.reload()
+		self.assertEqual(lead.lead_owner, "crm.user2@example.com")
+
+		deal_name = lead.convert_to_deal()
+
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal_name, "deal_owner"), "crm.user2@example.com")
+		deal = frappe.get_doc("CRM Deal", deal_name)
+		self.assertEqual(set(deal.get_assigned_users()), {"crm.user1@example.com", "crm.user2@example.com"})
+
 	def test_owner_cleared_on_unassign(self):
 		"""Unassigning the current owner clears lead_owner"""
 		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")
@@ -601,6 +647,15 @@ class TestCRMLead(IntegrationTestCase):
 					email=f"negative.{fieldname}@example.com",
 					**{fieldname: -100},
 				)
+
+	def test_unique_email_rejects_duplicates(self):
+		"""A Unique field set via Customize Form is enforced even when the DB index stays non-unique"""
+		email_field = frappe.get_meta("CRM Lead").get_field("email")
+		with patch.object(email_field, "unique", 1):
+			lead = create_lead(first_name="Unique", email="unique.lead@example.com")
+			with self.assertRaises(frappe.UniqueValidationError):
+				create_lead(first_name="Duplicate", email="unique.lead@example.com")
+			lead.save()
 
 
 def create_lead(**kwargs):

@@ -14,6 +14,31 @@
           {{ computedDescription }}
         </span>
       </div>
+      <div
+        v-if="onCreate || importDoctype || docsLink"
+        class="mt-2 flex flex-wrap items-center justify-center gap-2"
+      >
+        <Button
+          v-if="onCreate"
+          variant="solid"
+          :label="__('Create')"
+          iconLeft="lucide-plus"
+          @click="onCreate"
+        />
+        <Button
+          v-if="importDoctype"
+          :label="__('Import')"
+          iconLeft="lucide-upload"
+          :route="{ name: 'NewDataImport', params: { doctype: importDoctype } }"
+        />
+        <Button
+          v-if="docsLink"
+          variant="outline"
+          :label="__('Documentation')"
+          iconLeft="lucide-external-link"
+          :href="docsLink"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -31,13 +56,21 @@ const props = defineProps({
   },
   top: { type: String, default: '35%' },
   width: { type: String, default: 'md' },
+  // true when the list is empty only because of the applied filters
+  filtered: { type: Boolean, default: false },
+  docsLink: { type: String, default: '' },
+  importDoctype: { type: String, default: '' },
+  // declared as a prop so the Create button only shows when a page listens to @create
+  onCreate: { type: Function, default: null },
 })
 
 const computedTitle = computed(() => {
+  if (props.filtered) return __('No {0} Found', [__(props.name)])
   return props.title ? props.title : __('No {0} Found', [__(props.name)])
 })
 
 const computedDescription = computed(() => {
+  if (props.filtered) return __('Clear the filters to see all records.')
   return props.description
     ? props.description
     : __(

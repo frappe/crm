@@ -11,6 +11,7 @@ DEMO_USERS = [
 		"mobile_no": "+1 555 100 0002",
 		"roles": ["Sales Manager", "Sales User"],
 		"avatar": "/assets/crm/images/demo/sarah-connor.png",
+		"availability": "Away",
 	},
 	{
 		"email": "john.demo@example.com",
@@ -19,6 +20,7 @@ DEMO_USERS = [
 		"mobile_no": "+1 555 100 0003",
 		"roles": ["Sales User"],
 		"avatar": "/assets/crm/images/demo/john-parker.png",
+		"availability": "Active",
 	},
 	{
 		"email": "emily.demo@example.com",
@@ -27,6 +29,7 @@ DEMO_USERS = [
 		"mobile_no": "+1 555 100 0004",
 		"roles": ["Sales User"],
 		"avatar": "/assets/crm/images/demo/emily-chen.png",
+		"availability": "Unavailable",
 	},
 ]
 
@@ -47,6 +50,10 @@ def create_demo_users():
 					"mobile_no": user_data["mobile_no"],
 					"user_image": user_data["avatar"],
 					"roles": [{"role": r} for r in user_data["roles"]],
+					# a mix of statuses so the availability dots show up in the demo
+					"crm_availability": user_data["availability"]
+					if frappe.db.exists("CRM Availability Status", user_data["availability"])
+					else None,
 				}
 			).insert(ignore_permissions=True)
 

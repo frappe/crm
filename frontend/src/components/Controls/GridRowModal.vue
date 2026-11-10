@@ -1,12 +1,14 @@
 <template>
-  <Dialog v-model:open="show" :size="'4xl'">
-    <template #body>
+  <Dialog v-model:open="show" :size="'4xl'" bare>
+    <template #default>
       <div class="bg-surface-elevation-2 px-4 pb-6 pt-5 sm:px-6">
         <div class="mb-5 flex items-center justify-between">
           <div>
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{ __('Editing Row {0}', [index + 1]) }}
-            </h3>
+            <Dialog.Title as-child>
+              <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
+                {{ __('Editing Row {0}', [index + 1]) }}
+              </h3>
+            </Dialog.Title>
           </div>
           <div class="flex items-center gap-1">
             <Button
@@ -17,12 +19,14 @@
               :icon="EditIcon"
               @click="openGridRowFieldsModal"
             />
-            <Button
-              icon="lucide-x"
-              variant="ghost"
-              class="w-7"
-              @click="show = false"
-            />
+            <Dialog.Close as-child>
+              <Button
+                :aria-label="__('Close')"
+                icon="lucide-x"
+                variant="ghost"
+                class="w-7"
+              />
+            </Dialog.Close>
           </div>
         </div>
         <div>
@@ -43,7 +47,7 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import FieldLayout from '@/components/FieldLayout/FieldLayout.vue'
 import { usersStore } from '@/stores/users'
-import { createResource } from 'frappe-ui'
+import { Dialog, createResource } from 'frappe-ui'
 import { nextTick, provide } from 'vue'
 
 const props = defineProps({
