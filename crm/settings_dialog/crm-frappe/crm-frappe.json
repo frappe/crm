@@ -61,11 +61,6 @@
    ]
   },
   {
-   "anchors": [
-    {
-     "after": "email"
-    }
-   ],
    "component": "email-accounts",
    "description": "The email accounts linked to you. An administrator links them on each Email Account.",
    "key": "email-accounts",

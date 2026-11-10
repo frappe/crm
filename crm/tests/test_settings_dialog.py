@@ -130,11 +130,15 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			["Mobile No.", "Default Medium", "Device", "Twilio Number", "Exotel Number"],
 		)
 
-	def test_crm_adds_an_email_accounts_block_after_desks_email_block(self):
+	def test_crm_adds_its_profile_blocks_after_desks_own(self):
 		blocks = self.pane("frappe", "profile")["blocks"]
 		keys = [block["key"] for block in blocks]
 
-		self.assertEqual(keys[keys.index("email") + 1], "email-accounts")
+		crm_keys = [block["key"] for block in blocks if block["app"] == "crm"]
+		first_crm = keys.index(crm_keys[0])
+
+		self.assertEqual(crm_keys, ["telephony", "email-accounts"])
+		self.assertTrue(all(block["app"] == "frappe" for block in blocks[:first_crm]))
 		self.assertFalse(blocks[keys.index("email-accounts")].get("roles"))
 
 	def test_a_sales_user_sees_the_email_accounts_block_in_profile(self):
