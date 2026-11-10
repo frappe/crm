@@ -6,7 +6,7 @@ import os
 from unittest.mock import patch
 
 import frappe
-from frappe.shell.settings import _installed_doctypes as installed_doctypes
+from frappe.desk.settings_rules import SettingsRules
 from frappe.shell.settings import resolve_panes
 from frappe.shell.settings_filter import SettingsFilter
 from frappe.tests import IntegrationTestCase
@@ -205,22 +205,24 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			)
 
 	def test_the_whatsapp_pane_shows_only_where_frappe_whatsapp_is_installed(self):
-		with patch(
-			"frappe.shell.settings._installed_doctypes",
-			side_effect=lambda blocks: installed_doctypes(blocks) - {"WhatsApp Settings"},
-		):
+		with self.whatsapp_installed(False):
 			self.assertNotIn(("crm", "whatsapp"), self.pane_addresses())
 
-		with patch(
-			"frappe.shell.settings._installed_doctypes",
-			side_effect=lambda blocks: installed_doctypes(blocks) | {"WhatsApp Settings"},
-		):
+		with self.whatsapp_installed(True):
 			whatsapp = self.pane("crm", "whatsapp")
 
 		self.assertEqual([block["key"] for block in whatsapp["blocks"]], ["whatsapp"])
 		self.assertEqual(whatsapp["blocks"][0]["binding"]["doctype"], "WhatsApp Settings")
 		self.assertNotIn("fields", whatsapp["blocks"][0])
 		self.assertEqual(whatsapp["blocks"][0]["roles"], ["Sales Manager", "System Manager"])
+
+	def whatsapp_installed(self, installed: bool):
+		has_doctype = SettingsRules._has_doctype
+
+		def fake(rules, doctype):
+			return installed if doctype == "WhatsApp Settings" else has_doctype(rules, doctype)
+
+		return patch.object(SettingsRules, "_has_doctype", autospec=True, side_effect=fake)
 
 	def pane_addresses(self):
 		return [(pane["app"], pane["key"]) for pane in resolve_panes()]
