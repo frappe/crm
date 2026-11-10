@@ -560,6 +560,12 @@ class TestExotelCallStatus(IntegrationTestCase):
 		status = get_call_log_status({"CallType": "client-hangup", "DialCallStatus": "null"})
 		self.assertIsNone(status)
 
+	def restore_exotel_settings(self, original):
+		# The webhook handler commits, so a rollback no longer undoes the settings written above.
+		for field in ("enabled", "webhook_verify_token"):
+			frappe.db.set_single_value("CRM Exotel Settings", field, original.get(field))
+		frappe.db.commit()  # nosemgrep
+
 	def test_first_event_without_status_still_creates_call_log(self):
 		"""Status is mandatory on the call log, but a status-less first event must not be dropped.
 
@@ -568,6 +574,7 @@ class TestExotelCallStatus(IntegrationTestCase):
 		"""
 		call_sid = "test-exotel-no-status"
 		frappe.db.delete("CRM Call Log", {"id": call_sid})
+		self.addCleanup(self.restore_exotel_settings, frappe.get_single("CRM Exotel Settings").as_dict())
 		frappe.db.set_single_value("CRM Exotel Settings", "enabled", 1)
 		frappe.db.set_single_value("CRM Exotel Settings", "webhook_verify_token", "test-token")
 		self.addCleanup(frappe.db.delete, "CRM Call Log", {"id": call_sid})

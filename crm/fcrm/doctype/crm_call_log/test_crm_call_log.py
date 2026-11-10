@@ -418,6 +418,7 @@ class TestCRMCallLog(IntegrationTestCase):
 		call = create_test_call_log()
 
 		self.assertIsNone(get_call_log(call.name)["_reference"])
+
 	def test_call_log_shows_referenced_lead_when_number_is_shared(self):
 		referenced = create_test_lead("Referenced Lead", "+919876500001")
 		other = create_test_lead("Other Lead", "+919876500001")
