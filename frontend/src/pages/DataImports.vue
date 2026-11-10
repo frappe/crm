@@ -12,7 +12,7 @@
         variant="solid"
         :label="__('Create')"
         iconLeft="lucide-plus"
-        @click="router.push({ name: 'NewDataImport' })"
+        @click="showImportTypeModal = true"
       />
     </template>
   </LayoutHeader>
@@ -63,6 +63,20 @@
     "
     :description="__('Imports you start from a list appear here.')"
   />
+
+  <!-- Import Modals -->
+  <ImportTypeModal
+    v-model="showImportTypeModal"
+    @select="onImportTypeSelect"
+  />
+  <SingleImportModal
+    v-model="showSingleImportModal"
+    @success="onImportSuccess"
+  />
+  <BulkImportModal
+    v-model="showBulkImportModal"
+    @imported="onImportSuccess"
+  />
 </template>
 
 <script setup lang="ts">
@@ -72,6 +86,9 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import DataImportsListView from '@/components/ListViews/DataImportsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
+import ImportTypeModal from '@/components/Import/ImportTypeModal.vue'
+import SingleImportModal from '@/components/Import/SingleImportModal.vue'
+import BulkImportModal from '@/components/Import/BulkImportModal.vue'
 import {
   getDataImportRow,
   type DataImportList,
@@ -82,6 +99,22 @@ import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
+
+const showImportTypeModal = ref(false)
+const showSingleImportModal = ref(false)
+const showBulkImportModal = ref(false)
+
+function onImportTypeSelect(type: string) {
+  if (type === 'single') {
+    showSingleImportModal.value = true
+  } else if (type === 'bulk') {
+    showBulkImportModal.value = true
+  }
+}
+
+function onImportSuccess() {
+  viewControls.value?.reload?.()
+}
 
 const dataImportsListView = ref<InstanceType<
   typeof DataImportsListView
