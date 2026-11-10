@@ -347,3 +347,8 @@ def add_roles():
 			update_permission_property(doctype, role, 0, "print", 1)
 			update_permission_property(doctype, role, 0, "report", 1)
 			update_permission_property(doctype, role, 0, "export", 1)
+
+	# Read only: the template form links to an account, but accounts hold Meta credentials.
+	for role in role_list:
+		if not frappe.db.exists("Custom DocPerm", {"parent": "WA Account", "role": role}):
+			add_permission("WA Account", role, 0, "read")
