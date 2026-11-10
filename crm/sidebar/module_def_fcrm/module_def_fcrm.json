@@ -7,7 +7,7 @@
  "items": [],
  "link_doctype": "Module Def",
  "link_to": "FCRM",
- "modified": "2026-11-01 12:00:00.000000",
+ "modified": "2026-11-10 22:00:00.000000",
  "modified_by": "Administrator",
  "name": "module_def_fcrm",
  "navigation_items": [
@@ -137,6 +137,19 @@
   },
   {
    "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "enrichment-rules",
+   "label": "Enrichment Rules",
+   "link_doctype": "DocType",
+   "link_to": "CRM Enrichment Rule",
+   "parent_key": "accounts",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
    "collapsible": 1,
    "hidden": 0,
    "item_type": "Section",
@@ -181,6 +194,19 @@
    "key": "automation",
    "label": "Automation",
    "link_doctype": "",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "DocType",
+   "keep_closed": 0,
+   "key": "workflow-automations",
+   "label": "Workflow Automations",
+   "link_doctype": "DocType",
+   "link_to": "Automation Flow",
+   "parent_key": "automation",
    "switches_app": 0
   },
   {

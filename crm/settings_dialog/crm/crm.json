@@ -12,7 +12,8 @@
     "label": "Workspace",
     "panes": [
      "crm/general",
-     "crm/users"
+     "crm/users",
+     "crm/enrichment"
     ]
    },
    {
@@ -235,6 +236,24 @@
   },
   {
    "binding_type": "Single",
+   "document_type": "CRM Enrichment Settings",
+   "fields": [
+    "enabled",
+    "auto_enrich",
+    "max_pages"
+   ],
+   "key": "general",
+   "kind": "Generated",
+   "label": "General",
+   "pane": "enrichment",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
+   "save_mode": "button"
+  },
+  {
+   "binding_type": "Single",
    "document_type": "WhatsApp Settings",
    "key": "whatsapp",
    "kind": "Generated",
@@ -345,7 +364,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-11-10 20:05:00.000000",
+ "modified": "2026-11-10 22:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
@@ -379,6 +398,12 @@
    "icon": "plug",
    "key": "erpnext",
    "label": "ERPNext"
+  },
+  {
+   "description": "Fill in company details on leads, deals and organizations from their website.",
+   "icon": "zap",
+   "key": "enrichment",
+   "label": "Enrichment"
   }
  ],
  "standard": 1,

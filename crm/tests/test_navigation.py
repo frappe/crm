@@ -31,10 +31,12 @@ SETUP_ROWS = (
 	"accounts",
 	"industries",
 	"territories",
+	"enrichment-rules",
 	"email",
 	"email-accounts",
 	"email-templates",
 	"automation",
+	"workflow-automations",
 	"assignment-rules",
 	"sla-policies",
 	"holiday-lists",
@@ -53,7 +55,9 @@ SIDEBARS = {
 		if key
 		not in (
 			"email-accounts",
+			"enrichment-rules",
 			"automation",
+			"workflow-automations",
 			"assignment-rules",
 			"sla-policies",
 			"holiday-lists",
@@ -65,7 +69,9 @@ SIDEBARS = {
 	)
 }
 
-MANAGER_SIDEBAR = tuple(key for key in SETUP_ROWS if key not in ("email-accounts", "client-scripts"))
+MANAGER_SIDEBAR = tuple(
+	key for key in SETUP_ROWS if key not in ("email-accounts", "client-scripts", "workflow-automations")
+)
 
 SETUP_DOCTYPES = (
 	"CRM Lead Status",
@@ -75,12 +81,14 @@ SETUP_DOCTYPES = (
 	"CRM Product",
 	"CRM Industry",
 	"CRM Territory",
+	"CRM Enrichment Rule",
 	"Email Account",
 	"Email Template",
 	"Assignment Rule",
 	"CRM Service Level Agreement",
 	"CRM Holiday List",
 	"Client Script",
+	"Automation Flow",
 	"Lead Sync Source",
 	"Failed Lead Sync Log",
 )
@@ -118,19 +126,19 @@ class TestCRMNavigation(IntegrationTestCase):
 			SIDEBARS,
 		)
 
-	def test_a_sales_manager_sees_every_setup_list_but_email_accounts_and_client_scripts(self):
+	def test_a_sales_manager_sees_every_setup_list_but_email_accounts_client_scripts_and_workflows(self):
 		frappe.set_user(self.manager)
 
 		rows = resolve_navigation("crm")["sidebars"]["module_def_fcrm"]
 
 		self.assertEqual(tuple(row["key"] for row in rows), MANAGER_SIDEBAR)
 
-	def test_a_system_manager_sees_client_scripts(self):
+	def test_a_system_manager_sees_every_setup_list(self):
 		frappe.set_user(make_desk_user("crm.navigation.admin@example.com", "System Manager"))
 
 		rows = resolve_navigation("crm")["sidebars"]["module_def_fcrm"]
 
-		self.assertIn("client-scripts", [row["key"] for row in rows])
+		self.assertEqual(tuple(row["key"] for row in rows), SETUP_ROWS)
 
 	def test_the_setup_sidebar_ships_every_setup_list(self):
 		self.assertEqual(tuple(row.key for row in shipped("Sidebar", "module_def_fcrm")), SETUP_ROWS)

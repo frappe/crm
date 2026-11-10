@@ -23,6 +23,8 @@ Group "Workspace"
     crm/users/users
     crm/users/invite
     crm/users/sales-hierarchy
+  crm/enrichment
+    crm/enrichment/general
 
 Group "Integrations"
   crm/telephony
