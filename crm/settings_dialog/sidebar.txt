@@ -17,6 +17,7 @@ Group "Workspace"
     crm/general/deals
     crm/general/communication
     crm/general/exchange-rates
+    desk/system/regional  [placed, home desk/system]
   crm/users
     crm/users/users
     crm/users/invite
