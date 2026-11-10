@@ -8,9 +8,8 @@ from unittest.mock import patch
 import frappe
 from frappe.desk.doctype.settings_dialog.settings_dialog import SettingsDialog
 from frappe.desk.settings_rules import SettingsRules
-from frappe.shell.settings import resolve_panes
+from frappe.shell.settings import merge_settings, resolve_panes
 from frappe.shell.settings_filter import SettingsFilter
-from frappe.shell.settings import merge_settings
 from frappe.shell.settings_sidebar import filter_sidebar
 from frappe.shell.settings_sidebar_text import assert_settings_sidebar
 from frappe.tests import IntegrationTestCase
@@ -88,7 +87,10 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		self.make_user(SYSTEM_MANAGER, "System Manager")
 
 		with set_user(SALES_MANAGER):
-			self.assertNotIn("desk/system/regional", self.sidebar_blocks("crm/general"))
+			self.assertEqual(
+				self.sidebar_blocks("crm/general"),
+				["crm/general/deals", "crm/general/communication", "crm/general/exchange-rates"],
+			)
 		with set_user(SYSTEM_MANAGER):
 			self.assertEqual(self.sidebar_blocks("crm/general")[-1], "desk/system/regional")
 
