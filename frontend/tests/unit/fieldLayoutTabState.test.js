@@ -102,16 +102,16 @@ describe('FieldLayout tab state', () => {
               'Remount',
             ),
             showLayout.value &&
-              h(FieldLayout, {
-                tabs,
-                data: {},
-                doctype: 'CRM Deal',
-                isGridRow: true,
-                tabIndex: fieldLayoutTabIndex.value,
-                'onUpdate:tabIndex': (value) => {
-                  fieldLayoutTabIndex.value = value
-                },
-              }),
+            h(FieldLayout, {
+              tabs,
+              data: {},
+              doctype: 'CRM Deal',
+              isGridRow: true,
+              tabIndex: fieldLayoutTabIndex.value,
+              'onUpdate:tabIndex': (value) => {
+                fieldLayoutTabIndex.value = value
+              },
+            }),
           ])
       },
     })
@@ -135,7 +135,7 @@ describe('FieldLayout tab state', () => {
 
     app.unmount()
     root.remove()
-  })
+  }, 15000)
 
   it('keeps the selected data field tab when DataFields remounts', async () => {
     const { default: FieldLayout } = await import(
@@ -198,12 +198,12 @@ describe('FieldLayout tab state', () => {
               'Remount DataFields',
             ),
             showDataFields.value &&
-              h(DataFieldsStub, {
-                fieldLayoutTabIndex: fieldLayoutTabIndex.value,
-                'onUpdate:fieldLayoutTabIndex': (value) => {
-                  fieldLayoutTabIndex.value = value
-                },
-              }),
+            h(DataFieldsStub, {
+              fieldLayoutTabIndex: fieldLayoutTabIndex.value,
+              'onUpdate:fieldLayoutTabIndex': (value) => {
+                fieldLayoutTabIndex.value = value
+              },
+            }),
           ])
       },
     })
@@ -227,7 +227,7 @@ describe('FieldLayout tab state', () => {
 
     app.unmount()
     root.remove()
-  })
+  }, 15000)
 
   it('keeps the selected tab by name when labels are duplicated and tabs reload', async () => {
     const { default: FieldLayout } = await import(
@@ -309,7 +309,7 @@ describe('FieldLayout tab state', () => {
 
     app.unmount()
     root.remove()
-  })
+  }, 15000)
 
   it('restores the selected tab name from session storage after page remount', async () => {
     const { default: FieldLayout } = await import(

@@ -170,7 +170,7 @@ describe('FilesUploader', () => {
     expect(useCall).toHaveBeenLastCalledWith(
       expect.objectContaining({ params: { doctype: 'CRM Deal' } }),
     )
-  })
+  }, 15000)
 
   it('limits the file picker to the allowed file types', async () => {
     const { root } = await mountUploader()

@@ -5,6 +5,21 @@ import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 import frappeui from 'frappe-ui/vite'
 
+import fs from 'fs'
+
+// Resolve frappe and whatsapp UI paths, handling both in-bench and mounted workspace execution
+const getFrameworkUiPath = () => {
+  const localRelative = path.resolve(import.meta.dirname, '../../frappe/ui/src')
+  if (fs.existsSync(localRelative)) return localRelative
+  return '/home/frappe/frappe-bench/apps/frappe/ui/src'
+}
+
+const getWhatsappUiPath = () => {
+  const localRelative = path.resolve(import.meta.dirname, '../../whatsapp/ui/src')
+  if (fs.existsSync(localRelative)) return localRelative
+  return '/home/frappe/frappe-bench/apps/whatsapp/ui/src'
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   const config = {
@@ -58,19 +73,14 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname, 'src'),
-        // point at the package src dir (not index.ts) so subpath imports like
-        // `@framework/ui/components/Notifications` resolve. Importing subpaths avoids the
-        // barrel, which `export *`s components (Grid/Phone/FormLayout) that need a newer
-        // frappe-ui (`frappe-ui/internals`) than this app pins.
-        '@framework/ui': path.resolve(
-          import.meta.dirname,
-          '../../frappe/ui/src',
-        ),
+        '@whatsapp/ui': getWhatsappUiPath(),
+        '@framework/ui': getFrameworkUiPath(),
       },
-      // ensure the linked framework package reuses the host app's single copy of each peer.
-      // `dompurify` is an implicit dep of @framework/ui's sanitize util (not declared in its
-      // package.json); dedupe resolves it to the host's copy since the symlinked source has
-      // no node_modules of its own.
+      // ensure the linked @whatsapp/ui package reuses the host app's single copy of each peer:
+      // the symlinked source has no node_modules of its own, so dedupe resolves its imports
+      // (`dompurify`, and the peers below) to the host's copy.
+      // `reka-ui` is what frappe-ui builds on and it passes state through provide/inject,
+      // so a second copy silently breaks context across a linked package's components.
       // the editor packages must resolve to one copy each: tiptap imports
       // `@tiptap/pm/model` while prosemirror-state/transform/tables import bare
       // `prosemirror-model`, so a nested install of either throws "multiple
@@ -88,6 +98,10 @@ export default defineConfig(() => {
         // frappe's own node_modules has an old @vueuse/core without the exports frappe-ui needs
         '@vueuse/core',
         'dompurify',
+        'cropperjs',
+        'leaflet',
+        'leaflet-draw',
+        'leaflet.locatecontrol',
         // ConditionBuilder's drag handles; resolved from the host for the same reason
         'vuedraggable',
         '@tiptap/core',
@@ -120,8 +134,11 @@ export default defineConfig(() => {
     server: {
       fs: {
         // allow the bench `apps/` dir so Vite can serve linked local packages
-        // (@framework/ui) that live in sibling app repos
-        allow: [path.resolve(import.meta.dirname, '../..')],
+        // (@whatsapp/ui, @framework/ui) that live in sibling app repos
+        allow: [
+          path.resolve(import.meta.dirname, '../..'),
+          '/home/frappe/frappe-bench/apps',
+        ],
       },
     },
   }
