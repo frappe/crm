@@ -47,6 +47,9 @@ class TestFCRMSettings(IntegrationTestCase):
 			self.assertFalse(frappe.has_permission("FCRM Settings", "read"))
 			self.assertEqual(brand()["title"], "Acme Sales")
 
+	def test_the_brand_files_are_public_so_every_user_can_load_them(self):
+		self.assertTrue(frappe.get_meta("FCRM Settings").make_attachments_public)
+
 	def get_quick_entry_sections(self):
 		layout = json.loads(frappe.db.get_value("CRM Fields Layout", "CRM Deal-Quick Entry", "layout"))
 		if any("sections" in item for item in layout):
