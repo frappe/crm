@@ -30,6 +30,7 @@
   "panes": {
    "crm/general": {
     "blocks": [
+     "crm/general/brand",
      "crm/general/deals",
      "crm/general/communication",
      "crm/general/exchange-rates",
@@ -55,6 +56,24 @@
   }
  },
  "blocks": [
+  {
+   "binding_type": "Single",
+   "document_type": "FCRM Settings",
+   "fields": [
+    "brand_name",
+    "brand_logo",
+    "favicon"
+   ],
+   "key": "brand",
+   "kind": "Generated",
+   "label": "Brand",
+   "pane": "general",
+   "roles": [
+    "Sales Manager",
+    "System Manager"
+   ],
+   "save_mode": "button"
+  },
   {
    "binding_type": "Single",
    "document_type": "FCRM Settings",

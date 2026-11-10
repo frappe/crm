@@ -51,9 +51,15 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 
 		self.assertEqual(
 			[(block["key"], block["save_mode"]) for block in general["blocks"]],
-			[("deals", "button"), ("communication", "auto"), ("exchange-rates", "button")],
+			[
+				("brand", "button"),
+				("deals", "button"),
+				("communication", "auto"),
+				("exchange-rates", "button"),
+			],
 		)
-		self.assertEqual(general["blocks"][2]["fields"], ["service_provider", "access_key"])
+		self.assertEqual(general["blocks"][0]["fields"], ["brand_name", "brand_logo", "favicon"])
+		self.assertEqual(general["blocks"][3]["fields"], ["service_provider", "access_key"])
 		self.assertTrue(all(block["binding"]["doctype"] == "FCRM Settings" for block in general["blocks"]))
 		self.assertTrue(
 			all(block["roles"] == ["Sales Manager", "System Manager"] for block in general["blocks"])
@@ -68,13 +74,14 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		with set_user(SALES_MANAGER):
 			self.assertEqual(
 				[block["key"] for block in self.visible_pane("general")["blocks"]],
-				["deals", "communication", "exchange-rates"],
+				["brand", "deals", "communication", "exchange-rates"],
 			)
 
 	def test_general_places_the_regional_block_after_exchange_rates(self):
 		self.assertEqual(
 			self.sidebar_blocks("crm/general"),
 			[
+				"crm/general/brand",
 				"crm/general/deals",
 				"crm/general/communication",
 				"crm/general/exchange-rates",
@@ -89,7 +96,12 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 		with set_user(SALES_MANAGER):
 			self.assertEqual(
 				self.sidebar_blocks("crm/general"),
-				["crm/general/deals", "crm/general/communication", "crm/general/exchange-rates"],
+				[
+					"crm/general/brand",
+					"crm/general/deals",
+					"crm/general/communication",
+					"crm/general/exchange-rates",
+				],
 			)
 		with set_user(SYSTEM_MANAGER):
 			self.assertEqual(self.sidebar_blocks("crm/general")[-1], "desk/system/regional")

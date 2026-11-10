@@ -185,6 +185,15 @@ class FCRMSettings(Document):
 		doc.save(ignore_permissions=True)
 
 
+def brand() -> dict:
+	"""The name, logo and favicon an admin set in FCRM Settings, for desk's `add_to_apps_screen` brand hook."""
+	return {
+		"title": frappe.db.get_single_value("FCRM Settings", "brand_name"),
+		"logo": frappe.db.get_single_value("FCRM Settings", "brand_logo"),
+		"favicon": frappe.db.get_single_value("FCRM Settings", "favicon"),
+	}
+
+
 def get_standard_dropdown_items():
 	return [item.get("name1") for item in frappe.get_hooks("standard_dropdown_items")]
 

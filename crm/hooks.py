@@ -21,6 +21,7 @@ add_to_apps_screen = [
 		"title": "CRM",
 		"route": "/crm",
 		"has_permission": "crm.api.check_app_permission",
+		"brand": "crm.fcrm.doctype.fcrm_settings.fcrm_settings.brand",
 	}
 ]
 
