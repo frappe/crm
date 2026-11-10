@@ -77,7 +77,16 @@ const routes = [
     alias: '/tasks',
     path: '/tasks/view/:viewType?',
     name: 'Tasks',
-    component: () => import('@/pages/Tasks.vue'),
+    component: () => import('@/pages/MyTasks.vue'),
+  },
+  {
+    path: '/tasks/prospect/:contactId',
+    name: 'TaskProspect',
+    component: () => import('@/pages/TaskProspectDetail.vue'),
+    props: (route) => ({
+      contactId: route.params.contactId,
+      taskId: route.query.taskId || null,
+    }),
   },
   {
     alias: '/contacts',
@@ -114,6 +123,12 @@ const routes = [
     path: '/data-import/view/:viewType?',
     name: 'Data Imports',
     component: () => import('@/pages/DataImports.vue'),
+  },
+  {
+    alias: '/daily-allocation',
+    path: '/daily-allocation/view/:viewType?',
+    name: 'Daily Allocation',
+    component: () => import('@/pages/DailyAllocation.vue'),
   },
   // one page across these routes, so an import stays open when its URL changes
   // after the first save

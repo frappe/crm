@@ -1,3 +1,4 @@
+import json
 import frappe
 from frappe import _
 
@@ -5,16 +6,26 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 def validate(doc, method):
-	"""Require write access when directly assigning a CRM lead or deal."""
-	# assign_to and assignment rules insert with ignore_permissions after their
-	# own permission check.
+	"""Require write access when a ToDo starts to assign a CRM lead or deal."""
+	# assign_to and assignment rules save with ignore_permissions after their own permission check.
 	if (
-		doc.is_new()
-		and doc.reference_type in ["CRM Lead", "CRM Deal"]
+		doc.reference_type in ["CRM Lead", "CRM Deal"]
 		and doc.reference_name
 		and not doc.flags.ignore_permissions
+		and (doc.is_new() or assignment_changed(doc))
 	):
 		frappe.get_doc(doc.reference_type, doc.reference_name).check_permission("write")
+
+
+def assignment_changed(doc):
+	"""An open ToDo gives its assignee access to the record, so each of these edits assigns anew."""
+	before = doc.get_doc_before_save()
+	if not before:
+		return True
+	return any(
+		(before.get(field) or None) != (doc.get(field) or None)
+		for field in ["reference_type", "reference_name", "allocated_to"]
+	) or (before.status == "Cancelled" and doc.status != "Cancelled")
 
 
 def after_insert(doc, method):
@@ -25,7 +36,32 @@ def after_insert(doc, method):
 			doc.reference_type, doc.reference_name, fieldname, doc.allocated_to, update_modified=False
 		)
 
-	if doc.reference_type in ["CRM Lead", "CRM Deal", "CRM Task"] and doc.reference_name and doc.allocated_to:
+	if doc.reference_type == "Contact" and doc.reference_name and doc.allocated_to:
+		# 1. Enforce single-assignee / re-assign: cancel any old open ToDos for other users on this Contact
+		old_todos = frappe.get_all(
+			"ToDo",
+			filters={
+				"reference_type": "Contact",
+				"reference_name": doc.reference_name,
+				"status": "Open",
+				"name": ["!=", doc.name],
+			},
+			pluck="name",
+		)
+		for ot in old_todos:
+			frappe.db.set_value("ToDo", ot, "status", "Cancelled")
+
+		# 2. Update or create the CRM Daily Allocation record for this contact
+		from crm.api.daily_allocation import sync_contact_daily_allocation
+		sync_contact_daily_allocation(
+			contact_name=doc.reference_name,
+			assigned_to=doc.allocated_to,
+			allocated_by=doc.assigned_by,
+			allocation_date=doc.date,
+			status="To Do",
+		)
+
+	if doc.reference_type in ["CRM Lead", "CRM Deal", "CRM Task", "Contact"] and doc.reference_name and doc.allocated_to:
 		notify_assigned_user(doc)
 
 
@@ -33,12 +69,20 @@ def on_update(doc, method):
 	if (
 		doc.has_value_changed("status")
 		and doc.status == "Cancelled"
-		and doc.reference_type in ["CRM Lead", "CRM Deal", "CRM Task"]
+		and doc.reference_type in ["CRM Lead", "CRM Deal", "CRM Task", "Contact"]
 		and doc.reference_name
 		and doc.allocated_to
 	):
 		notify_assigned_user(doc, is_cancelled=True)
-		clear_owner_on_unassign(doc)
+		if doc.reference_type in ["CRM Lead", "CRM Deal"]:
+			clear_owner_on_unassign(doc)
+		elif doc.reference_type == "Contact":
+			clear_contact_on_unassign(doc)
+
+
+def on_trash(doc, method=None):
+	if doc.reference_type == "Contact" and doc.reference_name:
+		clear_contact_on_unassign(doc)
 
 
 def clear_owner_on_unassign(doc):
@@ -49,6 +93,32 @@ def clear_owner_on_unassign(doc):
 	# Mirror assign_to: cancelling an assignment clears the owner. Wrinkle (accepted):
 	# removing one of several manual co-assignees also clears, since owner is single-valued.
 	frappe.db.set_value(doc.reference_type, doc.reference_name, fieldname, None, update_modified=False)
+
+
+def clear_contact_on_unassign(doc):
+	# Check if any open ToDos remain for this contact
+	remaining_open = frappe.get_all(
+		"ToDo",
+		filters={
+			"reference_type": "Contact",
+			"reference_name": doc.reference_name,
+			"status": "Open",
+			"name": ["!=", getattr(doc, "name", "")],
+		},
+		pluck="allocated_to",
+	)
+	if not remaining_open:
+		from crm.api.daily_allocation import clear_contact_daily_allocation
+		clear_contact_daily_allocation(doc.reference_name)
+		frappe.db.set_value("Contact", doc.reference_name, "_assign", None, update_modified=False)
+	else:
+		frappe.db.set_value(
+			"Contact",
+			doc.reference_name,
+			"_assign",
+			json.dumps(list(set(remaining_open))),
+			update_modified=False,
+		)
 
 
 def notify_assigned_user(doc, is_cancelled=False):
@@ -87,11 +157,15 @@ def get_notification_text(owner, doc, reference_doc, is_cancelled=False):
 
 	if doctype.startswith("CRM "):
 		doctype = doctype[4:].lower()
+	else:
+		doctype = doctype.lower()
 
-	if doctype in ["lead", "deal"]:
+	if doctype in ["lead", "deal", "contact"]:
 		name = (
 			reference_doc.lead_name or name
 			if doctype == "lead"
+			else getattr(reference_doc, "full_name", None) or name
+			if doctype == "contact"
 			else reference_doc.organization or reference_doc.lead_name or name
 		)
 
@@ -142,3 +216,4 @@ def get_redirect_to_doc(doc):
 		return reference_doc.reference_doctype, reference_doc.reference_docname
 
 	return doc.reference_type, doc.reference_name
+
