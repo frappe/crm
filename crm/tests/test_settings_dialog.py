@@ -252,6 +252,27 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 				["erpnext", "verify-connection", "product-sync"],
 			)
 
+	def test_crm_ships_the_enrichment_pane_on_the_enrichment_settings_single(self):
+		enrichment = self.pane("crm", "enrichment")
+		block = enrichment["blocks"][0]
+
+		self.assertEqual(len(enrichment["blocks"]), 1)
+		self.assertEqual((block["key"], block["save_mode"]), ("general", "button"))
+		self.assertEqual(block["binding"]["doctype"], "CRM Enrichment Settings")
+		self.assertEqual(block["fields"], ["enabled", "auto_enrich", "max_pages"])
+		self.assertEqual(block["roles"], ["Sales Manager", "System Manager"])
+
+	def test_only_a_manager_sees_the_enrichment_pane(self):
+		self.make_user(SALES_USER, "Sales User")
+		self.make_user(SALES_MANAGER, "Sales Manager")
+
+		with set_user(SALES_USER):
+			self.assertIsNone(self.visible_pane("enrichment"))
+		with set_user(SALES_MANAGER):
+			self.assertEqual(
+				[block["key"] for block in self.visible_pane("enrichment")["blocks"]], ["general"]
+			)
+
 	def test_the_whatsapp_pane_shows_only_where_frappe_whatsapp_is_installed(self):
 		with self.whatsapp_installed(False):
 			self.assertNotIn(("crm", "whatsapp"), self.pane_addresses())
