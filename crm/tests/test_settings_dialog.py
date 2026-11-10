@@ -6,6 +6,7 @@ import os
 from unittest.mock import patch
 
 import frappe
+from frappe.desk.doctype.settings_dialog.settings_dialog import SettingsDialog
 from frappe.desk.settings_rules import SettingsRules
 from frappe.shell.settings import resolve_panes
 from frappe.shell.settings_filter import SettingsFilter
@@ -35,7 +36,9 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 			for name in RECORDS:
 				path = os.path.join(frappe.get_app_path("crm"), "settings_dialog", name, f"{name}.json")
 				with open(path) as f:
-					frappe.get_doc(json.load(f)).run_method("validate")
+					record = json.load(f)
+				SettingsDialog.prepare_for_import(record)
+				frappe.get_doc(record).run_method("validate")
 
 	def test_crm_ships_the_general_pane_on_fcrm_settings(self):
 		general = self.pane("crm", "general")
