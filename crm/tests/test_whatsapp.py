@@ -401,10 +401,25 @@ class TestAddRoles(FrappeTestCase):
 		self.assertEqual(
 			mock_add.call_args_list,
 			[
-				call(doctype, "Sales Manager", 0, "write")
-				for doctype in ("WA Message", "WA Template", "WA Settings", "WA Profile")
+				*(
+					call(doctype, "Sales Manager", 0, "write")
+					for doctype in ("WA Message", "WA Template", "WA Settings", "WA Profile")
+				),
+				call("WA Account", "Sales Manager", 0, "read"),
 			],
 		)
+
+	def test_sales_roles_can_read_but_not_write_accounts(self):
+		add_roles()
+
+		for role in ("Sales Manager", "Sales User"):
+			perm = frappe.db.get_value(
+				"Custom DocPerm",
+				{"parent": "WA Account", "role": role, "permlevel": 0},
+				["read", "write", "create", "delete"],
+				as_dict=True,
+			)
+			self.assertEqual(perm, {"read": 1, "write": 0, "create": 0, "delete": 0})
 
 
 class TestGetAccountUsage(FrappeTestCase):
