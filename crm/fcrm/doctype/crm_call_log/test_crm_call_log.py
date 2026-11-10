@@ -310,6 +310,56 @@ class TestCRMCallLog(IntegrationTestCase):
 		# Verify deal reference
 		self.assertEqual(result.get("_deal"), deal.name)
 
+	def test_get_call_log_names_a_deal_by_its_organization(self):
+		org = frappe.get_doc(
+			{"doctype": "CRM Organization", "organization_name": "Call Summary Org"}
+		).insert()
+		deal = frappe.get_doc(
+			{
+				"doctype": "CRM Deal",
+				"organization": org.name,
+				"lead_name": "Priya Raman",
+				"status": "Negotiation",
+				"deal_owner": "Administrator",
+			}
+		).insert()
+		call = create_test_call_log(reference_doctype="CRM Deal", reference_docname=deal.name)
+
+		self.assertEqual(
+			get_call_log(call.name)["_reference"],
+			{
+				"doctype": "CRM Deal",
+				"name": deal.name,
+				"title": org.name,
+				"subtitle": "Priya Raman",
+				"status": "Negotiation",
+			},
+		)
+
+	def test_get_call_log_names_a_lead_by_its_person(self):
+		lead = frappe.get_doc(
+			{
+				"doctype": "CRM Lead",
+				"first_name": "Priya",
+				"last_name": "Raman",
+				"organization": "Call Summary Org",
+				"lead_owner": "Administrator",
+			}
+		).insert()
+		call = create_test_call_log(reference_doctype="CRM Lead", reference_docname=lead.name)
+
+		reference = get_call_log(call.name)["_reference"]
+
+		self.assertEqual(reference["doctype"], "CRM Lead")
+		self.assertEqual(reference["title"], "Priya Raman")
+		self.assertEqual(reference["subtitle"], "Call Summary Org")
+		self.assertEqual(reference["status"], lead.status)
+
+	def test_get_call_log_without_a_deal_or_lead_has_no_reference(self):
+		call = create_test_call_log()
+
+		self.assertIsNone(get_call_log(call.name)["_reference"])
+
 	def test_get_call_log_with_linked_task(self):
 		"""Test get_call_log API with linked CRM Task"""
 		call = create_test_call_log()
