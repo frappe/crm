@@ -10,6 +10,7 @@ from frappe.desk.doctype.settings_dialog.settings_dialog import SettingsDialog
 from frappe.desk.settings_rules import SettingsRules
 from frappe.shell.settings import resolve_panes
 from frappe.shell.settings_filter import SettingsFilter
+from frappe.shell.settings_sidebar_text import assert_settings_sidebar
 from frappe.tests import IntegrationTestCase
 from frappe.tests.classes.context_managers import set_user
 
@@ -39,6 +40,9 @@ class TestCRMSettingsDialog(IntegrationTestCase):
 					record = json.load(f)
 				SettingsDialog.prepare_for_import(record)
 				frappe.get_doc(record).run_method("validate")
+
+	def test_the_crm_sidebar_matches_its_snapshot(self):
+		assert_settings_sidebar("crm")
 
 	def test_crm_ships_the_general_pane_on_fcrm_settings(self):
 		general = self.pane("crm", "general")

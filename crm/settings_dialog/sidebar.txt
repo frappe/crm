@@ -1,0 +1,35 @@
+Sidebar crm
+
+Group "Account"
+  desk/profile
+    desk/profile/photo
+    desk/profile/details
+    desk/profile/locale
+    desk/profile/appearance
+    desk/profile/notifications
+    desk/profile/email
+    desk/profile/email-accounts  [added by crm-frappe]
+    desk/profile/telephony  [added by crm-frappe]
+    desk/profile/password
+
+Group "Workspace"
+  crm/general
+    crm/general/deals
+    crm/general/communication
+    crm/general/exchange-rates
+  crm/users
+    crm/users/users
+    crm/users/invite
+    crm/users/sales-hierarchy
+
+Group "Integrations"
+  crm/telephony
+    crm/telephony/twilio
+    crm/telephony/exotel
+  crm/erpnext
+    crm/erpnext/erpnext
+    crm/erpnext/verify-connection
+    crm/erpnext/product-sync
+
+Hidden: desk/system
+Hidden: desk/profile/session-defaults

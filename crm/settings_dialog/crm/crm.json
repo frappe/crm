@@ -1,5 +1,51 @@
 {
  "app": "crm",
+ "arrangement": {
+  "groups": [
+   {
+    "label": "Account",
+    "panes": [
+     "desk/profile"
+    ]
+   },
+   {
+    "label": "Workspace",
+    "panes": [
+     "crm/general",
+     "crm/users"
+    ]
+   },
+   {
+    "label": "Integrations",
+    "panes": [
+     "crm/telephony",
+     "crm/whatsapp",
+     "crm/erpnext"
+    ]
+   }
+  ],
+  "hidden": [
+   "desk/system"
+  ],
+  "panes": {
+   "desk/profile": {
+    "blocks": [
+     "desk/profile/photo",
+     "desk/profile/details",
+     "desk/profile/locale",
+     "desk/profile/appearance",
+     "desk/profile/notifications",
+     "desk/profile/email",
+     "desk/profile/email-accounts",
+     "desk/profile/telephony",
+     "desk/profile/password"
+    ],
+    "hidden": [
+     "desk/profile/session-defaults"
+    ]
+   }
+  }
+ },
  "blocks": [
   {
    "binding_type": "Single",
@@ -272,7 +318,7 @@
  "doctype": "Settings Dialog",
  "extends": "",
  "idx": 0,
- "modified": "2026-11-01 12:00:00.000000",
+ "modified": "2026-11-10 14:00:00.000000",
  "modified_by": "Administrator",
  "name": "crm",
  "owner": "Administrator",
