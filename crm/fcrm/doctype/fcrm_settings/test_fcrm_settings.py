@@ -2,10 +2,14 @@
 # See license.txt
 
 import json
+from collections import defaultdict
 
 import frappe
+from frappe.shell.titles import app_brand
 from frappe.tests import IntegrationTestCase
+from frappe.tests.classes.context_managers import set_user
 
+from crm.fcrm.doctype.fcrm_settings.fcrm_settings import brand
 from crm.patches.v1_0 import encrypt_exchange_rate_access_key
 
 FORECASTING_FIELDS = ["expected_closure_date", "probability", "expected_deal_value"]
@@ -15,6 +19,33 @@ ACCESS_KEY = "exchange-rate-test-key"
 class TestFCRMSettings(IntegrationTestCase):
 	def tearDown(self) -> None:
 		frappe.db.rollback()
+
+	def set_brand(self, **values):
+		for field in ("brand_name", "brand_logo", "favicon"):
+			frappe.db.set_single_value("FCRM Settings", field, values.get(field))
+		frappe.local.request_cache = defaultdict(dict)
+
+	def test_brand_hands_desk_the_branding_fields(self):
+		self.set_brand(brand_name="Acme Sales", brand_logo="/files/acme.png", favicon="/files/acme.ico")
+
+		self.assertEqual(
+			app_brand("crm"),
+			{"title": "Acme Sales", "logo": "/files/acme.png", "favicon": "/files/acme.ico"},
+		)
+
+	def test_brand_leaves_out_what_is_not_set(self):
+		self.set_brand(brand_name="Acme Sales")
+
+		self.assertEqual(app_brand("crm"), {"title": "Acme Sales"})
+		self.set_brand()
+		self.assertEqual(app_brand("crm"), {})
+
+	def test_brand_is_readable_by_a_user_who_cannot_open_the_settings(self):
+		self.set_brand(brand_name="Acme Sales")
+
+		with set_user("test@example.com"):
+			self.assertFalse(frappe.has_permission("FCRM Settings", "read"))
+			self.assertEqual(brand()["title"], "Acme Sales")
 
 	def get_quick_entry_sections(self):
 		layout = json.loads(frappe.db.get_value("CRM Fields Layout", "CRM Deal-Quick Entry", "layout"))
