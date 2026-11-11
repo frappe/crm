@@ -443,7 +443,7 @@ def get_contact_activities(contact: str) -> dict[str, Any]:
 			sender_display = c.sender_full_name or c.sender or "User"
 			is_incoming = (getattr(c, "sent_or_received", "") == "Received")
 			activity_title = (
-				_("Received email from {0}").format(sender_display)
+				_("Prospect replied to your email")
 				if is_incoming
 				else _("{0} sent an email to this prospect").format(sender_display)
 			)
