@@ -25,6 +25,7 @@ class TestGuestGrantCleanup(IntegrationTestCase):
 		other_rows = {doctype: self.custom_perms(doctype, "!=") for doctype in GUEST_SELECT_REFUSED}
 
 		patch.execute()
+		patch.execute()
 
 		for doctype in GUEST_SELECT_REFUSED:
 			with self.subTest(doctype=doctype):
@@ -33,13 +34,6 @@ class TestGuestGrantCleanup(IntegrationTestCase):
 				self.assertFalse(frappe.has_permission(doctype, ptype="select", user="Guest"))
 		self.assertTrue(self.custom_perms(KEPT_DOCTYPE, "="))
 		self.assertTrue(frappe.has_permission(KEPT_DOCTYPE, ptype="select", user="Guest"))
-
-	def test_runs_again_without_guest_rows(self):
-		patch.execute()
-		patch.execute()
-
-		for doctype in GUEST_SELECT_REFUSED:
-			self.assertEqual(self.custom_perms(doctype, "="), [])
 
 	def custom_perms(self, doctype, role_operator):
 		return frappe.get_all(
