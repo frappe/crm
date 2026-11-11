@@ -1,6 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import frappe
+from bs4 import BeautifulSoup
 from frappe.desk.form.assign_to import add as assign
 from frappe.desk.form.assign_to import remove as unassign
 from frappe.model.document import Document
@@ -29,6 +31,46 @@ class CRMTask(Document):
 
 	def after_insert(self):
 		self.assign_to()
+
+	def on_update(self):
+		self.attach_description_images()
+
+	def attach_description_images(self):
+		if not self.description:
+			return
+
+		file_urls = {
+			image["src"]
+			for image in BeautifulSoup(self.description, "html.parser").find_all("img", src=True)
+			if image["src"].startswith(("/files/", "/private/files/"))
+		}
+		if not file_urls:
+			return
+
+		# Only claim the current user's uploads that are not already attached elsewhere.
+		files = frappe.get_all(
+			"File",
+			filters={
+				"file_url": ["in", list(file_urls)],
+				"owner": frappe.session.user,
+				"attached_to_doctype": ["is", "not set"],
+				"attached_to_name": ["is", "not set"],
+				"attached_to_field": ["is", "not set"],
+			},
+			fields=["name", "file_url"],
+		)
+		for file in files:
+			# File URLs are case-sensitive even when the database comparison is not.
+			if file.file_url in file_urls:
+				frappe.db.set_value(
+					"File",
+					file.name,
+					{
+						"attached_to_doctype": self.doctype,
+						"attached_to_name": self.name,
+						"attached_to_field": "description",
+					},
+				)
 
 	def validate(self):
 		if self.is_new() or not self.assigned_to:

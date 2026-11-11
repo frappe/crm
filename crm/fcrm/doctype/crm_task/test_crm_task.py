@@ -4,6 +4,8 @@
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.tests.test_password_setup import make_user
+
 
 class TestCRMTask(IntegrationTestCase):
 	def tearDown(self) -> None:
@@ -219,6 +221,130 @@ class TestCRMTask(IntegrationTestCase):
 		assignees_after = task.get_assigned_users()
 		self.assertEqual(len(assignees_after), initial_count)
 		self.assertIn("Administrator", assignees_after)
+
+
+class TestCRMTaskDescriptionAttachments(IntegrationTestCase):
+	def setUp(self):
+		self.uploader = make_user("task-image-owner@example.com", roles=["Sales User"]).name
+		self.colleague = make_user("task-image-reader@example.com", roles=["Sales User"]).name
+		self.outsider = make_user("task-image-outsider@example.com").name
+		frappe.set_user(self.uploader)
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		# File's rollback hook also removes the bytes written by these tests.
+		frappe.db.rollback()
+
+	def make_image(self, **fields):
+		return frappe.get_doc(
+			doctype="File",
+			file_name=f"task-image-{frappe.generate_hash(length=8)}.png",
+			content=f"task-image-content-{frappe.generate_hash(length=12)}".encode(),
+			is_private=1,
+			**fields,
+		).insert()
+
+	def assert_attached(self, image, task):
+		image.reload()
+		self.assertEqual(image.attached_to_doctype, task.doctype)
+		self.assertEqual(str(image.attached_to_name), str(task.name))
+		self.assertEqual(image.attached_to_field, "description")
+		self.assertEqual(image.is_private, 1)
+
+	def is_downloadable_as(self, image, user):
+		previous_user = frappe.session.user
+		frappe.set_user(user)
+		try:
+			return frappe.get_doc("File", image.name).is_downloadable()
+		finally:
+			frappe.set_user(previous_user)
+
+	def test_image_uploaded_before_task_creation_is_attached(self):
+		image = self.make_image()
+		task = create_test_task(
+			title="New task with image", description=f'<p><img src="{image.file_url}"></p>'
+		)
+
+		self.assert_attached(image, task)
+
+	def test_image_added_to_existing_task_is_attached(self):
+		task = create_test_task(title="Existing task")
+		image = self.make_image()
+		task.description = f'<img src="{image.file_url}">'
+		task.save()
+
+		self.assert_attached(image, task)
+
+	def test_private_image_access_follows_task_permissions(self):
+		image = self.make_image()
+		self.assertTrue(self.is_downloadable_as(image, self.uploader))
+		self.assertFalse(self.is_downloadable_as(image, self.colleague))
+
+		task = create_test_task(title="Shared task image", description=f'<img src="{image.file_url}">')
+
+		self.assertTrue(frappe.has_permission("CRM Task", "read", doc=task, user=self.colleague))
+		self.assertTrue(self.is_downloadable_as(image, self.colleague))
+		for user in (self.outsider, "Guest"):
+			with self.subTest(user=user):
+				self.assertFalse(frappe.has_permission("CRM Task", "read", doc=task, user=user))
+				self.assertFalse(self.is_downloadable_as(image, user))
+		self.assertEqual(image.reload().is_private, 1)
+
+	def test_another_users_unattached_image_is_not_adopted(self):
+		frappe.set_user(self.colleague)
+		image = self.make_image()
+		frappe.set_user(self.uploader)
+
+		create_test_task(title="Foreign image", description=f'<img src="{image.file_url}">')
+
+		image.reload()
+		self.assertFalse(image.attached_to_doctype)
+		self.assertFalse(image.attached_to_name)
+		self.assertFalse(image.attached_to_field)
+		self.assertFalse(self.is_downloadable_as(image, self.uploader))
+
+	def test_image_attached_elsewhere_is_not_moved(self):
+		original_task = create_test_task(title="Original attachment")
+		image = self.make_image(
+			attached_to_doctype="CRM Task",
+			attached_to_name=original_task.name,
+			attached_to_field="description",
+		)
+
+		create_test_task(title="Another task", description=f'<img src="{image.file_url}">')
+
+		self.assert_attached(image, original_task)
+		self.assertEqual(frappe.db.count("File", {"file_url": image.file_url}), 1)
+
+	def test_repeated_images_and_saves_do_not_duplicate_attachments(self):
+		image = self.make_image()
+		description = f'<img src="{image.file_url}"><img src="{image.file_url}">'
+		task = create_test_task(title="Repeated image", description=description)
+		task.title = "Updated task title"
+		task.save()
+		task.save()
+
+		self.assert_attached(image, task)
+		self.assertEqual(frappe.db.count("File", {"file_url": image.file_url}), 1)
+
+	def test_nonmatching_image_urls_do_not_attach_files(self):
+		image = self.make_image()
+		directory, filename = image.file_url.rsplit("/", 1)
+		for description in (
+			None,
+			"<p>Plain description</p>",
+			'<img src="https://example.com/image.png">',
+			'<img src="/private/files/missing-task-image.png">',
+			f'<img src="{directory}/{filename.upper()}">',
+			f'<a href="{image.file_url}">A link, not an image</a>',
+			"<img>",
+		):
+			with self.subTest(description=description):
+				create_test_task(title="No matching upload", description=description)
+				image.reload()
+				self.assertFalse(image.attached_to_doctype)
+				self.assertFalse(image.attached_to_name)
+				self.assertEqual(frappe.db.count("File", {"file_url": image.file_url}), 1)
 
 
 def create_test_task(**kwargs):
