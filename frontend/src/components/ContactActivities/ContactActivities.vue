@@ -114,15 +114,27 @@
             <div v-if="item.activity_type === 'email'" class="flex flex-col gap-2">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                  <span class="flex size-7 items-center justify-center rounded-full bg-surface-blue-2 text-ink-blue-4">
+                  <span
+                    class="flex size-7 items-center justify-center rounded-full"
+                    :class="item.sent_or_received === 'Received' ? 'bg-surface-purple-2 text-ink-purple-4' : 'bg-surface-blue-2 text-ink-blue-4'"
+                  >
                     <EmailIcon class="size-4" />
                   </span>
                   <div class="text-sm font-semibold text-ink-gray-9">
                     {{ item.activity_title }}
                   </div>
                 </div>
-                <div class="text-xs text-ink-gray-5">
-                  {{ formatActivityDate(item.date) }}
+                <div class="flex items-center gap-2">
+                  <Badge
+                    v-if="item.sent_or_received === 'Received'"
+                    variant="subtle"
+                    theme="purple"
+                  >
+                    {{ __('Incoming') }}
+                  </Badge>
+                  <div class="text-xs text-ink-gray-5">
+                    {{ formatActivityDate(item.date) }}
+                  </div>
                 </div>
               </div>
 
@@ -354,6 +366,13 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
+                <Badge
+                  v-if="email.sent_or_received === 'Received'"
+                  variant="subtle"
+                  theme="purple"
+                >
+                  {{ __('Incoming') }}
+                </Badge>
                 <Badge variant="subtle" :theme="getDeliveryStatusTheme(email.delivery_status)">{{ email.delivery_status }}</Badge>
                 <span class="text-xs text-ink-gray-5">{{ formatActivityDate(email.date) }}</span>
               </div>
@@ -879,20 +898,66 @@
               <label class="block text-xs font-medium text-ink-gray-6">
                 {{ __('Message:') }} <span class="text-red-500">*</span>
               </label>
-              <Button
-                variant="subtle"
-                size="sm"
-                iconLeft="lucide-layout-template"
-                :label="__('Insert Template')"
-                @click="openTemplateModal"
-              />
+              <div class="flex items-center gap-2">
+                <!-- Mode Toggle -->
+                <div class="flex items-center rounded border border-outline-gray-2 bg-surface-white p-0.5 dark:border-outline-gray-7 dark:bg-surface-gray-9">
+                  <button
+                    type="button"
+                    class="flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-colors"
+                    :class="emailComposerMode === 'preview' ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-2 dark:text-ink-gray-9' : 'text-ink-gray-6 hover:text-ink-gray-9'"
+                    @click="emailComposerMode = 'preview'"
+                  >
+                    <span class="lucide-eye size-3" />
+                    <span>{{ __('Preview') }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-colors"
+                    :class="emailComposerMode === 'edit' ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-2 dark:text-ink-gray-9' : 'text-ink-gray-6 hover:text-ink-gray-9'"
+                    @click="emailComposerMode = 'edit'"
+                  >
+                    <span class="lucide-pen size-3" />
+                    <span>{{ __('Edit') }}</span>
+                  </button>
+                </div>
+
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  iconLeft="lucide-layout-template"
+                  :label="__('Insert Template')"
+                  @click="openTemplateModal"
+                />
+              </div>
             </div>
-            <textarea
-              v-model="emailForm.content"
-              rows="8"
-              class="w-full rounded-md border border-outline-gray-2 bg-surface-white px-3 py-2 text-sm focus:border-surface-gray-7 focus:outline-none font-sans"
-              placeholder="Write your email message here..."
-            />
+
+            <!-- PREVIEW MODE -->
+            <div
+              v-if="emailComposerMode === 'preview'"
+              class="rounded-md border border-outline-gray-2 bg-surface-white p-3 min-h-[160px] max-h-[320px] overflow-y-auto text-sm dark:border-outline-gray-7 dark:bg-surface-gray-9"
+            >
+              <div class="mb-2 border-b pb-2 text-xs text-ink-gray-5 flex items-center justify-between dark:border-outline-gray-7">
+                <span>{{ __('Preview as recipient will see:') }}</span>
+                <button type="button" class="text-ink-primary hover:underline font-medium" @click="emailComposerMode = 'edit'">{{ __('Edit Message') }}</button>
+              </div>
+              <div v-if="emailForm.content" class="prose prose-sm max-w-none text-ink-gray-9 dark:prose-invert dark:text-ink-white" v-html="emailForm.content" />
+              <div v-else class="text-xs text-ink-gray-4 italic py-6 text-center">{{ __('No content to preview. Click Edit or Insert Template.') }}</div>
+            </div>
+
+            <!-- EDIT MODE (TipTap Editor) -->
+            <div v-else class="rounded-md border border-outline-gray-2 bg-surface-white dark:border-outline-gray-7 dark:bg-surface-gray-9">
+              <Editor
+                v-model="emailForm.content"
+                :extensions="editorExtensions"
+                :placeholder="__('Write your email message here...')"
+              >
+                <EditorFixedMenu
+                  :items="editorToolbar"
+                  class="w-full overflow-x-auto rounded-t border-b border-outline-gray-2 bg-surface-base p-1 dark:border-outline-gray-7"
+                />
+                <EditorContent class="prose prose-sm min-h-[160px] max-h-[320px] overflow-y-auto min-w-full p-3 text-sm text-ink-gray-9 dark:prose-invert dark:text-ink-white focus:outline-none" />
+              </Editor>
+            </div>
           </div>
 
           <!-- Attachments Section -->
@@ -1029,6 +1094,8 @@ import EmptyState from '@/components/ListViews/EmptyState.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
 import { Badge, Button, Dialog, Dropdown, Avatar, FileUploader, toast, createResource, call } from 'frappe-ui'
+import { Editor, EditorContent, EditorFixedMenu } from 'frappe-ui/editor'
+import { buildEditorExtensions, formToolbar } from '@/components/editor/config'
 import { formatDate, sanitizeHTML } from '@/utils'
 import { ref, reactive, computed, watch } from 'vue'
 
@@ -1055,6 +1122,9 @@ const showEmailModal = ref(false)
 const showTemplateModal = ref(false)
 const showCcBcc = ref(false)
 const emailSending = ref(false)
+const emailComposerMode = ref('edit')
+const editorExtensions = buildEditorExtensions()
+const editorToolbar = formToolbar
 
 const templateSearchQuery = ref('')
 const templatesList = ref([])
@@ -1090,6 +1160,7 @@ async function selectTemplate(tpl) {
     if (res) {
       if (res.subject) emailForm.subject = res.subject
       if (res.content) emailForm.content = res.content
+      emailComposerMode.value = 'preview'
       showTemplateModal.value = false
       toast.success(__('Template "{0}" applied', [tpl.name]))
     }
@@ -1312,6 +1383,7 @@ function formatTimeRange(start, end) {
 function getDeliveryStatusTheme(status) {
   if (!status) return 'gray'
   const s = String(status).toLowerCase()
+  if (s === 'replied') return 'teal'
   if (s === 'sent') return 'green'
   if (s === 'sending' || s === 'queued' || s === 'scheduled') return 'blue'
   if (s === 'error' || s === 'rejected' || s === 'bounced' || s === 'soft-bounced') return 'red'
