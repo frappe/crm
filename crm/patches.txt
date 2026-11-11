@@ -51,3 +51,4 @@ crm.patches.v1_0.set_setup_completed_for_existing_sites
 crm.patches.v1_0.clear_mcp_agent_instructions
 crm.patches.v1_0.add_availability_statuses
 crm.patches.v1_0.remirror_layouts_after_field_normalize
+crm.patches.v1_0.remove_guest_grants_on_refused_doctypes
