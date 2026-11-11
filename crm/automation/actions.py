@@ -58,6 +58,7 @@ def parse_overrides(overrides) -> dict:
 class AdjustLeadScore(AutomationAction):
 	action_type = "AdjustLeadScore"
 	label = "Adjust Lead Score"
+	icon = "lucide-trending-up"
 	description = "Add to or subtract from a Lead's score."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead"]
 	output_schema: ClassVar[dict] = {
@@ -94,6 +95,7 @@ class AdjustLeadScore(AutomationAction):
 class SetLeadTemperature(AutomationAction):
 	action_type = "SetLeadTemperature"
 	label = "Set Lead Temperature"
+	icon = "lucide-thermometer"
 	description = "Mark a Lead Cold, Warm or Hot."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead"]
 	output_schema: ClassVar[dict] = {"old_value": {"fieldtype": "Data"}, "new_value": {"fieldtype": "Data"}}
@@ -120,6 +122,7 @@ class SetLeadTemperature(AutomationAction):
 class ConvertLeadToDeal(AutomationAction):
 	action_type = "ConvertLeadToDeal"
 	label = "Convert Lead to Deal"
+	icon = "lucide-handshake"
 	description = "Convert a qualified Lead into a Deal."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead"]
 	output_schema: ClassVar[dict] = {
@@ -198,6 +201,7 @@ class ConvertLeadToDeal(AutomationAction):
 class SendEmailToRecord(AutomationAction):
 	action_type = "SendCRMEmail"
 	label = "Email the Lead or Deal"
+	icon = "lucide-mail"
 	description = "Send an email to the record's own address."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead", "CRM Deal"]
 	output_schema: ClassVar[dict] = {"communication": {"doctype": "Communication"}}
@@ -266,6 +270,7 @@ class SendEmailToRecord(AutomationAction):
 class SendCRMNotification(AutomationAction):
 	action_type = "SendCRMNotification"
 	label = "Notify in CRM"
+	icon = "lucide-bell"
 	description = "Send an in-app notification to CRM's notification bell."
 	applicable_doctypes: ClassVar[list] = ["CRM Lead", "CRM Deal"]
 	params_schema: ClassVar[list] = [

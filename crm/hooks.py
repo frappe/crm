@@ -193,37 +193,48 @@ DEAL_SUBJECT = {"doctype": "CRM Deal", "name_key": "deal"}
 automation_events = [
 	{
 		"crm.prospect_message_sent": {
+			"icon": "lucide-mail",
 			"label": "We emailed the prospect",
 			"subject": REFERENCE_SUBJECT,
 			"correlation_options": MESSAGE_CORRELATIONS,
 		},
 		"crm.prospect_message_received": {
+			"icon": "lucide-inbox",
 			"label": "The prospect replied",
 			"subject": REFERENCE_SUBJECT,
 			"correlation_options": MESSAGE_CORRELATIONS,
 		},
-		"crm.lead_qualified": {"label": "Lead was qualified", "subject": LEAD_SUBJECT},
+		"crm.lead_qualified": {
+			"icon": "lucide-badge-check",
+			"label": "Lead was qualified",
+			"subject": LEAD_SUBJECT,
+		},
 		"crm.lead_converted": {
+			"icon": "lucide-handshake",
 			"label": "Lead became a deal",
 			"subject": LEAD_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
 		},
 		"crm.deal_stage_changed": {
+			"icon": "lucide-kanban",
 			"label": "Deal changed stage",
 			"subject": DEAL_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
 		},
 		"crm.deal_won": {
+			"icon": "lucide-trophy",
 			"label": "Deal was won",
 			"subject": DEAL_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
 		},
 		"crm.deal_lost": {
+			"icon": "lucide-circle-x",
 			"label": "Deal was lost",
 			"subject": DEAL_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
 		},
 		"crm.task_overdue": {
+			"icon": "lucide-alarm-clock",
 			"label": "Task went overdue",
 			"subject": REFERENCE_SUBJECT,
 			"correlation_options": RECORD_CORRELATION,
