@@ -46,8 +46,7 @@ jobs:
             version-16|v16.*) BRANCH=version-16 FRAPPE_BRANCH=version-16 IMAGE_TAG=version-16 ;;
             *)                BRANCH=main       FRAPPE_BRANCH=version-15 IMAGE_TAG=stable ;;
           esac
-          export APPS_JSON='[{"url": "https://github.com/frappe/whatsapp","branch": "main"},{"url": "https://github.com/frappe/crm","branch": "'"$BRANCH"'"}]'
-          echo "APPS_JSON_BASE64=$(echo $APPS_JSON | base64 -w 0)" >> $GITHUB_ENV
+          printf '%s\n' '[{"url": "https://github.com/frappe/whatsapp","branch": "main"},{"url": "https://github.com/frappe/crm","branch": "'"$BRANCH"'"}]' > "$RUNNER_TEMP/apps.json"
           echo "FRAPPE_BRANCH=$FRAPPE_BRANCH" >> $GITHUB_ENV
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
@@ -67,4 +66,5 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
           build-args: |
             "FRAPPE_BRANCH=${{ env.FRAPPE_BRANCH }}"
-            "APPS_JSON_BASE64=${{ env.APPS_JSON_BASE64 }}"
+          secret-files: |
+            apps_json=${{ runner.temp }}/apps.json
