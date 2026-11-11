@@ -421,8 +421,8 @@ class TestFormAPI(IntegrationTestCase):
 	# ---- guest select ----
 
 	def test_grant_guest_access_refused_on_personal_data(self):
-		"""User, Contact and CRM Lead names and titles are personal data, so Guest never gets Select on them."""
-		for doctype in ("User", "Contact", "CRM Lead"):
+		"""User, Contact, CRM Lead and Address names and titles are personal data, so Guest never gets Select on them."""
+		for doctype in ("User", "Contact", "CRM Lead", "Address"):
 			with self.subTest(doctype=doctype):
 				self.assertTrue(F.link_field_guest_access(doctype)["grant_refused"])
 				with self.assertRaises(frappe.PermissionError):
@@ -431,6 +431,39 @@ class TestFormAPI(IntegrationTestCase):
 
 	def test_grant_guest_access_offered_on_other_link_targets(self):
 		self.assertFalse(F.link_field_guest_access("CRM Lead Source")["grant_refused"])
+
+	def test_public_page_lists_no_records_of_a_refused_doctype_granted_by_hand(self):
+		"""A Guest Select grant made before the refusal, or by hand, must not list refused records."""
+		from frappe.permissions import add_permission
+
+		from crm.www import crm_form
+
+		frappe.get_doc({"doctype": "Contact", "first_name": "T46937 Guest Probe"}).insert(
+			ignore_permissions=True
+		)
+		for doctype in sorted(F.GUEST_SELECT_REFUSED):
+			with self.subTest(doctype=doctype):
+				frappe.set_user("Administrator")
+				add_permission(doctype, "Guest", 0, ptype="select")
+				frappe.clear_cache(doctype=doctype)
+				self.addCleanup(frappe.clear_cache, doctype=doctype)
+				self.assertTrue(frappe.has_permission(doctype, ptype="select", user="Guest"))
+				self.assertFalse(F.link_field_guest_access(doctype)["guest_can_select"])
+
+				frappe.set_user("Guest")
+				self.assertEqual(crm_form._link_field_options(doctype), [])
+
+	def test_guest_submits_lead_capture_form(self):
+		from frappe.website.doctype.web_form.web_form import accept
+
+		name = make_form("t46937-guest-submit", published=1)
+		frappe.set_user("Guest")
+		accept(
+			web_form=name,
+			data={"doctype": "CRM Lead", "first_name": "T46937", "email": "t46937@test.invalid"},
+		)
+		frappe.set_user("Administrator")
+		self.assertEqual(frappe.db.get_value("CRM Lead", {"email": "t46937@test.invalid"}, "owner"), "Guest")
 
 	# ---- permissions ----
 

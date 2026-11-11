@@ -22,7 +22,7 @@ from crm.fcrm.record_defaults import first_status
 
 ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
 # Their record names and titles are personal data (User names are email addresses).
-GUEST_SELECT_REFUSED = frozenset({"User", "Contact", "CRM Lead"})
+GUEST_SELECT_REFUSED = frozenset({"User", "Contact", "CRM Lead", "Address"})
 FORM_SOURCE = "Web Form"
 FORM_MODULE = "FCRM"
 
@@ -113,8 +113,11 @@ def _seeded_visible_fieldnames(document_type: str) -> set:
 def guest_can_select(doctype: str) -> bool:
 	"""Whether Guest may reference `doctype` in a Link field. Gates on `select` (never
 	`read`) — Frappe's minimal tier that lists record names without exposing full
-	documents — so a doctype is linkable only when Guest select is deliberately granted."""
-	return bool(doctype) and frappe.has_permission(doctype, ptype="select", user="Guest")
+	documents — so a doctype is linkable only when Guest select is deliberately granted.
+	A refused doctype stays unlinkable even when a Guest Select grant exists."""
+	if not doctype or doctype in GUEST_SELECT_REFUSED:
+		return False
+	return frappe.has_permission(doctype, ptype="select", user="Guest")
 
 
 def _link_target_doctypes() -> set:
