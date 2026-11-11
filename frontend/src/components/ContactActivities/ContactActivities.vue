@@ -881,84 +881,23 @@
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-medium text-ink-gray-6 mb-1">
-              {{ __('Subject:') }} <span class="text-red-500">*</span>
-            </label>
-            <input
-              v-model="emailForm.subject"
-              type="text"
-              class="w-full rounded-md border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-sm focus:border-surface-gray-7 focus:outline-none"
-              placeholder="Email subject..."
-            />
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs font-medium text-ink-gray-6">
-                {{ __('Message:') }} <span class="text-red-500">*</span>
-              </label>
-              <div class="flex items-center gap-2">
-                <!-- Mode Toggle -->
-                <div class="flex items-center rounded border border-outline-gray-2 bg-surface-white p-0.5 dark:border-outline-gray-7 dark:bg-surface-gray-9">
-                  <button
-                    type="button"
-                    class="flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-colors"
-                    :class="emailComposerMode === 'preview' ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-2 dark:text-ink-gray-9' : 'text-ink-gray-6 hover:text-ink-gray-9'"
-                    @click="emailComposerMode = 'preview'"
-                  >
-                    <span class="lucide-eye size-3" />
-                    <span>{{ __('Preview') }}</span>
-                  </button>
-                  <button
-                    type="button"
-                    class="flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-colors"
-                    :class="emailComposerMode === 'edit' ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-2 dark:text-ink-gray-9' : 'text-ink-gray-6 hover:text-ink-gray-9'"
-                    @click="emailComposerMode = 'edit'"
-                  >
-                    <span class="lucide-pen size-3" />
-                    <span>{{ __('Edit') }}</span>
-                  </button>
-                </div>
-
-                <Button
-                  variant="subtle"
-                  size="sm"
-                  iconLeft="lucide-layout-template"
-                  :label="__('Insert Template')"
-                  @click="openTemplateModal"
-                />
-              </div>
-            </div>
-
-            <!-- PREVIEW MODE -->
-            <div
-              v-if="emailComposerMode === 'preview'"
-              class="rounded-md border border-outline-gray-2 bg-surface-white p-3 min-h-[160px] max-h-[320px] overflow-y-auto text-sm dark:border-outline-gray-7 dark:bg-surface-gray-9"
-            >
-              <div class="mb-2 border-b pb-2 text-xs text-ink-gray-5 flex items-center justify-between dark:border-outline-gray-7">
-                <span>{{ __('Preview as recipient will see:') }}</span>
-                <button type="button" class="text-ink-primary hover:underline font-medium" @click="emailComposerMode = 'edit'">{{ __('Edit Message') }}</button>
-              </div>
-              <div v-if="emailForm.content" class="prose prose-sm max-w-none text-ink-gray-9 dark:prose-invert dark:text-ink-white" v-html="emailForm.content" />
-              <div v-else class="text-xs text-ink-gray-4 italic py-6 text-center">{{ __('No content to preview. Click Edit or Insert Template.') }}</div>
-            </div>
-
-            <!-- EDIT MODE (TipTap Editor) -->
-            <div v-else class="rounded-md border border-outline-gray-2 bg-surface-white dark:border-outline-gray-7 dark:bg-surface-gray-9">
-              <Editor
-                v-model="emailForm.content"
-                :extensions="editorExtensions"
-                :placeholder="__('Write your email message here...')"
-              >
-                <EditorFixedMenu
-                  :items="editorToolbar"
-                  class="w-full overflow-x-auto rounded-t border-b border-outline-gray-2 bg-surface-base p-1 dark:border-outline-gray-7"
-                />
-                <EditorContent class="prose prose-sm min-h-[160px] max-h-[320px] overflow-y-auto min-w-full p-3 text-sm text-ink-gray-9 dark:prose-invert dark:text-ink-white focus:outline-none" />
-              </Editor>
-            </div>
-          </div>
+          <!-- Unified Visual Email Editor -->
+          <VisualEmailEditor
+            ref="activityVisualEditorRef"
+            v-model:subject="emailForm.subject"
+            v-model:content="emailForm.content"
+            v-model:templateName="emailForm.templateName"
+            v-model:isBranded="emailForm.isBranded"
+            :recipientCount="1"
+            :sampleRecipient="{
+              full_name: contact?.full_name || 'Prospect',
+              first_name: contact?.first_name || contact?.full_name?.split(' ')[0] || 'there',
+              organization: contact?.company_name || 'Organization',
+              email: emailForm.recipient,
+            }"
+            :contactName="props.contactId || null"
+            defaultMode="edit"
+          />
 
           <!-- Attachments Section -->
           <div class="space-y-2 border-t pt-2">
@@ -998,19 +937,39 @@
         </div>
       </template>
       <template #actions>
-        <div class="flex justify-end gap-2">
-          <Button
-            variant="subtle"
-            :label="__('Discard')"
-            @click="showEmailModal = false"
-          />
-          <Button
-            variant="solid"
-            :label="__('Send Email')"
-            :loading="emailSending"
-            :disabled="!emailForm.recipient || !emailForm.subject || !emailForm.content || emailSending"
-            @click="submitEmail"
-          />
+        <div class="flex items-center justify-between w-full">
+          <div>
+            <Button
+              v-if="activityVisualEditorRef?.activeMode === 'edit'"
+              variant="outline"
+              size="sm"
+              iconLeft="lucide-eye"
+              :label="__('Preview')"
+              @click="activityVisualEditorRef?.switchToPreview()"
+            />
+            <Button
+              v-else
+              variant="outline"
+              size="sm"
+              iconLeft="lucide-pen"
+              :label="__('Edit')"
+              @click="if (activityVisualEditorRef) activityVisualEditorRef.activeMode = 'edit'"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <Button
+              variant="subtle"
+              :label="__('Discard')"
+              @click="showEmailModal = false"
+            />
+            <Button
+              variant="solid"
+              :label="__('Send Email')"
+              :loading="emailSending"
+              :disabled="!emailForm.recipient || !emailForm.subject || !emailForm.content || emailSending"
+              @click="submitEmail"
+            />
+          </div>
         </div>
       </template>
     </Dialog>
@@ -1093,6 +1052,7 @@ import InboundCallIcon from '@/components/Icons/InboundCallIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import AudioPlayer from '@/components/Activities/AudioPlayer.vue'
+import VisualEmailEditor from '@/components/VisualEmailEditor.vue'
 import { Badge, Button, Dialog, Dropdown, Avatar, FileUploader, toast, createResource, call } from 'frappe-ui'
 import { Editor, EditorContent, EditorFixedMenu } from 'frappe-ui/editor'
 import { buildEditorExtensions, formToolbar } from '@/components/editor/config'
@@ -1170,12 +1130,15 @@ async function selectTemplate(tpl) {
 }
 
 // Form states
+const activityVisualEditorRef = ref(null)
 const emailForm = reactive({
   recipient: '',
   cc: '',
   bcc: '',
   subject: '',
   content: '',
+  templateName: '',
+  isBranded: false,
   attachments: [],
 })
 
@@ -1186,6 +1149,8 @@ function openEmailModal() {
   emailForm.content = ''
   emailForm.cc = ''
   emailForm.bcc = ''
+  emailForm.templateName = ''
+  emailForm.isBranded = false
   emailForm.attachments = []
   showCcBcc.value = false
   showEmailModal.value = true
@@ -1221,6 +1186,8 @@ async function submitEmail() {
       content: emailForm.content,
       cc: emailForm.cc || null,
       bcc: emailForm.bcc || null,
+      template_name: emailForm.templateName || null,
+      is_branded: emailForm.isBranded,
       attachments: emailForm.attachments.length ? emailForm.attachments : null,
     })
 

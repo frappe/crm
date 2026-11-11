@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 import frappe
@@ -1488,6 +1489,38 @@ def get_email_templates(search: str | None = None) -> list[dict[str, Any]]:
 	return results
 
 
+def is_branded_template(html: str) -> bool:
+	if not html:
+		return False
+	return "body-pad" in html or ("Smrikaam Technologies" in html and "email-shell" in html)
+
+
+def get_branded_template_shell(template_name: str = "Demo"):
+	if not frappe.db.exists("Email Template", template_name):
+		return None, None
+	t = frappe.get_doc("Email Template", template_name)
+	raw = t.response_html or t.response or ""
+	m = re.search(
+		r'(.*?<td class="body-pad"[^>]*>)(.*?)(</td>\s*</tr>\s*</table>\s*</td>\s*</tr>\s*<!-- SIGNATURE AND CTA -->.*)',
+		raw,
+		re.DOTALL | re.IGNORECASE,
+	)
+	if m:
+		return m.group(1), m.group(3)
+	return None, None
+
+
+def wrap_in_branded_template(body_html: str, template_name: str = "Demo") -> str:
+	if not body_html:
+		return body_html
+	if "<!doctype html" in body_html.lower() or "<html" in body_html.lower():
+		return body_html
+	prefix, suffix = get_branded_template_shell(template_name)
+	if not prefix or not suffix:
+		return body_html
+	return f"{prefix}\n{body_html.strip()}\n{suffix}"
+
+
 @frappe.whitelist()
 def render_email_template(template_name: str, contact: str | None = None) -> dict[str, Any]:
 	"""Render email template with personalization variables for the given contact/prospect."""
@@ -1548,20 +1581,41 @@ def render_email_template(template_name: str, contact: str | None = None) -> dic
 		rendered_subject = template.subject or ""
 
 	raw_body = template.response_html or template.response or ""
-	try:
-		rendered_body = frappe.render_template(raw_body, context)
-	except Exception:
-		rendered_body = raw_body
+	is_branded = is_branded_template(raw_body)
+	body_content = ""
 
-	# Clean up any leftover unparsed Jinja markers if any
+	if is_branded:
+		# Clean default body for visual WYSIWYG editor (no raw table code)
+		body_content = (
+			"<p><strong>Hi {{ first_name }},</strong></p>\n"
+			"<p>Greetings!</p>\n"
+			"<p>Facing challenges with manual inspections, forecasting, or unexpected equipment issues?</p>\n"
+			"<p>We assist businesses with AI solutions for predictive monitoring, computer vision, forecasting, and smarter decision-making.</p>\n"
+			"<p>Could we schedule a brief virtual meeting to showcase how this could fit your operations?</p>"
+		)
+		full_preview = wrap_in_branded_template(body_content, template_name)
+		try:
+			rendered_body = frappe.render_template(full_preview, context)
+		except Exception:
+			rendered_body = full_preview
+	else:
+		body_content = raw_body
+		try:
+			rendered_body = frappe.render_template(raw_body, context)
+		except Exception:
+			rendered_body = raw_body
+
+	# Clean up any leftover unparsed Jinja markers in preview subject if any
 	rendered_subject = re.sub(r"\{\{[^}]+\}\}", "", rendered_subject).strip()
 
 	return {
 		"name": template.name,
 		"subject": rendered_subject,
 		"content": rendered_body,
+		"body_content": body_content,
 		"raw_subject": template.subject or "",
 		"raw_content": raw_body,
+		"is_branded": is_branded,
 		"sample_recipient": {
 			"full_name": full_name,
 			"first_name": first_name,
@@ -1576,6 +1630,8 @@ def render_email_preview(
 	content: str = "",
 	subject: str = "",
 	contact: str | None = None,
+	template_name: str | None = None,
+	is_branded: bool | int | str = False,
 ) -> dict[str, Any]:
 	"""Render custom or edited email content and subject with contact or sample personalization."""
 	import re
@@ -1630,10 +1686,16 @@ def render_email_preview(
 	except Exception:
 		rendered_subject = subject or ""
 
+	# Check if branded wrapping should be applied
+	should_wrap = bool(is_branded) or (template_name and is_branded_template(template_name)) or (template_name == "Demo")
+	target_content = content or ""
+	if should_wrap and not ("<!doctype html" in target_content.lower() or "<html" in target_content.lower()):
+		target_content = wrap_in_branded_template(target_content, template_name or "Demo")
+
 	try:
-		rendered_body = frappe.render_template(content or "", context)
+		rendered_body = frappe.render_template(target_content, context)
 	except Exception:
-		rendered_body = content or ""
+		rendered_body = target_content
 
 	rendered_subject = re.sub(r"\{\{[^}]+\}\}", "", rendered_subject).strip()
 
@@ -1660,6 +1722,8 @@ def send_task_email(
 	bcc: str | None = None,
 	attachments: Any = None,
 	send_now: bool | int | str = False,
+	template_name: str | None = None,
+	is_branded: bool | int | str = False,
 ) -> dict[str, Any]:
 	"""Send an email from My Task workspace for a specific allocated task."""
 	current_user = frappe.session.user
@@ -1734,6 +1798,10 @@ def send_task_email(
 	}
 	final_subject = subject or ""
 	final_content = content or ""
+	should_wrap = bool(is_branded) or (template_name and is_branded_template(template_name)) or (template_name == "Demo")
+	if should_wrap and not ("<!doctype html" in final_content.lower() or "<html" in final_content.lower()):
+		final_content = wrap_in_branded_template(final_content, template_name or "Demo")
+
 	try:
 		final_subject = frappe.render_template(final_subject, recip_ctx)
 	except Exception:
@@ -1942,6 +2010,7 @@ def send_bulk_email(
 	subject: str,
 	content: str,
 	template_name: str | None = None,
+	is_branded: bool | int | str = False,
 ) -> dict[str, Any]:
 	"""Send bulk email to selected Contacts, Leads, or Tasks and advance To Do tasks to In Progress."""
 	if isinstance(names, str):
@@ -1967,6 +2036,11 @@ def send_bulk_email(
 			_("No outgoing Email Account found for {0}. Please configure an outgoing Email Account in Settings > Email Account.").format(user_email),
 			frappe.OutgoingEmailError,
 		)
+
+	base_content = content or ""
+	should_wrap = bool(is_branded) or (template_name and is_branded_template(template_name)) or (template_name == "Demo")
+	if should_wrap and not ("<!doctype html" in base_content.lower() or "<html" in base_content.lower()):
+		base_content = wrap_in_branded_template(base_content, template_name or "Demo")
 
 	sent_count = 0
 	skipped_count = 0
@@ -2036,9 +2110,9 @@ def send_bulk_email(
 				personalized_subject = subject
 
 			try:
-				personalized_content = frappe.render_template(content, recip_context)
+				personalized_content = frappe.render_template(base_content, recip_context)
 			except Exception:
-				personalized_content = content
+				personalized_content = base_content
 
 			comm = frappe.new_doc("Communication")
 			comm.communication_type = "Communication"

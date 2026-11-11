@@ -520,7 +520,7 @@
       @reload="onBulkEmailReload"
     />
 
-    <!-- TASK EMAIL MODAL -->
+    <!-- TASK EMAIL MODAL WITH UNIFIED VISUAL EDITOR -->
     <Dialog
       v-model:open="showTaskEmailModal"
       :title="__('Send Email to {0}', [activeEmailTask?.contact_name || 'Prospect'])"
@@ -528,8 +528,8 @@
     >
       <template #default>
         <div class="space-y-3 py-2 text-xs">
-          <!-- Top Row: Recipient & Template Selector -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Recipient & CC/BCC inputs -->
+          <div class="space-y-2">
             <div>
               <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('Recipient Email *') }}</label>
               <input
@@ -539,136 +539,57 @@
                 class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
               />
             </div>
-            <div>
-              <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('Email Template (Optional)') }}</label>
-              <select
-                v-model="selectedTaskTemplate"
-                class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
-                @change="applyTaskTemplate"
-              >
-                <option value="">{{ __('Custom Message (No Template)') }}</option>
-                <option
-                  v-for="tpl in taskEmailTemplates"
-                  :key="tpl.name"
-                  :value="tpl.name"
-                >
-                  {{ tpl.name }} ({{ tpl.subject || __('No Subject') }})
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('Subject *') }}</label>
-            <input
-              v-model="taskEmailForm.subject"
-              type="text"
-              placeholder="Email subject..."
-              class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
-            />
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('CC (optional)') }}</label>
-              <input
-                v-model="taskEmailForm.cc"
-                type="text"
-                placeholder="cc@example.com"
-                class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
-              />
-            </div>
-            <div>
-              <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('BCC (optional)') }}</label>
-              <input
-                v-model="taskEmailForm.bcc"
-                type="text"
-                placeholder="bcc@example.com"
-                class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('Message *') }}</label>
-              <div class="flex items-center rounded border border-outline-gray-2 bg-surface-white p-0.5 dark:border-outline-gray-7 dark:bg-surface-gray-9">
-                <button
-                  type="button"
-                  class="flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-colors"
-                  :class="taskEmailMode === 'preview' ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-2 dark:text-ink-gray-9' : 'text-ink-gray-6 hover:text-ink-gray-9 dark:text-ink-gray-4'"
-                  @click="taskEmailMode = 'preview'"
-                >
-                  <span class="lucide-eye size-3" />
-                  <span>{{ __('Preview') }}</span>
-                </button>
-                <button
-                  type="button"
-                  class="flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium transition-colors"
-                  :class="taskEmailMode === 'edit' ? 'bg-surface-gray-9 text-surface-white dark:bg-surface-gray-2 dark:text-ink-gray-9' : 'text-ink-gray-6 hover:text-ink-gray-9 dark:text-ink-gray-4'"
-                  @click="taskEmailMode = 'edit'"
-                >
-                  <span class="lucide-pen size-3" />
-                  <span>{{ __('Edit') }}</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- PREVIEW MODE -->
-            <div
-              v-if="taskEmailMode === 'preview'"
-              class="rounded border border-outline-gray-2 bg-surface-white dark:border-outline-gray-7 dark:bg-surface-gray-9"
-            >
-              <div class="border-b border-outline-gray-2 bg-surface-gray-1 p-2.5 text-xs dark:border-outline-gray-7 dark:bg-surface-gray-8 space-y-1">
-                <div class="flex items-center justify-between">
-                  <span class="font-medium text-ink-gray-7 dark:text-ink-gray-3">
-                    {{ __('To: {0} <{1}>', [activeEmailTask?.contact_name || 'Prospect', taskEmailForm.recipient]) }}
-                  </span>
-                  <button type="button" class="text-ink-primary hover:underline font-medium" @click="taskEmailMode = 'edit'">
-                    {{ __('Edit') }}
-                  </button>
-                </div>
-                <div class="text-ink-gray-6 dark:text-ink-gray-4">
-                  <span class="font-semibold">{{ __('Subject:') }}</span> {{ taskEmailForm.subject || __('(No Subject)') }}
-                </div>
-              </div>
-              <div
-                v-if="taskEmailForm.content"
-                class="prose prose-sm max-h-[260px] overflow-y-auto p-3 text-xs text-ink-gray-9 dark:prose-invert dark:text-ink-white"
-                v-html="taskEmailForm.content"
-              />
-              <div v-else class="p-6 text-center text-xs text-ink-gray-4 italic">
-                {{ __('No message content to preview. Click Edit to compose.') }}
-              </div>
-            </div>
-
-            <!-- EDIT MODE (TipTap Editor) -->
-            <div v-else class="rounded border border-outline-gray-2 bg-surface-white dark:border-outline-gray-7 dark:bg-surface-gray-9">
-              <Editor
-                v-model="taskEmailForm.content"
-                :extensions="taskEditorExtensions"
-                :placeholder="__('Write your email message here...')"
-              >
-                <EditorFixedMenu
-                  :items="taskEditorToolbar"
-                  class="w-full overflow-x-auto rounded-t border-b border-outline-gray-2 bg-surface-base p-1 dark:border-outline-gray-7"
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('CC (optional)') }}</label>
+                <input
+                  v-model="taskEmailForm.cc"
+                  type="text"
+                  placeholder="cc@example.com"
+                  class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
                 />
-                <EditorContent class="prose prose-sm min-h-[160px] max-h-[260px] overflow-y-auto min-w-full p-3 text-xs text-ink-gray-9 dark:prose-invert dark:text-ink-white focus:outline-none" />
-              </Editor>
+              </div>
+              <div>
+                <label class="mb-1 block font-medium text-ink-gray-7 dark:text-ink-gray-3">{{ __('BCC (optional)') }}</label>
+                <input
+                  v-model="taskEmailForm.bcc"
+                  type="text"
+                  placeholder="bcc@example.com"
+                  class="w-full rounded border border-outline-gray-2 bg-surface-white px-3 py-1.5 text-xs text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9 dark:text-ink-white"
+                />
+              </div>
             </div>
           </div>
+
+          <!-- Unified Visual Email Editor -->
+          <VisualEmailEditor
+            ref="taskVisualEditorRef"
+            v-model:subject="taskEmailForm.subject"
+            v-model:content="taskEmailForm.content"
+            v-model:templateName="taskEmailForm.templateName"
+            v-model:isBranded="taskEmailForm.isBranded"
+            :recipientCount="1"
+            :sampleRecipient="{
+              full_name: activeEmailTask?.contact_name || 'Prospect',
+              first_name: activeEmailTask?.contact_name?.split(' ')[0] || 'there',
+              organization: activeEmailTask?.company || 'Organization',
+              email: taskEmailForm.recipient,
+            }"
+            :contactName="activeEmailTask?.contact || null"
+            defaultMode="edit"
+          />
         </div>
       </template>
       <template #actions>
         <div class="flex items-center justify-between w-full">
           <div>
             <Button
-              v-if="taskEmailMode === 'edit'"
+              v-if="taskVisualEditorRef?.activeMode === 'edit'"
               variant="outline"
               size="sm"
               iconLeft="lucide-eye"
               :label="__('Preview')"
-              @click="taskEmailMode = 'preview'"
+              @click="taskVisualEditorRef?.switchToPreview()"
             />
             <Button
               v-else
@@ -676,7 +597,7 @@
               size="sm"
               iconLeft="lucide-pen"
               :label="__('Edit')"
-              @click="taskEmailMode = 'edit'"
+              @click="if (taskVisualEditorRef) taskVisualEditorRef.activeMode = 'edit'"
             />
           </div>
           <div class="flex items-center gap-2">
@@ -789,6 +710,7 @@ import { globalStore } from '@/stores/global'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import BulkEmailModal from '@/components/Modals/BulkEmailModal.vue'
+import VisualEmailEditor from '@/components/VisualEmailEditor.vue'
 
 const { $dialog, $socket } = globalStore()
 
@@ -835,17 +757,15 @@ const showBulkEmailModal = ref(false)
 const showTaskEmailModal = ref(false)
 const activeEmailTask = ref(null)
 const taskEmailSending = ref(false)
-const taskEmailMode = ref('edit')
-const selectedTaskTemplate = ref('')
-const taskEmailTemplates = ref([])
-const taskEditorExtensions = buildEditorExtensions()
-const taskEditorToolbar = formToolbar
+const taskVisualEditorRef = ref(null)
 const taskEmailForm = reactive({
   recipient: '',
   subject: '',
   cc: '',
   bcc: '',
   content: '',
+  templateName: '',
+  isBranded: false,
 })
 
 const showTaskCallModal = ref(false)
@@ -1162,10 +1082,9 @@ function openTaskEmail(task) {
   taskEmailForm.content = `<p>Hi ${task.contact_name},</p><p>I am following up regarding our discussion.</p>`
   taskEmailForm.cc = ''
   taskEmailForm.bcc = ''
-  selectedTaskTemplate.value = ''
-  taskEmailMode.value = 'edit'
+  taskEmailForm.templateName = ''
+  taskEmailForm.isBranded = false
   showTaskEmailModal.value = true
-  loadTaskTemplates()
 }
 
 async function submitTaskEmail() {
@@ -1179,6 +1098,8 @@ async function submitTaskEmail() {
       content: taskEmailForm.content,
       cc: taskEmailForm.cc || null,
       bcc: taskEmailForm.bcc || null,
+      template_name: taskEmailForm.templateName || null,
+      is_branded: taskEmailForm.isBranded,
     })
     const isSent = res?.delivery_status === 'Sent' || res?.queue_status === 'Sent'
     toast.success(res?.message || (isSent ? __('Email sent successfully') : __('Email queued successfully')))
