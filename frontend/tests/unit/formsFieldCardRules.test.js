@@ -26,7 +26,7 @@ vi.mock('frappe-ui', async () => {
 })
 
 const { default: FieldCard } = await import(
-  '../../../crm/fcrm/frontend/settings/forms/FieldCard.vue'
+  '../../../crm/fcrm/frontend/forms/FieldCard.vue'
 )
 
 let app

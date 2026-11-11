@@ -13,7 +13,6 @@
     "panes": [
      "crm/general",
      "crm/users",
-     "crm/forms",
      "crm/enrichment"
     ]
    },
@@ -358,32 +357,6 @@
      "label": "Bidirectional product sync"
     }
    ]
-  },
-  {
-   "component": "forms",
-   "key": "forms",
-   "kind": "Component",
-   "label": "Forms",
-   "pane": "forms",
-   "roles": [
-    "Sales Manager",
-    "System Manager"
-   ],
-   "search_entries": [
-    {
-     "keywords": [
-      "web form",
-      "lead form",
-      "deal form",
-      "embed",
-      "public form",
-      "capture",
-      "iframe",
-      "publish"
-     ],
-     "label": "Forms"
-    }
-   ]
   }
  ],
  "creation": "2026-10-27 10:30:00.000000",
@@ -407,12 +380,6 @@
    "icon": "users",
    "key": "users",
    "label": "Users"
-  },
-  {
-   "description": "Public forms that capture leads and deals from your website.",
-   "icon": "text-cursor-input",
-   "key": "forms",
-   "label": "Forms"
   },
   {
    "description": "Twilio and Exotel accounts for calls from CRM.",

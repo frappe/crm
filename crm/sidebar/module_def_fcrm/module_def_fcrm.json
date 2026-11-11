@@ -7,7 +7,7 @@
  "items": [],
  "link_doctype": "Module Def",
  "link_to": "FCRM",
- "modified": "2026-11-10 22:00:00.000000",
+ "modified": "2026-11-11 12:00:00.000000",
  "modified_by": "Administrator",
  "name": "module_def_fcrm",
  "navigation_items": [
@@ -270,6 +270,19 @@
    "key": "lead-syncing",
    "label": "Lead Syncing",
    "link_doctype": "",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "Page",
+   "keep_closed": 0,
+   "key": "forms",
+   "label": "Forms",
+   "link_doctype": "Page",
+   "link_to": "forms",
+   "parent_key": "lead-syncing",
    "switches_app": 0
   },
   {

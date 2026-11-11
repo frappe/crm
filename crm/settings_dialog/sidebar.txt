@@ -23,8 +23,6 @@ Group "Workspace"
     crm/users/users
     crm/users/invite
     crm/users/sales-hierarchy
-  crm/forms
-    crm/forms/forms
   crm/enrichment
     crm/enrichment/general
 
