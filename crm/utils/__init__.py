@@ -297,7 +297,7 @@ def handle_incoming_email_reply(doc: Communication):
 	"""Handle incoming email reply: match thread via In-Reply-To/References/Message-ID,
 	associate with Contact/Lead/Task, mark original communication as Replied,
 	and notify the assigned CRM user."""
-	if doc.doctype != "Communication" or doc.sent_or_received != "Received":
+	if doc.doctype != "Communication" or getattr(doc, "sent_or_received", "") != "Received":
 		return
 
 	matched_comm = None
@@ -324,40 +324,101 @@ def handle_incoming_email_reply(doc: Communication):
 					in_reply_to_ids.extend([h.strip() for h in str(header_val).split() if h.strip()])
 
 		for msg_id in in_reply_to_ids:
-			# Check both with and without angle brackets
+			clean_id = msg_id.strip("<>")
+			# 2a. Match on Communication.message_id
 			parent_candidates = frappe.db.get_all(
 				"Communication",
-				filters={"message_id": ["in", [msg_id, f"<{msg_id}>"]]},
+				filters={"message_id": ["in", [msg_id, f"<{msg_id}>", clean_id]]},
 				fields=["name", "reference_doctype", "reference_name", "sender", "recipients", "delivery_status"],
 				order_by="creation desc",
 				limit=1,
 			)
 			if parent_candidates:
 				matched_comm = parent_candidates[0]
-				# Set in_reply_to link to parent communication name
-				try:
-					doc.db_set("in_reply_to", matched_comm.name, update_modified=False)
-				except Exception:
-					pass
 				break
+
+			# 2b. Match on Email Queue.message_id (outgoing emails store message_id in Email Queue)
+			queue_parent = frappe.db.get_all(
+				"Email Queue",
+				filters={"message_id": ["in", [msg_id, f"<{msg_id}>", clean_id]], "communication": ["is", "set"]},
+				fields=["communication"],
+				order_by="creation desc",
+				limit=1,
+			)
+			if queue_parent and queue_parent[0].communication:
+				parent_candidates = frappe.db.get_all(
+					"Communication",
+					filters={"name": queue_parent[0].communication},
+					fields=["name", "reference_doctype", "reference_name", "sender", "recipients", "delivery_status"],
+					limit=1,
+				)
+				if parent_candidates:
+					matched_comm = parent_candidates[0]
+					break
+
+			# 2c. Check if clean_id prefix matches a Communication name directly
+			possible_name = clean_id.split("@", 1)[0]
+			if frappe.db.exists("Communication", possible_name):
+				parent_candidates = frappe.db.get_all(
+					"Communication",
+					filters={"name": possible_name},
+					fields=["name", "reference_doctype", "reference_name", "sender", "recipients", "delivery_status"],
+					limit=1,
+				)
+				if parent_candidates:
+					matched_comm = parent_candidates[0]
+					break
+
+		if matched_comm and not getattr(doc, "in_reply_to", None):
+			try:
+				doc.in_reply_to = matched_comm.name
+				doc.db_set("in_reply_to", matched_comm.name, update_modified=False)
+			except Exception:
+				pass
 
 	if matched_comm:
 		# Update original outgoing email's delivery_status to "Replied"
 		frappe.db.set_value("Communication", matched_comm.name, "delivery_status", "Replied", update_modified=False)
 
-		# Associate incoming email with the same reference doc if not already set
-		if not (doc.reference_doctype and doc.reference_name):
-			doc.reference_doctype = matched_comm.reference_doctype
-			doc.reference_name = matched_comm.reference_name
-			doc.db_set("reference_doctype", matched_comm.reference_doctype, update_modified=False)
-			doc.db_set("reference_name", matched_comm.reference_name, update_modified=False)
+		# Associate incoming email with the actual reference doc (overwrite if unset or if "Communication")
+		ref_doctype = matched_comm.reference_doctype
+		ref_name = matched_comm.reference_name
+
+		if ref_doctype and ref_name and ref_doctype != "Communication":
+			doc.reference_doctype = ref_doctype
+			doc.reference_name = ref_name
+			doc.db_set("reference_doctype", ref_doctype, update_modified=False)
+			doc.db_set("reference_name", ref_name, update_modified=False)
+
+		# Also check if contact can be resolved
+		contact_name = None
+		if doc.reference_doctype == "Contact":
+			contact_name = doc.reference_name
+		elif doc.sender:
+			contact_name = frappe.db.get_value("Contact", {"email_id": doc.sender.strip()}, "name")
+			if not contact_name:
+				c_match = frappe.db.sql("""
+					SELECT c.name FROM `tabContact` c
+					LEFT JOIN `tabContact Email` ce ON ce.parent = c.name
+					WHERE c.email_id = %s OR ce.email_id = %s
+					LIMIT 1
+				""", (doc.sender.strip(), doc.sender.strip()))
+				if c_match:
+					contact_name = c_match[0][0]
+
+		# If we have contact and reference is not set or not Contact, set it to Contact
+		if contact_name and (not (doc.reference_doctype and doc.reference_name) or doc.reference_doctype == "Communication"):
+			doc.reference_doctype = "Contact"
+			doc.reference_name = contact_name
+			doc.db_set("reference_doctype", "Contact", update_modified=False)
+			doc.db_set("reference_name", contact_name, update_modified=False)
 
 		# Notify assigned CRM user
 		assigned_user = None
-		if matched_comm.reference_doctype == "Contact":
-			assigned_user = frappe.db.get_value("CRM Daily Allocation", {"contact": matched_comm.reference_name}, "assigned_to")
+		if contact_name:
+			assigned_user = frappe.db.get_value("CRM Daily Allocation", {"contact": contact_name}, "assigned_to")
 			if not assigned_user:
-				contact_assign = frappe.db.get_value("Contact", matched_comm.reference_name, "_assign")
+				contact_assign = frappe.db.get_value("Contact", contact_name, "_assign")
 				if contact_assign:
 					try:
 						assignees = json.loads(contact_assign) if isinstance(contact_assign, str) else contact_assign
@@ -373,7 +434,7 @@ def handle_incoming_email_reply(doc: Communication):
 		return
 
 	# If no header match, fallback to match sender email with Contact
-	if not (doc.reference_doctype and doc.reference_name) and doc.sender:
+	if (not (doc.reference_doctype and doc.reference_name) or doc.reference_doctype == "Communication") and doc.sender:
 		sender_email = doc.sender.strip()
 		contact_match = frappe.db.sql("""
 			SELECT c.name FROM `tabContact` c
@@ -400,6 +461,15 @@ def handle_incoming_email_reply(doc: Communication):
 				frappe.db.set_value("Communication", recent_sent[0].name, "delivery_status", "Replied", update_modified=False)
 
 			assigned_user = frappe.db.get_value("CRM Daily Allocation", {"contact": contact_name}, "assigned_to")
+			if not assigned_user:
+				contact_assign = frappe.db.get_value("Contact", contact_name, "_assign")
+				if contact_assign:
+					try:
+						assignees = json.loads(contact_assign) if isinstance(contact_assign, str) else contact_assign
+						if assignees:
+							assigned_user = assignees[0]
+					except Exception:
+						pass
 			if assigned_user:
 				notify_user_of_reply(assigned_user, doc, None)
 			return
@@ -421,17 +491,28 @@ def notify_user_of_reply(user: str, comm_doc: Communication, parent_comm: dict |
 			user=user,
 		)
 		frappe.publish_realtime("crm_tasks_updated", user=user)
+		frappe.publish_realtime("crm_notification", user=user)
 
 		if frappe.db.exists("DocType", "CRM Notification"):
 			sender_name = getattr(comm_doc, "sender_full_name", None) or comm_doc.sender or "Prospect"
-			notif = frappe.new_doc("CRM Notification")
-			notif.to_user = user
-			notif.type = "Mention"
-			notif.notification_text = f"New reply from {sender_name}: {comm_doc.subject or '(No Subject)'}"
-			notif.reference_doctype = comm_doc.reference_doctype
-			notif.reference_name = comm_doc.reference_name
-			notif.flags.ignore_permissions = True
-			notif.insert()
+			notif_text = f"Prospect {sender_name} replied: {comm_doc.subject or '(No Subject)'}"
+
+			# Avoid duplicate notification for same communication and user
+			if not frappe.db.exists("CRM Notification", {
+				"to_user": user,
+				"reference_doctype": comm_doc.reference_doctype,
+				"reference_name": comm_doc.reference_name,
+				"notification_text": notif_text,
+			}):
+				notif = frappe.new_doc("CRM Notification")
+				notif.to_user = user
+				notif.from_user = "Administrator"
+				notif.type = "Mention"
+				notif.notification_text = notif_text
+				notif.reference_doctype = comm_doc.reference_doctype
+				notif.reference_name = comm_doc.reference_name
+				notif.flags.ignore_permissions = True
+				notif.insert()
 	except Exception:
 		pass
 

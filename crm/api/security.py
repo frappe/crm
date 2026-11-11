@@ -99,6 +99,19 @@ def guard_communication_update(doc, method=None):
 	"""Emails are strictly read-only after creation for standard users."""
 	if getattr(doc, "__islocal", False) or getattr(doc, "is_new", lambda: False)():
 		return
+
+	# Allow incoming email receiving, background tasks, and system operations
+	if (
+		getattr(doc.flags, "in_receive", False)
+		or getattr(doc.flags, "ignore_permissions", False)
+		or getattr(frappe.flags, "in_receive", False)
+		or getattr(frappe.flags, "in_email_schedule", False)
+		or getattr(frappe.flags, "ignore_permissions", False)
+		or getattr(doc, "sent_or_received", "") == "Received"
+		or getattr(doc, "communication_type", "") == "Automated Message"
+	):
+		return
+
 	if not is_admin_only():
 		frappe.throw(_("Permission denied. Sent emails are read-only and cannot be modified."), frappe.PermissionError)
 
