@@ -207,6 +207,7 @@ function onContactsRealtimeUpdate() {
 
 onMounted(() => {
   fetchTabCounts()
+  call('crm.api.contact.backfill_contact_country_and_timezone').catch(() => {})
   if ($socket) {
     $socket.on('crm_tasks_updated', onContactsRealtimeUpdate)
   }
@@ -361,12 +362,55 @@ const rows = computed(() => {
         label: getUser(user)?.full_name || user,
       }))
     }
+
+    if (!_rows['custom_country']) {
+      _rows['custom_country'] = contact.custom_country || contact.country || 'Not Available'
+    }
+    if (!_rows['custom_timezone']) {
+      _rows['custom_timezone'] = contact.custom_timezone || contact.timezone || 'Not Available'
+    }
+
     return _rows
   })
 })
 
 const columns = computed(() => {
   let _columns = [...(contacts.value?.data?.columns || [])]
+
+  // Add Country & Timezone columns across all tabs
+  if (!_columns.some((c) => (c.key || c.value) === 'custom_country' || (c.key || c.value) === 'country')) {
+    const countryCol = {
+      label: __('Country'),
+      type: 'Data',
+      key: 'custom_country',
+      width: '10rem',
+    }
+    const lastIndex = _columns.findIndex(
+      (c) => (c.key || c.value) === 'modified',
+    )
+    if (lastIndex !== -1) {
+      _columns.splice(lastIndex, 0, countryCol)
+    } else {
+      _columns.push(countryCol)
+    }
+  }
+
+  if (!_columns.some((c) => (c.key || c.value) === 'custom_timezone' || (c.key || c.value) === 'timezone')) {
+    const tzCol = {
+      label: __('Time Zone'),
+      type: 'Data',
+      key: 'custom_timezone',
+      width: '12rem',
+    }
+    const lastIndex = _columns.findIndex(
+      (c) => (c.key || c.value) === 'modified',
+    )
+    if (lastIndex !== -1) {
+      _columns.splice(lastIndex, 0, tzCol)
+    } else {
+      _columns.push(tzCol)
+    }
+  }
 
   if (activeTab.value === 'assigned') {
     if (!_columns.some((c) => (c.key || c.value) === '_assign')) {

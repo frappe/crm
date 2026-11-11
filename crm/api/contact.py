@@ -17,14 +17,22 @@ def sync_allocation_fields_on_contact_update(doc):
 	name = getattr(doc, "name", None)
 	if not name:
 		return
+	org_name = getattr(doc, "company_name", None) or ""
+	from crm.api.daily_allocation import resolve_country_for_contact, get_timezone_for_country, format_timezone_label
+	cntry = resolve_country_for_contact(name, org_name)
+	tz = get_timezone_for_country(cntry) if cntry else "Not Available"
+	tz_label = format_timezone_label(tz, cntry) if tz != "Not Available" else "Not Available"
+
+	# Populate custom_country and custom_timezone on the Contact doc if available
+	if cntry and not getattr(doc, "custom_country", None):
+		doc.custom_country = cntry
+	if tz_label and tz_label != "Not Available" and not getattr(doc, "custom_timezone", None):
+		doc.custom_timezone = tz_label
+
 	if frappe.db.exists("CRM Daily Allocation", {"contact": name}):
 		full_name = doc.full_name or f"{doc.first_name or ''} {doc.last_name or ''}".strip() or name
 		c_email = doc.email_id or (doc.email_ids[0].email_id if getattr(doc, "email_ids", None) else "") or ""
 		c_phone = doc.mobile_no or (doc.phone_nos[0].phone if getattr(doc, "phone_nos", None) else "") or ""
-		org_name = doc.company_name or ""
-		from crm.api.daily_allocation import resolve_country_for_contact, get_timezone_for_country
-		cntry = resolve_country_for_contact(name, org_name)
-		tz = get_timezone_for_country(cntry) if cntry else "Not Available"
 
 		frappe.db.set_value(
 			"CRM Daily Allocation",
@@ -416,7 +424,8 @@ def get_contact_activities(contact: str) -> dict[str, Any]:
 			},
 			fields=[
 				"name", "sender", "sender_full_name", "recipients", "cc", "bcc",
-				"subject", "content", "communication_date", "creation", "delivery_status"
+				"subject", "content", "communication_date", "creation", "delivery_status",
+				"sent_or_received", "in_reply_to", "message_id"
 			],
 			order_by="creation desc",
 		)
@@ -432,6 +441,12 @@ def get_contact_activities(contact: str) -> dict[str, Any]:
 			snippet = clean_text[:140] + ("..." if len(clean_text) > 140 else "")
 
 			sender_display = c.sender_full_name or c.sender or "User"
+			is_incoming = (getattr(c, "sent_or_received", "") == "Received")
+			activity_title = (
+				_("Received email from {0}").format(sender_display)
+				if is_incoming
+				else _("{0} sent an email to this prospect").format(sender_display)
+			)
 			emails_list.append({
 				"activity_type": "email",
 				"name": c.name,
@@ -445,9 +460,11 @@ def get_contact_activities(contact: str) -> dict[str, Any]:
 				"snippet": snippet,
 				"date": str(c.communication_date or c.creation),
 				"creation": str(c.creation),
-				"delivery_status": c.delivery_status or "Sending",
+				"delivery_status": c.delivery_status or ("Received" if is_incoming else "Sending"),
+				"sent_or_received": c.sent_or_received or ("Received" if is_incoming else "Sent"),
+				"in_reply_to": getattr(c, "in_reply_to", None) or "",
 				"attachments": attached_files,
-				"activity_title": _("{0} sent an email to this prospect").format(sender_display),
+				"activity_title": activity_title,
 			})
 
 	# ---------------------------------------------------------
@@ -633,13 +650,50 @@ def send_contact_email(
 
 
 def ensure_contact_custom_fields():
-	"""Ensure custom_is_dropped column exists in tabContact."""
+	"""Ensure custom_is_dropped, custom_country, and custom_timezone columns exist in tabContact."""
 	try:
-		if not frappe.db.has_column("Contact", "custom_is_dropped"):
+		if (
+			not frappe.db.has_column("Contact", "custom_is_dropped")
+			or not frappe.db.has_column("Contact", "custom_country")
+			or not frappe.db.has_column("Contact", "custom_timezone")
+		):
 			from crm.install import add_contact_custom_fields
 			add_contact_custom_fields()
 	except Exception:
 		pass
+
+
+@frappe.whitelist()
+def backfill_contact_country_and_timezone():
+	"""Populate custom_country and custom_timezone for contacts where available."""
+	ensure_contact_custom_fields()
+	from crm.api.daily_allocation import resolve_country_for_contact, get_timezone_for_country, format_timezone_label
+	contacts = frappe.db.sql("""
+		SELECT name, company_name, custom_country, custom_timezone
+		FROM `tabContact`
+		WHERE (custom_country IS NULL OR custom_country = '')
+		   OR (custom_timezone IS NULL OR custom_timezone = '')
+		LIMIT 200
+	""", as_dict=True)
+
+	updated = 0
+	for c in contacts:
+		cntry = resolve_country_for_contact(c.name, c.company_name)
+		tz = get_timezone_for_country(cntry) if cntry else "Not Available"
+		tz_label = format_timezone_label(tz, cntry) if tz != "Not Available" else "Not Available"
+
+		vals = {}
+		if cntry and not c.custom_country:
+			vals["custom_country"] = cntry
+		if tz_label and tz_label != "Not Available" and not c.custom_timezone:
+			vals["custom_timezone"] = tz_label
+
+		if vals:
+			frappe.db.set_value("Contact", c.name, vals, update_modified=False)
+			updated += 1
+	if updated:
+		frappe.db.commit()
+	return {"updated": updated}
 
 
 @frappe.whitelist()

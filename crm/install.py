@@ -340,6 +340,18 @@ def add_contact_custom_fields():
 			"label": "Is Dropped",
 			"insert_after": "status",
 		},
+		{
+			"fieldname": "custom_country",
+			"fieldtype": "Data",
+			"label": "Country",
+			"insert_after": "custom_is_dropped",
+		},
+		{
+			"fieldname": "custom_timezone",
+			"fieldtype": "Data",
+			"label": "Time Zone",
+			"insert_after": "custom_country",
+		},
 	]
 	fields = [field for field in fields if not meta.has_field(field["fieldname"])]
 	if not fields:
