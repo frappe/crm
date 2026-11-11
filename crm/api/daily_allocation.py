@@ -1498,11 +1498,30 @@ def render_email_template(template_name: str, contact: str | None = None) -> dic
 	template = frappe.get_doc("Email Template", template_name)
 	contact_doc = frappe.get_doc("Contact", contact) if (contact and frappe.db.exists("Contact", contact)) else None
 
-	doc_dict = contact_doc.as_dict() if contact_doc else {}
-	first_name = doc_dict.get("first_name") or (doc_dict.get("full_name") or "").split(" ")[0] or ""
-	last_name = doc_dict.get("last_name") or ""
-	full_name = doc_dict.get("full_name") or f"{first_name} {last_name}".strip() or "there"
-	org_name = doc_dict.get("company_name") or ""
+	if contact_doc:
+		doc_dict = contact_doc.as_dict()
+		first_name = doc_dict.get("first_name") or (doc_dict.get("full_name") or "").split(" ")[0] or ""
+		last_name = doc_dict.get("last_name") or ""
+		full_name = doc_dict.get("full_name") or f"{first_name} {last_name}".strip() or "there"
+		org_name = doc_dict.get("company_name") or ""
+		email_addr = doc_dict.get("email_id") or ""
+		phone_no = doc_dict.get("mobile_no") or ""
+	else:
+		first_name = "Alex"
+		last_name = "Morgan"
+		full_name = "Alex Morgan"
+		org_name = "Acme Corp"
+		email_addr = "alex.morgan@example.com"
+		phone_no = "+1 555-0199"
+		doc_dict = {
+			"first_name": first_name,
+			"last_name": last_name,
+			"full_name": full_name,
+			"company_name": org_name,
+			"organization": org_name,
+			"email_id": email_addr,
+			"mobile_no": phone_no,
+		}
 
 	doc_dict["first_name"] = first_name
 	doc_dict["last_name"] = last_name
@@ -1519,8 +1538,8 @@ def render_email_template(template_name: str, contact: str | None = None) -> dic
 		"organization": org_name,
 		"company_name": org_name,
 		"prospect_name": full_name,
-		"email": doc_dict.get("email_id") or "",
-		"mobile_no": doc_dict.get("mobile_no") or "",
+		"email": email_addr,
+		"mobile_no": phone_no,
 	}
 
 	try:
@@ -1541,6 +1560,92 @@ def render_email_template(template_name: str, contact: str | None = None) -> dic
 		"name": template.name,
 		"subject": rendered_subject,
 		"content": rendered_body,
+		"raw_subject": template.subject or "",
+		"raw_content": raw_body,
+		"sample_recipient": {
+			"full_name": full_name,
+			"first_name": first_name,
+			"organization": org_name,
+			"email": email_addr,
+		},
+	}
+
+
+@frappe.whitelist()
+def render_email_preview(
+	content: str = "",
+	subject: str = "",
+	contact: str | None = None,
+) -> dict[str, Any]:
+	"""Render custom or edited email content and subject with contact or sample personalization."""
+	import re
+	contact_doc = frappe.get_doc("Contact", contact) if (contact and frappe.db.exists("Contact", contact)) else None
+
+	if contact_doc:
+		doc_dict = contact_doc.as_dict()
+		first_name = doc_dict.get("first_name") or (doc_dict.get("full_name") or "").split(" ")[0] or ""
+		last_name = doc_dict.get("last_name") or ""
+		full_name = doc_dict.get("full_name") or f"{first_name} {last_name}".strip() or "there"
+		org_name = doc_dict.get("company_name") or ""
+		email_addr = doc_dict.get("email_id") or ""
+		phone_no = doc_dict.get("mobile_no") or ""
+	else:
+		first_name = "Alex"
+		last_name = "Morgan"
+		full_name = "Alex Morgan"
+		org_name = "Acme Corp"
+		email_addr = "alex.morgan@example.com"
+		phone_no = "+1 555-0199"
+		doc_dict = {
+			"first_name": first_name,
+			"last_name": last_name,
+			"full_name": full_name,
+			"company_name": org_name,
+			"organization": org_name,
+			"email_id": email_addr,
+			"mobile_no": phone_no,
+		}
+
+	doc_dict["first_name"] = first_name
+	doc_dict["last_name"] = last_name
+	doc_dict["full_name"] = full_name
+	doc_dict["organization"] = org_name
+	doc_dict["prospect_name"] = full_name
+	doc_dict["company_name"] = org_name
+
+	context = {
+		"doc": doc_dict,
+		"first_name": first_name,
+		"last_name": last_name,
+		"full_name": full_name,
+		"organization": org_name,
+		"company_name": org_name,
+		"prospect_name": full_name,
+		"email": email_addr,
+		"mobile_no": phone_no,
+	}
+
+	try:
+		rendered_subject = frappe.render_template(subject or "", context)
+	except Exception:
+		rendered_subject = subject or ""
+
+	try:
+		rendered_body = frappe.render_template(content or "", context)
+	except Exception:
+		rendered_body = content or ""
+
+	rendered_subject = re.sub(r"\{\{[^}]+\}\}", "", rendered_subject).strip()
+
+	return {
+		"subject": rendered_subject,
+		"content": rendered_body,
+		"sample_recipient": {
+			"full_name": full_name,
+			"first_name": first_name,
+			"organization": org_name,
+			"email": email_addr,
+		},
 	}
 
 
@@ -1601,8 +1706,45 @@ def send_task_email(
 	comm.recipients = recipient
 	comm.cc = cc or ""
 	comm.bcc = bcc or ""
-	comm.subject = subject
-	comm.content = content
+
+	# Personalize subject & content if variables exist
+	recip_doc = frappe.get_doc("Contact", contact_name).as_dict() if contact_name and frappe.db.exists("Contact", contact_name) else {}
+	r_first_name = recip_doc.get("first_name") or (recip_doc.get("full_name") or "").split(" ")[0] or ""
+	r_last_name = recip_doc.get("last_name") or ""
+	r_full_name = recip_doc.get("full_name") or f"{r_first_name} {r_last_name}".strip() or "there"
+	r_org_name = recip_doc.get("company_name") or recip_doc.get("organization") or ""
+
+	recip_doc["first_name"] = r_first_name
+	recip_doc["last_name"] = r_last_name
+	recip_doc["full_name"] = r_full_name
+	recip_doc["organization"] = r_org_name
+	recip_doc["prospect_name"] = r_full_name
+	recip_doc["company_name"] = r_org_name
+
+	recip_ctx = {
+		"doc": recip_doc,
+		"first_name": r_first_name,
+		"last_name": r_last_name,
+		"full_name": r_full_name,
+		"organization": r_org_name,
+		"company_name": r_org_name,
+		"prospect_name": r_full_name,
+		"email": recipient,
+		"mobile_no": recip_doc.get("mobile_no") or "",
+	}
+	final_subject = subject or ""
+	final_content = content or ""
+	try:
+		final_subject = frappe.render_template(final_subject, recip_ctx)
+	except Exception:
+		pass
+	try:
+		final_content = frappe.render_template(final_content, recip_ctx)
+	except Exception:
+		pass
+
+	comm.subject = final_subject
+	comm.content = final_content
 	comm.reference_doctype = "Contact"
 	comm.reference_name = contact_name
 	comm.delivery_status = "Sending"
@@ -1856,6 +1998,48 @@ def send_bulk_email(
 			continue
 
 		try:
+			# Personalize subject and content per recipient
+			recipient_doc = None
+			if contact_name and frappe.db.exists("Contact", contact_name):
+				recipient_doc = frappe.get_doc("Contact", contact_name).as_dict()
+			elif lead_name and frappe.db.exists("CRM Lead", lead_name):
+				recipient_doc = frappe.get_doc("CRM Lead", lead_name).as_dict()
+
+			recip_dict = recipient_doc or {}
+			r_first_name = recip_dict.get("first_name") or (recip_dict.get("full_name") or "").split(" ")[0] or ""
+			r_last_name = recip_dict.get("last_name") or ""
+			r_full_name = recip_dict.get("full_name") or f"{r_first_name} {r_last_name}".strip() or "there"
+			r_org_name = recip_dict.get("company_name") or recip_dict.get("organization") or ""
+
+			recip_dict["first_name"] = r_first_name
+			recip_dict["last_name"] = r_last_name
+			recip_dict["full_name"] = r_full_name
+			recip_dict["organization"] = r_org_name
+			recip_dict["prospect_name"] = r_full_name
+			recip_dict["company_name"] = r_org_name
+
+			recip_context = {
+				"doc": recip_dict,
+				"first_name": r_first_name,
+				"last_name": r_last_name,
+				"full_name": r_full_name,
+				"organization": r_org_name,
+				"company_name": r_org_name,
+				"prospect_name": r_full_name,
+				"email": recip_email,
+				"mobile_no": recip_dict.get("mobile_no") or "",
+			}
+
+			try:
+				personalized_subject = frappe.render_template(subject, recip_context)
+			except Exception:
+				personalized_subject = subject
+
+			try:
+				personalized_content = frappe.render_template(content, recip_context)
+			except Exception:
+				personalized_content = content
+
 			comm = frappe.new_doc("Communication")
 			comm.communication_type = "Communication"
 			comm.communication_medium = "Email"
@@ -1863,8 +2047,8 @@ def send_bulk_email(
 			comm.sender = user_email
 			comm.sender_full_name = user_fullname
 			comm.recipients = recip_email
-			comm.subject = subject
-			comm.content = content
+			comm.subject = personalized_subject
+			comm.content = personalized_content
 			comm.reference_doctype = "Contact" if contact_name else ("CRM Lead" if lead_name else "Contact")
 			comm.reference_name = contact_name or lead_name or item
 			comm.delivery_status = "Sending"
