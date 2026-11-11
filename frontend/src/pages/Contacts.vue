@@ -363,75 +363,67 @@ const rows = computed(() => {
       }))
     }
 
-    if (!_rows['custom_country']) {
-      _rows['custom_country'] = contact.custom_country || contact.country || 'Not Available'
-    }
-    if (!_rows['custom_timezone']) {
-      _rows['custom_timezone'] = contact.custom_timezone || contact.timezone || 'Not Available'
-    }
+    const countryVal = contact.custom_country || contact.country
+    _rows['custom_country'] =
+      countryVal && countryVal !== 'Not Available' ? countryVal : '—'
+
+    const tzVal = contact.custom_timezone || contact.timezone
+    _rows['custom_timezone'] =
+      tzVal && tzVal !== 'Not Available' ? tzVal : '—'
 
     return _rows
   })
 })
 
 const columns = computed(() => {
-  let _columns = [...(contacts.value?.data?.columns || [])]
+  let baseColumns = [...(contacts.value?.data?.columns || [])]
 
-  // Add Country & Timezone columns across all tabs
-  if (!_columns.some((c) => (c.key || c.value) === 'custom_country' || (c.key || c.value) === 'country')) {
-    const countryCol = {
-      label: __('Country'),
-      type: 'Data',
-      key: 'custom_country',
-      width: '10rem',
-    }
-    const lastIndex = _columns.findIndex(
-      (c) => (c.key || c.value) === 'modified',
-    )
-    if (lastIndex !== -1) {
-      _columns.splice(lastIndex, 0, countryCol)
-    } else {
-      _columns.push(countryCol)
-    }
+  const countryCol = {
+    label: __('Country'),
+    type: 'Data',
+    key: 'custom_country',
+    width: '10rem',
+  }
+  const tzCol = {
+    label: __('Timezone'),
+    type: 'Data',
+    key: 'custom_timezone',
+    width: '12rem',
   }
 
-  if (!_columns.some((c) => (c.key || c.value) === 'custom_timezone' || (c.key || c.value) === 'timezone')) {
-    const tzCol = {
-      label: __('Time Zone'),
-      type: 'Data',
-      key: 'custom_timezone',
-      width: '12rem',
-    }
-    const lastIndex = _columns.findIndex(
-      (c) => (c.key || c.value) === 'modified',
-    )
-    if (lastIndex !== -1) {
-      _columns.splice(lastIndex, 0, tzCol)
-    } else {
-      _columns.push(tzCol)
-    }
+  // Filter out any pre-existing custom_country/custom_timezone/country/timezone to enforce clean order
+  let cleanCols = baseColumns.filter(
+    (c) =>
+      !['custom_country', 'country', 'custom_timezone', 'timezone'].includes(
+        c.key || c.value,
+      ),
+  )
+
+  // Desired order: Name | Email | Phone | Organization | Country | Timezone | Last Modified
+  const modifiedIndex = cleanCols.findIndex(
+    (c) => (c.key || c.value) === 'modified',
+  )
+  if (modifiedIndex !== -1) {
+    cleanCols.splice(modifiedIndex, 0, countryCol, tzCol)
+  } else {
+    cleanCols.push(countryCol, tzCol)
   }
 
   if (activeTab.value === 'assigned') {
-    if (!_columns.some((c) => (c.key || c.value) === '_assign')) {
+    if (!cleanCols.some((c) => (c.key || c.value) === '_assign')) {
       const assignCol = {
         label: __('Assigned To'),
         type: 'Data',
         key: '_assign',
         width: '13rem',
       }
-      const lastIndex = _columns.findIndex(
-        (c) => (c.key || c.value) === 'modified',
-      )
-      if (lastIndex !== -1) {
-        _columns.splice(lastIndex, 0, assignCol)
-      } else {
-        _columns.push(assignCol)
-      }
+      cleanCols.push(assignCol)
     }
   } else {
-    _columns = _columns.filter((c) => (c.key || c.value) !== '_assign')
+    cleanCols = cleanCols.filter((c) => (c.key || c.value) !== '_assign')
   }
+
+  let _columns = cleanCols
 
   // Set align right for last column
   if (_columns.length) {
