@@ -34,6 +34,7 @@ class TestFormsSetupRow(IntegrationTestCase):
 		page = os.path.join(frappe.get_app_path("crm"), "fcrm", "frontend", "pages", "forms.js")
 
 		self.assertTrue(os.path.exists(page))
+		self.assertTrue(frappe.db.exists("Page", {"name": "forms", "module": "FCRM"}))
 
 	def test_the_forms_page_is_permitted_to_sales_and_system_managers_only(self):
 		for email, role in (

@@ -29,5 +29,5 @@ import FormsList from "./FormsList.vue";
 
 const router = useRouter();
 const route = useRoute();
-const activeName = computed(() => route.query.form || null);
+const activeName = computed(() => [route.query.form].flat()[0] || null);
 </script>
