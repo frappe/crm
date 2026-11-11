@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import {
   evaluateRule,
   ruleError,
-} from '../../../crm/fcrm/frontend/settings/forms/conditionalRule.js'
+} from '../../../crm/fcrm/frontend/forms/conditionalRule.js'
 
 // The public page's parser, read out of crm_form.html: Preview must give the same answers.
 const html = readFileSync(

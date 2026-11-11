@@ -9,7 +9,7 @@
 					:label="form.title || __('Untitled')"
 					size="md"
 					class="-ml-4 cursor-pointer !max-w-96 !justify-start !pr-0 text-lg-semibold text-ink-gray-7 no-underline hover:bg-transparent hover:no-underline hover:opacity-70 focus:bg-transparent focus:outline-none focus:ring-0"
-					@click="goBack"
+					@click="emit('back')"
 				/>
 				<Badge v-if="dirty" variant="subtle" theme="amber" size="sm" :label="__('Not Saved')" />
 			</div>
@@ -908,12 +908,9 @@ async function saveNow() {
 	const ok = await save();
 	if (ok) toast.success(__("Form updated"));
 }
-async function goBack() {
-	if (!dirty.value || (await confirmDiscard())) emit("back");
-}
-// Closing the dialog, Esc and a pane switch all move the address.
+// Back, the browser's back and any other link leave through the router, so the guard asks once.
 const stopLeaveGuard = props.router?.beforeEach((to, from) =>
-	!dirty.value || samePane(to, from) ? true : confirmDiscard()
+	!dirty.value || sameForm(to, from) ? true : confirmDiscard()
 );
 function blockUnload(event) {
 	if (!dirty.value) return;
@@ -925,9 +922,8 @@ onBeforeUnmount(() => {
 	stopLeaveGuard?.();
 	window.removeEventListener("beforeunload", blockUnload);
 });
-function samePane(to, from) {
-	const pane = (hash) => hash.split("/").slice(0, 3).join("/");
-	return to.path === from.path && pane(to.hash) === pane(from.hash);
+function sameForm(to, from) {
+	return to.path === from.path && to.query.form === from.query.form;
 }
 function confirmDiscard() {
 	return new Promise((resolve) =>

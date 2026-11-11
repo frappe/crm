@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col text-ink-gray-8">
-		<div class="mt-3 flex items-center justify-between gap-2">
+		<div v-if="!forms.error" class="mt-3 flex items-center justify-between gap-2">
 			<a
 				href="https://docs.frappe.io/crm/capturing-leads/web-form"
 				target="_blank"

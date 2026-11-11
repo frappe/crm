@@ -42,6 +42,7 @@ SETUP_ROWS = (
 	"holiday-lists",
 	"client-scripts",
 	"lead-syncing",
+	"forms",
 	"lead-sync-sources",
 	"failed-lead-syncs",
 )
@@ -63,6 +64,7 @@ SIDEBARS = {
 			"holiday-lists",
 			"client-scripts",
 			"lead-syncing",
+			"forms",
 			"lead-sync-sources",
 			"failed-lead-syncs",
 		)
