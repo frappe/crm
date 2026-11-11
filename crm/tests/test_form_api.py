@@ -14,6 +14,12 @@ def make_form(route, document_type="CRM Lead", **kw):
 	return F.save_form(name=None, form=payload)["name"]
 
 
+def make_web_page(route, published=1):
+	frappe.get_doc({"doctype": "Web Page", "title": route, "route": route, "published": published}).insert(
+		ignore_permissions=True
+	)
+
+
 class TestFormAPI(IntegrationTestCase):
 	def tearDown(self):
 		frappe.set_user("Administrator")
@@ -120,6 +126,19 @@ class TestFormAPI(IntegrationTestCase):
 		for route in ("login", "App", "/api/", "crm-form", "update-password"):
 			with self.subTest(route=route), self.assertRaises(frappe.ValidationError):
 				make_form(route)
+
+	def test_save_form_rejects_route_a_web_page_serves(self):
+		"""The Web Form resolves before a Web Page, so it would take over the page's URL and those below it."""
+		make_web_page("t46931-about")
+		make_web_page("t46931-docs/intro")
+		for route in ("t46931-about", "T46931 Docs"):
+			with self.subTest(route=route), self.assertRaises(frappe.ValidationError):
+				make_form(route)
+
+	def test_save_form_allows_route_of_an_unpublished_web_page(self):
+		make_web_page("t46931-draft", published=0)
+		name = make_form("t46931-draft")
+		self.assertEqual(frappe.db.get_value("Web Form", name, "route"), "t46931-draft")
 
 	def test_save_form_rejects_empty_route(self):
 		with self.assertRaises(frappe.ValidationError):
@@ -398,6 +417,20 @@ class TestFormAPI(IntegrationTestCase):
 		):
 			crm_form._link_field_options("CRM Industry")
 			mock_set_user.assert_not_called()
+
+	# ---- guest select ----
+
+	def test_grant_guest_access_refused_on_personal_data(self):
+		"""User, Contact and CRM Lead names and titles are personal data, so Guest never gets Select on them."""
+		for doctype in ("User", "Contact", "CRM Lead"):
+			with self.subTest(doctype=doctype):
+				self.assertTrue(F.link_field_guest_access(doctype)["grant_refused"])
+				with self.assertRaises(frappe.PermissionError):
+					F.grant_guest_link_access(doctype)
+				self.assertFalse(frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": "Guest"}))
+
+	def test_grant_guest_access_offered_on_other_link_targets(self):
+		self.assertFalse(F.link_field_guest_access("CRM Lead Source")["grant_refused"])
 
 	# ---- permissions ----
 
