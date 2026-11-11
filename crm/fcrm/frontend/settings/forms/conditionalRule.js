@@ -1,6 +1,5 @@
-// A field's conditional-logic rule (`depends_on`, `mandatory_depends_on`, `read_only_depends_on`).
-// Parsed, never run: the rule is stored data, and Preview runs in the viewer's desk session.
-// The grammar and results match the public page's parser (crm/www/crm_form.html).
+// Parsed, never run: a stored rule must not execute in the viewer's desk session.
+// Keep the grammar and results equal to the public page's parser (crm/www/crm_form.html).
 
 /** The rule's value for `doc`, or `fallback` when the rule is empty or does not parse. */
 export function evaluateRule(expression, doc, fallback) {
@@ -17,6 +16,8 @@ export function evaluateRule(expression, doc, fallback) {
 export function ruleError(expression) {
 	const rule = expression ? String(expression).trim() : "";
 	if (!rule) return null;
+	if (!rule.startsWith("eval:") && !rule.startsWith("fn:") && !FIELDNAME.test(rule))
+		return "a rule that is not a field name starts with eval:";
 	try {
 		truthy(rule, {});
 		return null;
@@ -33,6 +34,7 @@ function truthy(rule, doc) {
 
 const COMPARISONS = ["===", "!==", "==", "!=", "<=", ">=", "<", ">"];
 const IDENTIFIER = /^[A-Za-z_$][\w$]*/;
+const FIELDNAME = /^[A-Za-z_]\w*$/;
 const NUMBER = /^-?\d+(?:\.\d+)?/;
 
 /** Reads `doc` / `parent` members, literals, comparisons, `&&`, `||`, `!` and parentheses. */

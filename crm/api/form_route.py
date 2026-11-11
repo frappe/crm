@@ -8,6 +8,7 @@ import re
 
 import frappe
 from frappe import _
+from frappe.utils import cstr
 
 # Served by the framework itself, not by a `www` page or a route rule.
 FRAMEWORK_ROUTES = frozenset({"api", "app", "apps", "assets", "desk", "files", "private"})
@@ -15,7 +16,7 @@ FRAMEWORK_ROUTES = frozenset({"api", "app", "apps", "assets", "desk", "files", "
 
 def form_route(route: str | None) -> str:
 	"""`route` as the builder slugs it. Refuses an empty route and one that another page owns."""
-	slug = re.sub(r"[^a-z0-9]+", "-", (route or "").strip().lower()).strip("-")
+	slug = re.sub(r"[^a-z0-9]+", "-", cstr(route).strip().lower()).strip("-")
 	if not slug:
 		frappe.throw(_("A form needs a route."), title=_("Route required"))
 	if slug in reserved_routes():

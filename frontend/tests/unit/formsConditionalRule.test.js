@@ -17,7 +17,6 @@ const html = readFileSync(
 const pageSource = html
   .split('// [conditional-eval:start]')[1]
   .split('// [conditional-eval:end]')[0]
-// eslint-disable-next-line no-new-func
 const { truthy: pageTruthy } = new Function(
   `${pageSource}; return { truthy };`,
 )()
@@ -79,6 +78,81 @@ describe('Forms Preview conditional rules', () => {
     }
   })
 
+  it('matches the public page on random rules', () => {
+    let seed = 46920
+    const random = (n) => {
+      seed = (seed * 1103515245 + 12345) % 2147483648
+      return (seed >>> 16) % n
+    }
+    const pick = (list) => list[random(list.length)]
+    const space = () => pick(['', ' ', '  '])
+    const operands = [
+      'doc.organization',
+      'doc.qty',
+      'doc.n',
+      'doc.missing',
+      'doc.items',
+      'doc.nested.city',
+      'doc["organization"]',
+      'parent.first_name',
+      'doc.__proto__',
+      'doc.constructor',
+      '"Acme"',
+      "'Pune'",
+      '0',
+      '-1',
+      '10.5',
+      'true',
+      'false',
+      'null',
+      'undefined',
+      'window',
+    ]
+    const comparisons = ['==', '===', '!=', '!==', '<', '<=', '>', '>=']
+    const expression = (depth) => {
+      const kind = depth > 2 ? 0 : random(5)
+      if (kind === 1) return '!' + expression(depth + 1)
+      if (kind === 2)
+        return '(' + space() + expression(depth + 1) + space() + ')'
+      if (kind === 3)
+        return (
+          pick(operands) +
+          space() +
+          pick(comparisons) +
+          space() +
+          pick(operands)
+        )
+      if (kind === 4)
+        return (
+          expression(depth + 1) +
+          space() +
+          pick(['&&', '||']) +
+          space() +
+          expression(depth + 1)
+        )
+      return pick(operands)
+    }
+    const junk = ['(', ')', '"', '\\', '.', '[', '=', '!', '&&', 'doc']
+    for (let i = 0; i < 20000; i++) {
+      let rule = expression(0)
+      if (random(4) === 0) {
+        const at = random(rule.length + 1)
+        rule = rule.slice(0, at) + pick(junk) + rule.slice(at)
+      }
+      rule = 'eval:' + rule
+      for (const fallback of [true, false]) {
+        const ours = evaluateRule(rule, doc, fallback)
+        const page = pageTruthy(rule, doc, fallback)
+        if (ours !== page)
+          expect({ rule, fallback, ours }).toEqual({
+            rule,
+            fallback,
+            ours: page,
+          })
+      }
+    }
+  })
+
   describe('never run the rule', () => {
     const attacks = [
       'eval:window',
@@ -122,6 +196,9 @@ describe('Forms Preview conditional rules', () => {
       expect(ruleError('eval:window.x')).toBe('unknown name: window')
       expect(ruleError('fn:my_rule')).toBe(
         'fn: rules do not run on public forms',
+      )
+      expect(ruleError('doc.status == "Open"')).toBe(
+        'a rule that is not a field name starts with eval:',
       )
     })
     it('has no error when it parses or is empty', () => {

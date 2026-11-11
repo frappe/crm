@@ -715,17 +715,23 @@ async function ensureGuestSelect(doctype) {
 	}
 }
 // the grant is site-wide, not scoped to this form, so the author confirms it by name
+let grantConfirmOpen = false;
 function grantGuestSelect(doctype) {
-	if (!doctype || grantingSelect[doctype]) return;
+	if (!doctype || grantingSelect[doctype] || grantConfirmOpen) return;
+	grantConfirmOpen = true;
 	dialog.confirm({
 		title: __("Give Guest access to {0}?", [doctype]),
 		message: __(
-			"Guest gets the Select permission on {0} for the whole site. Anyone, signed in or not, can then list the names of all {0} records, not only through this form.",
+			"Guest gets the Select permission on {0} for the whole site. Anyone, signed in or not, can then search and list all {0} records with their names, titles and owners, not only through this form.",
 			[doctype]
 		),
 		confirmLabel: __("Grant"),
 		cancelLabel: __("Cancel"),
-		onConfirm: () => grantGuestSelectNow(doctype),
+		onConfirm: () => {
+			grantConfirmOpen = false;
+			return grantGuestSelectNow(doctype);
+		},
+		onCancel: () => (grantConfirmOpen = false),
 	});
 }
 async function grantGuestSelectNow(doctype) {
@@ -907,7 +913,9 @@ const stopLeaveGuard = props.router?.beforeEach((to, from) =>
 	!dirty.value || samePane(to, from) ? true : confirmDiscard()
 );
 function blockUnload(event) {
-	if (dirty.value) event.preventDefault();
+	if (!dirty.value) return;
+	event.preventDefault();
+	event.returnValue = "";
 }
 window.addEventListener("beforeunload", blockUnload);
 onBeforeUnmount(() => {
@@ -1242,7 +1250,7 @@ async function requestDoctypeChange(newDt) {
 				wouldDrop,
 			])
 		);
-	if (hiddenDefaultsEdited())
+	if (hiddenDefaultsLost(seed))
 		losses.push(
 			__("The hidden fields' default values are reset to those of {0}.", [docLabel(newDt)])
 		);
@@ -1260,8 +1268,6 @@ async function requestDoctypeChange(newDt) {
 	});
 }
 
-// the hidden fields' defaults as loaded or seeded; commitDoctype replaces the rows
-let hiddenBaseline = new Map();
 function setHiddenFields(rows) {
 	hiddenFields.value = (rows || []).map((h) => ({
 		fieldname: h.fieldname,
@@ -1270,15 +1276,13 @@ function setHiddenFields(rows) {
 		options: h.options || "",
 		default: h.default ?? "",
 	}));
-	hiddenBaseline = new Map(hiddenFields.value.map((h) => [h.fieldname, String(h.default)]));
 	hiddenFields.value.forEach((h) => {
 		if (h.fieldtype === "Link") ensureLinkOptions(h.options);
 	});
 }
-function hiddenDefaultsEdited() {
-	return hiddenFields.value.some(
-		(h) => String(h.default ?? "") !== hiddenBaseline.get(h.fieldname)
-	);
+function hiddenDefaultsLost(seed) {
+	const next = new Map((seed || []).map((h) => [h.fieldname, String(h.default ?? "")]));
+	return hiddenFields.value.some((h) => String(h.default ?? "") !== (next.get(h.fieldname) ?? ""));
 }
 
 async function commitDoctype(newDt, valid, seed) {
