@@ -1033,7 +1033,7 @@ async function submitTaskEmail() {
   if (!activeEmailTask.value) return
   taskEmailSending.value = true
   try {
-    await call('crm.api.daily_allocation.send_task_email', {
+    const res = await call('crm.api.daily_allocation.send_task_email', {
       task_name: activeEmailTask.value.name,
       recipient: taskEmailForm.recipient,
       subject: taskEmailForm.subject,
@@ -1041,14 +1041,15 @@ async function submitTaskEmail() {
       cc: taskEmailForm.cc || null,
       bcc: taskEmailForm.bcc || null,
     })
-    toast.success(__('Email sent successfully'))
+    const isSent = res?.delivery_status === 'Sent' || res?.queue_status === 'Sent'
+    toast.success(res?.message || (isSent ? __('Email sent successfully') : __('Email queued successfully')))
     showTaskEmailModal.value = false
     if (activeEmailTask.value.status === 'To Do') {
       activeEmailTask.value.status = 'In Progress'
     }
     await fetchTasks()
   } catch (err) {
-    toast.error(err.message || __('Failed to send email'))
+    toast.error(err.messages?.[0] || err.message || __('Failed to send email'))
   } finally {
     taskEmailSending.value = false
   }

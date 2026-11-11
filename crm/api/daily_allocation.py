@@ -1554,6 +1554,7 @@ def send_task_email(
 	cc: str | None = None,
 	bcc: str | None = None,
 	attachments: Any = None,
+	send_now: bool | int | str = False,
 ) -> dict[str, Any]:
 	"""Send an email from My Task workspace for a specific allocated task."""
 	current_user = frappe.session.user
@@ -1588,13 +1589,14 @@ def send_task_email(
 	if not subject or not content:
 		frappe.throw(_("Subject and content are required."))
 
+	user_email = frappe.db.get_value("User", current_user, "email") or current_user
 	user_fullname = frappe.db.get_value("User", current_user, "full_name") or current_user
 
 	comm = frappe.new_doc("Communication")
 	comm.communication_type = "Communication"
 	comm.communication_medium = "Email"
 	comm.sent_or_received = "Sent"
-	comm.sender = current_user
+	comm.sender = user_email
 	comm.sender_full_name = user_fullname
 	comm.recipients = recipient
 	comm.cc = cc or ""
@@ -1603,11 +1605,12 @@ def send_task_email(
 	comm.content = content
 	comm.reference_doctype = "Contact"
 	comm.reference_name = contact_name
-	comm.delivery_status = "Sent"
+	comm.delivery_status = "Sending"
 	comm.flags.ignore_permissions = True
 	comm.insert()
 
 	# Process attachments if supplied
+	has_attachments = False
 	if attachments:
 		if isinstance(attachments, str):
 			try:
@@ -1616,14 +1619,39 @@ def send_task_email(
 				attachments = [a.strip() for a in attachments.split(",") if a.strip()]
 		if isinstance(attachments, list):
 			for att in attachments:
-				file_url = att.get("file_url") if isinstance(att, dict) else str(att)
+				file_url = att.get("file_url") if isinstance(att, dict) else (att if isinstance(att, str) and "/" in att else None)
+				file_name_candidate = att.get("name") if isinstance(att, dict) else (att if isinstance(att, str) and "/" not in att else None)
+				file_name = None
 				if file_url:
 					file_name = frappe.db.get_value("File", {"file_url": file_url}, "name")
-					if file_name:
-						frappe.db.set_value("File", file_name, {
-							"attached_to_doctype": "Communication",
-							"attached_to_name": comm.name,
-						})
+				if not file_name and file_name_candidate and frappe.db.exists("File", file_name_candidate):
+					file_name = file_name_candidate
+				if file_name:
+					frappe.db.set_value("File", file_name, {
+						"attached_to_doctype": "Communication",
+						"attached_to_name": comm.name,
+					})
+					has_attachments = True
+	if has_attachments:
+		comm.db_set("has_attachment", 1)
+
+	# Verify outgoing Email Account resolution
+	outgoing_account = comm.get_outgoing_email_account()
+	if not outgoing_account:
+		frappe.throw(
+			_("No outgoing Email Account found for {0}. Please configure an outgoing Email Account in Settings > Email Account.").format(user_email),
+			frappe.OutgoingEmailError,
+		)
+
+	# Send email through Frappe supported email mechanism
+	is_send_now = frappe.parse_json(send_now) if isinstance(send_now, str) else bool(send_now)
+	try:
+		comm.send_email(now=is_send_now)
+		comm.set_delivery_status(commit=True)
+	except Exception as e:
+		comm.db_set("delivery_status", "Error")
+		frappe.db.commit()
+		frappe.throw(_("Failed to send email: {0}").format(str(e)))
 
 	# Advance task from To Do to In Progress if currently To Do
 	if task_name and frappe.db.get_value("CRM Daily Allocation", task_name, "status") == "To Do":
@@ -1632,7 +1660,30 @@ def send_task_email(
 		check_and_advance_task_to_in_progress(contact=contact_name, email=recipient)
 
 	frappe.db.commit()
-	return {"success": True, "communication": comm.name, "task_status": "In Progress"}
+
+	# Fetch created Email Queue record if any
+	queue_records = frappe.get_all(
+		"Email Queue",
+		filters={"communication": comm.name},
+		fields=["name", "status", "error"],
+		order_by="creation desc",
+		limit=1,
+	)
+	queue_name = queue_records[0].name if queue_records else None
+	queue_status = queue_records[0].status if queue_records else None
+
+	comm.reload()
+	current_delivery_status = comm.delivery_status or ("Sent" if queue_status == "Sent" else "Sending")
+
+	return {
+		"success": True,
+		"communication": comm.name,
+		"email_queue": queue_name,
+		"queue_status": queue_status,
+		"delivery_status": current_delivery_status,
+		"task_status": "In Progress",
+		"message": _("Email sent successfully") if current_delivery_status == "Sent" else _("Email queued successfully"),
+	}
 
 
 @frappe.whitelist()
@@ -1764,7 +1815,16 @@ def send_bulk_email(
 		frappe.throw(_("Email subject and content cannot be empty."))
 
 	current_user = frappe.session.user
+	user_email = frappe.db.get_value("User", current_user, "email") or current_user
 	user_fullname = frappe.db.get_value("User", current_user, "full_name") or current_user
+
+	from frappe.email.doctype.email_account.email_account import EmailAccount
+	outgoing_acc = EmailAccount.find_outgoing(match_by_email=user_email, match_by_doctype="Contact")
+	if not outgoing_acc:
+		frappe.throw(
+			_("No outgoing Email Account found for {0}. Please configure an outgoing Email Account in Settings > Email Account.").format(user_email),
+			frappe.OutgoingEmailError,
+		)
 
 	sent_count = 0
 	skipped_count = 0
@@ -1800,16 +1860,19 @@ def send_bulk_email(
 			comm.communication_type = "Communication"
 			comm.communication_medium = "Email"
 			comm.sent_or_received = "Sent"
-			comm.sender = current_user
+			comm.sender = user_email
 			comm.sender_full_name = user_fullname
 			comm.recipients = recip_email
 			comm.subject = subject
 			comm.content = content
 			comm.reference_doctype = "Contact" if contact_name else ("CRM Lead" if lead_name else "Contact")
 			comm.reference_name = contact_name or lead_name or item
-			comm.delivery_status = "Sent"
+			comm.delivery_status = "Sending"
 			comm.flags.ignore_permissions = True
 			comm.insert()
+
+			comm.send_email(now=False)
+			comm.set_delivery_status(commit=True)
 
 			# Advance allocated task from To Do to In Progress
 			check_and_advance_task_to_in_progress(contact=contact_name, lead=lead_ref if (lead_ref := lead_name) else None, email=recip_email)
@@ -1824,7 +1887,7 @@ def send_bulk_email(
 		"sent": sent_count,
 		"skipped": skipped_count,
 		"errors": errors,
-		"message": _("Sent bulk email to {0} recipient(s).").format(sent_count),
+		"message": _("Queued bulk email for {0} recipient(s).").format(sent_count) if sent_count else _("No emails were queued."),
 	}
 
 

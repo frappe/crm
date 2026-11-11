@@ -142,7 +142,7 @@
                 <div v-if="expandedEmails[item.name]" class="mt-3 rounded-md bg-surface-gray-1 p-3 text-xs space-y-2 border border-outline-gray-2">
                   <div class="flex items-center justify-between border-b pb-2">
                     <span class="font-medium text-ink-gray-8">{{ __('Full Email Content') }}</span>
-                    <Badge variant="subtle" theme="green">{{ item.delivery_status }}</Badge>
+                    <Badge variant="subtle" :theme="getDeliveryStatusTheme(item.delivery_status)">{{ item.delivery_status }}</Badge>
                   </div>
                   <div v-if="item.cc" class="text-ink-gray-6">
                     <span class="font-medium">CC:</span> {{ item.cc }}
@@ -354,7 +354,7 @@
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <Badge variant="subtle" theme="green">{{ email.delivery_status }}</Badge>
+                <Badge variant="subtle" :theme="getDeliveryStatusTheme(email.delivery_status)">{{ email.delivery_status }}</Badge>
                 <span class="text-xs text-ink-gray-5">{{ formatActivityDate(email.date) }}</span>
               </div>
             </div>
@@ -1153,7 +1153,8 @@ async function submitEmail() {
       attachments: emailForm.attachments.length ? emailForm.attachments : null,
     })
 
-    toast.success(__('Email sent successfully'))
+    const isSent = res?.delivery_status === 'Sent' || res?.queue_status === 'Sent'
+    toast.success(res?.message || (isSent ? __('Email sent successfully') : __('Email queued successfully')))
     showEmailModal.value = false
     emailForm.content = ''
     emailForm.attachments = []
@@ -1306,6 +1307,16 @@ function formatTimeRange(start, end) {
   } catch {
     return `${start} – ${end || ''}`
   }
+}
+
+function getDeliveryStatusTheme(status) {
+  if (!status) return 'gray'
+  const s = String(status).toLowerCase()
+  if (s === 'sent') return 'green'
+  if (s === 'sending' || s === 'queued' || s === 'scheduled') return 'blue'
+  if (s === 'error' || s === 'rejected' || s === 'bounced' || s === 'soft-bounced') return 'red'
+  if (s === 'read' || s === 'opened' || s === 'clicked') return 'purple'
+  return 'gray'
 }
 
 // -------------------------------------------------------------

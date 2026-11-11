@@ -445,7 +445,7 @@ def get_contact_activities(contact: str) -> dict[str, Any]:
 				"snippet": snippet,
 				"date": str(c.communication_date or c.creation),
 				"creation": str(c.creation),
-				"delivery_status": c.delivery_status or "Sent",
+				"delivery_status": c.delivery_status or "Sending",
 				"attachments": attached_files,
 				"activity_title": _("{0} sent an email to this prospect").format(sender_display),
 			})
