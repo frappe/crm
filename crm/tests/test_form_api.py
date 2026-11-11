@@ -110,6 +110,21 @@ class TestFormAPI(IntegrationTestCase):
 
 	# ---- publish guard ----
 
+	def test_save_form_normalises_route(self):
+		"""The route is saved as the builder slugs it, whatever the client sent."""
+		name = make_form("  Spring Sale/2026_Q1 ")
+		self.assertEqual(frappe.db.get_value("Web Form", name, "route"), "spring-sale-2026-q1")
+
+	def test_save_form_rejects_reserved_route(self):
+		"""Frappe serves a published Web Form at /<route> too, so a path another page owns is refused."""
+		for route in ("login", "App", "/api/", "crm-form", "update-password"):
+			with self.subTest(route=route), self.assertRaises(frappe.ValidationError):
+				make_form(route)
+
+	def test_save_form_rejects_empty_route(self):
+		with self.assertRaises(frappe.ValidationError):
+			make_form(" -- ")
+
 	def test_publish_blocked_when_hidden_default_missing(self):
 		name = make_form("pub-guard")
 		with self.assertRaises(frappe.ValidationError):

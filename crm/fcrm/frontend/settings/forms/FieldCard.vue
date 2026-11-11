@@ -120,34 +120,26 @@
 					<Tooltip
 						:text="
 							__(
-								'Frappe expression referencing other fields as doc.<fieldname>, e.g. eval:doc.country == \'India\'. Leave blank for no condition.'
+								'A field name, or eval: with doc.<fieldname>, quoted text, numbers, comparisons, &&, || and !, e.g. eval:doc.country == \'India\'. Leave blank for no condition.'
 							)
 						"
 					>
 						<span class="lucide-info h-3.5 w-3.5 text-ink-gray-4" aria-hidden="true" />
 					</Tooltip>
 				</div>
-				<FormControl
-					v-model="dependsOnModel"
-					type="text"
-					size="sm"
-					:label="__('Visible if')"
-					:placeholder="rulePlaceholder"
-				/>
-				<FormControl
-					v-model="mandatoryDependsOnModel"
-					type="text"
-					size="sm"
-					:label="__('Mandatory if')"
-					:placeholder="rulePlaceholder"
-				/>
-				<FormControl
-					v-model="readOnlyDependsOnModel"
-					type="text"
-					size="sm"
-					:label="__('Read-only if')"
-					:placeholder="rulePlaceholder"
-				/>
+				<div v-for="rule in rules" :key="rule.key" class="space-y-1.5">
+					<FormControl
+						v-model="rule.model.value"
+						type="text"
+						size="sm"
+						:label="rule.label"
+						:placeholder="rulePlaceholder"
+					/>
+					<ErrorMessage
+						v-if="rule.error.value"
+						:message="__('This rule does not work: {0}', [rule.error.value])"
+					/>
+				</div>
 			</div>
 			<!-- Link field whose target isn't guest-visible: the public dropdown will be
            empty until the author deliberately exposes those records to visitors -->
@@ -182,8 +174,9 @@
 
 <script setup>
 import { computed, nextTick, ref } from "vue";
-import { Switch, Button, FormControl, Tooltip } from "frappe-ui";
+import { Switch, Button, ErrorMessage, FormControl, Tooltip } from "frappe-ui";
 import { __ } from "frappe/i18n";
+import { ruleError } from "./conditionalRule";
 import { fieldTypeIcon, fieldTypeLabel } from "./fieldTypeIcon";
 
 const props = defineProps({
@@ -208,9 +201,15 @@ const labelModel = fieldModel("label");
 const reqdModel = fieldModel("reqd");
 const placeholderModel = fieldModel("placeholder");
 const descriptionModel = fieldModel("field_description");
-const dependsOnModel = fieldModel("depends_on");
-const mandatoryDependsOnModel = fieldModel("mandatory_depends_on");
-const readOnlyDependsOnModel = fieldModel("read_only_depends_on");
+const rules = [
+	{ key: "depends_on", label: __("Visible if") },
+	{ key: "mandatory_depends_on", label: __("Mandatory if") },
+	{ key: "read_only_depends_on", label: __("Read-only if") },
+].map((rule) => ({
+	...rule,
+	model: fieldModel(rule.key),
+	error: computed(() => ruleError(props.field[rule.key])),
+}));
 const rulePlaceholder = 'eval:doc.fieldname == "value"';
 
 const editingLabel = ref(false);

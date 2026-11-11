@@ -17,6 +17,7 @@ import frappe
 from frappe import _
 from frappe.utils.telemetry import capture
 
+from crm.api.form_route import form_route
 from crm.fcrm.record_defaults import first_status
 
 ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
@@ -433,7 +434,7 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	doc = _get_crm_form(name) if name else frappe.new_doc("Web Form")
 
 	doc.title = form.get("title")
-	doc.route = form.get("route")
+	doc.route = form_route(form.get("route"))
 	doc.doc_type = form.get("document_type")
 	doc.introduction_text = form.get("description")
 	doc.button_label = form.get("submit_button_label") or "Submit"

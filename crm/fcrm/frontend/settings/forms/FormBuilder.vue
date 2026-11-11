@@ -277,6 +277,7 @@
 													v-model="form.route"
 													class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
 													@input="(routeEdited = true), markDirty()"
+													@blur="form.route = slugify(form.route)"
 												/>
 											</div>
 										</div>
@@ -566,17 +567,20 @@ import {
 	dialog,
 	toast,
 } from "frappe-ui";
-import { evaluateDependsOn } from "@framework/ui/FormLayout";
 import { __ } from "frappe/i18n";
 import FieldCard from "./FieldCard.vue";
+import { evaluateRule } from "./conditionalRule";
 import { call, copyToClipboard, errorText, recordNames } from "./formsApi";
 import { fieldTypeIcon } from "./fieldTypeIcon";
 import Draggable from "vuedraggable";
-import { ref, reactive, computed, watch, onMounted } from "vue";
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from "vue";
 
 const BREAK_TYPES = ["Section Break", "Column Break"];
 
-const props = defineProps({ name: { type: String, required: true } });
+const props = defineProps({
+	name: { type: String, required: true },
+	router: { type: Object, default: null },
+});
 const emit = defineEmits(["back", "saved"]);
 
 const targetOptions = [
@@ -710,9 +714,21 @@ async function ensureGuestSelect(doctype) {
 		guestSelect[doctype] = true;
 	}
 }
-// author's explicit, informed choice to expose a doctype's records to guests
-async function grantGuestSelect(doctype) {
+// the grant is site-wide, not scoped to this form, so the author confirms it by name
+function grantGuestSelect(doctype) {
 	if (!doctype || grantingSelect[doctype]) return;
+	dialog.confirm({
+		title: __("Give Guest access to {0}?", [doctype]),
+		message: __(
+			"Guest gets the Select permission on {0} for the whole site. Anyone, signed in or not, can then list the names of all {0} records, not only through this form.",
+			[doctype]
+		),
+		confirmLabel: __("Grant"),
+		cancelLabel: __("Cancel"),
+		onConfirm: () => grantGuestSelectNow(doctype),
+	});
+}
+async function grantGuestSelectNow(doctype) {
 	grantingSelect[doctype] = true;
 	try {
 		const res = await call("grant_guest_link_access", { doctype });
@@ -811,11 +827,11 @@ const sectionKey = (sec) => sec.secField?.fieldname || "sec";
 const columnKey = (col) => col.colField?.fieldname || "col0";
 const previewModel = reactive({}); // throwaway values so the preview is interactive
 
-// preview honours the same conditional-logic rules, reusing the app's evaluator
-const evalRule = (expr, fallback) => (expr ? evaluateDependsOn(expr, previewModel) : fallback);
-const fieldVisible = (f) => evalRule(f.depends_on, true);
-const fieldRequired = (f) => (f.reqd ? true : evalRule(f.mandatory_depends_on, false));
-const fieldReadOnly = (f) => evalRule(f.read_only_depends_on, false);
+// the public page's fallbacks: a rule that does not parse shows the field, and does not require or lock it
+const fieldVisible = (f) => evaluateRule(f.depends_on, previewModel, true);
+const fieldRequired = (f) =>
+	f.reqd ? true : evaluateRule(f.mandatory_depends_on, previewModel, false);
+const fieldReadOnly = (f) => evaluateRule(f.read_only_depends_on, previewModel, false);
 const previewSubmitted = ref(false);
 
 function resetPreview() {
@@ -883,18 +899,36 @@ async function saveNow() {
 	const ok = await save();
 	if (ok) toast.success(__("Form updated"));
 }
-// with autosave gone, warn before leaving the editor with unsaved changes
-function goBack() {
-	if (dirty.value) {
+async function goBack() {
+	if (!dirty.value || (await confirmDiscard())) emit("back");
+}
+// Closing the dialog, Esc and a pane switch all move the address.
+const stopLeaveGuard = props.router?.beforeEach((to, from) =>
+	!dirty.value || samePane(to, from) ? true : confirmDiscard()
+);
+function blockUnload(event) {
+	if (dirty.value) event.preventDefault();
+}
+window.addEventListener("beforeunload", blockUnload);
+onBeforeUnmount(() => {
+	stopLeaveGuard?.();
+	window.removeEventListener("beforeunload", blockUnload);
+});
+function samePane(to, from) {
+	const pane = (hash) => hash.split("/").slice(0, 3).join("/");
+	return to.path === from.path && pane(to.hash) === pane(from.hash);
+}
+function confirmDiscard() {
+	return new Promise((resolve) =>
 		dialog.confirm({
-			title: __("Unsaved Changes"),
-			message: __("Are you sure you want to go back? Unsaved changes will be lost."),
-			confirmLabel: __("Go Back"),
-			onConfirm: () => emit("back"),
-		});
-		return;
-	}
-	emit("back");
+			title: __("Discard unsaved changes?"),
+			message: __("This form has changes that are not saved."),
+			confirmLabel: __("Discard"),
+			cancelLabel: __("Keep editing"),
+			onConfirm: () => resolve(true),
+			onCancel: () => resolve(false),
+		})
+	);
 }
 function toggle(f) {
 	expanded.value = expanded.value === f.fieldname ? null : f.fieldname;
@@ -1123,16 +1157,7 @@ call("get_form_config", { name: props.name })
 			mandatory_depends_on: f.mandatory_depends_on || "",
 			read_only_depends_on: f.read_only_depends_on || "",
 		}));
-		hiddenFields.value = (doc.hidden_fields || []).map((h) => ({
-			fieldname: h.fieldname,
-			label: h.label,
-			fieldtype: h.fieldtype,
-			options: h.options || "",
-			default: h.default ?? "",
-		}));
-		hiddenFields.value.forEach((h) => {
-			if (h.fieldtype === "Link") ensureLinkOptions(h.options);
-		});
+		setHiddenFields(doc.hidden_fields);
 		// resolve guest-access state up front so a Link field can warn on the build tab
 		form.fields.forEach((f) => {
 			if (f.fieldtype === "Link") ensureLinkMeta(f.options);
@@ -1209,21 +1234,51 @@ async function requestDoctypeChange(newDt) {
 	const wouldDrop = form.fields.filter(
 		(f) => !BREAK_TYPES.includes(f.fieldtype) && !valid.has(f.fieldname)
 	).length;
+	const losses = [];
+	if (wouldDrop)
+		losses.push(
+			__("Switching to {0} will remove {1} field(s) that don't exist on {0}.", [
+				docLabel(newDt),
+				wouldDrop,
+			])
+		);
+	if (hiddenDefaultsEdited())
+		losses.push(
+			__("The hidden fields' default values are reset to those of {0}.", [docLabel(newDt)])
+		);
 
-	if (!wouldDrop) {
+	if (!losses.length) {
 		commitDoctype(newDt, valid, seed);
 		return;
 	}
 	dialog.confirm({
 		title: __("Change form type?"),
-		message: __(
-			"Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone.",
-			[docLabel(newDt), wouldDrop]
-		),
-		confirmLabel: __("Change & remove fields"),
+		message: [...losses, __("This can't be undone.")].join(" "),
+		confirmLabel: wouldDrop ? __("Change & remove fields") : __("Change form type"),
 		theme: "red",
 		onConfirm: () => commitDoctype(newDt, valid, seed),
 	});
+}
+
+// the hidden fields' defaults as loaded or seeded; commitDoctype replaces the rows
+let hiddenBaseline = new Map();
+function setHiddenFields(rows) {
+	hiddenFields.value = (rows || []).map((h) => ({
+		fieldname: h.fieldname,
+		label: h.label,
+		fieldtype: h.fieldtype,
+		options: h.options || "",
+		default: h.default ?? "",
+	}));
+	hiddenBaseline = new Map(hiddenFields.value.map((h) => [h.fieldname, String(h.default)]));
+	hiddenFields.value.forEach((h) => {
+		if (h.fieldtype === "Link") ensureLinkOptions(h.options);
+	});
+}
+function hiddenDefaultsEdited() {
+	return hiddenFields.value.some(
+		(h) => String(h.default ?? "") !== hiddenBaseline.get(h.fieldname)
+	);
 }
 
 async function commitDoctype(newDt, valid, seed) {
@@ -1247,16 +1302,7 @@ async function commitDoctype(newDt, valid, seed) {
 	});
 	// rebuild hidden fields for the new doctype: its system-hidden fields (Status,
 	// with the right options + default)
-	hiddenFields.value = (seed || []).map((h) => ({
-		fieldname: h.fieldname,
-		label: h.label,
-		fieldtype: h.fieldtype,
-		options: h.options || "",
-		default: h.default ?? "",
-	}));
-	hiddenFields.value.forEach((h) => {
-		if (h.fieldtype === "Link") ensureLinkOptions(h.options);
-	});
+	setHiddenFields(seed);
 	rebuildModel();
 	markDirty();
 	if (dropped) {
@@ -1289,7 +1335,7 @@ async function save({ silent = false } = {}) {
 			name: form.name,
 			form: {
 				title: form.title,
-				route: form.route,
+				route: slugify(form.route),
 				document_type: form.document_type,
 				description: form.description,
 				submit_button_label: form.submit_button_label,
