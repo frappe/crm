@@ -53,7 +53,11 @@
 			</div>
 			<Tooltip
 				v-if="guestSelectMissing"
-				:text="__('Guests can\'t see {0} records yet. Open to grant access.', [field.options])"
+				:text="
+					grantRefused
+						? __('Guests can\'t see {0} records.', [field.options])
+						: __('Guests can\'t see {0} records yet. Open to grant access.', [field.options])
+				"
 			>
 				<span
 					class="lucide-triangle-alert h-3.5 w-3.5 shrink-0 text-ink-amber-5"
@@ -152,7 +156,15 @@
 					aria-hidden="true"
 				/>
 				<div class="flex min-w-0 flex-col items-start gap-2">
-					<p class="text-p-sm text-ink-gray-7">
+					<p v-if="grantRefused" class="text-p-sm text-ink-gray-7">
+						{{
+							__(
+								"Guests can't see {0} records, and access can't be granted: they hold personal data. The public dropdown stays empty.",
+								[field.options]
+							)
+						}}
+					</p>
+					<p v-else class="text-p-sm text-ink-gray-7">
 						{{
 							__("Guests can't see {0} records. Grant select access to list them publicly.", [
 								field.options,
@@ -160,6 +172,7 @@
 						}}
 					</p>
 					<Button
+						v-if="!grantRefused"
 						size="sm"
 						variant="outline"
 						:loading="granting"
@@ -185,6 +198,7 @@ const props = defineProps({
 	locked: { type: Boolean, default: false },
 	guestSelectMissing: { type: Boolean, default: false },
 	granting: { type: Boolean, default: false },
+	grantRefused: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["open", "toggle", "remove", "update", "grant-guest"]);

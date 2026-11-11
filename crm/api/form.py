@@ -21,6 +21,8 @@ from crm.api.form_route import form_route
 from crm.fcrm.record_defaults import first_status
 
 ALLOWED_DOCTYPES = ("CRM Lead", "CRM Deal")
+# Their record names and titles are personal data (User names are email addresses).
+GUEST_SELECT_REFUSED = frozenset({"User", "Contact", "CRM Lead"})
 FORM_SOURCE = "Web Form"
 FORM_MODULE = "FCRM"
 
@@ -254,7 +256,11 @@ def link_field_guest_access(doctype: str) -> dict:
 	notice: if False, the author is warned that the public dropdown will be empty and
 	is offered a one-click grant (grant_guest_link_access)."""
 	_check_manager()
-	return {"doctype": doctype, "guest_can_select": guest_can_select(doctype)}
+	return {
+		"doctype": doctype,
+		"guest_can_select": guest_can_select(doctype),
+		"grant_refused": doctype in GUEST_SELECT_REFUSED,
+	}
 
 
 @frappe.whitelist()
@@ -264,6 +270,12 @@ def grant_guest_link_access(doctype: str) -> dict:
 	will then see them). Limited to doctypes that are Link targets on a CRM form; stored as
 	a site-level Custom DocPerm."""
 	_check_manager()
+	if doctype in GUEST_SELECT_REFUSED:
+		frappe.throw(
+			_("Guests can't be given access to {0} records: they hold personal data.").format(doctype),
+			frappe.PermissionError,
+			title=_("Access Refused"),
+		)
 	if doctype not in _link_target_doctypes():
 		frappe.throw(_("{0} isn't a linkable field on a CRM form.").format(doctype))
 

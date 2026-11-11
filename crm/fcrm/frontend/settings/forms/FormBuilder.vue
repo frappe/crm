@@ -156,6 +156,7 @@
 																	f.fieldtype === 'Link' && guestSelect[f.options] === false
 																"
 																:granting="!!grantingSelect[f.options]"
+																:grant-refused="!!grantRefused[f.options]"
 																@open="open(f)"
 																@toggle="toggle(f)"
 																@remove="removeField(f)"
@@ -704,12 +705,14 @@ async function ensureLinkOptions(doctype) {
 // FieldCard. Fail-open on error so a failed check doesn't nag.
 const guestSelect = reactive({});
 const grantingSelect = reactive({});
+const grantRefused = reactive({});
 async function ensureGuestSelect(doctype) {
 	if (!doctype || doctype in guestSelect) return;
 	guestSelect[doctype] = true;
 	try {
 		const res = await call("link_field_guest_access", { doctype });
 		guestSelect[doctype] = !!res?.guest_can_select;
+		grantRefused[doctype] = !!res?.grant_refused;
 	} catch {
 		guestSelect[doctype] = true;
 	}
@@ -717,7 +720,7 @@ async function ensureGuestSelect(doctype) {
 // the grant is site-wide, not scoped to this form, so the author confirms it by name
 let grantConfirmOpen = false;
 function grantGuestSelect(doctype) {
-	if (!doctype || grantingSelect[doctype] || grantConfirmOpen) return;
+	if (!doctype || grantRefused[doctype] || grantingSelect[doctype] || grantConfirmOpen) return;
 	grantConfirmOpen = true;
 	dialog.confirm({
 		title: __("Give Guest access to {0}?", [doctype]),
