@@ -5,6 +5,7 @@ import { call, errorText } from "../formsApi";
 import {
 	fieldsFromServer,
 	MAX_COLUMNS,
+	afterSubmitOf,
 	buildSections,
 	flattenSections,
 	makeMarker,
@@ -47,6 +48,7 @@ export function useFormDraft({ name, onSaved }) {
 		submit_button_label: "Submit",
 		success_message: "",
 		redirect_url: "",
+		after_submit: "message", // UI choice; save clears the other value
 		allowed_embedding_domains: "",
 		published: 0,
 		fields: [],
@@ -257,6 +259,7 @@ export function useFormDraft({ name, onSaved }) {
 				form.submit_button_label = doc.submit_button_label || "Submit";
 				form.success_message = doc.success_message || "";
 				form.redirect_url = doc.redirect_url || "";
+				form.after_submit = afterSubmitOf(form);
 				form.allowed_embedding_domains = doc.allowed_embedding_domains || "";
 				form.published = doc.published || 0;
 				form.fields = fieldsFromServer(doc.fields);

@@ -1,133 +1,127 @@
 <template>
-	<div class="flex flex-col pt-5">
-		<p v-if="!form.published" class="mb-5 text-p-sm text-ink-gray-5">
-			{{ __("This form isn’t published yet. Turn on Publish to make the link and embeds live.") }}
-		</p>
-
-		<!-- link -->
-		<div>
+	<div class="mx-auto flex w-full max-w-[640px] flex-col gap-8 pt-6">
+		<section class="flex flex-col gap-4">
 			<div class="flex flex-col gap-1">
-				<span class="text-lg-semibold text-ink-gray-8">{{ __("Link") }}</span>
-				<span class="text-p-sm text-ink-gray-6">{{
-					__("Send people straight to the hosted form.")
-				}}</span>
-			</div>
-			<div class="mt-3.5 flex items-center gap-2">
-				<TextInput class="flex-1" size="sm" readonly :modelValue="publicUrl">
-					<template #suffix>
-						<button
-							class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
-							:title="__('Copy link')"
-							@click="copyToClipboard(publicUrl)"
-						>
-							<span class="lucide-copy h-4 w-4" aria-hidden="true" />
-						</button>
-					</template>
-				</TextInput>
-				<a :href="publicUrl" target="_blank">
-					<Button :label="__('Open')">
-						<template #prefix
-							><span class="lucide-external-link h-4 w-4" aria-hidden="true"
-						/></template>
-					</Button>
-				</a>
-			</div>
-		</div>
-
-		<hr class="my-8 border-outline-gray-2" />
-
-		<!-- embed -->
-		<div>
-			<div class="flex flex-col gap-1">
-				<span class="text-lg-semibold text-ink-gray-8">{{ __("Embed") }}</span>
-				<span class="text-p-sm text-ink-gray-6">{{
-					__("Drop the form into your own website.")
-				}}</span>
-			</div>
-
-			<div class="mt-3.5 flex flex-col gap-5">
-				<!-- iframe (isolated) -->
-				<div>
-					<div class="mb-1 text-base text-ink-gray-5">
-						{{ __("iframe") }}
-					</div>
-					<p class="mb-2 text-p-sm text-ink-gray-5">
-						{{ __("Sandboxed in a frame. Simplest, but a fixed height and its own styling.") }}
-					</p>
-					<div class="relative">
-						<textarea
-							readonly
-							rows="3"
-							class="w-full resize-none rounded-5 border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
-							:value="iframeSnippet"
-						/>
-						<button
-							class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
-							:title="__('Copy')"
-							@click="copyToClipboard(iframeSnippet)"
-						>
-							<span class="lucide-copy h-4 w-4" aria-hidden="true" />
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<hr class="my-8 border-outline-gray-2" />
-
-		<!-- allowed domains -->
-		<div>
-			<div class="flex flex-col gap-1">
-				<span class="text-lg-semibold text-ink-gray-8">{{ __("Allowed domains") }}</span>
-				<span class="text-p-sm text-ink-gray-6">
+				<h3 class="text-base-medium text-ink-gray-8">{{ __("Link") }}</h3>
+				<p class="text-p-sm text-ink-gray-5">
 					{{
-						__(
-							"Sites where this form may be embedded, one per line. Browsers block the iframe on any site not listed here."
-						)
+						form.published
+							? __("Send people straight to the hosted form.")
+							: __("Not published yet. Publish it to make the link and embed live.")
 					}}
-				</span>
+				</p>
 			</div>
-			<textarea
-				v-model="form.allowed_embedding_domains"
-				rows="3"
-				spellcheck="false"
-				placeholder="https://www.example.com"
-				class="mt-3.5 w-full resize-none rounded-5 border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
-				@input="markDirty"
-			/>
-			<p v-if="invalidEmbeddingDomains.length" class="mt-1.5 text-xs text-ink-red-5">
-				{{
-					__("Not a valid domain and will be ignored: {0}", [invalidEmbeddingDomains.join(", ")])
-				}}
-			</p>
-			<p v-else-if="!embeddingDomains.length" class="mt-1.5 text-xs text-ink-gray-5">
-				{{ __("No domains added. The embed will only work on this site until you add one.") }}
-			</p>
-		</div>
+			<div class="flex items-center gap-2">
+				<TextInput class="flex-1" readonly :modelValue="publicUrl" />
+				<Button icon="lucide-copy" :tooltip="__('Copy link')" @click="copyToClipboard(publicUrl)" />
+				<Button :label="__('Open')" icon-left="lucide-external-link" :href="publicUrl" />
+			</div>
+		</section>
+
+		<section class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<h3 class="text-base-medium text-ink-gray-8">{{ __("Embed") }}</h3>
+				<p class="text-p-sm text-ink-gray-5">
+					{{ __("Paste this code into a page of your website.") }}
+				</p>
+			</div>
+			<div class="relative rounded-4 bg-surface-gray-2">
+				<pre
+					class="whitespace-pre-wrap py-2 pl-3 pr-10 font-mono text-sm leading-5 text-ink-gray-7 [overflow-wrap:anywhere]"
+					>{{ iframeSnippet }}</pre
+				>
+				<Button
+					class="absolute right-1 top-1"
+					variant="ghost"
+					icon="lucide-copy"
+					:tooltip="__('Copy code')"
+					@click="copyToClipboard(iframeSnippet)"
+				/>
+			</div>
+		</section>
+
+		<section class="flex flex-col gap-4">
+			<div class="flex flex-col gap-1">
+				<h3 class="text-base-medium text-ink-gray-8">{{ __("Allowed domains") }}</h3>
+				<p class="text-p-sm text-ink-gray-5">
+					{{ __("Sites that may show the embed. Browsers block it everywhere else.") }}
+				</p>
+			</div>
+			<ul v-if="embeddingDomains.length" class="flex flex-col">
+				<li
+					v-for="domain in embeddingDomains"
+					:key="domain"
+					class="flex h-9 items-center gap-2 border-b border-outline-gray-1 first:border-t"
+				>
+					<span class="lucide-globe h-4 w-4 shrink-0 text-ink-gray-5" aria-hidden="true" />
+					<span class="flex-1 truncate text-base text-ink-gray-8">{{ domain }}</span>
+					<span v-if="!normalizeDomain(domain)" class="shrink-0 text-p-sm text-ink-red-4">
+						{{ __("Not valid, ignored") }}
+					</span>
+					<Button
+						class="-mr-1.5"
+						variant="ghost"
+						icon="lucide-x"
+						:tooltip="__('Remove')"
+						@click="removeDomain(domain)"
+					/>
+				</li>
+			</ul>
+			<div class="flex flex-col gap-1.5">
+				<div class="flex items-center gap-2">
+					<TextInput
+						v-model="newDomain"
+						class="flex-1"
+						placeholder="https://www.example.com"
+						@keydown.enter.prevent="addDomain"
+						@input="domainError = ''"
+					/>
+					<Button :label="__('Add domain')" icon-left="lucide-plus" @click="addDomain" />
+				</div>
+				<p v-if="domainError" class="text-p-sm text-ink-red-4">{{ domainError }}</p>
+				<p v-else-if="!embeddingDomains.length" class="text-p-sm text-ink-gray-5">
+					{{ __("No domains added. The embed works only on this site until you add one.") }}
+				</p>
+			</div>
+		</section>
 	</div>
 </template>
 
 <script setup>
 import { Button, TextInput } from "frappe-ui";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { __ } from "frappe/i18n";
 import { copyToClipboard } from "../formsApi";
+import { domainList, normalizeDomain } from "./formModel";
 
 const props = defineProps({ draft: { type: Object, required: true } });
 const { form, markDirty } = props.draft;
 
 const publicUrl = computed(() => `${window.location.origin}/crm-form/${form.route}`);
-const embeddingDomains = computed(() =>
-	(form.allowed_embedding_domains || "").split(/\s+/).filter(Boolean)
-);
-// mirror the server's ALLOWED_EMBEDDING_DOMAIN_RE (crm/www/crm_form.py): bare host,
-// optional scheme/port, optional leading "*." wildcard. Anything else is dropped
-// from the CSP header server-side, so flag it here instead of failing silently.
-const EMBEDDING_DOMAIN_RE =
-	/^(https?:\/\/)?(\*\.)?[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::\d+)?$/;
-const invalidEmbeddingDomains = computed(() =>
-	embeddingDomains.value.filter((d) => !EMBEDDING_DOMAIN_RE.test(d))
-);
+const embeddingDomains = computed(() => domainList(form.allowed_embedding_domains));
+
+const newDomain = ref("");
+const domainError = ref("");
+
+function addDomain() {
+	if (!newDomain.value.trim()) return;
+	const domain = normalizeDomain(newDomain.value);
+	if (!domain) {
+		domainError.value = __("Enter a valid site address, like https://www.example.com");
+		return;
+	}
+	if (!embeddingDomains.value.includes(domain)) setDomains([...embeddingDomains.value, domain]);
+	newDomain.value = "";
+}
+
+function removeDomain(domain) {
+	setDomains(embeddingDomains.value.filter((d) => d !== domain));
+}
+
+function setDomains(list) {
+	form.allowed_embedding_domains = list.join("\n");
+	markDirty();
+}
 
 const escapeAttr = (text) => text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const iframeSnippet = computed(

@@ -3,9 +3,11 @@ import {
   buildSections,
   flattenSections,
   groupLayout,
+  normalizeDomain,
   newFieldFromCatalog,
   optionList,
   slugify,
+  toSavePayload,
 } from '../../../crm/fcrm/frontend/forms/builder/formModel.js'
 
 const field = (fieldname) => ({ fieldname, fieldtype: 'Data' })
@@ -71,5 +73,83 @@ describe('form model', () => {
   it('splits Select options and skips blanks', () => {
     expect(optionList('A\n\nB')).toEqual(['A', 'B'])
     expect(optionList(undefined)).toEqual([])
+  })
+})
+
+describe('save payload', () => {
+  const base = (patch) => ({
+    title: 'T',
+    route: 't',
+    fields: [],
+    success_message: 'Thanks',
+    redirect_url: 'https://acme.com/thanks',
+    allowed_embedding_domains: '',
+    ...patch,
+  })
+
+  it('clears the redirect URL when "Show a message" is selected', () => {
+    const payload = toSavePayload(base({ after_submit: 'message' }), [])
+    expect(payload.success_message).toBe('Thanks')
+    expect(payload.redirect_url).toBe('')
+  })
+
+  it('clears the success message when "Go to a URL" is selected', () => {
+    const payload = toSavePayload(base({ after_submit: 'url' }), [])
+    expect(payload.success_message).toBe('')
+    expect(payload.redirect_url).toBe('https://acme.com/thanks')
+  })
+
+  it('keeps the message when "Go to a URL" has no URL', () => {
+    const payload = toSavePayload(
+      base({ after_submit: 'url', redirect_url: '  ' }),
+      [],
+    )
+    expect(payload.success_message).toBe('Thanks')
+    expect(payload.redirect_url).toBe('')
+  })
+
+  it('trims the redirect URL', () => {
+    const payload = toSavePayload(
+      base({ after_submit: 'url', redirect_url: ' https://acme.com ' }),
+      [],
+    )
+    expect(payload.redirect_url).toBe('https://acme.com')
+  })
+
+  it('derives the choice from the stored values when none is set', () => {
+    expect(toSavePayload(base({}), []).success_message).toBe('')
+    expect(toSavePayload(base({ redirect_url: '' }), []).success_message).toBe(
+      'Thanks',
+    )
+  })
+
+  it('leaves the stored domains as they are', () => {
+    const payload = toSavePayload(
+      base({ after_submit: 'message', allowed_embedding_domains: 'acme.com' }),
+      [],
+    )
+    expect(payload.allowed_embedding_domains).toBe('acme.com')
+  })
+})
+
+describe('normalizeDomain', () => {
+  it('turns a bare host into https://host', () => {
+    expect(normalizeDomain('acme.com')).toBe('https://acme.com')
+    expect(normalizeDomain(' acme.com/ ')).toBe('https://acme.com')
+  })
+
+  it('lowercases the address and allows a wildcard with a port', () => {
+    expect(normalizeDomain('Acme.COM')).toBe('https://acme.com')
+    expect(normalizeDomain('*.acme.com:8443')).toBe('https://*.acme.com:8443')
+  })
+
+  it('keeps a given scheme', () => {
+    expect(normalizeDomain('http://acme.com')).toBe('http://acme.com')
+  })
+
+  it('rejects anything that is not a host', () => {
+    expect(normalizeDomain('acme.com/path')).toBe('')
+    expect(normalizeDomain('not a host')).toBe('')
+    expect(normalizeDomain('')).toBe('')
   })
 })
