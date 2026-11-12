@@ -16,6 +16,7 @@ import {
 } from "./formModel";
 import { docLabel, targetOptions, useDoctypeSwitch } from "./useDoctypeSwitch";
 import { useHiddenRows } from "./useHiddenRows";
+import { settledValue } from "./hiddenValue";
 import { useLinkMeta } from "./useLinkMeta";
 
 // The form being edited: load, dirty, save, publish and every structural edit.
@@ -235,6 +236,7 @@ export function useFormDraft({ name, onSaved }) {
 	async function save({ silent = false } = {}) {
 		// drafts auto-save freely; only a published form requires every hidden field
 		// to carry a default (an empty one would break record creation)
+		hidden.settleHiddenDefaults();
 		if (form.published) {
 			const missing = hidden.unpublishableRows();
 			if (missing.length) {
@@ -311,7 +313,7 @@ export function useFormDraft({ name, onSaved }) {
 			label: h.label,
 			fieldtype: h.fieldtype,
 			options: h.options || "",
-			default: h.default ?? "",
+			default: settledValue(h.fieldtype, h.default),
 		}));
 		hiddenFields.value.forEach((h) => {
 			if (h.fieldtype === "Link") ensureLinkOptions(h.options);
