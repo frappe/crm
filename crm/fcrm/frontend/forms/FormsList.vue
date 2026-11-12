@@ -56,7 +56,11 @@
 					<ListCell>
 						<div class="flex w-full justify-end" @click.stop.prevent>
 							<Dropdown align="end" :options="rowOptions(form)">
-								<Button icon="lucide-more-horizontal" variant="ghost" />
+								<Button
+									icon="lucide-more-horizontal"
+									variant="ghost"
+									:aria-label="__('More actions')"
+								/>
 							</Dropdown>
 						</div>
 					</ListCell>
@@ -126,7 +130,7 @@ import {
 } from "frappe-ui";
 import { List as FrappeList, ListCell, ListHeader, ListHeaderCell, ListRow } from "frappe-ui/list";
 import { __ } from "frappe/i18n";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { call, copyToClipboard, errorText } from "./formsApi";
 
 defineOptions({ inheritAttrs: false });
@@ -272,5 +276,5 @@ function rowOptions(form) {
 	];
 }
 
-defineExpose({ reload: loadForms, openCreate });
+defineExpose({ reload: loadForms, openCreate, failed: computed(() => Boolean(forms.error)) });
 </script>

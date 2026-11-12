@@ -11,6 +11,7 @@
 				:aria-label="__('Documentation')"
 			/>
 			<Button
+				v-if="!list?.failed"
 				variant="solid"
 				icon-left="lucide-plus"
 				:label="__('Create')"
