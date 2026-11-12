@@ -304,14 +304,16 @@ def last_email(doctype: str, name: str):
 
 
 def get_brief(user: str, tab: str = "mine") -> dict:
+	"""The reply names its tab, so the page can tell a late reply for the other tab apart."""
 	if role_for(user) != "manager":
 		if tab != "mine":
 			frappe.throw(_("The team brief is only available to managers"), frappe.PermissionError)
-		return MineBrief(user).summary()
+		return {**MineBrief(user).summary(), "tab": tab}
 
 	if tab not in ("team", "mine"):
 		frappe.throw(_("Unknown brief tab {0}").format(tab))
 	active, other = (TeamBrief, MineBrief) if tab == "team" else (MineBrief, TeamBrief)
 	brief = active(user).summary()
 	brief["counts"] = {tab: brief["total"], "mine" if tab == "team" else "team": other(user).count()}
+	brief["tab"] = tab
 	return brief

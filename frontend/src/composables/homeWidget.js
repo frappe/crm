@@ -46,6 +46,10 @@ export function useBrief() {
     makeParams: () => ({ tab: tab.value }),
     auto: true,
   })
-  watch([homeVersion, tab], () => resource.reload())
+  // A reply that lands after a quicker tab switch would show the wrong tab.
+  watch([homeVersion, tab], () => {
+    resource.abort()
+    resource.reload()
+  })
   return { tab, resource }
 }

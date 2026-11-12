@@ -245,5 +245,6 @@ class TestGetBrief(TeamWidgetTestCase):
 	def test_a_manager_gets_counts_for_both_tabs(self):
 		self.lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
 		brief = get_brief(MANAGER, "team")
+		self.assertEqual(brief["tab"], "team")
 		self.assertEqual(set(brief["counts"]), {"team", "mine"})
 		self.assertEqual(brief["counts"]["mine"], 1)

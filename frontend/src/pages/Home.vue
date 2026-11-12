@@ -39,7 +39,7 @@
         <template v-if="target === 'mine'">
           <HomeHeader
             :count="brief.data?.total"
-            :team="briefTab === 'team'"
+            :team="brief.data?.tab === 'team'"
             :flow="askFlow.data?.available"
           />
           <AskFlow :resource="askFlow" :team="isManager()" />

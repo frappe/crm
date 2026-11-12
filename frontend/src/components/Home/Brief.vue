@@ -1,18 +1,9 @@
 <template>
   <section :aria-label="__('Today\'s brief')" class="flex flex-col gap-3">
     <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <div class="flex items-baseline gap-2.5">
-        <h2 class="text-xl-semibold text-ink-gray-9">
-          {{ __("Today's brief") }}
-        </h2>
-        <span class="text-sm text-ink-gray-5">
-          {{
-            tab === 'team'
-              ? __('The most urgent items across your team')
-              : __('Your most urgent items')
-          }}
-        </span>
-      </div>
+      <h2 class="text-xl-semibold text-ink-gray-9">
+        {{ __("Today's brief") }}
+      </h2>
       <HomeTabs
         v-if="isManager()"
         v-model="tab"
@@ -21,12 +12,23 @@
       />
     </div>
 
-    <div
-      v-if="resource.loading && !items.length"
-      class="flex justify-center py-6"
+    <ol
+      v-if="!loaded"
+      :aria-label="__('Loading')"
+      class="divide-y divide-outline-gray-2 rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
     >
-      <LoadingIndicator class="size-4 text-ink-gray-5" />
-    </div>
+      <li
+        v-for="row in PLACEHOLDER_ROWS"
+        :key="row"
+        class="flex h-[60px] animate-pulse items-center gap-3 pl-3.5 pr-3"
+      >
+        <span class="size-7 shrink-0 rounded-4 bg-surface-gray-2" />
+        <div class="flex flex-1 flex-col gap-2">
+          <span class="h-3 w-1/3 rounded bg-surface-gray-2" />
+          <span class="h-2.5 w-1/2 rounded bg-surface-gray-2" />
+        </div>
+      </li>
+    </ol>
     <HomeEmptyState
       v-else-if="!items.length"
       compact
@@ -97,7 +99,6 @@
 import BriefAction from '@/components/Home/BriefAction.vue'
 import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeTabs from '@/components/Home/HomeTabs.vue'
-import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import { usersStore } from '@/stores/users'
 import {
   briefAge,
@@ -125,6 +126,11 @@ const tabs = [
   { label: __('Team'), value: 'team' },
   { label: __('For you'), value: 'mine' },
 ]
+
+// As many rows as the Brief shows at most
+const PLACEHOLDER_ROWS = 5
+
+const loaded = computed(() => props.resource.data?.tab === tab.value)
 
 const items = computed(() => props.resource.data?.items || [])
 
