@@ -148,15 +148,36 @@ export function fieldsFromServer(rows) {
 	}));
 }
 
+// what the visitor sees after submitting: the message or a redirect
+export function afterSubmitOf(doc) {
+	return doc.redirect_url ? "url" : "message";
+}
+
+// A bare host ("acme.com") becomes "https://acme.com"; the stored value stays one
+// address per line. Returns "" when the input is not a valid site address.
+const SITE_ADDRESS_RE = /^https?:\/\/(\*\.)?[a-zA-Z0-9](?:[a-zA-Z0-9.-]*[a-zA-Z0-9])?(?::\d+)?$/;
+export function normalizeDomain(value) {
+	const host = (value || "").trim().replace(/\/+$/, "").toLowerCase();
+	const address = /^https?:\/\//.test(host) ? host : `https://${host}`;
+	return SITE_ADDRESS_RE.test(address) ? address : "";
+}
+
+export function domainList(stored) {
+	return (stored || "").split(/\s+/).filter(Boolean);
+}
+
 export function toSavePayload(form, hiddenFields) {
+	// "Go to a URL" with no URL keeps the message: clearing both would lose it
+	const redirectUrl = (form.redirect_url || "").trim();
+	const afterSubmit = (form.after_submit || afterSubmitOf(form)) === "url" && redirectUrl ? "url" : "message";
 	return {
 		title: form.title,
 		route: slugify(form.route),
 		document_type: form.document_type,
 		description: form.description,
 		submit_button_label: form.submit_button_label,
-		success_message: form.success_message,
-		redirect_url: form.redirect_url,
+		success_message: afterSubmit === "message" ? form.success_message : "",
+		redirect_url: afterSubmit === "url" ? redirectUrl : "",
 		allowed_embedding_domains: form.allowed_embedding_domains,
 		published: form.published ? 1 : 0,
 		fields: form.fields.map((f) => ({
