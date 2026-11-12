@@ -86,9 +86,17 @@ jobs:
                   python-version: "3.14"
                   node-version: "24"
                   type: "server"
-                  # erpnext: stable lane only, never v16 (v16 test bootstrap broken on bare bench)
-                  install-erpnext: ${{ env.CRM_BRANCH != 'develop' && matrix.frappe-branch == 'version-15' }}
+                  # erpnext: stable lanes only
+                  install-erpnext: ${{ env.CRM_BRANCH != 'develop' }}
                   frappe-branch: ${{ matrix.frappe-branch }}
+
+            # erpnext v16 creates its test data on import, so create it before the suite starts.
+            - name: Warm up ERPNext test data
+              if: env.CRM_BRANCH != 'develop' && matrix.frappe-branch == 'version-16'
+              working-directory: /home/runner/frappe-bench
+              run: |
+                  bench --site test_site set-config allow_tests true
+                  bench --site test_site run-tests --lightmode --module erpnext.tests.bootstrap_test_data
 
             - name: Run server tests
               uses: ./.github/actions/run-server-tests
