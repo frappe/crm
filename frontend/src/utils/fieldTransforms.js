@@ -176,3 +176,48 @@ export function findMissingMandatory(fields, doc, options = {}) {
 
   return missingFields
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * Whether a filter's field/operator pair should render a multi-select picker
+ * rather than a comma-separated text input.
+ *
+ * `in` / `not in` match against a set, so they need a picker wherever the field
+ * can offer a list: Select and Check carry their own options, Link searches its
+ * target doctype. Dynamic Link is deliberately absent — its target is chosen by
+ * a sibling field at runtime, so there is no doctype to search.
+ */
+export function isMultiValueFilter(field, operator) {
+  if (!['in', 'not in'].includes(operator)) return false
+  return ['Select', 'Check', 'Link'].includes(field?.fieldtype)
+}
+
+/**
+ * Whether a filter field can use the `descendants of (inclusive)` operator.
+ *
+ * Frappe resolves it through the target's `lft` / `rgt`, so filtering a lead by
+ * a parent territory also matches its child territories. It only applies to a
+ * Link whose target is a tree — `get_filterable_fields` flags those with
+ * `is_tree`. Frappe takes a single node here, not a list.
+ */
+export function supportsTreeFilter(field) {
+  return field?.fieldtype === 'Link' && Boolean(field.is_tree)
+}
+
+/**
+ * Coerce a stored `in` / `not in` value into the array a multi-select expects.
+ *
+ * A filter restored from a saved view or a URL can still hold the legacy
+ * "Open,Qualified" string, and an empty selection can arrive as [''], which
+ * would otherwise render as one blank checked value.
+ */
+export function toFilterValueArray(value) {
+  if (Array.isArray(value)) return value.filter(Boolean)
+  if (!value) return []
+  return String(value)
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean)
+}
+>>>>>>> 2a3b4d5 (feat: filter tree Link fields by descendants (inclusive))
