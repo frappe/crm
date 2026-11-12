@@ -88,13 +88,6 @@
             {{ briefAge(item).label }}
           </span>
           <BriefAction :item="item" />
-          <router-link
-            :to="briefRoute(item)"
-            :aria-label="__('Open')"
-            class="flex text-ink-gray-5"
-          >
-            <span aria-hidden="true" class="lucide-chevron-right size-4" />
-          </router-link>
         </div>
       </li>
     </ol>

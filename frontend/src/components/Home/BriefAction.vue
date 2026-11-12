@@ -2,6 +2,7 @@
   <Button
     v-if="item.kind === 'follow_up'"
     :label="__('Mark done')"
+    iconLeft="lucide-check"
     :loading="saving"
     @click="markDone"
   />
@@ -12,10 +13,14 @@
     :title="__('Follow up with {0}', [recordTitle(item)])"
     @created="refreshHome"
   >
-    <Button :label="__('Follow up')" />
+    <Button :label="__('Follow up')" iconLeft="lucide-calendar-clock" />
   </FollowUpPopover>
   <template v-else-if="item.kind === 'client'">
-    <Button :label="__('Reassign')" @click="assigning = true" />
+    <Button
+      :label="__('Reassign')"
+      iconLeft="lucide-user-pen"
+      @click="assigning = true"
+    />
     <AssignmentModal
       v-if="assigning"
       v-model="assigning"
@@ -28,6 +33,7 @@
   <Button
     v-else
     :label="briefActionLabel(item)"
+    :iconLeft="briefActionIcon(item)"
     :route="briefActionRoute(item)"
   />
 </template>
@@ -35,7 +41,11 @@
 import FollowUpPopover from '@/components/FollowUp/FollowUpPopover.vue'
 import AssignmentModal from '@/components/Modals/AssignmentModal.vue'
 import { refreshHome } from '@/composables/homeWidget'
-import { briefActionLabel, briefActionRoute } from '@/utils/brief'
+import {
+  briefActionIcon,
+  briefActionLabel,
+  briefActionRoute,
+} from '@/utils/brief'
 import { recordTitle } from '@/utils/home'
 import { call, toast } from 'frappe-ui'
 import { ref } from 'vue'

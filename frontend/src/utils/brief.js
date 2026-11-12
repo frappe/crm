@@ -205,16 +205,23 @@ export function replyRoute(item) {
   return { ...recordRoute(item), hash: tab }
 }
 
-const ACTION_LABELS = {
-  waiting: () => __('Reply'),
-  new: () => __('Review'),
-  ownerless: () => __('Assign'),
-  overdue_person: () => __('View tasks'),
-  workload: () => __('View leads'),
+const ACTIONS = {
+  waiting: { label: () => __('Reply'), icon: 'lucide-reply' },
+  new: { label: () => __('Review'), icon: 'lucide-eye' },
+  ownerless: { label: () => __('Assign'), icon: 'lucide-user-plus' },
+  overdue_person: {
+    label: () => __('View tasks'),
+    icon: 'lucide-square-check',
+  },
+  workload: { label: () => __('View leads'), icon: 'lucide-user' },
 }
 
 export function briefActionLabel(item) {
-  return ACTION_LABELS[item.kind]?.()
+  return ACTIONS[item.kind]?.label()
+}
+
+export function briefActionIcon(item) {
+  return ACTIONS[item.kind]?.icon
 }
 
 export function briefActionRoute(item) {

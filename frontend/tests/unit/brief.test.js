@@ -1,5 +1,6 @@
 import {
   askFlowChips,
+  briefActionIcon,
   briefActionLabel,
   briefActionRoute,
   briefAge,
@@ -201,6 +202,7 @@ describe('routes and actions', () => {
     )
     expect(briefActionRoute({ ...lead, channel: 'email' }).hash).toBe('#emails')
     expect(briefActionLabel(lead)).toBe('Reply')
+    expect(briefActionIcon(lead)).toBe('lucide-reply')
   })
 })
 
