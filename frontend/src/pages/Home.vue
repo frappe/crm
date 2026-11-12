@@ -11,10 +11,19 @@
         />
       </template>
       <template #right-header>
-        <Dropdown align="end" :options="widgetMenu">
-          <Button :label="__('Widget')" iconLeft="lucide-plus" />
-        </Dropdown>
         <template v-if="editing">
+          <Dropdown
+            v-if="widgetOptions.length"
+            align="end"
+            :options="widgetOptions"
+          >
+            <Button :label="__('Widget')" iconLeft="lucide-plus" />
+          </Dropdown>
+          <Button
+            :label="resetLabel"
+            iconLeft="lucide-undo-2"
+            @click="reset()"
+          />
           <Button :label="__('Cancel')" @click="cancel()" />
           <Button
             variant="solid"
@@ -23,12 +32,19 @@
             @click="save()"
           />
         </template>
-        <Dropdown v-else-if="isAdmin()" :options="defaultOptions">
+        <template v-else>
           <Button
-            icon="lucide-more-horizontal"
-            :tooltip="__('Role defaults')"
+            :label="__('Edit')"
+            iconLeft="lucide-pen-line"
+            @click="edit()"
           />
-        </Dropdown>
+          <Dropdown v-if="isAdmin()" :options="defaultOptions">
+            <Button
+              icon="lucide-more-horizontal"
+              :tooltip="__('Role defaults')"
+            />
+          </Dropdown>
+        </template>
       </template>
     </LayoutHeader>
 
@@ -50,60 +66,30 @@
           v-model="visibleItems"
           class="-mx-2 !flex-none !overflow-visible !p-0"
           :editing="editing"
-          dragHandle=".home-drag-handle"
           @layout-updated="showAddedWidget"
         >
-          <template #item="{ item, remove }">
-            <div class="relative h-full w-full" :data-home-widget="item.name">
+          <template #item="{ item }">
+            <div class="h-full w-full rounded-4" :data-home-widget="item.name">
               <component
                 :is="getWidget(item.name).component"
                 class="h-full w-full"
-                :class="{ 'pointer-events-none select-none': editing }"
                 :config="item.config"
                 @update:config="(config) => updateConfig(item, config)"
               />
-              <template v-if="editing">
-                <div
-                  class="pointer-events-none absolute inset-0 rounded-4 border border-dashed border-outline-gray-4"
-                />
-                <div class="absolute right-2 top-1.5 flex items-center gap-0.5">
-                  <Tooltip :text="__('Drag to move')">
-                    <span
-                      class="home-drag-handle flex size-7 cursor-grab items-center justify-center rounded text-ink-gray-6 hover:bg-surface-gray-2 active:cursor-grabbing"
-                      :aria-label="__('Drag to move')"
-                    >
-                      <span
-                        class="lucide-grip-vertical size-4"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  </Tooltip>
-                  <Button
-                    variant="ghost"
-                    icon="lucide-x"
-                    :tooltip="__('Remove')"
-                    @click="remove"
-                  />
-                </div>
-              </template>
             </div>
           </template>
         </DashboardGrid>
-        <div
+        <HomeEmptyState
           v-else-if="!loading"
-          class="flex flex-1 flex-col items-center justify-center gap-1 p-5 text-center"
-        >
-          <span class="text-base-medium text-ink-gray-8">
-            {{ __('Nothing on Home yet') }}
-          </span>
-          <span class="text-p-base text-ink-gray-6">
-            {{
-              availableWidgets.length
-                ? __('Add widgets to see what needs you next.')
-                : __('Widgets will appear here once they are available.')
-            }}
-          </span>
-        </div>
+          class="flex-1 p-5"
+          icon="lucide-layout-dashboard"
+          :title="__('Nothing on Home yet')"
+          :text="
+            availableWidgets.length
+              ? __('Add widgets to see what needs you next.')
+              : __('Widgets will appear here once they are available.')
+          "
+        />
       </div>
     </div>
   </div>
@@ -113,6 +99,7 @@
 import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
 import AskFlow from '@/components/Home/AskFlow.vue'
 import Brief from '@/components/Home/Brief.vue'
+import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeHeader from '@/components/Home/HomeHeader.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
@@ -121,13 +108,7 @@ import { useBrief } from '@/composables/homeWidget'
 import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
-import {
-  Badge,
-  Dropdown,
-  Tooltip,
-  createResource,
-  usePageMeta,
-} from 'frappe-ui'
+import { Badge, Dropdown, createResource, usePageMeta } from 'frappe-ui'
 import { computed, nextTick, provide, ref } from 'vue'
 
 const { brand } = getSettings()
@@ -179,32 +160,13 @@ const resetLabel = computed(() =>
   target.value === 'mine' ? __('Reset to default') : __('Reset to built-in'),
 )
 
-const widgetMenu = computed(() => {
-  const widgets = availableWidgets.value.map((widget) => ({
+const widgetOptions = computed(() =>
+  availableWidgets.value.map((widget) => ({
     label: __(widget.label),
     icon: widget.icon,
     onClick: () => addAndShow(widget),
-  }))
-  return [
-    ...(widgets.length ? [{ group: __('Widgets'), options: widgets }] : []),
-    {
-      group: __('Layout'),
-      hideLabel: true,
-      options: [
-        ...(editing.value
-          ? []
-          : [
-              {
-                label: __('Arrange and resize widgets'),
-                icon: 'lucide-layout-dashboard',
-                onClick: () => edit(),
-              },
-            ]),
-        { label: resetLabel.value, icon: 'lucide-rotate-ccw', onClick: reset },
-      ],
-    },
-  ]
-})
+  })),
+)
 
 // The grid places a new widget a moment after it is added; scrolling earlier lands at the top.
 const addedWidget = ref(null)
