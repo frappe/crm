@@ -386,6 +386,18 @@ def get_allocated_tasks(
 		order_by="modified desc, creation desc",
 	)
 
+	# Batch fetch contact details (designation, company_name, creation)
+	contact_ids = list({row.contact for row in query if row.contact})
+	contact_meta = {}
+	if contact_ids:
+		contacts_data = frappe.get_all(
+			"Contact",
+			filters={"name": ["in", contact_ids]},
+			fields=["name", "designation", "company_name", "creation", "modified"],
+		)
+		for c in contacts_data:
+			contact_meta[c.name] = c
+
 	# Cache user names for display
 	user_names = {}
 
@@ -393,11 +405,15 @@ def get_allocated_tasks(
 	search_lower = (search or "").strip().lower()
 
 	for row in query:
+		c_info = contact_meta.get(row.contact) or {}
+		designation = c_info.get("designation") or ""
+
 		# Search filter on text fields
 		if search_lower:
 			fields_to_search = [
 				row.contact_name or "",
 				row.organization or "",
+				designation,
 				row.email or "",
 				row.mobile_no or "",
 				row.country or "",
@@ -441,7 +457,8 @@ def get_allocated_tasks(
 			"contact": row.contact,
 			"contact_name": row.contact_name or row.contact,
 			"prospect_name": row.contact_name or row.contact,
-			"organization": row.organization or "",
+			"organization": row.organization or c_info.get("company_name") or "",
+			"designation": designation,
 			"email": row.email or "",
 			"mobile_no": row.mobile_no or "",
 			"country": display_country,
@@ -455,8 +472,10 @@ def get_allocated_tasks(
 			"status": st_val,
 			"notes": row.notes or "",
 			"follow_up_date": str(row.follow_up_date) if row.follow_up_date else "",
-			"creation": str(row.creation),
+			"creation": str(c_info.get("creation") or row.creation),
+			"task_creation": str(row.creation),
 			"modified": str(row.modified),
+			"contact_modified": str(c_info.get("modified") or row.modified),
 		})
 
 	return results

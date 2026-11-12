@@ -87,7 +87,7 @@
         </template>
         <template #default="{ label }">
           <div
-            v-if="['modified', 'creation'].includes(column.key)"
+            v-if="['modified', 'creation', 'data_age'].includes(column.key) && item && item.timeAgo"
             class="truncate text-base"
             @click="
               (event) =>
@@ -142,8 +142,33 @@
                 })
             "
           />
+          <!-- Name + Organization underneath -->
           <div
-            v-else-if="label"
+            v-else-if="column.key === 'full_name'"
+            class="flex flex-col min-w-0 py-0.5"
+            @click="
+              (event) =>
+                emit('applyFilter', {
+                  event,
+                  idx,
+                  column,
+                  item,
+                  firstColumn: columns[0],
+                })
+            "
+          >
+            <span class="truncate font-semibold text-ink-gray-9 dark:text-ink-white">
+              {{ item?.label || '—' }}
+            </span>
+            <span
+              v-if="item?.company_name"
+              class="truncate text-xs text-ink-gray-5 dark:text-ink-gray-4"
+            >
+              {{ item.company_name }}
+            </span>
+          </div>
+          <div
+            v-else-if="label || (typeof item === 'string' && item)"
             class="truncate text-base"
             @click="
               (event) =>
@@ -156,8 +181,9 @@
                 })
             "
           >
-            {{ getLabel(label, column) }}
+            {{ getLabel(label || item, column) }}
           </div>
+          <div v-else class="text-ink-gray-4">—</div>
         </template>
       </ListRowItem>
     </ListRows>
@@ -248,6 +274,7 @@ function onColumnWidthUpdated({ width, save }, column) {
 }
 
 function getLabel(label, column) {
+  if (!label || label === '' || label === '—') return '—'
   if (column.type === 'Duration') return formatDuration(label)
   if (column.options && isTranslatable(column.options)) return __(label)
   return label

@@ -56,6 +56,9 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     :filters="activeTabFilters"
+    :options="{
+      hideColumnsButton: true,
+    }"
     doctype="Contact"
   />
   <ContactsListView
@@ -120,7 +123,7 @@ import { organizationsStore } from '@/stores/organizations.js'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
-import { formatDate } from '@/utils'
+import { formatDate, timeAgo } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { Badge, createResource } from 'frappe-ui'
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
@@ -288,153 +291,105 @@ const rows = computed(() => {
   )
     return []
   return contacts.value?.data.data.map((contact) => {
-    let _rows = {}
-    contacts.value?.data.rows.forEach((row) => {
-      _rows[row] = contact[row]
-
-      let fieldType = contacts.value?.data.columns?.find(
-        (col) => (col.key || col.value) == row,
-      )?.type
-
-      if (
-        fieldType &&
-        ['Date', 'Datetime'].includes(fieldType) &&
-        !['modified', 'creation'].includes(row)
-      ) {
-        _rows[row] = formatDate(contact[row], '', true, fieldType == 'Datetime')
-      }
-
-      if (fieldType && fieldType == 'Currency') {
-        _rows[row] = getFormattedCurrency(row, contact)
-      }
-
-      if (fieldType && fieldType == 'Float') {
-        _rows[row] = getFormattedFloat(row, contact)
-      }
-
-      if (fieldType && fieldType == 'Percent') {
-        _rows[row] = getFormattedPercent(row, contact)
-      }
-
-      if (row == 'full_name') {
-        _rows[row] = {
-          label: contact.full_name,
-          image_label: contact.full_name,
-          image: contact.image,
-        }
-      } else if (row == 'company_name') {
-        _rows[row] = {
-          label: contact.company_name,
-          logo: getOrganization(contact.company_name)?.organization_logo,
-        }
-      } else if (row == '_assign') {
-        let assignees = []
-        try {
-          assignees =
-            typeof contact._assign === 'string'
-              ? JSON.parse(contact._assign || '[]')
-              : contact._assign || []
-        } catch (e) {
-          assignees = []
-        }
-        _rows[row] = (assignees || []).map((user) => ({
-          name: user,
-          image: getUser(user)?.user_image,
-          label: getUser(user)?.full_name || user,
-        }))
-      } else if (['modified', 'creation'].includes(row)) {
-        _rows[row] = timestampCell(contact[row])
-      }
-    })
-    if (contact._assign && !_rows['_assign']) {
-      let assignees = []
-      try {
-        assignees =
-          typeof contact._assign === 'string'
-            ? JSON.parse(contact._assign || '[]')
-            : contact._assign || []
-      } catch (e) {
-        assignees = []
-      }
-      _rows['_assign'] = (assignees || []).map((user) => ({
-        name: user,
-        image: getUser(user)?.user_image,
-        label: getUser(user)?.full_name || user,
-      }))
+    let _rows = {
+      name: contact.name,
+      _liked_by: contact._liked_by,
+      _assign: contact._assign,
+      custom_is_dropped: contact.custom_is_dropped,
     }
 
+    // 1. Name + Organization layout
+    _rows.full_name = {
+      label: contact.full_name || '—',
+      image_label: contact.full_name,
+      image: contact.image,
+      company_name: contact.company_name || '',
+    }
+
+    // 2. Designation
+    _rows.designation = contact.designation || '—'
+
+    // 3. Email
+    _rows.email_id = contact.email_id || '—'
+
+    // 4. Phone
+    _rows.mobile_no = contact.mobile_no || contact.phone || '—'
+
+    // 5. Country
     const countryVal = contact.custom_country || contact.country
-    _rows['custom_country'] =
+    _rows.custom_country =
       countryVal && countryVal !== 'Not Available' ? countryVal : '—'
 
+    // 6. Timezone
     const tzVal = contact.custom_timezone || contact.timezone
-    _rows['custom_timezone'] =
+    _rows.custom_timezone =
       tzVal && tzVal !== 'Not Available' ? tzVal : '—'
+
+    // 7. Data Age
+    _rows.data_age = contact.creation
+      ? timestampCell(contact.creation)
+      : '—'
+
+    // 8. Last Updated on
+    _rows.modified = contact.modified
+      ? timestampCell(contact.modified)
+      : '—'
 
     return _rows
   })
 })
 
 const columns = computed(() => {
-  let baseColumns = [...(contacts.value?.data?.columns || [])]
-
-  const countryCol = {
-    label: __('Country'),
-    type: 'Data',
-    key: 'custom_country',
-    width: '10rem',
-  }
-  const tzCol = {
-    label: __('Timezone'),
-    type: 'Data',
-    key: 'custom_timezone',
-    width: '12rem',
-  }
-
-  // Filter out any pre-existing custom_country/custom_timezone/country/timezone to enforce clean order
-  let cleanCols = baseColumns.filter(
-    (c) =>
-      !['custom_country', 'country', 'custom_timezone', 'timezone'].includes(
-        c.key || c.value,
-      ),
-  )
-
-  // Desired order: Name | Email | Phone | Organization | Country | Timezone | Last Modified
-  const modifiedIndex = cleanCols.findIndex(
-    (c) => (c.key || c.value) === 'modified',
-  )
-  if (modifiedIndex !== -1) {
-    cleanCols.splice(modifiedIndex, 0, countryCol, tzCol)
-  } else {
-    cleanCols.push(countryCol, tzCol)
-  }
-
-  if (activeTab.value === 'assigned') {
-    if (!cleanCols.some((c) => (c.key || c.value) === '_assign')) {
-      const assignCol = {
-        label: __('Assigned To'),
-        type: 'Data',
-        key: '_assign',
-        width: '13rem',
-      }
-      cleanCols.push(assignCol)
-    }
-  } else {
-    cleanCols = cleanCols.filter((c) => (c.key || c.value) !== '_assign')
-  }
-
-  let _columns = cleanCols
-
-  // Set align right for last column
-  if (_columns.length) {
-    _columns = _columns.map((col, index) => {
-      if (index === _columns.length - 1) {
-        return { ...col, align: 'right' }
-      }
-      return col
-    })
-  }
-
-  return _columns
+  return [
+    {
+      label: __('Name'),
+      type: 'Data',
+      key: 'full_name',
+      width: '16rem',
+    },
+    {
+      label: __('Designation'),
+      type: 'Data',
+      key: 'designation',
+      width: '12rem',
+    },
+    {
+      label: __('Email'),
+      type: 'Data',
+      key: 'email_id',
+      width: '14rem',
+    },
+    {
+      label: __('Phone'),
+      type: 'Data',
+      key: 'mobile_no',
+      width: '11rem',
+    },
+    {
+      label: __('Country'),
+      type: 'Data',
+      key: 'custom_country',
+      width: '10rem',
+    },
+    {
+      label: __('Timezone'),
+      type: 'Data',
+      key: 'custom_timezone',
+      width: '12rem',
+    },
+    {
+      label: __('Data Age'),
+      type: 'Data',
+      key: 'data_age',
+      width: '10rem',
+    },
+    {
+      label: __('Last Updated on'),
+      type: 'Datetime',
+      key: 'modified',
+      width: '12rem',
+      align: 'right',
+    },
+  ]
 })
 </script>

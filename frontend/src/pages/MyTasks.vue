@@ -67,39 +67,43 @@
     </header>
 
     <!-- Main Content -->
-    <div class="flex-1 space-y-6 p-6">
-      <!-- Status Summary Badges Bar -->
-      <div class="flex flex-wrap items-center gap-3">
-        <div
-          v-for="st in statusPills"
-          :key="st.value"
-          class="flex cursor-pointer items-center gap-2 rounded border p-3 transition-all"
-          :class="[
-            currentStatus === st.value
-              ? 'border-ink-gray-9 bg-surface-gray-2 shadow-xs dark:border-ink-white dark:bg-surface-gray-8'
-              : 'border-outline-gray-2 bg-surface-base hover:border-outline-gray-4 dark:border-outline-gray-7',
-          ]"
-          @click="currentStatus = st.value"
-        >
-          <div class="text-xs font-medium text-ink-gray-7 dark:text-ink-gray-3">
-            {{ st.label }}
-          </div>
-          <Badge
-            variant="solid"
-            size="sm"
-            :class="st.badgeClass"
+    <div class="flex-1 space-y-4 p-4 sm:p-5">
+      <!-- Status Tabs Bar (Compact horizontal layout) -->
+      <div class="rounded border border-outline-gray-2 bg-surface-base px-3 py-2 shadow-xs dark:border-outline-gray-7">
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <button
+            v-for="st in statusPills"
+            :key="st.value"
+            type="button"
+            class="flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap focus:outline-none"
+            :class="[
+              currentStatus === st.value
+                ? 'bg-surface-gray-9 text-surface-white font-semibold shadow-xs dark:bg-surface-white dark:text-ink-gray-9'
+                : 'text-ink-gray-7 hover:bg-surface-gray-2 hover:text-ink-gray-9 dark:text-ink-gray-3 dark:hover:bg-surface-gray-8 dark:hover:text-ink-white',
+            ]"
+            @click="currentStatus = st.value"
           >
-            {{ getCountForStatus(st.value) }}
-          </Badge>
+            <span>{{ st.label }}</span>
+            <span
+              class="rounded-full px-1.5 py-0.5 text-[11px] font-semibold leading-none"
+              :class="[
+                currentStatus === st.value
+                  ? 'bg-surface-white/20 text-surface-white dark:bg-surface-gray-8 dark:text-ink-gray-9'
+                  : 'bg-surface-gray-2 text-ink-gray-7 dark:bg-surface-gray-8 dark:text-ink-gray-3',
+              ]"
+            >
+              {{ getCountForStatus(st.value) }}
+            </span>
+          </button>
         </div>
       </div>
 
       <!-- Tasks Section -->
       <div class="rounded border border-outline-gray-2 bg-surface-base shadow-sm dark:border-outline-gray-7">
         <!-- Search & Info Toolbar with Bulk Actions -->
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-gray-2 px-5 py-3 dark:border-outline-gray-7">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-outline-gray-2 px-4 py-2.5 dark:border-outline-gray-7">
           <div class="flex items-center gap-2">
-            <h2 class="text-sm font-semibold text-ink-gray-9 dark:text-ink-white">
+            <h2 class="text-xs font-semibold text-ink-gray-9 dark:text-ink-white">
               {{ __('Tasks List') }}
             </h2>
             <Badge variant="outline" size="sm">
@@ -137,12 +141,12 @@
           </div>
         </div>
 
-        <!-- Task Table -->
+        <!-- Task Table: Dense, compact 10-column prospect table -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead class="bg-surface-gray-1 text-ink-gray-5 border-b border-outline-gray-2 dark:bg-surface-gray-8 dark:border-outline-gray-7">
               <tr>
-                <th class="w-10 px-4 py-3 text-center">
+                <th class="w-10 px-3 py-2 text-center">
                   <input
                     ref="headerCheckboxRef"
                     type="checkbox"
@@ -152,15 +156,16 @@
                     @change="toggleSelectAll"
                   />
                 </th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Prospect') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Organization') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Contact Details') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Allocation Date') }}</th>
-                <th v-if="isAdmin" class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Assigned To') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Status') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Country') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider">{{ __('Timezone') }}</th>
-                <th class="px-5 py-3 font-medium uppercase tracking-wider text-right">{{ __('Actions') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Name') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Designation') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Email') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Phone') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Country') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Timezone') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Data Age') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Last Updated') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px]">{{ __('Assigned By') }}</th>
+                <th class="px-3.5 py-2 font-medium uppercase tracking-wider text-[11px] text-right">{{ __('Actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-outline-gray-2 dark:divide-outline-gray-7">
@@ -171,7 +176,7 @@
                 :class="{ 'bg-surface-gray-1/40 dark:bg-surface-gray-8/30': selectedTaskIds.includes(task.name) }"
               >
                 <!-- Row Checkbox -->
-                <td class="w-10 px-4 py-3.5 text-center">
+                <td class="w-10 px-3 py-2 text-center">
                   <input
                     type="checkbox"
                     :value="task.name"
@@ -180,95 +185,92 @@
                   />
                 </td>
 
-                <!-- Prospect -->
-                <td class="px-5 py-3.5">
-                  <router-link
-                    :to="{
-                      name: 'TaskProspect',
-                      params: { contactId: task.contact },
-                      query: { taskId: task.name },
-                    }"
-                    class="font-semibold text-ink-gray-9 hover:underline hover:text-ink-primary dark:text-ink-white"
+                <!-- 1. Name & Organization underneath -->
+                <td class="px-3.5 py-2">
+                  <div class="flex flex-col min-w-0">
+                    <router-link
+                      :to="{
+                        name: 'TaskProspect',
+                        params: { contactId: task.contact },
+                        query: { taskId: task.name },
+                      }"
+                      class="truncate font-semibold text-ink-gray-9 hover:underline hover:text-ink-primary dark:text-ink-white"
+                    >
+                      {{ task.contact_name || task.prospect_name || '—' }}
+                    </router-link>
+                    <span
+                      v-if="task.organization"
+                      class="truncate text-xs text-ink-gray-5 dark:text-ink-gray-4"
+                    >
+                      {{ task.organization }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- 2. Designation -->
+                <td class="px-3.5 py-2 text-ink-gray-8 dark:text-ink-gray-2 truncate">
+                  {{ task.designation || '—' }}
+                </td>
+
+                <!-- 3. Email -->
+                <td class="px-3.5 py-2 truncate">
+                  <a
+                    v-if="task.email"
+                    :href="`mailto:${task.email}`"
+                    class="text-ink-gray-7 hover:underline dark:text-ink-gray-3"
                   >
-                    {{ task.contact_name }}
-                  </router-link>
-                  <div class="text-[11px] text-ink-gray-4">
-                    {{ __('Allocated by') }}: {{ task.allocated_by_name || task.allocated_by }}
-                  </div>
+                    {{ task.email }}
+                  </a>
+                  <span v-else class="text-ink-gray-4">—</span>
                 </td>
 
-                <!-- Organization -->
-                <td class="px-5 py-3.5 font-medium text-ink-gray-8 dark:text-ink-gray-2">
-                  {{ task.organization || '-' }}
-                </td>
-
-                <!-- Contact Details -->
-                <td class="px-5 py-3.5">
-                  <div v-if="task.email">
-                    <a :href="`mailto:${task.email}`" class="text-ink-gray-7 hover:underline dark:text-ink-gray-3">
-                      {{ task.email }}
-                    </a>
-                  </div>
-                  <div v-if="task.mobile_no" class="text-[11px]">
-                    <a :href="`tel:${task.mobile_no}`" class="text-ink-gray-5 hover:underline">
-                      {{ task.mobile_no }}
-                    </a>
-                  </div>
-                  <div v-if="!task.email && !task.mobile_no" class="text-ink-gray-4">-</div>
-                </td>
-
-                <!-- Allocation Date -->
-                <td class="px-5 py-3.5">
-                  <div class="font-medium text-ink-gray-8 dark:text-ink-gray-2">
-                    {{ task.allocation_date }}
-                  </div>
-                  <div v-if="task.allocation_date === todayStr" class="text-[10px] font-semibold text-ink-green-3">
-                    {{ __('Today') }}
-                  </div>
-                </td>
-
-                <!-- Assigned User (Admin view) -->
-                <td v-if="isAdmin" class="px-5 py-3.5">
-                  <div class="flex items-center gap-1.5">
-                    <UserAvatar :user="task.assigned_to" size="xs" />
-                    <span class="text-ink-gray-8 dark:text-ink-gray-2">{{ task.assigned_to_name }}</span>
-                  </div>
-                </td>
-
-                <!-- Status Select -->
-                <td class="px-5 py-3.5">
-                  <select
-                    :value="task.status"
-                    class="rounded-md border border-outline-gray-2 bg-surface-white px-2 py-1 text-xs font-semibold focus:outline-none dark:border-outline-gray-7 dark:bg-surface-gray-9"
-                    :class="getStatusBadgeClass(task.status)"
-                    @change="handleStatusChange(task, $event.target.value)"
+                <!-- 4. Phone -->
+                <td class="px-3.5 py-2 truncate">
+                  <a
+                    v-if="task.mobile_no"
+                    :href="`tel:${task.mobile_no}`"
+                    class="text-ink-gray-7 hover:underline dark:text-ink-gray-3"
                   >
-                    <option value="To Do">{{ __('To Do') }}</option>
-                    <option value="In Progress">{{ __('In Progress') }}</option>
-                    <option value="Pending">{{ __('Pending') }}</option>
-                    <option value="Callback">{{ __('Callback') }}</option>
-                    <option value="Follow up">{{ __('Follow up') }}</option>
-                    <option value="Not Interested">{{ __('Not Interested') }}</option>
-                  </select>
+                    {{ task.mobile_no }}
+                  </a>
+                  <span v-else class="text-ink-gray-4">—</span>
                 </td>
 
-                <!-- Country -->
-                <td class="px-5 py-3.5">
-                  <div class="font-medium text-ink-gray-8 dark:text-ink-gray-2">
-                    {{ (task.country && task.country !== 'Not Available') ? task.country : __('Not Available') }}
-                  </div>
+                <!-- 5. Country -->
+                <td class="px-3.5 py-2 text-ink-gray-8 dark:text-ink-gray-2 truncate">
+                  {{ (task.country && task.country !== 'Not Available') ? task.country : '—' }}
                 </td>
 
-                <!-- Timezone -->
-                <td class="px-5 py-3.5">
-                  <div class="font-mono text-xs text-ink-gray-7 dark:text-ink-gray-3">
-                    {{ formatTimezone(task.timezone) }}
-                  </div>
+                <!-- 6. Timezone -->
+                <td class="px-3.5 py-2 font-mono text-xs text-ink-gray-7 dark:text-ink-gray-3 truncate">
+                  {{ (task.timezone && task.timezone !== 'Not Available') ? formatTimezone(task.timezone) : '—' }}
                 </td>
 
-                <!-- Actions Column: Email and Call -->
-                <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                  <div class="inline-flex items-center gap-1.5">
+                <!-- 7. Data Age -->
+                <td class="px-3.5 py-2 text-ink-gray-7 dark:text-ink-gray-3 truncate">
+                  <Tooltip v-if="task.creation" :text="formatDateTime(task.creation)">
+                    <div>{{ formatDataAge(task.creation) }}</div>
+                  </Tooltip>
+                  <span v-else class="text-ink-gray-4">—</span>
+                </td>
+
+                <!-- 8. Last Updated -->
+                <td class="px-3.5 py-2 text-ink-gray-7 dark:text-ink-gray-3 truncate">
+                  <Tooltip v-if="task.modified" :text="formatDateTime(task.modified)">
+                    <div>{{ formatTimeAgo(task.modified) }}</div>
+                  </Tooltip>
+                  <span v-else class="text-ink-gray-4">—</span>
+                </td>
+
+                <!-- 9. Assigned By -->
+                <td class="px-3.5 py-2 text-ink-gray-8 dark:text-ink-gray-2 truncate">
+                  {{ task.allocated_by_name || task.allocated_by || '—' }}
+                </td>
+
+                <!-- 10. Actions Column: 1. Email, 2. Phone, 3. Pencil/Edit -->
+                <td class="px-3.5 py-2 text-right whitespace-nowrap">
+                  <div class="inline-flex items-center gap-1.5 justify-end">
+                    <!-- 1. Email icon -->
                     <Button
                       variant="subtle"
                       icon="lucide-mail"
@@ -276,20 +278,31 @@
                       class="!size-7 p-1 text-ink-blue-3 hover:bg-surface-blue-2"
                       @click="openTaskEmail(task)"
                     />
+                    <!-- 2. Phone icon -->
                     <Button
                       variant="subtle"
                       icon="lucide-phone"
-                      :tooltip="__('Log Call')"
+                      :tooltip="task.mobile_no ? __('Call / Log Call') : __('No phone number available')"
                       class="!size-7 p-1 text-ink-green-3 hover:bg-surface-green-2"
-                      @click="openTaskCall(task)"
+                      :class="{ 'opacity-40': !task.mobile_no }"
+                      @click="handlePhoneAction(task)"
                     />
+                    <!-- 3. Pencil/Edit icon -->
+                    <Dropdown :options="getStatusDropdownOptions(task)">
+                      <Button
+                        variant="subtle"
+                        icon="lucide-edit-2"
+                        :tooltip="__('Update Status')"
+                        class="!size-7 p-1 text-ink-gray-7 hover:text-ink-gray-9 hover:bg-surface-gray-2 dark:text-ink-gray-3"
+                      />
+                    </Dropdown>
                   </div>
                 </td>
               </tr>
 
               <!-- Empty Row -->
               <tr v-if="!filteredTasks.length">
-                <td :colspan="isAdmin ? 10 : 9" class="px-5 py-12 text-center text-ink-gray-5">
+                <td :colspan="11" class="px-5 py-12 text-center text-ink-gray-5">
                   <div class="flex flex-col items-center justify-center gap-2">
                     <TaskIcon class="size-8 text-ink-gray-4" />
                     <p class="font-medium">{{ __('No tasks match your filter criteria.') }}</p>
@@ -597,7 +610,7 @@
               size="sm"
               iconLeft="lucide-pen"
               :label="__('Edit')"
-              @click="if (taskVisualEditorRef) taskVisualEditorRef.activeMode = 'edit'"
+              @click="taskVisualEditorRef && (taskVisualEditorRef.activeMode = 'edit')"
             />
           </div>
           <div class="flex items-center gap-2">
@@ -703,16 +716,18 @@
 
 <script setup>
 import { ref, reactive, computed, watchEffect, onMounted, onBeforeUnmount } from 'vue'
-import { call, Button, Dialog, Badge, Dropdown, toast } from 'frappe-ui'
+import { call, Button, Dialog, Badge, Dropdown, Tooltip, toast } from 'frappe-ui'
 import { Editor, EditorContent, EditorFixedMenu } from 'frappe-ui/editor'
 import { buildEditorExtensions, formToolbar } from '@/components/editor/config'
 import { globalStore } from '@/stores/global'
+import { formatDate, timeAgo } from '@/utils'
+import { callEnabled } from '@/composables/telephony'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import BulkEmailModal from '@/components/Modals/BulkEmailModal.vue'
 import VisualEmailEditor from '@/components/VisualEmailEditor.vue'
 
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 
 const todayStr = new Date().toLocaleDateString('en-CA')
 const loading = ref(false)
@@ -811,9 +826,51 @@ const TZ_FALLBACK_MAP = {
 }
 
 function formatTimezone(tz) {
-  if (!tz || tz === 'Not Available') return __('Not Available')
+  if (!tz || tz === 'Not Available' || tz === '—') return '—'
   if (String(tz).startsWith('GMT')) return tz
   return TZ_FALLBACK_MAP[tz] || tz
+}
+
+function formatDataAge(dateStr) {
+  if (!dateStr) return '—'
+  return timeAgo(dateStr) || '—'
+}
+
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return '—'
+  return timeAgo(dateStr) || '—'
+}
+
+function formatDateTime(dateStr) {
+  if (!dateStr) return ''
+  return formatDate(dateStr, 'DD MMM YYYY, hh:mm A')
+}
+
+function handlePhoneAction(task) {
+  if (!task.mobile_no) {
+    toast.error(__('No phone number available for this prospect'))
+    return
+  }
+  if (callEnabled?.value) {
+    makeCall(task.mobile_no)
+  } else {
+    openTaskCall(task)
+  }
+}
+
+function getStatusDropdownOptions(task) {
+  const options = myTaskStatuses.map((st) => ({
+    label: st + (task.status === st ? ' ✓' : ''),
+    onClick: () => handleStatusChange(task, st),
+  }))
+
+  options.push({
+    label: __('Edit notes & follow-up...'),
+    icon: 'lucide-file-text',
+    onClick: () => openEditModal(task),
+  })
+
+  return options
 }
 
 // Three-Dot Bulk Actions
@@ -1216,6 +1273,7 @@ const filteredTasks = computed(() => {
     list = list.filter((t) =>
       (t.contact_name || '').toLowerCase().includes(q) ||
       (t.organization || '').toLowerCase().includes(q) ||
+      (t.designation || '').toLowerCase().includes(q) ||
       (t.email || '').toLowerCase().includes(q) ||
       (t.mobile_no || '').toLowerCase().includes(q) ||
       (t.country || '').toLowerCase().includes(q) ||
@@ -1283,9 +1341,11 @@ async function handleStatusChange(task, newStatus) {
       task_name: task.name,
       status: newStatus,
     })
+    toast.success(__('Status updated to {0}', [newStatus]))
   } catch (error) {
     console.error('Error updating status:', error)
     task.status = previousStatus
+    toast.error(__('Failed to update status'))
   }
 }
 
@@ -1311,8 +1371,10 @@ async function submitEdit() {
     selectedTask.value.notes = editForm.notes
     selectedTask.value.follow_up_date = editForm.follow_up_date
     showEditModal.value = false
+    toast.success(__('Task updated successfully'))
   } catch (error) {
     console.error('Save failed:', error)
+    toast.error(__('Failed to save task update'))
   } finally {
     saving.value = false
   }
