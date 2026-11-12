@@ -44,7 +44,11 @@
         <div
           class="flex flex-col flex-1 overflow-y-auto bg-surface-elevation-2"
         >
-          <component :is="activeTab.component" v-if="activeTab" />
+          <component
+            :is="activeTab.component"
+            v-if="activeTab"
+            :key="settingsOpenCount"
+          />
         </div>
       </div>
     </template>
@@ -90,6 +94,7 @@ import {
   showSettings,
   activeSettingsPage,
   disableSettingModalOutsideClick,
+  settingsOpenCount,
 } from '@/composables/settings'
 import { isWhatsAppInstalled } from '@/composables/whatsapp'
 import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
@@ -299,8 +304,13 @@ function scrollActiveIntoView() {
   })
 }
 
-watch(activeSettingsPage, (activePage) => {
-  setActiveTab(activePage)
-  scrollActiveIntoView()
-})
+// immediate: a page asked for before Settings mounted, e.g. a ?settings= link, still opens
+watch(
+  activeSettingsPage,
+  (activePage) => {
+    setActiveTab(activePage)
+    scrollActiveIntoView()
+  },
+  { immediate: true },
+)
 </script>
