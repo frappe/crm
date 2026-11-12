@@ -2,7 +2,6 @@
 import { getMeta } from '@framework/ui/api'
 import { routeFor } from '@shell'
 import { __ } from 'frappe/i18n'
-import { saveRecord } from '../saveRecord.js'
 import { readStatuses } from '../status/index.js'
 import {
 	convertLead,
@@ -24,7 +23,7 @@ export function addConvertButton(page) {
 
 async function convertToDeal(page) {
 	// The server converts the saved lead.
-	if (!(await saveRecord(page))) return
+	if (!(await page.save())) return
 	const [meta, statuses] = await Promise.all([getMeta('CRM Deal'), readStatuses('CRM Deal Status')])
 	const required = requiredDealFields(meta.data?.fields)
 	let deal = null

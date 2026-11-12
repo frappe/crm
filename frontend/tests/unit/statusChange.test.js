@@ -15,7 +15,7 @@ const labels = {
   cancelLabel: 'Cancel',
 }
 
-function fakePage(status, save = () => Promise.resolve(), reason = null) {
+function fakePage(status, save = () => Promise.resolve(true), reason = null) {
   const page = {
     doctype: 'CRM Deal',
     doc: { status },
@@ -67,20 +67,17 @@ describe('changeStatus', () => {
     expect(page.save).not.toHaveBeenCalled()
   })
 
-  it('goes back to the saved status and shows the message when the save is refused', async () => {
-    const refusal = new Error('Please specify a reason for losing the deal.')
-    const page = fakePage('Qualification', () => Promise.reject(refusal))
+  it('goes back to the saved status and leaves the message to the page when the save is refused', async () => {
+    const page = fakePage('Qualification', () => Promise.resolve(false))
     await changeStatus(page, { name: 'Lost' })
     expect(page.doc.status).toBe('Qualification')
-    expect(page.toast.error).toHaveBeenCalledWith(
-      'Please specify a reason for losing the deal.',
-    )
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 
   it('takes back what `beforeSave` wrote for a refused pick, and keeps the reader edits', async () => {
     const page = fakePage('Qualification', () => {
       page.doc.probability = 70
-      return Promise.reject(new Error('Expected Closure Date is mandatory'))
+      return Promise.resolve(false)
     })
     Object.assign(page.doc, {
       probability: 10,
@@ -99,9 +96,7 @@ describe('changeStatus', () => {
     const page = fakePage('Qualification', () => {
       page.doc = { status: 'Won' }
       page.saved = { status: 'Won' }
-      return Promise.reject(
-        Object.assign(new Error('Saved elsewhere'), { name: 'SaveConflict' }),
-      )
+      return Promise.resolve(false)
     })
     await changeStatus(page, { name: 'Negotiation' })
     expect(page.doc.status).toBe('Won')
@@ -136,17 +131,14 @@ describe('changeStatus to a Lost status', () => {
   })
 
   it('puts the saved reason back with the status when the save is refused', async () => {
-    const page = fakePage(
-      'Negotiation',
-      () => Promise.reject(new Error('Expected closure date is required.')),
-      { lost_reason: 'Pricing', lost_notes: null },
-    )
+    const page = fakePage('Negotiation', () => Promise.resolve(false), {
+      lost_reason: 'Pricing',
+      lost_notes: null,
+    })
     await changeStatus(page, lost)
     expect(page.doc.status).toBe('Negotiation')
     expect(page.doc.lost_reason).toBeUndefined()
-    expect(page.toast.error).toHaveBeenCalledWith(
-      'Expected closure date is required.',
-    )
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 
   it('opens the dialog on the reason the record already has', async () => {

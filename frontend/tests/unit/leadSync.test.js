@@ -29,7 +29,7 @@ function fakePage(doc = {}, overrides = {}) {
       })),
     },
     toast: { success: vi.fn(), error: vi.fn() },
-    save: vi.fn().mockResolvedValue(),
+    save: vi.fn().mockResolvedValue(true),
     refresh: vi.fn().mockResolvedValue(),
     cached: vi.fn(() => undefined),
     ...overrides,
@@ -131,15 +131,12 @@ describe('a saved lead sync source', () => {
 
   it('does not sync when the save is refused', async () => {
     runDocumentMethod.mockClear()
-    const page = fakePage(
-      {},
-      { save: vi.fn().mockRejectedValue(new Error('Refused')) },
-    )
+    const page = fakePage({}, { save: vi.fn().mockResolvedValue(false) })
     addSourceActs(page, routeFor)
     await acts(page).sync_now.run(page)
 
     expect(runDocumentMethod).not.toHaveBeenCalled()
-    expect(page.toast.error).toHaveBeenCalledWith('Refused')
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 })
 

@@ -35,7 +35,7 @@ function fakePage(overrides = {}) {
     panelSections: { add: vi.fn(), has: vi.fn(() => true) },
     create: vi.fn(() => Promise.resolve({ name: 'Dana Walk' })),
     toast: { success: vi.fn(), error: vi.fn() },
-    save: vi.fn(() => Promise.resolve()),
+    save: vi.fn(() => Promise.resolve(true)),
     ...overrides,
   }
 }
@@ -151,7 +151,7 @@ describe('ContactsEditor', () => {
     const page = fakePage()
     page.save = vi.fn(() => {
       expect(page.doc.contacts.map((row) => row.contact)).toContain('Cara Lim')
-      return Promise.resolve()
+      return Promise.resolve(true)
     })
     await new ContactsEditor(page, MESSAGES).add('Cara Lim')
     expect(page.save).toHaveBeenCalled()
@@ -174,7 +174,7 @@ describe('ContactsEditor', () => {
     'puts the rows back when the save of %s is refused, keeping other edits',
     async (verb, contact) => {
       const page = fakePage({
-        save: vi.fn(() => Promise.reject(new Error('Not permitted'))),
+        save: vi.fn(() => Promise.resolve(false)),
       })
       const before = page.doc.contacts
       page.doc.deal_value = 500
@@ -186,7 +186,7 @@ describe('ContactsEditor', () => {
         ['Ben Okafor', 1],
       ])
       expect(page.doc.deal_value).toBe(500)
-      expect(page.toast.error).toHaveBeenCalledWith('Not permitted')
+      expect(page.toast.error).not.toHaveBeenCalled()
       expect(page.toast.success).not.toHaveBeenCalled()
     },
   )
@@ -198,9 +198,7 @@ describe('ContactsEditor', () => {
     ]
     page.save = vi.fn(() => {
       page.doc = { contacts: reloaded }
-      return Promise.reject(
-        Object.assign(new Error('Changed'), { name: 'SaveConflict' }),
-      )
+      return Promise.resolve(false)
     })
     expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(false)
     expect(page.doc.contacts).toBe(reloaded)
@@ -213,7 +211,7 @@ describe('ContactsEditor', () => {
     page.save = vi.fn(() => {
       sent.push(page.doc.contacts.map((row) => row.contact))
       page.isDirty = false
-      return Promise.resolve()
+      return Promise.resolve(true)
     })
     expect(await new ContactsEditor(page, MESSAGES).add('Cara Lim')).toBe(true)
     expect(sent).toEqual([
@@ -225,7 +223,7 @@ describe('ContactsEditor', () => {
   it('changes no rows when the dirty draft’s own save is refused', async () => {
     const page = fakePage({
       isDirty: true,
-      save: vi.fn(() => Promise.reject(new Error('Mandatory'))),
+      save: vi.fn(() => Promise.resolve(false)),
     })
     const before = page.doc.contacts
     expect(await new ContactsEditor(page, MESSAGES).remove('Ana Ruiz')).toBe(
@@ -233,7 +231,7 @@ describe('ContactsEditor', () => {
     )
     expect(page.save).toHaveBeenCalledTimes(1)
     expect(page.doc.contacts).toBe(before)
-    expect(page.toast.error).toHaveBeenCalledWith('Mandatory')
+    expect(page.toast.error).not.toHaveBeenCalled()
   })
 
   it('runs one write at a time and is busy while it runs', async () => {
@@ -245,7 +243,7 @@ describe('ContactsEditor', () => {
     const first = editor.add('Cara Lim')
     expect(editor.busy.value).toBe(true)
     expect(await editor.remove('Ana Ruiz')).toBe(false)
-    finish()
+    finish(true)
     expect(await first).toBe(true)
     expect(editor.busy.value).toBe(false)
     expect(page.save).toHaveBeenCalledTimes(1)
@@ -253,7 +251,7 @@ describe('ContactsEditor', () => {
 
   it('is no longer busy after a refused save', async () => {
     const page = fakePage({
-      save: vi.fn(() => Promise.reject(new Error('Refused'))),
+      save: vi.fn(() => Promise.resolve(false)),
     })
     const editor = new ContactsEditor(page, MESSAGES)
     await editor.add('Cara Lim')

@@ -1,6 +1,5 @@
 // What CRM Deal's contacts section does, kept free of the desk's imports so it is unit-tested.
 import { ref, toRaw } from 'vue'
-import { saveRecord } from '../saveRecord.js'
 import { callState } from '../telephony/callState.js'
 import { MAKE_A_CALL } from '../telephony/makeCall.js'
 
@@ -99,7 +98,7 @@ export class ContactsEditor {
 		this.busy.value = true
 		try {
 			// A running save would take this change in and then drop it for the server's copy.
-			if (this.page.isDirty && !(await saveRecord(this.page))) return false
+			if (this.page.isDirty && !(await this.page.save())) return false
 			return await this.#save(change, done)
 		} finally {
 			this.busy.value = false
@@ -110,7 +109,7 @@ export class ContactsEditor {
 		const before = this.page.doc.contacts ?? []
 		const after = change(before)
 		this.page.doc.contacts = after
-		if (await saveRecord(this.page)) {
+		if (await this.page.save()) {
 			this.page.toast.success(done)
 			return true
 		}

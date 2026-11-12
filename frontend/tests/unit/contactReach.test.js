@@ -39,7 +39,7 @@ function fakePage(overrides = {}) {
     },
     fields: { update: vi.fn() },
     toast: { success: vi.fn(), error: vi.fn() },
-    save: vi.fn(() => Promise.resolve()),
+    save: vi.fn(() => Promise.resolve(true)),
     call: vi.fn(() => Promise.resolve(true)),
     reload: vi.fn(() => Promise.resolve()),
     ...overrides,
@@ -127,7 +127,10 @@ describe('ReachEditor', () => {
     async (fieldname, value, field) => {
       const order = []
       const page = fakePage({
-        save: vi.fn(() => order.push('save')),
+        save: vi.fn(() => {
+          order.push('save')
+          return Promise.resolve(true)
+        }),
         call: vi.fn(() => order.push('call')),
         reload: vi.fn(() => order.push('reload')),
       })

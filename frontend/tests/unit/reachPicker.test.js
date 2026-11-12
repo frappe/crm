@@ -31,7 +31,7 @@ function fakePage() {
       email_ids: [{ email_id: 'a@example.com' }, { email_id: 'b@example.com' }],
     },
     toast: { success: vi.fn(), error: vi.fn() },
-    save: vi.fn(() => Promise.resolve()),
+    save: vi.fn(() => Promise.resolve(true)),
     call: vi.fn(() => Promise.resolve(true)),
     reload: vi.fn(() => Promise.resolve()),
   }
