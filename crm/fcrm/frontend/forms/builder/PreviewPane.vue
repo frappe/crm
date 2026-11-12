@@ -9,7 +9,11 @@
 					<span class="lucide-check h-6 w-6" aria-hidden="true" />
 				</div>
 				<div class="text-lg font-semibold text-ink-gray-9">
-					{{ form.success_message || __("Thank you!") }}
+					{{
+						redirectUrl
+							? __("Visitors go to {0}", [redirectUrl])
+							: form.success_message || __("Thank you!")
+					}}
 				</div>
 				<Button :label="__('Preview again')" @click="resetPreview" />
 			</div>
@@ -116,6 +120,10 @@ const { form, linkMeta } = props.draft;
 const previewModel = reactive({}); // throwaway values so the preview is interactive
 const previewSubmitted = ref(false);
 
+// the public page redirects only for "Go to a URL" with a URL; otherwise it shows the message
+const redirectUrl = computed(() =>
+	form.after_submit === "url" ? (form.redirect_url || "").trim() : ""
+);
 const layout = computed(() => groupLayout(form.fields));
 const inputFieldCount = computed(
 	() => form.fields.filter((f) => !BREAK_TYPES.includes(f.fieldtype)).length
