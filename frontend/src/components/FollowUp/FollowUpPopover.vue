@@ -33,9 +33,7 @@
 </template>
 <script setup>
 import FollowUpDates from '@/components/FollowUp/FollowUpDates.vue'
-import { createFollowUp, openFollowUpForm } from '@/composables/followUp'
-import { useCrmOnboarding } from '@/composables/onboarding'
-import { useTelemetry } from '@framework/ui/telemetry'
+import { openFollowUpForm, useAddFollowUp } from '@/composables/followUp'
 import { ItemListRow, Popover, TextInput, toast } from 'frappe-ui'
 import { ref } from 'vue'
 
@@ -47,8 +45,7 @@ const props = defineProps({
 
 const emit = defineEmits(['created'])
 
-const { completeStep } = useCrmOnboarding()
-const { capture } = useTelemetry()
+const { addFollowUp, recordCreated } = useAddFollowUp()
 
 const open = ref(false)
 const note = ref('')
@@ -57,11 +54,10 @@ const creating = ref(false)
 async function create(dueDate) {
   creating.value = true
   try {
-    const task = await createFollowUp({ ...taskFields(), dueDate })
-    toast.success(__('Follow-up added'))
+    const task = await addFollowUp({ ...taskFields(), dueDate })
     open.value = false
     note.value = ''
-    afterCreate(task)
+    emit('created', task)
   } catch (error) {
     toast.error(error.messages?.[0] || __('Could not add the follow-up'))
   } finally {
@@ -76,8 +72,7 @@ function openFullForm() {
 }
 
 function afterCreate(task) {
-  completeStep('create_first_task')
-  capture('follow_up_created', { doctype: props.doctype })
+  recordCreated(props.doctype)
   emit('created', task)
 }
 
