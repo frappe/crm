@@ -2,9 +2,9 @@ import { toast } from "frappe-ui";
 import { ref, reactive, computed } from "vue";
 import { __ } from "frappe/i18n";
 import { call, errorText } from "../formsApi";
+import { fieldTypeIcon } from "../fieldTypeIcon";
 import {
 	fieldsFromServer,
-	MAX_COLUMNS,
 	afterSubmitOf,
 	buildSections,
 	flattenSections,
@@ -14,7 +14,8 @@ import {
 	slugify,
 	toSavePayload,
 } from "./formModel";
-import { targetOptions, useDoctypeSwitch } from "./useDoctypeSwitch";
+import { docLabel, targetOptions, useDoctypeSwitch } from "./useDoctypeSwitch";
+import { useHiddenRows } from "./useHiddenRows";
 import { useLinkMeta } from "./useLinkMeta";
 
 // The form being edited: load, dirty, save, publish and every structural edit.
@@ -30,13 +31,13 @@ export function useFormDraft({ name, onSaved }) {
 	const loadError = ref("");
 	const saving = ref(false);
 	const dirty = ref(false);
-	const expanded = ref(null); // fieldname of the expanded field editor
 	// while a draft still has an auto-generated route, keep it in sync with the
 	// title; once the user edits the route (or the form is published) we stop
 	const routeEdited = ref(false);
+	// "Open form" and "Copy link" use the route the server holds, not the one being typed
+	const savedRoute = ref("");
 	const sections = ref([]);
-	// doctype-mandatory fields removed from the visible form. Each carries a default
-	// value that's applied on submission so the record can still be created.
+	// fields kept off the form. Each carries a value applied to every record the form creates.
 	const hiddenFields = ref([]);
 
 	const form = reactive({
@@ -68,18 +69,24 @@ export function useFormDraft({ name, onSaved }) {
 		const used = new Set(form.fields.map((f) => f.fieldname));
 		return (availableFields.data || [])
 			.filter((f) => !used.has(f.fieldname))
-			.map((af) => ({ label: af.label, value: af.fieldname, af }));
+			.map((af) => ({ label: af.label, value: af.fieldname, icon: fieldTypeIcon(af), af }))
+			.sort((a, b) => a.label.localeCompare(b.label));
 	});
 
-	// fieldnames the target doctype marks mandatory (from the field catalog). They
-	// stay in the form: the server only accepts system-managed fields as hidden.
+	// fieldnames the target doctype marks mandatory (from the field catalog)
 	const mandatorySet = computed(
 		() => new Set((availableFields.data || []).filter((f) => f.reqd).map((f) => f.fieldname))
 	);
-	// true while any hidden required field is missing its default (blocks publish)
-	const hiddenMissingDefault = computed(() =>
-		hiddenFields.value.some((h) => !String(h.default || "").trim())
-	);
+	const doctypeLabel = computed(() => docLabel(form.document_type));
+
+	const hidden = useHiddenRows({
+		form,
+		hiddenFields,
+		availableFields,
+		availableFieldOptions,
+		linkMeta,
+		markDirty: () => markDirty(),
+	});
 
 	// select is bound to this so we can intercept the change and confirm before
 	// dropping incompatible fields; cancelling leaves form.document_type untouched
@@ -87,12 +94,6 @@ export function useFormDraft({ name, onSaved }) {
 	const doctypeModel = computed({
 		get: () => form.document_type,
 		set: (v) => requestDoctypeChange(v),
-	});
-
-	// a section can't take a new column break once the last one is full
-	const columnBreakDisabled = computed(() => {
-		const secs = sections.value;
-		return (secs.length ? secs[secs.length - 1].columns.length : 1) >= MAX_COLUMNS;
 	});
 
 	// every edit funnels through markDirty(), which just flags unsaved changes;
@@ -149,7 +150,7 @@ export function useFormDraft({ name, onSaved }) {
 		markDirty();
 	}
 
-	// apply an edit emitted by a FieldCard to the parent-owned field object
+	// apply an edit from the field panel to the parent-owned field object
 	function updateField(f, patch) {
 		Object.assign(f, patch);
 		markDirty();
@@ -157,7 +158,6 @@ export function useFormDraft({ name, onSaved }) {
 
 	function removeField(f) {
 		form.fields = form.fields.filter((x) => x !== f);
-		if (expanded.value === f.fieldname) expanded.value = null;
 		rebuildModel();
 		markDirty();
 	}
@@ -170,55 +170,58 @@ export function useFormDraft({ name, onSaved }) {
 		markDirty();
 	}
 
-	function addBreak(fieldtype) {
-		if (fieldtype === "Column Break" && columnBreakDisabled.value) {
-			toast.info(__("A section can have up to {0} columns", [MAX_COLUMNS]));
-			return;
-		}
-		// append at the end: a Section Break starts a new section, a Column Break
-		// adds a new column to the last section
-		form.fields.push(makeMarker(fieldtype));
-		rebuildModel();
-		markDirty();
-	}
-
-	function toggle(f) {
-		expanded.value = expanded.value === f.fieldname ? null : f.fieldname;
-	}
-
-	// focusing a field's label selects it (reveals inline editor) without toggling off
-	function open(f) {
-		expanded.value = f.fieldname;
-	}
-
-	// add a field into a specific column, then re-flatten to form.fields
-	function addFieldToColumn(col, option) {
+	// add a field into a column (at the end, or at `index`); returns the new field
+	function addFieldToColumn(col, option, index = col.items.length) {
 		const af = option?.af || option;
-		if (!af?.fieldname) return;
-		// a freshly added field starts collapsed, not stacked under a previously open one
-		expanded.value = null;
+		if (!af?.fieldname) return null;
 		// re-adding a field that was moved to hidden brings it back onto the form
 		hiddenFields.value = hiddenFields.value.filter((h) => h.fieldname !== af.fieldname);
-		col.items.push(newFieldFromCatalog(af));
+		const field = newFieldFromCatalog(af);
+		col.items.splice(index, 0, field);
 		if (af.fieldtype === "Link") ensureLinkMeta(af.options);
 		syncFromModel();
+		return field;
 	}
 
-	function addColumn(cols) {
-		if (cols.length >= MAX_COLUMNS) {
-			toast.info(__("A section can have up to {0} columns", [MAX_COLUMNS]));
-			return;
-		}
-		cols.push(newColumn());
+	// a section's "Add field": after the selected field when it is in the section, else in its shortest column
+	function addFieldToSection(sec, option, after = null) {
+		const col = sec.columns.find((c) => c.items.includes(after));
+		const target = col || sec.columns.reduce((a, c) => (c.items.length <= a.items.length ? c : a));
+		return addFieldToColumn(
+			target,
+			option,
+			col ? col.items.indexOf(after) + 1 : target.items.length
+		);
+	}
+
+	// "Add to form" on a hidden row: the end of the last section, in its shortest column
+	function addHiddenToForm(h) {
+		return addFieldToSection(sections.value.at(-1), hidden.catalogField(h.fieldname) || h);
+	}
+
+	// a field dragged in from the panel's list or the hidden block lands as a clone: tidy the model after it
+	function settleCloneDrop() {
+		const onForm = new Set(flattenSections(sections.value).map((f) => f.fieldname));
+		hiddenFields.value = hiddenFields.value.filter((h) => !onForm.has(h.fieldname));
 		syncFromModel();
+		form.fields.forEach((f) => f.fieldtype === "Link" && ensureLinkMeta(f.options));
 	}
 
-	function removeLastColumn(cols) {
-		if (cols.length <= 1) return;
-		const last = cols[cols.length - 1];
-		const prev = cols[cols.length - 2];
-		if (last.items.length) prev.items.push(...last.items); // keep the fields
-		cols.pop();
+	function addSection() {
+		form.fields.push(makeMarker("Section Break"));
+		rebuildModel();
+		markDirty();
+		return sections.value.at(-1);
+	}
+
+	// the panel's Columns setting: add empty columns, or fold the last ones into the previous
+	function setColumns(sec, count) {
+		const cols = sec.columns;
+		while (cols.length < count) cols.push(newColumn());
+		while (cols.length > Math.max(count, 1)) {
+			const last = cols.pop();
+			cols.at(-1).items.push(...last.items);
+		}
 		syncFromModel();
 	}
 
@@ -233,11 +236,12 @@ export function useFormDraft({ name, onSaved }) {
 		// drafts auto-save freely; only a published form requires every hidden field
 		// to carry a default (an empty one would break record creation)
 		if (form.published) {
-			const missing = hiddenFields.value.filter((h) => !String(h.default || "").trim());
+			const missing = hidden.unpublishableRows();
 			if (missing.length) {
+				hidden.stopEditing(); // the refused required rows turn red again
 				if (!silent)
 					toast.error(
-						__("Set a default value for hidden required field(s): {0}", [
+						__("Give a value to, or add to the form: {0}", [
 							missing.map((h) => h.label || h.fieldname).join(", "),
 						])
 					);
@@ -255,6 +259,7 @@ export function useFormDraft({ name, onSaved }) {
 				form: toSavePayload(form, hiddenFields.value),
 			});
 			form.route = doc.route;
+			savedRoute.value = doc.route;
 			(doc.fields || []).forEach((df, i) => {
 				if (form.fields[i]) form.fields[i].name = df.name;
 			});
@@ -274,6 +279,7 @@ export function useFormDraft({ name, onSaved }) {
 			.then((doc) => {
 				form.title = doc.title || "";
 				form.route = doc.route || "";
+				savedRoute.value = form.route;
 				form.document_type = doc.document_type || "CRM Lead";
 				form.description = doc.description || "";
 				form.submit_button_label = doc.submit_button_label || "Submit";
@@ -314,7 +320,6 @@ export function useFormDraft({ name, onSaved }) {
 
 	const { requestDoctypeChange } = useDoctypeSwitch({
 		form,
-		expanded,
 		hiddenFields,
 		availableFields,
 		linkMeta,
@@ -331,14 +336,15 @@ export function useFormDraft({ name, onSaved }) {
 		loadError,
 		saving,
 		dirty,
-		expanded,
 		routeEdited,
+		savedRoute,
 		sections,
 		hiddenFields,
-		hiddenMissingDefault,
+		...hidden,
 		availableFieldOptions,
 		doctypeModel,
 		targetOptions,
+		doctypeLabel,
 		linkMeta,
 		isMandatory,
 		markDirty,
@@ -346,15 +352,15 @@ export function useFormDraft({ name, onSaved }) {
 		publish,
 		unpublish,
 		syncFromModel,
-		toggle,
-		open,
 		addFieldToColumn,
-		addColumn,
-		removeLastColumn,
+		addFieldToSection,
+		addHiddenToForm,
+		addSection,
+		settleCloneDrop,
+		setColumns,
 		updateField,
 		removeField,
 		removeBreak,
-		addBreak,
 		saveNow,
 	};
 }

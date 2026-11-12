@@ -297,19 +297,97 @@ class TestFormAPI(IntegrationTestCase):
 			)
 
 	def test_save_form_rejects_unknown_hidden_field(self):
-		"""Only the system-managed mandatory fields may be hidden fields."""
+		"""A denied or system-set field can't be a hidden field."""
 		name = make_form("hidden-denied")
-		with self.assertRaises(frappe.ValidationError):
-			F.save_form(
-				name=name,
-				form={
-					"title": "H",
-					"route": "hidden-denied",
-					"document_type": "CRM Lead",
-					"fields": [{"fieldname": "first_name", "fieldtype": "Data"}],
-					"hidden_fields": [{"fieldname": "converted", "fieldtype": "Check", "default": "1"}],
-				},
-			)
+		for fieldname in ("converted", "naming_series", "lead_name"):
+			with self.subTest(fieldname=fieldname), self.assertRaises(frappe.ValidationError):
+				F.save_form(
+					name=name,
+					form={
+						"title": "H",
+						"route": "hidden-denied",
+						"document_type": "CRM Lead",
+						"fields": [{"fieldname": "first_name", "fieldtype": "Data"}],
+						"hidden_fields": [{"fieldname": fieldname, "fieldtype": "Data", "default": "1"}],
+					},
+				)
+
+	def test_save_form_rejects_a_hidden_value_that_does_not_fit_its_fieldtype(self):
+		name = make_form("hidden-typed")
+		form = {
+			"title": "H",
+			"route": "hidden-typed",
+			"document_type": "CRM Lead",
+			"fields": [{"fieldname": "first_name", "fieldtype": "Data"}],
+		}
+		for fieldname, bad, good in (("lead_score", "high", "7"), ("lead_temperature", "Boiling", "Hot")):
+			with self.subTest(fieldname=fieldname):
+				with self.assertRaises(frappe.ValidationError):
+					F.save_form(
+						name=name, form={**form, "hidden_fields": [{"fieldname": fieldname, "default": bad}]}
+					)
+				F.save_form(
+					name=name, form={**form, "hidden_fields": [{"fieldname": fieldname, "default": good}]}
+				)
+
+	def test_save_form_accepts_a_picker_field_as_hidden(self):
+		"""Any field the editor offers may be hidden, not only the system-managed ones."""
+		name = make_form("hidden-picker")
+		F.save_form(
+			name=name,
+			form={
+				"title": "H",
+				"route": "hidden-picker",
+				"document_type": "CRM Lead",
+				"fields": [{"fieldname": "first_name", "fieldtype": "Data"}],
+				"hidden_fields": [{"fieldname": "email", "fieldtype": "Attach", "default": "a@b.co"}],
+			},
+		)
+		hidden = {h["fieldname"]: h for h in F.get_form_config(name)["hidden_fields"]}
+		self.assertEqual(hidden["email"]["default"], "a@b.co")
+		self.assertEqual(hidden["email"]["fieldtype"], "Data")  # taken from the doctype
+
+	def test_publish_blocked_when_a_required_field_is_neither_asked_nor_valued(self):
+		required = [
+			df for df in frappe.get_meta("CRM Lead").fields if df.reqd and df.fieldname == "first_name"
+		]
+		self.assertTrue(required, "CRM Lead no longer requires first_name; pick another required field")
+		name = make_form("pub-required")
+		form = {
+			"title": "P",
+			"route": "pub-required",
+			"document_type": "CRM Lead",
+			"published": 1,
+			"fields": [{"fieldname": "email", "fieldtype": "Data"}],
+			"hidden_fields": F.get_hidden_seed("CRM Lead"),
+		}
+		with self.assertRaises(frappe.ValidationError) as ctx:
+			F.save_form(name=name, form=form)
+		self.assertIn("First Name", str(ctx.exception))
+		# a hidden value covers it
+		form["hidden_fields"] = [*form["hidden_fields"], {"fieldname": "first_name", "default": "Web"}]
+		F.save_form(name=name, form=form)
+		# so does asking for it on the form
+		form.update(
+			hidden_fields=F.get_hidden_seed("CRM Lead"),
+			fields=[{"fieldname": "first_name", "fieldtype": "Data"}],
+		)
+		F.save_form(name=name, form=form)
+
+	def test_set_published_blocked_when_a_required_field_is_missing(self):
+		name = make_form("setpub-required", fields=[{"fieldname": "email", "fieldtype": "Data"}])
+		with self.assertRaises(frappe.ValidationError) as ctx:
+			F.set_published(name, 1)
+		self.assertIn("First Name", str(ctx.exception))
+
+	def test_publish_allows_a_required_field_that_has_a_default(self):
+		first_name = frappe.get_meta("CRM Lead").get_field("first_name")
+		first_name.default = "Guest"
+		try:
+			name = make_form("pub-default", fields=[{"fieldname": "email", "fieldtype": "Data"}])
+			F.set_published(name, 1)
+		finally:
+			first_name.default = None
 
 	def test_save_form_takes_fieldtype_from_catalog(self):
 		"""fieldtype and options come from the doctype, not the payload."""

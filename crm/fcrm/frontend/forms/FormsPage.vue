@@ -25,17 +25,17 @@
 			/>
 		</div>
 	</PageHeader>
-	<div class="flex h-full flex-col overflow-y-auto">
+	<FormBuilder
+		v-if="activeName"
+		ref="builder"
+		:key="activeName"
+		:name="activeName"
+		:tab="tab"
+		:router="router"
+	/>
+	<div v-else class="flex h-full flex-col overflow-y-auto">
 		<div class="px-3 pb-6 sm:px-5">
-			<FormBuilder
-				v-if="activeName"
-				ref="builder"
-				:key="activeName"
-				:name="activeName"
-				:tab="tab"
-				:router="router"
-			/>
-			<FormsList v-else ref="list" @open="(name) => router.push({ query: { form: name } })" />
+			<FormsList ref="list" @open="(name) => router.push({ query: { form: name } })" />
 		</div>
 	</div>
 </template>

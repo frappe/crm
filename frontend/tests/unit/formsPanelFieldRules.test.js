@@ -6,27 +6,25 @@ vi.mock('frappe-ui', async () => {
   const stub = (name, render) =>
     defineComponent({
       name,
-      props: ['label', 'message', 'modelValue', 'text'],
+      props: ['label', 'modelValue', 'text'],
       setup:
         (props, { slots }) =>
         () =>
           render(props, slots),
     })
+  const input = (name) =>
+    stub(name, (props) => h('input', { value: props.modelValue }))
   return {
     Button: stub('Button', (props) => h('button', props.label)),
-    ErrorMessage: stub('ErrorMessage', (props) =>
-      h('p', { 'data-error': '' }, props.message),
-    ),
-    FormControl: stub('FormControl', (props) =>
-      h('label', [props.label, h('input', { value: props.modelValue })]),
-    ),
     Switch: stub('Switch', () => h('span')),
+    TextInput: input('TextInput'),
+    Textarea: input('Textarea'),
     Tooltip: stub('Tooltip', (props, slots) => slots.default?.()),
   }
 })
 
-const { default: FieldCard } = await import(
-  '../../../crm/fcrm/frontend/forms/FieldCard.vue'
+const { default: PanelFieldSettings } = await import(
+  '../../../crm/fcrm/frontend/forms/builder/PanelFieldSettings.vue'
 )
 
 let app
@@ -36,7 +34,7 @@ afterEach(() => {
   root?.remove()
 })
 
-async function mountCard(rules) {
+async function mountPanel(rules) {
   root = document.createElement('div')
   document.body.append(root)
   const field = {
@@ -48,15 +46,17 @@ async function mountCard(rules) {
     read_only_depends_on: '',
     ...rules,
   }
-  app = createApp({ render: () => h(FieldCard, { field, expanded: true }) })
+  app = createApp({ render: () => h(PanelFieldSettings, { field }) })
   app.mount(root)
   await nextTick()
-  return [...root.querySelectorAll('[data-error]')].map((p) => p.textContent)
+  return [...root.querySelectorAll('p')]
+    .map((p) => p.textContent.trim())
+    .filter((t) => t.startsWith('This rule does not work'))
 }
 
-describe('FieldCard conditional rules', () => {
+describe('Field panel conditional rules', () => {
   it('shows why a rule does not work, under that rule', async () => {
-    const errors = await mountCard({
+    const errors = await mountPanel({
       mandatory_depends_on: 'eval:doc.qty >',
       read_only_depends_on: 'eval:window.x',
     })
@@ -67,7 +67,7 @@ describe('FieldCard conditional rules', () => {
   })
 
   it('shows no error for a rule that parses', async () => {
-    const errors = await mountCard({
+    const errors = await mountPanel({
       depends_on: 'eval:doc.email && doc.qty > 1',
       mandatory_depends_on: 'organization',
     })

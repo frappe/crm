@@ -1,9 +1,6 @@
 // Pure helpers for the builder's field model. No Vue, no network.
 export const BREAK_TYPES = ["Section Break", "Column Break"];
 
-// a section can hold this many columns before it gets too cramped to build/fill
-export const MAX_COLUMNS = 4;
-
 export const TEXTAREA_TYPES = [
 	"Small Text",
 	"Text",
@@ -169,7 +166,8 @@ export function domainList(stored) {
 export function toSavePayload(form, hiddenFields) {
 	// "Go to a URL" with no URL keeps the message: clearing both would lose it
 	const redirectUrl = (form.redirect_url || "").trim();
-	const afterSubmit = (form.after_submit || afterSubmitOf(form)) === "url" && redirectUrl ? "url" : "message";
+	const afterSubmit =
+		(form.after_submit || afterSubmitOf(form)) === "url" && redirectUrl ? "url" : "message";
 	return {
 		title: form.title,
 		route: slugify(form.route),

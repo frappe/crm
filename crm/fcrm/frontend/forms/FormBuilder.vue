@@ -1,18 +1,20 @@
 <template>
-	<div class="flex flex-col text-ink-gray-8">
-		<ErrorMessage v-if="draft.loadError.value" class="py-3.5" :message="draft.loadError.value" />
-		<div v-if="draft.loaded.value" class="pb-6">
+	<div class="flex h-full min-h-0 flex-1 flex-col text-ink-gray-8">
+		<ErrorMessage v-if="draft.loadError" class="px-3 py-3.5 sm:px-5" :message="draft.loadError" />
+		<template v-if="draft.loaded">
 			<EditorTab v-if="tab === 'editor'" :draft="draft" />
-			<SettingsTab v-else-if="tab === 'settings'" :draft="draft" />
-			<ShareTab v-else-if="tab === 'share'" :draft="draft" />
-			<PreviewPane v-else :draft="draft" />
-		</div>
+			<div v-else class="min-h-0 flex-1 overflow-y-auto px-3 pb-6 sm:px-5">
+				<SettingsTab v-if="tab === 'settings'" :draft="draft" />
+				<ShareTab v-else-if="tab === 'share'" :draft="draft" />
+				<PreviewPane v-else :draft="draft" />
+			</div>
+		</template>
 	</div>
 </template>
 
 <script setup>
 import { ErrorMessage } from "frappe-ui";
-import { reactive } from "vue";
+import { reactive, toRef } from "vue";
 import EditorTab from "./builder/EditorTab.vue";
 import PreviewPane from "./builder/PreviewPane.vue";
 import SettingsTab from "./builder/SettingsTab.vue";
@@ -27,9 +29,9 @@ const props = defineProps({
 });
 const emit = defineEmits(["saved"]);
 
-const draft = useFormDraft({ name: props.name, onSaved: () => emit("saved") });
-useLeaveGuard(props.router, draft.dirty);
+// One reactive draft for the tabs and the header, which sits above this component's key.
+const draft = reactive(useFormDraft({ name: props.name, onSaved: () => emit("saved") }));
+useLeaveGuard(props.router, toRef(draft, "dirty"));
 
-// The header sits above this component's key, so it reads the draft from here.
-defineExpose({ draft: reactive(draft) });
+defineExpose({ draft });
 </script>

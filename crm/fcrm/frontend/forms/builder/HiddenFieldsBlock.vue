@@ -1,83 +1,140 @@
+<!-- Fields the form does not ask for. Every new record gets their values; a row drags up onto the
+     form, a field drags down into here. A record-required field with no value shows as a missing row. -->
 <template>
-	<!-- hidden required fields: kept off the form, a default is applied
-       on submission so the record can still be created -->
-	<div v-if="hiddenFields.length" class="mt-6">
-		<div class="mb-2 flex items-center gap-1.5 text-base-medium text-ink-gray-7">
-			<span class="lucide-eye-off h-3.5 w-3.5 text-ink-gray-5" aria-hidden="true" />
-			{{ __("Hidden required fields") }}
-		</div>
-		<div class="rounded-4 bg-surface-gray-2 p-2.5">
-			<p class="mb-2.5 text-p-sm text-ink-gray-5">
-				{{
-					__(
-						"These fields aren't shown to users. Default values are used when the form is submitted."
-					)
-				}}
-			</p>
-			<div class="flex flex-col gap-2">
+	<div class="mt-10 border-t border-outline-gray-1 pt-10" data-editor-hidden>
+		<h3 class="text-lg font-semibold text-ink-gray-6">{{ __("Hidden fields") }}</h3>
+		<p class="mt-1.5 text-p-base text-ink-gray-5">
+			{{
+				__(
+					"Not shown to visitors. Every new {0} gets these values — or drag a field onto the form to ask for it.",
+					[draft.doctypeLabel]
+				)
+			}}
+		</p>
+		<Draggable
+			:model-value="draft.hiddenRows"
+			:group="{ name: 'wf-fields', pull: 'clone', put: true }"
+			:clone="draft.cloneHidden"
+			:sort="false"
+			:move="canLeaveHidden"
+			item-key="fieldname"
+			filter="input, select, textarea, button"
+			:prevent-on-filter="false"
+			class="mt-5 flex min-h-8 flex-col gap-3"
+			ghost-class="editor-drop-line"
+			:force-fallback="true"
+			:fallback-on-body="false"
+			fallback-class="wf-drag-fallback"
+			data-editor-hidden-list
+			@start="drag.startHidden"
+			@end="$emit('clone-end')"
+			@change="draft.onHiddenChange"
+		>
+			<template #item="{ element: h }">
 				<div
-					v-for="h in hiddenFields"
-					:key="h.fieldname"
-					class="flex items-center gap-2.5 rounded-4 border border-outline-gray-2 bg-surface-elevation-2 px-2.5 py-2"
+					class="group/hidden flex min-h-8 cursor-grab select-none items-center gap-3 active:cursor-grabbing"
+					:data-hidden-fieldname="h.fieldname"
 				>
-					<span
-						:class="[fieldTypeIcon(h), 'h-4 w-4 shrink-0 text-ink-gray-5']"
-						aria-hidden="true"
-					/>
-					<span class="flex-1 truncate text-base text-ink-gray-8" :title="h.label">{{
-						h.label
-					}}</span>
-					<div class="w-52 shrink-0">
-						<FormControl
-							v-if="hiddenIsSelect(h)"
-							type="select"
+					<span class="w-36 shrink-0 truncate text-sm text-ink-gray-6">
+						{{ h.label || h.fieldname
+						}}<span v-if="draft.isMandatory(h.fieldname)" class="text-ink-red-4"> *</span>
+					</span>
+					<div v-if="draft.isMissingRow(h)" class="flex min-w-0 flex-1 items-center gap-3">
+						<span class="flex min-w-0 flex-1 items-center gap-1.5 text-sm text-ink-red-5">
+							<span class="lucide-circle-alert size-4 shrink-0" aria-hidden="true" />
+							<span class="truncate">{{ __("Every {0} needs this", [draft.doctypeLabel]) }}</span>
+						</span>
+						<Button
+							variant="subtle"
 							size="sm"
-							:modelValue="h.default"
-							:options="hiddenSelectOptions(h)"
-							@update:modelValue="(v) => ((h.default = v), markDirty())"
-						/>
-						<FormControl
-							v-else
-							type="text"
-							size="sm"
-							:modelValue="h.default"
-							:placeholder="__('Default value')"
-							@update:modelValue="(v) => ((h.default = v), markDirty())"
+							:label="__('Set a value')"
+							@click.stop="draft.setHiddenValue(h)"
 						/>
 					</div>
+					<FormControl
+						v-else
+						class="min-w-0 flex-1"
+						:type="isSelect(h) ? 'select' : 'text'"
+						size="sm"
+						:model-value="h.default"
+						:options="isSelect(h) ? selectOptions(h) : undefined"
+						:placeholder="isSelect(h) ? __('Select a value') : __('Add a value')"
+						:data-hidden-value="h.fieldname"
+						@update:model-value="(v) => draft.setHiddenDefault(h, v)"
+					/>
+					<Button
+						v-if="draft.canAddToForm(h)"
+						variant="subtle"
+						size="sm"
+						:label="__('Add to form')"
+						@click.stop="addToForm(h)"
+					/>
+					<span
+						class="lucide-grip-vertical size-4 shrink-0 text-ink-gray-4 group-hover/hidden:text-ink-gray-6"
+						:title="__('Drag onto the form')"
+						aria-hidden="true"
+					/>
 				</div>
-			</div>
-			<ErrorMessage
-				v-if="hiddenMissingDefault"
-				class="mt-2"
-				:message="__('Set a default value for each field to publish this form.')"
-			/>
-		</div>
+			</template>
+		</Draggable>
+		<Combobox
+			:options="draft.hiddenPickerOptions"
+			:model-value="null"
+			:placeholder="__('Search fields…')"
+			@update:selected-option="draft.addHiddenField"
+		>
+			<template #trigger="{ open, setOpen }">
+				<div class="mt-4 flex w-fit" data-editor-add-hidden>
+					<Button
+						variant="subtle"
+						size="sm"
+						icon-left="lucide-plus"
+						:class="{ '!bg-surface-gray-3': open }"
+						:label="__('Add hidden field')"
+						@click.stop="setOpen(!open)"
+					/>
+				</div>
+			</template>
+		</Combobox>
 	</div>
 </template>
 
 <script setup>
-import { ErrorMessage, FormControl } from "frappe-ui";
+import { Button, Combobox, FormControl } from "frappe-ui";
 import { __ } from "frappe/i18n";
-import { fieldTypeIcon } from "../fieldTypeIcon";
+import Draggable from "vuedraggable";
 import { optionList } from "./formModel";
 
-const props = defineProps({ draft: { type: Object, required: true } });
-const { hiddenFields, hiddenMissingDefault, markDirty, linkMeta } = props.draft;
+const props = defineProps({
+	draft: { type: Object, required: true },
+	selection: { type: Object, required: true },
+	drag: { type: Object, required: true },
+});
+defineEmits(["clone-end"]);
 
-function hiddenIsSelect(h) {
-	return h.fieldtype === "Select" || h.fieldtype === "Link";
+// Sortable asks the list a drag started in, so this list guards drops onto the form
+const canLeaveHidden = (evt) =>
+	evt.to === evt.from || props.draft.canAddToForm(evt.draggedContext.element);
+
+const isSelect = (h) => h.fieldtype === "Select" || h.fieldtype === "Link";
+
+function selectOptions(h) {
+	const options =
+		h.fieldtype === "Select"
+			? optionList(h.options)
+			: (props.draft.linkMeta.linkOptions[h.options] || []).slice();
+	if (h.default && !options.includes(h.default)) options.unshift(h.default);
+	return options.map((o) => ({ label: o, value: o }));
 }
 
-function hiddenSelectOptions(h) {
-	let opts = [];
-	if (h.fieldtype === "Select") {
-		opts = optionList(h.options);
-	} else if (h.fieldtype === "Link") {
-		opts = linkMeta.linkOptions[h.options] || [];
-	}
-	opts = opts.slice();
-	if (h.default && !opts.includes(h.default)) opts.unshift(h.default);
-	return opts.map((o) => ({ label: o, value: o }));
+function addToForm(h) {
+	const f = props.draft.addHiddenToForm(h);
+	if (!f) return;
+	props.selection.selectField(f);
+	requestAnimationFrame(() =>
+		document
+			.querySelector(`[data-editor-canvas] [data-fieldname="${f.fieldname}"]`)
+			?.scrollIntoView({ block: "center", behavior: "smooth" })
+	);
 }
 </script>

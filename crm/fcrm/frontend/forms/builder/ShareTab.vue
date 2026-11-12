@@ -97,7 +97,7 @@ import { domainList, normalizeDomain } from "./formModel";
 const props = defineProps({ draft: { type: Object, required: true } });
 const { form, markDirty } = props.draft;
 
-const publicUrl = computed(() => `${window.location.origin}/crm-form/${form.route}`);
+const publicUrl = computed(() => `${window.location.origin}/crm-form/${props.draft.savedRoute}`);
 const embeddingDomains = computed(() => domainList(form.allowed_embedding_domains));
 
 const newDomain = ref("");

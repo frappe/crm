@@ -4,7 +4,7 @@ import { __ } from "frappe/i18n";
 import { call, recordNames } from "../formsApi";
 
 // Per Link target doctype: its record names (preview and hidden-field dropdowns) and
-// whether a guest can select it (the Link-field warning in FieldCard).
+// whether a guest can select it (the Link-field warning on the canvas and in the panel).
 export function useLinkMeta() {
 	// cache of Link option lists (e.g. CRM Lead Status names)
 	const linkOptions = reactive({});

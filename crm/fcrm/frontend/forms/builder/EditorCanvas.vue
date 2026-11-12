@@ -1,233 +1,194 @@
+<!-- The form as a visitor sees it, one size up: sections 40px apart, fields that select and drag. -->
 <template>
-	<!-- native-style layout: draggable section boxes → dashed columns → field cards -->
-	<div class="flex flex-col gap-3" :class="{ 'select-none': dragging }">
-		<Draggable
-			:list="sections"
-			:item-key="sectionKey"
-			handle=".section-handle"
-			group="wf-sections"
-			class="flex flex-col gap-3"
-			ghost-class="opacity-40"
-			:force-fallback="true"
-			:fallback-on-body="false"
-			fallback-class="wf-drag-fallback"
-			:animation="120"
-			@start="dragging = true"
-			@end="onSortEnd"
-		>
-			<template #item="{ element: sec }">
-				<div class="flex flex-col gap-1.5 rounded-4 bg-surface-gray-2 p-2.5">
-					<div class="flex h-7 items-center justify-between">
-						<div class="flex items-center gap-2 text-base-medium text-ink-gray-9">
-							<span
-								class="lucide-grip-vertical section-handle h-3.5 shrink-0 cursor-grab text-ink-gray-3"
-								aria-hidden="true"
-							/>
-							<input
-								v-if="sec.editingLabel"
-								:ref="(el) => el && el.focus()"
-								v-model="sec.secField.label"
-								:placeholder="__('Section title')"
-								class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base-medium text-ink-gray-9 placeholder:font-normal placeholder:italic placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
-								@blur="sec.editingLabel = false"
-								@keydown.enter="sec.editingLabel = false"
-								@input="markDirty"
-							/>
-							<span
-								v-else
-								class="cursor-text truncate"
-								:class="{
-									'italic text-ink-gray-4': !sec.secField.label,
-								}"
-								@click="sec.editingLabel = true"
-							>
-								{{ sec.secField.label || __("Section title") }}
-							</span>
-						</div>
-						<div class="flex items-center gap-1.5">
-							<span
-								v-if="sectionFieldCount(sec)"
-								class="rounded-4 bg-surface-gray-3 px-1.5 py-0.5 text-xs leading-none text-ink-gray-4"
-							>
-								{{ sectionFieldCount(sec) }}
-								{{ sectionFieldCount(sec) === 1 ? __("field") : __("fields") }}
-							</span>
-							<Dropdown :options="sectionMenu(sec)">
-								<template #default>
-									<Button variant="ghost">
-										<span class="lucide-more-horizontal h-4" aria-hidden="true" />
-									</Button>
-								</template>
-							</Dropdown>
-						</div>
+	<Draggable
+		:list="draft.sections"
+		:item-key="sectionKey"
+		handle=".section-handle"
+		group="wf-sections"
+		class="flex flex-col gap-10"
+		ghost-class="opacity-40"
+		:force-fallback="true"
+		:fallback-on-body="false"
+		fallback-class="wf-drag-fallback"
+		:animation="120"
+		@end="onSortEnd"
+	>
+		<template #item="{ element: sec }">
+			<div class="section-block relative">
+				<div
+					class="relative -m-4 rounded-7 p-4"
+					:class="{ 'ring-1 ring-outline-gray-4': selection.isSectionSelected(sec) }"
+				>
+					<div class="group/section relative mb-5 flex h-6 items-center">
+						<input
+							v-model="sec.secField.label"
+							data-editor-select
+							:placeholder="__('Untitled section')"
+							class="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg font-semibold text-ink-gray-9 placeholder:font-normal placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
+							@focus="selection.selectSection(sec)"
+							@click.stop="selection.selectSection(sec)"
+							@input="draft.markDirty"
+						/>
+						<span
+							class="section-handle flex size-6 shrink-0 cursor-grab items-center justify-center text-ink-gray-4 opacity-0 transition-opacity hover:text-ink-gray-7 group-hover/section:opacity-100"
+							:class="{ '!opacity-100': selection.isSectionSelected(sec) }"
+							:title="__('Drag to move the section')"
+						>
+							<span class="lucide-grip-vertical size-4" aria-hidden="true" />
+						</span>
 					</div>
-					<div class="flex gap-2">
+					<div
+						class="grid gap-x-8"
+						:style="{ gridTemplateColumns: `repeat(${sec.columns.length}, minmax(0,1fr))` }"
+					>
 						<div
 							v-for="col in sec.columns"
 							:key="columnKey(col)"
-							class="flex min-w-0 flex-1 flex-col gap-1.5 rounded-4 border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
+							class="relative flex min-w-0 flex-col"
 						>
 							<Draggable
 								:list="col.items"
 								group="wf-fields"
 								item-key="fieldname"
-								handle=".drag-handle"
-								class="flex min-h-[34px] min-w-0 flex-1 flex-col gap-1.5"
-								ghost-class="opacity-40"
+								handle=".editor-field"
+								class="flex min-w-0 flex-1 flex-col gap-6 pb-4"
+								:class="{ 'min-h-[60px]': !col.items.length }"
+								:data-editor-empty="!col.items.length || null"
+								ghost-class="editor-drop-line"
 								:force-fallback="true"
 								:fallback-on-body="false"
 								fallback-class="wf-drag-fallback"
 								:animation="120"
-								@start="dragging = true"
+								@start="drag.startField"
 								@end="onSortEnd"
 							>
 								<template #item="{ element: f }">
-									<FieldCard
+									<EditorField
 										:field="f"
-										:expanded="expanded === f.fieldname"
-										:locked="isMandatory(f.fieldname)"
+										:selected="selection.field === f"
+										:locked="draft.isMandatory(f.fieldname)"
 										:guest-select-missing="
 											f.fieldtype === 'Link' && guestSelect[f.options] === false
 										"
-										:granting="!!grantingSelect[f.options]"
-										:grant-refused="!!grantRefused[f.options]"
-										@open="open(f)"
-										@toggle="toggle(f)"
-										@remove="removeField(f)"
-										@update="(patch) => updateField(f, patch)"
-										@grant-guest="grantGuestSelect(f.options)"
+										@click.stop="selection.selectField(f)"
 									/>
 								</template>
 							</Draggable>
-							<Combobox
-								:options="availableFieldOptions"
-								:model-value="null"
-								:placeholder="__('Search fields…')"
-								@update:selected-option="(e) => addFieldToColumn(col, e)"
+							<div
+								v-if="!col.items.length"
+								class="pointer-events-none absolute inset-x-0 top-0 flex h-[60px] items-center justify-center rounded-4 border border-dashed border-outline-gray-2 text-base text-ink-gray-4"
 							>
-								<template #trigger="{ open, setOpen }">
-									<Button
-										class="!h-8 w-full !bg-surface-elevation-2"
-										variant="outline"
-										:label="__('Add Field')"
-										icon-left="lucide-plus"
-										@click="openFieldPicker(open, setOpen)"
-									/>
-								</template>
-							</Combobox>
+								{{ __("Drop a field here") }}
+							</div>
 						</div>
 					</div>
+					<Combobox
+						:options="draft.availableFieldOptions"
+						:model-value="null"
+						:placeholder="__('Search fields…')"
+						@update:selected-option="(o) => addToSection(sec, o)"
+					>
+						<template #trigger="{ open, setOpen }">
+							<div class="flex w-fit" data-editor-add-field>
+								<Button
+									variant="subtle"
+									size="sm"
+									icon-left="lucide-plus"
+									:class="{ '!bg-surface-gray-3': open }"
+									:label="__('Add field')"
+									@click.stop="setOpen(!open)"
+								/>
+							</div>
+						</template>
+					</Combobox>
 				</div>
-			</template>
-		</Draggable>
+			</div>
+		</template>
+	</Draggable>
 
+	<div class="mt-10 flex border-t border-outline-gray-1 pt-4" data-editor-add-section>
 		<Button
-			class="!h-8 w-full"
 			variant="subtle"
-			:label="__('Add Section')"
+			size="sm"
 			icon-left="lucide-plus"
-			@click="addBreak('Section Break')"
+			:label="__('Add section')"
+			@click.stop="selection.selectSection(draft.addSection())"
+		/>
+	</div>
+	<div class="mt-8 flex justify-end">
+		<Button
+			variant="solid"
+			size="md"
+			class="pointer-events-none"
+			tabindex="-1"
+			:label="draft.form.submit_button_label || __('Submit')"
 		/>
 	</div>
 </template>
 
 <script setup>
-import { Button, Combobox, Dropdown } from "frappe-ui";
+import { Button, Combobox } from "frappe-ui";
 import { __ } from "frappe/i18n";
 import Draggable from "vuedraggable";
-import { ref } from "vue";
-import FieldCard from "../FieldCard.vue";
-import { MAX_COLUMNS } from "./formModel";
+import EditorField from "./EditorField.vue";
 
-const props = defineProps({ draft: { type: Object, required: true } });
-const {
-	sections,
-	expanded,
-	hiddenFields,
-	availableFieldOptions,
-	linkMeta,
-	isMandatory,
-	markDirty,
-	syncFromModel,
-	updateField,
-	removeField,
-	removeBreak,
-	addBreak,
-	toggle,
-	open,
-	addFieldToColumn,
-	addColumn,
-	removeLastColumn,
-} = props.draft;
-const { guestSelect, grantingSelect, grantRefused, grantGuestSelect } = linkMeta;
+const props = defineProps({
+	draft: { type: Object, required: true },
+	selection: { type: Object, required: true },
+	drag: { type: Object, required: true },
+});
+const guestSelect = props.draft.linkMeta.guestSelect;
 
-const dragging = ref(false);
-
-// vuedraggable item-keys
 const sectionKey = (sec) => sec.secField?.fieldname || "sec";
 const columnKey = (col) => col.colField?.fieldname || "col0";
 
 function onSortEnd() {
-	dragging.value = false;
-	syncFromModel();
+	const { cancelled, removed } = props.drag.end();
+	if (cancelled) return;
+	if (removed) {
+		props.draft.sections.forEach((sec) =>
+			sec.columns.forEach((c) => {
+				const i = c.items.indexOf(removed);
+				if (i > -1) c.items.splice(i, 1);
+			})
+		);
+	}
+	props.draft.syncFromModel();
+	if (!props.draft.form.fields.includes(props.selection.field)) props.selection.clear();
 }
 
-// field counts shown in section headers
-function sectionFieldCount(sec) {
-	return sec.columns.reduce((n, c) => n + c.items.length, 0);
-}
-
-// opening the Add Field picker collapses any open field editor
-function openFieldPicker(isOpen, setOpen) {
-	if (!isOpen) expanded.value = null;
-	setOpen(!isOpen);
-}
-
-// ⋯ menu for a section: rename / remove + column ops
-function sectionMenu(sec) {
-	return [
-		{
-			group: __("Section"),
-			options: [
-				{
-					label: __("Rename"),
-					icon: "lucide-edit",
-					onClick: () => (sec.editingLabel = true),
-				},
-				{
-					label: __("Remove Section"),
-					icon: "lucide-trash-2",
-					onClick: () => removeBreak(sec.secField),
-				},
-			],
-		},
-		{ group: __("Column"), options: columnOps(sec.columns) },
-	];
-}
-
-function columnOps(cols) {
-	return [
-		{
-			label: __("Add Column"),
-			icon: "lucide-columns",
-			onClick: () => addColumn(cols),
-			condition: () => cols.length < MAX_COLUMNS,
-		},
-		{
-			label: __("Remove Last Column"),
-			icon: "lucide-trash-2",
-			onClick: () => removeLastColumn(cols),
-			condition: () => cols.length > 1,
-		},
-	];
+// a field enters the form after the selected one in that section, else in its shortest column
+function addToSection(sec, option) {
+	const f = props.draft.addFieldToSection(sec, option, props.selection.field);
+	if (f) props.selection.selectField(f);
 }
 </script>
 
 <style>
-/* Hide Sortable's floating drag clone so reordering stays contained to the
-   fields list — only the in-list placeholder moves, never a copy that can
-   drift outside the section/modal. */
+/* Sortable's floating clone stays hidden: DragLayer draws the preview card instead. */
 .wf-drag-fallback {
 	opacity: 0 !important;
+}
+/* Sortable's ghost is drawn as a 2px line centred in the 24px field gap. */
+.editor-drop-line {
+	height: 2px !important;
+	min-height: 0 !important;
+	margin: -13px 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 1px;
+	overflow: hidden;
+	box-shadow: none !important;
+	background-color: var(--outline-gray-4) !important;
+	opacity: 1 !important;
+}
+[data-editor-empty] > .editor-drop-line {
+	margin: 29px 0 0 !important;
+}
+[data-editor-hidden-list] > .editor-drop-line {
+	margin: -7px 0 !important;
+}
+.editor-drop-line > * {
+	display: none !important;
 }
 </style>
