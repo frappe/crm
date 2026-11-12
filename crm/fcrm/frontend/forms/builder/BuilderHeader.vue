@@ -102,7 +102,7 @@ const publishMenu = computed(() => {
 		const label = dirty ? __("Save and publish") : __("Publish");
 		return [{ label, icon: "lucide-globe", onClick: publish }];
 	}
-	const url = `${window.location.origin}/crm-form/${form.route}`;
+	const url = `${window.location.origin}/crm-form/${props.draft.savedRoute}`;
 	return [
 		{
 			group: __("Link"),

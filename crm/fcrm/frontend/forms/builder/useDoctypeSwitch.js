@@ -7,13 +7,12 @@ export const targetOptions = [
 	{ label: "Lead", value: "CRM Lead" },
 	{ label: "Deal", value: "CRM Deal" },
 ];
-const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt;
+export const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt;
 
 // Changing the form's target doctype: fetch the new field catalog, confirm what
 // would be lost, then rebuild the form and its hidden fields for the new doctype.
 export function useDoctypeSwitch({
 	form,
-	expanded,
 	hiddenFields,
 	availableFields,
 	linkMeta,
@@ -75,7 +74,6 @@ export function useDoctypeSwitch({
 
 	async function commitDoctype(newDt, valid, seed) {
 		form.document_type = newDt;
-		expanded.value = null;
 		await availableFields.reload();
 		const before = form.fields.length;
 		form.fields = form.fields.filter(

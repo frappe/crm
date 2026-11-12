@@ -8,7 +8,7 @@
 				</p>
 			</div>
 			<FormControl
-				v-model="doctypeModel"
+				v-model="draft.doctypeModel"
 				type="select"
 				:label="__('Maps to')"
 				:options="targetOptions"
@@ -23,7 +23,7 @@
 					<input
 						v-model="form.route"
 						class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
-						@input="(routeEdited = true), markDirty()"
+						@input="(draft.routeEdited = true), markDirty()"
 						@blur="form.route = slugify(form.route)"
 					/>
 				</div>
@@ -66,7 +66,7 @@ import { __ } from "frappe/i18n";
 import { slugify } from "./formModel";
 
 const props = defineProps({ draft: { type: Object, required: true } });
-const { form, routeEdited, doctypeModel, targetOptions, markDirty } = props.draft;
+const { form, targetOptions, markDirty } = props.draft;
 
 const afterSubmitOptions = [
 	{ value: "message", label: __("Show a message") },
