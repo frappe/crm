@@ -140,6 +140,9 @@ class TestTeamOverview(TeamWidgetTestCase):
 	def overview(self, user=MANAGER, period=None):
 		return {row["user"]: row for row in self.team("team_overview", user, period=period)["rows"]}
 
+	def test_administrator_is_not_a_member(self):
+		self.assertNotIn("Administrator", self.overview(BOSS))
+
 	def test_counts_per_member_match_their_own_widgets(self):
 		self.lead(awaiting_reply_since=now_datetime())
 		idle = self.lead()

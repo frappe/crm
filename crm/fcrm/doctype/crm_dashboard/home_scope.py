@@ -46,6 +46,7 @@ class Team:
 
 
 def sales_users() -> list:
+	"""Administrator holds every role but is not a salesperson."""
 	user = frappe.qb.DocType("User")
 	has_role = frappe.qb.DocType("Has Role")
 	return (
@@ -54,6 +55,6 @@ def sales_users() -> list:
 		.on((has_role.parent == user.name) & (has_role.parenttype == "User"))
 		.select(user.name)
 		.distinct()
-		.where((user.enabled == 1) & has_role.role.isin(SALES_ROLES))
+		.where((user.enabled == 1) & (user.name != "Administrator") & has_role.role.isin(SALES_ROLES))
 		.run(pluck=True)
 	)

@@ -39,8 +39,7 @@ CHANNEL_TABS = {"email": "emails", "whatsapp": "whatsapp"}
 def send_morning_digests():
 	if not frappe.db.get_single_value("FCRM Settings", "enable_morning_digest"):
 		return
-	users = [user for user in sales_users() if user != "Administrator"]
-	for batch in create_batch(users, BATCH_SIZE):
+	for batch in create_batch(sales_users(), BATCH_SIZE):
 		frappe.enqueue(send_digests, queue="long", users=batch, now=frappe.flags.in_test)
 
 
