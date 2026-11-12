@@ -59,7 +59,6 @@
 								:fallback-on-body="false"
 								fallback-class="wf-drag-fallback"
 								:animation="120"
-								:move="canDropOnForm"
 								@start="drag.startField"
 								@end="onSortEnd"
 							>
@@ -140,7 +139,6 @@ const props = defineProps({
 });
 const guestSelect = props.draft.linkMeta.guestSelect;
 
-// vuedraggable item-keys
 const sectionKey = (sec) => sec.secField?.fieldname || "sec";
 const columnKey = (col) => col.colField?.fieldname || "col0";
 
@@ -154,21 +152,15 @@ function onSortEnd() {
 				if (i > -1) c.items.splice(i, 1);
 			})
 		);
-		if (props.selection.field === removed) props.selection.clear();
 	}
 	props.draft.syncFromModel();
+	if (!props.draft.form.fields.includes(props.selection.field)) props.selection.clear();
 }
 
 // a field enters the form after the selected one in that section, else in its shortest column
 function addToSection(sec, option) {
 	const f = props.draft.addFieldToSection(sec, option, props.selection.field);
 	if (f) props.selection.selectField(f);
-}
-
-// system-managed hidden rows are not form fields: the server would reject them on the form
-function canDropOnForm(evt) {
-	const el = evt.draggedContext.element;
-	return !props.draft.hiddenFields.includes(el) || props.draft.canAddToForm(el);
 }
 </script>
 

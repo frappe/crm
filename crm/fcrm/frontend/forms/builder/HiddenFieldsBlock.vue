@@ -16,6 +16,7 @@
 			:group="{ name: 'wf-fields', pull: 'clone', put: true }"
 			:clone="draft.cloneHidden"
 			:sort="false"
+			:move="canLeaveHidden"
 			item-key="fieldname"
 			filter="input, select, textarea, button"
 			:prevent-on-filter="false"
@@ -110,6 +111,10 @@ const props = defineProps({
 	drag: { type: Object, required: true },
 });
 defineEmits(["clone-end"]);
+
+// Sortable asks the list a drag started in, so this list guards drops onto the form
+const canLeaveHidden = (evt) =>
+	evt.to === evt.from || props.draft.canAddToForm(evt.draggedContext.element);
 
 const isSelect = (h) => h.fieldtype === "Select" || h.fieldtype === "Link";
 

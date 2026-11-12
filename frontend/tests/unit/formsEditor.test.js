@@ -98,12 +98,36 @@ describe('the hidden block', () => {
     expect(draft.isMissingRow(draft.hiddenRows.value[0])).toBe(false)
   })
 
-  it('treats an empty hidden value as missing, until the user is entering one', async () => {
-    const draft = await loadDraft({ hidden_fields: [hiddenEntry('source')] })
+  it('shows an empty required hidden row as missing, until the user is entering a value', async () => {
+    const draft = await loadDraft({
+      fields: [SERVER_FORM.fields[1]],
+      hidden_fields: [hiddenEntry('first_name')],
+    })
     const row = draft.hiddenRows.value[0]
     expect(draft.isMissingRow(row)).toBe(true)
     draft.setHiddenValue(row)
     expect(draft.isMissingRow(row)).toBe(false)
+  })
+
+  it('keeps the value control for an empty hidden row the record does not require', async () => {
+    const draft = await loadDraft({ hidden_fields: [hiddenEntry('source')] })
+    expect(draft.isMissingRow(draft.hiddenRows.value[0])).toBe(false)
+  })
+
+  it('has no missing row for a required field that has a default', async () => {
+    const catalog = CATALOG.map((f) =>
+      f.fieldname === 'first_name' ? { ...f, default: 'Guest' } : f,
+    )
+    api.call.mockImplementation(async (method) =>
+      method === 'get_form_fields'
+        ? catalog
+        : method === 'get_form_config'
+          ? { ...SERVER_FORM, fields: [SERVER_FORM.fields[1]] }
+          : null,
+    )
+    const draft = useFormDraft({ name: 'contact-us' })
+    await flushPromises()
+    expect(draft.hiddenRows.value.filter((h) => h.missing)).toHaveLength(0)
   })
 
   it('"Add to form" puts the field at the end of the last section and drops it from hidden', async () => {
@@ -201,6 +225,22 @@ describe('editing the form', () => {
       expect.stringContaining('First Name'),
     )
   })
+
+  it('publish is refused while a hidden row has no value, and the required row turns red again', async () => {
+    const draft = await loadDraft({
+      fields: [SERVER_FORM.fields[1]],
+      hidden_fields: [hiddenEntry('first_name'), hiddenEntry('source')],
+    })
+    const [first, source] = draft.hiddenRows.value
+    draft.setHiddenValue(first)
+    await draft.publish()
+    expect(calls('save_form')).toHaveLength(0)
+    expect(api.toast.error).toHaveBeenCalledWith(
+      expect.stringContaining('First Name, Source'),
+    )
+    expect(draft.isMissingRow(first)).toBe(true)
+    expect(draft.isMissingRow(source)).toBe(false)
+  })
 })
 
 describe('useEditorSelection', () => {
@@ -283,6 +323,16 @@ describe('useEditorDrag', () => {
     expect(names(column().items)).toEqual(['first_name', 'email'])
     expect(names(draft.hiddenFields)).toEqual(['source'])
     expect(drag.active()).toBe(false)
+  })
+
+  it('Escape leaves a clean draft clean', () => {
+    expect(draft.dirty).toBe(false)
+    startOn(column().items[1])
+    draft.hiddenFields.push(hiddenEntry('email'))
+    draft.markDirty()
+    drag.cancel({ preventDefault: vi.fn() })
+    drag.end()
+    expect(draft.dirty).toBe(false)
   })
 
   it('a release over the bin reports the field and never leaves it hidden', () => {

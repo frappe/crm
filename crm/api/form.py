@@ -12,6 +12,7 @@ doctype; this module only:
 """
 
 import json
+from datetime import date, datetime, time
 
 import frappe
 from frappe import _
@@ -423,9 +424,8 @@ def _validated_visible_fields(document_type: str, fields: list[dict]) -> list[di
 
 
 def _validated_hidden_fields(document_type: str, hidden: list[dict]) -> list[dict]:
-	"""Same gate for the hidden section: `_apply_hidden_defaults` writes these onto
-	every submission. Any field the picker offers may be hidden, and so may the
-	system-managed mandatory ones."""
+	"""Any field the picker offers, or a system-managed mandatory one. A value must
+	fit its fieldtype: `_apply_hidden_defaults` writes it onto every submission."""
 	catalog = {f["fieldname"]: f for f in _mappable_fields(document_type)}
 	catalog.update({h["fieldname"]: h for h in _seed_hidden_fields(document_type)})
 	rows = []
@@ -434,13 +434,45 @@ def _validated_hidden_fields(document_type: str, hidden: list[dict]) -> list[dic
 		allowed = catalog.get(fieldname)
 		if not allowed:
 			frappe.throw(_("{0} can't be set as a hidden field").format(fieldname or _("Unnamed field")))
-		rows.append({**h, "fieldtype": allowed["fieldtype"], "options": allowed["options"] or ""})
+		row = {**h, "fieldtype": allowed["fieldtype"], "options": allowed["options"] or ""}
+		if not _hidden_value_fits(row):
+			frappe.throw(
+				_("{0} needs a valid {1} value").format(allowed.get("label") or fieldname, row["fieldtype"])
+			)
+		rows.append(row)
 	return rows
 
 
+def _hidden_value_fits(h: dict) -> bool:
+	value = str(h.get("default") or "").strip()
+	fieldtype = h["fieldtype"]
+	if not value:
+		return True
+	if fieldtype == "Select":
+		return value in h["options"].split("\n")
+	if fieldtype == "Check":
+		return value in ("0", "1")
+	parse = {
+		"Int": int,
+		"Float": float,
+		"Currency": float,
+		"Percent": float,
+		"Date": date.fromisoformat,
+		"Datetime": datetime.fromisoformat,
+		"Time": time.fromisoformat,
+	}.get(fieldtype)
+	if not parse:
+		return True
+	try:
+		parse(value)
+	except ValueError:
+		return False
+	return True
+
+
 def _assert_required_fields_covered(document_type: str, fields: list[dict], hidden: list[dict]):
-	"""Publishing requires every field the record needs to be asked for on the form
-	or given a hidden value; otherwise each submission would fail to create it."""
+	"""Each field the record requires, and has no default for, must be on the form or
+	hidden with a value; otherwise every submission fails to create the record."""
 	meta = frappe.get_meta(document_type)
 	asked = {f.get("fieldname") for f in fields if f.get("fieldtype") not in LAYOUT_BREAKS}
 	valued = {h["fieldname"] for h in hidden if str(h.get("default") or "").strip()}
@@ -448,6 +480,7 @@ def _assert_required_fields_covered(document_type: str, fields: list[dict], hidd
 		df.label or df.fieldname
 		for df in meta.fields
 		if df.reqd
+		and not df.default
 		and df.fieldtype not in frappe.model.no_value_fields
 		and df.fieldname not in asked | valued
 	]

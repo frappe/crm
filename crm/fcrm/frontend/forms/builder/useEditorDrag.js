@@ -1,12 +1,11 @@
 import { ref } from "vue";
 import { fieldTypeIcon } from "../fieldTypeIcon";
 
-// One drag at a time: a canvas field, a row of the panel's list, or a hidden row. It snapshots
-// every list at the start, so Escape can put them back, and asks the drag layer whether the
-// pointer let go over the bin. `layer` is a template ref to DragLayer.vue.
+// One drag at a time (canvas field, panel row or hidden row). It snapshots every list at the start,
+// so Escape can put them back. `layer` is a template ref to DragLayer.vue (it knows the bin).
 export function useEditorDrag({ draft, layer }) {
 	const dragging = ref(false);
-	let current = null; // { kind, element, columns, hidden, cancelled }
+	let current = null; // { kind, element, columns, hidden, dirty, cancelled }
 
 	function start(kind, evt) {
 		const el = evt?.item?.__draggable_context?.element;
@@ -17,6 +16,7 @@ export function useEditorDrag({ draft, layer }) {
 			cancelled: false,
 			columns: draft.sections.map((sec) => sec.columns.map((c) => [...c.items])),
 			hidden: draft.hiddenFields.map((h) => ({ ...h })),
+			dirty: draft.dirty,
 		};
 		if (el) {
 			const icon = el.icon || fieldTypeIcon(el.af || el);
@@ -25,7 +25,6 @@ export function useEditorDrag({ draft, layer }) {
 		dragging.value = true;
 	}
 
-	// returns what the drop did: { cancelled } after Escape, { removed: field } after a release over the bin
 	function end() {
 		dragging.value = false;
 		const overBin = layer.value?.end();
@@ -39,13 +38,14 @@ export function useEditorDrag({ draft, layer }) {
 		return result;
 	}
 
-	function restore({ columns, hidden }) {
+	function restore({ columns, hidden, dirty }) {
 		draft.sections.forEach((sec, i) =>
 			sec.columns.forEach(
 				(c, j) => columns[i]?.[j] && c.items.splice(0, c.items.length, ...columns[i][j])
 			)
 		);
 		draft.hiddenFields = hidden;
+		draft.dirty = dirty;
 	}
 
 	// Sortable ends its drag on the document's pointer/mouse up

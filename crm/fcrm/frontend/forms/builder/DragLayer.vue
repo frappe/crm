@@ -1,6 +1,5 @@
-<!-- What the hand carries during a drag, plus the bin. It keeps the pointer state to itself, so a
-     pointer move never re-renders the editor (a re-render mid-drag makes vuedraggable patch DOM that
-     Sortable has moved). Place it as the last child of the canvas scroll container. -->
+<!-- The drag preview card and the bin. Pointer state stays in here: a re-render of the editor
+     mid-drag makes vuedraggable patch DOM that Sortable has moved. -->
 <template>
 	<RemoveBin ref="bin" :visible="withBin" :over="overBin" />
 	<!-- the card under the pointer; Sortable's own clone stays hidden. Over the bin it lifts above the

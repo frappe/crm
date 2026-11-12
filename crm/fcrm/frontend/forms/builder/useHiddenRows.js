@@ -21,7 +21,7 @@ export function useHiddenRows({
 		const onForm = new Set(form.fields.map((f) => f.fieldname));
 		const listed = new Set(hiddenFields.value.map((h) => h.fieldname));
 		const missing = (availableFields.data || [])
-			.filter((f) => f.reqd && !onForm.has(f.fieldname) && !listed.has(f.fieldname))
+			.filter((f) => f.reqd && !f.default && !onForm.has(f.fieldname) && !listed.has(f.fieldname))
 			.map((f) => ({ ...hiddenEntry(f), missing: true }));
 		return [...hiddenFields.value, ...missing];
 	});
@@ -36,8 +36,16 @@ export function useHiddenRows({
 		};
 	}
 
+	const isBlank = (h) => !String(h.default || "").trim();
+	const isRequired = (h) => {
+		const f = catalogField(h.fieldname);
+		return !f || (!!f.reqd && !f.default); // not in the catalog: a system-managed mandatory field
+	};
 	const isMissingRow = (h) =>
-		!!h.missing || (!String(h.default || "").trim() && !editingHidden.has(h.fieldname));
+		!!h.missing || (isBlank(h) && isRequired(h) && !editingHidden.has(h.fieldname));
+
+	const unpublishableRows = () => hiddenRows.value.filter((h) => h.missing || isBlank(h));
+	const stopEditing = () => editingHidden.clear();
 
 	// system-managed fields (Status, …) are hidden-only: not in the catalog, so never put on the form
 	const canAddToForm = (h) => !!catalogField(h.fieldname);
@@ -94,6 +102,8 @@ export function useHiddenRows({
 		hiddenRows,
 		catalogField,
 		isMissingRow,
+		unpublishableRows,
+		stopEditing,
 		canAddToForm,
 		cloneHidden,
 		hiddenPickerOptions,

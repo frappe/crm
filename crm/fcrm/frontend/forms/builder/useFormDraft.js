@@ -236,8 +236,9 @@ export function useFormDraft({ name, onSaved }) {
 		// drafts auto-save freely; only a published form requires every hidden field
 		// to carry a default (an empty one would break record creation)
 		if (form.published) {
-			const missing = hidden.hiddenRows.value.filter(hidden.isMissingRow);
+			const missing = hidden.unpublishableRows();
 			if (missing.length) {
+				hidden.stopEditing(); // the refused required rows turn red again
 				if (!silent)
 					toast.error(
 						__("Give a value to, or add to the form: {0}", [

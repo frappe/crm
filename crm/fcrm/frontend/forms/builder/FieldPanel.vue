@@ -38,7 +38,6 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
 import PanelAddField from "./PanelAddField.vue";
 import PanelFieldSettings from "./PanelFieldSettings.vue";
 import PanelSectionSettings from "./PanelSectionSettings.vue";

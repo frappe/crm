@@ -45,9 +45,9 @@ const layer = useTemplateRef("layer");
 const drag = reactive(useEditorDrag({ draft: props.draft, layer }));
 const selection = reactive(useEditorSelection({ draft: props.draft, drag }));
 
-// a click on the panel's list adds to the selected section, else to the form's last column
+// a click on the panel's list adds to the form's last column
 function addFromPanel(option) {
-	const col = (selection.section || props.draft.sections.at(-1)).columns.at(-1);
+	const col = props.draft.sections.at(-1).columns.at(-1);
 	const f = props.draft.addFieldToColumn(col, option);
 	requestAnimationFrame(() =>
 		document
