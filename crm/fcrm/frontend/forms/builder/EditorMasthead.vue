@@ -1,10 +1,10 @@
 <template>
 	<!-- form masthead (title + description) — typed right on the canvas -->
-	<div class="mb-5 px-1">
+	<div class="mb-10">
 		<input
 			v-model="form.title"
 			:placeholder="__('Form title')"
-			class="w-full border-0 bg-transparent p-0 text-2xl font-semibold leading-tight text-ink-gray-9 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
+			class="w-full border-0 bg-transparent p-0 text-2xl font-semibold text-ink-gray-9 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
 			@input="onTitleInput"
 		/>
 		<textarea
@@ -12,10 +12,9 @@
 			v-model="form.description"
 			:placeholder="__('Add a description to help people fill out this form')"
 			rows="1"
-			class="mt-2 w-full resize-none border-0 bg-transparent p-0 text-base leading-relaxed text-ink-gray-6 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
+			class="mt-2 w-full resize-none border-0 bg-transparent p-0 text-base text-ink-gray-6 placeholder:text-ink-gray-4 focus:outline-none focus:ring-0"
 			@input="(e) => (autoGrow(e.target), markDirty())"
 		/>
-		<hr class="mt-5 border-outline-gray-2" />
 	</div>
 </template>
 

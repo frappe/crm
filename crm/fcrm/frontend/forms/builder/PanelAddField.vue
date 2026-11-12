@@ -22,7 +22,7 @@
 			:fallback-on-body="false"
 			fallback-class="wf-drag-fallback"
 			ghost-class="editor-drop-line"
-			@start="$emit('drag-start')"
+			@start="(evt) => $emit('drag-start', evt)"
 			@end="$emit('drag-end')"
 		>
 			<template #item="{ element: o }">
@@ -35,7 +35,7 @@
 					@click="$emit('add', o)"
 				>
 					<template #prefix>
-						<span class="size-4 text-ink-gray-5" :class="fieldTypeIcon(o.af)" aria-hidden="true" />
+						<span class="size-4 text-ink-gray-5" :class="o.icon" aria-hidden="true" />
 					</template>
 					<span class="block truncate text-ink-gray-8">{{ o.label }}</span>
 				</ItemListRow>
@@ -52,12 +52,11 @@ import { computed, ref } from "vue";
 import { ItemListRow, TextInput } from "frappe-ui";
 import { __ } from "frappe/i18n";
 import Draggable from "vuedraggable";
-import { fieldTypeIcon } from "../fieldTypeIcon";
 import { newFieldFromCatalog } from "./formModel";
 import PanelSection from "./PanelSection.vue";
 
 const props = defineProps({
-	options: { type: Array, default: () => [] }, // { label, value, af } of fields not on the form
+	options: { type: Array, default: () => [] }, // { label, value, icon, af } of fields not on the form, sorted
 	doctypeLabel: { type: String, default: "" },
 });
 defineEmits(["add", "drag-start", "drag-end"]);
@@ -65,8 +64,7 @@ defineEmits(["add", "drag-start", "drag-end"]);
 const query = ref("");
 const rows = computed(() => {
 	const q = query.value.trim().toLowerCase();
-	const list = q ? props.options.filter((o) => o.label.toLowerCase().includes(q)) : props.options;
-	return [...list].sort((a, b) => a.label.localeCompare(b.label));
+	return q ? props.options.filter((o) => o.label.toLowerCase().includes(q)) : props.options;
 });
 
 // a drop onto the form receives a new field object, never the palette row

@@ -2,6 +2,7 @@ import { toast } from "frappe-ui";
 import { ref, reactive, computed } from "vue";
 import { __ } from "frappe/i18n";
 import { call, errorText } from "../formsApi";
+import { fieldTypeIcon } from "../fieldTypeIcon";
 import {
 	fieldsFromServer,
 	afterSubmitOf,
@@ -68,7 +69,8 @@ export function useFormDraft({ name, onSaved }) {
 		const used = new Set(form.fields.map((f) => f.fieldname));
 		return (availableFields.data || [])
 			.filter((f) => !used.has(f.fieldname))
-			.map((af) => ({ label: af.label, value: af.fieldname, af }));
+			.map((af) => ({ label: af.label, value: af.fieldname, icon: fieldTypeIcon(af), af }))
+			.sort((a, b) => a.label.localeCompare(b.label));
 	});
 
 	// fieldnames the target doctype marks mandatory (from the field catalog)

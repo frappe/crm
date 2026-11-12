@@ -31,7 +31,7 @@
 			:options="draft.availableFieldOptions"
 			:doctype-label="draft.doctypeLabel"
 			@add="(o) => $emit('add', o)"
-			@drag-start="$emit('drag-start')"
+			@drag-start="(evt) => $emit('drag-start', evt)"
 			@drag-end="$emit('drag-end')"
 		/>
 	</aside>

@@ -171,3 +171,32 @@ function canDropOnForm(evt) {
 	return !props.draft.hiddenFields.includes(el) || props.draft.canAddToForm(el);
 }
 </script>
+
+<style>
+/* Sortable's floating clone stays hidden: DragLayer draws the preview card instead. */
+.wf-drag-fallback {
+	opacity: 0 !important;
+}
+/* Sortable's ghost is drawn as a 2px line centred in the 24px field gap. */
+.editor-drop-line {
+	height: 2px !important;
+	min-height: 0 !important;
+	margin: -13px 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+	border-radius: 1px;
+	overflow: hidden;
+	box-shadow: none !important;
+	background-color: var(--outline-gray-4) !important;
+	opacity: 1 !important;
+}
+[data-editor-empty] > .editor-drop-line {
+	margin: 29px 0 0 !important;
+}
+[data-editor-hidden-list] > .editor-drop-line {
+	margin: -7px 0 !important;
+}
+.editor-drop-line > * {
+	display: none !important;
+}
+</style>
