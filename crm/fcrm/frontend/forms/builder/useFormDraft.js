@@ -119,17 +119,24 @@ export function useFormDraft({ name, onSaved }) {
 		form.published = 1;
 		const ok = await save();
 		if (!ok) form.published = 0;
-		else toast.success(__("Form published"));
+		else {
+			routeEdited.value = true; // the link is live: a later rename must not move it
+			toast.success(__("Form published"));
+		}
 	}
 
 	// header Unpublish takes the form down at once; unsaved edits stay unsaved
 	async function unpublish() {
+		if (saving.value) return;
+		saving.value = true; // holds off a save, so the two requests cannot cross
 		try {
 			await call("set_published", { name: form.name, published: 0 });
 			form.published = 0;
 			toast.success(__("Form unpublished"));
 		} catch (e) {
 			toast.error(errorText(e, __("Could not unpublish the form")));
+		} finally {
+			saving.value = false;
 		}
 	}
 

@@ -57,5 +57,5 @@ const builder = useTemplateRef("builder");
 const route = useRoute();
 const activeName = computed(() => [route.query.form].flat()[0] || null);
 const tab = ref("editor");
-watch(activeName, () => (tab.value = "editor"));
+watch(activeName, () => (tab.value = "editor"), { flush: "sync" });
 </script>

@@ -146,4 +146,24 @@ describe('useFormDraft', () => {
     await draft.unpublish()
     expect(draft.form.published).toBe(1)
   })
+
+  it('unpublish waits while a save is in flight', async () => {
+    const { draft } = await loadDraft()
+    draft.markDirty()
+    api.call.mockImplementation(() => new Promise(() => {}))
+    draft.saveNow()
+    await draft.unpublish()
+    expect(calls('set_published')).toHaveLength(0)
+  })
+
+  it('a published form keeps its route when the title changes', async () => {
+    const { draft } = await loadDraft({ route: 'untitled-form' })
+    await draft.publish()
+    draft.form.title = 'Contact sales'
+    draft.onTitleInput()
+    await draft.unpublish()
+    draft.form.title = 'Contact us again'
+    draft.onTitleInput()
+    expect(draft.form.route).toBe('contact-us')
+  })
 })

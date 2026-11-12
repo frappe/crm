@@ -6,9 +6,11 @@
 				class="-mx-3 flex h-12 items-center justify-between gap-3 border-b px-3 sm:-mx-5 sm:px-5"
 			>
 				<div class="flex min-w-0 flex-1 items-center gap-2">
-					<Breadcrumbs class="-ml-0.5 shrink-0" :items="crumbs" />
+					<Breadcrumbs class="-ml-0.5 min-w-0" :items="crumbs" />
 					<Dropdown v-if="ready" :options="publishMenu" side="bottom" align="start">
 						<button
+							type="button"
+							:aria-label="__('Publish status: {0}', [published ? __('Published') : __('Draft')])"
 							class="flex shrink-0 items-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-3"
 						>
 							<Badge
