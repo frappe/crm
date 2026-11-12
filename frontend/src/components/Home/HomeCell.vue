@@ -26,7 +26,7 @@
     :row="row"
     :item="label"
     :align="column.align"
-    class="overflow-hidden"
+    class="min-w-0"
   >
     <template #prefix>
       <div v-if="column.type === 'status'" class="shrink-0">
