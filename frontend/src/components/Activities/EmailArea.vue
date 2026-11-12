@@ -1,5 +1,5 @@
 <template>
-  <EmailItem :email="email">
+  <EmailItem :email="email" show-subject>
     <template #actions>
       <Badge
         v-if="activity.communication_type == 'Automated Message'"
