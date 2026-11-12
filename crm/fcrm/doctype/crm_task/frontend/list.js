@@ -8,8 +8,8 @@ export default {
 		{ fieldname: "assigned_to" },
 		{ fieldname: "modified" },
 	],
-	cells: {
-		status: {
+	onRefresh(page) {
+		page.columns.update("status", {
 			icons: {
 				Backlog: "lucide-circle-dashed",
 				Todo: "lucide-circle",
@@ -17,8 +17,8 @@ export default {
 				Done: "lucide-circle-check",
 				Canceled: "lucide-circle-x",
 			},
-		},
-		priority: { badge: { High: "red", Medium: "orange", Low: "gray" } },
-		due_date: { icon: "lucide-calendar", format: "D MMM, hh:mm a" },
+		});
+		page.columns.update("priority", { badge: { High: "red", Medium: "orange", Low: "gray" } });
+		page.columns.update("due_date", { icon: "lucide-calendar", format: "D MMM, hh:mm a" });
 	},
 };
