@@ -424,16 +424,39 @@ def _validated_visible_fields(document_type: str, fields: list[dict]) -> list[di
 
 def _validated_hidden_fields(document_type: str, hidden: list[dict]) -> list[dict]:
 	"""Same gate for the hidden section: `_apply_hidden_defaults` writes these onto
-	every submission."""
-	catalog = {h["fieldname"]: h for h in _seed_hidden_fields(document_type)}
+	every submission. Any field the picker offers may be hidden, and so may the
+	system-managed mandatory ones."""
+	catalog = {f["fieldname"]: f for f in _mappable_fields(document_type)}
+	catalog.update({h["fieldname"]: h for h in _seed_hidden_fields(document_type)})
 	rows = []
 	for h in hidden:
 		fieldname = h.get("fieldname")
 		allowed = catalog.get(fieldname)
 		if not allowed:
 			frappe.throw(_("{0} can't be set as a hidden field").format(fieldname or _("Unnamed field")))
-		rows.append({**h, "fieldtype": allowed["fieldtype"], "options": allowed["options"]})
+		rows.append({**h, "fieldtype": allowed["fieldtype"], "options": allowed["options"] or ""})
 	return rows
+
+
+def _assert_required_fields_covered(document_type: str, fields: list[dict], hidden: list[dict]):
+	"""Publishing requires every field the record needs to be asked for on the form
+	or given a hidden value; otherwise each submission would fail to create it."""
+	meta = frappe.get_meta(document_type)
+	asked = {f.get("fieldname") for f in fields if f.get("fieldtype") not in LAYOUT_BREAKS}
+	valued = {h["fieldname"] for h in hidden if str(h.get("default") or "").strip()}
+	missing = [
+		df.label or df.fieldname
+		for df in meta.fields
+		if df.reqd
+		and df.fieldtype not in frappe.model.no_value_fields
+		and df.fieldname not in asked | valued
+	]
+	if missing:
+		frappe.throw(
+			_("Add these fields to the form or give them a hidden value before publishing: {0}").format(
+				", ".join(missing)
+			)
+		)
 
 
 @frappe.whitelist()
@@ -511,6 +534,7 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	hidden = _validated_hidden_fields(form["document_type"], hidden or [])
 	if doc.crm_published:
 		_assert_hidden_defaults_set(hidden)
+		_assert_required_fields_covered(doc.doc_type, [f.as_dict() for f in doc.web_form_fields], hidden)
 	doc.crm_hidden_defaults = json.dumps(hidden) if hidden else ""
 
 	doc.save(ignore_permissions=True)
@@ -532,7 +556,9 @@ def set_published(name: str, published: int) -> None:
 	_check_manager()
 	doc = _get_crm_form(name)
 	if int(published):
-		_assert_hidden_defaults_set(_load_hidden_fields(doc))
+		hidden = _load_hidden_fields(doc)
+		_assert_hidden_defaults_set(hidden)
+		_assert_required_fields_covered(doc.doc_type, [f.as_dict() for f in doc.web_form_fields], hidden)
 	doc.crm_published = 1 if int(published) else 0
 	doc.published = doc.crm_published  # mirror onto native flag (see save_form)
 	doc.save(ignore_permissions=True)
