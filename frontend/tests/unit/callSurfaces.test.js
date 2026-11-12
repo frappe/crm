@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 const { default: fieldActions } = await import(
   '../../../crm/fcrm/frontend/field-actions.js'
@@ -26,25 +26,34 @@ describe('Make a call on a phone field', () => {
 })
 
 describe('Make a call on a list row', () => {
+  const page = { rowActions: { add: vi.fn() }, run: vi.fn() }
+
   it('is a row action on Lead and Deal lists', () => {
-    expect(leadList.rowActions).toEqual([callRowAction])
-    expect(dealList.rowActions).toEqual([callRowAction])
+    leadList.onRefresh(page)
+    dealList.onRefresh(page)
+    expect(page.rowActions.add.mock.calls).toEqual([
+      [callRowAction],
+      [callRowAction],
+    ])
   })
 
   it('reads both number fields into the list query', () => {
-    expect(callRowAction.act).toBe('shell.crm.make_a_call')
     expect(callRowAction.fields).toEqual(['mobile_no', 'phone'])
   })
 
   it('calls the mobile number, else the phone', () => {
-    expect(callRowAction.value({ mobile_no: '+1 1', phone: '+1 2' })).toBe(
-      '+1 1',
-    )
-    expect(callRowAction.value({ mobile_no: '', phone: '+1 2' })).toBe('+1 2')
+    callRowAction.run(page, { mobile_no: '+1 1', phone: '+1 2' })
+    callRowAction.run(page, { mobile_no: '', phone: '+1 2' })
+    expect(page.run.mock.calls).toEqual([
+      ['shell.crm.make_a_call', '+1 1'],
+      ['shell.crm.make_a_call', '+1 2'],
+    ])
   })
 
   it('is drawn only on a row with a number', () => {
-    expect(callRowAction.when({ mobile_no: '', phone: null })).toBe(false)
-    expect(callRowAction.when({ mobile_no: null, phone: '+1 2' })).toBe(true)
+    expect(callRowAction.when(page, { mobile_no: '', phone: null })).toBe(false)
+    expect(callRowAction.when(page, { mobile_no: null, phone: '+1 2' })).toBe(
+      true,
+    )
   })
 })

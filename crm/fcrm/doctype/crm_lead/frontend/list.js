@@ -1,5 +1,7 @@
 import { callRowAction } from "../../../frontend/telephony/callRowAction.js";
 
 export default {
-	rowActions: [callRowAction],
+	onRefresh(page) {
+		page.rowActions.add(callRowAction);
+	},
 };
