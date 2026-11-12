@@ -131,10 +131,7 @@ describe('a saved lead sync source', () => {
 
   it('does not sync when the save is refused', async () => {
     runDocumentMethod.mockClear()
-    const page = fakePage(
-      {},
-      { save: vi.fn().mockResolvedValue(false) },
-    )
+    const page = fakePage({}, { save: vi.fn().mockResolvedValue(false) })
     addSourceActs(page, routeFor)
     await acts(page).sync_now.run(page)
 

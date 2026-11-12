@@ -77,7 +77,10 @@ describe('enrichRecord', () => {
   it('saves the draft before it queues, since the server reads the saved website', async () => {
     const order = []
     const page = fakePage({
-      save: vi.fn(() => { order.push('save'); return Promise.resolve(true) }),
+      save: vi.fn(() => {
+        order.push('save')
+        return Promise.resolve(true)
+      }),
       call: vi.fn(() => order.push('call')),
     })
     await enrichRecord(page, 'Enrichment started.')

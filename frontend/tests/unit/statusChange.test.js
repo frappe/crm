@@ -131,11 +131,10 @@ describe('changeStatus to a Lost status', () => {
   })
 
   it('puts the saved reason back with the status when the save is refused', async () => {
-    const page = fakePage(
-      'Negotiation',
-      () => Promise.resolve(false),
-      { lost_reason: 'Pricing', lost_notes: null },
-    )
+    const page = fakePage('Negotiation', () => Promise.resolve(false), {
+      lost_reason: 'Pricing',
+      lost_notes: null,
+    })
     await changeStatus(page, lost)
     expect(page.doc.status).toBe('Negotiation')
     expect(page.doc.lost_reason).toBeUndefined()

@@ -127,7 +127,10 @@ describe('ReachEditor', () => {
     async (fieldname, value, field) => {
       const order = []
       const page = fakePage({
-        save: vi.fn(() => { order.push('save'); return Promise.resolve(true) }),
+        save: vi.fn(() => {
+          order.push('save')
+          return Promise.resolve(true)
+        }),
         call: vi.fn(() => order.push('call')),
         reload: vi.fn(() => order.push('reload')),
       })
