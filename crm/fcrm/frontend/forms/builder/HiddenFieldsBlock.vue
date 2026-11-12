@@ -51,14 +51,26 @@
 							@click.stop="draft.setHiddenValue(h)"
 						/>
 					</div>
+					<div
+						v-else-if="valueControl(h.fieldtype) === 'checkbox'"
+						class="flex h-7 min-w-0 flex-1 items-center"
+					>
+						<FormControl
+							type="checkbox"
+							size="sm"
+							:model-value="isChecked(h.default)"
+							:data-hidden-value="h.fieldname"
+							@update:model-value="(v) => draft.setHiddenDefault(h, v)"
+						/>
+					</div>
 					<FormControl
 						v-else
 						class="min-w-0 flex-1"
-						:type="isSelect(h) ? 'select' : 'text'"
+						:type="valueControl(h.fieldtype)"
 						size="sm"
 						:model-value="h.default"
-						:options="isSelect(h) ? selectOptions(h) : undefined"
-						:placeholder="isSelect(h) ? __('Select a value') : __('Add a value')"
+						:options="valueControl(h.fieldtype) === 'select' ? selectOptions(h) : undefined"
+						:placeholder="placeholder(h)"
 						:data-hidden-value="h.fieldname"
 						@update:model-value="(v) => draft.setHiddenDefault(h, v)"
 					/>
@@ -104,6 +116,7 @@ import { Button, Combobox, FormControl } from "frappe-ui";
 import { __ } from "frappe/i18n";
 import Draggable from "vuedraggable";
 import { optionList } from "./formModel";
+import { isChecked, valueControl } from "./hiddenValue";
 
 const props = defineProps({
 	draft: { type: Object, required: true },
@@ -116,7 +129,13 @@ defineEmits(["clone-end"]);
 const canLeaveHidden = (evt) =>
 	evt.to === evt.from || props.draft.canAddToForm(evt.draggedContext.element);
 
-const isSelect = (h) => h.fieldtype === "Select" || h.fieldtype === "Link";
+const PLACEHOLDERS = {
+	select: () => __("Select a value"),
+	date: () => __("Select a date"),
+	datetime: () => __("Select a date and time"),
+	time: () => __("Select a time"),
+};
+const placeholder = (h) => PLACEHOLDERS[valueControl(h.fieldtype)]?.() || __("Add a value");
 
 function selectOptions(h) {
 	const options =

@@ -109,6 +109,48 @@ describe('the hidden block', () => {
     expect(draft.isMissingRow(row)).toBe(false)
   })
 
+  it('adds a Check row unticked, so it has a value and publishes', async () => {
+    const draft = await loadDraft()
+    const af = {
+      fieldname: 'unsubscribed',
+      fieldtype: 'Check',
+      label: 'Unsubscribed',
+    }
+    draft.addHiddenField({ value: af.fieldname, af })
+    const row = draft.hiddenRows.value.find(
+      (h) => h.fieldname === 'unsubscribed',
+    )
+    expect(row.default).toBe('0')
+    expect(draft.isMissingRow(row)).toBe(false)
+  })
+
+  it('saves each typed control value in the format the server accepts', async () => {
+    const draft = await loadDraft({
+      hidden_fields: [
+        {
+          fieldname: 'unsubscribed',
+          fieldtype: 'Check',
+          label: 'Unsubscribed',
+          default: '0',
+        },
+        {
+          fieldname: 'no_of_employees',
+          fieldtype: 'Int',
+          label: 'Employees',
+          default: '',
+        },
+        hiddenEntry('annual_revenue'),
+      ],
+    })
+    const [check, int, currency] = draft.hiddenRows.value
+    draft.setHiddenDefault(check, true)
+    draft.setHiddenDefault(int, '12.7')
+    draft.setHiddenDefault(currency, '2500.5')
+    await draft.saveNow()
+    const saved = calls('save_form')[0][1].form.hidden_fields
+    expect(saved.map((h) => h.default)).toEqual(['1', '12', '2500.5'])
+  })
+
   it('keeps the value control for an empty hidden row the record does not require', async () => {
     const draft = await loadDraft({ hidden_fields: [hiddenEntry('source')] })
     expect(draft.isMissingRow(draft.hiddenRows.value[0])).toBe(false)
