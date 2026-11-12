@@ -1,6 +1,6 @@
 import { computed, nextTick, reactive } from "vue";
 import { newFieldFromCatalog } from "./formModel";
-import { initialValue, storedValue } from "./hiddenValue";
+import { initialValue, settledValue, storedValue } from "./hiddenValue";
 
 // The Hidden fields block: the form's hidden entries, plus a "missing" row for every
 // record-required field that is neither on the form nor hidden with a value.
@@ -99,6 +99,13 @@ export function useHiddenRows({
 		markDirty();
 	}
 
+	function settleHiddenDefault(h) {
+		const value = settledValue(h.fieldtype, h.default);
+		if (value !== h.default) setHiddenDefault(h, value);
+	}
+
+	const settleHiddenDefaults = () => hiddenFields.value.forEach(settleHiddenDefault);
+
 	return {
 		hiddenRows,
 		catalogField,
@@ -111,6 +118,8 @@ export function useHiddenRows({
 		addHiddenEntry,
 		setHiddenValue,
 		setHiddenDefault,
+		settleHiddenDefault,
+		settleHiddenDefaults,
 		addHiddenField,
 		onHiddenChange,
 	};

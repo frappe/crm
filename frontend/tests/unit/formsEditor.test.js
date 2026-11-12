@@ -124,6 +124,23 @@ describe('the hidden block', () => {
     expect(draft.isMissingRow(row)).toBe(false)
   })
 
+  it('reads a blank Check row saved earlier as unticked, so it publishes', async () => {
+    const draft = await loadDraft({
+      fields: SERVER_FORM.fields,
+      hidden_fields: [
+        {
+          fieldname: 'unsubscribed',
+          fieldtype: 'Check',
+          label: 'Unsubscribed',
+          default: '',
+        },
+      ],
+    })
+    expect(draft.hiddenRows.value[0].default).toBe('0')
+    await draft.publish()
+    expect(calls('save_form')).toHaveLength(1)
+  })
+
   it('saves each typed control value in the format the server accepts', async () => {
     const draft = await loadDraft({
       hidden_fields: [

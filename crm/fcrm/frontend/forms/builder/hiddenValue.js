@@ -21,11 +21,16 @@ export const initialValue = (fieldtype) => (fieldtype === "Check" ? "0" : "");
 
 export function storedValue(fieldtype, raw) {
 	if (fieldtype === "Check") return raw ? "1" : "0";
-	const value = String(raw ?? "");
-	// a number input still lets "1.5" into an Int, which the server refuses
-	if (fieldtype === "Int" && value.trim() && Number.isFinite(Number(value)))
-		return String(Math.trunc(Number(value)));
-	return value;
+	return String(raw ?? "");
+}
+
+// the value once typing ends: an Int input still takes "1.5", which the server refuses
+export function settledValue(fieldtype, value) {
+	if (fieldtype === "Check") return isChecked(value) ? "1" : "0";
+	const text = String(value ?? "");
+	if (fieldtype === "Int" && text.trim() && Number.isFinite(Number(text)))
+		return String(Math.trunc(Number(text)));
+	return text;
 }
 
 export const isChecked = (value) => String(value ?? "") === "1";

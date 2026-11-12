@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   initialValue,
   isChecked,
+  settledValue,
   storedValue,
   valueControl,
 } from '../../../crm/fcrm/frontend/forms/builder/hiddenValue.js'
@@ -43,11 +44,18 @@ describe('a hidden row stored value', () => {
     expect(isChecked(undefined)).toBe(false)
   })
 
-  it('stores a whole number for an Int, which the server parses with int()', () => {
-    expect(storedValue('Int', '42')).toBe('42')
-    expect(storedValue('Int', '1.5')).toBe('1')
-    expect(storedValue('Int', '1e3')).toBe('1000')
-    expect(storedValue('Int', '')).toBe('')
+  it('keeps an Int as typed, then settles it on a whole number for int()', () => {
+    expect(storedValue('Int', '1.5')).toBe('1.5')
+    expect(settledValue('Int', '42')).toBe('42')
+    expect(settledValue('Int', '1.5')).toBe('1')
+    expect(settledValue('Int', '1e3')).toBe('1000')
+    expect(settledValue('Int', '')).toBe('')
+  })
+
+  it('settles a blank Check (saved before rows had a checkbox) on "0"', () => {
+    expect(settledValue('Check', '')).toBe('0')
+    expect(settledValue('Check', 1)).toBe('1')
+    expect(settledValue('Float', '1.25')).toBe('1.25')
   })
 
   it('keeps a number input value for Float, Currency and Percent', () => {

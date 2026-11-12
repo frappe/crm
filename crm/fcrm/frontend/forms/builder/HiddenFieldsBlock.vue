@@ -73,6 +73,7 @@
 						:placeholder="placeholder(h)"
 						:data-hidden-value="h.fieldname"
 						@update:model-value="(v) => draft.setHiddenDefault(h, v)"
+						@blur="draft.settleHiddenDefault(h)"
 					/>
 					<Button
 						v-if="draft.canAddToForm(h)"
