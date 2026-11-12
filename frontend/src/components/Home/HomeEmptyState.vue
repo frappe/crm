@@ -1,25 +1,25 @@
+<!-- Looks like ListViews/EmptyState, but sits in the page flow so it fits inside a card. -->
 <template>
-  <div
-    class="flex items-center justify-center gap-3"
-    :class="{ 'flex-col text-center': !compact }"
-  >
+  <div class="flex flex-col items-center justify-center gap-3 text-center">
     <span
-      class="flex size-8 shrink-0 items-center justify-center rounded-full bg-surface-gray-2"
-    >
-      <span :class="icon" class="size-4 text-ink-gray-5" />
-    </span>
-    <span
-      class="min-w-0 text-p-base text-ink-gray-6"
-      :class="{ 'max-w-64 text-balance': !compact }"
-    >
-      <slot>{{ text }}</slot>
-    </span>
+      :class="icon"
+      class="size-7.5 shrink-0 text-ink-gray-5"
+      aria-hidden="true"
+    />
+    <div class="flex max-w-72 flex-col items-center gap-1 text-balance">
+      <span v-if="title" class="text-lg-medium text-ink-gray-8">
+        {{ title }}
+      </span>
+      <span v-if="text || $slots.default" class="text-p-base text-ink-gray-6">
+        <slot>{{ text }}</slot>
+      </span>
+    </div>
   </div>
 </template>
 <script setup>
 defineProps({
-  text: { type: String, default: '' },
   icon: { type: String, required: true },
-  compact: { type: Boolean, default: false },
+  title: { type: String, default: '' },
+  text: { type: String, default: '' },
 })
 </script>

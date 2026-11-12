@@ -1,8 +1,7 @@
 <template>
   <HomeEmptyState
     v-if="resource.data && !data.forecasting"
-    compact
-    class="rounded-4 border border-outline-gray-1 bg-surface-elevation-2 px-4 py-3"
+    class="h-full rounded-4 border border-outline-gray-1 bg-surface-elevation-2 p-4"
     icon="lucide-trending-up"
   >
     {{ beforeCta }}

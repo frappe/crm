@@ -31,9 +31,8 @@
     </ol>
     <HomeEmptyState
       v-else-if="!items.length"
-      compact
       icon="lucide-check"
-      class="rounded-4 border border-outline-gray-2 p-4"
+      class="rounded-4 border border-outline-gray-2 p-6"
       :text="__('Nothing needs you today')"
     />
     <ol
