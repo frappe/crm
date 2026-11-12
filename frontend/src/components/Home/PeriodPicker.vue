@@ -2,7 +2,7 @@
   <Dropdown :options="options">
     <button
       type="button"
-      class="flex items-center gap-0.5 text-ink-gray-5 hover:text-ink-gray-7"
+      class="flex items-center gap-0.5 text-ink-gray-7 hover:text-ink-gray-9"
     >
       {{ labels[current] }}
       <span class="lucide-chevron-down size-3" aria-hidden="true" />
