@@ -1,13 +1,5 @@
 // The Task list as CRM v1 draws it: a status icon, a priority badge and a dated calendar cell.
 export default {
-	columns: [
-		{ fieldname: "title" },
-		{ fieldname: "status" },
-		{ fieldname: "priority" },
-		{ fieldname: "due_date" },
-		{ fieldname: "assigned_to" },
-		{ fieldname: "modified" },
-	],
 	onRefresh(page) {
 		page.columns.update("status", {
 			icons: {

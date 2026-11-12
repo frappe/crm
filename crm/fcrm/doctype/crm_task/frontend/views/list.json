@@ -1,0 +1,22 @@
+{
+ "columns": [
+  {
+   "fieldname": "title"
+  },
+  {
+   "fieldname": "status"
+  },
+  {
+   "fieldname": "priority"
+  },
+  {
+   "fieldname": "due_date"
+  },
+  {
+   "fieldname": "assigned_to"
+  },
+  {
+   "fieldname": "modified"
+  }
+ ]
+}
