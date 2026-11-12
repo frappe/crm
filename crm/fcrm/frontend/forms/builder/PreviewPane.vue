@@ -1,5 +1,5 @@
 <template>
-	<div class="max-w-2xl pt-6">
+	<div class="mx-auto max-w-2xl pt-8">
 		<div class="rounded-7 border bg-surface-white p-7">
 			<!-- simulated success screen -->
 			<div v-if="previewSubmitted" class="flex flex-col items-center gap-3 py-10 text-center">
@@ -90,7 +90,6 @@
 						{{ __("Add fields to see them here.") }}
 					</div>
 					<div class="mt-1 flex justify-end gap-2.5">
-						<Button variant="subtle" size="md" :label="__('Discard')" @click="resetPreview" />
 						<Button
 							variant="solid"
 							size="md"

@@ -112,12 +112,25 @@ export function useFormDraft({ name, onSaved }) {
 		markDirty();
 	}
 
-	// header Publish toggle: flip the flag locally (instant, no animation) and mark
-	// dirty — like Assignment Rule's Enabled switch, it persists on Save, where the
-	// publish guard (every hidden field needs a default) is enforced
-	function togglePublish() {
-		form.published = form.published ? 0 : 1;
-		markDirty();
+	// header Publish: saves pending edits with it, so the guard (every hidden field
+	// needs a default) runs; a refused or failed save leaves the form a draft
+	async function publish() {
+		if (saving.value) return;
+		form.published = 1;
+		const ok = await save();
+		if (!ok) form.published = 0;
+		else toast.success(__("Form published"));
+	}
+
+	// header Unpublish takes the form down at once; unsaved edits stay unsaved
+	async function unpublish() {
+		try {
+			await call("set_published", { name: form.name, published: 0 });
+			form.published = 0;
+			toast.success(__("Form unpublished"));
+		} catch (e) {
+			toast.error(errorText(e, __("Could not unpublish the form")));
+		}
 	}
 
 	function rebuildModel() {
@@ -323,7 +336,8 @@ export function useFormDraft({ name, onSaved }) {
 		isMandatory,
 		markDirty,
 		onTitleInput,
-		togglePublish,
+		publish,
+		unpublish,
 		syncFromModel,
 		toggle,
 		open,
