@@ -1,8 +1,13 @@
 #!/bin/bash
 
 # Ensure MariaDB client does not enforce TLS over TCP when connecting to MariaDB 10.8 server
-if ! grep -q "skip-ssl" /etc/mysql/mariadb.cnf 2>/dev/null; then
-    printf '\n[client]\nssl=0\nskip-ssl\n' >> /etc/mysql/mariadb.cnf
+if [ ! -f ~/.my.cnf ] || ! grep -q "skip-ssl" ~/.my.cnf 2>/dev/null; then
+    printf '\n[client]\nssl=0\nskip-ssl\n' >> ~/.my.cnf 2>/dev/null || true
+fi
+if [ -w /etc/mysql/mariadb.cnf ] 2>/dev/null; then
+    if ! grep -q "skip-ssl" /etc/mysql/mariadb.cnf 2>/dev/null; then
+        printf '\n[client]\nssl=0\nskip-ssl\n' >> /etc/mysql/mariadb.cnf 2>/dev/null || true
+    fi
 fi
 
 if [ -d "/home/frappe/frappe-bench/apps/frappe" ]; then
