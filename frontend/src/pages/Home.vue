@@ -51,9 +51,10 @@
           class="-mx-2 !flex-none !overflow-visible !p-0"
           :editing="editing"
           dragHandle=".home-drag-handle"
+          @layout-updated="showAddedWidget"
         >
           <template #item="{ item, remove }">
-            <div class="relative h-full w-full">
+            <div class="relative h-full w-full" :data-home-widget="item.name">
               <component
                 :is="getWidget(item.name).component"
                 class="h-full w-full"
@@ -127,7 +128,7 @@ import {
   createResource,
   usePageMeta,
 } from 'frappe-ui'
-import { computed, provide } from 'vue'
+import { computed, nextTick, provide, ref } from 'vue'
 
 const { brand } = getSettings()
 const { isAdmin, isManager } = usersStore()
@@ -182,7 +183,7 @@ const widgetMenu = computed(() => {
   const widgets = availableWidgets.value.map((widget) => ({
     label: __(widget.label),
     icon: widget.icon,
-    onClick: () => addWidget(widget),
+    onClick: () => addAndShow(widget),
   }))
   return [
     ...(widgets.length ? [{ group: __('Widgets'), options: widgets }] : []),
@@ -204,6 +205,24 @@ const widgetMenu = computed(() => {
     },
   ]
 })
+
+// The grid places a new widget a moment after it is added; scrolling earlier lands at the top.
+const addedWidget = ref(null)
+
+function addAndShow(widget) {
+  addedWidget.value = widget.key
+  addWidget(widget)
+}
+
+async function showAddedWidget() {
+  if (!addedWidget.value) return
+  const key = addedWidget.value
+  addedWidget.value = null
+  await nextTick()
+  document
+    .querySelector(`[data-home-widget="${key}"]`)
+    ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 
 usePageMeta(() => ({ title: __('Home'), icon: brand.favicon }))
 </script>

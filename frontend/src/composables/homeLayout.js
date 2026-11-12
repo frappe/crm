@@ -105,11 +105,10 @@ export function useHomeLayout() {
     }
   }
 
-  async function addWidget(widget) {
+  // Lands in edit mode, so it can be placed before it is saved.
+  function addWidget(widget) {
     items.value = [...items.value, newItem(widget, items.value)]
-    if (editing.value) return
-    await save()
-    items.value = copy(saved.value)
+    editing.value = true
   }
 
   async function updateConfig(item, config) {

@@ -20,6 +20,7 @@
         }
       "
       @layout-ready="layoutReady = true"
+      @layout-updated="emit('layout-updated')"
     >
       <GridItem
         v-for="({ layout: l }, index) in items"
@@ -90,6 +91,8 @@ defineProps({
 })
 
 const items = defineModel({ type: Array, default: () => [] })
+
+const emit = defineEmits(['layout-updated'])
 
 const layoutReady = ref(false)
 
