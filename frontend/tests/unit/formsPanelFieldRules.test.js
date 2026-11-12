@@ -12,7 +12,8 @@ vi.mock('frappe-ui', async () => {
         () =>
           render(props, slots),
     })
-  const input = (name) => stub(name, (props) => h('input', { value: props.modelValue }))
+  const input = (name) =>
+    stub(name, (props) => h('input', { value: props.modelValue }))
   return {
     Button: stub('Button', (props) => h('button', props.label)),
     Switch: stub('Switch', () => h('span')),
