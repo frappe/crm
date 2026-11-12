@@ -82,7 +82,7 @@ describe('useFormDraft', () => {
     draft.markDirty()
     let finish
     api.call.mockImplementation(
-      () => new Promise((resolve) => (finish = resolve))
+      () => new Promise((resolve) => (finish = resolve)),
     )
     const saving = draft.saveNow()
     draft.markDirty()
