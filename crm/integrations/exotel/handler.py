@@ -3,12 +3,8 @@ import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
-<<<<<<< HEAD
 from crm.integrations.api import get_contact_by_phone_number
-=======
-from crm.integrations.api import find_contact_by_phone_number
 from crm.utils import sales_user_only
->>>>>>> 702dd15 (fix: telephony call improvements)
 
 # Endpoints for webhook
 
