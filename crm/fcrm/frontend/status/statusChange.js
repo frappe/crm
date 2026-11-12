@@ -78,14 +78,10 @@ export async function changeStatus(page, status, labels) {
 	if (!reason) return
 	Object.assign(page.doc, reason, { status: status.name })
 	const picked = { ...page.doc }
-	try {
-		await page.save()
-	} catch (error) {
-		// A conflict reload has already replaced the draft; only a pick still in it goes back, with what `beforeSave` wrote for it.
-		if (page.doc.status === status.name)
-			Object.assign(page.doc, writtenSince(page.doc, picked), savedValues(page, ['status', ...Object.keys(reason)]))
-		if (!SHOWN_IN_DIALOG.includes(error?.name)) page.toast.error(error?.message || String(error))
-	}
+	if (await page.save()) return
+	// A conflict reload has already replaced the draft; only a pick still in it goes back, with what `beforeSave` wrote for it.
+	if (page.doc.status === status.name)
+		Object.assign(page.doc, writtenSince(page.doc, picked), savedValues(page, ['status', ...Object.keys(reason)]))
 }
 
 /** The `status` field handler's job: a Lost status writes its reason, a cancel goes back to the saved status. */
@@ -111,9 +107,6 @@ async function askLostReason(page, status, labels) {
 		defaults: currentReason(page.doc),
 	})
 }
-
-// The record page's own dialog has told the reader why: a save conflict, or code that does not compile.
-export const SHOWN_IN_DIALOG = ['SaveConflict', 'SaveCodeErrors']
 
 const LOST_REASON_FIELDS = ['lost_reason', 'lost_notes']
 

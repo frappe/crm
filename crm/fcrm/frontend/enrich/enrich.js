@@ -1,5 +1,4 @@
 // What the header's Enrich entry does, kept free of the desk's imports so it is unit-tested.
-import { saveRecord } from '../saveRecord.js'
 
 export const ENRICH_METHOD = 'crm.domain_enrichment.api.enrich'
 export const ENRICHABLE_METHOD = 'crm.domain_enrichment.api.enrichable_doctypes'
@@ -15,7 +14,7 @@ export function placeEnrichItem(page, item) {
 /** Saves, then queues the record's enrichment; the host toasts a refusal, such as a record with no website. */
 export async function enrichRecord(page, startedMessage) {
 	// The server reads the saved website, and the job's own save would conflict with a draft.
-	if (!(await saveRecord(page))) return
+	if (!(await page.save())) return
 	await page.call(ENRICH_METHOD, { reference_doctype: page.doctype, reference_name: page.docname })
 	page.toast.success(startedMessage)
 }

@@ -1,6 +1,5 @@
 // The server writes a CRM section runs on the saved record, kept free of the desk's imports so it is unit-tested.
 import { ref } from 'vue'
-import { saveRecord } from './saveRecord.js'
 
 /** Runs whitelisted methods that change the saved record, one at a time; each resolves true once it is done. */
 export class ServerWrites {
@@ -27,7 +26,7 @@ export class ServerWrites {
 
 	async #write(method, args, done) {
 		// The server saves the record: a draft goes first, and the re-read keeps the next save from conflicting.
-		if (!(await saveRecord(this.page))) return false
+		if (!(await this.page.save())) return false
 		try {
 			await this.page.call(method, args)
 		} catch (error) {

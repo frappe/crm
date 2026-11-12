@@ -1,7 +1,6 @@
 // Lead Sync Source, Facebook Lead Form and Failed Lead Sync Log on desk v2's standard pages, free of `@shell` so it is unit-tested.
 import { getMeta, runDocumentMethod } from '@framework/ui/api'
 import { __ } from 'frappe/i18n'
-import { saveRecord } from '../saveRecord.js'
 
 const MAPPED_FIELD = 'questions.mapped_to_crm_field'
 const NOT_MAPPABLE = [
@@ -48,7 +47,7 @@ function failedSyncsPath(page, routeFor) {
 
 async function syncNow(page) {
 	// The server syncs the saved source.
-	if (!(await saveRecord(page))) return
+	if (!(await page.save())) return
 	try {
 		await runDocumentMethod(page.doctype, page.docname, 'sync_leads', {}, { nullable: true })
 	} catch (error) {
