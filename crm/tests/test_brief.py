@@ -109,6 +109,21 @@ class TestMineBrief(HomeWidgetTestCase):
 		kinds = [item["kind"] for item in of_kind(self.brief(), "follow_up", "no_next_step")]
 		self.assertEqual(kinds, ["follow_up", "no_next_step"])
 
+	def test_high_priority_follow_ups_come_first(self):
+		def follow_up(days, priority):
+			return make_task(
+				add_days(nowdate(), days),
+				assigned_to=AGENT,
+				reference_doctype="CRM Lead",
+				reference_docname=self.lead(),
+				priority=priority,
+			).name
+
+		low_overdue = follow_up(-3, "Low")
+		high_today = follow_up(0, "High")
+		medium_overdue = follow_up(-1, "Medium")
+		self.assertEqual(kind_names(self.brief(), "follow_up"), [high_today, low_overdue, medium_overdue])
+
 	def test_a_new_lead_is_not_also_a_no_next_step_item(self):
 		lead = make_lead(status=self.open_lead, lead_owner=MANAGER)
 		frappe.set_user(MANAGER)

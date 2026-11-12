@@ -238,6 +238,11 @@ class FollowUpsDue(DueTasks):
 	def condition(self):
 		return self.linked() & super().condition()
 
+	def order(self, query):
+		"""High priority comes first, even when it is due later than an overdue task."""
+		high_first = Case().when(self.task.priority == "High", 0).else_(1)
+		return query.orderby(high_first).orderby(self.task.due_date)
+
 
 class UpcomingTasks(TaskWidget):
 	def condition(self):
