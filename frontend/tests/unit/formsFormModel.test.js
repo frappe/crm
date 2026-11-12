@@ -29,25 +29,43 @@ describe('form model', () => {
   })
 
   it('flattens sections and columns back to the same order', () => {
-    const fields = [section('s1'), field('a'), column('c1'), field('b'), section('s2')]
-    expect(flattenSections(buildSections(fields)).map((f) => f.fieldname)).toEqual([
-      's1',
-      'a',
-      'c1',
-      'b',
-      's2',
-    ])
+    const fields = [
+      section('s1'),
+      field('a'),
+      column('c1'),
+      field('b'),
+      section('s2'),
+    ]
+    expect(
+      flattenSections(buildSections(fields)).map((f) => f.fieldname),
+    ).toEqual(['s1', 'a', 'c1', 'b', 's2'])
   })
 
   it('groups the preview layout and drops empty sections', () => {
-    const layout = groupLayout([field('a'), column('c'), field('b'), section('s')])
+    const layout = groupLayout([
+      field('a'),
+      column('c'),
+      field('b'),
+      section('s'),
+    ])
     expect(layout).toHaveLength(1)
     expect(layout[0].columns.map((c) => c.length)).toEqual([1, 1])
   })
 
   it('builds a blank form field from a catalog entry', () => {
-    const f = newFieldFromCatalog({ fieldname: 'status', label: 'Status', fieldtype: 'Select', options: 'A\nB', reqd: 1 })
-    expect(f).toMatchObject({ fieldname: 'status', reqd: true, placeholder: '', depends_on: '' })
+    const f = newFieldFromCatalog({
+      fieldname: 'status',
+      label: 'Status',
+      fieldtype: 'Select',
+      options: 'A\nB',
+      reqd: 1,
+    })
+    expect(f).toMatchObject({
+      fieldname: 'status',
+      reqd: true,
+      placeholder: '',
+      depends_on: '',
+    })
   })
 
   it('splits Select options and skips blanks', () => {
