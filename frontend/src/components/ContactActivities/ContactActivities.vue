@@ -953,7 +953,7 @@
               size="sm"
               iconLeft="lucide-pen"
               :label="__('Edit')"
-              @click="if (activityVisualEditorRef) activityVisualEditorRef.activeMode = 'edit'"
+              @click="activityVisualEditorRef && (activityVisualEditorRef.activeMode = 'edit')"
             />
           </div>
           <div class="flex items-center gap-2">

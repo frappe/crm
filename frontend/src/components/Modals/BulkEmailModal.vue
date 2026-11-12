@@ -42,7 +42,7 @@
             size="sm"
             iconLeft="lucide-pen"
             :label="__('Edit Content')"
-            @click="if (visualEditorRef) visualEditorRef.activeMode = 'edit'"
+            @click="visualEditorRef && (visualEditorRef.activeMode = 'edit')"
           />
         </div>
 

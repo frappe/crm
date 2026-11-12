@@ -71,7 +71,7 @@
           <span class="lucide-sparkles size-4 text-ink-primary shrink-0" />
           <span class="text-[11px] leading-relaxed">
             <template v-if="recipientCount > 1">
-              {{ __('Previewing as representative prospect: {0} ({1}). Recipient-specific variables (e.g. {{ first_name }}) will be personalized individually for each recipient when sending.', [sampleRecipient.full_name, sampleRecipient.email]) }}
+              {{ __('Previewing as representative prospect: {0} ({1}). Recipient-specific variables (e.g. {first_name}) will be personalized individually for each recipient when sending.', [sampleRecipient.full_name, sampleRecipient.email]) }}
             </template>
             <template v-else>
               {{ __('Previewing email as received by {0} ({1})', [sampleRecipient.full_name, sampleRecipient.email]) }}
