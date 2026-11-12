@@ -27,6 +27,10 @@ from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 
 NEW_FOR_YOU_DAYS = 7
 NO_SLA_WAIT_DAYS = 2
+# The Brief links to the records it had no room for; the link carries their names.
+MORE_LIMIT = 100
+# Idle records stay out, as they stay out of the headline.
+MORE_KINDS = ("waiting", "follow_up", "client")
 MINE_SLOTS = {"waiting": 2, "follow_ups": 2, "new": 1}
 TEAM_SLOTS = {"clients": 3, "people": 2}
 
@@ -105,9 +109,9 @@ class ClientsWaiting(TeamRepliesWaiting):
 				*self.fields(doctype, table), self.sort_term(table), past
 			)
 			query = query.orderby(Field("past_response"), order=Order.desc).orderby(Field(self.sort_field))
-			rows += [{**row, "doctype": doctype} for row in query.limit(ROW_LIMIT).run(as_dict=True)]
+			rows += [{**row, "doctype": doctype} for row in query.limit(self.row_limit).run(as_dict=True)]
 		rows.sort(key=lambda row: (-row["past_response"], row[self.sort_field]))
-		return self.decorate(rows[:ROW_LIMIT])
+		return self.decorate(rows[: self.row_limit])
 
 
 class Ownerless(Unassigned):
@@ -157,6 +161,7 @@ class MineBrief:
 
 	def summary(self) -> dict:
 		widgets = self.widgets()
+		widgets["waiting"].row_limit = widgets["tasks"].row_limit = MORE_LIMIT
 		counts = {key: widget.count() for key, widget in widgets.items()}
 		rows = {
 			"waiting": [{**row, "kind": "waiting"} for row in widgets["waiting"].rows()],
@@ -169,7 +174,7 @@ class MineBrief:
 		shown = allocate(rows, MINE_SLOTS)
 		set_last_emails(shown["waiting"])
 		items = [item for group in shown.values() for item in group]
-		return {"items": items, "total": headline(counts)}
+		return {"items": items, "total": headline(counts), "more": more_records(rows, shown)}
 
 	def count(self) -> int:
 		return headline({key: widget.count() for key, widget in self.widgets().items()})
@@ -189,6 +194,17 @@ def headline(counts: dict) -> int:
 	return counts["waiting"] + counts["tasks"] + counts["new"] + idle_shown
 
 
+def more_records(rows: dict, shown: dict) -> dict:
+	"""Names of the records each group had no room for, by the list that opens them."""
+	more = {}
+	for group, group_rows in rows.items():
+		for row in group_rows[len(shown[group]) :]:
+			if row["kind"] in MORE_KINDS:
+				doctype = "CRM Task" if row["kind"] == "follow_up" else row["doctype"]
+				more.setdefault(doctype, []).append(row["name"])
+	return more
+
+
 def new_items(rows: list, count: int) -> list:
 	if not rows:
 		return []
@@ -203,6 +219,7 @@ class TeamBrief:
 
 	def summary(self) -> dict:
 		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope)
+		clients.row_limit = MORE_LIMIT
 		rows = [{**row, "kind": "client"} for row in clients.rows()]
 		ownerless = self.ownerless()
 		if ownerless:
@@ -211,10 +228,11 @@ class TeamBrief:
 			rows = [*past, ownerless, *rest]
 		people = [*self.workload(), *self.overdue_people()]
 		total = clients.count() + bool(ownerless) + len(people)
-		shown = allocate({"clients": rows, "people": people}, TEAM_SLOTS)
+		grouped = {"clients": rows, "people": people}
+		shown = allocate(grouped, TEAM_SLOTS)
 		set_last_emails(shown["clients"])
 		items = [*shown["clients"], *shown["people"]]
-		return {"items": items, "total": total}
+		return {"items": items, "total": total, "more": more_records(grouped, shown)}
 
 	def count(self) -> int:
 		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope).count()

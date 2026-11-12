@@ -23,9 +23,12 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Task"
+    :filters="briefFilters"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'kanban'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="$route.params.viewType == 'kanban' && rows.length"
@@ -212,6 +215,7 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
@@ -235,6 +239,12 @@ const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 
 const router = useRouter()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 const tasksListView = ref(null)
 

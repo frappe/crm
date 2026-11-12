@@ -7,7 +7,9 @@ import {
   briefBadge,
   briefDetail,
   briefIcon,
+  briefMoreLinks,
   briefPerson,
+  briefRecordNames,
   briefRoute,
   briefSummary,
   briefTitle,
@@ -51,6 +53,30 @@ describe('briefSummary', () => {
 
   it('says so when nothing is due', () => {
     expect(briefSummary({ count: 0 })).toBe('Nothing needs you today')
+  })
+})
+
+describe('briefMoreLinks', () => {
+  it('links each list to the records the brief had no room for', () => {
+    const links = briefMoreLinks({
+      'CRM Deal': ['D-1'],
+      'CRM Lead': ['L-1', 'L-2'],
+    })
+    expect(links.map((link) => link.label)).toEqual(['2 leads', '1 deal'])
+    expect(links[0].route).toEqual({
+      name: 'Leads',
+      query: { brief: 'L-1,L-2' },
+    })
+  })
+
+  it('has nothing to link when everything is shown', () => {
+    expect(briefMoreLinks({})).toEqual([])
+    expect(briefMoreLinks()).toEqual([])
+  })
+
+  it('reads the names back from the link', () => {
+    expect(briefRecordNames({ brief: 'L-1,L-2' })).toEqual(['L-1', 'L-2'])
+    expect(briefRecordNames({})).toEqual([])
   })
 })
 

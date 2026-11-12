@@ -93,6 +93,18 @@
         </div>
       </li>
     </ol>
+    <p v-if="loaded && moreLinks.length" class="text-sm text-ink-gray-6">
+      {{ __('More:') }}
+      <template v-for="(link, index) in moreLinks" :key="link.label">
+        <span v-if="index" aria-hidden="true"> · </span>
+        <router-link
+          :to="link.route"
+          class="text-ink-gray-8 underline-offset-2 hover:underline"
+        >
+          {{ link.label }}
+        </router-link>
+      </template>
+    </p>
   </section>
 </template>
 <script setup>
@@ -105,6 +117,7 @@ import {
   briefBadge,
   briefDetail,
   briefIcon,
+  briefMoreLinks,
   briefPerson,
   briefRoute,
   briefTitle,
@@ -133,6 +146,8 @@ const PLACEHOLDER_ROWS = 5
 const loaded = computed(() => props.resource.data?.tab === tab.value)
 
 const items = computed(() => props.resource.data?.items || [])
+
+const moreLinks = computed(() => briefMoreLinks(props.resource.data?.more))
 
 function fullName(user) {
   return getUser(user)?.full_name || user

@@ -228,6 +228,41 @@ export function briefActionRoute(item) {
   return item.kind === 'waiting' ? replyRoute(item) : briefRoute(item)
 }
 
+export const BRIEF_QUERY = 'brief'
+
+const MORE_LISTS = [
+  {
+    doctype: 'CRM Lead',
+    page: 'Leads',
+    label: (n) => (n === 1 ? __('1 lead') : __('{0} leads', [n])),
+  },
+  {
+    doctype: 'CRM Deal',
+    page: 'Deals',
+    label: (n) => (n === 1 ? __('1 deal') : __('{0} deals', [n])),
+  },
+  {
+    doctype: 'CRM Task',
+    page: 'Tasks',
+    label: (n) => (n === 1 ? __('1 task') : __('{0} tasks', [n])),
+  },
+]
+
+export function briefMoreLinks(more = {}) {
+  return MORE_LISTS.filter(({ doctype }) => more[doctype]?.length).map(
+    ({ doctype, page, label }) => ({
+      label: label(more[doctype].length),
+      route: { name: page, query: { [BRIEF_QUERY]: more[doctype].join(',') } },
+    }),
+  )
+}
+
+export function briefRecordNames(query) {
+  return String(query[BRIEF_QUERY] || '')
+    .split(',')
+    .filter(Boolean)
+}
+
 export function flowSessionUrl(session) {
   return `/flow/s/${encodeURIComponent(session)}`
 }

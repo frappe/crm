@@ -51,7 +51,7 @@ class TestMineBrief(HomeWidgetTestCase):
 
 	def test_a_quiet_day_has_no_groups(self):
 		brief = self.brief()
-		self.assertEqual(brief, {"items": [], "total": 0})
+		self.assertEqual(brief, {"items": [], "total": 0, "more": {}})
 
 	def test_waiting_items_go_oldest_first(self):
 		newer = self.lead(awaiting_reply_since=add_days(now_datetime(), -1))
@@ -64,6 +64,17 @@ class TestMineBrief(HomeWidgetTestCase):
 		brief = self.brief()
 		self.assertEqual(len(brief["items"]), 5)
 		self.assertEqual(brief["total"], 7)
+
+	def test_links_to_the_waiting_records_it_has_no_room_for(self):
+		leads = {self.lead(awaiting_reply_since=now_datetime()) for _ in range(7)}
+		brief = self.brief()
+		shown = set(kind_names(brief, "waiting"))
+		self.assertEqual(set(brief["more"]["CRM Lead"]), leads - shown)
+
+	def test_idle_records_are_not_linked(self):
+		for _ in range(9):
+			self.idle_lead()
+		self.assertEqual(self.brief()["more"], {})
 
 	def test_idle_records_count_only_when_there_is_room_to_show_them(self):
 		for _ in range(9):
