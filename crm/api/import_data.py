@@ -13,6 +13,16 @@ from frappe import _
 SYNONYM_MAP = {
 	"first_name": ["first name", "firstname", "first", "fname", "given name", "first_name"],
 	"last_name": ["last name", "lastname", "last", "lname", "surname", "family name", "last_name"],
+	"designation": [
+		"designation",
+		"job title",
+		"job_title",
+		"title",
+		"position",
+		"role",
+		"job",
+		"post",
+	],
 	"id": ["id", "lead id", "crm lead id", "lead_id", "record id"],
 	"status": ["status", "lead status", "lead_status", "stage"],
 	"email": ["email", "email address", "email_id", "email id", "mail", "e-mail"],
@@ -209,6 +219,8 @@ def _parse_tabular_data(content: bytes, file_name: str) -> tuple[list[str], list
 
 def _suggest_mappings(headers: list[str]) -> dict[str, str]:
 	"""Map CRM destination fields to uploaded file headers automatically."""
+	import re
+
 	suggested = {}
 	lower_headers = {h.lower().strip(): h for h in headers if h}
 
@@ -220,11 +232,12 @@ def _suggest_mappings(headers: list[str]) -> dict[str, str]:
 				matched = lower_headers[syn]
 				break
 
-		# 2. Substring match
+		# 2. Whole word / boundary match (e.g. "phone" in "work phone", but NOT "nation" in "designation")
 		if not matched:
 			for syn in synonyms:
+				pattern = r"\b" + re.escape(syn) + r"\b"
 				for h_lower, orig in lower_headers.items():
-					if syn == h_lower or syn in h_lower:
+					if re.search(pattern, h_lower):
 						matched = orig
 						break
 				if matched:
@@ -332,6 +345,7 @@ def preview_import(
 	for r in rows_data:
 		first_name = _clean_str(r.get(mapping.get("first_name", "")))
 		last_name = _clean_str(r.get(mapping.get("last_name", "")))
+		designation = _clean_str(r.get(mapping.get("designation", "")))
 		email = _clean_str(r.get(mapping.get("email", "")))
 		mobile_no = _clean_str(r.get(mapping.get("mobile_no", "")))
 		org_val = _clean_str(r.get(mapping.get("organization", "")))
@@ -351,7 +365,7 @@ def preview_import(
 			unique_orgs.add(org_val)
 
 		# Check if optional fields are missing
-		optional_fields = [last_name, website, city, state, country, id_val]
+		optional_fields = [last_name, designation, website, city, state, country, id_val]
 		if any(not f for f in optional_fields):
 			missing_values_count += 1
 
@@ -380,6 +394,7 @@ def preview_import(
 		sample_preview.append({
 			"first_name": _clean_str(r.get(mapping.get("first_name", ""))),
 			"last_name": _clean_str(r.get(mapping.get("last_name", ""))),
+			"designation": _clean_str(r.get(mapping.get("designation", ""))),
 			"id": _clean_str(r.get(mapping.get("id", ""))),
 			"status": status_final,
 			"email": _clean_str(r.get(mapping.get("email", ""))),
@@ -462,6 +477,7 @@ def _get_or_create_contact(
 	email: str,
 	mobile_no: str,
 	org_name: str | None,
+	designation: str | None = None,
 	status: str | None = None,
 	contact_cache: dict[str, str] | None = None,
 ) -> str:
@@ -507,6 +523,9 @@ def _get_or_create_contact(
 			changed = True
 		if not contact_doc.last_name and last_name:
 			contact_doc.last_name = last_name
+			changed = True
+		if designation and contact_doc.designation != designation:
+			contact_doc.designation = designation
 			changed = True
 		if org_name and contact_doc.company_name != org_name:
 			contact_doc.company_name = org_name
@@ -557,6 +576,8 @@ def _get_or_create_contact(
 	contact_doc.owner = frappe.session.user
 	contact_doc.first_name = first_name or (email_clean.split("@")[0] if email_clean else (org_name or "Contact"))
 	contact_doc.last_name = last_name or ""
+	if designation:
+		contact_doc.designation = designation
 	contact_doc.custom_is_dropped = 0
 	if org_name:
 		contact_doc.company_name = org_name
@@ -672,6 +693,7 @@ def execute_bulk_import(
 	for row_idx, r in enumerate(rows_data, start=1):
 		first_name = _clean_str(r.get(mapping.get("first_name", "")))
 		last_name = _clean_str(r.get(mapping.get("last_name", "")))
+		designation = _clean_str(r.get(mapping.get("designation", "")))
 		email = _clean_str(r.get(mapping.get("email", "")))
 		mobile_no = _clean_str(r.get(mapping.get("mobile_no", "")))
 		org_val = _clean_str(r.get(mapping.get("organization", "")))
@@ -703,6 +725,7 @@ def execute_bulk_import(
 					email=email,
 					mobile_no=mobile_no,
 					org_name=org_name,
+					designation=designation,
 					status=status_val,
 					contact_cache=contact_cache,
 				)
@@ -728,6 +751,7 @@ def execute_bulk_import(
 			results.append({
 				"row": row_idx,
 				"name": display_name,
+				"designation": designation,
 				"organization": org_name or org_val or "",
 				"email": email or "",
 				"contact": contact_name,
@@ -777,6 +801,7 @@ def execute_single_import(data: Any) -> dict[str, Any]:
 
 	first_name = _clean_str(data.get("first_name"))
 	last_name = _clean_str(data.get("last_name"))
+	designation = _clean_str(data.get("designation"))
 	email = _clean_str(data.get("email"))
 	mobile_no = _clean_str(data.get("mobile_no"))
 	org_val = _clean_str(data.get("organization"))
@@ -806,6 +831,7 @@ def execute_single_import(data: Any) -> dict[str, Any]:
 			email=email,
 			mobile_no=mobile_no,
 			org_name=org_name,
+			designation=designation,
 		)
 
 		# 3. Address (optional) - NO CRM Leads are created during import

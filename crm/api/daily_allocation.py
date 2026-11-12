@@ -1514,6 +1514,82 @@ def is_branded_template(html: str) -> bool:
 	return "body-pad" in html or ("Smrikaam Technologies" in html and "email-shell" in html)
 
 
+def get_clean_user_signature(user_email: str | None = None) -> str:
+	"""Retrieve sender's configured HTML signature and unescape rich-text Quill formatting if present."""
+	if not user_email:
+		user_email = frappe.session.user
+
+	raw_sig = None
+	if user_email and frappe.db.exists("User", user_email):
+		raw_sig = frappe.db.get_value("User", user_email, "email_signature")
+
+	if not raw_sig:
+		raw_sig = frappe.db.get_value(
+			"Email Account",
+			{"default_outgoing": 1, "add_signature": 1},
+			"signature",
+		)
+
+	if not raw_sig:
+		return ""
+
+	from bs4 import BeautifulSoup
+
+	soup = BeautifulSoup(raw_sig, "html.parser")
+	code_blocks = soup.find_all("div", class_="ql-code-block")
+	if code_blocks:
+		extracted = "\n".join([b.get_text() for b in code_blocks])
+	else:
+		ql_editor = soup.find("div", class_="ql-editor")
+		if ql_editor:
+			extracted = "".join(str(c) for c in ql_editor.contents)
+		else:
+			extracted = raw_sig
+
+	extracted = extracted.replace("\xa0", " ").strip()
+
+	# If the signature is wrapped in a full HTML document, extract style and body content
+	if "<!doctype" in extracted.lower() or "<html" in extracted.lower():
+		try:
+			sig_soup = BeautifulSoup(extracted, "html.parser")
+			style_tag = str(sig_soup.find("style")) if sig_soup.find("style") else ""
+			body_tag = sig_soup.find("body")
+			if body_tag:
+				body_content = "".join([str(c) for c in body_tag.children if c.name])
+				return f"{style_tag}\n{body_content}".strip()
+		except Exception:
+			pass
+
+	return extracted
+
+
+def append_signature_to_email_content(content: str, signature_html: str) -> str:
+	"""Append user HTML signature cleanly immediately below the body once, without duplicate signoffs."""
+	if not content or not signature_html:
+		return content
+
+	# Avoid duplicate insertion
+	if "signature-shell" in content or (signature_html and signature_html[:60] in content):
+		return content
+
+	# If this is a branded template layout containing a placeholder signature block
+	sig_placeholder_pattern = re.compile(
+		r"<!-- SIGNATURE AND CTA -->.*?(?=<!-- FOOTER -->)",
+		re.DOTALL | re.IGNORECASE,
+	)
+	if sig_placeholder_pattern.search(content):
+		replacement = (
+			"<!-- SIGNATURE -->\n"
+			'<tr><td align="left" bgcolor="#ffffff" style="background:#ffffff;padding:0 0 20px 0;">\n'
+			f"{signature_html}\n"
+			"</td></tr>\n\n"
+		)
+		return sig_placeholder_pattern.sub(replacement, content)
+
+	# Non-branded email: append immediately below content
+	return f"{content}<br><br>{signature_html}"
+
+
 def get_branded_template_shell(template_name: str = "Demo"):
 	if not frappe.db.exists("Email Template", template_name):
 		return None, None
@@ -1613,16 +1689,20 @@ def render_email_template(template_name: str, contact: str | None = None) -> dic
 			"<p>Could we schedule a brief virtual meeting to showcase how this could fit your operations?</p>"
 		)
 		full_preview = wrap_in_branded_template(body_content, template_name)
+		sig_html = get_clean_user_signature(frappe.session.user)
+		full_preview = append_signature_to_email_content(full_preview, sig_html)
 		try:
 			rendered_body = frappe.render_template(full_preview, context)
 		except Exception:
 			rendered_body = full_preview
 	else:
 		body_content = raw_body
+		sig_html = get_clean_user_signature(frappe.session.user)
+		full_preview = append_signature_to_email_content(raw_body, sig_html)
 		try:
-			rendered_body = frappe.render_template(raw_body, context)
+			rendered_body = frappe.render_template(full_preview, context)
 		except Exception:
-			rendered_body = raw_body
+			rendered_body = full_preview
 
 	# Clean up any leftover unparsed Jinja markers in preview subject if any
 	rendered_subject = re.sub(r"\{\{[^}]+\}\}", "", rendered_subject).strip()
@@ -1710,6 +1790,9 @@ def render_email_preview(
 	target_content = content or ""
 	if should_wrap and not ("<!doctype html" in target_content.lower() or "<html" in target_content.lower()):
 		target_content = wrap_in_branded_template(target_content, template_name or "Demo")
+
+	sig_html = get_clean_user_signature(frappe.session.user)
+	target_content = append_signature_to_email_content(target_content, sig_html)
 
 	try:
 		rendered_body = frappe.render_template(target_content, context)
@@ -1820,6 +1903,9 @@ def send_task_email(
 	should_wrap = bool(is_branded) or (template_name and is_branded_template(template_name)) or (template_name == "Demo")
 	if should_wrap and not ("<!doctype html" in final_content.lower() or "<html" in final_content.lower()):
 		final_content = wrap_in_branded_template(final_content, template_name or "Demo")
+
+	sig_html = get_clean_user_signature(current_user)
+	final_content = append_signature_to_email_content(final_content, sig_html)
 
 	try:
 		final_subject = frappe.render_template(final_subject, recip_ctx)
@@ -2060,6 +2146,9 @@ def send_bulk_email(
 	should_wrap = bool(is_branded) or (template_name and is_branded_template(template_name)) or (template_name == "Demo")
 	if should_wrap and not ("<!doctype html" in base_content.lower() or "<html" in base_content.lower()):
 		base_content = wrap_in_branded_template(base_content, template_name or "Demo")
+
+	sig_html = get_clean_user_signature(current_user)
+	base_content = append_signature_to_email_content(base_content, sig_html)
 
 	sent_count = 0
 	skipped_count = 0

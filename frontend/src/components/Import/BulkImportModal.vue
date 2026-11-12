@@ -223,6 +223,7 @@
                 <tr>
                   <th class="px-3 py-2">{{ __('First Name') }}</th>
                   <th class="px-3 py-2">{{ __('Last Name') }}</th>
+                  <th class="px-3 py-2">{{ __('Designation') }}</th>
                   <th class="px-3 py-2">{{ __('Email') }}</th>
                   <th class="px-3 py-2">{{ __('Mobile') }}</th>
                   <th class="px-3 py-2">{{ __('Organization') }}</th>
@@ -238,6 +239,7 @@
                 >
                   <td class="px-3 py-1.5 font-medium">{{ row.first_name || '—' }}</td>
                   <td class="px-3 py-1.5">{{ row.last_name || '—' }}</td>
+                  <td class="px-3 py-1.5 text-ink-gray-7">{{ row.designation || '—' }}</td>
                   <td class="px-3 py-1.5">{{ row.email || '—' }}</td>
                   <td class="px-3 py-1.5">{{ row.mobile_no || '—' }}</td>
                   <td class="px-3 py-1.5 font-medium text-ink-blue-4">{{ row.organization || '—' }}</td>
@@ -308,6 +310,7 @@
                     <tr>
                       <th class="px-3 py-2 w-12">{{ __('#') }}</th>
                       <th class="px-3 py-2">{{ __('Name') }}</th>
+                      <th class="px-3 py-2">{{ __('Designation') }}</th>
                       <th class="px-3 py-2">{{ __('Organization') }}</th>
                       <th class="px-3 py-2">{{ __('Email') }}</th>
                       <th class="px-3 py-2 w-20 text-right">{{ __('Status') }}</th>
@@ -317,6 +320,7 @@
                     <tr v-for="(rec, idx) in importResult.results" :key="idx" class="hover:bg-surface-gray-1">
                       <td class="px-3 py-1.5 text-ink-gray-5">{{ rec.row }}</td>
                       <td class="px-3 py-1.5 font-medium text-ink-gray-9">{{ rec.name }}</td>
+                      <td class="px-3 py-1.5 text-ink-gray-6">{{ rec.designation || '—' }}</td>
                       <td class="px-3 py-1.5 text-ink-blue-4">{{ rec.organization || '—' }}</td>
                       <td class="px-3 py-1.5 text-ink-gray-6">{{ rec.email || '—' }}</td>
                       <td class="px-3 py-1.5 text-right">
@@ -489,6 +493,7 @@ const importResult = reactive({
 const crmDestinationFields = [
   { fieldname: 'first_name', label: __('First Name'), description: __('Person\'s first or given name'), required: false },
   { fieldname: 'last_name', label: __('Last Name'), description: __('Person\'s last or family name'), required: false },
+  { fieldname: 'designation', label: __('Designation'), description: __('Job title or role of the contact'), required: false },
   { fieldname: 'id', label: __('ID'), description: __('Existing Record ID or Contact Name'), required: false },
   { fieldname: 'status', label: __('Status'), description: __('Contact status'), required: false },
   { fieldname: 'email', label: __('Email'), description: __('Primary email address for Contact'), required: false },
@@ -503,6 +508,7 @@ const crmDestinationFields = [
 const fieldMapping = reactive({
   first_name: '',
   last_name: '',
+  designation: '',
   id: '',
   status: '',
   email: '',

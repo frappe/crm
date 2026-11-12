@@ -12,8 +12,8 @@
         </p>
 
         <form @submit.prevent="submit" class="flex flex-col gap-4">
-          <!-- Row 1: Name -->
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <!-- Row 1: Name & Designation -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <FormControl
               type="text"
               :label="__('First Name')"
@@ -26,6 +26,12 @@
               :label="__('Last Name')"
               v-model="form.last_name"
               :placeholder="__('e.g. Doe')"
+            />
+            <FormControl
+              type="text"
+              :label="__('Designation')"
+              v-model="form.designation"
+              :placeholder="__('e.g. Director')"
             />
           </div>
 
@@ -155,6 +161,7 @@ const statusOptions = [
 const form = reactive({
   first_name: '',
   last_name: '',
+  designation: '',
   id: '',
   status: 'New',
   email: '',
@@ -169,6 +176,7 @@ const form = reactive({
 function resetForm() {
   form.first_name = ''
   form.last_name = ''
+  form.designation = ''
   form.id = ''
   form.status = 'New'
   form.email = ''

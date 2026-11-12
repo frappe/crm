@@ -21,35 +21,11 @@ def get_translations():
 
 @frappe.whitelist()
 def get_user_signature():
-	user = frappe.session.user
-	user_email_signature = (
-		frappe.db.get_value(
-			"User",
-			user,
-			"email_signature",
-		)
-		if user
-		else None
-	)
-
-	signature = user_email_signature or frappe.db.get_value(
-		"Email Account",
-		{"default_outgoing": 1, "add_signature": 1},
-		"signature",
-	)
-
-	if not signature:
-		return
-
-	soup = BeautifulSoup(signature, "html.parser")
-	html_signature = soup.find("div", {"class": "ql-editor read-mode"})
-	_signature = None
-	if html_signature:
-		_signature = html_signature.renderContents()
-	content = ""
-	if cstr(_signature) or signature:
-		content = f'<br><p class="signature">{signature}</p>'
-	return content
+	from crm.api.daily_allocation import get_clean_user_signature
+	sig = get_clean_user_signature(frappe.session.user)
+	if not sig:
+		return ""
+	return f'<br><div class="signature">{sig}</div>'
 
 
 @frappe.whitelist()
