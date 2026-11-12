@@ -20,7 +20,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Email",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "role",
@@ -28,12 +29,15 @@
    "in_list_view": 1,
    "label": "Role",
    "options": "\nSales User\nSales Manager\nSystem Manager",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "key",
    "fieldtype": "Data",
-   "label": "Key"
+   "label": "Key",
+   "permlevel": 1,
+   "read_only": 1
   },
   {
    "fieldname": "invited_by",
@@ -66,7 +70,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-23 12:15:54.279434",
+ "modified": "2026-11-02 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Invitation",
