@@ -1,18 +1,5 @@
 <template>
 	<div class="flex flex-col text-ink-gray-8">
-		<div v-if="!forms.error" class="mt-3 flex items-center justify-between gap-2">
-			<a
-				href="https://docs.frappe.io/crm/capturing-leads/web-form"
-				target="_blank"
-				class="flex items-center gap-1.5 text-base text-ink-gray-6 hover:text-ink-gray-8"
-			>
-				<span class="lucide-circle-question-mark size-4" aria-hidden="true" />
-				{{ __("View documentation") }}
-			</a>
-			<Button :label="__('New')" icon-left="lucide-plus" variant="solid" @click="openCreate" />
-		</div>
-
-		<!-- List -->
 		<div class="flex flex-col">
 			<div v-if="forms.loading && !forms.data" class="flex items-center justify-center mt-12">
 				<LoadingIndicator class="w-4" />
@@ -26,44 +13,59 @@
 				<p class="text-base-medium text-ink-gray-7">{{ __("No web forms yet") }}</p>
 				<p class="text-p-base text-ink-gray-5">{{ __("Create one to start capturing leads.") }}</p>
 			</div>
-			<div v-else class="w-full">
-				<div class="flex items-center p-2 text-sm text-ink-gray-5">
-					<div class="w-6/12">{{ __("Form") }}</div>
-					<div class="w-3/12">{{ __("Maps to") }}</div>
-					<div class="w-3/12">{{ __("Status") }}</div>
-				</div>
-				<div class="h-px border-t mx-2 border-outline-elevation-2" />
-				<template v-for="(form, i) in forms.data" :key="form.name">
-					<div class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2">
-						<div class="w-6/12 min-w-0 cursor-pointer" @click="$emit('open', form.name)">
-							<div class="truncate text-base-medium text-ink-gray-7">
-								{{ form.title }}
-							</div>
-							<div class="mt-0.5 truncate text-p-base text-ink-gray-5">
-								/crm-form/{{ form.route }}
-							</div>
+			<FrappeList
+				v-else
+				divider="inset"
+				:columns="COLUMNS"
+				:row-height="40"
+				class="-mx-2 pt-2"
+				style="--list-row-padding-x: 0.5rem; --list-gap: 1rem"
+			>
+				<ListHeader>
+					<ListHeaderCell>{{ __("Form") }}</ListHeaderCell>
+					<ListHeaderCell>{{ __("Maps to") }}</ListHeaderCell>
+					<ListHeaderCell>{{ __("Status") }}</ListHeaderCell>
+					<div role="columnheader" aria-hidden="true" />
+				</ListHeader>
+				<ListRow
+					v-for="form in forms.data"
+					:key="form.name"
+					:route="{ query: { form: form.name } }"
+				>
+					<ListCell class="gap-2">
+						<div class="max-w-[60%] truncate text-base-medium text-ink-gray-8">
+							{{ form.title }}
 						</div>
-						<div
-							class="w-3/12 cursor-pointer text-base text-ink-gray-7"
-							@click="$emit('open', form.name)"
-						>
+						<div class="min-w-0 truncate text-base text-ink-gray-5">
+							/crm-form/{{ form.route }}
+						</div>
+					</ListCell>
+					<ListCell>
+						<div class="truncate text-base text-ink-gray-8">
 							{{ docLabel(form.document_type) }}
 						</div>
-						<div class="flex w-3/12 items-center justify-between">
-							<Badge
-								:theme="form.published ? 'green' : 'gray'"
-								variant="outline"
-								size="md"
-								:label="form.published ? __('Published') : __('Draft')"
-							/>
+					</ListCell>
+					<ListCell>
+						<Badge
+							:theme="form.published ? 'green' : 'gray'"
+							variant="outline"
+							size="md"
+							:label="form.published ? __('Published') : __('Draft')"
+						/>
+					</ListCell>
+					<ListCell>
+						<div class="flex w-full justify-end" @click.stop.prevent>
 							<Dropdown align="end" :options="rowOptions(form)">
-								<Button icon="lucide-more-horizontal" variant="ghost" />
+								<Button
+									icon="lucide-more-horizontal"
+									variant="ghost"
+									:aria-label="__('More actions')"
+								/>
 							</Dropdown>
 						</div>
-					</div>
-					<hr v-if="forms.data.length !== i + 1" class="mx-2" />
-				</template>
-			</div>
+					</ListCell>
+				</ListRow>
+			</FrappeList>
 		</div>
 	</div>
 
@@ -126,8 +128,9 @@ import {
 	dialog,
 	toast,
 } from "frappe-ui";
+import { List as FrappeList, ListCell, ListHeader, ListHeaderCell, ListRow } from "frappe-ui/list";
 import { __ } from "frappe/i18n";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { call, copyToClipboard, errorText } from "./formsApi";
 
 defineOptions({ inheritAttrs: false });
@@ -138,6 +141,8 @@ const targetOptions = [
 	{ label: "Deal", value: "CRM Deal" },
 ];
 const docLabel = (dt) => targetOptions.find((o) => o.value === dt)?.label || dt;
+
+const COLUMNS = ["minmax(0, 6fr)", "minmax(0, 3fr)", "minmax(0, 3fr)", "2rem"];
 
 const forms = reactive({ data: null, loading: false, error: "" });
 
@@ -271,5 +276,5 @@ function rowOptions(form) {
 	];
 }
 
-defineExpose({ reload: loadForms });
+defineExpose({ reload: loadForms, openCreate, failed: computed(() => Boolean(forms.error)) });
 </script>

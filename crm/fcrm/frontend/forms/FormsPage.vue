@@ -1,13 +1,26 @@
 <!-- Public lead and deal capture forms: the list, and the builder for one form at `?form=<name>`. Server logic stays in crm.api.form. -->
 <template>
+	<PageHeader v-if="!activeName">
+		<Breadcrumbs class="-ml-0.5" :items="[{ label: __('Forms') }]" />
+		<div class="flex items-center gap-2">
+			<Button
+				variant="ghost"
+				size="sm"
+				icon="lucide-circle-question-mark"
+				:href="DOCS_URL"
+				:aria-label="__('Documentation')"
+			/>
+			<Button
+				v-if="!list?.failed"
+				variant="solid"
+				icon-left="lucide-plus"
+				:label="__('Create')"
+				@click="list.openCreate()"
+			/>
+		</div>
+	</PageHeader>
 	<div class="flex h-full flex-col overflow-y-auto">
-		<header
-			v-if="!activeName"
-			class="flex h-12 shrink-0 items-center border-b border-outline-gray-1 px-5"
-		>
-			<h1 class="text-xl-semibold text-ink-gray-9">{{ __("Forms") }}</h1>
-		</header>
-		<div class="px-5 pb-6">
+		<div class="px-3 pb-6 sm:px-5">
 			<FormBuilder
 				v-if="activeName"
 				:key="activeName"
@@ -15,19 +28,23 @@
 				:router="router"
 				@back="router.push({ query: {} })"
 			/>
-			<FormsList v-else @open="(name) => router.push({ query: { form: name } })" />
+			<FormsList v-else ref="list" @open="(name) => router.push({ query: { form: name } })" />
 		</div>
 	</div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, useTemplateRef } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { Breadcrumbs, Button, PageHeader } from "frappe-ui";
 import { __ } from "frappe/i18n";
 import FormBuilder from "./FormBuilder.vue";
 import FormsList from "./FormsList.vue";
 
+const DOCS_URL = "https://docs.frappe.io/crm/capturing-leads/web-form";
+
 const router = useRouter();
+const list = useTemplateRef("list");
 const route = useRoute();
 const activeName = computed(() => [route.query.form].flat()[0] || null);
 </script>
