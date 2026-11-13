@@ -238,7 +238,7 @@ class CRMServiceLevelAgreement(Document):
 			is_workday = today_weekday in workdays
 			is_holiday = today_day in holidays
 			if is_holiday or not is_workday:
-				res = add_to_date(res, days=1, as_datetime=True)
+				res = getdate(add_to_date(res, days=1, as_datetime=True))
 				continue
 			today_workday = workdays[today_weekday]
 			now_in_seconds = time_diff_in_seconds(today, today_day)
