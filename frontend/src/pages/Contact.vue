@@ -143,17 +143,35 @@
       </template>
       <template #tab-panel="{ tab }">
         <DealsListView
-          v-if="tab.label === 'Deals' && rows.length"
+          v-if="tab.value === 'deals' && rows.length"
           class="mt-4"
           :rows="rows"
           :columns="columns"
           :options="{ selectable: false, showTooltip: false }"
         />
         <EmptyState
-          v-if="!rows.length"
+          v-if="tab.value === 'deals' && !rows.length"
           :icon="tab.iconLeft"
           name="Deals"
           :description="__('Use New Deal to create a deal for this contact.')"
+        />
+        <ContactTabListView
+          v-else-if="tab.extension && contactTabs.states[tab.name]?.rows.length"
+          class="mt-4"
+          :rows="contactTabs.states[tab.name].rows"
+          :columns="tab.columns"
+          :total-count="contactTabs.states[tab.name].totalCount"
+          :loading="contactTabs.states[tab.name].loading"
+          :doctype="tab.doctype"
+          @load-more="contactTabs.loadMore(tab.name)"
+        />
+        <EmptyState
+          v-else-if="
+            tab.extension && contactTabs.states[tab.name]?.totalCount === 0
+          "
+          :icon="tab.iconLeft"
+          :name="tab.label"
+          description=""
         />
       </template>
     </Tabs>
@@ -188,9 +206,11 @@ import CameraIcon from '@/components/Icons/CameraIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import DealsListView from '@/components/ListViews/DealsListView.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
+import ContactTabListView from '@/components/ListViews/ContactTabListView.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { validateIsImageFile, setupCustomizations } from '@/utils'
 import { useContactFields } from '@/composables/useContactFields'
+import { useContactTabs } from '@/composables/useContactTabs'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { getView } from '@/utils/view'
 import { useDocument } from '@/data/document'
@@ -328,14 +348,25 @@ function changeContactImage(file) {
 }
 
 const activeTab = ref('deals')
-const tabs = [
-  {
-    value: 'deals',
-    label: 'Deals',
-    iconLeft: DealsIcon,
-    count: computed(() => deals.data?.length),
-  },
-]
+const dealsTab = {
+  value: 'deals',
+  label: 'Deals',
+  iconLeft: DealsIcon,
+  count: computed(() => deals.data?.length),
+}
+
+// Tabs from the `crm_contact_tabs` hook of installed apps, after Deals
+const contactTabs = useContactTabs(props.contactId, activeTab)
+const tabs = computed(() => [
+  dealsTab,
+  ...contactTabs.tabs.value.map((tab) => ({
+    ...tab,
+    value: tab.name,
+    // `icon` would make an icon-only trigger
+    icon: undefined,
+    iconLeft: tab.icon,
+  })),
+])
 
 const deals = createResource({
   url: 'crm.api.contact.get_linked_deals',
