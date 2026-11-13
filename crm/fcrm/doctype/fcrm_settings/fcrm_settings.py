@@ -33,6 +33,7 @@ class FCRMSettings(Document):
 		brand_name: DF.Data | None
 		currency: DF.Link | None
 		default_calendar_view: DF.Literal["Daily", "Weekly", "Monthly"]
+		disable_onboarding: DF.Check
 		dropdown_items: DF.Table[CRMDropdownItem]
 		enable_forecasting: DF.Check
 		event_notifications: DF.Table[EventNotifications]
