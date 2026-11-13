@@ -144,7 +144,7 @@ console.log(field.options, field.read_only, field.hidden)
 | `placeholder` | `string` | Input placeholder |
 | `description` | `string` | Help text below the field |
 | `options` | `string` | Select choices (newline-separated) or Link doctype |
-| `link_filters` | `object` | Filter object for Link autocomplete |
+| `link_filters` | `object` | Filter object for Link and Table MultiSelect autocomplete |
 | `precision` | `string` | Decimal precision for Float/Currency/Percent |
 | `button_color` | `string` | `"Default"`, `"Primary"`, `"Info"`, `"Success"`, `"Warning"`, `"Danger"` |
 
