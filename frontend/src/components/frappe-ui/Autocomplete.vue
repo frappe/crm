@@ -123,7 +123,7 @@
                 v-if="groups.length == 0"
                 class="my-1.5 rounded-5 px-2.5 py-1.5 text-base text-ink-gray-5"
               >
-                {{ __('No results found') }}
+                {{ loading ? __('Loading...') : __('No results found') }}
               </li>
             </ComboboxOptions>
             <div
@@ -192,6 +192,10 @@ const props = defineProps({
   buttonId: {
     type: String,
     default: undefined,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 })
 const emit = defineEmits(['update:modelValue', 'update:query', 'change'])
