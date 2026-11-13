@@ -96,8 +96,10 @@ import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h, nextTick } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
 import ShieldCheck from '~icons/lucide/shield-check'
+import LucideBriefcase from '~icons/lucide/briefcase'
 import LucideZap from '~icons/lucide/zap'
 import SlaConfig from './Sla/SlaConfig.vue'
+import BusinessHolidays from './BusinessHolidays/BusinessHolidays.vue'
 
 const { isManager, getUser } = usersStore()
 
@@ -208,6 +210,11 @@ const tabs = computed(() => {
           label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
+        },
+        {
+          label: __('Business Holidays'),
+          icon: markRaw(LucideBriefcase),
+          component: markRaw(BusinessHolidays),
         },
         {
           label: __('Forms'),
