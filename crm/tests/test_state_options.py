@@ -83,3 +83,8 @@ class TestGetBoot(FrappeTestCase):
 		with patch("crm.www.crm.get_installed_apps", side_effect=Exception("boot context")):
 			boot = get_boot()
 		self.assertEqual(boot["state_options"], {})
+
+	def test_boot_reports_no_insights_when_app_lookup_fails(self):
+		with patch("crm.www.crm.get_installed_apps", side_effect=Exception("boot context")):
+			boot = get_boot()
+		self.assertFalse(boot["is_insights_installed"])
