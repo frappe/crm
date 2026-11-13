@@ -72,6 +72,7 @@ const routes = [
     path: '/notes/view/:viewType?',
     name: 'Notes',
     component: () => import('@/pages/Notes.vue'),
+    meta: { viewKey: 'notes' },
   },
   {
     alias: '/tasks',
