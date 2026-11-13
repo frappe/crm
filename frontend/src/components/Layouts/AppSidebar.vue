@@ -127,7 +127,7 @@
             />
             <TrialCard v-if="!isCollapsed" />
             <GettingStartedBanner
-              v-if="!isOnboardingStepsCompleted"
+              v-if="showGettingStarted"
               :isSidebarCollapsed="isCollapsed"
             />
           </div>
@@ -142,7 +142,7 @@
             </template>
           </SidebarItem>
           <SidebarItem
-            v-if="isOnboardingStepsCompleted"
+            v-if="isOnboardingStepsCompleted && !onboardingDisabled"
             :label="__('Help')"
             @click="toggleHelpModal"
           >
@@ -170,7 +170,7 @@
   <template v-if="!mobile">
     <Settings />
     <HelpModal
-      v-if="showHelpModal"
+      v-if="showHelpModal && !onboardingDisabled"
       v-model="showHelpModal"
       v-model:articles="articles"
       :logo="CRMLogo"
@@ -219,6 +219,7 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
+import { getSettings } from '@/stores/settings'
 import { sessionStore } from '@/stores/session'
 import {
   showSettings,
@@ -396,6 +397,14 @@ const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 const { flushPendingSteps } = useCrmOnboarding()
+const { _settings } = getSettings()
+
+const onboardingDisabled = computed(
+  () => !_settings.doc || Boolean(_settings.doc.disable_onboarding),
+)
+const showGettingStarted = computed(
+  () => !isOnboardingStepsCompleted.value && !onboardingDisabled.value,
+)
 
 // The onboarding composable persists the checklist as a positional
 // [{name, completed}] list, seeds it from the current steps ONLY when empty,
