@@ -4,7 +4,7 @@
 import json
 
 import frappe
-from frappe.desk.doctype.form_layout.form_layout import default_filters
+from frappe.desk.doctype.form_layout.form_layout import OMITTING_LAYOUT_TYPES, default_filters
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
 
@@ -74,7 +74,7 @@ def layout_app(dt: str) -> str | None:
 def write_default_row(dt: str, type: str, layout: list):
 	stored = default_row(dt, type)
 	# A skipped save keeps a lost deal's v1 rewrite from writing Form Layout again.
-	if stored and not stored.omitted and read_tree(stored.layout) == layout:
+	if stored and read_tree(stored.layout) == layout and not lacks_omitted(stored, type):
 		return
 	row = (
 		frappe.get_doc("Form Layout", stored.name)
@@ -84,8 +84,14 @@ def write_default_row(dt: str, type: str, layout: list):
 		)
 	)
 	row.layout = frappe.as_json(layout)
-	row.omitted = None
+	# As `save_form_layout` does: the save lists the fields this layout does not place.
+	row.flags.writes_omitted = type in OMITTING_LAYOUT_TYPES
 	row.save(ignore_permissions=True)
+
+
+def lacks_omitted(stored, type: str) -> bool:
+	"""A row saved before `omitted` meant "not placed at the save" reads every unplaced field as new."""
+	return type in OMITTING_LAYOUT_TYPES and not stored.omitted
 
 
 def set_dialog_sizes():

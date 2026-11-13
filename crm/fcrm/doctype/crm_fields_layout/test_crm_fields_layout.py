@@ -4,7 +4,11 @@
 import json
 
 import frappe
-from frappe.desk.doctype.form_layout.form_layout import default_filters, get_form_layouts
+from frappe.desk.doctype.form_layout.form_layout import (
+	default_filters,
+	get_form_layouts,
+	omitted_fieldnames,
+)
 from frappe.tests import IntegrationTestCase
 
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import (
@@ -19,6 +23,7 @@ from crm.fcrm.doctype.crm_fields_layout.form_layout_mirror import (
 )
 from crm.fcrm.doctype.utils import add_or_remove_lost_reason_section_in_sidepanel
 from crm.patches.v1_0 import (
+	fill_mirrored_details_omitted,
 	mirror_contact_and_address_layouts_to_form_layout,
 	mirror_fields_layouts_to_form_layout,
 	set_lead_quick_entry_dialog_size,
@@ -41,7 +46,7 @@ def default_rows(dt, type, app=None):
 	return frappe.get_all(
 		"Form Layout",
 		filters=default_filters(dt, type, app),
-		fields=["name", "layout", "modified"],
+		fields=["name", "layout", "omitted", "modified"],
 	)
 
 
@@ -58,8 +63,10 @@ def save_v1_layout(dt, type, layout):
 
 class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 	def setUp(self):
-		frappe.db.delete("CRM Fields Layout", {"dt": "CRM Task", "type": "Side Panel"})
-		frappe.db.delete("Form Layout", {"dt": "CRM Task", "type": "Side Panel"})
+		frappe.db.delete(
+			"CRM Fields Layout", {"dt": "CRM Task", "type": ("in", ("Side Panel", "Data Fields"))}
+		)
+		frappe.db.delete("Form Layout", {"dt": "CRM Task", "type": ("in", ("Side Panel", "Details"))})
 
 	def test_insert_writes_the_converted_default_row(self):
 		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
@@ -103,14 +110,53 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 		(after,) = default_rows("CRM Deal", "Side Panel")
 		self.assertEqual(after.modified, before.modified)
 
-	def test_a_desk_v2_omitted_list_is_lost_at_the_next_v1_save(self):
+	def test_a_details_row_omits_the_fields_it_does_not_place(self):
+		save_v1_layout("CRM Task", "Data Fields", TASK_PANEL)
+
+		(row,) = default_rows("CRM Task", "Details")
+		expected = omitted_fieldnames("CRM Task", frappe.parse_json(row.layout))
+		self.assertIn("priority", expected)
+		self.assertEqual(frappe.parse_json(row.omitted), expected)
+
+	def test_a_details_row_that_places_every_field_omits_an_empty_list(self):
+		every_field = [
+			{
+				**TASK_PANEL[0],
+				"columns": [{"name": "details_column", "fields": omitted_fieldnames("CRM Task", [])}],
+			}
+		]
+		save_v1_layout("CRM Task", "Data Fields", every_field)
+		(before,) = default_rows("CRM Task", "Details")
+
+		save_v1_layout("CRM Task", "Data Fields", every_field)
+
+		(after,) = default_rows("CRM Task", "Details")
+		self.assertEqual(before.omitted, "[]")
+		self.assertEqual(after.modified, before.modified)
+
+	def test_a_side_panel_row_omits_nothing(self):
 		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
+
 		(row,) = default_rows("CRM Task", "Side Panel")
-		frappe.db.set_value("Form Layout", row.name, "omitted", '["status"]')
+		self.assertIsNone(row.omitted)
 
-		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
+	def test_an_unchanged_details_row_with_no_omitted_is_saved_again(self):
+		save_v1_layout("CRM Task", "Data Fields", TASK_PANEL)
+		(row,) = default_rows("CRM Task", "Details")
+		frappe.db.set_value("Form Layout", row.name, "omitted", None, update_modified=False)
 
-		self.assertIsNone(frappe.db.get_value("Form Layout", row.name, "omitted"))
+		save_v1_layout("CRM Task", "Data Fields", TASK_PANEL)
+
+		self.assertEqual(frappe.db.get_value("Form Layout", row.name, "omitted"), row.omitted)
+
+	def test_an_unchanged_details_row_with_omitted_skips_the_save(self):
+		save_v1_layout("CRM Task", "Data Fields", TASK_PANEL)
+		(before,) = default_rows("CRM Task", "Details")
+
+		save_v1_layout("CRM Task", "Data Fields", TASK_PANEL)
+
+		(after,) = default_rows("CRM Task", "Details")
+		self.assertEqual(after.modified, before.modified)
 
 	def test_moving_a_v1_row_to_another_type_moves_its_mirror(self):
 		doc = save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
@@ -262,6 +308,25 @@ class TestMirrorFieldsLayoutsPatch(IntegrationTestCase):
 		mirror_fields_layouts_to_form_layout.execute()
 
 		self.assertEqual(frappe.get_all("Form Layout", fields=["name", "modified"], order_by="name"), before)
+
+
+class TestFillMirroredDetailsOmittedPatch(IntegrationTestCase):
+	def test_fills_the_omitted_list_the_mirror_cleared(self):
+		mirror_fields_layouts_to_form_layout.execute()
+		(row,) = default_rows("CRM Lead", "Details")
+		frappe.db.set_value("Form Layout", row.name, "omitted", None, update_modified=False)
+
+		side_panels = default_rows("CRM Lead", "Side Panel") + default_rows("CRM Deal", "Side Panel")
+
+		fill_mirrored_details_omitted.execute()
+
+		self.assertEqual(
+			default_rows("CRM Lead", "Side Panel") + default_rows("CRM Deal", "Side Panel"), side_panels
+		)
+		(after,) = default_rows("CRM Lead", "Details")
+		expected = omitted_fieldnames("CRM Lead", frappe.parse_json(after.layout))
+		self.assertEqual(frappe.parse_json(after.omitted), expected)
+		self.assertEqual(after.layout, row.layout)
 
 
 class TestQuickEntryDialogSize(IntegrationTestCase):
