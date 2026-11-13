@@ -49,17 +49,16 @@ jobs:
 
         services:
             mysql:
-                image: mariadb:10.6
+                image: mariadb:11.8
                 env:
                     MYSQL_ROOT_PASSWORD: root
                 ports:
                     - 3306:3306
-                options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+                options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
         env:
             BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
-            BENCH_PATH: /home/runner/frappe-bench
-            BENCH_USE_UV: "1"
+            BENCH_PATH: /home/runner/pilot/benches/frappe-bench
 
         steps:
             - name: Checkout PR code
@@ -70,61 +69,118 @@ jobs:
             - name: Resolve frappe branch for base
               id: frappe
               run: |
-                  echo "branch=$(bash pr-crm/.github/helper/frappe_ref.sh "${{ matrix.frappe-branch }}")" >> "$GITHUB_OUTPUT"
-
-            - name: Setup Python
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.14"
+                  echo "branch=${{ matrix.frappe-branch }}" >> "$GITHUB_OUTPUT"
 
             - name: Setup Node
               uses: actions/setup-node@v6
               with:
                   node-version: "24"
 
-            - name: Install system packages
-              uses: ./pr-crm/.github/actions/apt-install
-              with:
-                  packages: redis-server mariadb-client libmariadb-dev
-
-            - name: Install yarn
-              run: npm install -g yarn
-
-            - name: Configure database
+            # Stable key; drift is handled post-restore like server tests.
+            - name: Compute bench cache key
+              id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
-                  # The MariaDB 11.4+ client requires SSL by default; the mariadb:10.6 service has none.
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb2" >> "$GITHUB_OUTPUT"
+
+            - name: Restore Pilot bench
+              id: bench-cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/.config/systemd/user
+                      ~/db-snapshot
+                  key: ${{ steps.bench-key.outputs.key }}
+
+            - name: Setup Pilot bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+              run: |
+                  export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+                  printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
+                  curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
+                  if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
+                    pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
+                    pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+                    pilot -b frappe-bench set-bench-config mariadb_existing true
+                    pilot -b frappe-bench set-bench-config mariadb_host 127.0.0.1
+                    pilot -b frappe-bench set-bench-config mariadb_port 3306
+                    pilot -b frappe-bench set-bench-config mariadb_admin_user root
+                    pilot -b frappe-bench set-bench-config mariadb_password root
+                  fi
+                  pilot -b frappe-bench init --skip-frontend
+                  export BENCH_PATH=/home/runner/pilot/benches/frappe-bench
+                  cd "$BENCH_PATH"
+                  uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
+                  pilot get-app https://github.com/frappe/whatsapp --skip-assets
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
+                  pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+                  curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+                    http://127.0.0.1:7000/api/v1/health
+                  # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
                   printf '[client]\nskip-ssl\n' > ~/.my.cnf
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER 'test_frappe'@'localhost' IDENTIFIED BY 'test_frappe'"
-                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE test_frappe"
-                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO 'test_frappe'@'localhost'"
-                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "FLUSH PRIVILEGES"
+                  if [ "${{ steps.bench-cache.outputs.cache-hit }}" != 'true' ]; then
+                    pilot -b frappe-bench new-site test_site --admin-password admin --apps frappe whatsapp crm --skip-assets
+                    # Emails resolve CSS through assets.json; tests never load the built bundles.
+                    mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
+                    db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+                    mkdir -p "$HOME/db-snapshot"
+                    cp sites/test_site/site_config.json "$HOME/db-snapshot/site_config.json"
+                    mariadb-dump --host 127.0.0.1 --port 3306 -u root -proot \
+                      --single-transaction --quick "$db_name" | gzip > "$HOME/db-snapshot/test_site.sql.gz"
+                  else
+                    # Fast-forward cached checkouts; the final migrate covers schema drift.
+                    drifted=""
+                    refresh_app() {
+                      local current remote_sha app_path="$BENCH_PATH/apps/$1"
+                      current=$(git -C "$app_path" rev-parse HEAD)
+                      remote_sha=$(git ls-remote "$(git -C "$app_path" remote get-url origin)" "$2" | cut -f1)
+                      [ "$current" != "$remote_sha" ] || return 0
+                      git -C "$app_path" fetch --depth 1 origin "$2"
+                      if ! git -C "$app_path" diff --quiet HEAD FETCH_HEAD -- '*.json' 'hooks.py' 'patches.txt' '*requirements*.txt' 'pyproject.toml' 'setup.py' 'setup.cfg'; then
+                        drifted=1
+                      fi
+                      git -C "$app_path" reset --quiet --hard FETCH_HEAD
+                    }
+                    refresh_app frappe "refs/heads/${{ steps.frappe.outputs.branch }}"
+                    refresh_app whatsapp HEAD
+                    if [ -n "$drifted" ]; then
+                      uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]" -e "$BENCH_PATH/apps/whatsapp"
+                    fi
+                  fi
+                  test -d sites/test_site || { echo "site dir missing after setup" >&2; exit 1; }
 
-            - name: Init bench with frappe
-              run: |
-                  pip install frappe-bench
-                  git clone "https://github.com/frappe/frappe" --branch "${{ steps.frappe.outputs.branch }}" --depth 1 ~/frappe
-                  bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" "$BENCH_PATH"
+            - name: Save Pilot bench
+              if: steps.bench-cache.outputs.cache-hit != 'true'
+              uses: actions/cache/save@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/.config/systemd/user
+                      ~/db-snapshot
+                  key: ${{ steps.bench-key.outputs.key }}
 
-            - name: Install CRM at base branch
-              working-directory: /home/runner/frappe-bench
+            - name: Restore snapshot and migrate PR code
+              working-directory: /home/runner/pilot/benches/frappe-bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
               run: |
-                  mkdir sites/test_site
-                  cp "${GITHUB_WORKSPACE}/pr-crm/.github/helper/site_config.json" sites/test_site/site_config.json
-                  sed -i 's/watch:/# watch:/g; s/schedule:/# schedule:/g; s/socketio:/# socketio:/g; s/redis_socketio:/# redis_socketio:/g' Procfile
-                  bench get-app crm "https://github.com/frappe/crm" --branch "$BASE_BRANCH"
-                  bench setup requirements --dev
-                  bench start &>> "$BENCH_PATH/bench_start.log" &
-                  CI=Yes bench build --app frappe &
-                  bench --site test_site reinstall --yes
-                  bench --verbose --site test_site install-app crm
-
-            - name: Upgrade CRM to PR code and migrate
-              working-directory: /home/runner/frappe-bench
-              run: |
-                  # Swap the installed (base branch) code for the PR code, keep the git dir.
+                  export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+                  # Fresh container DB every run: recreate the user, restore the
+                  # dependency snapshot, then swap in PR code and migrate.
+                  db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+                  db_user=$(python3 -c "import json; c = json.load(open('sites/test_site/site_config.json')); print(c.get('db_user') or c['db_name'])")
+                  db_password=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_password'])")
+                  printf '[client]\nskip-ssl\n' > ~/.my.cnf
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE IF NOT EXISTS \`$db_name\`"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER IF NOT EXISTS '${db_user}'@'%' IDENTIFIED BY '${db_password}'"
+                  mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '${db_user}'@'%'"
+                  gunzip -c "$HOME/db-snapshot/test_site.sql.gz" | mariadb --host 127.0.0.1 --port 3306 -u root -proot "$db_name"
+                  # The cached site already has base crm installed; swap in the PR
+                  # code over it and migrate. Fresh PR code every run, no reinstall.
                   rsync -a --delete --exclude=".git" "${GITHUB_WORKSPACE}/pr-crm/" apps/crm/
-                  bench setup requirements --dev
-                  bench --site test_site migrate
+                  pilot setup requirements
+                  pilot frappe --site test_site migrate

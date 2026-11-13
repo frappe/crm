@@ -20,31 +20,22 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
+<<<<<<< HEAD
   FRAPPE_BRANCH: ${{ startsWith(github.base_ref || github.ref_name, 'version-15') && 'version-15' || 'version-16' }}
   BENCH_USE_UV: "1"
+=======
+  FRAPPE_BRANCH: develop
+<<<<<<< HEAD
+  PILOT_VERSION: v0.0.99-pre-alpha
+>>>>>>> 98d7803 (ci: run migration and ui tests on pilot)
+=======
+>>>>>>> c19df28 (ci: track pilot develop, drop version pin)
 
 jobs:
   ui-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     name: Playwright E2E Tests
-
-    services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
-      mariadb:
-        image: mariadb:10.6
-        env:
-          MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
-        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
       - name: Clone
@@ -93,24 +84,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install MariaDB Client
-        uses: ./.github/actions/apt-install
-        with:
-          packages: mariadb-client
-
       - name: Week number
         id: week
         run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
 
-      - name: Restore bench
+      - name: Restore Pilot bench
         id: bench-cache
         uses: actions/cache/restore@v4
         with:
-          path: ~/frappe-bench
-          key: ${{ runner.os }}-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}
+          path: |
+            ~/pilot/benches
+            ~/pilot/databases
+            ~/.config/systemd/user
+          key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}
 
-      - name: Setup Bench
+      - name: Setup Pilot bench
         run: |
+<<<<<<< HEAD
           pip install frappe-bench
           FRAPPE_REF=$(bash "$GITHUB_WORKSPACE/.github/helper/frappe_ref.sh" "$FRAPPE_BRANCH")
           if [ -d ~/frappe-bench/apps/frappe ]; then
@@ -123,33 +113,61 @@ jobs:
           printf '[client]\nskip-ssl\n' > ~/.my.cnf
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+=======
+          export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+          printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$GITHUB_ENV"
+          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
+          [ -d "$HOME/pilot/benches/frappe-bench" ] || pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
+          pilot -b frappe-bench init
+          pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+        env:
+          CI: "Yes"
+>>>>>>> 98d7803 (ci: run migration and ui tests on pilot)
 
-      - name: Save bench
+      - name: Save Pilot bench
         if: steps.bench-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: ~/frappe-bench
+          path: |
+            ~/pilot/benches
+            ~/pilot/databases
+            ~/.config/systemd/user
           key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM
-        working-directory: /home/runner/frappe-bench
+        working-directory: /home/runner/pilot/benches/frappe-bench
         run: |
+<<<<<<< HEAD
           bench get-app crm $GITHUB_WORKSPACE
           bench setup requirements --dev
           bench new-site --db-root-password root --admin-password admin crm.test
           bench --site crm.test install-app crm
           bench build --app crm
+=======
+          uv pip install --python env/bin/python -e "apps/frappe[test]"
+          pilot get-app https://github.com/frappe/whatsapp
+          pilot get-app "$GITHUB_WORKSPACE" --branch "$GITHUB_SHA"
+          pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+          curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+            http://127.0.0.1:7000/api/v1/health
+          pilot new-site crm.test --admin-password admin --apps frappe whatsapp crm
+>>>>>>> 98d7803 (ci: run migration and ui tests on pilot)
         env:
           CI: "Yes"
 
       - name: Configure Site for UI Tests
-        working-directory: /home/runner/frappe-bench
+        working-directory: /home/runner/pilot/benches/frappe-bench
         run: |
-          bench --site crm.test set-config allow_tests true
-          bench --site crm.test set-config host_name "http://crm.test:8000"
+          pilot frappe --site crm.test set-config allow_tests true
+          pilot frappe --site crm.test set-config host_name "http://crm.test:8000"
           # Dummy default-outgoing account so send-email queues without real SMTP.
+<<<<<<< HEAD
           # Flat top-level statements only — piped IPython drops indented blocks.
           bench --site crm.test console <<'PY'
+=======
+          pilot frappe --site crm.test console <<'PY'
+>>>>>>> 98d7803 (ci: run migration and ui tests on pilot)
           import frappe
           frappe.flags.in_patch = True  # skip the outgoing SMTP connection check on insert
           acc = {"doctype": "Email Account", "email_account_name": "E2E Outgoing", "email_id": "e2e@example.com", "smtp_server": "localhost", "smtp_port": 25, "enable_outgoing": 1, "default_outgoing": 1, "no_smtp_authentication": 1}
@@ -158,12 +176,8 @@ jobs:
           print("DEFAULT_OUTGOING_EXISTS:", bool(frappe.db.exists("Email Account", {"default_outgoing": 1})))
           PY
 
-      - name: Start Frappe Server
-        working-directory: /home/runner/frappe-bench
+      - name: Wait for site
         run: |
-          sed -i 's/^watch:/# watch:/g' Procfile
-          sed -i 's/^schedule:/# schedule:/g' Procfile
-          bench start &> bench_start.log &
           echo "Waiting for Frappe server to start..."
           timeout 60 bash -c 'until curl -s http://crm.test:8000 > /dev/null; do sleep 2; done'
           echo "Frappe server is ready!"
@@ -196,12 +210,10 @@ jobs:
           path: test-results/
           retention-days: 7
 
-      - name: Show Bench Logs on Failure
+      - name: Show Pilot logs on failure
         if: failure()
-        working-directory: /home/runner/frappe-bench
         run: |
-          echo "=== Bench Start Log ==="
-          cat bench_start.log || true
+          cat "$RUNNER_TEMP/pilot.log" || true
           echo ""
           echo "=== Frappe Logs ==="
-          cat logs/*.log || true
+          cat ~/pilot/benches/frappe-bench/logs/*.log || true
