@@ -62,6 +62,8 @@ class CRMInvitation(Document):
 	@frappe.whitelist()
 	def accept_invitation(self):
 		frappe.only_for(["System Manager", "Sales Manager"], True)
+		if frappe.db.exists("User", self.email):
+			frappe.only_for("System Manager")
 		if self.accept():
 			# the invitee was not around to set a password, mail them a link to do it
 			frappe.get_doc("User", self.email).send_welcome_mail_to_user()
