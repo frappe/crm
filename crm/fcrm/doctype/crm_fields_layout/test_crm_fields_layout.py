@@ -8,6 +8,7 @@ from frappe.desk.doctype.form_layout.form_layout import (
 	default_filters,
 	get_form_layouts,
 	omitted_fieldnames,
+	source_fingerprint,
 )
 from frappe.tests import IntegrationTestCase
 
@@ -87,6 +88,13 @@ class TestCRMFieldsLayoutMirror(IntegrationTestCase):
 
 		(row,) = default_rows("CRM Task", "Side Panel")
 		self.assertEqual(frappe.parse_json(row.layout)[0]["sections"][0]["label"], "Task")
+
+	def test_a_mirrored_row_records_the_source_it_was_saved_against(self):
+		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)
+
+		(name,) = [row.name for row in default_rows("CRM Task", "Side Panel")]
+		fingerprint = frappe.db.get_value("Form Layout", name, "fingerprint")
+		self.assertEqual(fingerprint, source_fingerprint("CRM Task", "Side Panel"))
 
 	def test_an_unchanged_conversion_skips_the_save(self):
 		save_v1_layout("CRM Task", "Side Panel", TASK_PANEL)

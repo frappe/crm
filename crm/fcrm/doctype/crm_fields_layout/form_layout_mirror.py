@@ -4,7 +4,11 @@
 import json
 
 import frappe
-from frappe.desk.doctype.form_layout.form_layout import OMITTING_LAYOUT_TYPES, default_filters
+from frappe.desk.doctype.form_layout.form_layout import (
+	OMITTING_LAYOUT_TYPES,
+	default_filters,
+	write_layout_row,
+)
 
 from crm.fcrm.doctype.crm_fields_layout.form_layout_conversion import convert_layout
 
@@ -83,10 +87,8 @@ def write_default_row(dt: str, type: str, layout: list):
 			"Form Layout", dt=dt, type=type, app=layout_app(dt), dialog_size=dialog_size(dt, type)
 		)
 	)
-	row.layout = frappe.as_json(layout)
-	# As `save_form_layout` does: the save lists the fields this layout does not place.
-	row.flags.writes_omitted = type in OMITTING_LAYOUT_TYPES
-	row.save(ignore_permissions=True)
+	row.flags.ignore_permissions = True
+	write_layout_row(row, layout=frappe.as_json(layout))
 
 
 def lacks_omitted(stored, type: str) -> bool:
