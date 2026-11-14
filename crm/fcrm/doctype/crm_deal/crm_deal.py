@@ -262,10 +262,8 @@ class CRMDeal(Document):
 		"""
 		Update the expected deal value based on the net total or total.
 		"""
-		if (
-			frappe.db.get_single_value("FCRM Settings", "auto_update_expected_deal_value")
-			and (self.net_total or self.total)
-			and self.expected_deal_value
+		if frappe.db.get_single_value("FCRM Settings", "auto_update_expected_deal_value") and (
+			self.net_total or self.total
 		):
 			self.expected_deal_value = self.net_total or self.total
 
