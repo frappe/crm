@@ -525,6 +525,24 @@ class TestCRMDeal(IntegrationTestCase):
 		deal.reload()
 		self.assertTrue(deal.closed_date)
 
+	def test_status_change_log_records_deal_status_types(self):
+		"""Status change log rows store the CRM Deal Status type of each status"""
+		deal = create_test_deal(organization="Status Log Org", status="Qualification")
+		deal.status = "Negotiation"
+		deal.save()
+		deal.reload()
+
+		qualification_type = frappe.db.get_value("CRM Deal Status", "Qualification", "type")
+		negotiation_type = frappe.db.get_value("CRM Deal Status", "Negotiation", "type")
+		log = deal.status_change_log
+		self.assertEqual(len(log), 2)
+		self.assertEqual(log[0].get("from"), "Qualification")
+		self.assertEqual(log[0].from_type, qualification_type)
+		self.assertEqual(log[0].to, "Negotiation")
+		self.assertEqual(log[0].to_type, negotiation_type)
+		self.assertEqual(log[1].get("from"), "Negotiation")
+		self.assertEqual(log[1].from_type, negotiation_type)
+
 	def test_forecasting_fields_validation(self):
 		"""Test forecasting fields validation when enabled"""
 		# Enable forecasting
