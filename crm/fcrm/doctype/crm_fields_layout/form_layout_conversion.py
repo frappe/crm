@@ -4,7 +4,7 @@
 import copy
 
 import frappe
-from frappe.desk.doctype.form_layout.app_layout import read_app_layout
+from frappe.desk.doctype.form_layout.app_layout import read_app_layouts
 from frappe.desk.doctype.form_layout.form_layout import (
 	data_fieldnames,
 	free_name,
@@ -42,7 +42,7 @@ class LayoutConversion:
 		if self.v1_type == "Quick Entry":
 			use_app_inline_fields(tabs, self.dt)
 		name_layout_containers(tabs)
-		rename_clashes(tabs, data_fieldnames(self.dt))
+		rename_clashes(tabs, data_fieldnames(frappe.get_meta(self.dt)))
 		return tabs
 
 	def keeps(self, section) -> bool:
@@ -81,7 +81,7 @@ def lost_reason_section() -> dict:
 
 def use_app_inline_fields(tabs: list, dt: str):
 	"""Define a field inline where the doctype's own Quick Entry file does, as Contact's read-only `email_id`."""
-	app_layout = read_app_layout(dt, "Quick Entry")
+	app_layout = default_app_layout(dt, "Quick Entry")
 	if not app_layout:
 		return
 	meta = frappe.get_meta(dt)
@@ -95,6 +95,14 @@ def use_app_inline_fields(tabs: list, dt: str):
 		for section in tab["sections"]:
 			for column in section["columns"]:
 				column["fields"] = inline_column(column["fields"], definitions, placed)
+
+
+def default_app_layout(dt: str, type: str):
+	"""The app file's entry with no condition, the layout a new record reads."""
+	app_layouts = read_app_layouts(dt, type)
+	if not app_layouts:
+		return None
+	return next((entry for entry in app_layouts.entries if not entry.condition), None)
 
 
 def is_read_only(meta, fieldname) -> bool:
