@@ -239,7 +239,10 @@ class CRMServiceLevelAgreement(Document):
 		weekdays = get_weekdays()
 		workdays = self.get_workdays()
 		# Without working time on any day the loop below never ends, so there is no deadline.
-		if not any(to_timedelta(row.end_time) > to_timedelta(row.start_time) for row in workdays.values()):
+		# A zero duration needs no working time: the deadline is the start itself.
+		if time_needed and not any(
+			to_timedelta(row.end_time) > to_timedelta(row.start_time) for row in workdays.values()
+		):
 			return None
 		while time_needed:
 			today = res

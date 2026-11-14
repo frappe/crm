@@ -479,6 +479,9 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 			row.end_time = row.start_time
 
 		self.assertIsNone(sla.calc_time(get_datetime("2024-01-01 10:00:00"), 3600))
+		# a zero duration still answers with its start, as it always did
+		start = get_datetime("2024-01-01 10:00:00")
+		self.assertEqual(sla.calc_time(start, 0), start)
 
 	def test_working_hours_must_end_after_they_start(self):
 		"""A working-hours row with no working time cannot be saved"""
