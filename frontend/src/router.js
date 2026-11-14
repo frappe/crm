@@ -140,7 +140,7 @@ const routes = [
     component: () => import('@/pages/Setup.vue'),
   },
   {
-    path: '/:invalidpath',
+    path: '/:invalidpath(.*)*',
     name: 'Invalid Page',
     component: () => import('@/pages/InvalidPage.vue'),
   },
