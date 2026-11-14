@@ -34,7 +34,7 @@
           <RouterLink
             v-for="n in notifications.data"
             :key="n.comment"
-            :to="getRoute(n)"
+            :to="notificationRoute(n)"
             class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-surface-gray-2"
             @click="markAsRead(n.comment || n.notification_type_doc)"
           >
@@ -92,6 +92,7 @@ import {
 } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'
+import { notificationRoute } from '@/utils/notificationRoute'
 import { onClickOutside } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
@@ -128,21 +129,4 @@ onBeforeUnmount(() => {
 onMounted(() => {
   $socket.on('crm_notification', () => notifications.reload())
 })
-
-function getRoute(notification) {
-  let params = {
-    leadId: notification.reference_name,
-  }
-  if (notification.route_name === 'Deal') {
-    params = {
-      dealId: notification.reference_name,
-    }
-  }
-
-  return {
-    name: notification.route_name,
-    params: params,
-    hash: notification.hash,
-  }
-}
 </script>

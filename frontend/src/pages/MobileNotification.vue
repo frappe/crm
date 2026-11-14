@@ -25,7 +25,7 @@
       <RouterLink
         v-for="n in notifications.data"
         :key="n.comment"
-        :to="getRoute(n)"
+        :to="notificationRoute(n)"
         class="flex cursor-pointer items-start gap-3 px-2.5 py-3 hover:bg-surface-gray-2"
         @click="mark_doc_as_read(n.comment || n.notification_type_doc)"
       >
@@ -76,6 +76,7 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import { notifications, notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'
+import { notificationRoute } from '@/utils/notificationRoute'
 import { Breadcrumbs } from 'frappe-ui'
 import { onMounted, onBeforeUnmount } from 'vue'
 
@@ -91,20 +92,4 @@ onMounted(() => {
     notifications.reload()
   })
 })
-
-function getRoute(notification) {
-  let params = {
-    leadId: notification.reference_name,
-  }
-  if (notification.route_name === 'Deal') {
-    params = {
-      dealId: notification.reference_name,
-    }
-  }
-  return {
-    name: notification.route_name,
-    params: params,
-    hash: notification.hash,
-  }
-}
 </script>
