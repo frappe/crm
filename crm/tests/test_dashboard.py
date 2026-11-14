@@ -7,7 +7,7 @@ from unittest.mock import patch
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.tests.utils import make_test_records
-from frappe.utils import add_days, get_first_day, get_last_day, nowdate
+from frappe.utils import add_days, date_diff, get_first_day, get_last_day, getdate, nowdate
 
 from crm.api.dashboard import (
 	get_average_deal_value,
@@ -30,6 +30,7 @@ from crm.api.dashboard import (
 	get_leads_by_source,
 	get_lost_deal_reasons,
 	get_ongoing_deals,
+	get_previous_period_start,
 	get_sales_trend,
 	get_total_leads,
 	get_won_deals,
@@ -859,3 +860,24 @@ class TestDashboardContributedCharts(IntegrationTestCase):
 			"average_time_to_close_a_deal",
 		}
 		self.assertEqual(contributed_values, set())
+
+
+class TestPreviousPeriod(IntegrationTestCase):
+	"""The comparison period behind every number chart's percentage change."""
+
+	def assert_previous_period(self, from_date, to_date, expected_start):
+		start = get_previous_period_start(from_date, to_date)
+		self.assertEqual(getdate(start), getdate(expected_start))
+		# the previous period ends the day before `from_date`, so it is as long as the current one
+		previous_days = date_diff(add_days(from_date, -1), start) + 1
+		current_days = date_diff(to_date, from_date) + 1
+		self.assertEqual(previous_days, current_days)
+
+	def test_a_31_day_month_compares_with_the_previous_31_days(self):
+		self.assert_previous_period("2026-03-01", "2026-03-31", "2026-01-29")
+
+	def test_a_28_day_month_compares_with_the_previous_28_days(self):
+		self.assert_previous_period("2026-02-01", "2026-02-28", "2026-01-04")
+
+	def test_a_single_day_compares_with_the_day_before(self):
+		self.assert_previous_period("2026-03-15", "2026-03-15", "2026-03-14")
