@@ -825,19 +825,27 @@ def remove_doc_link(doctype, docname, record_doctype=None, record_docname=None):
 					"reference_docname": "",
 				}
 			)
-			# a call log can also name the record in its `links` table, which the dialog lists too
-			if record_doctype and record_docname and linked_doc_data.meta.has_field("links"):
-				linked_doc_data.links = [
-					row
-					for row in linked_doc_data.links
-					if not (row.link_doctype == record_doctype and row.link_name == record_docname)
-				]
+			remove_record_links(linked_doc_data, record_doctype, record_docname)
 		linked_doc_data.save(ignore_permissions=True)
 	except (frappe.DoesNotExistError, frappe.ValidationError):
 		pass
 
 
-def remove_contact_link(doctype, docname):
+def remove_record_links(linked_doc, record_doctype, record_docname):
+	"""
+	Drop the rows of `linked_doc`'s `links` table that name the record. A call log names a
+	lead, deal or contact there (`link_with_reference_doc`), and the delete dialog lists it.
+	"""
+	if not (record_doctype and record_docname and linked_doc.meta.has_field("links")):
+		return
+	linked_doc.links = [
+		row
+		for row in linked_doc.links
+		if not (row.link_doctype == record_doctype and row.link_name == record_docname)
+	]
+
+
+def remove_contact_link(doctype, docname, record_doctype=None, record_docname=None):
 	# crm.api.whatsapp imports this module at load time
 	from crm.api.whatsapp import WhatsAppRecipientChangeError
 
@@ -852,6 +860,7 @@ def remove_contact_link(doctype, docname):
 				"contacts": [],
 			}
 		)
+		remove_record_links(linked_doc_data, record_doctype, record_docname)
 		linked_doc_data.save(ignore_permissions=True)
 	except WhatsAppRecipientChangeError:
 		raise
@@ -882,7 +891,7 @@ def remove_linked_doc_reference(
 
 		try:
 			if remove_contact:
-				remove_contact_link(item["doctype"], item["docname"])
+				remove_contact_link(item["doctype"], item["docname"], record_doctype, record_docname)
 			else:
 				remove_doc_link(item["doctype"], item["docname"], record_doctype, record_docname)
 
