@@ -40,6 +40,48 @@ class TestCRMDeal(IntegrationTestCase):
 		self.assertTrue(deal.organization)
 		self.assertEqual(deal.annual_revenue, 1000000)
 
+	def test_deal_takes_empty_organization_fields_from_its_organization(self):
+		"""Annual revenue, website and territory are fetched from the organization"""
+		territory = frappe.get_doc(
+			{"doctype": "CRM Territory", "territory_name": "Fetch Test Territory"}
+		).insert()
+		org = frappe.get_doc(
+			{
+				"doctype": "CRM Organization",
+				"organization_name": "Fetch Test Org",
+				"annual_revenue": 750000,
+				"website": "https://fetch-test.example.com",
+				"territory": territory.name,
+			}
+		).insert()
+
+		deal = create_test_deal(organization=org.name, status="Qualification")
+
+		self.assertEqual(deal.annual_revenue, 750000)
+		self.assertEqual(deal.website, "https://fetch-test.example.com")
+		self.assertEqual(deal.territory, territory.name)
+
+	def test_deal_keeps_its_own_values_over_the_organizations(self):
+		"""The fetch only fills empty fields; a value set on the deal is kept"""
+		org = frappe.get_doc(
+			{
+				"doctype": "CRM Organization",
+				"organization_name": "Fetch Keep Org",
+				"annual_revenue": 750000,
+				"website": "https://org.example.com",
+			}
+		).insert()
+
+		deal = create_test_deal(
+			organization=org.name,
+			annual_revenue=120000,
+			website="https://deal.example.com",
+			status="Qualification",
+		)
+
+		self.assertEqual(deal.annual_revenue, 120000)
+		self.assertEqual(deal.website, "https://deal.example.com")
+
 	def test_set_primary_contact(self):
 		"""Test setting primary contact from contacts table"""
 		# Create contacts
