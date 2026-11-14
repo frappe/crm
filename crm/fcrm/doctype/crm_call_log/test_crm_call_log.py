@@ -18,6 +18,51 @@ class TestCRMCallLog(IntegrationTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
+	def test_unlinking_removes_the_links_row_naming_the_record(self):
+		"""The delete dialog's unlink frees a call log tied to the record only by `links`"""
+		from crm.api.doc import remove_linked_doc_reference
+
+		lead, other = (
+			frappe.get_doc({"doctype": "CRM Lead", "first_name": name}).insert()
+			for name in ("Unlinked", "Kept")
+		)
+		call = create_test_call_log()
+		call.link_with_reference_doc("CRM Lead", lead.name)
+		call.link_with_reference_doc("CRM Lead", other.name)
+		call.save()
+
+		remove_linked_doc_reference(
+			[{"doctype": "CRM Call Log", "docname": call.name}],
+			record_doctype="CRM Lead",
+			record_docname=lead.name,
+		)
+
+		call.reload()
+		self.assertEqual([row.link_name for row in call.links], [other.name])
+		frappe.delete_doc("CRM Lead", lead.name)
+		self.assertFalse(frappe.db.exists("CRM Lead", lead.name))
+
+	def test_unlinking_from_a_contact_removes_its_links_row(self):
+		"""Telephony links a call to a contact through `links` when no lead or deal matches"""
+		from crm.api.doc import remove_linked_doc_reference
+
+		contact = frappe.get_doc({"doctype": "Contact", "first_name": "Caller"}).insert()
+		call = create_test_call_log()
+		call.link_with_reference_doc("Contact", contact.name)
+		call.save()
+
+		remove_linked_doc_reference(
+			[{"doctype": "CRM Call Log", "docname": call.name}],
+			remove_contact=True,
+			record_doctype="Contact",
+			record_docname=contact.name,
+		)
+
+		call.reload()
+		self.assertEqual(call.links, [])
+		frappe.delete_doc("Contact", contact.name)
+		self.assertFalse(frappe.db.exists("Contact", contact.name))
+
 	def test_call_log_creation_incoming(self):
 		"""Test creating an incoming call log"""
 		call = create_test_call_log(

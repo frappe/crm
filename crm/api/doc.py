@@ -794,7 +794,11 @@ def get_linked_docs_data(doc):
 	return docs_data
 
 
-def remove_doc_link(doctype, docname):
+def remove_doc_link(doctype, docname, record_doctype=None, record_docname=None):
+	"""
+	Unlink `doctype` `docname` from the record being deleted (`record_doctype`,
+	`record_docname`), so that it no longer blocks the delete.
+	"""
 	if not doctype or not docname:
 		return
 
@@ -821,12 +825,27 @@ def remove_doc_link(doctype, docname):
 					"reference_docname": "",
 				}
 			)
+			remove_record_links(linked_doc_data, record_doctype, record_docname)
 		linked_doc_data.save(ignore_permissions=True)
 	except (frappe.DoesNotExistError, frappe.ValidationError):
 		pass
 
 
-def remove_contact_link(doctype, docname):
+def remove_record_links(linked_doc, record_doctype, record_docname):
+	"""
+	Drop the rows of `linked_doc`'s `links` table that name the record. A call log names a
+	lead, deal or contact there (`link_with_reference_doc`), and the delete dialog lists it.
+	"""
+	if not (record_doctype and record_docname and linked_doc.meta.has_field("links")):
+		return
+	linked_doc.links = [
+		row
+		for row in linked_doc.links
+		if not (row.link_doctype == record_doctype and row.link_name == record_docname)
+	]
+
+
+def remove_contact_link(doctype, docname, record_doctype=None, record_docname=None):
 	# crm.api.whatsapp imports this module at load time
 	from crm.api.whatsapp import WhatsAppRecipientChangeError
 
@@ -841,6 +860,7 @@ def remove_contact_link(doctype, docname):
 				"contacts": [],
 			}
 		)
+		remove_record_links(linked_doc_data, record_doctype, record_docname)
 		linked_doc_data.save(ignore_permissions=True)
 	except WhatsAppRecipientChangeError:
 		raise
@@ -849,7 +869,13 @@ def remove_contact_link(doctype, docname):
 
 
 @frappe.whitelist()
-def remove_linked_doc_reference(items: str | list, remove_contact: bool = False, delete: bool = False):
+def remove_linked_doc_reference(
+	items: str | list,
+	remove_contact: bool = False,
+	delete: bool = False,
+	record_doctype: str | None = None,
+	record_docname: str | None = None,
+):
 	# crm.api.whatsapp imports this module at load time
 	from crm.api.whatsapp import WhatsAppRecipientChangeError
 
@@ -865,9 +891,9 @@ def remove_linked_doc_reference(items: str | list, remove_contact: bool = False,
 
 		try:
 			if remove_contact:
-				remove_contact_link(item["doctype"], item["docname"])
+				remove_contact_link(item["doctype"], item["docname"], record_doctype, record_docname)
 			else:
-				remove_doc_link(item["doctype"], item["docname"])
+				remove_doc_link(item["doctype"], item["docname"], record_doctype, record_docname)
 
 			if delete:
 				frappe.delete_doc(item["doctype"], item["docname"])
@@ -918,6 +944,8 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 					],
 					remove_contact=doctype == "Contact",
 					delete=delete_linked,
+					record_doctype=doctype,
+					record_docname=doc,
 				)
 		except Exception as e:
 			frappe.log_error(f"Error processing linked docs for {doctype} {doc}: {e!s}", "Bulk Delete Error")
