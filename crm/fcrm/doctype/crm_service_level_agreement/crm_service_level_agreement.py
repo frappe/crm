@@ -13,6 +13,7 @@ from frappe.utils import (
 	getdate,
 	now_datetime,
 	time_diff_in_seconds,
+	to_timedelta,
 )
 
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_context
@@ -49,6 +50,12 @@ class CRMServiceLevelAgreement(Document):
 	def validate(self):
 		self.validate_default()
 		self.validate_condition()
+		self.validate_working_hours()
+
+	def validate_working_hours(self):
+		for row in self.working_hours:
+			if to_timedelta(row.end_time) <= to_timedelta(row.start_time):
+				frappe.throw(_("End Time must be later than Start Time for {0}").format(row.workday))
 
 	def validate_default(self):
 		if self.default:
@@ -231,6 +238,9 @@ class CRMServiceLevelAgreement(Document):
 		holidays = self.get_holidays()
 		weekdays = get_weekdays()
 		workdays = self.get_workdays()
+		# Without working time on any day the loop below never ends, so there is no deadline.
+		if not any(to_timedelta(row.end_time) > to_timedelta(row.start_time) for row in workdays.values()):
+			return None
 		while time_needed:
 			today = res
 			today_day = getdate(today)
