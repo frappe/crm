@@ -207,15 +207,22 @@ def get_chart_options():
 	return options
 
 
+def get_previous_period_start(from_date: str, to_date: str):
+	"""
+	Start of the period just before `from_date`..`to_date`, of the same number of days.
+
+	`date_diff` returns the gap between the two dates (30 for 1-31 March), not the number
+	of days in the range (31), so the range is `date_diff + 1` days long.
+	"""
+	days = frappe.utils.date_diff(to_date, from_date) + 1
+	return frappe.utils.add_days(from_date, -days)
+
+
 def get_total_leads(from_date: str | None = None, to_date: str | None = None, user: str | None = None):
 	"""
 	Get lead count for the dashboard.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 
 	Lead = DocType("CRM Lead")
@@ -258,11 +265,7 @@ def get_ongoing_deals(from_date: str | None = None, to_date: str | None = None, 
 	"""
 	Get ongoing deal count for the dashboard, and also calculate average deal value for ongoing deals.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 
 	Deal = DocType("CRM Deal")
@@ -319,11 +322,7 @@ def get_average_ongoing_deal_value(
 	"""
 	Get ongoing deal count for the dashboard, and also calculate average deal value for ongoing deals.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 
 	Deal = DocType("CRM Deal")
@@ -379,11 +378,7 @@ def get_won_deals(from_date: str | None = None, to_date: str | None = None, user
 	"""
 	Get won deal count for the dashboard, and also calculate average deal value for won deals.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 
 	Deal = DocType("CRM Deal")
@@ -436,11 +431,7 @@ def get_average_won_deal_value(
 	"""
 	Get won deal count for the dashboard, and also calculate average deal value for won deals.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 
 	Deal = DocType("CRM Deal")
@@ -492,11 +483,7 @@ def get_average_deal_value(from_date: str | None = None, to_date: str | None = N
 	"""
 	Get average deal value for the dashboard.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 
 	Deal = DocType("CRM Deal")
@@ -548,11 +535,7 @@ def get_average_time_to_close_a_lead(
 	"""
 	Get average time to close deals for the dashboard.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 	prev_to_date = from_date
 
@@ -613,11 +596,7 @@ def get_average_time_to_close_a_deal(
 	"""
 	Get average time to close deals for the dashboard.
 	"""
-	diff = frappe.utils.date_diff(to_date, from_date)
-	if diff == 0:
-		diff = 1
-
-	prev_from_date = frappe.utils.add_days(from_date, -diff)
+	prev_from_date = get_previous_period_start(from_date, to_date)
 	to_date_plus_one = frappe.utils.add_days(to_date, 1)
 	prev_to_date = from_date
 
