@@ -1,6 +1,8 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
@@ -35,6 +37,39 @@ class TestCRMNotificationPermission(FrappeTestCase):
 
 	def test_notification_without_to_user_is_readable(self):
 		self.assertTrue(has_permission(make_notification(None), "read", USER1))
+
+
+class TestDeletingANotifiedRecord(FrappeTestCase):
+	"""A notification naming a record no longer blocks deleting it"""
+
+	def tearDown(self):
+		frappe.db.rollback()
+
+	def notify(self, **links):
+		return frappe.get_doc(
+			{"doctype": "CRM Notification", "to_user": USER1, "type": "Assignment", **links}
+		).insert(ignore_permissions=True)
+
+	def test_deleting_a_task_deletes_its_assignment_notification(self):
+		task = frappe.get_doc({"doctype": "CRM Task", "title": "Notified task"}).insert()
+		notification = self.notify(notification_type_doctype="CRM Task", notification_type_doc=task.name)
+
+		with patch("frappe.publish_realtime") as publish:
+			frappe.delete_doc("CRM Task", task.name)
+
+		self.assertFalse(frappe.db.exists("CRM Task", task.name))
+		self.assertFalse(frappe.db.exists("CRM Notification", notification.name))
+		# the recipient's open notifications list is told to reload
+		publish.assert_any_call("crm_notification", user=USER1, after_commit=True)
+
+	def test_deleting_a_lead_deletes_the_notifications_that_open_it(self):
+		lead = frappe.get_doc({"doctype": "CRM Lead", "first_name": "Notified"}).insert()
+		notification = self.notify(reference_doctype="CRM Lead", reference_name=lead.name)
+
+		frappe.delete_doc("CRM Lead", lead.name)
+
+		self.assertFalse(frappe.db.exists("CRM Lead", lead.name))
+		self.assertFalse(frappe.db.exists("CRM Notification", notification.name))
 
 
 def make_notification(to_user):

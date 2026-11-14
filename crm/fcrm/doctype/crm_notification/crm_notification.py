@@ -84,6 +84,27 @@ def notify_user(notification):
 	frappe.get_doc(values).insert(ignore_permissions=True)
 
 
+def delete_notifications(doc, method=None):
+	"""
+	Delete the notifications that name a record being deleted.
+
+	A notification is a message to a person, not data the record depends on, but it names
+	the record through Dynamic Links, so it would make `delete_doc` refuse the delete.
+	`on_trash` runs before that check, and the notifications may belong to other users.
+	"""
+	recipients = set()
+	for filters in (
+		{"reference_doctype": doc.doctype, "reference_name": doc.name},
+		{"notification_type_doctype": doc.doctype, "notification_type_doc": doc.name},
+	):
+		recipients.update(frappe.get_all("CRM Notification", filters=filters, pluck="to_user"))
+		frappe.db.delete("CRM Notification", filters)
+
+	# the list and the unread count reload on this event, as when a notification is saved
+	for user in recipients - {None, ""}:
+		frappe.publish_realtime("crm_notification", user=user, after_commit=True)
+
+
 def on_doctype_update():
 	# Not search_index on to_user (what Notification Log uses): for a user with
 	# thousands of notifications the database skips that index and scans the whole

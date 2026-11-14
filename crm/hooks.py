@@ -292,9 +292,14 @@ doc_events = {
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_in_erpnext",
 			"crm.automation.events.on_deal_update",
 		],
+		"on_trash": ["crm.fcrm.doctype.crm_notification.crm_notification.delete_notifications"],
 	},
 	"CRM Lead": {
 		"on_update": ["crm.automation.events.on_lead_update"],
+		"on_trash": ["crm.fcrm.doctype.crm_notification.crm_notification.delete_notifications"],
+	},
+	"CRM Task": {
+		"on_trash": ["crm.fcrm.doctype.crm_notification.crm_notification.delete_notifications"],
 	},
 	"Sales Order": {
 		"before_validate": [
