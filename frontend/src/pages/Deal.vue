@@ -248,6 +248,7 @@
                         </div>
                       </div>
                     </template>
+<<<<<<< HEAD
                     <div class="flex flex-col gap-1.5 text-base">
                       <div
                         v-if="contact.email"
@@ -271,6 +272,13 @@
                       </div>
                     </div>
                   </Section>
+=======
+                    <DealContactDetails
+                      :contact="contact"
+                      :reload="reloadContactDetails"
+                    />
+                  </CollapsibleSection>
+>>>>>>> a35fa9c (feat: edit contact email and mobile from the deal side panel)
                 </div>
                 <div
                   v-if="i != dealContacts.data.length - 1"
@@ -367,7 +375,12 @@ import AssignTo from '@/components/AssignTo.vue'
 import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
+<<<<<<< HEAD
 import Section from '@/components/CollapsibleSection.vue'
+=======
+import CollapsibleSection from '@/components/CollapsibleSection.vue'
+import DealContactDetails from '@/components/DealContactDetails.vue'
+>>>>>>> a35fa9c (feat: edit contact email and mobile from the deal side panel)
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
@@ -929,6 +942,11 @@ const dealContacts = createResource({
 })
 
 if (!dealContacts.data) dealContacts.fetch()
+
+// A contact's primary email/mobile is copied onto the deal, so reload both
+function reloadContactDetails() {
+  return Promise.all([dealContacts.reload(), document.reload()])
+}
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
