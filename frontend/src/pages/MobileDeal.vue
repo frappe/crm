@@ -183,6 +183,7 @@
                             </div>
                           </div>
                         </template>
+<<<<<<< HEAD
                         <div
                           class="flex flex-col gap-1.5 text-base text-ink-gray-8"
                         >
@@ -196,6 +197,13 @@
                           </div>
                         </div>
                       </Section>
+=======
+                        <DealContactDetails
+                          :contact="contact"
+                          :reload="reloadContactDetails"
+                        />
+                      </CollapsibleSection>
+>>>>>>> a35fa9c (feat: edit contact email and mobile from the deal side panel)
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
@@ -272,7 +280,7 @@ import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import DealContactDetails from '@/components/DealContactDetails.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -618,6 +626,8 @@ const dealContacts = createResource({
         full_name: contact.full_name,
         email: contact.email,
         mobile_no: contact.mobile_no,
+        email_ids: contact.email_ids,
+        phone_nos: contact.phone_nos,
         image: contact.image,
         is_primary: contact.is_primary,
         opened: index === 0,
@@ -625,6 +635,11 @@ const dealContacts = createResource({
     })
   },
 })
+
+// A contact's primary email/mobile is copied onto the deal, so reload both
+function reloadContactDetails() {
+  return Promise.all([dealContacts.reload(), document.reload()])
+}
 
 function updateField(name, value) {
   value = Array.isArray(name) ? '' : value
