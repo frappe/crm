@@ -392,6 +392,25 @@ class TestCRMDeal(IntegrationTestCase):
 		self.assertEqual(contacts[0]["is_primary"], 1)
 		self.assertEqual([c["name"] for c in contacts[1:]], [contact1.name, contact2.name])
 
+	def test_get_deal_contacts_includes_all_emails_and_phones(self):
+		"""Test that get_deal_contacts returns every email and phone of a
+		contact, with row names the side panel needs to edit them"""
+		contact = create_test_contact(
+			first_name="Multi", email="multi@example.com", mobile_no="+91-9000000001"
+		)
+		contact.append("phone_nos", {"phone": "+91-8000000002"})
+		contact.save(ignore_permissions=True)
+
+		deal = create_test_deal(organization="Contact Details Org")
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.save()
+
+		result = get_deal_contacts(deal.name)[0]
+
+		self.assertEqual([e["email_id"] for e in result["email_ids"]], ["multi@example.com"])
+		self.assertEqual([p["phone"] for p in result["phone_nos"]], ["+91-9000000001", "+91-8000000002"])
+		self.assertEqual({p["name"] for p in result["phone_nos"]}, {p.name for p in contact.phone_nos})
+
 	def test_create_deal_api(self):
 		"""Test create_deal API function"""
 		deal_name = create_deal(
