@@ -192,18 +192,10 @@
                             </div>
                           </div>
                         </template>
-                        <div
-                          class="flex flex-col gap-1.5 text-base text-ink-gray-8"
-                        >
-                          <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
-                            <Email2Icon class="h-4 w-4" />
-                            {{ contact.email }}
-                          </div>
-                          <div class="flex items-center gap-3 p-1 py-1.5">
-                            <PhoneIcon class="h-4 w-4" />
-                            {{ contact.mobile_no }}
-                          </div>
-                        </div>
+                        <DealContactDetails
+                          :contact="contact"
+                          :reload="reloadContactDetails"
+                        />
                       </CollapsibleSection>
                     </div>
                     <div
@@ -281,7 +273,7 @@ import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import DealContactDetails from '@/components/DealContactDetails.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -643,6 +635,8 @@ const dealContacts = createResource({
         full_name: contact.full_name,
         email: contact.email,
         mobile_no: contact.mobile_no,
+        email_ids: contact.email_ids,
+        phone_nos: contact.phone_nos,
         image: contact.image,
         is_primary: contact.is_primary,
         opened: index === 0,
@@ -650,6 +644,11 @@ const dealContacts = createResource({
     })
   },
 })
+
+// A contact's primary email/mobile is copied onto the deal, so reload both
+function reloadContactDetails() {
+  return Promise.all([dealContacts.reload(), document.reload()])
+}
 
 function updateField(name, value) {
   value = Array.isArray(name) ? '' : value
