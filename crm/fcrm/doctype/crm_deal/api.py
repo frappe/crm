@@ -29,6 +29,9 @@ def get_deal_contacts(name: str):
 			"email": contact.email_id,
 			"mobile_no": contact.mobile_no,
 			"is_primary": is_primary,
+			# Every email and phone, so the deal side panel can edit them in place
+			"email_ids": [{"name": e.name, "email_id": e.email_id} for e in contact.email_ids],
+			"phone_nos": [{"name": p.name, "phone": p.phone} for p in contact.phone_nos],
 		}
 		deal_contacts.append(_contact)
 	return deal_contacts
