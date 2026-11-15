@@ -330,7 +330,9 @@ def create_lead_from_call_log(call_log: str | dict, lead_details: str | dict | N
 		sanitized_details["lead_owner"] = frappe.session.user
 
 	if "mobile_no" in valid_fieldnames and not sanitized_details.get("mobile_no"):
-		sanitized_details["mobile_no"] = call_doc.get("from") or ""
+		# on an outgoing call "from" is our own number, the prospect is the one we called
+		number_field = "to" if call_doc.get("type") == "Outgoing" else "from"
+		sanitized_details["mobile_no"] = call_doc.get(number_field) or ""
 
 	if "first_name" in valid_fieldnames and not sanitized_details.get("first_name"):
 		reference_label = sanitized_details.get("mobile_no") or call_doc.name

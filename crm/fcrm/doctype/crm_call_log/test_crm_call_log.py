@@ -615,6 +615,19 @@ class TestCRMCallLog(IntegrationTestCase):
 		with patch("crm.integrations.api.frappe.get_single", return_value=settings):
 			self.assertEqual(_get_recording_credentials("Exotel"), ("exotel_key", "exotel_token"))
 
+	def test_create_lead_from_outgoing_call_log_uses_called_number(self):
+		call = create_test_call_log(
+			type="Outgoing",
+			from_number="+15550001111",
+			to="+15557654321",
+		)
+
+		lead_name = create_lead_from_call_log(call_log=frappe.as_json({"name": call.name}))
+
+		lead = frappe.get_doc("CRM Lead", lead_name)
+		self.assertEqual(lead.mobile_no, "+15557654321")
+		self.assertEqual(lead.first_name, "Lead from call +15557654321")
+
 
 def create_sales_user():
 	if not frappe.db.exists("User", "sales-user@example.com"):
