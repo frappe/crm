@@ -1,21 +1,41 @@
-import { dayjs } from 'frappe-ui'
+import { dayjs, dayjsLocal } from 'frappe-ui'
 import { recordRoute, recordTitle, taskRecordRoute } from '@/utils/home'
-import { isTaskOverdue } from '@/utils/task'
+import { dueDay, isTaskOverdue } from '@/utils/task'
 
 const WEEKS_FROM_DAYS = 21
 
-export function waitedFor(since, now = dayjs()) {
-  const days = dayjs(now).diff(dayjs(since), 'day')
+// The server sends times in the system time zone, and `now` is given the same way.
+function instant(at) {
+  return at ? dayjsLocal(at) : dayjsLocal()
+}
+
+export function waitedFor(since, now) {
+  const days = instant(now).diff(instant(since), 'day')
   if (days >= 1) {
     return days === 1 ? __('1 day') : __('{0} days', [days])
   }
-  const hours = Math.max(dayjs(now).diff(dayjs(since), 'hour'), 1)
+  const hours = Math.max(instant(now).diff(instant(since), 'hour'), 1)
   return hours === 1 ? __('1 hour') : __('{0} hours', [hours])
 }
 
-export function shortAge(since, now = dayjs()) {
-  const days = dayjs(now).diff(dayjs(since), 'day')
-  if (days < 1) return __('Today')
+export function shortAge(since, now) {
+  const days = instant(now).diff(instant(since), 'day')
+  return days < 1 ? __('Today') : dayAge(days)
+}
+
+function lateBy(since, now) {
+  const hours = instant(now).diff(instant(since), 'hour')
+  if (hours < 24) return __('{0} h', [Math.max(hours, 1)])
+  return dayAge(Math.floor(hours / 24))
+}
+
+// An all-day follow-up is late from the day after its day, wherever the user is.
+function allDayLateBy(task, now) {
+  const today = dayjs(instant(now).format('YYYY-MM-DD'))
+  return dayAge(today.diff(dayjs(dueDay(task)), 'day'))
+}
+
+function dayAge(days) {
   if (days < WEEKS_FROM_DAYS) return __('{0} d', [days])
   return __('{0} wk', [Math.floor(days / 7)])
 }
@@ -169,13 +189,17 @@ export function briefAge(item, now) {
       return { label: shortAge(item.since, now) }
     case 'overdue_person':
       return {
-        label: __('{0} late', [shortAge(item.oldest_due, now)]),
+        label: __('{0} late', [lateBy(item.oldest_due, now)]),
         late: true,
       }
     case 'follow_up':
       return isTaskOverdue(item)
         ? {
-            label: __('{0} late', [shortAge(item.due_date, now)]),
+            label: __('{0} late', [
+              item.all_day
+                ? allDayLateBy(item, now)
+                : lateBy(item.due_date, now),
+            ]),
             late: true,
           }
         : { label: __('Due today') }

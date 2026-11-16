@@ -67,6 +67,6 @@ function dueSortKey(task) {
   return dayjsLocal(task.due_date).format('YYYY-MM-DD HH:mm:ss')
 }
 
-function dueDay(task) {
+export function dueDay(task) {
   return task.due_date.slice(0, 10)
 }

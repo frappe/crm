@@ -19,6 +19,8 @@ import {
   waitedFor,
 } from '@/utils/brief'
 
+import { setConfig } from 'frappe-ui'
+
 const now = '2026-11-05 12:00:00'
 const name = (user) => ({ r: 'Ravi Kumar', t: 'Tom Fischer' })[user] || user
 
@@ -33,6 +35,50 @@ describe('ages', () => {
     expect(shortAge('2026-11-05 09:00:00', now)).toBe('Today')
     expect(shortAge('2026-10-22 12:00:00', now)).toBe('14 d')
     expect(shortAge('2026-10-15 12:00:00', now)).toBe('3 wk')
+  })
+
+  describe('in a time zone other than the system one', () => {
+    beforeEach(() => {
+      setConfig('systemTimezone', 'America/New_York')
+      setConfig('localTimezone', 'Asia/Kolkata')
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-11-05T13:00:00Z'))
+    })
+
+    afterEach(() => {
+      setConfig('systemTimezone', null)
+      setConfig('localTimezone', null)
+      vi.useRealTimers()
+    })
+
+    it('reads server times in the system time zone', () => {
+      expect(waitedFor('2026-11-05 07:00:00')).toBe('1 hour')
+    })
+  })
+})
+
+describe('briefAge for late work', () => {
+  it('counts hours when late by less than a day', () => {
+    expect(
+      briefAge(
+        { kind: 'follow_up', status: 'Todo', due_date: '2020-01-14 07:00:00' },
+        '2020-01-14 10:00:00',
+      ),
+    ).toEqual({ label: '3 h late', late: true })
+  })
+
+  it('counts an all-day follow-up from the day after its day', () => {
+    expect(
+      briefAge(
+        {
+          kind: 'follow_up',
+          status: 'Todo',
+          all_day: 1,
+          due_date: '2020-01-13 00:00:00',
+        },
+        '2020-01-14 23:00:00',
+      ),
+    ).toEqual({ label: '1 d late', late: true })
   })
 })
 
