@@ -449,6 +449,9 @@ class TestDashboard(IntegrationTestCase):
 
 	def test_funnel_counts_a_reentered_stage_once(self):
 		"""Re-entering a stage (Won -> Negotiation -> Won) must not double-count the deal"""
+		# the class keeps its records between tests, so the won deal must not reach the won counts
+		frappe.db.savepoint("reentered_stage")
+		self.addCleanup(frappe.db.rollback, save_point="reentered_stage")
 		baseline = {r["stage"]: r["count"] for r in get_funnel_stage_counts(self.from_date, self.to_date)}
 
 		deal = frappe.get_doc(
