@@ -99,6 +99,13 @@ class TestRepliesWaiting(HomeWidgetTestCase):
 		assign({"assign_to": [AGENT], "doctype": "CRM Lead", "name": lead})
 		self.assertEqual(names(self.data(RepliesWaiting)), [lead])
 
+	def test_an_underscore_in_my_address_matches_only_me(self):
+		me = make_user("home_twin@example.com", "Sales User")
+		lookalike = make_user("homextwin@example.com", "Sales User")
+		lead = self.lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
+		assign({"assign_to": [lookalike], "doctype": "CRM Lead", "name": lead})
+		self.assertEqual(names(RepliesWaiting(DOCTYPES["Both"], Mine(me)).summary()), [])
+
 	def test_rows_are_capped_but_total_counts_all(self):
 		for _ in range(ROW_LIMIT + 2):
 			self.lead(awaiting_reply_since=now_datetime())

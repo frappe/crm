@@ -18,7 +18,15 @@ class Mine:
 		self.user = user
 
 	def records(self, doctype: str, table, owner_field: str):
-		return table._assign.like(f'%"{self.user}"%') | (table[owner_field] == self.user)
+		todo = frappe.qb.DocType("ToDo")
+		assigned = (
+			frappe.qb.from_(todo)
+			.select(todo.reference_name)
+			.where(
+				(todo.reference_type == doctype) & (todo.status == "Open") & (todo.allocated_to == self.user)
+			)
+		)
+		return table.name.isin(assigned) | (table[owner_field] == self.user)
 
 	def tasks(self, task):
 		return task.assigned_to == self.user
