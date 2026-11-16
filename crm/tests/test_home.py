@@ -321,7 +321,7 @@ class TestHomeCounts(IntegrationTestCase):
 
 	def test_new_leads_are_my_open_leads(self):
 		open_status = frappe.get_all("CRM Lead Status", filters={"type": "Open"}, pluck="name")[0]
-		other_status = frappe.get_all("CRM Lead Status", filters={"type": ["!=", "Open"]}, pluck="name")[0]
+		other_status = frappe.get_all("CRM Lead Status", filters={"type": "Ongoing"}, pluck="name")[0]
 		make_lead(lead_owner=AGENT, status=open_status)
 		make_lead(lead_owner=AGENT, status=other_status)
 		make_lead(lead_owner=MANAGER, status=open_status)
