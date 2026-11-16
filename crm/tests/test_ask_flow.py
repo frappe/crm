@@ -52,13 +52,16 @@ class TestAskFlow(IntegrationTestCase):
 		with self.available(), self.assertRaises(frappe.ValidationError):
 			ask_flow.start_flow_chat("   ")
 
-	def test_no_provider_means_not_available(self):
-		frappe.db.set_value("Flow Provider", {"enabled": 1}, "enabled", 0)
-		self.assertFalse(ask_flow.flow_available())
+	def flow_enabled(self, value=True):
+		return patch("frappe.flow.is_enabled", return_value=value, create=True)
+
+	def test_not_available_when_flow_cannot_chat(self):
+		with self.flow_enabled(False):
+			self.assertFalse(ask_flow.flow_available())
 
 	def test_only_a_flow_user_sees_flow(self):
 		frappe.set_user(AGENT)
-		with patch.object(frappe.db, "exists", return_value=True):
+		with self.flow_enabled():
 			self.assertFalse(ask_flow.flow_available())
 			frappe.set_user("Administrator")
 			frappe.get_doc("User", AGENT).add_roles(FLOW_ROLE)
