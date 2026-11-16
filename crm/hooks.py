@@ -483,6 +483,14 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
+		"name1": "whats_new",
+		"label": "What's new",
+		"type": "Route",
+		"icon": "sparkles",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
 		"name1": "separator",
 		"label": "",
 		"type": "Separator",
