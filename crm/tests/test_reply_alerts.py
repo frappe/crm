@@ -107,6 +107,15 @@ class TestWhatsAppReplyAlerts(IntegrationTestCase):
 		self.assertFalse(frappe.db.exists("CRM Notification", {"type": "WhatsApp"}))
 		self.assertEqual(frappe.db.get_value("CRM Notification", {"type": "Reply"}, "message"), "Hello")
 
+	def test_incoming_message_alerts_when_the_webhook_runs_as_guest(self):
+		message = make_whatsapp_message(self.lead, "Incoming", at(0))
+		frappe.set_user("Guest")
+		try:
+			message.run_method("on_submit")
+		finally:
+			frappe.set_user("Administrator")
+		self.assertEqual([row.to_user for row in alerts()], [AGENT])
+
 	def test_outgoing_message_and_reaction_raise_no_alert(self):
 		make_whatsapp_message(self.lead, "Outgoing", at(0))
 		make_whatsapp_message(self.lead, "Incoming", at(5), reaction="👍")

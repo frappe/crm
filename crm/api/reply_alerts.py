@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import frappe
 from frappe import _
 
-from crm.api.doc import get_assigned_users
+from crm.api.doc import get_assignees
 from crm.fcrm.doctype.crm_dashboard.home_widgets import RECORD_TYPES
 from crm.fcrm.doctype.crm_notification.crm_notification import (
 	get_record_title,
@@ -57,7 +57,7 @@ def alert_assignees(doctype: str, docname: str, reply: Reply):
 
 def recipients(doctype: str, docname: str) -> list:
 	owner = frappe.db.get_value(doctype, docname, RECORD_TYPES[doctype].owner_field)
-	return get_assigned_users(doctype, docname, default_assigned_to=owner)
+	return get_assignees(doctype, docname, default_assigned_to=owner)
 
 
 def channel_text(channel: str) -> str:
