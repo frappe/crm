@@ -110,10 +110,11 @@ class TeamOverview(Widget):
 
 		responses = self.responses()
 		no_responses = {"first_response_time": None, "sla_met": 0, "sla_total": 0}
-		return [
+		rows = [
 			{"user": member, **counts, **responses.get(member, no_responses)}
 			for member, counts in stats.items()
 		]
+		return [row for row in rows if has_figures(row)]
 
 	def overdue_follow_ups(self) -> list:
 		follow_ups = TeamOverdueFollowUps(self.doctypes, self.scope)
@@ -202,6 +203,11 @@ def overview_cache_key(scope_key: str, period: str, doctypes: tuple, filters: di
 	if filters:
 		key += ":" + hashlib.sha1(json.dumps(filters, sort_keys=True).encode()).hexdigest()[:12]
 	return key
+
+
+def has_figures(row: dict) -> bool:
+	counts = (*OVERVIEW_COUNTS, "overdue_follow_ups", "sla_total")
+	return any(row[count] for count in counts) or row["first_response_time"] is not None
 
 
 TEAM_WIDGET_DATA = {

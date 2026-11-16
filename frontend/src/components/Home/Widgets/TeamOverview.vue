@@ -2,7 +2,7 @@
   <HomeWidget
     :title="__('Team workload')"
     :resource="resource"
-    :emptyText="__('No one is on your team yet.')"
+    :emptyText="__('No team activity in this period.')"
     emptyIcon="lucide-users"
   >
     <template #subtitle>

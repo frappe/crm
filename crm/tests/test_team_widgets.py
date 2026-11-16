@@ -193,8 +193,7 @@ class TestTeamOverview(TeamWidgetTestCase):
 		)
 		frappe.db.set_value("CRM Lead", lead, "creation", add_days(now, -10))
 
-		last_week = self.overview(period="last_week")[AGENT]
-		self.assertEqual((last_week["first_response_time"], last_week["sla_total"]), (None, 0))
+		self.assertNotIn(AGENT, self.overview(period="last_week"))
 		last_month = self.overview(period="last_month")[AGENT]
 		self.assertEqual((last_month["first_response_time"], last_month["sla_total"]), (600, 1))
 
@@ -203,12 +202,18 @@ class TestTeamOverview(TeamWidgetTestCase):
 		self.follow_up(add_days(now_datetime(), -1), reference=lead)
 		frappe.db.set_value("CRM Lead", lead, "creation", add_days(now_datetime(), -10))
 
-		def counts(period):
-			agent = self.overview(period=period)[AGENT]
-			return agent["open"], agent["replies_waiting"], agent["overdue_follow_ups"]
+		self.assertNotIn(AGENT, self.overview(period="last_week"))
+		agent = self.overview(period="last_month")[AGENT]
+		self.assertEqual((agent["open"], agent["replies_waiting"], agent["overdue_follow_ups"]), (1, 1, 1))
 
-		self.assertEqual(counts("last_week"), (0, 0, 0))
-		self.assertEqual(counts("last_month"), (1, 1, 1))
+	def test_a_member_with_nothing_to_show_is_left_out(self):
+		self.lead()
+		self.assertEqual(set(self.overview()), {AGENT})
+
+	def test_a_member_with_only_a_response_time_is_kept(self):
+		responded = self.lead(lead_owner=MANAGER, status=self.closed_lead)
+		frappe.db.set_value("CRM Lead", responded, "first_response_time", 600)
+		self.assertEqual(self.overview()[MANAGER]["first_response_time"], 600)
 
 	def test_unknown_period_is_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
@@ -247,10 +252,11 @@ class TestTeamOverview(TeamWidgetTestCase):
 		frappe.db.delete("CRM Sales Hierarchy", {"user": ["in", [OTHER_MANAGER, OUTSIDER]]})
 		hierarchy_node(OUTSIDER, reports_to=hierarchy_node(OTHER_MANAGER, is_group=1))
 
-		self.assertEqual(self.overview()[AGENT]["open"], 0)
+		self.lead(lead_owner=OUTSIDER)
+		self.assertNotIn(AGENT, self.overview())
 		self.lead()
-		self.assertEqual(self.overview()[AGENT]["open"], 0)
-		self.assertEqual(set(self.overview(OTHER_MANAGER)), {OTHER_MANAGER, OUTSIDER})
+		self.assertNotIn(AGENT, self.overview())
+		self.assertEqual(set(self.overview(OTHER_MANAGER)), {OUTSIDER})
 		self.assertEqual(self.overview(BOSS)[AGENT]["open"], 1)
 
 		ttl = frappe.cache.ttl(frappe.cache.make_key(overview_key(MANAGER)))
