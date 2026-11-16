@@ -7,21 +7,32 @@
       :class="editing ? 'pr-16' : 'pr-2'"
     >
       <div class="flex min-w-0 flex-1 flex-col gap-1">
-        <div class="flex h-6 min-w-0 items-center gap-1.5">
+        <div class="flex h-6 min-w-0 items-center">
           <span class="truncate text-xl-semibold text-ink-gray-9">
             {{ title }}
           </span>
-          <Dropdown v-if="config" :options="doctypeOptions">
-            <Button
-              variant="ghost"
-              size="sm"
-              :label="doctypeLabels[doctype]"
-              iconRight="lucide-chevron-down"
-            />
-          </Dropdown>
         </div>
         <slot name="subtitle">
-          <span class="truncate text-base text-ink-gray-5">{{ subtitle }}</span>
+          <div
+            v-if="config && subtitleParts"
+            class="flex min-w-0 items-center gap-1 text-base text-ink-gray-5"
+          >
+            <span v-if="subtitleParts[0]" class="shrink-0">
+              {{ subtitleParts[0] }}
+            </span>
+            <PeriodPicker
+              class="h-5 shrink-0 text-base"
+              :period="doctype"
+              :labels="RECORD_LABELS"
+              @change="
+                (value) => emit('update:config', { ...config, doctype: value })
+              "
+            />
+            <span class="truncate">{{ subtitleParts[1] }}</span>
+          </div>
+          <span v-else class="truncate text-base text-ink-gray-5">
+            {{ subtitle.replace('{0}', RECORD_LABELS[doctype]) }}
+          </span>
         </slot>
       </div>
       <div v-if="$slots.tabs" class="shrink-0">
@@ -60,11 +71,13 @@
 <script setup>
 import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
-import { Dropdown } from 'frappe-ui'
+import PeriodPicker from '@/components/Home/PeriodPicker.vue'
+import { RECORD_LABELS } from '@/utils/home'
 import { computed, inject, ref } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
+  // With a config, {0} in the subtitle becomes the Lead, Deal or Both picker
   subtitle: { type: String, required: true },
   resource: { type: Object, required: true },
   config: { type: Object, default: null },
@@ -77,27 +90,13 @@ const emit = defineEmits(['update:config'])
 
 const editing = inject('homeEditing', ref(false))
 
-const doctypeLabels = {
-  Both: __('All'),
-  Lead: __('Leads'),
-  Deal: __('Deals'),
-}
-
 const doctype = computed(() => props.config?.doctype || 'Both')
 const rows = computed(() => props.resource.data?.rows || [])
 const total = computed(() => props.resource.data?.total || 0)
 const loading = computed(() => props.resource.loading && !props.resource.data)
 
-const doctypeOptions = computed(() => [
-  {
-    group: __('Show'),
-    options: Object.entries(doctypeLabels).map(([value, label]) => ({
-      label,
-      selected: value === doctype.value,
-      onClick: () => {
-        if (value !== doctype.value) emit('update:config', { doctype: value })
-      },
-    })),
-  },
-])
+const subtitleParts = computed(() => {
+  if (!props.subtitle.includes('{0}')) return null
+  return props.subtitle.split('{0}').map((part) => part.trim())
+})
 </script>

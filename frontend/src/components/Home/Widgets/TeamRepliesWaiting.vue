@@ -1,7 +1,7 @@
 <template>
   <HomeWidget
     :title="__('Team replies waiting')"
-    :subtitle="__('Customers whose last message has no reply from your team')"
+    :subtitle="__('{0} whose last message has no reply from your team')"
     :resource="resource"
     :config="config"
     :viewAll="recordListRoute(config.doctype)"

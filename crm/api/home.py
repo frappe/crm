@@ -131,20 +131,21 @@ def ask_flow(message: str) -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_tab(widget: str, tab: str, doctype: str = "Both") -> dict:
+def get_tab(widget: str, tab: str, doctype: str | None = None) -> dict:
 	return get_tab_data(widget, tab, doctype)
 
 
 @frappe.whitelist()
 @sales_user_only
-def get_widget(widget: str, doctype: str = "Both", period: str | None = None) -> dict:
+def get_widget(widget: str, doctype: str | None = None, period: str | None = None) -> dict:
 	return get_widget_data(widget, doctype, period=period)
 
 
 def get_widget_data(
-	widget: str, doctype: str = "Both", user: str | None = None, period: str | None = None
+	widget: str, doctype: str | None = None, user: str | None = None, period: str | None = None
 ) -> dict:
 	user = user or frappe.session.user
+	doctype = doctype or "Both"
 	shared = {**WIDGET_DATA, **SALES_WIDGET_DATA, "recently_opened": RecentActivity}
 	if widget not in shared and widget not in TEAM_WIDGET_DATA:
 		frappe.throw(_("Home widget {0} has no data").format(widget))
@@ -165,8 +166,9 @@ def get_widget_data(
 	return TEAM_WIDGET_DATA[widget](*args).summary()
 
 
-def get_tab_data(widget: str, tab: str, doctype: str = "Both", user: str | None = None) -> dict:
+def get_tab_data(widget: str, tab: str, doctype: str | None = None, user: str | None = None) -> dict:
 	user = user or frappe.session.user
+	doctype = doctype or "Both"
 	if widget not in TABBED_WIDGETS and widget not in TEAM_TABBED_WIDGETS:
 		frappe.throw(_("Home widget {0} has no tabs").format(widget))
 	if doctype not in DOCTYPES:

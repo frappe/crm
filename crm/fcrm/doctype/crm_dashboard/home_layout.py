@@ -183,10 +183,10 @@ def _config(name: str, config) -> dict:
 		frappe.throw(_("Home widget {0} has no such setting").format(name))
 
 	settings = {}
-	if widget.doctype_setting:
-		settings["doctype"] = config.get("doctype", "Both")
-		if settings["doctype"] not in DOCTYPE_OPTIONS:
+	if "doctype" in config:
+		if config["doctype"] not in DOCTYPE_OPTIONS:
 			frappe.throw(_("Home widget {0} can only be set to Lead, Deal or Both").format(name))
+		settings["doctype"] = config["doctype"]
 	if "period" in config:
 		if config["period"] not in PERIOD_DAYS:
 			frappe.throw(_("Home widget {0} can only compare last week, month or 3 months").format(name))
@@ -213,10 +213,8 @@ def _position(item: dict) -> dict:
 
 
 # Heights fit the content; see widgets.js for the arithmetic.
-def _item(
-	name: str, x: int, y: int, w: int = 10, h: int = 10, doctype: str = "Both", period: str | None = None
-) -> dict:
-	config = {"doctype": doctype} if WIDGETS[name].doctype_setting else {}
+def _item(name: str, x: int, y: int, w: int = 10, h: int = 10, period: str | None = None) -> dict:
+	config = {}
 	if period:
 		config["period"] = period
 	return {"name": name, "config": config, "layout": {"x": x, "y": y, "w": w, "h": h, "i": name}}

@@ -13,7 +13,7 @@ export function useHomeWidget(widget, config = () => ({})) {
     url: 'crm.api.home.get_widget',
     makeParams: () => ({
       widget,
-      doctype: config().doctype || 'Both',
+      doctype: config().doctype,
       period: config().period,
     }),
     auto: true,
@@ -30,7 +30,7 @@ export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
     makeParams: () => ({
       widget,
       tab: tab.value,
-      doctype: config().doctype || 'Both',
+      doctype: config().doctype,
     }),
     auto: true,
   })

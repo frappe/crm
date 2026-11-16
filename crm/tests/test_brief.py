@@ -4,7 +4,7 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
-from crm.api.home import set_brief_doctype
+from crm.api.home import get_tab_data, set_brief_doctype
 from crm.fcrm.doctype.crm_dashboard.brief import (
 	DOCTYPE_KEY,
 	MineBrief,
@@ -329,6 +329,12 @@ class TestBriefDoctype(TeamWidgetTestCase):
 		self.assertEqual(kind_names(get_brief(AGENT), "new"), [lead])
 		self.set_doctype(AGENT, "Deal")
 		self.assertEqual(of_kind(get_brief(AGENT), "new"), [])
+
+	def test_a_widget_with_no_doctype_shows_leads_and_deals(self):
+		self.set_doctype(AGENT, "Deal")
+		self.lead(awaiting_reply_since=now_datetime())
+		self.deal(awaiting_reply_since=now_datetime())
+		self.assertEqual(get_tab_data("leads_and_deals", "replies", user=AGENT)["total"], 2)
 
 
 class TestGetBrief(TeamWidgetTestCase):

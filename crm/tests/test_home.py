@@ -147,7 +147,9 @@ class TestHomeLayout(IntegrationTestCase):
 			save_layout([widget("tasks", w=20, config={"doctype": "Lead"})])
 
 		saved = save_layout([widget("leads_and_deals")])["layout"][0]
-		self.assertEqual(saved["config"], {"doctype": "Both"})
+		self.assertEqual(saved["config"], {})
+		saved = save_layout([widget("leads_and_deals", config={"doctype": "Deal"})])["layout"][0]
+		self.assertEqual(saved["config"], {"doctype": "Deal"})
 
 	def test_number_cards_keep_a_comparison_period(self):
 		frappe.set_user(AGENT)
