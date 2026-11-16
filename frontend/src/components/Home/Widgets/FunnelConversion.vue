@@ -8,6 +8,7 @@
   >
     <template #tabs>
       <PeriodPicker
+        button
         :period="config?.period"
         @change="(period) => emit('update:config', { ...config, period })"
       />
