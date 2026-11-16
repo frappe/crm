@@ -47,16 +47,20 @@ class TestMineBrief(HomeWidgetTestCase):
 	def brief(self):
 		return MineBrief(AGENT).summary()
 
-	def idle(self, lead):
+	def idle(self, lead, days=10):
 		frappe.db.set_value(
-			"CRM Lead", lead, {"modified": add_days(now_datetime(), -10)}, update_modified=False
+			"CRM Lead", lead, {"modified": add_days(now_datetime(), -days)}, update_modified=False
 		)
 
-	def idle_lead(self):
+	def idle_lead(self, days=10):
 		lead = self.lead()
-		self.idle(lead)
-		frappe.db.set_value("ToDo", {"reference_name": lead}, "creation", add_days(now_datetime(), -10))
+		self.idle(lead, days)
+		frappe.db.set_value("ToDo", {"reference_name": lead}, "creation", add_days(now_datetime(), -days))
 		return lead
+
+	def contacted_lead(self):
+		"""Not a new lead, so it adds no item of its own."""
+		return self.lead(last_outbound_at=now_datetime())
 
 	def test_a_quiet_day_has_no_groups(self):
 		brief = self.brief()
@@ -179,13 +183,36 @@ class TestMineBrief(HomeWidgetTestCase):
 
 	def test_count_matches_the_summary_total(self):
 		self.lead(awaiting_reply_since=now_datetime())
-		make_task(
-			add_days(nowdate(), -1),
-			assigned_to=AGENT,
-			reference_doctype="CRM Lead",
-			reference_docname=self.lead(),
-		)
-		self.assertEqual(MineBrief(AGENT).count(), self.brief()["total"])
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
+		contacted = self.contacted_lead()
+		self.follow_up(add_days(nowdate(), -1), reference=contacted)
+		self.follow_up(add_days(nowdate(), -31), reference=contacted)
+		self.idle_lead()
+		brief = get_brief(AGENT)
+		self.assertEqual(brief["total"], 3)
+		self.assertEqual(get_brief_count(AGENT, "mine"), brief["total"])
+
+	def test_replies_waiting_count_only_from_the_last_30_days(self):
+		inside = self.lead(awaiting_reply_since=add_days(now_datetime(), -29))
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
+		brief = get_brief(AGENT)
+		self.assertEqual(kind_names(brief, "waiting"), [inside])
+		self.assertEqual(brief["total"], 1)
+
+	def test_overdue_follow_ups_count_only_from_the_last_30_days(self):
+		contacted = self.contacted_lead()
+		inside = self.follow_up(add_days(nowdate(), -29), reference=contacted)
+		self.follow_up(add_days(nowdate(), -31), reference=contacted)
+		brief = get_brief(AGENT)
+		self.assertEqual(kind_names(brief, "follow_up"), [inside])
+		self.assertEqual(brief["total"], 1)
+
+	def test_no_next_step_lists_records_quiet_for_7_to_30_days(self):
+		self.idle_lead(days=3)
+		quiet = self.idle_lead(days=10)
+		self.idle_lead(days=40)
+		brief = get_brief(AGENT)
+		self.assertEqual(kind_names(brief, "no_next_step"), [quiet])
 
 
 class TestTeamBrief(TeamWidgetTestCase):
@@ -272,7 +299,51 @@ class TestTeamBrief(TeamWidgetTestCase):
 	def test_count_matches_the_summary_total(self):
 		self.past()
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -3))
-		self.assertEqual(TeamBrief(MANAGER).count(), self.brief()["total"])
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
+		self.follow_up(add_days(nowdate(), -31))
+		brief = get_brief(MANAGER, "team")
+		self.assertEqual(get_brief_count(MANAGER, "team"), brief["total"])
+
+	def test_replies_waiting_count_only_from_the_last_30_days(self):
+		inside = self.lead(awaiting_reply_since=add_days(now_datetime(), -29))
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
+		brief = get_brief(MANAGER, "team")
+		self.assertEqual(kind_names(brief, "client"), [inside])
+
+	def test_past_response_counts_only_from_the_last_30_days(self):
+		inside = self.lead(response_by=add_days(now_datetime(), -29))
+		self.lead(response_by=add_days(now_datetime(), -31))
+		brief = get_brief(MANAGER, "team")
+		self.assertEqual(kind_names(brief, "client"), [inside])
+
+	def test_without_an_sla_behind_counts_only_from_the_last_30_days(self):
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -29))
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
+		workload = of_kind(get_brief(MANAGER, "team"), "workload")
+		self.assertEqual([(row["member"], row["behind"]) for row in workload], [(AGENT, 1)])
+
+	def test_with_an_sla_behind_counts_only_from_the_last_30_days(self):
+		self.lead(response_by=add_days(now_datetime(), -29))
+		self.lead(response_by=add_days(now_datetime(), -31))
+		frappe.get_doc(
+			{
+				"doctype": "CRM Service Level Agreement",
+				"name": "Brief window test",
+				"sla_name": "Brief window test",
+				"apply_on": "CRM Lead",
+				"enabled": 1,
+			}
+		).db_insert()
+		workload = of_kind(get_brief(MANAGER, "team"), "workload")
+		self.assertEqual([(row["member"], row["behind"]) for row in workload], [(AGENT, 1)])
+		self.assertTrue(workload[0]["past_response"])
+
+	def test_overdue_follow_ups_count_only_from_the_last_30_days(self):
+		self.follow_up(add_days(nowdate(), -29))
+		self.follow_up(add_days(nowdate(), -31))
+		brief = get_brief(MANAGER, "team")
+		rows = of_kind(brief, "overdue_person")
+		self.assertEqual([(row["member"], row["count"]) for row in rows], [(AGENT, 1)])
 
 
 class TestBriefDoctype(TeamWidgetTestCase):

@@ -22,8 +22,14 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NoNextStep,
 	RecordWidget,
 	RepliesWaiting,
+	idle_since,
 )
-from crm.fcrm.doctype.crm_dashboard.team_widgets import TeamOverdueFollowUps, TeamRepliesWaiting, Unassigned
+from crm.fcrm.doctype.crm_dashboard.team_widgets import (
+	OVERDUE_DAYS,
+	TeamOverdueFollowUps,
+	TeamRepliesWaiting,
+	Unassigned,
+)
 
 DOCTYPE_KEY = "crm_brief_doctype"
 NEW_FOR_YOU_DAYS = 7
@@ -43,6 +49,18 @@ def past_response(table):
 		& table.first_responded_on.isnull()
 		& table.last_outbound_at.isnull()
 	)
+
+
+def window_start():
+	return now_datetime() - timedelta(days=OVERDUE_DAYS)
+
+
+def waiting_in_window(table):
+	return table.awaiting_reply_since >= window_start()
+
+
+def past_response_in_window(table):
+	return past_response(table) & (table.response_by >= window_start())
 
 
 def allocate(rows_by_group: dict, slots: dict) -> dict:
@@ -73,6 +91,9 @@ class NewForYou(AssignedToMe):
 
 
 class WaitingOnMe(RepliesWaiting):
+	def filtered(self, doctype: str, table):
+		return super().filtered(doctype, table).where(waiting_in_window(table))
+
 	def fields(self, doctype: str, table) -> list:
 		past = Case().when(past_response(table), 1).else_(0).as_("past_response")
 		return [*super().fields(doctype, table), past]
@@ -82,7 +103,12 @@ class NoNextStepNotListed(NoNextStep):
 	"""Waiting records and new leads already have their own item in the Brief."""
 
 	def filtered(self, doctype: str, table):
-		query = super().filtered(doctype, table).where(table.awaiting_reply_since.isnull())
+		query = (
+			super()
+			.filtered(doctype, table)
+			.where(idle_since(table) >= window_start())
+			.where(table.awaiting_reply_since.isnull())
+		)
 		if doctype != "CRM Lead":
 			return query
 		new_lead = frappe.qb.DocType("CRM Lead").as_("new_lead")
@@ -115,6 +141,17 @@ class ClientsWaiting(TeamRepliesWaiting):
 		return self.decorate(rows[: self.row_limit])
 
 
+class RecentClientsWaiting(ClientsWaiting):
+	def filtered(self, doctype: str, table):
+		recent = waiting_in_window(table) | past_response_in_window(table)
+		return super().filtered(doctype, table).where(recent)
+
+
+class RecentFollowUpsDue(FollowUpsDue):
+	def condition(self):
+		return self.linked() & self.due.due_by_today_within_condition(self.task, OVERDUE_DAYS)
+
+
 class Ownerless(Unassigned):
 	def filtered(self, doctype: str, table):
 		owner = table[RECORD_TYPES[doctype].owner_field]
@@ -123,13 +160,17 @@ class Ownerless(Unassigned):
 
 class PastResponse(RecordWidget):
 	def filtered(self, doctype: str, table):
-		return super().filtered(doctype, table).where(past_response(table))
+		return super().filtered(doctype, table).where(past_response_in_window(table))
 
 
 class WaitingTooLong(RepliesWaiting):
 	def filtered(self, doctype: str, table):
 		cutoff = now_datetime() - timedelta(days=NO_SLA_WAIT_DAYS)
-		return super().filtered(doctype, table).where(table.awaiting_reply_since < cutoff)
+		return (
+			super()
+			.filtered(doctype, table)
+			.where(waiting_in_window(table) & (table.awaiting_reply_since < cutoff))
+		)
 
 
 def member_counts(widget: RecordWidget) -> Counter:
@@ -158,7 +199,7 @@ class MineBrief:
 	def widgets(self) -> dict:
 		widgets = {
 			"waiting": WaitingOnMe(self.doctypes, self.scope),
-			"tasks": FollowUpsDue(self.doctypes, self.scope),
+			"tasks": RecentFollowUpsDue(self.doctypes, self.scope),
 			"idle": NoNextStepNotListed(self.doctypes, self.scope),
 		}
 		if "CRM Lead" in self.doctypes:
@@ -227,7 +268,7 @@ class TeamBrief:
 		self.doctypes = DOCTYPES[self.doctype]
 
 	def summary(self) -> dict:
-		clients = ClientsWaiting(self.doctypes, self.scope)
+		clients = RecentClientsWaiting(self.doctypes, self.scope)
 		clients.row_limit = MORE_LIMIT
 		rows = [{**row, "kind": "client"} for row in clients.rows()]
 		ownerless = self.ownerless()
@@ -244,7 +285,7 @@ class TeamBrief:
 		return {"items": items, "total": total, "more": more_records(grouped, shown)}
 
 	def count(self) -> int:
-		clients = ClientsWaiting(self.doctypes, self.scope).count()
+		clients = RecentClientsWaiting(self.doctypes, self.scope).count()
 		return clients + bool(self.ownerless()) + len(self.workload()) + len(self.overdue_people())
 
 	def ownerless(self) -> dict | None:
