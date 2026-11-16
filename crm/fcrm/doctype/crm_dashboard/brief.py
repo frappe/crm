@@ -14,6 +14,7 @@ from frappe.utils import now_datetime
 from crm.fcrm.doctype.crm_dashboard.home_layout import role_for
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
+	DOCTYPES,
 	RECORD_TYPES,
 	ROW_LIMIT,
 	AssignedToMe,
@@ -21,10 +22,18 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NoNextStep,
 	RecordWidget,
 	RepliesWaiting,
+	TaskWidget,
+	idle_since,
 )
-from crm.fcrm.doctype.crm_dashboard.team_widgets import TeamOverdueFollowUps, TeamRepliesWaiting, Unassigned
-from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
+from crm.fcrm.doctype.crm_dashboard.team_widgets import (
+	OVERDUE_DAYS,
+	TeamOverdueFollowUps,
+	TeamRepliesWaiting,
+	Unassigned,
+)
 
+DOCTYPE_KEY = "crm_brief_doctype"
+RECORD_DOCTYPES = {"Lead": "CRM Lead", "Deal": "CRM Deal"}
 NEW_FOR_YOU_DAYS = 7
 NO_SLA_WAIT_DAYS = 2
 # The Brief links to the records it had no room for; the link carries their names.
@@ -42,6 +51,18 @@ def past_response(table):
 		& table.first_responded_on.isnull()
 		& table.last_outbound_at.isnull()
 	)
+
+
+def window_start():
+	return now_datetime() - timedelta(days=OVERDUE_DAYS)
+
+
+def waiting_in_window(table):
+	return table.awaiting_reply_since >= window_start()
+
+
+def past_response_in_window(table):
+	return past_response(table) & (table.response_by >= window_start())
 
 
 def allocate(rows_by_group: dict, slots: dict) -> dict:
@@ -72,6 +93,9 @@ class NewForYou(AssignedToMe):
 
 
 class WaitingOnMe(RepliesWaiting):
+	def filtered(self, doctype: str, table):
+		return super().filtered(doctype, table).where(waiting_in_window(table))
+
 	def fields(self, doctype: str, table) -> list:
 		past = Case().when(past_response(table), 1).else_(0).as_("past_response")
 		return [*super().fields(doctype, table), past]
@@ -81,7 +105,12 @@ class NoNextStepNotListed(NoNextStep):
 	"""Waiting records and new leads already have their own item in the Brief."""
 
 	def filtered(self, doctype: str, table):
-		query = super().filtered(doctype, table).where(table.awaiting_reply_since.isnull())
+		query = (
+			super()
+			.filtered(doctype, table)
+			.where(idle_since(table) >= window_start())
+			.where(table.awaiting_reply_since.isnull())
+		)
 		if doctype != "CRM Lead":
 			return query
 		new_lead = frappe.qb.DocType("CRM Lead").as_("new_lead")
@@ -114,6 +143,58 @@ class ClientsWaiting(TeamRepliesWaiting):
 		return self.decorate(rows[: self.row_limit])
 
 
+class RecentClientsWaiting(ClientsWaiting):
+	def filtered(self, doctype: str, table):
+		recent = waiting_in_window(table) | past_response_in_window(table)
+		return super().filtered(doctype, table).where(recent)
+
+
+class RecentFollowUpsDue(FollowUpsDue):
+	def condition(self):
+		return self.linked() & self.due.due_by_today_within_condition(self.task, OVERDUE_DAYS)
+
+
+class OverdueFollowUps(TaskWidget):
+	def condition(self):
+		return self.linked() & self.due.overdue_condition(self.task)
+
+
+class OlderRecords(RecordWidget):
+	"""The records a widget counts that its 30-day version leaves out."""
+
+	def __init__(self, widget: RecordWidget, recent: RecordWidget):
+		super().__init__(widget.doctypes, widget.scope)
+		self.widget = widget
+		self.recent = recent
+
+	def query(self, doctype: str, table):
+		recent = self.recent.query(doctype, table).select(table.name)
+		return self.widget.query(doctype, table).where(table.name.notin(recent))
+
+	def counts(self) -> dict:
+		return {doctype: self._count(doctype) for doctype in self.doctypes}
+
+	def names(self, doctype: str) -> list:
+		table = frappe.qb.DocType(doctype)
+		return self.query(doctype, table).select(table.name).run(pluck=True)
+
+
+class OlderTasks(TaskWidget):
+	"""The tasks a widget counts that its 30-day version leaves out."""
+
+	def __init__(self, widget: TaskWidget, recent: TaskWidget):
+		super().__init__(widget.doctypes, widget.scope)
+		self.widget = widget
+		self.recent = recent
+
+	def query(self):
+		recent = self.recent.query().select(self.task.name)
+		return self.widget.query().where(self.task.name.notin(recent))
+
+	def names(self) -> list:
+		return self.query().select(self.task.name).run(pluck=True)
+
+
 class Ownerless(Unassigned):
 	def filtered(self, doctype: str, table):
 		owner = table[RECORD_TYPES[doctype].owner_field]
@@ -122,13 +203,29 @@ class Ownerless(Unassigned):
 
 class PastResponse(RecordWidget):
 	def filtered(self, doctype: str, table):
-		return super().filtered(doctype, table).where(past_response(table))
+		return super().filtered(doctype, table).where(past_response_in_window(table))
 
 
 class WaitingTooLong(RepliesWaiting):
 	def filtered(self, doctype: str, table):
 		cutoff = now_datetime() - timedelta(days=NO_SLA_WAIT_DAYS)
-		return super().filtered(doctype, table).where(table.awaiting_reply_since < cutoff)
+		return (
+			super()
+			.filtered(doctype, table)
+			.where(waiting_in_window(table) & (table.awaiting_reply_since < cutoff))
+		)
+
+
+class RecentlyWorked(RecordWidget):
+	"""Any status counts, so a seller who just closed a deal is still active."""
+
+	def filtered(self, doctype: str, table):
+		# Same as idle_since(table) >= since, but plain comparisons run faster than GREATEST on large tables.
+		since = window_start()
+		worked = (
+			(table.modified >= since) | (table.last_inbound_at >= since) | (table.last_outbound_at >= since)
+		)
+		return frappe.qb.from_(table).where(worked)
 
 
 def member_counts(widget: RecordWidget) -> Counter:
@@ -140,24 +237,53 @@ def member_counts(widget: RecordWidget) -> Counter:
 		query = widget.query(doctype, table)
 		has_owner = Coalesce(owner, "") != ""
 		counts.update(dict(query.select(owner, Count("*")).where(has_owner).groupby(owner).run()))
-		for (assigned,) in query.select(table._assign).where(Coalesce(owner, "") == "").run():
+		ownerless_assigned = (Coalesce(owner, "") == "") & Coalesce(table._assign, "").notin(("", "[]"))
+		for (assigned,) in query.select(table._assign).where(ownerless_assigned).run():
 			first = next(iter(json.loads(assigned or "[]")), None)
 			if first:
 				counts[first] += 1
 	return counts
 
 
-class MineBrief:
+class Brief:
+	def older(self) -> dict:
+		"""Conversations are counted per record type, as each type opens its own list."""
+		widgets = self.older_widgets()
+		counts = widgets["conversations"].counts()
+		conversations = {
+			key: counts[doctype] for key, doctype in RECORD_DOCTYPES.items() if doctype in counts
+		}
+		return without_zeros(
+			{"conversations": without_zeros(conversations), "tasks": widgets["tasks"].count()}
+		)
+
+	def older_names(self, kind: str, doctype: str | None = None) -> list:
+		widgets = self.older_widgets()
+		if kind == "tasks":
+			return widgets["tasks"].names()
+		if kind != "conversations":
+			frappe.throw(_("Unknown older kind {0}").format(kind))
+		record_doctype = RECORD_DOCTYPES.get(doctype)
+		if record_doctype not in self.doctypes:
+			frappe.throw(_("The brief does not show {0}").format(doctype))
+		return widgets["conversations"].names(record_doctype)
+
+
+class MineBrief(Brief):
 	def __init__(self, user: str):
 		self.scope = Mine(user)
+		self.doctype = brief_doctype(user)
+		self.doctypes = DOCTYPES[self.doctype]
 
 	def widgets(self) -> dict:
-		return {
-			"waiting": WaitingOnMe(FOLLOW_UP_DOCTYPES, self.scope),
-			"tasks": FollowUpsDue(FOLLOW_UP_DOCTYPES, self.scope),
-			"idle": NoNextStepNotListed(FOLLOW_UP_DOCTYPES, self.scope),
-			"new": NewForYou(("CRM Lead",), self.scope),
+		widgets = {
+			"waiting": WaitingOnMe(self.doctypes, self.scope),
+			"tasks": RecentFollowUpsDue(self.doctypes, self.scope),
+			"idle": NoNextStepNotListed(self.doctypes, self.scope),
 		}
+		if "CRM Lead" in self.doctypes:
+			widgets["new"] = NewForYou(("CRM Lead",), self.scope)
+		return widgets
 
 	def summary(self) -> dict:
 		widgets = self.widgets()
@@ -169,19 +295,35 @@ class MineBrief:
 				*({**row, "kind": "follow_up"} for row in widgets["tasks"].rows()),
 				*({**row, "kind": "no_next_step"} for row in widgets["idle"].rows()),
 			],
-			"new": new_items(widgets["new"].rows(), counts["new"]),
+			"new": new_items(widgets["new"].rows(), counts["new"]) if "new" in widgets else [],
 		}
 		shown = allocate(rows, MINE_SLOTS)
 		set_last_emails(shown["waiting"])
 		items = [item for group in shown.values() for item in group]
-		return {"items": items, "total": headline(counts), "more": more_records(rows, shown)}
+		return {
+			"items": items,
+			"total": headline(counts),
+			"more": more_records(rows, shown),
+			"older": self.older(),
+		}
 
 	def count(self) -> int:
 		return headline({key: widget.count() for key, widget in self.widgets().items()})
 
+	def older_widgets(self) -> dict:
+		return {
+			"conversations": OlderRecords(
+				RepliesWaiting(self.doctypes, self.scope), WaitingOnMe(self.doctypes, self.scope)
+			),
+			"tasks": OlderTasks(
+				FollowUpsDue(self.doctypes, self.scope), RecentFollowUpsDue(self.doctypes, self.scope)
+			),
+		}
+
 
 def headline(counts: dict) -> int:
 	"""Idle records count only when the Brief has room to show them, or they swamp the number."""
+	counts = {"new": 0, **counts}
 	taken = allocate(
 		{
 			"waiting": range(counts["waiting"]),
@@ -213,12 +355,18 @@ def new_items(rows: list, count: int) -> list:
 	return [{**newest, "kind": "new", "count": count, "names": names}]
 
 
-class TeamBrief:
+def without_zeros(counts: dict) -> dict:
+	return {key: count for key, count in counts.items() if count}
+
+
+class TeamBrief(Brief):
 	def __init__(self, user: str):
 		self.scope = Team(user)
+		self.doctype = brief_doctype(user)
+		self.doctypes = DOCTYPES[self.doctype]
 
 	def summary(self) -> dict:
-		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope)
+		clients = RecentClientsWaiting(self.doctypes, self.scope)
 		clients.row_limit = MORE_LIMIT
 		rows = [{**row, "kind": "client"} for row in clients.rows()]
 		ownerless = self.ownerless()
@@ -232,13 +380,30 @@ class TeamBrief:
 		shown = allocate(grouped, TEAM_SLOTS)
 		set_last_emails(shown["clients"])
 		items = [*shown["clients"], *shown["people"]]
-		return {"items": items, "total": total, "more": more_records(grouped, shown)}
+		return {
+			"items": items,
+			"total": total,
+			"more": more_records(grouped, shown),
+			"older": self.older(),
+		}
 
 	def count(self) -> int:
-		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope).count()
+		clients = RecentClientsWaiting(self.doctypes, self.scope).count()
 		return clients + bool(self.ownerless()) + len(self.workload()) + len(self.overdue_people())
 
+	def older_widgets(self) -> dict:
+		return {
+			"conversations": OlderRecords(
+				ClientsWaiting(self.doctypes, self.scope), RecentClientsWaiting(self.doctypes, self.scope)
+			),
+			"tasks": OlderTasks(
+				OverdueFollowUps(self.doctypes, self.scope), TeamOverdueFollowUps(self.doctypes, self.scope)
+			),
+		}
+
 	def ownerless(self) -> dict | None:
+		if "CRM Lead" not in self.doctypes:
+			return None
 		widget = Ownerless(("CRM Lead",), self.scope)
 		count = widget.count()
 		if not count:
@@ -248,7 +413,7 @@ class TeamBrief:
 		return {"kind": "ownerless", "count": count, "since": oldest}
 
 	def overdue_people(self) -> list:
-		widget = TeamOverdueFollowUps(FOLLOW_UP_DOCTYPES, self.scope)
+		widget = TeamOverdueFollowUps(self.doctypes, self.scope)
 		task = widget.task
 		rows = (
 			widget.query()
@@ -265,14 +430,17 @@ class TeamBrief:
 		has_sla = frappe.db.exists("CRM Service Level Agreement", {"enabled": 1})
 		widget = PastResponse if has_sla else WaitingTooLong
 		members = set(self.scope.members)
-		behind = member_counts(widget(FOLLOW_UP_DOCTYPES, self.scope))
+		behind = member_counts(widget(self.doctypes, self.scope))
 		behind = {member: count for member, count in behind.items() if member in members}
 		if not behind:
 			return []
 
-		open_records = member_counts(RecordWidget(FOLLOW_UP_DOCTYPES, self.scope))
+		open_records = member_counts(RecordWidget(self.doctypes, self.scope))
+		active = member_counts(RecentlyWorked(self.doctypes, self.scope))
 		spare = [
-			member for member in members - set(behind) if member != self.scope.user and open_records[member]
+			member
+			for member in members - set(behind)
+			if member != self.scope.user and open_records[member] and active[member]
 		]
 		lightest = min(spare, key=lambda member: (open_records[member], member), default=None)
 		return [
@@ -321,17 +489,42 @@ def last_email(doctype: str, name: str):
 	return emails[0] if emails and emails[0].date else None
 
 
+BRIEFS = {"mine": MineBrief, "team": TeamBrief}
+
+
 def get_brief(user: str, tab: str = "mine") -> dict:
 	"""The reply names its tab, so the page can tell a late reply for the other tab apart."""
-	if role_for(user) != "manager":
-		if tab != "mine":
-			frappe.throw(_("The team brief is only available to managers"), frappe.PermissionError)
-		return {**MineBrief(user).summary(), "tab": tab}
+	brief = brief_for(user, tab)
+	return {**brief.summary(), "tab": tab, "doctype": brief.doctype}
 
-	if tab not in ("team", "mine"):
+
+def get_brief_count(user: str, tab: str) -> int:
+	"""Asked for apart from the Brief, so the tab on screen does not wait for the other tab's count."""
+	return brief_for(user, tab).count()
+
+
+def get_brief_older(user: str, tab: str, kind: str, doctype: str | None = None) -> list:
+	"""The names behind an older count, so its link can open a list of exactly those records."""
+	return brief_for(user, tab).older_names(kind, doctype)
+
+
+def brief_doctype(user: str) -> str:
+	"""Lead, Deal or Both. Both is never saved, so a user who has not chosen sees everything."""
+	return frappe.defaults.get_user_default(DOCTYPE_KEY, user) or "Both"
+
+
+def set_brief_doctype(user: str, doctype: str):
+	if doctype not in DOCTYPES:
+		frappe.throw(_("The brief can only show Lead, Deal or Both"))
+	if doctype == "Both":
+		frappe.defaults.clear_user_default(DOCTYPE_KEY, user)
+	else:
+		frappe.defaults.set_user_default(DOCTYPE_KEY, doctype, user)
+
+
+def brief_for(user: str, tab: str) -> MineBrief | TeamBrief:
+	if tab not in BRIEFS:
 		frappe.throw(_("Unknown brief tab {0}").format(tab))
-	active, other = (TeamBrief, MineBrief) if tab == "team" else (MineBrief, TeamBrief)
-	brief = active(user).summary()
-	brief["counts"] = {tab: brief["total"], "mine" if tab == "team" else "team": other(user).count()}
-	brief["tab"] = tab
-	return brief
+	if tab == "team" and role_for(user) != "manager":
+		frappe.throw(_("The team brief is only available to managers"), frappe.PermissionError)
+	return BRIEFS[tab](user)

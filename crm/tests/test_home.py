@@ -147,7 +147,26 @@ class TestHomeLayout(IntegrationTestCase):
 			save_layout([widget("tasks", w=20, config={"doctype": "Lead"})])
 
 		saved = save_layout([widget("leads_and_deals")])["layout"][0]
-		self.assertEqual(saved["config"], {"doctype": "Both"})
+		self.assertEqual(saved["config"], {})
+		saved = save_layout([widget("leads_and_deals", config={"doctype": "Deal"})])["layout"][0]
+		self.assertEqual(saved["config"], {"doctype": "Deal"})
+
+	def test_only_team_workload_keeps_filters(self):
+		frappe.set_user(MANAGER)
+		filters = {"territory": "Europe"}
+		saved = save_layout([widget("team_overview", h=10, config={"filters": filters})])["layout"][0]
+		self.assertEqual(saved["config"], {"filters": filters})
+		with self.assertRaises(frappe.ValidationError):
+			save_layout([widget("leads_and_deals", config={"filters": filters})])
+
+	def test_team_workload_refuses_a_filter_on_a_missing_field(self):
+		frappe.set_user(MANAGER)
+		for config in (
+			{"filters": {"no_such_field": 1}},
+			{"doctype": "Lead", "filters": {"deal_owner": MANAGER}},
+		):
+			with self.assertRaises(frappe.ValidationError):
+				save_layout([widget("team_overview", h=10, config=config)])
 
 	def test_number_cards_keep_a_comparison_period(self):
 		frappe.set_user(AGENT)

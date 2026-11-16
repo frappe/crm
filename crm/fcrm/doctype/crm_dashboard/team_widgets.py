@@ -1,6 +1,7 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
+import hashlib
 import json
 import operator
 from datetime import timedelta
@@ -22,8 +23,8 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	TabbedWidget,
 	TaskWidget,
 	Widget,
+	check_filters,
 )
-from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 
 OVERDUE_DAYS = 30
 UNASSIGNED_CAP = 100
@@ -62,15 +63,18 @@ class Unassigned(NewLeads):
 
 
 class TeamOverview(Widget):
-	"""Every column counts only leads and deals created in the period."""
+	"""Every column counts only leads and deals created in the period that match the filters.
+	With both doctypes, the filters can only use fields the two share."""
 
-	def __init__(self, doctypes: tuple, scope, period: str = DEFAULT_PERIOD):
+	def __init__(self, doctypes: tuple, scope, period: str = DEFAULT_PERIOD, filters: dict | None = None):
 		super().__init__(doctypes, scope)
 		self.since = now_datetime() - timedelta(days=period_days(period))
 		self.period = period
+		self.filters = filters or {}
+		check_filters(doctypes, self.filters)
 
 	def summary(self) -> dict:
-		key = f"crm:home:team_overview:{self.scope.key}:{self.period}"
+		key = overview_cache_key(self.scope.key, self.period, self.doctypes, self.filters)
 		rows = frappe.cache.get_value(key)
 		if rows is None:
 			rows = self.rows()
@@ -82,11 +86,11 @@ class TeamOverview(Widget):
 			member: dict.fromkeys((*OVERVIEW_COUNTS, "overdue_follow_ups"), 0)
 			for member in self.scope.members
 		}
-		for doctype in FOLLOW_UP_DOCTYPES:
+		for doctype in self.doctypes:
 			table = frappe.qb.DocType(doctype)
 			for stat, widget in OVERVIEW_COUNTS.items():
 				filtered = widget(self.doctypes, self.scope).filtered(doctype, table)
-				records = self.by_member(doctype, filtered.where(table.creation >= self.since))
+				records = self.by_member(doctype, filtered.where(self.counted(doctype, table)))
 				counts = frappe.qb.from_(records).select("member", Count("*")).groupby("member")
 				for member, count in counts.run():
 					stats[member][stat] += count
@@ -96,19 +100,20 @@ class TeamOverview(Widget):
 
 		responses = self.responses()
 		no_responses = {"first_response_time": None, "sla_met": 0, "sla_total": 0}
-		return [
+		rows = [
 			{"user": member, **counts, **responses.get(member, no_responses)}
 			for member, counts in stats.items()
 		]
+		return [row for row in rows if has_figures(row)]
 
 	def overdue_follow_ups(self) -> list:
-		follow_ups = TeamOverdueFollowUps(FOLLOW_UP_DOCTYPES, self.scope)
+		follow_ups = TeamOverdueFollowUps(self.doctypes, self.scope)
 		task = follow_ups.task
 		on_recent_records = reduce(
 			operator.or_,
 			(
 				(task.reference_doctype == doctype) & task.reference_docname.isin(self.created(doctype))
-				for doctype in FOLLOW_UP_DOCTYPES
+				for doctype in self.doctypes
 			),
 		)
 		query = follow_ups.query().where(on_recent_records)
@@ -116,15 +121,22 @@ class TeamOverview(Widget):
 
 	def created(self, doctype: str):
 		table = frappe.qb.DocType(doctype)
-		return frappe.qb.from_(table).select(table.name).where(table.creation >= self.since)
+		return frappe.qb.from_(table).select(table.name).where(self.counted(doctype, table))
+
+	def counted(self, doctype: str, table):
+		created = table.creation >= self.since
+		if not self.filters:
+			return created
+		matching = frappe.qb.get_query(doctype, fields=["name"], filters=self.filters, db_query_compat=True)
+		return created & table.name.isin(matching)
 
 	def responses(self) -> dict:
 		"""An unanswered record counts against the SLA once its response_by has passed."""
 		now = now_datetime()
 		totals = {}
-		for doctype in FOLLOW_UP_DOCTYPES:
+		for doctype in self.doctypes:
 			table = frappe.qb.DocType(doctype)
-			created = frappe.qb.from_(table).where(table.creation >= self.since)
+			created = frappe.qb.from_(table).where(self.counted(doctype, table))
 			sla_decided = table.response_by.isnotnull() & (
 				table.first_responded_on.isnotnull() | (table.response_by < now)
 			)
@@ -174,6 +186,18 @@ class TeamOverview(Widget):
 
 class OverdueAndUnassigned(TabbedWidget):
 	TABS: ClassVar[dict] = {"overdue": TeamOverdueFollowUps, "unassigned": Unassigned}
+
+
+def overview_cache_key(scope_key: str, period: str, doctypes: tuple, filters: dict | None = None) -> str:
+	key = f"crm:home:team_overview:{scope_key}:{period}:{','.join(doctypes)}"
+	if filters:
+		key += ":" + hashlib.sha1(json.dumps(filters, sort_keys=True).encode()).hexdigest()[:12]
+	return key
+
+
+def has_figures(row: dict) -> bool:
+	counts = (*OVERVIEW_COUNTS, "overdue_follow_ups", "sla_total")
+	return any(row[count] for count in counts) or row["first_response_time"] is not None
 
 
 TEAM_WIDGET_DATA = {

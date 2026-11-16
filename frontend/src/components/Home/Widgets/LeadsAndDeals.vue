@@ -1,7 +1,7 @@
 <template>
   <HomeWidget
     :title="titles[doctype || 'Both']"
-    :subtitle="tabEmpty[tab].subtitle"
+    :subtitle="subtitle"
     :resource="resource"
     :config="doctype ? null : config"
     :viewAll="recordListRoute(filter.doctype)"
@@ -23,7 +23,7 @@ import HomeTabs from '@/components/Home/HomeTabs.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { useTabbedHomeWidget } from '@/composables/homeWidget'
-import { recordListRoute, recordRoute } from '@/utils/home'
+import { RECORD_LABELS, recordListRoute, recordRoute } from '@/utils/home'
 import { computed, ref } from 'vue'
 
 const props = defineProps({
@@ -50,12 +50,12 @@ const tabs = [
 
 const tabEmpty = {
   replies: {
-    subtitle: __('Customers waiting on a reply from you'),
+    subtitle: __('{0} waiting on a reply from you'),
     text: __('No one is waiting on a reply from you.'),
     icon: 'lucide-inbox',
   },
   new: {
-    subtitle: __('New leads and deals, newest first'),
+    subtitle: __('New {0}, newest first'),
     text: __('Nothing new for you right now.'),
     icon: 'lucide-sparkles',
   },
@@ -76,6 +76,12 @@ const columns = {
 }
 
 const tab = ref('replies')
+
+// A Leads or Deals card has no picker, so it names its records itself.
+const subtitle = computed(() => {
+  const template = tabEmpty[tab.value].subtitle
+  return props.doctype ? __(template, [RECORD_LABELS[props.doctype]]) : template
+})
 
 const resource = useTabbedHomeWidget('leads_and_deals', tab, () => filter.value)
 </script>

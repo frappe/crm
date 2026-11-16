@@ -1,14 +1,24 @@
 <template>
   <section :aria-label="__('Today\'s brief')" class="flex flex-col gap-3">
     <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <h2 class="text-xl-semibold text-ink-gray-9">
-        {{ __("Today's brief") }}
-      </h2>
+      <div class="flex min-w-0 items-baseline gap-2">
+        <h2 class="text-xl-semibold text-ink-gray-9">
+          {{ __("Today's brief") }}
+        </h2>
+        <span class="flex items-baseline gap-1 text-base text-ink-gray-5">
+          {{ __('on') }}
+          <PeriodPicker
+            :period="doctype"
+            :labels="RECORD_LABELS"
+            @change="(value) => emit('update:doctype', value)"
+          />
+        </span>
+      </div>
       <HomeTabs
         v-if="isManager()"
         v-model="tab"
         :tabs="tabs"
-        :counts="resource.data?.counts"
+        :counts="shownCounts"
       />
     </div>
 
@@ -92,13 +102,12 @@
         </div>
       </li>
     </ol>
-    <p v-if="loaded && moreLinks.length" class="text-sm text-ink-gray-6">
-      {{ __('More:') }}
-      <template v-for="(link, index) in moreLinks" :key="link.label">
+    <p v-if="loaded && footerLinks.length" class="text-sm text-ink-gray-6">
+      <template v-for="(link, index) in footerLinks" :key="link.label">
         <span v-if="index" aria-hidden="true"> · </span>
         <router-link
           :to="link.route"
-          class="text-ink-gray-8 underline-offset-2 hover:underline"
+          class="text-ink-gray-8 underline underline-offset-2 hover:text-ink-gray-9"
         >
           {{ link.label }}
         </router-link>
@@ -110,29 +119,47 @@
 import BriefAction from '@/components/Home/BriefAction.vue'
 import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeTabs from '@/components/Home/HomeTabs.vue'
+import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { usersStore } from '@/stores/users'
 import {
   briefAge,
   briefBadge,
+  briefCount,
   briefDetail,
   briefIcon,
   briefMoreLinks,
+  briefOlderLinks,
   briefPerson,
   briefRoute,
   briefTitle,
 } from '@/utils/brief'
 import { formatDate } from '@/utils'
+import { RECORD_LABELS } from '@/utils/home'
 import { formatTaskDue } from '@/utils/task'
 import { Avatar, Badge } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
   resource: { type: Object, required: true },
+  counts: { type: Object, default: () => ({}) },
 })
+
+const emit = defineEmits(['update:doctype'])
 
 const tab = defineModel('tab', { type: String, required: true })
 
 const { getUser, isManager } = usersStore()
+
+const doctype = computed(() => props.resource.data?.doctype || 'Both')
+
+const shownCounts = computed(() =>
+  Object.fromEntries(
+    Object.entries(props.counts).map(([name, count]) => [
+      name,
+      briefCount(count),
+    ]),
+  ),
+)
 
 const tabs = [
   { label: __('Team'), value: 'team' },
@@ -146,7 +173,10 @@ const loaded = computed(() => props.resource.data?.tab === tab.value)
 
 const items = computed(() => props.resource.data?.items || [])
 
-const moreLinks = computed(() => briefMoreLinks(props.resource.data?.more))
+const footerLinks = computed(() => [
+  ...briefMoreLinks(props.resource.data?.more),
+  ...briefOlderLinks(props.resource.data),
+])
 
 function fullName(user) {
   return getUser(user)?.full_name || user

@@ -2,8 +2,8 @@ import frappe
 from frappe import _
 
 from crm.api.digest import OPT_OUT_KEY
+from crm.fcrm.doctype.crm_dashboard import brief
 from crm.fcrm.doctype.crm_dashboard.ask_flow import flow_available, start_flow_chat
-from crm.fcrm.doctype.crm_dashboard.brief import get_brief as build_brief
 from crm.fcrm.doctype.crm_dashboard.home_layout import (
 	DEFAULT_PERIOD,
 	WIDGETS,
@@ -98,7 +98,25 @@ def get_counts() -> dict:
 @frappe.whitelist()
 @sales_user_only
 def get_brief(tab: str = "mine") -> dict:
-	return build_brief(frappe.session.user, tab)
+	return brief.get_brief(frappe.session.user, tab)
+
+
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def set_brief_doctype(doctype: str):
+	brief.set_brief_doctype(frappe.session.user, doctype)
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_brief_count(tab: str) -> int:
+	return brief.get_brief_count(frappe.session.user, tab)
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_brief_older(tab: str, kind: str, doctype: str | None = None) -> list:
+	return brief.get_brief_older(frappe.session.user, tab, kind, doctype)
 
 
 @frappe.whitelist()
@@ -119,20 +137,27 @@ def ask_flow(message: str) -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_tab(widget: str, tab: str, doctype: str = "Both") -> dict:
+def get_tab(widget: str, tab: str, doctype: str | None = None) -> dict:
 	return get_tab_data(widget, tab, doctype)
 
 
 @frappe.whitelist()
 @sales_user_only
-def get_widget(widget: str, doctype: str = "Both", period: str | None = None) -> dict:
-	return get_widget_data(widget, doctype, period=period)
+def get_widget(
+	widget: str, doctype: str | None = None, period: str | None = None, filters: dict | str | None = None
+) -> dict:
+	return get_widget_data(widget, doctype, period=period, filters=filters)
 
 
 def get_widget_data(
-	widget: str, doctype: str = "Both", user: str | None = None, period: str | None = None
+	widget: str,
+	doctype: str | None = None,
+	user: str | None = None,
+	period: str | None = None,
+	filters: dict | str | None = None,
 ) -> dict:
 	user = user or frappe.session.user
+	doctype = doctype or "Both"
 	shared = {**WIDGET_DATA, **SALES_WIDGET_DATA, "recently_opened": RecentActivity}
 	if widget not in shared and widget not in TEAM_WIDGET_DATA:
 		frappe.throw(_("Home widget {0} has no data").format(widget))
@@ -150,11 +175,13 @@ def get_widget_data(
 	args = (DOCTYPES[doctype], Team(user))
 	if WIDGETS[widget].period_setting:
 		args += (period or DEFAULT_PERIOD,)
-	return TEAM_WIDGET_DATA[widget](*args).summary()
+	kwargs = {"filters": frappe.parse_json(filters) or {}} if WIDGETS[widget].filter_setting else {}
+	return TEAM_WIDGET_DATA[widget](*args, **kwargs).summary()
 
 
-def get_tab_data(widget: str, tab: str, doctype: str = "Both", user: str | None = None) -> dict:
+def get_tab_data(widget: str, tab: str, doctype: str | None = None, user: str | None = None) -> dict:
 	user = user or frappe.session.user
+	doctype = doctype or "Both"
 	if widget not in TABBED_WIDGETS and widget not in TEAM_TABBED_WIDGETS:
 		frappe.throw(_("Home widget {0} has no tabs").format(widget))
 	if doctype not in DOCTYPES:
