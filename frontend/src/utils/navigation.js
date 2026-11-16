@@ -5,10 +5,12 @@ import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
+import LucideHouse from '~icons/lucide/house'
 import LucideLayoutDashboard from '~icons/lucide/layout-dashboard'
 import router from '@/router'
 
 export const navigationItems = [
+  { label: 'Home', icon: LucideHouse, route: 'Home', desktopOnly: true },
   {
     label: 'Dashboard',
     icon: LucideLayoutDashboard,

@@ -36,6 +36,7 @@ class FCRMSettings(Document):
 		disable_onboarding: DF.Check
 		dropdown_items: DF.Table[CRMDropdownItem]
 		enable_forecasting: DF.Check
+		enable_morning_digest: DF.Check
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
 		service_provider: DF.Literal[

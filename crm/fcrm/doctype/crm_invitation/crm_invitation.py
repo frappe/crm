@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from crm.api.user import validate_no_role_profile
+from crm.api.user import add_flow_role_on_joining, validate_no_role_profile
 
 
 class CRMInvitation(Document):
@@ -73,6 +73,7 @@ class CRMInvitation(Document):
 		user, is_new_user = self.create_user_if_not_exists()
 		if not is_new_user:
 			validate_no_role_profile(user)
+		add_flow_role_on_joining(user)
 		user.append_roles(self.role)
 		if self.role == "System Manager":
 			user.append_roles("Sales Manager", "Sales User")
