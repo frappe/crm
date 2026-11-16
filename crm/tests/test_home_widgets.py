@@ -222,6 +222,10 @@ class TestTasksWidget(HomeWidgetTestCase):
 		self.assertEqual(data["rows"][0]["reference_title"], "Home")
 		self.assertEqual(self.counts()["follow_ups_due"], 2)
 
+	def test_a_record_i_cannot_read_has_no_title(self):
+		self.follow_up(add_days(now_datetime(), -1), reference=self.lead(lead_owner=MANAGER))
+		self.assertIsNone(self.tasks("due")["rows"][0]["reference_title"])
+
 	def test_upcoming_covers_the_next_seven_days(self):
 		later = self.follow_up(add_days(nowdate(), 7), all_day=1)
 		tomorrow = self.follow_up(add_days(nowdate(), 1), all_day=1)

@@ -187,7 +187,7 @@ class TaskWidget(Widget):
 		task = self.task
 		query = self.query().select(*self.FIELDS, task.reference_doctype, task.reference_docname)
 		rows = self.order(query).limit(self.row_limit).run(as_dict=True)
-		set_reference_titles(rows)
+		set_reference_titles(rows, self.scope.user)
 		return rows
 
 	def count(self) -> int:
@@ -289,7 +289,8 @@ WIDGET_DATA = {
 TABBED_WIDGETS = {"tasks": Tasks, "leads_and_deals": LeadsAndDeals}
 
 
-def set_reference_titles(rows: list):
+def set_reference_titles(rows: list, user: str):
+	"""A task can be on a record its assignee cannot read; that record gets no title."""
 	names = {}
 	for row in rows:
 		if row.reference_doctype in RECORD_TYPES and row.reference_docname:
@@ -298,7 +299,9 @@ def set_reference_titles(rows: list):
 	titles = {}
 	for doctype, docnames in names.items():
 		title_field = RECORD_TYPES[doctype].title_field
-		for record in frappe.get_all(doctype, {"name": ["in", docnames]}, ["name", title_field]):
+		for record in frappe.get_list(
+			doctype, filters={"name": ["in", docnames]}, fields=["name", title_field], user=user
+		):
 			titles[doctype, record.name] = record[title_field] or record.name
 
 	for row in rows:
