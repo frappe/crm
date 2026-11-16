@@ -157,7 +157,7 @@ class FollowUpsSection(Section, FollowUpsDue):
 	def item(self, row) -> dict:
 		return {
 			"title": row.title,
-			"detail": " · ".join(filter(None, (row.reference_title, due_label(self.due, row)))),
+			"detail": joined(row.reference_title, due_label(self.due, row)),
 			"url": record_url(row.reference_doctype, row.reference_docname, "tasks"),
 			"overdue": self.due.is_overdue(row),
 		}
@@ -172,7 +172,7 @@ class RepliesSection(Section, RepliesWaiting):
 		channel = {"email": _("Email"), "whatsapp": _("WhatsApp")}.get(row["channel"])
 		return {
 			"title": row["title"] or row["name"],
-			"detail": " · ".join(filter(None, (row["subtitle"], channel, received))),
+			"detail": joined(row["subtitle"], channel, received),
 			"url": record_url(row["doctype"], row["name"], CHANNEL_TABS.get(row["channel"])),
 		}
 
@@ -197,7 +197,7 @@ class NewlyAssignedSection(Section, AssignedToMe):
 	def item(self, row) -> dict:
 		return {
 			"title": row["title"] or row["name"],
-			"detail": " · ".join(filter(None, (row["subtitle"], row["status"]))),
+			"detail": joined(row["subtitle"], row["status"]),
 			"url": record_url(row["doctype"], row["name"]),
 		}
 
@@ -220,6 +220,10 @@ def due_label(due: TaskDue, task) -> str:
 	if task.all_day:
 		return _("Due today")
 	return _("Due at {0}").format(format_time(due.user_time(task.due_date), "HH:mm"))
+
+
+def joined(*parts) -> str:
+	return " · ".join(part for part in parts if part)
 
 
 def record_url(doctype: str, name: str, tab: str | None = None) -> str:
