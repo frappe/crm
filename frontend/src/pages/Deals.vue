@@ -17,6 +17,7 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    v-if="briefReady"
     ref="viewControls"
     v-model="deals"
     v-model:loadMore="loadMore"
@@ -296,6 +297,7 @@ const route = useRoute()
 const {
   filters: briefFilters,
   label: briefFiltersLabel,
+  ready: briefReady,
   clear: clearBriefFilters,
 } = useBriefFilter()
 

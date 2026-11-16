@@ -22,6 +22,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NoNextStep,
 	RecordWidget,
 	RepliesWaiting,
+	TaskWidget,
 	idle_since,
 )
 from crm.fcrm.doctype.crm_dashboard.team_widgets import (
@@ -32,6 +33,7 @@ from crm.fcrm.doctype.crm_dashboard.team_widgets import (
 )
 
 DOCTYPE_KEY = "crm_brief_doctype"
+RECORD_DOCTYPES = {"Lead": "CRM Lead", "Deal": "CRM Deal"}
 NEW_FOR_YOU_DAYS = 7
 NO_SLA_WAIT_DAYS = 2
 # The Brief links to the records it had no room for; the link carries their names.
@@ -152,6 +154,47 @@ class RecentFollowUpsDue(FollowUpsDue):
 		return self.linked() & self.due.due_by_today_within_condition(self.task, OVERDUE_DAYS)
 
 
+class OverdueFollowUps(TaskWidget):
+	def condition(self):
+		return self.linked() & self.due.overdue_condition(self.task)
+
+
+class OlderRecords(RecordWidget):
+	"""The records a widget counts that its 30-day version leaves out."""
+
+	def __init__(self, widget: RecordWidget, recent: RecordWidget):
+		super().__init__(widget.doctypes, widget.scope)
+		self.widget = widget
+		self.recent = recent
+
+	def query(self, doctype: str, table):
+		recent = self.recent.query(doctype, table).select(table.name)
+		return self.widget.query(doctype, table).where(table.name.notin(recent))
+
+	def counts(self) -> dict:
+		return {doctype: self._count(doctype) for doctype in self.doctypes}
+
+	def names(self, doctype: str) -> list:
+		table = frappe.qb.DocType(doctype)
+		return self.query(doctype, table).select(table.name).run(pluck=True)
+
+
+class OlderTasks(TaskWidget):
+	"""The tasks a widget counts that its 30-day version leaves out."""
+
+	def __init__(self, widget: TaskWidget, recent: TaskWidget):
+		super().__init__(widget.doctypes, widget.scope)
+		self.widget = widget
+		self.recent = recent
+
+	def query(self):
+		recent = self.recent.query().select(self.task.name)
+		return self.widget.query().where(self.task.name.notin(recent))
+
+	def names(self) -> list:
+		return self.query().select(self.task.name).run(pluck=True)
+
+
 class Ownerless(Unassigned):
 	def filtered(self, doctype: str, table):
 		owner = table[RECORD_TYPES[doctype].owner_field]
@@ -190,7 +233,31 @@ def member_counts(widget: RecordWidget) -> Counter:
 	return counts
 
 
-class MineBrief:
+class Brief:
+	def older(self) -> dict:
+		"""Conversations are counted per record type, as each type opens its own list."""
+		widgets = self.older_widgets()
+		counts = widgets["conversations"].counts()
+		conversations = {
+			key: counts[doctype] for key, doctype in RECORD_DOCTYPES.items() if doctype in counts
+		}
+		return without_zeros(
+			{"conversations": without_zeros(conversations), "tasks": widgets["tasks"].count()}
+		)
+
+	def older_names(self, kind: str, doctype: str | None = None) -> list:
+		widgets = self.older_widgets()
+		if kind == "tasks":
+			return widgets["tasks"].names()
+		if kind != "conversations":
+			frappe.throw(_("Unknown older kind {0}").format(kind))
+		record_doctype = RECORD_DOCTYPES.get(doctype)
+		if record_doctype not in self.doctypes:
+			frappe.throw(_("The brief does not show {0}").format(doctype))
+		return widgets["conversations"].names(record_doctype)
+
+
+class MineBrief(Brief):
 	def __init__(self, user: str):
 		self.scope = Mine(user)
 		self.doctype = brief_doctype(user)
@@ -221,10 +288,25 @@ class MineBrief:
 		shown = allocate(rows, MINE_SLOTS)
 		set_last_emails(shown["waiting"])
 		items = [item for group in shown.values() for item in group]
-		return {"items": items, "total": headline(counts), "more": more_records(rows, shown)}
+		return {
+			"items": items,
+			"total": headline(counts),
+			"more": more_records(rows, shown),
+			"older": self.older(),
+		}
 
 	def count(self) -> int:
 		return headline({key: widget.count() for key, widget in self.widgets().items()})
+
+	def older_widgets(self) -> dict:
+		return {
+			"conversations": OlderRecords(
+				RepliesWaiting(self.doctypes, self.scope), WaitingOnMe(self.doctypes, self.scope)
+			),
+			"tasks": OlderTasks(
+				FollowUpsDue(self.doctypes, self.scope), RecentFollowUpsDue(self.doctypes, self.scope)
+			),
+		}
 
 
 def headline(counts: dict) -> int:
@@ -261,7 +343,11 @@ def new_items(rows: list, count: int) -> list:
 	return [{**newest, "kind": "new", "count": count, "names": names}]
 
 
-class TeamBrief:
+def without_zeros(counts: dict) -> dict:
+	return {key: count for key, count in counts.items() if count}
+
+
+class TeamBrief(Brief):
 	def __init__(self, user: str):
 		self.scope = Team(user)
 		self.doctype = brief_doctype(user)
@@ -282,11 +368,26 @@ class TeamBrief:
 		shown = allocate(grouped, TEAM_SLOTS)
 		set_last_emails(shown["clients"])
 		items = [*shown["clients"], *shown["people"]]
-		return {"items": items, "total": total, "more": more_records(grouped, shown)}
+		return {
+			"items": items,
+			"total": total,
+			"more": more_records(grouped, shown),
+			"older": self.older(),
+		}
 
 	def count(self) -> int:
 		clients = RecentClientsWaiting(self.doctypes, self.scope).count()
 		return clients + bool(self.ownerless()) + len(self.workload()) + len(self.overdue_people())
+
+	def older_widgets(self) -> dict:
+		return {
+			"conversations": OlderRecords(
+				ClientsWaiting(self.doctypes, self.scope), RecentClientsWaiting(self.doctypes, self.scope)
+			),
+			"tasks": OlderTasks(
+				OverdueFollowUps(self.doctypes, self.scope), TeamOverdueFollowUps(self.doctypes, self.scope)
+			),
+		}
 
 	def ownerless(self) -> dict | None:
 		if "CRM Lead" not in self.doctypes:
@@ -385,6 +486,11 @@ def get_brief(user: str, tab: str = "mine") -> dict:
 def get_brief_count(user: str, tab: str) -> int:
 	"""Asked for apart from the Brief, so the tab on screen does not wait for the other tab's count."""
 	return brief_for(user, tab).count()
+
+
+def get_brief_older(user: str, tab: str, kind: str, doctype: str | None = None) -> list:
+	"""The names behind an older count, so its link can open a list of exactly those records."""
+	return brief_for(user, tab).older_names(kind, doctype)
 
 
 def brief_doctype(user: str) -> str:

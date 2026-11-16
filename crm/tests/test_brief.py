@@ -12,6 +12,7 @@ from crm.fcrm.doctype.crm_dashboard.brief import (
 	allocate,
 	get_brief,
 	get_brief_count,
+	get_brief_older,
 )
 from crm.tests.test_home import AGENT, MANAGER, make_lead, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
@@ -64,7 +65,7 @@ class TestMineBrief(HomeWidgetTestCase):
 
 	def test_a_quiet_day_has_no_groups(self):
 		brief = self.brief()
-		self.assertEqual(brief, {"items": [], "total": 0, "more": {}})
+		self.assertEqual(brief, {"items": [], "total": 0, "more": {}, "older": {}})
 
 	def test_waiting_items_go_oldest_first(self):
 		newer = self.lead(awaiting_reply_since=add_days(now_datetime(), -1))
@@ -198,6 +199,7 @@ class TestMineBrief(HomeWidgetTestCase):
 		brief = get_brief(AGENT)
 		self.assertEqual(kind_names(brief, "waiting"), [inside])
 		self.assertEqual(brief["total"], 1)
+		self.assertEqual(brief["older"], {"conversations": {"Lead": 1}})
 
 	def test_overdue_follow_ups_count_only_from_the_last_30_days(self):
 		contacted = self.contacted_lead()
@@ -206,6 +208,7 @@ class TestMineBrief(HomeWidgetTestCase):
 		brief = get_brief(AGENT)
 		self.assertEqual(kind_names(brief, "follow_up"), [inside])
 		self.assertEqual(brief["total"], 1)
+		self.assertEqual(brief["older"], {"tasks": 1})
 
 	def test_no_next_step_lists_records_quiet_for_7_to_30_days(self):
 		self.idle_lead(days=3)
@@ -213,6 +216,7 @@ class TestMineBrief(HomeWidgetTestCase):
 		self.idle_lead(days=40)
 		brief = get_brief(AGENT)
 		self.assertEqual(kind_names(brief, "no_next_step"), [quiet])
+		self.assertEqual(brief["older"], {})
 
 
 class TestTeamBrief(TeamWidgetTestCase):
@@ -302,6 +306,7 @@ class TestTeamBrief(TeamWidgetTestCase):
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
 		self.follow_up(add_days(nowdate(), -31))
 		brief = get_brief(MANAGER, "team")
+		self.assertEqual(brief["older"], {"conversations": {"Lead": 1}, "tasks": 1})
 		self.assertEqual(get_brief_count(MANAGER, "team"), brief["total"])
 
 	def test_replies_waiting_count_only_from_the_last_30_days(self):
@@ -309,12 +314,14 @@ class TestTeamBrief(TeamWidgetTestCase):
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -31))
 		brief = get_brief(MANAGER, "team")
 		self.assertEqual(kind_names(brief, "client"), [inside])
+		self.assertEqual(brief["older"], {"conversations": {"Lead": 1}})
 
 	def test_past_response_counts_only_from_the_last_30_days(self):
 		inside = self.lead(response_by=add_days(now_datetime(), -29))
 		self.lead(response_by=add_days(now_datetime(), -31))
 		brief = get_brief(MANAGER, "team")
 		self.assertEqual(kind_names(brief, "client"), [inside])
+		self.assertEqual(brief["older"], {"conversations": {"Lead": 1}})
 
 	def test_without_an_sla_behind_counts_only_from_the_last_30_days(self):
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -29))
@@ -344,6 +351,7 @@ class TestTeamBrief(TeamWidgetTestCase):
 		brief = get_brief(MANAGER, "team")
 		rows = of_kind(brief, "overdue_person")
 		self.assertEqual([(row["member"], row["count"]) for row in rows], [(AGENT, 1)])
+		self.assertEqual(brief["older"], {"tasks": 1})
 
 
 class TestBriefDoctype(TeamWidgetTestCase):
@@ -425,3 +433,59 @@ class TestGetBrief(TeamWidgetTestCase):
 		self.assertNotIn("counts", brief)
 		self.assertEqual(get_brief_count(MANAGER, "mine"), 1)
 		self.assertEqual(get_brief_count(MANAGER, "team"), brief["total"])
+
+
+class TestBriefOlder(TeamWidgetTestCase):
+	def setUp(self):
+		super().setUp()
+		month_ago = add_days(now_datetime(), -31)
+		self.old_lead = self.lead(awaiting_reply_since=month_ago)
+		self.old_deal = self.deal(awaiting_reply_since=month_ago)
+		self.old_past_response = self.deal(response_by=month_ago)
+		self.recent_lead = self.lead(awaiting_reply_since=add_days(now_datetime(), -29))
+		contacted = self.lead(last_outbound_at=now_datetime())
+		self.old_task = self.follow_up(add_days(nowdate(), -31), reference=contacted)
+		self.recent_task = self.follow_up(add_days(nowdate(), -29), reference=contacted)
+
+	def test_the_names_match_the_older_counts(self):
+		for user, tab in ((AGENT, "mine"), (MANAGER, "team")):
+			older = get_brief(user, tab)["older"]
+			for doctype, count in older["conversations"].items():
+				with self.subTest(tab=tab, doctype=doctype):
+					self.assertEqual(len(get_brief_older(user, tab, "conversations", doctype)), count)
+			with self.subTest(tab=tab, kind="tasks"):
+				self.assertEqual(len(get_brief_older(user, tab, "tasks")), older["tasks"])
+
+	def test_both_record_types_have_their_own_count(self):
+		older = get_brief(AGENT)["older"]
+		self.assertEqual(older["conversations"], {"Lead": 1, "Deal": 1})
+
+	def test_a_past_response_deal_is_an_older_team_conversation(self):
+		names = get_brief_older(MANAGER, "team", "conversations", "Deal")
+		self.assertIn(self.old_past_response, names)
+
+	def test_records_inside_the_window_are_left_out(self):
+		for user, tab in ((AGENT, "mine"), (MANAGER, "team")):
+			with self.subTest(tab=tab):
+				leads = get_brief_older(user, tab, "conversations", "Lead")
+				self.assertIn(self.old_lead, leads)
+				self.assertNotIn(self.recent_lead, leads)
+				tasks = get_brief_older(user, tab, "tasks")
+				self.assertIn(self.old_task, tasks)
+				self.assertNotIn(self.recent_task, tasks)
+
+	def test_an_unknown_kind_is_refused(self):
+		with self.assertRaises(frappe.ValidationError):
+			get_brief_older(AGENT, "mine", "contacts")
+
+	def test_a_record_type_the_brief_does_not_show_is_refused(self):
+		frappe.defaults.set_user_default(DOCTYPE_KEY, "Deal", AGENT)
+		self.addCleanup(clear_defaults_cache, AGENT)
+		with self.assertRaises(frappe.ValidationError):
+			get_brief_older(AGENT, "mine", "conversations", "Lead")
+		with self.assertRaises(frappe.ValidationError):
+			get_brief_older(AGENT, "mine", "conversations", None)
+
+	def test_an_agent_gets_no_team_names(self):
+		with self.assertRaises(frappe.PermissionError):
+			get_brief_older(AGENT, "team", "conversations", "Lead")

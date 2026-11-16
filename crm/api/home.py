@@ -115,6 +115,12 @@ def get_brief_count(tab: str) -> int:
 
 @frappe.whitelist()
 @sales_user_only
+def get_brief_older(tab: str, kind: str, doctype: str | None = None) -> list:
+	return brief.get_brief_older(frappe.session.user, tab, kind, doctype)
+
+
+@frappe.whitelist()
+@sales_user_only
 def get_ask_flow() -> dict:
 	mine = Mine(frappe.session.user)
 	return {
