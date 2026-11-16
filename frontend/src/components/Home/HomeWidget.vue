@@ -43,10 +43,12 @@
     </div>
 
     <div
-      v-if="viewAll && total"
+      v-if="$slots.footer || (viewAll && total)"
       class="flex h-8 shrink-0 items-center justify-end px-2"
     >
+      <slot name="footer" />
       <Button
+        v-if="viewAll && total"
         variant="ghost"
         :label="__('View all')"
         iconRight="lucide-arrow-right"
