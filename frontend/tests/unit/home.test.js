@@ -1,4 +1,6 @@
 import {
+  fieldsOnBoth,
+  filtersFor,
   formatPercentChange,
   greetingFor,
   nextSort,
@@ -127,6 +129,75 @@ describe('shortDuration', () => {
 
   it('is blank without a value', () => {
     expect(shortDuration(null)).toBe('')
+  })
+})
+
+describe('fieldsOnBoth', () => {
+  const field = (fieldname, fieldtype = 'Data', options = '') => ({
+    fieldname,
+    fieldtype,
+    options,
+  })
+  const names = (fields) => fields.map((f) => f.fieldname)
+
+  it('keeps a field that leads and deals share', () => {
+    const shared = fieldsOnBoth([field('status')], [field('status')])
+    expect(names(shared)).toEqual(['status'])
+  })
+
+  it('drops a field missing on one side', () => {
+    const shared = fieldsOnBoth(
+      [field('status'), field('lead_owner')],
+      [field('status'), field('deal_owner')],
+    )
+    expect(names(shared)).toEqual(['status'])
+  })
+
+  it('drops the same name with a different type', () => {
+    expect(
+      fieldsOnBoth([field('source', 'Data')], [field('source', 'Link')]),
+    ).toEqual([])
+  })
+
+  it('drops the same name with different options', () => {
+    expect(
+      fieldsOnBoth(
+        [field('status', 'Link', 'CRM Lead Status')],
+        [field('status', 'Link', 'CRM Deal Status')],
+      ),
+    ).toEqual([])
+  })
+
+  it('treats null and empty options as equal', () => {
+    const shared = fieldsOnBoth(
+      [field('website', 'Data', null)],
+      [field('website', 'Data', '')],
+    )
+    expect(names(shared)).toEqual(['website'])
+  })
+
+  it('is empty while the lead fields are loading', () => {
+    expect(fieldsOnBoth(null, [field('status')])).toEqual([])
+  })
+})
+
+describe('filtersFor', () => {
+  const fields = [{ fieldname: 'status' }, { fieldname: 'territory' }]
+
+  it('keeps filters on fields that remain', () => {
+    const filters = { status: 'Open', territory: 'India' }
+    expect(filtersFor(filters, fields)).toEqual(filters)
+  })
+
+  it('drops filters on fields that are gone', () => {
+    expect(
+      filtersFor({ status: 'Open', lead_owner: 'asha@x.com' }, fields),
+    ).toEqual({ status: 'Open' })
+  })
+
+  it('gives no filters when there are none', () => {
+    expect(filtersFor({}, fields)).toEqual({})
+    expect(filtersFor(null, fields)).toEqual({})
   })
 })
 

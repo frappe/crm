@@ -59,7 +59,12 @@
             :flow="askFlow.data?.available"
           />
           <AskFlow :resource="askFlow" :team="isManager()" />
-          <Brief v-model:tab="briefTab" :resource="brief" />
+          <Brief
+            v-model:tab="briefTab"
+            :resource="brief"
+            :counts="briefCounts"
+            @update:doctype="setBriefDoctype"
+          />
         </template>
         <DashboardGrid
           v-if="visibleItems.length"
@@ -109,7 +114,7 @@ import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
 import { Badge, Dropdown, createResource, usePageMeta } from 'frappe-ui'
-import { computed, nextTick, provide, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 
 const { brand } = getSettings()
 const { isAdmin, isManager } = usersStore()
@@ -132,9 +137,12 @@ const {
 
 load()
 
-provide('homeEditing', editing)
-
-const { tab: briefTab, resource: brief } = useBrief()
+const {
+  tab: briefTab,
+  resource: brief,
+  counts: briefCounts,
+  setDoctype: setBriefDoctype,
+} = useBrief()
 
 const askFlow = createResource({ url: 'crm.api.home.get_ask_flow', auto: true })
 

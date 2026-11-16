@@ -5,9 +5,12 @@ import {
   briefActionRoute,
   briefAge,
   briefBadge,
+  briefCount,
   briefDetail,
   briefIcon,
   briefMoreLinks,
+  briefOlderLinks,
+  briefOlderQuery,
   briefPerson,
   briefRecordNames,
   briefRoute,
@@ -92,6 +95,14 @@ describe('briefSummary', () => {
     )
   })
 
+  it('caps a large count at 500+', () => {
+    expect(briefCount(500)).toBe(500)
+    expect(briefCount(501)).toBe('500+')
+    expect(briefSummary({ count: 2067, team: true })).toBe(
+      'Your team has 500+ things that need you today.',
+    )
+  })
+
   it('speaks for the team on the Team tab', () => {
     expect(briefSummary({ count: 7, team: true })).toBe(
       'Your team has 7 things that need you today.',
@@ -109,7 +120,10 @@ describe('briefMoreLinks', () => {
       'CRM Deal': ['D-1'],
       'CRM Lead': ['L-1', 'L-2'],
     })
-    expect(links.map((link) => link.label)).toEqual(['2 leads', '1 deal'])
+    expect(links.map((link) => link.label)).toEqual([
+      '2 more leads',
+      '1 more deal',
+    ])
     expect(links[0].route).toEqual({
       name: 'Leads',
       query: { brief: 'L-1,L-2' },
@@ -124,6 +138,98 @@ describe('briefMoreLinks', () => {
   it('reads the names back from the link', () => {
     expect(briefRecordNames({ brief: 'L-1,L-2' })).toEqual(['L-1', 'L-2'])
     expect(briefRecordNames({})).toEqual([])
+  })
+})
+
+describe('briefOlderLinks', () => {
+  const labels = (links) => links.map((link) => link.label)
+
+  it('names the older conversations and tasks', () => {
+    const links = briefOlderLinks({
+      older: { conversations: { Deal: 54 }, tasks: 98 },
+      doctype: 'Deal',
+      tab: 'mine',
+    })
+    expect(labels(links)).toEqual(['54 older conversations', '98 older tasks'])
+  })
+
+  it('uses the singular for one', () => {
+    const links = briefOlderLinks({
+      older: { conversations: { Lead: 1 }, tasks: 1 },
+      doctype: 'Lead',
+      tab: 'mine',
+    })
+    expect(labels(links)).toEqual(['1 older conversation', '1 older task'])
+  })
+
+  it('caps a large count', () => {
+    const links = briefOlderLinks({ older: { tasks: 1200 }, tab: 'team' })
+    expect(links[0].label).toBe('500+ older tasks')
+  })
+
+  it('gives leads and deals a link each with both types', () => {
+    const links = briefOlderLinks({
+      older: { conversations: { Lead: 3, Deal: 1 } },
+      doctype: 'Both',
+      tab: 'team',
+    })
+    expect(labels(links)).toEqual([
+      '3 older lead conversations',
+      '1 older deal conversation',
+    ])
+  })
+
+  it('opens each list with the query for its names', () => {
+    const links = briefOlderLinks({
+      older: { conversations: { Lead: 3, Deal: 1 }, tasks: 2 },
+      doctype: 'Both',
+      tab: 'team',
+    })
+    expect(links.map((link) => link.route)).toEqual([
+      {
+        name: 'Leads',
+        query: {
+          brief_older: 'conversations',
+          brief_tab: 'team',
+          brief_doctype: 'Lead',
+        },
+      },
+      {
+        name: 'Deals',
+        query: {
+          brief_older: 'conversations',
+          brief_tab: 'team',
+          brief_doctype: 'Deal',
+        },
+      },
+      { name: 'Tasks', query: { brief_older: 'tasks', brief_tab: 'team' } },
+    ])
+  })
+
+  it('has no link when nothing is older', () => {
+    expect(briefOlderLinks({ older: {}, tab: 'mine' })).toEqual([])
+    expect(briefOlderLinks()).toEqual([])
+  })
+})
+
+describe('briefOlderQuery', () => {
+  it('reads the link back', () => {
+    expect(
+      briefOlderQuery({
+        brief_older: 'conversations',
+        brief_tab: 'mine',
+        brief_doctype: 'Deal',
+        view: 'x',
+      }),
+    ).toEqual({ kind: 'conversations', tab: 'mine', doctype: 'Deal' })
+    expect(
+      briefOlderQuery({ brief_older: 'tasks', brief_tab: 'team' }),
+    ).toEqual({ kind: 'tasks', tab: 'team' })
+  })
+
+  it('is empty without an older link', () => {
+    expect(briefOlderQuery({})).toBeNull()
+    expect(briefOlderQuery({ brief: 'L-1' })).toBeNull()
   })
 })
 
