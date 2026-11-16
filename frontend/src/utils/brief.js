@@ -275,7 +275,7 @@ export function openFlowSession(
   { flow = window.flow, assign = (url) => window.location.assign(url) } = {},
 ) {
   try {
-    flow.open({ path: `/s/${encodeURIComponent(session)}` })
+    flow.open({ session })
     return true
   } catch {
     assign(flowSessionUrl(session))

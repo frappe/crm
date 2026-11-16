@@ -259,7 +259,7 @@ describe('openFlowSession', () => {
     const flow = { open: vi.fn() }
     const assign = vi.fn()
     expect(openFlowSession('abc 1', { flow, assign })).toBe(true)
-    expect(flow.open).toHaveBeenCalledWith({ path: '/s/abc%201' })
+    expect(flow.open).toHaveBeenCalledWith({ session: 'abc 1' })
     expect(assign).not.toHaveBeenCalled()
   })
 
