@@ -1,6 +1,13 @@
 <template>
   <Dropdown :options="options">
+    <Button
+      v-if="button"
+      variant="outline"
+      :label="labels[current]"
+      iconRight="lucide-chevron-down"
+    />
     <button
+      v-else
       type="button"
       class="flex items-center gap-0.5 text-ink-gray-7 hover:text-ink-gray-9"
     >
@@ -10,12 +17,14 @@
   </Dropdown>
 </template>
 <script setup>
-import { Dropdown } from 'frappe-ui'
+import { Button, Dropdown } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
   period: { type: String, default: 'last_month' },
   labels: { type: Object, default: null },
+  // A picker on its own in a widget header is a button; one inside a sentence stays text
+  button: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['change'])
