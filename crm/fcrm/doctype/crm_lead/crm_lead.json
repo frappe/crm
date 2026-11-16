@@ -429,13 +429,15 @@
    "fieldname": "last_inbound_at",
    "fieldtype": "Datetime",
    "label": "Last Inbound At",
-   "read_only": 1
+   "read_only": 1,
+   "search_index": 1
   },
   {
    "fieldname": "last_outbound_at",
    "fieldtype": "Datetime",
    "label": "Last Outbound At",
-   "read_only": 1
+   "read_only": 1,
+   "search_index": 1
   },
   {
    "fieldname": "column_break_interactions",
@@ -514,7 +516,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-16 12:00:00.000000",
+ "modified": "2026-11-17 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Lead",

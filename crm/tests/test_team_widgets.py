@@ -5,8 +5,8 @@ from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_tab_data, get_widget_data
 from crm.fcrm.doctype.crm_dashboard import team_widgets
-from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, PERIOD_DAYS
-from crm.fcrm.doctype.crm_dashboard.home_widgets import NoNextStep, RepliesWaiting
+from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD
+from crm.fcrm.doctype.crm_dashboard.home_widgets import DOCTYPES, NoNextStep, RepliesWaiting
 from crm.tests.test_home import AGENT, MANAGER, make_deal, make_lead, make_user
 from crm.tests.test_home_widgets import HomeWidgetTestCase, names, status
 
@@ -134,9 +134,7 @@ class TestTeamOverview(TeamWidgetTestCase):
 		super().tearDown()
 
 	def clear_cache(self):
-		for scope in (MANAGER, OTHER_MANAGER, "all"):
-			for period in PERIOD_DAYS:
-				frappe.cache.delete_value(overview_key(scope, period))
+		frappe.cache.delete_keys("crm:home:team_overview:")
 
 	def overview(self, user=MANAGER, period=None):
 		return {row["user"]: row for row in self.team("team_overview", user, period=period)["rows"]}
@@ -195,8 +193,7 @@ class TestTeamOverview(TeamWidgetTestCase):
 		)
 		frappe.db.set_value("CRM Lead", lead, "creation", add_days(now, -10))
 
-		last_week = self.overview(period="last_week")[AGENT]
-		self.assertEqual((last_week["first_response_time"], last_week["sla_total"]), (None, 0))
+		self.assertNotIn(AGENT, self.overview(period="last_week"))
 		last_month = self.overview(period="last_month")[AGENT]
 		self.assertEqual((last_month["first_response_time"], last_month["sla_total"]), (600, 1))
 
@@ -205,12 +202,18 @@ class TestTeamOverview(TeamWidgetTestCase):
 		self.follow_up(add_days(now_datetime(), -1), reference=lead)
 		frappe.db.set_value("CRM Lead", lead, "creation", add_days(now_datetime(), -10))
 
-		def counts(period):
-			agent = self.overview(period=period)[AGENT]
-			return agent["open"], agent["replies_waiting"], agent["overdue_follow_ups"]
+		self.assertNotIn(AGENT, self.overview(period="last_week"))
+		agent = self.overview(period="last_month")[AGENT]
+		self.assertEqual((agent["open"], agent["replies_waiting"], agent["overdue_follow_ups"]), (1, 1, 1))
 
-		self.assertEqual(counts("last_week"), (0, 0, 0))
-		self.assertEqual(counts("last_month"), (1, 1, 1))
+	def test_a_member_with_nothing_to_show_is_left_out(self):
+		self.lead()
+		self.assertEqual(set(self.overview()), {AGENT})
+
+	def test_a_member_with_only_a_response_time_is_kept(self):
+		responded = self.lead(lead_owner=MANAGER, status=self.closed_lead)
+		frappe.db.set_value("CRM Lead", responded, "first_response_time", 600)
+		self.assertEqual(self.overview()[MANAGER]["first_response_time"], 600)
 
 	def test_unknown_period_is_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
@@ -221,23 +224,47 @@ class TestTeamOverview(TeamWidgetTestCase):
 		frappe.db.set_value("CRM Lead", lead, values)
 		return lead
 
+	def test_filters_narrow_every_count(self):
+		self.lead(organization="Acme", awaiting_reply_since=now_datetime())
+		self.lead(organization="Other", awaiting_reply_since=now_datetime())
+		every = self.agent_row()
+		self.assertEqual((every["open"], every["replies_waiting"]), (2, 2))
+		acme = self.agent_row({"organization": "Acme"})
+		self.assertEqual((acme["open"], acme["replies_waiting"]), (1, 1))
+
+	def test_a_filter_on_a_field_the_records_do_not_have_is_refused(self):
+		for filters in ({"no_such_field": 1}, {"lead_owner.full_name": "Agent"}, [["name", "=", "x"]]):
+			with self.assertRaises(frappe.ValidationError):
+				get_widget_data("team_overview", "Lead", MANAGER, filters=filters)
+
+	def test_different_filters_are_cached_apart(self):
+		self.lead(organization="Acme")
+		self.lead(organization="Other")
+		self.assertEqual(self.agent_row({"organization": "Acme"})["open"], 1)
+		self.assertEqual(self.agent_row()["open"], 2)
+
+	def agent_row(self, filters=None):
+		rows = get_widget_data("team_overview", "Lead", MANAGER, filters=filters)["rows"]
+		return next(row for row in rows if row["user"] == AGENT)
+
 	def test_cached_per_scope_for_a_few_minutes(self):
 		make_user(OTHER_MANAGER, "Sales User", "Sales Manager")
 		frappe.db.delete("CRM Sales Hierarchy", {"user": ["in", [OTHER_MANAGER, OUTSIDER]]})
 		hierarchy_node(OUTSIDER, reports_to=hierarchy_node(OTHER_MANAGER, is_group=1))
 
-		self.assertEqual(self.overview()[AGENT]["open"], 0)
+		self.lead(lead_owner=OUTSIDER)
+		self.assertNotIn(AGENT, self.overview())
 		self.lead()
-		self.assertEqual(self.overview()[AGENT]["open"], 0)
-		self.assertEqual(set(self.overview(OTHER_MANAGER)), {OTHER_MANAGER, OUTSIDER})
+		self.assertNotIn(AGENT, self.overview())
+		self.assertEqual(set(self.overview(OTHER_MANAGER)), {OUTSIDER})
 		self.assertEqual(self.overview(BOSS)[AGENT]["open"], 1)
 
 		ttl = frappe.cache.ttl(frappe.cache.make_key(overview_key(MANAGER)))
 		self.assertTrue(120 <= ttl <= 300)
 
 
-def overview_key(scope, period=DEFAULT_PERIOD):
-	return f"crm:home:team_overview:{scope}:{period}"
+def overview_key(scope, period=DEFAULT_PERIOD, doctype="Both"):
+	return team_widgets.overview_cache_key(scope, period, DOCTYPES[doctype])
 
 
 def hierarchy_node(user, **kwargs):

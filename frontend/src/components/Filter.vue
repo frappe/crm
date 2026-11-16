@@ -3,6 +3,7 @@
     <template #trigger="{ close }">
       <div class="flex items-center">
         <Button
+          :variant="variant"
           :label="__('Filter')"
           :class="filters?.size ? 'rounded-r-none' : ''"
           :iconLeft="FilterIcon"
@@ -17,6 +18,7 @@
         </Button>
         <Button
           v-if="filters?.size"
+          :variant="variant"
           :tooltip="__('Clear All Filters')"
           class="rounded-l-none border-l"
           icon="lucide-x"
@@ -29,6 +31,7 @@
         class="my-2 min-w-40 rounded-6 bg-surface-elevation-2 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
       >
         <div class="min-w-72 p-2 sm:min-w-[400px]">
+          <slot name="header" />
           <template v-if="filters?.size">
             <div
               v-for="(f, i) in filters"
@@ -183,6 +186,9 @@ const typeRating = ['Rating']
 const props = defineProps({
   doctype: { type: String, required: true },
   default_filters: { type: Object, default: () => {} },
+  // Fields to offer in place of the doctype's own, such as those two doctypes share
+  fields: { type: Array, default: null },
+  variant: { type: String, default: 'subtle' },
 })
 
 const emit = defineEmits(['update'])
@@ -195,8 +201,10 @@ const filterableFields = createResource({
   params: { doctype: props.doctype },
 })
 
+const fieldList = computed(() => props.fields || filterableFields.data)
+
 onMounted(() => {
-  if (filterableFields.data?.length) return
+  if (props.fields || filterableFields.data?.length) return
   filterableFields.fetch()
 })
 
@@ -204,17 +212,13 @@ const filters = computed(() => {
   if (!list.value?.data) return new Set()
   let allFilters =
     list.value?.params?.filters || list.value.data?.params?.filters
-  if (
-    !allFilters ||
-    Object.keys(allFilters).length === 0 ||
-    !filterableFields.data
-  )
+  if (!allFilters || Object.keys(allFilters).length === 0 || !fieldList.value)
     return new Set()
   // remove default filters
   if (props.default_filters) {
     allFilters = removeCommonFilters(props.default_filters, allFilters)
   }
-  return convertFilters(filterableFields.data, allFilters)
+  return convertFilters(fieldList.value, allFilters)
 })
 
 // `name` is labelled "Name" but holds the document ID, which reads as the
@@ -222,7 +226,7 @@ const filters = computed(() => {
 const idFieldDoctypes = ['CRM Lead', 'CRM Deal']
 
 const filterFieldOptions = computed(() => {
-  const fields = filterableFields.data || []
+  const fields = fieldList.value || []
   if (!idFieldDoctypes.includes(props.doctype)) return fields
 
   return fields.map((field) =>
@@ -242,7 +246,7 @@ const filterFieldOptions = computed(() => {
 })
 
 const availableFilters = computed(() => {
-  if (!filterableFields.data) return []
+  if (!fieldList.value) return []
 
   const selectedFieldNames = new Set()
   for (const filter of filters.value) {

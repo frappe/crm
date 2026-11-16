@@ -1,7 +1,7 @@
 <template>
   <HomeWidget
     :title="__('Recent activity')"
-    :subtitle="__('Leads and deals you worked on or opened in the last 7 days')"
+    :subtitle="__('{0} you worked on or opened in the last 7 days')"
     :resource="resource"
     :config="config"
     :emptyText="__('Leads and deals you work on will show up here.')"

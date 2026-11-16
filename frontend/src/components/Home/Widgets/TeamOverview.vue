@@ -2,18 +2,39 @@
   <HomeWidget
     :title="__('Team workload')"
     :resource="resource"
-    :emptyText="__('No one is on your team yet.')"
+    :emptyText="__('No team activity in this period.')"
     emptyIcon="lucide-users"
   >
     <template #subtitle>
       <div class="flex min-w-0 items-center gap-1 text-base text-ink-gray-5">
-        <span class="truncate">{{ __('Leads and deals created in') }}</span>
+        <span class="truncate">{{ CREATED_IN[doctype] }}</span>
         <PeriodPicker
           class="h-5 shrink-0 text-base"
           :period="config?.period"
           @change="(period) => emit('update:config', { ...config, period })"
         />
       </div>
+    </template>
+    <template #tabs>
+      <Filter
+        :key="doctype"
+        variant="outline"
+        :modelValue="{ data: {}, params: { filters: config?.filters || {} } }"
+        :doctype="doctype === 'Lead' ? 'CRM Lead' : 'CRM Deal'"
+        :fields="doctype === 'Both' ? sharedFields : null"
+        @update="(filters) => emit('update:config', { ...config, filters })"
+      >
+        <template #header>
+          <div class="mb-3 flex items-center justify-between gap-4 px-2">
+            <span class="text-base text-ink-gray-5">{{ __('Show') }}</span>
+            <TabButtons
+              :modelValue="doctype"
+              :options="DOCTYPE_OPTIONS"
+              @update:modelValue="setDoctype"
+            />
+          </div>
+        </template>
+      </Filter>
     </template>
     <template #default="{ rows }">
       <HomeTable v-model:sort="sort" :columns="columns" :rows="visible(rows)">
@@ -42,22 +63,59 @@
   </HomeWidget>
 </template>
 <script setup>
+import Filter from '@/components/Filter.vue'
 import HomeTable from '@/components/Home/HomeTable.vue'
 import HomeWidget from '@/components/Home/HomeWidget.vue'
 import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { homeColumns } from '@/components/Home/columns'
 import { useHomeWidget } from '@/composables/homeWidget'
 import { usersStore } from '@/stores/users'
-import { shortDuration, sortRows } from '@/utils/home'
-import { Tooltip } from 'frappe-ui'
+import { fieldsOnBoth, filtersFor, shortDuration, sortRows } from '@/utils/home'
+import { TabButtons, Tooltip, createResource } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
-// Not passed on to HomeWidget, which would show the doctype setting for any config
 const props = defineProps({ config: { type: Object, default: null } })
 
 const emit = defineEmits(['update:config'])
 
 const { getUser } = usersStore()
+
+const doctype = computed(() => props.config?.doctype || 'Both')
+
+const CREATED_IN = {
+  Both: __('Leads and deals created in'),
+  Deal: __('Deals created in'),
+  Lead: __('Leads created in'),
+}
+
+const DOCTYPE_OPTIONS = [
+  { label: __('Both'), value: 'Both' },
+  { label: __('Deals'), value: 'Deal' },
+  { label: __('Leads'), value: 'Lead' },
+]
+
+const filterableFields = (doctype) =>
+  createResource({
+    url: 'crm.api.doc.get_filterable_fields',
+    cache: ['filterableFields', doctype],
+    params: { doctype },
+    auto: true,
+  })
+const fieldsByDoctype = {
+  Lead: filterableFields('CRM Lead'),
+  Deal: filterableFields('CRM Deal'),
+}
+
+const sharedFields = computed(() =>
+  fieldsOnBoth(fieldsByDoctype.Lead.data, fieldsByDoctype.Deal.data),
+)
+
+function setDoctype(value) {
+  const fields =
+    value === 'Both' ? sharedFields.value : fieldsByDoctype[value].data || []
+  const filters = filtersFor(props.config?.filters, fields)
+  emit('update:config', { ...props.config, doctype: value, filters })
+}
 
 // Stat columns are as wide as their short label, so Member keeps the rest of a half-width card.
 const stat = (key, label, tooltip, width, format = String) => ({

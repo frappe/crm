@@ -23,6 +23,18 @@ ACTIVE_STATUS_TYPES = ("Open", "Ongoing")
 DOCTYPES = {"Lead": ("CRM Lead",), "Deal": ("CRM Deal",), "Both": FOLLOW_UP_DOCTYPES}
 
 
+def check_filters(doctypes: tuple, filters):
+	"""Only columns every doctype has, so a filter cannot reach into a linked table."""
+	if not isinstance(filters, dict):
+		frappe.throw(_("Team workload filters must name a field and a value"))
+	for doctype in doctypes:
+		unknown = set(filters) - set(frappe.db.get_table_columns(doctype))
+		if unknown:
+			frappe.throw(
+				_("Team workload cannot filter {0} on {1}").format(_(doctype), ", ".join(sorted(unknown)))
+			)
+
+
 @dataclass(frozen=True)
 class RecordType:
 	owner_field: str

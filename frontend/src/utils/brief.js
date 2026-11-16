@@ -1,5 +1,10 @@
 import { dayjs, dayjsLocal } from 'frappe-ui'
-import { recordRoute, recordTitle, taskRecordRoute } from '@/utils/home'
+import {
+  recordListRoute,
+  recordRoute,
+  recordTitle,
+  taskRecordRoute,
+} from '@/utils/home'
 import { dueDay, isTaskOverdue } from '@/utils/task'
 
 const WEEKS_FROM_DAYS = 21
@@ -40,15 +45,22 @@ function dayAge(days) {
   return __('{0} wk', [Math.floor(days / 7)])
 }
 
+const COUNT_CAP = 500
+
+// Past a few hundred the exact number stops meaning anything to the reader.
+export function briefCount(count) {
+  return count > COUNT_CAP ? `${COUNT_CAP}+` : count
+}
+
 export function briefSummary({ count, team, flow }) {
   if (!count) return __('Nothing needs you today')
   const things = team
     ? count === 1
       ? __('Your team has 1 thing that needs you today')
-      : __('Your team has {0} things that need you today', [count])
+      : __('Your team has {0} things that need you today', [briefCount(count)])
     : count === 1
       ? __('1 thing needs you today')
-      : __('{0} things need you today', [count])
+      : __('{0} things need you today', [briefCount(count)])
   return flow
     ? __('{0}. Or ask Flow to get something done.', [things])
     : `${things}.`
@@ -258,17 +270,17 @@ const MORE_LISTS = [
   {
     doctype: 'CRM Lead',
     page: 'Leads',
-    label: (n) => (n === 1 ? __('1 lead') : __('{0} leads', [n])),
+    label: (n) => (n === 1 ? __('1 more lead') : __('{0} more leads', [n])),
   },
   {
     doctype: 'CRM Deal',
     page: 'Deals',
-    label: (n) => (n === 1 ? __('1 deal') : __('{0} deals', [n])),
+    label: (n) => (n === 1 ? __('1 more deal') : __('{0} more deals', [n])),
   },
   {
     doctype: 'CRM Task',
     page: 'Tasks',
-    label: (n) => (n === 1 ? __('1 task') : __('{0} tasks', [n])),
+    label: (n) => (n === 1 ? __('1 more task') : __('{0} more tasks', [n])),
   },
 ]
 
@@ -279,6 +291,69 @@ export function briefMoreLinks(more = {}) {
       route: { name: page, query: { [BRIEF_QUERY]: more[doctype].join(',') } },
     }),
   )
+}
+
+export const BRIEF_OLDER_QUERY = ['brief_older', 'brief_tab', 'brief_doctype']
+
+const OLDER_CONVERSATIONS = [
+  {
+    doctype: 'Lead',
+    label: (n) =>
+      n === 1
+        ? __('1 older lead conversation')
+        : __('{0} older lead conversations', [briefCount(n)]),
+  },
+  {
+    doctype: 'Deal',
+    label: (n) =>
+      n === 1
+        ? __('1 older deal conversation')
+        : __('{0} older deal conversations', [briefCount(n)]),
+  },
+]
+
+function olderConversationsLabel(n) {
+  return n === 1
+    ? __('1 older conversation')
+    : __('{0} older conversations', [briefCount(n)])
+}
+
+function olderTasksLabel(n) {
+  return n === 1 ? __('1 older task') : __('{0} older tasks', [briefCount(n)])
+}
+
+// With Leads & Deals, each type gets its own link, as each opens its own list.
+export function briefOlderLinks({ older = {}, doctype = 'Both', tab } = {}) {
+  const links = OLDER_CONVERSATIONS.filter(
+    (list) => older.conversations?.[list.doctype] > 0,
+  ).map((list) => {
+    const count = older.conversations[list.doctype]
+    return {
+      label:
+        doctype === 'Both' ? list.label(count) : olderConversationsLabel(count),
+      route: {
+        ...recordListRoute(list.doctype),
+        query: {
+          brief_older: 'conversations',
+          brief_tab: tab,
+          brief_doctype: list.doctype,
+        },
+      },
+    }
+  })
+  if (older.tasks > 0) {
+    links.push({
+      label: olderTasksLabel(older.tasks),
+      route: { name: 'Tasks', query: { brief_older: 'tasks', brief_tab: tab } },
+    })
+  }
+  return links
+}
+
+export function briefOlderQuery(query) {
+  const { brief_older: kind, brief_tab: tab, brief_doctype: doctype } = query
+  if (!kind || !tab) return null
+  return doctype ? { kind, tab, doctype } : { kind, tab }
 }
 
 export function briefRecordNames(query) {
