@@ -35,10 +35,7 @@
     <div v-else class="-m-1 flex-1 overflow-y-auto p-1">
       <AccountForm :controller="account" :show-append-actions="false">
         <template #settings>
-          <div class="text-base-medium text-ink-gray-9">
-            {{ __('New Senders') }}
-          </div>
-          <div class="mt-6 flex items-center justify-between gap-4">
+          <div class="flex items-center justify-between gap-4">
             <div class="flex min-w-0 flex-1 flex-col gap-1">
               <span class="text-base-medium text-ink-gray-8">
                 {{ __('Create from a new number') }}
