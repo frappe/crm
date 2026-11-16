@@ -33,19 +33,33 @@
     <!-- p-1/-m-1 leaves the scroll box a little slack beyond the content, so a
          focused control's ring isn't clipped by the edge it sits flush against. -->
     <div v-else class="-m-1 flex-1 overflow-y-auto p-1">
-      <AccountForm :controller="account">
+      <AccountForm :controller="account" :show-append-actions="false">
         <template #settings>
-          <FormControl
-            v-model="newSenders"
-            type="select"
-            :label="__('New senders become')"
-            :description="
-              __(
-                'What a message from a number not yet in CRM creates. Known numbers are always added to their lead or deal.',
-              )
-            "
-            :options="newSenderOptions"
-          />
+          <div class="text-base-medium text-ink-gray-9">
+            {{ __('New Senders') }}
+          </div>
+          <div class="mt-6 flex items-center justify-between gap-4">
+            <div class="flex min-w-0 flex-1 flex-col gap-1">
+              <span class="text-base-medium text-ink-gray-8">
+                {{ __('Create from a new number') }}
+              </span>
+              <span class="text-p-sm text-ink-gray-6">
+                {{
+                  __(
+                    'Messages from numbers already in CRM always go to their lead or deal.',
+                  )
+                }}
+              </span>
+            </div>
+            <div class="w-40 shrink-0">
+              <FormControl
+                v-model="newSenders"
+                type="select"
+                :aria-label="__('Create from a new number')"
+                :options="newSenderOptions"
+              />
+            </div>
+          </div>
         </template>
       </AccountForm>
     </div>
@@ -77,8 +91,8 @@ const createsDeals = useAppendToggle(account, {
 
 const newSenderOptions = [
   { label: __('Nothing'), value: 'none' },
-  { label: __('A lead'), value: 'lead' },
-  { label: __('A deal'), value: 'deal' },
+  { label: __('Lead'), value: 'lead' },
+  { label: __('Deal'), value: 'deal' },
 ]
 
 // the two rows are exclusive (crm.api.whatsapp.validate_account), so one choice sets both
