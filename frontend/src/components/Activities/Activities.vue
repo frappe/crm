@@ -627,6 +627,7 @@ import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { MessageInput, MessageList, useMessages } from '@whatsapp/ui'
+import { subscribeToDoc } from '@framework/ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -755,13 +756,16 @@ watch(
   () => nextTick(() => scroll()),
 )
 
+// counted, so leaving here does not drop the WhatsApp thread sharing this room out of it
+let leaveRoom = () => {}
+
 onBeforeUnmount(() => {
   $socket.off('docinfo_update', handleDocinfoUpdate)
-  $socket.emit('doc_unsubscribe', props.doctype, props.docname)
+  leaveRoom()
 })
 
 onMounted(() => {
-  $socket.emit('doc_subscribe', props.doctype, props.docname)
+  leaveRoom = subscribeToDoc($socket, props.doctype, props.docname)
   $socket.on('docinfo_update', handleDocinfoUpdate)
 
   nextTick(() => scrollToHash(route.hash))
