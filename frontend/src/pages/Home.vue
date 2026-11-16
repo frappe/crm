@@ -114,7 +114,7 @@ import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
 import { Badge, Dropdown, createResource, usePageMeta } from 'frappe-ui'
-import { computed, nextTick, provide, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 
 const { brand } = getSettings()
 const { isAdmin, isManager } = usersStore()
@@ -136,8 +136,6 @@ const {
 } = useHomeLayout()
 
 load()
-
-provide('homeEditing', editing)
 
 const {
   tab: briefTab,
