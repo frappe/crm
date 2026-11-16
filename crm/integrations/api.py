@@ -33,6 +33,17 @@ def _get_recording_credentials(telephony_medium: str) -> tuple | None:
 	return None
 
 
+_PROVIDER_DOMAINS = {"Twilio": ("twilio.com",), "Exotel": ("exotel.com", "exotel.in")}
+
+
+def _is_provider_url(telephony_medium: str, url: str) -> bool:
+	"""Whether url is an https URL on the telephony provider's own domain."""
+	parsed = urlparse(url)
+	host = (parsed.hostname or "").lower()
+	domains = _PROVIDER_DOMAINS.get(telephony_medium, ())
+	return parsed.scheme == "https" and any(host == d or host.endswith(f".{d}") for d in domains)
+
+
 @frappe.whitelist()
 def is_call_integration_enabled():
 	return {
@@ -264,7 +275,9 @@ def get_recording_url(call_log_name: str):
 	if not log.recording_url:
 		frappe.throw(_("Recording URL not found"), frappe.DoesNotExistError)
 
-	auth = _get_recording_credentials(log.telephony_medium)
+	auth = None
+	if _is_provider_url(log.telephony_medium, log.recording_url):
+		auth = _get_recording_credentials(log.telephony_medium)
 	# forward the browser's Range header so the provider (Twilio/Exotel CDN) can return
 	# just the requested bytes; falls back to the full file if it doesn't support ranges
 	req_headers = {}
