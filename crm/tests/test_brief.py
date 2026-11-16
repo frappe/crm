@@ -283,6 +283,20 @@ class TestTeamBrief(TeamWidgetTestCase):
 
 		self.assertEqual(TeamBrief(BOSS).workload()[0]["lightest"], MANAGER)
 
+	def test_only_someone_who_worked_a_record_in_the_last_30_days_is_named_as_having_room(self):
+		self.lead(lead_owner=MANAGER, awaiting_reply_since=add_days(now_datetime(), -3))
+		quiet = self.lead()
+		frappe.db.set_value(
+			"CRM Lead", quiet, "modified", add_days(now_datetime(), -31), update_modified=False
+		)
+		self.assertIsNone(self.lightest())
+
+		frappe.db.set_value("CRM Lead", quiet, "last_inbound_at", now_datetime(), update_modified=False)
+		self.assertEqual(self.lightest(), AGENT)
+
+	def lightest(self):
+		return of_kind(get_brief(MANAGER, "team"), "workload")[0]["lightest"]
+
 	def test_the_lightest_person_is_not_the_reader_or_anyone_behind(self):
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -3))
 		for row in TeamBrief(BOSS).workload():

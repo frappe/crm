@@ -216,6 +216,18 @@ class WaitingTooLong(RepliesWaiting):
 		)
 
 
+class RecentlyWorked(RecordWidget):
+	"""Any status counts, so a seller who just closed a deal is still active."""
+
+	def filtered(self, doctype: str, table):
+		# Same as idle_since(table) >= since, but plain comparisons run faster than GREATEST on large tables.
+		since = window_start()
+		worked = (
+			(table.modified >= since) | (table.last_inbound_at >= since) | (table.last_outbound_at >= since)
+		)
+		return frappe.qb.from_(table).where(worked)
+
+
 def member_counts(widget: RecordWidget) -> Counter:
 	"""Count each record for its owner, or for its first assignee when it has no owner."""
 	counts = Counter()
@@ -424,8 +436,11 @@ class TeamBrief(Brief):
 			return []
 
 		open_records = member_counts(RecordWidget(self.doctypes, self.scope))
+		active = member_counts(RecentlyWorked(self.doctypes, self.scope))
 		spare = [
-			member for member in members - set(behind) if member != self.scope.user and open_records[member]
+			member
+			for member in members - set(behind)
+			if member != self.scope.user and open_records[member] and active[member]
 		]
 		lightest = min(spare, key=lambda member: (open_records[member], member), default=None)
 		return [
