@@ -892,3 +892,81 @@ class TestPhoneLookupPermissions(IntegrationTestCase):
 		self.assertEqual(find_contact_by_phone_number("+91 98765 11111")["lead"], self.lead.name)
 		self.assertEqual(get_contact_by_phone_number("+91 98765 11111")["lead"], readable.name)
 		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (readable.name, "CRM Lead"))
+
+
+EXOTEL_CALLER = "exotel-caller@example.com"
+WEBSITE_USER = "exotel-website-user@example.com"
+EXOPHONE = "+91 80000 00000"
+
+
+def make_user(email, role=None):
+	if frappe.db.exists("User", email):
+		return
+	user = frappe.get_doc(
+		{"doctype": "User", "email": email, "first_name": email.split("@")[0], "send_welcome_email": 0}
+	).insert(ignore_permissions=True)
+	if role:
+		user.add_roles(role)
+
+
+class TestExotelOutgoingCall(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		make_user(EXOTEL_CALLER, "Sales User")
+		make_user(WEBSITE_USER)
+
+	def setUp(self):
+		frappe.db.savepoint("test_exotel_call")
+		self.mock("crm.integrations.exotel.handler.is_integration_enabled", return_value=True)
+		self.mock("crm.integrations.exotel.handler.get_exotel_endpoint", return_value="https://exotel.test")
+		self.mock("crm.integrations.exotel.handler.get_all_exophones", return_value=[EXOPHONE])
+		self.mock("crm.integrations.exotel.handler.create_call_log")
+		self.post = self.mock("crm.integrations.exotel.handler.requests.post")
+		self.post.return_value.json.return_value = {"Call": {"Sid": "test-call"}}
+
+	def tearDown(self):
+		frappe.set_user("Administrator")
+		frappe.db.rollback(save_point="test_exotel_call")
+		super().tearDown()
+
+	def mock(self, target, **kwargs):
+		patcher = patch(target, **kwargs)
+		self.addCleanup(patcher.stop)
+		return patcher.start()
+
+	def call_as(self, user):
+		frappe.set_user(user)
+		return frappe.call(
+			"crm.integrations.exotel.handler.make_a_call",
+			to_number="+91 70000 00001",
+			from_number="+91 70000 00002",
+			caller_id=EXOPHONE,
+		)
+
+	def test_website_user_cannot_call(self):
+		with self.assertRaises(frappe.PermissionError):
+			self.call_as(WEBSITE_USER)
+		self.post.assert_not_called()
+
+	def test_sales_user_without_telephony_agent_cannot_call(self):
+		with self.assertRaises(frappe.ValidationError):
+			self.call_as(EXOTEL_CALLER)
+		self.post.assert_not_called()
+
+	def test_call_uses_numbers_from_telephony_agent(self):
+		frappe.get_doc(
+			{
+				"doctype": "CRM Telephony Agent",
+				"user": EXOTEL_CALLER,
+				"mobile_no": "+91 90000 00000",
+				"exotel_number": EXOPHONE,
+			}
+		).insert(ignore_permissions=True)
+
+		self.call_as(EXOTEL_CALLER)
+
+		data = self.post.call_args.kwargs["data"]
+		self.assertEqual(data["From"], "+91 90000 00000")
+		self.assertEqual(data["CallerId"], EXOPHONE)
+		self.assertEqual(data["To"], "+91 70000 00001")
