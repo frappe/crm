@@ -40,7 +40,7 @@ export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
 
 export function useBrief() {
   const { isManager } = usersStore()
-  const tab = ref(isManager() ? 'team' : 'mine')
+  const tab = ref('mine')
   const counts = ref({})
   const resource = createResource({
     url: 'crm.api.home.get_brief',
