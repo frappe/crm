@@ -18,17 +18,13 @@ from frappe.utils import (
 )
 
 from crm.extends.notification_log import CRM_ROUTES
+from crm.fcrm.doctype.crm_dashboard.brief import RecentFollowUpsDue, WaitingOnMe, brief_doctype
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, sales_users
-from crm.fcrm.doctype.crm_dashboard.home_widgets import (
-	AssignedToMe,
-	FollowUpsDue,
-	RepliesWaiting,
-	TaskWidget,
-)
-from crm.fcrm.doctype.crm_dashboard.team_widgets import OVERDUE_DAYS
-from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES, TaskDue
+from crm.fcrm.doctype.crm_dashboard.home_widgets import DOCTYPES, AssignedToMe, TaskWidget
+from crm.fcrm.doctype.crm_task.rules import TaskDue
 
 DIGEST_HOUR = 8
+COUNT_CAP = 500
 CUTOFF_HOUR = 11
 BATCH_SIZE = 50
 ASSIGNED_MAX_DAYS = 7
@@ -100,14 +96,16 @@ class MorningDigest:
 		frappe.defaults.set_user_default(LAST_RUN_KEY, str(self.now), self.user)
 
 	def sections(self) -> list:
+		"""The same records as the user's brief on Home: their choice of leads or deals, and the last 30 days."""
 		mine = Mine(self.user)
+		doctypes = DOCTYPES[brief_doctype(self.user)]
 		return [
 			section.build()
 			for section in (
-				FollowUpsSection(FOLLOW_UP_DOCTYPES, mine),
-				RepliesSection(FOLLOW_UP_DOCTYPES, mine),
-				NewlyAssignedSection(FOLLOW_UP_DOCTYPES, mine, self.assigned_since()),
-				TasksDueTodaySection(FOLLOW_UP_DOCTYPES, mine),
+				FollowUpsSection(doctypes, mine),
+				RepliesSection(doctypes, mine),
+				NewlyAssignedSection(doctypes, mine, self.assigned_since()),
+				TasksDueTodaySection(doctypes, mine),
 			)
 		]
 
@@ -115,9 +113,13 @@ class MorningDigest:
 		follow_ups, replies = sections[0].total, sections[1].total
 		parts = []
 		if follow_ups:
-			parts.append(_("1 follow-up") if follow_ups == 1 else _("{0} follow-ups").format(follow_ups))
+			parts.append(
+				_("1 follow-up") if follow_ups == 1 else _("{0} follow-ups").format(capped(follow_ups))
+			)
 		if replies:
-			parts.append(_("1 reply waiting") if replies == 1 else _("{0} replies waiting").format(replies))
+			parts.append(
+				_("1 reply waiting") if replies == 1 else _("{0} replies waiting").format(capped(replies))
+			)
 		if not parts:
 			return _("Your CRM morning")
 		return _("Your CRM morning: {0}").format(", ".join(parts))
@@ -147,12 +149,9 @@ class Section:
 		raise NotImplementedError
 
 
-class FollowUpsSection(Section, FollowUpsDue):
+class FollowUpsSection(Section, RecentFollowUpsDue):
 	def title(self) -> str:
 		return _("Follow-ups due")
-
-	def condition(self):
-		return self.linked() & self.due.due_by_today_within_condition(self.task, OVERDUE_DAYS)
 
 	def item(self, row) -> dict:
 		return {
@@ -163,7 +162,7 @@ class FollowUpsSection(Section, FollowUpsDue):
 		}
 
 
-class RepliesSection(Section, RepliesWaiting):
+class RepliesSection(Section, WaitingOnMe):
 	def title(self) -> str:
 		return _("Replies waiting")
 
@@ -211,6 +210,11 @@ class TasksDueTodaySection(Section, TaskWidget):
 
 	def item(self, row) -> dict:
 		return {"title": row.title, "detail": due_label(self.due, row), "url": get_url("/crm/tasks")}
+
+
+def capped(count: int) -> int | str:
+	"""Past a few hundred the exact number means nothing to the reader, as on Home."""
+	return f"{COUNT_CAP}+" if count > COUNT_CAP else count
 
 
 def due_label(due: TaskDue, task) -> str:

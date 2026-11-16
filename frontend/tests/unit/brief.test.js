@@ -11,7 +11,7 @@ import {
   briefIcon,
   briefMoreLinks,
   briefOlderLinks,
-  briefOlderQuery,
+  briefListQuery,
   briefPerson,
   briefRecordNames,
   briefRoute,
@@ -190,7 +190,7 @@ describe('briefOlderLinks', () => {
       {
         name: 'Leads',
         query: {
-          brief_older: 'conversations',
+          brief_list: 'conversations',
           brief_tab: 'team',
           brief_doctype: 'Lead',
         },
@@ -198,12 +198,12 @@ describe('briefOlderLinks', () => {
       {
         name: 'Deals',
         query: {
-          brief_older: 'conversations',
+          brief_list: 'conversations',
           brief_tab: 'team',
           brief_doctype: 'Deal',
         },
       },
-      { name: 'Tasks', query: { brief_older: 'tasks', brief_tab: 'team' } },
+      { name: 'Tasks', query: { brief_list: 'tasks', brief_tab: 'team' } },
     ])
   })
 
@@ -213,24 +213,41 @@ describe('briefOlderLinks', () => {
   })
 })
 
-describe('briefOlderQuery', () => {
+describe('briefListQuery', () => {
   it('reads the link back', () => {
     expect(
-      briefOlderQuery({
-        brief_older: 'conversations',
+      briefListQuery({
+        brief_list: 'conversations',
         brief_tab: 'mine',
         brief_doctype: 'Deal',
         view: 'x',
       }),
     ).toEqual({ kind: 'conversations', tab: 'mine', doctype: 'Deal' })
-    expect(
-      briefOlderQuery({ brief_older: 'tasks', brief_tab: 'team' }),
-    ).toEqual({ kind: 'tasks', tab: 'team' })
+    expect(briefListQuery({ brief_list: 'tasks', brief_tab: 'team' })).toEqual({
+      kind: 'tasks',
+      tab: 'team',
+    })
   })
 
-  it('is empty without an older link', () => {
-    expect(briefOlderQuery({})).toBeNull()
-    expect(briefOlderQuery({ brief: 'L-1' })).toBeNull()
+  it('reads a member link back', () => {
+    expect(
+      briefListQuery({
+        brief_list: 'behind',
+        brief_tab: 'team',
+        brief_doctype: 'Deal',
+        brief_member: 'asha@x.com',
+      }),
+    ).toEqual({
+      kind: 'behind',
+      tab: 'team',
+      doctype: 'Deal',
+      member: 'asha@x.com',
+    })
+  })
+
+  it('is empty without a list link', () => {
+    expect(briefListQuery({})).toBeNull()
+    expect(briefListQuery({ brief: 'L-1' })).toBeNull()
   })
 })
 
@@ -373,6 +390,43 @@ describe('routes and actions', () => {
 
   it('sends several new leads to the list', () => {
     expect(briefRoute({ kind: 'new', count: 3 })).toEqual({ name: 'Leads' })
+  })
+
+  it("opens a member's records past response time in their list", () => {
+    const item = { kind: 'workload', member: 'asha@x.com', doctype: 'Deal' }
+    expect(briefRoute(item)).toEqual({
+      name: 'Deals',
+      query: {
+        brief_list: 'behind',
+        brief_tab: 'team',
+        brief_member: 'asha@x.com',
+        brief_doctype: 'Deal',
+      },
+    })
+    expect(briefActionLabel(item)).toBe('View deals')
+    expect(briefActionLabel({ ...item, doctype: 'Lead' })).toBe('View leads')
+  })
+
+  it('names the count when the link leaves out the other record type', () => {
+    const item = { kind: 'workload', doctype: 'Deal', behind: 3, linked: 2 }
+    expect(briefActionLabel(item)).toBe('View 2 deals')
+    expect(briefActionLabel({ ...item, doctype: 'Lead', linked: 1 })).toBe(
+      'View 1 lead',
+    )
+    expect(briefActionLabel({ ...item, linked: 3 })).toBe('View deals')
+  })
+
+  it("opens a member's overdue follow-ups in Tasks", () => {
+    expect(
+      briefRoute({ kind: 'overdue_person', member: 'asha@x.com' }),
+    ).toEqual({
+      name: 'Tasks',
+      query: {
+        brief_list: 'overdue',
+        brief_tab: 'team',
+        brief_member: 'asha@x.com',
+      },
+    })
   })
 
   it('replies on the channel the customer used', () => {

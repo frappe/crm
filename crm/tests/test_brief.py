@@ -12,7 +12,7 @@ from crm.fcrm.doctype.crm_dashboard.brief import (
 	allocate,
 	get_brief,
 	get_brief_count,
-	get_brief_older,
+	get_brief_records,
 )
 from crm.tests.test_home import AGENT, MANAGER, make_lead, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
@@ -449,7 +449,7 @@ class TestGetBrief(TeamWidgetTestCase):
 		self.assertEqual(get_brief_count(MANAGER, "team"), brief["total"])
 
 
-class TestBriefOlder(TeamWidgetTestCase):
+class TestBriefRecords(TeamWidgetTestCase):
 	def setUp(self):
 		super().setUp()
 		month_ago = add_days(now_datetime(), -31)
@@ -466,40 +466,81 @@ class TestBriefOlder(TeamWidgetTestCase):
 			older = get_brief(user, tab)["older"]
 			for doctype, count in older["conversations"].items():
 				with self.subTest(tab=tab, doctype=doctype):
-					self.assertEqual(len(get_brief_older(user, tab, "conversations", doctype)), count)
+					self.assertEqual(len(get_brief_records(user, tab, "conversations", doctype)), count)
 			with self.subTest(tab=tab, kind="tasks"):
-				self.assertEqual(len(get_brief_older(user, tab, "tasks")), older["tasks"])
+				self.assertEqual(len(get_brief_records(user, tab, "tasks")), older["tasks"])
 
 	def test_both_record_types_have_their_own_count(self):
 		older = get_brief(AGENT)["older"]
 		self.assertEqual(older["conversations"], {"Lead": 1, "Deal": 1})
 
 	def test_a_past_response_deal_is_an_older_team_conversation(self):
-		names = get_brief_older(MANAGER, "team", "conversations", "Deal")
+		names = get_brief_records(MANAGER, "team", "conversations", "Deal")
 		self.assertIn(self.old_past_response, names)
 
 	def test_records_inside_the_window_are_left_out(self):
 		for user, tab in ((AGENT, "mine"), (MANAGER, "team")):
 			with self.subTest(tab=tab):
-				leads = get_brief_older(user, tab, "conversations", "Lead")
+				leads = get_brief_records(user, tab, "conversations", "Lead")
 				self.assertIn(self.old_lead, leads)
 				self.assertNotIn(self.recent_lead, leads)
-				tasks = get_brief_older(user, tab, "tasks")
+				tasks = get_brief_records(user, tab, "tasks")
 				self.assertIn(self.old_task, tasks)
 				self.assertNotIn(self.recent_task, tasks)
 
 	def test_an_unknown_kind_is_refused(self):
 		with self.assertRaises(frappe.ValidationError):
-			get_brief_older(AGENT, "mine", "contacts")
+			get_brief_records(AGENT, "mine", "contacts")
 
 	def test_a_record_type_the_brief_does_not_show_is_refused(self):
 		frappe.defaults.set_user_default(DOCTYPE_KEY, "Deal", AGENT)
 		self.addCleanup(clear_defaults_cache, AGENT)
 		with self.assertRaises(frappe.ValidationError):
-			get_brief_older(AGENT, "mine", "conversations", "Lead")
+			get_brief_records(AGENT, "mine", "conversations", "Lead")
 		with self.assertRaises(frappe.ValidationError):
-			get_brief_older(AGENT, "mine", "conversations", None)
+			get_brief_records(AGENT, "mine", "conversations", None)
 
 	def test_an_agent_gets_no_team_names(self):
 		with self.assertRaises(frappe.PermissionError):
-			get_brief_older(AGENT, "team", "conversations", "Lead")
+			get_brief_records(AGENT, "team", "conversations", "Lead")
+
+
+class TestBriefMemberRecords(TeamWidgetTestCase):
+	"""Without an SLA, behind means waiting on a reply for more than two days."""
+
+	def setUp(self):
+		super().setUp()
+		waiting = add_days(now_datetime(), -5)
+		self.leads = [self.lead(awaiting_reply_since=waiting)]
+		self.deals = [self.deal(awaiting_reply_since=waiting) for _ in range(2)]
+		self.someone_elses = self.lead(lead_owner=MANAGER, awaiting_reply_since=waiting)
+
+	def workload_row(self):
+		rows = of_kind(get_brief(MANAGER, "team"), "workload")
+		return next(row for row in rows if row["member"] == AGENT)
+
+	def test_workload_links_to_the_type_holding_most_records(self):
+		row = self.workload_row()
+		self.assertEqual(row["behind"], 3)
+		self.assertEqual(row["doctype"], "Deal")
+		self.assertEqual(row["linked"], 2)
+
+	def test_behind_names_are_the_members_records_of_that_type(self):
+		deals = get_brief_records(MANAGER, "team", "behind", "Deal", AGENT)
+		leads = get_brief_records(MANAGER, "team", "behind", "Lead", AGENT)
+		self.assertCountEqual(deals, self.deals)
+		self.assertEqual(leads, self.leads)
+		self.assertEqual(len(deals) + len(leads), self.workload_row()["behind"])
+
+	def test_overdue_names_are_the_members_overdue_follow_ups(self):
+		mine = self.follow_up(add_days(nowdate(), -3))
+		self.follow_up(add_days(nowdate(), -3), assigned_to=MANAGER)
+		self.follow_up(add_days(nowdate(), -31))
+		row = next(r for r in TeamBrief(MANAGER).overdue_people() if r["member"] == AGENT)
+		names = get_brief_records(MANAGER, "team", "overdue", member=AGENT)
+		self.assertEqual(names, [mine])
+		self.assertEqual(row["count"], 1)
+
+	def test_an_agent_gets_no_team_member_records(self):
+		with self.assertRaises(frappe.PermissionError):
+			get_brief_records(AGENT, "team", "behind", "Lead", AGENT)
