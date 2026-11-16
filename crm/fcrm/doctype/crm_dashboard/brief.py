@@ -34,6 +34,7 @@ from crm.fcrm.doctype.crm_dashboard.team_widgets import (
 
 DOCTYPE_KEY = "crm_brief_doctype"
 RECORD_DOCTYPES = {"Lead": "CRM Lead", "Deal": "CRM Deal"}
+RECORD_KEYS = {doctype: key for key, doctype in RECORD_DOCTYPES.items()}
 NEW_FOR_YOU_DAYS = 7
 NO_SLA_WAIT_DAYS = 2
 # The Brief links to the records it had no room for; the link carries their names.
@@ -229,20 +230,46 @@ class RecentlyWorked(RecordWidget):
 
 
 def member_counts(widget: RecordWidget) -> Counter:
+	return sum(member_counts_by_doctype(widget).values(), Counter())
+
+
+def member_counts_by_doctype(widget: RecordWidget) -> dict[str, Counter]:
 	"""Count each record for its owner, or for its first assignee when it has no owner."""
-	counts = Counter()
-	for doctype in widget.doctypes:
-		table = frappe.qb.DocType(doctype)
-		owner = table[RECORD_TYPES[doctype].owner_field]
-		query = widget.query(doctype, table)
-		has_owner = Coalesce(owner, "") != ""
-		counts.update(dict(query.select(owner, Count("*")).where(has_owner).groupby(owner).run()))
-		ownerless_assigned = (Coalesce(owner, "") == "") & Coalesce(table._assign, "").notin(("", "[]"))
-		for (assigned,) in query.select(table._assign).where(ownerless_assigned).run():
-			first = next(iter(json.loads(assigned or "[]")), None)
-			if first:
-				counts[first] += 1
+	return {doctype: doctype_member_counts(widget, doctype) for doctype in widget.doctypes}
+
+
+def doctype_member_counts(widget: RecordWidget, doctype: str) -> Counter:
+	table = frappe.qb.DocType(doctype)
+	owner = table[RECORD_TYPES[doctype].owner_field]
+	query = widget.query(doctype, table)
+	has_owner = Coalesce(owner, "") != ""
+	counts = Counter(dict(query.select(owner, Count("*")).where(has_owner).groupby(owner).run()))
+	for (assigned,) in query.select(table._assign).where(ownerless_assigned(table, owner)).run():
+		if first := first_assignee(assigned):
+			counts[first] += 1
 	return counts
+
+
+def member_names(widget: RecordWidget, doctype: str, member: str) -> list:
+	"""The records that member_counts credits to one member."""
+	table = frappe.qb.DocType(doctype)
+	owner = table[RECORD_TYPES[doctype].owner_field]
+	query = widget.query(doctype, table)
+	owned = query.select(table.name).where(owner == member).run(pluck=True)
+	assigned = query.select(table.name, table._assign).where(ownerless_assigned(table, owner)).run()
+	return owned + [name for name, assign in assigned if first_assignee(assign) == member]
+
+
+def ownerless_assigned(table, owner):
+	return (Coalesce(owner, "") == "") & Coalesce(table._assign, "").notin(("", "[]"))
+
+
+def first_assignee(assigned: str | None) -> str | None:
+	return next(iter(json.loads(assigned or "[]")), None)
+
+
+def has_sla() -> bool:
+	return bool(frappe.db.exists("CRM Service Level Agreement", {"enabled": 1}))
 
 
 class Brief:
@@ -257,16 +284,18 @@ class Brief:
 			{"conversations": without_zeros(conversations), "tasks": widgets["tasks"].count()}
 		)
 
-	def older_names(self, kind: str, doctype: str | None = None) -> list:
-		widgets = self.older_widgets()
+	def record_names(self, kind: str, doctype: str | None = None, member: str | None = None) -> list:
 		if kind == "tasks":
-			return widgets["tasks"].names()
-		if kind != "conversations":
-			frappe.throw(_("Unknown older kind {0}").format(kind))
+			return self.older_widgets()["tasks"].names()
+		if kind == "conversations":
+			return self.older_widgets()["conversations"].names(self.record_doctype(doctype))
+		frappe.throw(_("Unknown brief list {0}").format(kind))
+
+	def record_doctype(self, doctype: str | None) -> str:
 		record_doctype = RECORD_DOCTYPES.get(doctype)
 		if record_doctype not in self.doctypes:
 			frappe.throw(_("The brief does not show {0}").format(doctype))
-		return widgets["conversations"].names(record_doctype)
+		return record_doctype
 
 
 class MineBrief(Brief):
@@ -426,11 +455,25 @@ class TeamBrief(Brief):
 			for member, count, oldest in sorted(rows, key=lambda row: (-row[1], row[0]))
 		]
 
+	def record_names(self, kind: str, doctype: str | None = None, member: str | None = None) -> list:
+		"""Both lists are limited to the team's scope, so naming someone else's member finds nothing."""
+		if kind == "behind":
+			return member_names(self.behind_widget(), self.record_doctype(doctype), member)
+		if kind == "overdue":
+			widget = TeamOverdueFollowUps(self.doctypes, self.scope)
+			task = widget.task
+			return widget.query().select(task.name).where(task.assigned_to == member).run(pluck=True)
+		return super().record_names(kind, doctype)
+
+	def behind_widget(self) -> RecordWidget:
+		widget = PastResponse if has_sla() else WaitingTooLong
+		return widget(self.doctypes, self.scope)
+
 	def workload(self) -> list:
-		has_sla = frappe.db.exists("CRM Service Level Agreement", {"enabled": 1})
-		widget = PastResponse if has_sla else WaitingTooLong
 		members = set(self.scope.members)
-		behind = member_counts(widget(self.doctypes, self.scope))
+		behind_widget = self.behind_widget()
+		by_doctype = member_counts_by_doctype(behind_widget)
+		behind = sum(by_doctype.values(), Counter())
 		behind = {member: count for member, count in behind.items() if member in members}
 		if not behind:
 			return []
@@ -443,12 +486,18 @@ class TeamBrief(Brief):
 			if member != self.scope.user and open_records[member] and active[member]
 		]
 		lightest = min(spare, key=lambda member: (open_records[member], member), default=None)
+		# A link opens one list, so it goes to the type holding most of the member's records.
+		linked = {
+			member: max(by_doctype, key=lambda doctype: by_doctype[doctype][member]) for member in behind
+		}
 		return [
 			{
 				"kind": "workload",
 				"member": member,
 				"behind": count,
-				"past_response": bool(has_sla),
+				"doctype": RECORD_KEYS[linked[member]],
+				"linked": by_doctype[linked[member]][member],
+				"past_response": isinstance(behind_widget, PastResponse),
 				"lightest": lightest,
 				"lightest_open": open_records[lightest] if lightest else None,
 			}
@@ -503,9 +552,11 @@ def get_brief_count(user: str, tab: str) -> int:
 	return brief_for(user, tab).count()
 
 
-def get_brief_older(user: str, tab: str, kind: str, doctype: str | None = None) -> list:
-	"""The names behind an older count, so its link can open a list of exactly those records."""
-	return brief_for(user, tab).older_names(kind, doctype)
+def get_brief_records(
+	user: str, tab: str, kind: str, doctype: str | None = None, member: str | None = None
+) -> list:
+	"""The names behind a count in the brief, so its link can open a list of exactly those records."""
+	return brief_for(user, tab).record_names(kind, doctype, member)
 
 
 def brief_doctype(user: str) -> str:

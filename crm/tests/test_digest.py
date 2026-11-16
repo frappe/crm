@@ -4,6 +4,7 @@ from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 import frappe
+from frappe.cache_manager import clear_defaults_cache
 from frappe.desk.form.assign_to import add as assign
 from frappe.utils import add_days, add_to_date, get_system_timezone, now_datetime
 
@@ -16,6 +17,7 @@ from crm.api.digest import (
 	send_morning_digests,
 )
 from crm.api.home import set_morning_digest
+from crm.fcrm.doctype.crm_dashboard.brief import DOCTYPE_KEY as BRIEF_DOCTYPE_KEY
 from crm.fcrm.doctype.crm_task.rules import TaskDue
 from crm.tests.test_home import AGENT, MANAGER, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
@@ -172,6 +174,11 @@ class TestDigestSending(DigestTestCase):
 		digest = MorningDigest(AGENT)
 		self.assertEqual(digest.subject(digest.sections()), "Your CRM morning: 2 follow-ups, 1 reply waiting")
 
+	def test_subject_caps_large_counts(self):
+		sections = [frappe._dict(total=1200), frappe._dict(total=501)]
+		subject = MorningDigest(AGENT).subject(sections)
+		self.assertEqual(subject, "Your CRM morning: 500+ follow-ups, 500+ replies waiting")
+
 
 class TestDigestSections(DigestTestCase):
 	def titles(self, section):
@@ -203,6 +210,29 @@ class TestDigestSections(DigestTestCase):
 		section = self.sections()["Replies waiting"]
 		self.assertEqual(section.total, 1)
 		self.assertIn(f"/crm/leads/{lead}", section["items"][0]["url"])
+
+	def test_replies_waiting_count_only_from_the_last_30_days(self):
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -29), first_name="Recent")
+		self.lead(awaiting_reply_since=add_days(now_datetime(), -31), first_name="Old")
+		section = self.sections()["Replies waiting"]
+		self.assertEqual(section.total, 1)
+		self.assertEqual(self.titles(section), ["Recent"])
+
+	def test_sections_follow_the_brief_record_type(self):
+		frappe.defaults.set_user_default(BRIEF_DOCTYPE_KEY, "Deal", AGENT)
+		self.addCleanup(clear_defaults_cache, AGENT)
+		self.lead(awaiting_reply_since=now_datetime())
+		deal = self.deal(awaiting_reply_since=now_datetime())
+		lead = self.lead(lead_owner=None)
+		assign({"assign_to": [AGENT], "doctype": "CRM Lead", "name": lead})
+
+		sections = self.sections()
+		replies = sections["Replies waiting"]
+		self.assertEqual(replies.total, 1)
+		self.assertIn(f"/crm/deals/{deal}", replies["items"][0]["url"])
+		newly = sections["Newly assigned to you"]
+		self.assertEqual(newly.total, 1)
+		self.assertIn(f"/crm/deals/{deal}", newly["items"][0]["url"])
 
 	def test_newly_assigned_since_the_last_digest(self):
 		before = self.lead(lead_owner=None, first_name="Before")
