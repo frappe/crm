@@ -23,10 +23,12 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
-    :filters="{ converted: 0 }"
+    :filters="{ converted: 0, ...briefFilters }"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
@@ -276,6 +278,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import KanbanActivityCounts from '@/components/Kanban/KanbanActivityCounts.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -302,6 +305,12 @@ const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 
 const route = useRoute()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 function getRoute(name) {
   return {

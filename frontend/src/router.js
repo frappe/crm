@@ -1,8 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, START_LOCATION } from 'vue-router'
 import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+import { getLandingPage, landingRoute, viewRoute } from '@/utils/landingPage'
 
 let setupChecked = false
 export const SETUP_DONE_KEY = 'crm_setup_completed'
@@ -32,6 +33,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
+    component: () => import('@/pages/Home.vue'),
   },
   {
     path: '/notifications',
@@ -151,8 +153,27 @@ const routes = [
   },
 ]
 
+const isMobileView = () => window.innerWidth < 768
+
 const handleMobileView = (componentName) => {
-  return window.innerWidth < 768 ? `Mobile${componentName}` : componentName
+  return isMobileView() ? `Mobile${componentName}` : componentName
+}
+
+async function mobileHomeRoute() {
+  const { views, getDefaultView } = viewsStore()
+  await views.promise
+
+  const defaultView = getDefaultView()
+  return defaultView ? viewRoute(defaultView) : { name: 'Leads' }
+}
+
+async function landingPageRoute() {
+  const page = getLandingPage()
+  if (page === 'Home') return null
+
+  const { views } = viewsStore()
+  await views.promise
+  return landingRoute(page, views.data, (name) => router.hasRoute(name))
 }
 
 let router = createRouter({
@@ -187,28 +208,12 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'Not Permitted' })
   } else if (to.name === 'Not Permitted' && isLoggedIn && isCrmUser()) {
     next({ name: 'Home' })
-  } else if (to.name === 'Home' && isLoggedIn) {
-    const { views, getDefaultView } = viewsStore()
-    await views.promise
-
-    let defaultView = getDefaultView()
-    if (!defaultView) {
-      next({ name: 'Leads' })
-      return
-    }
-
-    let { route_name, type, name, is_standard } = defaultView
-    route_name = route_name || 'Leads'
-
-    if (name && !is_standard) {
-      next({
-        name: route_name,
-        params: { viewType: type },
-        query: { view: name },
-      })
-    } else {
-      next({ name: route_name, params: { viewType: type } })
-    }
+  } else if (to.name === 'Home' && isLoggedIn && isMobileView()) {
+    next(await mobileHomeRoute())
+  } else if (to.name === 'Home' && isLoggedIn && from === START_LOCATION) {
+    const landing = await landingPageRoute()
+    if (landing) next(landing)
+    else next()
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {

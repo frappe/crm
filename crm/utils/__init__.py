@@ -1,5 +1,6 @@
 import functools
 import re
+from email.utils import parseaddr
 
 import frappe
 import phonenumbers
@@ -140,6 +141,11 @@ def sales_user_only(fn: callable) -> callable:
 		return fn(*args, **kwargs)
 
 	return wrapper
+
+
+def is_unattended() -> bool:
+	flags = frappe.flags
+	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
 
 
 def is_frappe_version(version: str, above: bool = False, below: bool = False):
@@ -304,6 +310,8 @@ def on_communication_update(doc: Communication, method: str | None = None):
 	if doc.reference_doctype not in ["CRM Lead", "CRM Deal"]:
 		return
 
+	_record_email_interaction(doc)
+
 	should_update_modified = _should_update_modified(doc)
 	status = _get_communication_status(doc)
 
@@ -328,4 +336,34 @@ def on_communication_update(doc: Communication, method: str | None = None):
 		doc.reference_name,
 		values,
 		update_modified=False,
+	)
+
+
+def _record_email_interaction(doc: Communication):
+	# Circular import: crm.api imports crm.utils.
+	from crm.api.interactions import record
+
+	direction = {"Received": "Inbound", "Sent": "Outbound"}.get(doc.sent_or_received)
+	if doc.communication_type != "Communication" or not direction or frappe.flags.crm_automated_email:
+		return
+	record(
+		doc.reference_doctype,
+		doc.reference_name,
+		direction,
+		doc.communication_date or doc.creation,
+		_email_reply(doc) if direction == "Inbound" else None,
+	)
+
+
+def _email_reply(doc: Communication):
+	from crm.api.reply_alerts import Reply
+
+	sender_name, sender_email = parseaddr(doc.sender or "")
+	return Reply(
+		channel="Email",
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		sender_name=doc.sender_full_name or sender_name or sender_email,
+		preview=doc.subject,
+		sender_user=sender_email and frappe.db.get_value("User", {"email": sender_email}),
 	)
