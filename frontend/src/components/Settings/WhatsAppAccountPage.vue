@@ -33,14 +33,29 @@
     <!-- p-1/-m-1 leaves the scroll box a little slack beyond the content, so a
          focused control's ring isn't clipped by the edge it sits flush against. -->
     <div v-else class="-m-1 flex-1 overflow-y-auto p-1">
-      <AccountForm :controller="account" />
+      <AccountForm :controller="account">
+        <template #settings>
+          <FormControl
+            v-model="newSenders"
+            type="select"
+            :label="__('New senders become')"
+            :description="
+              __(
+                'What a message from a number not yet in CRM creates. Known numbers are always added to their lead or deal.',
+              )
+            "
+            :options="newSenderOptions"
+          />
+        </template>
+      </AccountForm>
     </div>
   </div>
 </template>
 
 <script setup>
-import { AccountForm, useAccount } from '@whatsapp/ui'
-import { LoadingIndicator, toast } from 'frappe-ui'
+import { AccountForm, useAccount, useAppendToggle } from '@whatsapp/ui'
+import { FormControl, LoadingIndicator, toast } from 'frappe-ui'
+import { computed } from 'vue'
 
 const props = defineProps({
   // Empty renders a blank account that the first save creates.
@@ -50,6 +65,31 @@ const props = defineProps({
 const emit = defineEmits(['back', 'created'])
 
 const account = useAccount({ name: () => props.name })
+
+const createsLeads = useAppendToggle(account, {
+  append_to: 'CRM Lead',
+  trigger_on: 'Incoming',
+})
+const createsDeals = useAppendToggle(account, {
+  append_to: 'CRM Deal',
+  trigger_on: 'Incoming',
+})
+
+const newSenderOptions = [
+  { label: __('Nothing'), value: 'none' },
+  { label: __('A lead'), value: 'lead' },
+  { label: __('A deal'), value: 'deal' },
+]
+
+// the two rows are exclusive (crm.api.whatsapp.validate_account), so one choice sets both
+const newSenders = computed({
+  get: () =>
+    createsDeals.value ? 'deal' : createsLeads.value ? 'lead' : 'none',
+  set: (choice) => {
+    createsLeads.value = choice === 'lead'
+    createsDeals.value = choice === 'deal'
+  },
+})
 
 // The form shows a failed save under itself, so only success needs a toast.
 async function save() {
