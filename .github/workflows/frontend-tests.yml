@@ -37,7 +37,7 @@ jobs:
               run: |
                   git clone --depth 1 --branch develop --filter=blob:none --sparse \
                       https://github.com/frappe/frappe "$GITHUB_WORKSPACE/../frappe"
-                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui
+                  git -C "$GITHUB_WORKSPACE/../frappe" sparse-checkout set ui frappe/geo frappe/public/js/frappe/utils
 
             - uses: actions/setup-node@v4
               with:
