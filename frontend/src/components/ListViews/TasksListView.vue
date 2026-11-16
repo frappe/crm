@@ -65,11 +65,10 @@
             <TaskPriorityIcon :priority="item" />
           </div>
           <div v-else-if="column.key === 'assigned_to'">
-            <Avatar
+            <UserAvatar
               v-if="item.full_name"
               class="flex items-center"
-              :image="item.user_image"
-              :label="item.full_name"
+              :user="item.name"
               size="sm"
             />
           </div>
@@ -184,6 +183,7 @@
   />
 </template>
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
@@ -197,17 +197,15 @@ import {
   formatDuration,
   sanitizeHTML,
 } from '@/utils'
+import { Dropdown, Tooltip } from 'frappe-ui'
 import {
-  Avatar,
   ListView,
   ListHeader,
   ListHeaderItem,
   ListSelectBanner,
   ListRowItem,
   ListFooter,
-  Dropdown,
-  Tooltip,
-} from 'frappe-ui'
+} from 'frappe-ui/experimental'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 

@@ -1,6 +1,27 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 export const mobileSidebarOpened = ref(false)
+
+let afterMobileSidebarClosed = null
+
+// A callback whose close never finished (drawer unmounted mid-transition)
+// must not fire on a later, unrelated close.
+watch(mobileSidebarOpened, (opened) => {
+  if (opened) afterMobileSidebarClosed = null
+})
+
+// The drawer traps focus until its leave transition ends, so anything that
+// needs focus (like a dialog) must wait for it to be gone.
+export function closeMobileSidebar(then) {
+  if (!mobileSidebarOpened.value) return then?.()
+  afterMobileSidebarClosed = then
+  mobileSidebarOpened.value = false
+}
+
+export function onMobileSidebarClosed() {
+  afterMobileSidebarClosed?.()
+  afterMobileSidebarClosed = null
+}
 
 export const isMobileView = computed(() => window.innerWidth < 768)
 

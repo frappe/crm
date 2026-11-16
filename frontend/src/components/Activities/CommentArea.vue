@@ -16,8 +16,8 @@
         <Dropdown
           v-if="isOwner && !editing"
           :options="menuOptions"
-          placement="right"
-          @click="confirmingDelete = false"
+          align="end"
+          @update:open="(open) => open && (confirmingDelete = false)"
         >
           <Button
             icon="lucide-more-horizontal"
@@ -28,7 +28,7 @@
       </div>
     </div>
     <div
-      class="rounded bg-surface-gray-1 px-3 py-[7.5px] text-base leading-6 transition-all duration-300 ease-in-out"
+      class="rounded-4 bg-surface-gray-1 px-3 py-[7.5px] text-base leading-6 transition-all duration-300 ease-in-out"
     >
       <template v-if="editing">
         <RichTextField
@@ -92,7 +92,7 @@ const confirmingDelete = ref(false)
 const menuOptions = computed(() => [
   {
     label: __('Edit'),
-    icon: 'edit-2',
+    icon: 'lucide-edit-2',
     onClick: startEdit,
   },
   ...ConfirmDelete({
@@ -118,11 +118,9 @@ async function saveEdit() {
   }
   saving.value = true
   try {
-    await call('frappe.client.set_value', {
-      doctype: 'Comment',
+    await call('frappe.desk.form.utils.update_comment', {
       name: props.activity.name,
-      fieldname: 'content',
-      value: editContent.value,
+      content: editContent.value,
     })
     editing.value = false
     emit('reload')

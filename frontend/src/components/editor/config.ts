@@ -20,15 +20,17 @@ import {
   InsertTable,
   Strike,
   type MenuItem,
+  type CommandMenuItem,
 } from 'frappe-ui/editor'
 import { useFileUpload } from 'frappe-ui'
 import type { Extension } from '@tiptap/core'
-import type { MaybeRefOrGetter } from 'vue'
+import { markRaw, type MaybeRefOrGetter } from 'vue'
+import EditorMoreMenu from '@/components/editor/EditorMoreMenu.vue'
 
-/** A mentionable user as the editor expects it. `id` is the email — `extract_mentions`
- *  (crm/api/comment.py) reads it back off `data-id`. */
+/** A mentionable user as the editor expects it. `value` is the email; the editor
+ *  stores it as `data-id`, which `extract_mentions` (crm/api/comment.py) reads. */
 export interface MentionItem {
-  id: string
+  value: string
   label: string
 }
 
@@ -84,6 +86,43 @@ export const fullToolbar: MenuItem[] = [
 /** Compact toolbar for inline/ghost fields (generic form fields, grid rows) —
  *  shown in a floating bubble on text selection rather than a fixed bar. */
 export const bubbleToolbar: MenuItem[] = [Bold, Italic, Strike, InsertLink]
+
+/** Rarer formatting, shown under the More (⋯) button of the form toolbar. */
+export const moreToolbarItems: CommandMenuItem[] = [
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  FontColor,
+  InlineCode,
+  HorizontalRule,
+  InsertVideo,
+  InsertTable,
+]
+
+const MoreMenu: CommandMenuItem = {
+  label: 'More',
+  icon: 'lucide-ellipsis',
+  action: () => {},
+  component: markRaw(EditorMoreMenu),
+}
+
+/** Toolbar for rich text fields in forms, short enough to fit a dialog. */
+export const formToolbar: MenuItem[] = [
+  HeadingGroup,
+  Separator,
+  Bold,
+  Italic,
+  Strike,
+  Separator,
+  BulletList,
+  OrderedList,
+  Separator,
+  InsertLink,
+  Blockquote,
+  InsertImage,
+  Separator,
+  MoreMenu,
+]
 
 /** Upload handler for images/files dropped or pasted into an editor. */
 export function uploadFile(

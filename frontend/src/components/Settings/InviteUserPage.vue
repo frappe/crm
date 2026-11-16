@@ -8,7 +8,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Invite users to access CRM. Specify their roles to control access and permissions',
+              'Invite users to access CRM. Specify their roles to control access and permissions.',
             )
           }}
         </p>
@@ -42,7 +42,7 @@
         />
         <div
           v-if="userExistMessage || inviteeExistMessage"
-          class="text-xs text-ink-red-6 mt-1.5"
+          class="text-xs text-ink-red-5 mt-1.5"
         >
           {{ userExistMessage || inviteeExistMessage }}
         </div>
@@ -64,7 +64,7 @@
             <li
               v-for="user in pendingInvitations.data"
               :key="user.name"
-              class="flex items-center justify-between px-2 py-1 rounded-lg bg-surface-gray-2"
+              class="flex items-center justify-between px-2 py-1 rounded-6 bg-surface-gray-2"
             >
               <div class="text-base">
                 <span class="text-ink-gray-8">
@@ -97,7 +97,8 @@
 <script setup>
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import {
   toast,
   createListResource,
@@ -106,7 +107,7 @@ import {
 } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 const { users, isAdmin } = usersStore()
 const { capture } = useTelemetry()
 
@@ -185,7 +186,7 @@ const inviteByEmail = createResource({
     invitees.value = []
     pendingInvitations.reload()
     toast.success(__('Invitations sent successfully'))
-    updateOnboardingStep('invite_your_team')
+    completeStep('invite_your_team')
     capture('user_invited')
   },
   onError(err) {

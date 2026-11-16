@@ -4,21 +4,28 @@ import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
 
-let personaChecked = false
-export const PERSONA_DONE_KEY = 'crm_persona_captured'
+let setupChecked = false
+export const SETUP_DONE_KEY = 'crm_setup_completed'
 
-async function shouldCapturePersona() {
+async function needsSetup() {
   // Client-side flag guards against re-prompting if the server persist failed.
-  if (localStorage.getItem(PERSONA_DONE_KEY)) return false
-  const captured = await call('frappe.client.get_single_value', {
+  if (localStorage.getItem(SETUP_DONE_KEY)) return false
+  const completed = await call('frappe.client.get_single_value', {
     doctype: 'FCRM Settings',
-    field: 'persona_captured',
+    field: 'setup_completed',
   })
-  if (captured) return false
-  // The wizard only feeds telemetry; skip it entirely if the user opted out.
-  const { enabled } =
-    (await call('frappe.utils.telemetry.pulse.client.boot_config')) || {}
-  return !!enabled
+  return !completed
+}
+
+async function getSetupRedirect(to, isAdminUser) {
+  if (to.name === 'Setup') {
+    const allowed = isAdminUser && (await needsSetup().catch(() => false))
+    return allowed ? null : { name: 'Home' }
+  }
+  if (!isAdminUser || setupChecked) return null
+  setupChecked = true
+  const required = await needsSetup().catch(() => false)
+  return required ? { name: 'Setup' } : null
 }
 
 const routes = [
@@ -103,21 +110,24 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
-    path: '/data-import',
-    name: 'DataImportList',
-    component: () => import('@/pages/DataImport.vue'),
+    alias: '/data-import',
+    path: '/data-import/view/:viewType?',
+    name: 'Data Imports',
+    component: () => import('@/pages/DataImports.vue'),
   },
+  // one page across these routes, so an import stays open when its URL changes
+  // after the first save
   {
-    path: '/data-import/doctype/:doctype',
+    path: '/data-import/doctype/:doctype?',
     name: 'NewDataImport',
     component: () => import('@/pages/DataImport.vue'),
-    props: true,
+    meta: { viewKey: 'data-import' },
   },
   {
     path: '/data-import/:importName',
     name: 'DataImport',
     component: () => import('@/pages/DataImport.vue'),
-    props: true,
+    meta: { viewKey: 'data-import' },
   },
   {
     path: '/welcome',
@@ -125,9 +135,9 @@ const routes = [
     component: () => import('@/pages/Welcome.vue'),
   },
   {
-    path: '/onboarding',
-    name: 'Onboarding',
-    component: () => import('@/pages/PersonaForm.vue'),
+    path: '/setup',
+    name: 'Setup',
+    component: () => import('@/pages/Setup.vue'),
   },
   {
     path: '/:invalidpath',
@@ -167,34 +177,10 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  const isAdminUser = isLoggedIn && (isAdmin() || user === 'Administrator')
-
-  // Only admins who haven't finished may reach the wizard, even via direct URL.
-  if (isLoggedIn && to.name === 'Onboarding') {
-    try {
-      if (!isAdminUser || !(await shouldCapturePersona())) {
-        return next({ name: 'Home' })
-      }
-    } catch {
-      return next({ name: 'Home' })
-    }
-  }
-
-  if (
-    isLoggedIn &&
-    isCrmUser() &&
-    !personaChecked &&
-    to.name !== 'Onboarding' &&
-    isAdminUser
-  ) {
-    personaChecked = true
-    try {
-      if (await shouldCapturePersona()) {
-        return next({ name: 'Onboarding' })
-      }
-    } catch (error) {
-      // fail open
-    }
+  if (isLoggedIn && isCrmUser()) {
+    const isAdminUser = isAdmin() || user === 'Administrator'
+    const redirect = await getSetupRedirect(to, isAdminUser)
+    if (redirect) return next(redirect)
   }
 
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
@@ -241,6 +227,7 @@ router.beforeEach(async (to, from, next) => {
       'Notes',
       'Tasks',
       'Call Logs',
+      'Data Imports',
     ].includes(to.name) &&
     !to.query?.view
   ) {
@@ -259,6 +246,7 @@ router.beforeEach(async (to, from, next) => {
         Notes: 'FCRM Note',
         Tasks: 'CRM Task',
         'Call Logs': 'CRM Call Log',
+        'Data Imports': 'Data Import',
       }
 
       const doctype = doctypeMap[to.name]

@@ -29,6 +29,8 @@ USER_FIELDS = [
 	"full_name",
 	"user_type",
 	"language",
+	"crm_availability",
+	"crm_availability_changed_on",
 ]
 
 

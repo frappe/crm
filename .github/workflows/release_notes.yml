@@ -23,6 +23,7 @@ jobs:
   regen-notes:
     name: 'Regenerate release notes'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
     - name: Update notes

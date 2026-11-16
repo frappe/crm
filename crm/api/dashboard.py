@@ -46,7 +46,7 @@ def get_dashboard(from_date: str | None = None, to_date: str | None = None, user
 
 	if not dashboard:
 		layout = json.loads(create_default_manager_dashboard())
-		frappe.db.commit()
+		frappe.db.commit()  # persist the auto-created default dashboard  # nosemgrep
 	else:
 		layout = json.loads(frappe.db.get_value("CRM Dashboard", "Manager Dashboard", "layout") or "[]")
 
@@ -539,7 +539,6 @@ def get_average_deal_value(from_date: str | None = None, to_date: str | None = N
 		"value": current_month_avg,
 		"prefix": get_base_currency_symbol(),
 		"delta": delta,
-		"deltaSuffix": "%",
 	}
 
 
@@ -1281,8 +1280,11 @@ def get_deal_status_change_counts(
 	filters: dict | None = None,
 ):
 	"""
-	Get count of each status change (to) for each deal, excluding deals with current status type 'Lost'.
-	Order results by status position.
+	Get count of unique deals that ever reached each status (to), excluding deals with current status
+	type 'Lost'. Order results by status position.
+
+	Counts distinct deals per stage rather than status-change events, so a deal that re-enters a stage
+	(e.g. Won -> Negotiation -> Won) is counted once per stage and does not inflate the funnel.
 	Returns:
 	[
 	  {"status": "Qualification", "count": 120},
@@ -1304,7 +1306,7 @@ def get_deal_status_change_counts(
 		.on(CRMDeal.status == CurrentStatus.name)
 		.join(TargetStatus)
 		.on(CRMStatusChangeLog.to == TargetStatus.name)
-		.select(CRMStatusChangeLog.to.as_("stage"), Count("*").as_("count"))
+		.select(CRMStatusChangeLog.to.as_("stage"), Count(CRMStatusChangeLog.parent).distinct().as_("count"))
 		.where(
 			(CRMStatusChangeLog.to.isnotnull())
 			& (CRMStatusChangeLog.to != "")

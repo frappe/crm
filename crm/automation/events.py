@@ -54,19 +54,19 @@ def on_communication(doc, method=None):
 		return
 	event = "crm.prospect_message_sent" if doc.sent_or_received == "Sent" else "crm.prospect_message_received"
 	thread = _email_thread_key(doc)
-	payload = _message_payload(doc, doc.name, "Email", thread)
-	_emit_correlated(event, doc, payload, [thread, _record_key(doc)])
+	payload = _message_payload(doc.reference_doctype, doc.reference_name, doc.name, "Email", thread)
+	_emit_correlated(event, doc, payload, [thread, _record_key(doc.reference_doctype, doc.reference_name)])
 
 
 def on_whatsapp_message(doc, method=None):
 	"""Emit the prospect message event for a WhatsApp message against a Lead or Deal."""
 	if not _enabled() or doc.reference_doctype not in CRM_REFERENCE_DOCTYPES:
 		return
-	outgoing = doc.get("type") == "Outgoing"
+	outgoing = doc.direction == "Outgoing"
 	event = "crm.prospect_message_sent" if outgoing else "crm.prospect_message_received"
-	thread = doc.get("message_id") if outgoing else doc.get("reply_to_message_id")
-	payload = _message_payload(doc, doc.name, "WhatsApp", thread)
-	_emit_correlated(event, doc, payload, [thread, _record_key(doc)])
+	thread = doc.message_id if outgoing else doc.context_message_id
+	payload = _message_payload(doc.reference_doctype, doc.reference_docname, doc.name, "WhatsApp", thread)
+	_emit_correlated(event, doc, payload, [thread, _record_key(doc.reference_doctype, doc.reference_docname)])
 
 
 def on_lead_update(doc, method=None):
@@ -155,10 +155,10 @@ def _emit_correlated(event, doc, payload, keys):
 		emit(event, doc=doc, payload=payload, correlation_key=key)
 
 
-def _message_payload(doc, communication, channel, thread) -> dict:
+def _message_payload(reference_doctype, reference_name, communication, channel, thread) -> dict:
 	return {
-		"reference_doctype": doc.reference_doctype,
-		"reference_name": doc.reference_name,
+		"reference_doctype": reference_doctype,
+		"reference_name": reference_name,
 		"communication": communication,
 		"channel": channel,
 		"thread": thread,
@@ -180,10 +180,10 @@ def _message_key(message_id) -> str | None:
 	return message_id.strip("<>").strip() if message_id else None
 
 
-def _record_key(doc) -> str | None:
-	if not (doc.reference_doctype and doc.reference_name):
+def _record_key(reference_doctype, reference_name) -> str | None:
+	if not (reference_doctype and reference_name):
 		return None
-	return f"{doc.reference_doctype}:{doc.reference_name}"
+	return f"{reference_doctype}:{reference_name}"
 
 
 def _enabled() -> bool:

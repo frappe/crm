@@ -16,9 +16,9 @@
       v-if="showDropdown"
       :options="parsedOptions"
       size="sm"
-      placement="right"
+      align="end"
       :button="{
-        icon: 'chevron-down',
+        icon: 'lucide-chevron-down',
         variant: $attrs.variant,
         size: $attrs.size,
         class:
@@ -28,7 +28,6 @@
   </div>
 </template>
 <script setup>
-import { DropdownOption } from '@/utils'
 import { Button, Dropdown } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
@@ -44,13 +43,8 @@ const parsedOptions = computed(() => {
     props.options?.map((option) => {
       return {
         label: option.label,
-        component: (props) =>
-          DropdownOption({
-            option: option.label,
-            active: props.active,
-            selected: option.label === activeButton.value.label,
-            onClick: () => (activeButton.value = option),
-          }),
+        selected: option.label === activeButton.value.label,
+        onClick: () => (activeButton.value = option),
       }
     }) || []
   )

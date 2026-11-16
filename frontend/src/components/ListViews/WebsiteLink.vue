@@ -2,7 +2,7 @@
   <button
     v-if="variant === 'label'"
     type="button"
-    class="w-full truncate bg-transparent p-0 text-left text-base cursor-pointer hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4 focus-visible:ring-offset-1 rounded"
+    class="w-full truncate bg-transparent p-0 text-left text-base cursor-pointer hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4 focus-visible:ring-offset-1 rounded-4"
     @click.stop.prevent="openWebsite(url)"
   >
     {{ label }}

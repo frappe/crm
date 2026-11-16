@@ -72,7 +72,7 @@ export function checkedFirst(commands = []) {
 }
 
 export function flattenCommandActions(actions = []) {
-  return actions.flatMap((action) => action.items || action)
+  return actions.flatMap((action) => action.options || action.items || action)
 }
 
 export const FILTERABLE_FIELDTYPES = ['Check', 'Select', 'Link']

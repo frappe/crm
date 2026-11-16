@@ -11,7 +11,7 @@
   <div class="relative flex h-full bg-surface-gray-1">
     <Sidebar
       v-model:collapsed="isSidebarCollapsed"
-      :disable-collapse="mobile"
+      :collapsible="!mobile"
       :width="mobile ? '260px' : undefined"
       class="border-r border-outline-gray-1"
     >
@@ -22,10 +22,22 @@
              active row's shadow. Widen the scroll box to the sidebar edges and
              pad the content back in so the shadow has room. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
+          <SidebarItem :label="__('Search')" @click="onSearchClick">
+            <template #prefix>
+              <LucideSearch class="size-4 text-ink-gray-7" />
+            </template>
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Search') }}
+            </span>
+            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
+              K
+            </KeyboardShortcut>
+          </SidebarItem>
+
           <SidebarItem
             id="notifications-btn"
             :label="__('Notifications')"
-            :to="mobile ? { name: 'Notifications' } : undefined"
+            :route="mobile ? { name: 'Notifications' } : undefined"
             :active="mobile && activeItem === 'Notifications'"
             @click="onNotificationsClick"
           >
@@ -38,14 +50,17 @@
                 />
               </span>
             </template>
-            <template #suffix>
-              <Badge
-                v-if="unreadNotificationsCount"
-                class="mr-2"
-                :label="unreadNotificationsCount"
-                variant="subtle"
-              />
-            </template>
+            <!-- Not in #suffix: that slot sits outside the button, so a click on
+                 the count would not toggle the panel. -->
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Notifications') }}
+            </span>
+            <Badge
+              v-if="unreadNotificationsCount"
+              class="mr-2"
+              :label="unreadNotificationsCount"
+              variant="subtle"
+            />
           </SidebarItem>
 
           <CollapsibleSection
@@ -77,7 +92,7 @@
               <SidebarItem
                 v-for="link in section.views"
                 :key="link.key"
-                :to="link.to"
+                :route="link.to"
                 :label="__(link.label)"
                 :active="activeItem === link.key"
                 @click="selectItem($event, link.key)"
@@ -87,8 +102,8 @@
                 </template>
                 <Tooltip
                   :text="__(link.label)"
-                  placement="right"
-                  :hoverDelay="1.5"
+                  side="right"
+                  :hoverDelay="1500"
                   :disabled="isCollapsed"
                 >
                   <span class="truncate text-sm">{{ __(link.label) }}</span>
@@ -106,19 +121,20 @@
               :afterSignup="() => capture('signup_from_demo_site')"
             />
             <TrialBanner
-              v-if="isFCSite"
+              v-if="isFCSite && !isCloudSettingsAvailable()"
               :isSidebarCollapsed="isCollapsed"
               :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
             />
+            <TrialCard v-if="!isCollapsed" />
             <GettingStartedBanner
-              v-if="!isOnboardingStepsCompleted"
+              v-if="showGettingStarted"
               :isSidebarCollapsed="isCollapsed"
             />
           </div>
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
             :label="__('Clear Demo Data')"
-            class="!text-ink-red-6 hover:!bg-surface-red-2"
+            class="!text-ink-red-5 hover:!bg-surface-red-2"
             @click="() => clearDemoData()"
           >
             <template #prefix>
@@ -126,7 +142,7 @@
             </template>
           </SidebarItem>
           <SidebarItem
-            v-if="isOnboardingStepsCompleted"
+            v-if="isOnboardingStepsCompleted && !onboardingDisabled"
             :label="__('Help')"
             @click="toggleHelpModal"
           >
@@ -154,7 +170,7 @@
   <template v-if="!mobile">
     <Settings />
     <HelpModal
-      v-if="showHelpModal"
+      v-if="showHelpModal && !onboardingDisabled"
       v-model="showHelpModal"
       v-model:articles="articles"
       :logo="CRMLogo"
@@ -176,15 +192,11 @@ import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import InviteIcon from '@/components/Icons/InviteIcon.vue'
 import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
-import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
-import StepsIcon from '@/components/Icons/StepsIcon.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
-import SquareAsterisk from '@/components/Icons/SquareAsterisk.vue'
-import WebsiteIcon from '@/components/Icons/WebsiteIcon.vue'
 import { getNavigationItems } from '@/utils/navigation'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
@@ -197,6 +209,9 @@ import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import Notifications from '@/components/Notifications.vue'
+import KeyboardShortcut from '@/components/KeyboardShortcut.vue'
+import LucideSearch from '~icons/lucide/search'
+import { openCommandPalette } from '@/composables/useCommandPalette'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
 import {
@@ -204,29 +219,33 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
+import { getSettings } from '@/stores/settings'
 import { sessionStore } from '@/stores/session'
 import {
   showSettings,
   activeSettingsPage,
   mobileSidebarOpened,
+  closeMobileSidebar,
 } from '@/composables/settings'
-import { showChangePasswordModal } from '@/composables/modals'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+import { SignupBanner } from '@framework/ui/components/SignupBanner'
+import { TrialBanner } from '@framework/ui/components/TrialBanner'
+import TrialCard from '@/components/Layouts/TrialCard.vue'
+import { isCloudSettingsAvailable } from '@/composables/cloudSettings'
 import {
-  SignupBanner,
-  TrialBanner,
   HelpModal,
   GettingStartedBanner,
   useOnboarding,
   showHelpModal,
   minimize,
   IntermediateStepModal,
-  useTelemetry,
-} from 'frappe-ui/frappe'
+} from '@framework/ui/components/Onboarding'
+import { useTelemetry } from '@framework/ui/telemetry'
 import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
+import { useCrmOnboarding } from '@/composables/onboarding'
 import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -355,6 +374,11 @@ watch(
   () => (activeItem.value = currentRouteKey()),
 )
 
+function onSearchClick() {
+  if (props.mobile) closeMobileSidebar(openCommandPalette)
+  else openCommandPalette()
+}
+
 function onNotificationsClick(event) {
   if (props.mobile) {
     selectItem(event, 'Notifications')
@@ -372,11 +396,20 @@ function toggleHelpModal() {
 const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
+const { flushPendingSteps } = useCrmOnboarding()
+const { _settings } = getSettings()
+
+const onboardingDisabled = computed(
+  () => !_settings.doc || Boolean(_settings.doc.disable_onboarding),
+)
+const showGettingStarted = computed(
+  () => !isOnboardingStepsCompleted.value && !onboardingDisabled.value,
+)
 
 // The onboarding composable persists the checklist as a positional
 // [{name, completed}] list, seeds it from the current steps ONLY when empty,
 // and never adds newly introduced steps to an existing list. So once a step is
-// added (e.g. create_first_web_form), a saved list is missing it — skip / reset
+// added (e.g. connect_your_email), a saved list is missing it — skip / reset
 // / complete become no-ops (findIndex returns -1) and the total is wrong.
 //
 // Reconcile the saved list to the current steps while never losing progress:
@@ -413,7 +446,11 @@ async function reconcileOnboarding(currentSteps) {
   }))
   // Preserve saved-but-not-visible steps (e.g. manager-only steps for a user
   // whose role was removed) so their completion survives role changes.
-  const hidden = persisted.filter((s) => !currentNames.has(s.name))
+  // Drop steps that no longer exist so they can't block completion.
+  const knownNames = new Set(steps.map((s) => s.name))
+  const hidden = persisted.filter(
+    (s) => !currentNames.has(s.name) && knownNames.has(s.name),
+  )
   const merged = [...visible, ...hidden]
 
   const unchanged =
@@ -468,19 +505,8 @@ const currentStep = ref({})
 
 const steps = reactive([
   {
-    name: 'setup_your_password',
-    title: __('Setup your password'),
-    icon: markRaw(SquareAsterisk),
-    completed: false,
-    onClick: () => {
-      minimize.value = true
-      showChangePasswordModal.value = true
-      capture('onboarding_step_clicked_setup_password')
-    },
-  },
-  {
     name: 'create_first_lead',
-    title: __('Create your first lead'),
+    title: __('Add your first lead'),
     icon: markRaw(LeadsIcon),
     completed: false,
     onClick: () => {
@@ -491,15 +517,15 @@ const steps = reactive([
     },
   },
   {
-    name: 'create_first_web_form',
-    title: __('Capture leads with a form'),
-    icon: markRaw(WebsiteIcon),
+    name: 'connect_your_email',
+    title: __('Connect your email'),
+    icon: markRaw(EmailIcon),
     completed: false,
     onClick: () => {
       minimize.value = true
       showSettings.value = true
-      activeSettingsPage.value = 'Forms'
-      capture('onboarding_step_clicked_create_first_web_form')
+      activeSettingsPage.value = __('Accounts')
+      capture('onboarding_step_clicked_connect_your_email')
     },
     condition: () => isManager(),
   },
@@ -546,7 +572,7 @@ const steps = reactive([
   },
   {
     name: 'create_first_task',
-    title: __('Create your first task'),
+    title: __('Schedule a follow-up task'),
     icon: markRaw(TaskIcon),
     completed: false,
     onClick: async () => {
@@ -563,104 +589,6 @@ const steps = reactive([
       } else {
         router.push({ name: 'Tasks' })
       }
-    },
-  },
-  {
-    name: 'create_first_note',
-    title: __('Create your first note'),
-    icon: markRaw(NoteIcon),
-    completed: false,
-    onClick: async () => {
-      minimize.value = true
-      let deal = await getFirstDeal()
-      capture('onboarding_step_clicked_create_first_note')
-
-      if (deal) {
-        router.push({
-          name: 'Deal',
-          params: { dealId: deal },
-          hash: '#notes',
-        })
-      } else {
-        router.push({ name: 'Notes' })
-      }
-    },
-  },
-  {
-    name: 'add_first_comment',
-    title: __('Add your first comment'),
-    icon: markRaw(CommentIcon),
-    completed: false,
-    dependsOn: 'create_first_lead',
-    onClick: async () => {
-      minimize.value = true
-      let deal = await getFirstDeal()
-      capture('onboarding_step_clicked_add_first_comment')
-
-      if (deal) {
-        router.push({
-          name: 'Deal',
-          params: { dealId: deal },
-          hash: '#comments',
-        })
-      } else {
-        router.push({ name: 'Leads' })
-      }
-    },
-  },
-  {
-    name: 'send_first_email',
-    title: __('Send email'),
-    icon: markRaw(EmailIcon),
-    completed: false,
-    dependsOn: 'create_first_lead',
-    onClick: async () => {
-      minimize.value = true
-      let deal = await getFirstDeal()
-      capture('onboarding_step_clicked_send_first_email')
-
-      if (deal) {
-        router.push({
-          name: 'Deal',
-          params: { dealId: deal },
-          hash: '#emails',
-        })
-      } else {
-        router.push({ name: 'Leads' })
-      }
-    },
-  },
-  {
-    name: 'change_deal_status',
-    title: __('Change deal status'),
-    icon: markRaw(StepsIcon),
-    completed: false,
-    dependsOn: 'convert_lead_to_deal',
-    onClick: async () => {
-      minimize.value = true
-      capture('onboarding_step_clicked_change_deal_status')
-
-      currentStep.value = {
-        title: __('Change deal status'),
-        buttonLabel: __('Change'),
-        videoURL: '/assets/crm/videos/changeDealStatus.mov',
-        onClick: async () => {
-          showIntermediateModal.value = false
-          currentStep.value = {}
-
-          let deal = await getFirstDeal()
-          if (deal) {
-            router.push({
-              name: 'Deal',
-              params: { dealId: deal },
-              hash: '#activity',
-            })
-          } else {
-            router.push({ name: 'Leads' })
-          }
-        },
-      }
-      showIntermediateModal.value = true
     },
   },
 ])
@@ -681,6 +609,7 @@ onMounted(async () => {
   // newly introduced steps, preserves completion). No-op when already aligned.
   await reconcileOnboarding(filteredSteps)
   setUp(filteredSteps)
+  flushPendingSteps()
 })
 
 // help center
@@ -697,10 +626,10 @@ const articles = ref([
     title: __('Settings'),
     opened: false,
     subArticles: [
-      { name: 'profile', title: __('Profile') },
+      { name: 'profile-and-preferences', title: __('Profile') },
       { name: 'custom-branding', title: __('Custom Branding') },
       { name: 'home-actions', title: __('Home Actions') },
-      { name: 'invite-users', title: __('Invite Users') },
+      { name: 'inviting-your-team', title: __('Invite Users') },
     ],
   },
   {
@@ -720,7 +649,7 @@ const articles = ref([
   {
     title: __('Capturing Leads'),
     opened: false,
-    subArticles: [{ name: 'web-form', title: __('Web Form') }],
+    subArticles: [{ name: 'capturing-leads/web-form', title: __('Web Form') }],
   },
   {
     title: __('Views'),

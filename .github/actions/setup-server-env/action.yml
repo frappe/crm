@@ -1,10 +1,6 @@
 name: Setup Server Environment
 description: Prepare Python, Node, caching, and bench prerequisites for CRM server tests.
 inputs:
-    python-version:
-        description: Python version to install
-        required: false
-        default: "3.14"
     node-version:
         description: Node version to install
         required: false
@@ -24,15 +20,10 @@ inputs:
 runs:
     using: composite
     steps:
-        - name: Setup Python
-          uses: actions/setup-python@v6
-          with:
-              python-version: ${{ inputs.python-version }}
-
         - name: Check for valid Python & merge conflicts
           shell: bash
           run: |
-              python -m compileall -f "${GITHUB_WORKSPACE}"
+              python3 -m compileall -f "${GITHUB_WORKSPACE}"
               if grep -lr --exclude-dir=node_modules "^<<<<<<< " "${GITHUB_WORKSPACE}"; then
                   echo "Found merge conflicts"
                   exit 1
@@ -42,49 +33,38 @@ runs:
           uses: actions/setup-node@v6
           with:
               node-version: ${{ inputs.node-version }}
-              check-latest: true
-
-        - name: Install Yarn
-          shell: bash
-          run: npm install -g yarn
 
         - name: Add to hosts file
           shell: bash
           run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
 
-        - name: Cache pip
+        - name: Cache pip and uv
           uses: actions/cache@v4
           with:
-              path: ~/.cache/pip
-              key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
+              path: |
+                  ~/.cache/pip
+                  ~/.cache/uv
+              key: ${{ runner.os }}-py-deps-${{ hashFiles('**/*requirements.txt', '**/pyproject.toml') }}
               restore-keys: |
-                  ${{ runner.os }}-pip-
-                  ${{ runner.os }}-
+                  ${{ runner.os }}-py-deps-
 
-        - name: Cache node modules
-          uses: actions/cache@v4
-          env:
-              cache-name: cache-node-modules
-          with:
-              path: ~/.npm
-              key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-              restore-keys: |
-                  ${{ runner.os }}-build-${{ env.cache-name }}-
-                  ${{ runner.os }}-build-
-                  ${{ runner.os }}-
-
-        - name: Get yarn cache directory path
-          id: yarn-cache-dir-path
+        # Stable key; drift is detected post-restore (see install.sh), so schema churn never forces a reprovision.
+        - name: Compute bench cache key
+          id: bench-key
           shell: bash
-          run: echo "dir=$(yarn cache dir)" >> "${GITHUB_OUTPUT}"
+          run: |
+              echo "key=${{ runner.os }}-pilot-bench-crm-${{ inputs.frappe-branch }}-py3.14-extdb-erpnext-${{ inputs.install-erpnext }}" >> "$GITHUB_OUTPUT"
 
-        - name: Cache yarn
-          uses: actions/cache@v4
+        - name: Restore Pilot bench
+          id: bench-cache
+          uses: actions/cache/restore@v4
           with:
-              path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-              key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-              restore-keys: |
-                  ${{ runner.os }}-yarn-
+              path: |
+                  ~/pilot/benches
+                  ~/pilot/databases
+                  ~/.config/systemd/user
+                  ~/db-snapshot
+              key: ${{ steps.bench-key.outputs.key }}
 
         - name: Install bench dependencies
           shell: bash
@@ -92,4 +72,16 @@ runs:
               TYPE: ${{ inputs.type }}
               INSTALL_ERPNEXT: ${{ inputs.install-erpnext }}
               FRAPPE_BRANCH: ${{ inputs.frappe-branch }}
+              PILOT_CACHE_HIT: ${{ steps.bench-cache.outputs.cache-hit }}
           run: bash ${GITHUB_WORKSPACE}/.github/helper/install.sh
+
+        - name: Save Pilot bench
+          if: steps.bench-cache.outputs.cache-hit != 'true'
+          uses: actions/cache/save@v4
+          with:
+              path: |
+                  ~/pilot/benches
+                  ~/pilot/databases
+                  ~/.config/systemd/user
+                  ~/db-snapshot
+              key: ${{ steps.bench-key.outputs.key }}

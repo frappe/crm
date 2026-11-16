@@ -1,8 +1,10 @@
 <template>
   <Dialog
-    v-model="commandPaletteOpen"
+    v-model:open="commandPaletteOpen"
     bare
-    :options="{ size: '2xl', position: 'top', paddingTop: '10vh' }"
+    size="2xl"
+    position="top"
+    padding-top="10vh"
   >
     <Combobox
       as="div"
@@ -23,6 +25,7 @@
         </button>
         <ComboboxInput
           ref="inputRef"
+          :display-value="() => commandPaletteQuery"
           :placeholder="__('Search records or type a command...')"
           class="w-full border-none bg-transparent py-3.5 pe-4 ps-3 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
           autofocus
@@ -85,7 +88,7 @@
           <kbd
             v-for="key in hint.keys"
             :key="key"
-            class="rounded-sm bg-surface-gray-2 px-1 py-0.5 font-sans text-ink-gray-5"
+            class="rounded-1 bg-surface-gray-2 px-1 py-0.5 font-sans text-ink-gray-5"
           >
             {{ key }}
           </kbd>

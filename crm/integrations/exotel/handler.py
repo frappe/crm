@@ -3,7 +3,8 @@ import requests
 from frappe import _
 from frappe.integrations.utils import create_request_log
 
-from crm.integrations.api import get_contact_by_phone_number
+from crm.integrations.api import find_contact_by_phone_number
+from crm.utils import sales_user_only
 
 # Endpoints for webhook
 
@@ -16,7 +17,7 @@ from crm.integrations.api import get_contact_by_phone_number
 
 
 # Incoming Call
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def handle_request(**kwargs):
 	validate_request()
 	if not is_integration_enabled():
@@ -38,7 +39,9 @@ def handle_request(**kwargs):
 
 		call_payload = kwargs
 
-		frappe.publish_realtime("exotel_call", call_payload)
+		if call_agent := get_call_agent(call_payload):
+			frappe.publish_realtime("exotel_call", call_payload, user=call_agent)
+
 		status = call_payload.get("Status")
 		if status == "free":
 			return
@@ -69,25 +72,24 @@ def handle_request(**kwargs):
 		request_log.error = frappe.get_traceback()
 		frappe.db.rollback()
 		frappe.log_error(title="Error while creating/updating call record")
-		frappe.db.commit()
+		frappe.db.commit()  # keep the error log after the rollback  # nosemgrep
 	finally:
 		request_log.save(ignore_permissions=True)
-		frappe.db.commit()
+		frappe.db.commit()  # passthru webhooks are GET, not auto-committed  # nosemgrep
 
 
 # Outgoing Call
-@frappe.whitelist()
-def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def make_a_call(to_number: str):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel integration"), title=_("Integration Not Enabled"))
 
 	endpoint = get_exotel_endpoint("Calls/connect.json?details=true")
 
-	if not from_number:
-		from_number = frappe.get_value("CRM Telephony Agent", {"user": frappe.session.user}, "mobile_no")
-
-	if not caller_id:
-		caller_id = frappe.get_value("CRM Telephony Agent", {"user": frappe.session.user}, "exotel_number")
+	from_number, caller_id = frappe.get_value(
+		"CRM Telephony Agent", {"user": frappe.session.user}, ["mobile_no", "exotel_number"]
+	) or (None, None)
 
 	if not caller_id:
 		frappe.throw(
@@ -224,12 +226,12 @@ def create_call_log(
 	link(contact_number, call_log)
 
 	call_log.save(ignore_permissions=True)
-	frappe.db.commit()
+	frappe.db.commit()  # passthru webhooks are GET, not auto-committed  # nosemgrep
 	return call_log
 
 
 def link(contact_number, call_log):
-	contact = get_contact_by_phone_number(contact_number)
+	contact = find_contact_by_phone_number(contact_number)
 	if contact.get("name"):
 		doctype = "Contact"
 		docname = contact.get("name")
@@ -246,6 +248,14 @@ def get_call_log(call_payload):
 	call_log_id = call_payload.get("CallSid")
 	if frappe.db.exists("CRM Call Log", call_log_id):
 		return frappe.get_doc("CRM Call Log", call_log_id)
+
+
+def get_call_agent(call_payload):
+	if agent := call_payload.get("AgentEmail") or frappe.request.args.get("agent"):
+		return agent
+
+	if call_log := get_call_log(call_payload):
+		return call_log.receiver if call_log.type == "Incoming" else call_log.caller
 
 
 # Exotel reports call status in lowercase, hyphenated form. Map it onto the

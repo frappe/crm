@@ -6,7 +6,7 @@ from frappe import _
 from frappe.auth import LoginManager
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def login():
 	if not frappe.conf.demo_username or not frappe.conf.demo_password:
 		return

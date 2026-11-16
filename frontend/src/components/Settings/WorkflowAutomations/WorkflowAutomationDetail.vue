@@ -17,7 +17,7 @@
             </h2>
             <Badge
               :label="doc.enabled ? __('Enabled') : __('Draft')"
-              :theme="doc.enabled ? 'green' : 'orange'"
+              :theme="doc.enabled ? 'green' : 'amber'"
               variant="subtle"
             />
             <Badge
@@ -44,7 +44,7 @@
       </div>
       <div
         v-else
-        class="h-full min-h-[480px] overflow-hidden rounded border border-outline-gray-2"
+        class="h-full min-h-[480px] overflow-hidden rounded-4 border border-outline-gray-2"
       >
         <WorkflowFlow :nodes="nodes" :edges="edges" readonly />
       </div>

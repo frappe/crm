@@ -4,6 +4,7 @@ from frappe import _
 
 @frappe.whitelist()
 def get_deal_contacts(name: str):
+	"""Return a Deal's Contacts with their email, phone and primary flag."""
 	if not frappe.has_permission("CRM Deal", "read", name):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 

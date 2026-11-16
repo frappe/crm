@@ -9,29 +9,62 @@ permissions:
     pull-requests: read
 
 jobs:
-    commit-lint:
-        name: Semantic Commits
+    commits-and-pre-commit:
+        name: Commits & Pre-commit
         runs-on: ubuntu-latest
+        timeout-minutes: 15
+
+        env:
+            PIP_DISABLE_PIP_VERSION_CHECK: "1"
+            PYTHONDONTWRITEBYTECODE: "1"
 
         steps:
             - uses: actions/checkout@v6
               with:
                   fetch-depth: 200
 
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.14"
+                  cache: pip
+
             - uses: actions/setup-node@v6
               with:
                   node-version: "24"
                   check-latest: true
 
+            # The lockfile rarely changes, so restoring node_modules beats a fresh yarn install.
+            - name: Cache node_modules
+              uses: actions/cache@v4
+              with:
+                  path: frontend/node_modules
+                  key: node-modules-${{ runner.os }}-node24-${{ hashFiles('frontend/yarn.lock') }}
+                  restore-keys: |
+                      node-modules-${{ runner.os }}-node24-
+
             - name: Install commitlint
+              if: github.event_name == 'pull_request'
               run: npm install --no-save @commitlint/cli @commitlint/config-conventional
 
             - name: Check commit titles
+              if: github.event_name == 'pull_request'
               run: npx commitlint --verbose --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}"
 
-    semgrep:
-        name: Semgrep Rules
+            - name: Install frontend dependencies
+              if: success() || failure()
+              run: cd frontend && yarn install
+
+            - name: Run Pre-commit
+              if: success() || failure()
+              uses: pre-commit/action@v3.0.1
+              with:
+                  extra_args: --all-files
+
+    python-checks:
+        name: Semgrep & Dependency Audit
         runs-on: ubuntu-latest
+        timeout-minutes: 15
 
         env:
             PIP_DISABLE_PIP_VERSION_CHECK: "1"
@@ -46,8 +79,8 @@ jobs:
                   python-version: "3.14"
                   cache: pip
 
-            - name: Install Semgrep
-              run: pip install --upgrade semgrep
+            - name: Install Semgrep and pip-audit
+              run: pip install --upgrade semgrep pip-audit
 
             - name: Download Semgrep rules
               run: git clone --depth 1 https://github.com/frappe/semgrep-rules.git frappe-semgrep-rules
@@ -55,31 +88,6 @@ jobs:
             - name: Run Semgrep rules
               run: semgrep ci --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness
 
-    pre-commit:
-        name: Pre-commit Checks
-        runs-on: ubuntu-latest
-
-        env:
-            PIP_DISABLE_PIP_VERSION_CHECK: "1"
-            PYTHONDONTWRITEBYTECODE: "1"
-
-        steps:
-            - uses: actions/checkout@v6
-
-            - name: Set up Python
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.14"
-                  cache: pip
-
-            - uses: actions/setup-node@v6
-              with:
-                  node-version: "24"
-
-            - name: Install frontend dependencies
-              run: cd frontend && yarn install
-
-            - name: Run Pre-commit
-              uses: pre-commit/action@v3.0.1
-              with:
-                  extra_args: --all-files
+            - name: Run pip-audit
+              if: success() || failure()
+              run: pip-audit --desc on .
