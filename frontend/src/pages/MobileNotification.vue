@@ -34,8 +34,7 @@
             class="size-[5px] rounded-full"
             :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-10']"
           />
-          <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
-          <UserAvatar v-else :user="n.from_user.name" size="lg" />
+          <NotificationIcon :notification="n" />
         </div>
         <div>
           <div
@@ -69,10 +68,9 @@
 </template>
 <script setup>
 import LayoutHeader from '@/components/LayoutHeader.vue'
-import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
+import NotificationIcon from '@/components/NotificationIcon.vue'
 import { notifications, notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
 import { timeAgo, sanitizeHTML } from '@/utils'

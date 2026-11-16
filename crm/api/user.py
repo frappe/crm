@@ -4,6 +4,10 @@ from frappe.auth import LoginAttemptTracker
 from frappe.rate_limiter import rate_limit
 from frappe.utils.password import check_password, update_password
 
+from crm.fcrm.doctype.crm_dashboard.home_scope import SALES_ROLES
+
+FLOW_ROLE = "Flow User"
+
 
 @frappe.whitelist()
 @rate_limit(limit=5, seconds=300)  # 5 attempts per 5 minutes per user/IP
@@ -154,6 +158,7 @@ def update_user_role(user: str, new_role: str):
 
 	user_doc = frappe.get_doc("User", user)
 	validate_no_role_profile(user_doc)
+	add_flow_role_on_joining(user_doc)
 	target_roles = [d.role for d in user_doc.roles]
 	target_is_system_manager = "System Manager" in target_roles
 
@@ -240,6 +245,14 @@ def validate_no_role_profile(user_doc):
 			),
 			title=_("Role Profile Assigned"),
 		)
+
+
+def add_flow_role_on_joining(user_doc):
+	"""Flow is on for everyone who joins the CRM. Only joining gives the role, so a user an admin
+	took it from does not get it back on a later role change. Frappe v16 has no Flow."""
+	joining = not any(row.role in SALES_ROLES for row in user_doc.roles)
+	if joining and frappe.db.exists("Role", FLOW_ROLE):
+		user_doc.append_roles(FLOW_ROLE)
 
 
 def remove_roles(self, *roles):

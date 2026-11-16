@@ -22,7 +22,6 @@ from crm.api.whatsapp import (
 	guard_recipient_change,
 	is_whatsapp_enabled,
 	is_whatsapp_installed,
-	notify_agent,
 	update_reference_modified,
 	validate,
 	validate_access,
@@ -115,97 +114,6 @@ class TestWhatsAppHooks(FrappeTestCase):
 			validate(doc, None)  # must not raise
 
 		mock_log.assert_called_once()
-
-	# --- notify_agent() ---
-
-	def test_notify_agent_returns_early_when_no_reference(self):
-		"""notify_agent() skips notification when reference_doctype and reference_docname are absent"""
-		doc = MagicMock()
-		doc.direction = "Incoming"
-		doc.reference_doctype = None
-		doc.reference_docname = None
-
-		with patch("crm.api.whatsapp.get_assignees") as mock_users:
-			notify_agent(doc)  # must not raise
-
-		mock_users.assert_not_called()
-
-	def test_notify_agent_returns_early_when_reference_doctype_missing(self):
-		"""notify_agent() skips notification when only reference_doctype is absent"""
-		doc = MagicMock()
-		doc.direction = "Incoming"
-		doc.reference_doctype = ""
-		doc.reference_docname = "LEAD-0001"
-
-		with patch("crm.api.whatsapp.get_assignees") as mock_users:
-			notify_agent(doc)
-
-		mock_users.assert_not_called()
-
-	def test_notify_agent_notifies_each_assigned_user(self):
-		doc = frappe._dict(
-			name="MSG-1",
-			owner="Administrator",
-			direction="Incoming",
-			message="Hi",
-			reference_doctype="CRM Lead",
-			reference_docname="<b>LEAD-1</b>",
-		)
-
-		with (
-			patch("crm.api.whatsapp.get_assignees", return_value=["a@example.com", "b@example.com"]),
-			patch("crm.api.whatsapp.notify_user") as mock_notify,
-		):
-			notify_agent(doc)
-
-		self.assertEqual(
-			[c.args[0]["assigned_to"] for c in mock_notify.call_args_list], ["a@example.com", "b@example.com"]
-		)
-		sent = mock_notify.call_args.args[0]
-		self.assertEqual(sent["notification_type"], "WhatsApp")
-		self.assertEqual(sent["reference_doctype"], "WA Message")
-		self.assertEqual(sent["redirect_to_docname"], "<b>LEAD-1</b>")
-		self.assertIn("in lead", sent["notification_text"])
-		self.assertNotIn("<b>LEAD-1</b>", sent["notification_text"])
-
-	def test_notify_agent_ignores_outgoing_messages(self):
-		doc = frappe._dict(direction="Outgoing", reference_doctype="CRM Lead", reference_docname="LEAD-1")
-
-		with patch("crm.api.whatsapp.get_assignees") as mock_users:
-			notify_agent(doc)
-
-		mock_users.assert_not_called()
-
-	def test_notify_agent_runs_as_guest_like_the_webhook(self):
-		lead = frappe.get_doc({"doctype": "CRM Lead", "first_name": "Webhook"}).insert(
-			ignore_permissions=True
-		)
-		frappe.get_doc(
-			{
-				"doctype": "ToDo",
-				"allocated_to": "Administrator",
-				"reference_type": "CRM Lead",
-				"reference_name": lead.name,
-				"description": "Assigned",
-			}
-		).insert(ignore_permissions=True)
-		doc = frappe._dict(
-			name="MSG-1",
-			owner="Guest",
-			direction="Incoming",
-			message="Hi",
-			reference_doctype="CRM Lead",
-			reference_docname=lead.name,
-		)
-
-		frappe.set_user("Guest")
-		try:
-			with patch("crm.api.whatsapp.notify_user") as mock_notify:
-				notify_agent(doc)
-		finally:
-			frappe.set_user("Administrator")
-
-		self.assertEqual([c.args[0]["assigned_to"] for c in mock_notify.call_args_list], ["Administrator"])
 
 	# --- _get_phone_number_from_profile() ---
 

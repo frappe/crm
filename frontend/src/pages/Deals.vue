@@ -23,11 +23,14 @@
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Deal"
+    :filters="briefFilters"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
       groupSummary: true,
       groupByExclude: ['naming_series', 'docstatus'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
@@ -260,6 +263,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import KanbanActivityCounts from '@/components/Kanban/KanbanActivityCounts.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -288,6 +292,12 @@ const { showModal } = useDoctypeModal()
 const { on } = useBroadcast()
 
 const route = useRoute()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 function getRoute(name) {
   return {
