@@ -1,6 +1,8 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.utils import sha256_hash
 from frappe.utils.password import update_password
@@ -76,6 +78,10 @@ class TestPasswordSetup(CRMTestCase):
 		frappe.local.system_settings = None
 
 		self.assertFalse(needs_password_setup())
+
+	def test_does_not_need_setup_on_frappe_cloud_v2(self):
+		with patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}):
+			self.assertFalse(needs_password_setup())
 
 	# ---- redirect ----
 

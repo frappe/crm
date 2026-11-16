@@ -67,6 +67,12 @@ def needs_password_setup() -> bool:
 	if frappe.get_system_settings("disable_user_pass_login"):
 		return False
 
+	# Frappe Cloud v2 signs the owner back in from its dashboard
+	from crm.api.onboarding import is_v2_site
+
+	if is_v2_site():
+		return False
+
 	if frappe.db.get_single_value("LDAP Settings", "enabled"):
 		return False
 
