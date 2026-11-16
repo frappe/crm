@@ -225,15 +225,23 @@ export function briefRoute(item) {
     case 'follow_up':
       return taskRecordRoute(item)
     case 'overdue_person':
-      return { name: 'Tasks' }
-    case 'ownerless':
+      return { name: 'Tasks', query: memberQuery('overdue', item) }
     case 'workload':
+      return {
+        ...recordListRoute(item.doctype),
+        query: { ...memberQuery('behind', item), brief_doctype: item.doctype },
+      }
+    case 'ownerless':
       return { name: 'Leads' }
     case 'new':
       return item.count > 1 ? { name: 'Leads' } : recordRoute(item)
     default:
       return recordRoute(item)
   }
+}
+
+function memberQuery(list, item) {
+  return { brief_list: list, brief_tab: 'team', brief_member: item.member }
 }
 
 export function replyRoute(item) {
@@ -249,11 +257,22 @@ const ACTIONS = {
     label: () => __('View tasks'),
     icon: 'lucide-square-check',
   },
-  workload: { label: () => __('View leads'), icon: 'lucide-user' },
+  workload: { label: workloadActionLabel, icon: 'lucide-user' },
+}
+
+// The link opens one record type, so name the count when the other type is left out.
+function workloadActionLabel(item) {
+  const deals = item.doctype === 'Deal'
+  if (!item.linked || item.linked >= item.behind)
+    return deals ? __('View deals') : __('View leads')
+  if (item.linked === 1) return deals ? __('View 1 deal') : __('View 1 lead')
+  return deals
+    ? __('View {0} deals', [item.linked])
+    : __('View {0} leads', [item.linked])
 }
 
 export function briefActionLabel(item) {
-  return ACTIONS[item.kind]?.label()
+  return ACTIONS[item.kind]?.label(item)
 }
 
 export function briefActionIcon(item) {
@@ -312,7 +331,13 @@ export function briefMoreLinks(more = {}) {
   )
 }
 
-export const BRIEF_OLDER_QUERY = ['brief_older', 'brief_tab', 'brief_doctype']
+export const BRIEF_LIST_QUERY = [
+  'brief_list',
+  'brief_tab',
+  'brief_doctype',
+  'brief_member',
+]
+export const OLDER_LISTS = ['conversations', 'tasks']
 
 const OLDER_CONVERSATIONS = [
   {
@@ -353,7 +378,7 @@ export function briefOlderLinks({ older = {}, doctype = 'Both', tab } = {}) {
       route: {
         ...recordListRoute(list.doctype),
         query: {
-          brief_older: 'conversations',
+          brief_list: 'conversations',
           brief_tab: tab,
           brief_doctype: list.doctype,
         },
@@ -363,16 +388,23 @@ export function briefOlderLinks({ older = {}, doctype = 'Both', tab } = {}) {
   if (older.tasks > 0) {
     links.push({
       label: olderTasksLabel(older.tasks),
-      route: { name: 'Tasks', query: { brief_older: 'tasks', brief_tab: tab } },
+      route: { name: 'Tasks', query: { brief_list: 'tasks', brief_tab: tab } },
     })
   }
   return links
 }
 
-export function briefOlderQuery(query) {
-  const { brief_older: kind, brief_tab: tab, brief_doctype: doctype } = query
+export function briefListQuery(query) {
+  const {
+    brief_list: kind,
+    brief_tab: tab,
+    brief_doctype: doctype,
+    brief_member: member,
+  } = query
   if (!kind || !tab) return null
-  return doctype ? { kind, tab, doctype } : { kind, tab }
+  return Object.fromEntries(
+    Object.entries({ kind, tab, doctype, member }).filter(([, v]) => v),
+  )
 }
 
 export function briefRecordNames(query) {
