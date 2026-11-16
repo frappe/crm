@@ -296,6 +296,25 @@ const MORE_LISTS = [
   },
 ]
 
+// What an empty brief can still point to: the team's brief, then older items.
+export function briefEmptyLine({ tab, isManager, counts = {}, older = {} }) {
+  if (tab === 'mine' && isManager && counts.team > 0) {
+    return {
+      text: __('Your team has {0} things to look at.', [
+        briefCount(counts.team),
+      ]),
+      team: true,
+    }
+  }
+  const hasOlder = Object.keys(older.conversations || {}).length || older.tasks
+  return {
+    text: hasOlder
+      ? __('Older items are waiting below if you have time.')
+      : __('New replies and follow-ups will show up here.'),
+    team: false,
+  }
+}
+
 export function briefMoreLinks(more = {}) {
   return MORE_LISTS.filter(({ doctype }) => more[doctype]?.length).map(
     ({ doctype, page, label }) => ({

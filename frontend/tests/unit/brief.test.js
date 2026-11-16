@@ -7,6 +7,7 @@ import {
   briefBadge,
   briefCount,
   briefDetail,
+  briefEmptyLine,
   briefIcon,
   briefMoreLinks,
   briefOlderLinks,
@@ -483,5 +484,47 @@ describe('openFlowSession', () => {
     }
     expect(openFlowSession('abc', { flow, assign })).toBe(false)
     expect(assign).toHaveBeenCalledWith('/flow/s/abc')
+  })
+})
+
+describe('briefEmptyLine', () => {
+  it('points a manager on For you to the team when it has work', () => {
+    const line = briefEmptyLine({
+      tab: 'mine',
+      isManager: true,
+      counts: { team: 4 },
+    })
+    expect(line).toEqual({
+      text: 'Your team has 4 things to look at.',
+      team: true,
+    })
+  })
+
+  it('caps the team count', () => {
+    const line = briefEmptyLine({
+      tab: 'mine',
+      isManager: true,
+      counts: { team: 900 },
+    })
+    expect(line.text).toBe('Your team has 500+ things to look at.')
+  })
+
+  it('mentions older items when there are some', () => {
+    const line = briefEmptyLine({
+      tab: 'team',
+      isManager: true,
+      counts: { mine: 2 },
+      older: { tasks: 3 },
+    })
+    expect(line).toEqual({
+      text: 'Older items are waiting below if you have time.',
+      team: false,
+    })
+  })
+
+  it('says what will show up when there is nothing at all', () => {
+    expect(briefEmptyLine({ tab: 'mine', isManager: false }).text).toBe(
+      'New replies and follow-ups will show up here.',
+    )
   })
 })
