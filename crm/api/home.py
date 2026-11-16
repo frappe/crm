@@ -101,6 +101,12 @@ def get_brief(tab: str = "mine") -> dict:
 	return brief.get_brief(frappe.session.user, tab)
 
 
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def set_brief_doctype(doctype: str):
+	brief.set_brief_doctype(frappe.session.user, doctype)
+
+
 @frappe.whitelist()
 @sales_user_only
 def get_brief_count(tab: str) -> int:

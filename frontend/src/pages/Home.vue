@@ -63,6 +63,7 @@
             v-model:tab="briefTab"
             :resource="brief"
             :counts="briefCounts"
+            @update:doctype="setBriefDoctype"
           />
         </template>
         <DashboardGrid
@@ -138,7 +139,12 @@ load()
 
 provide('homeEditing', editing)
 
-const { tab: briefTab, resource: brief, counts: briefCounts } = useBrief()
+const {
+  tab: briefTab,
+  resource: brief,
+  counts: briefCounts,
+  setDoctype: setBriefDoctype,
+} = useBrief()
 
 const askFlow = createResource({ url: 'crm.api.home.get_ask_flow', auto: true })
 

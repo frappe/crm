@@ -14,6 +14,7 @@ from frappe.utils import now_datetime
 from crm.fcrm.doctype.crm_dashboard.home_layout import role_for
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import (
+	DOCTYPES,
 	RECORD_TYPES,
 	ROW_LIMIT,
 	AssignedToMe,
@@ -23,8 +24,8 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	RepliesWaiting,
 )
 from crm.fcrm.doctype.crm_dashboard.team_widgets import TeamOverdueFollowUps, TeamRepliesWaiting, Unassigned
-from crm.fcrm.doctype.crm_task.rules import FOLLOW_UP_DOCTYPES
 
+DOCTYPE_KEY = "crm_brief_doctype"
 NEW_FOR_YOU_DAYS = 7
 NO_SLA_WAIT_DAYS = 2
 # The Brief links to the records it had no room for; the link carries their names.
@@ -151,14 +152,18 @@ def member_counts(widget: RecordWidget) -> Counter:
 class MineBrief:
 	def __init__(self, user: str):
 		self.scope = Mine(user)
+		self.doctype = brief_doctype(user)
+		self.doctypes = DOCTYPES[self.doctype]
 
 	def widgets(self) -> dict:
-		return {
-			"waiting": WaitingOnMe(FOLLOW_UP_DOCTYPES, self.scope),
-			"tasks": FollowUpsDue(FOLLOW_UP_DOCTYPES, self.scope),
-			"idle": NoNextStepNotListed(FOLLOW_UP_DOCTYPES, self.scope),
-			"new": NewForYou(("CRM Lead",), self.scope),
+		widgets = {
+			"waiting": WaitingOnMe(self.doctypes, self.scope),
+			"tasks": FollowUpsDue(self.doctypes, self.scope),
+			"idle": NoNextStepNotListed(self.doctypes, self.scope),
 		}
+		if "CRM Lead" in self.doctypes:
+			widgets["new"] = NewForYou(("CRM Lead",), self.scope)
+		return widgets
 
 	def summary(self) -> dict:
 		widgets = self.widgets()
@@ -170,7 +175,7 @@ class MineBrief:
 				*({**row, "kind": "follow_up"} for row in widgets["tasks"].rows()),
 				*({**row, "kind": "no_next_step"} for row in widgets["idle"].rows()),
 			],
-			"new": new_items(widgets["new"].rows(), counts["new"]),
+			"new": new_items(widgets["new"].rows(), counts["new"]) if "new" in widgets else [],
 		}
 		shown = allocate(rows, MINE_SLOTS)
 		set_last_emails(shown["waiting"])
@@ -183,6 +188,7 @@ class MineBrief:
 
 def headline(counts: dict) -> int:
 	"""Idle records count only when the Brief has room to show them, or they swamp the number."""
+	counts = {"new": 0, **counts}
 	taken = allocate(
 		{
 			"waiting": range(counts["waiting"]),
@@ -217,9 +223,11 @@ def new_items(rows: list, count: int) -> list:
 class TeamBrief:
 	def __init__(self, user: str):
 		self.scope = Team(user)
+		self.doctype = brief_doctype(user)
+		self.doctypes = DOCTYPES[self.doctype]
 
 	def summary(self) -> dict:
-		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope)
+		clients = ClientsWaiting(self.doctypes, self.scope)
 		clients.row_limit = MORE_LIMIT
 		rows = [{**row, "kind": "client"} for row in clients.rows()]
 		ownerless = self.ownerless()
@@ -236,10 +244,12 @@ class TeamBrief:
 		return {"items": items, "total": total, "more": more_records(grouped, shown)}
 
 	def count(self) -> int:
-		clients = ClientsWaiting(FOLLOW_UP_DOCTYPES, self.scope).count()
+		clients = ClientsWaiting(self.doctypes, self.scope).count()
 		return clients + bool(self.ownerless()) + len(self.workload()) + len(self.overdue_people())
 
 	def ownerless(self) -> dict | None:
+		if "CRM Lead" not in self.doctypes:
+			return None
 		widget = Ownerless(("CRM Lead",), self.scope)
 		count = widget.count()
 		if not count:
@@ -249,7 +259,7 @@ class TeamBrief:
 		return {"kind": "ownerless", "count": count, "since": oldest}
 
 	def overdue_people(self) -> list:
-		widget = TeamOverdueFollowUps(FOLLOW_UP_DOCTYPES, self.scope)
+		widget = TeamOverdueFollowUps(self.doctypes, self.scope)
 		task = widget.task
 		rows = (
 			widget.query()
@@ -266,12 +276,12 @@ class TeamBrief:
 		has_sla = frappe.db.exists("CRM Service Level Agreement", {"enabled": 1})
 		widget = PastResponse if has_sla else WaitingTooLong
 		members = set(self.scope.members)
-		behind = member_counts(widget(FOLLOW_UP_DOCTYPES, self.scope))
+		behind = member_counts(widget(self.doctypes, self.scope))
 		behind = {member: count for member, count in behind.items() if member in members}
 		if not behind:
 			return []
 
-		open_records = member_counts(RecordWidget(FOLLOW_UP_DOCTYPES, self.scope))
+		open_records = member_counts(RecordWidget(self.doctypes, self.scope))
 		spare = [
 			member for member in members - set(behind) if member != self.scope.user and open_records[member]
 		]
@@ -328,12 +338,26 @@ BRIEFS = {"mine": MineBrief, "team": TeamBrief}
 def get_brief(user: str, tab: str = "mine") -> dict:
 	"""The reply names its tab, so the page can tell a late reply for the other tab apart."""
 	brief = brief_for(user, tab)
-	return {**brief.summary(), "tab": tab}
+	return {**brief.summary(), "tab": tab, "doctype": brief.doctype}
 
 
 def get_brief_count(user: str, tab: str) -> int:
 	"""Asked for apart from the Brief, so the tab on screen does not wait for the other tab's count."""
 	return brief_for(user, tab).count()
+
+
+def brief_doctype(user: str) -> str:
+	"""Lead, Deal or Both. Both is never saved, so a user who has not chosen sees everything."""
+	return frappe.defaults.get_user_default(DOCTYPE_KEY, user) or "Both"
+
+
+def set_brief_doctype(user: str, doctype: str):
+	if doctype not in DOCTYPES:
+		frappe.throw(_("The brief can only show Lead, Deal or Both"))
+	if doctype == "Both":
+		frappe.defaults.clear_user_default(DOCTYPE_KEY, user)
+	else:
+		frappe.defaults.set_user_default(DOCTYPE_KEY, doctype, user)
 
 
 def brief_for(user: str, tab: str) -> MineBrief | TeamBrief:

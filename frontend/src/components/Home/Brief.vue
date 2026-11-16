@@ -1,9 +1,19 @@
 <template>
   <section :aria-label="__('Today\'s brief')" class="flex flex-col gap-3">
     <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-      <h2 class="text-xl-semibold text-ink-gray-9">
-        {{ __("Today's brief") }}
-      </h2>
+      <div class="flex min-w-0 items-baseline gap-2">
+        <h2 class="text-xl-semibold text-ink-gray-9">
+          {{ __("Today's brief") }}
+        </h2>
+        <span class="flex items-baseline gap-1 text-base text-ink-gray-5">
+          {{ __('on') }}
+          <PeriodPicker
+            :period="doctype"
+            :labels="RECORD_LABELS"
+            @change="(value) => emit('update:doctype', value)"
+          />
+        </span>
+      </div>
       <HomeTabs
         v-if="isManager()"
         v-model="tab"
@@ -110,6 +120,7 @@
 import BriefAction from '@/components/Home/BriefAction.vue'
 import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeTabs from '@/components/Home/HomeTabs.vue'
+import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { usersStore } from '@/stores/users'
 import {
   briefAge,
@@ -123,6 +134,7 @@ import {
   briefTitle,
 } from '@/utils/brief'
 import { formatDate } from '@/utils'
+import { RECORD_LABELS } from '@/utils/home'
 import { formatTaskDue } from '@/utils/task'
 import { Avatar, Badge } from 'frappe-ui'
 import { computed } from 'vue'
@@ -132,9 +144,13 @@ const props = defineProps({
   counts: { type: Object, default: () => ({}) },
 })
 
+const emit = defineEmits(['update:doctype'])
+
 const tab = defineModel('tab', { type: String, required: true })
 
 const { getUser, isManager } = usersStore()
+
+const doctype = computed(() => props.resource.data?.doctype || 'Both')
 
 const shownCounts = computed(() =>
   Object.fromEntries(

@@ -1,9 +1,12 @@
 import frappe
+from frappe.cache_manager import clear_defaults_cache
 from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
+from crm.api.home import set_brief_doctype
 from crm.fcrm.doctype.crm_dashboard.brief import (
+	DOCTYPE_KEY,
 	MineBrief,
 	TeamBrief,
 	allocate,
@@ -270,6 +273,62 @@ class TestTeamBrief(TeamWidgetTestCase):
 		self.past()
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -3))
 		self.assertEqual(TeamBrief(MANAGER).count(), self.brief()["total"])
+
+
+class TestBriefDoctype(TeamWidgetTestCase):
+	def tearDown(self):
+		super().tearDown()
+		for user in (AGENT, MANAGER, BOSS):
+			clear_defaults_cache(user)
+
+	def set_doctype(self, user, doctype):
+		frappe.set_user(user)
+		set_brief_doctype(doctype)
+		frappe.set_user("Administrator")
+
+	def test_a_new_user_sees_leads_and_deals(self):
+		self.assertEqual(get_brief(AGENT)["doctype"], "Both")
+
+	def test_each_user_keeps_their_own_choice(self):
+		self.set_doctype(AGENT, "Deal")
+		self.set_doctype(MANAGER, "Lead")
+		self.assertEqual(get_brief(AGENT)["doctype"], "Deal")
+		self.assertEqual(get_brief(MANAGER)["doctype"], "Lead")
+		self.assertEqual(get_brief(BOSS)["doctype"], "Both")
+
+	def test_an_agent_can_save_their_own_choice(self):
+		self.lead(awaiting_reply_since=now_datetime())
+		self.set_doctype(AGENT, "Deal")
+		brief = get_brief(AGENT)
+		self.assertEqual(brief["items"], [])
+		self.assertEqual(get_brief_count(AGENT, "mine"), 0)
+
+	def test_both_clears_the_saved_choice(self):
+		self.set_doctype(AGENT, "Deal")
+		self.set_doctype(AGENT, "Both")
+		self.assertIsNone(frappe.defaults.get_user_default(DOCTYPE_KEY, AGENT))
+		self.assertEqual(get_brief(AGENT)["doctype"], "Both")
+
+	def test_only_lead_deal_or_both_can_be_saved(self):
+		with self.assertRaises(frappe.ValidationError):
+			self.set_doctype(AGENT, "Contact")
+
+	def test_deals_leave_out_the_lead_only_items(self):
+		self.lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
+		make_lead(status=self.open_lead)
+		self.set_doctype(MANAGER, "Deal")
+		self.set_doctype(BOSS, "Deal")
+		self.assertEqual(get_brief(MANAGER)["items"], [])
+		self.assertEqual(of_kind(get_brief(BOSS, "team"), "ownerless"), [])
+
+	def test_new_leads_show_with_both_and_not_with_deals(self):
+		lead = make_lead(status=self.open_lead, lead_owner=MANAGER)
+		frappe.set_user(MANAGER)
+		assign({"assign_to": [AGENT], "doctype": "CRM Lead", "name": lead})
+		frappe.set_user("Administrator")
+		self.assertEqual(kind_names(get_brief(AGENT), "new"), [lead])
+		self.set_doctype(AGENT, "Deal")
+		self.assertEqual(of_kind(get_brief(AGENT), "new"), [])
 
 
 class TestGetBrief(TeamWidgetTestCase):

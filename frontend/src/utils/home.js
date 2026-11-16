@@ -22,6 +22,12 @@ export function taskRecordRoute(task) {
   })
 }
 
+export const RECORD_LABELS = {
+  Both: __('Leads & Deals'),
+  Deal: __('Deals'),
+  Lead: __('Leads'),
+}
+
 export function recordListRoute(doctype = 'Both') {
   return { name: doctype === 'Deal' ? 'Deals' : 'Leads' }
 }

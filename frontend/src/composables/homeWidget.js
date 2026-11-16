@@ -66,5 +66,12 @@ export function useBrief() {
   loadOtherCount()
   watch(homeVersion, loadOtherCount)
 
-  return { tab, resource, counts }
+  function setDoctype(doctype) {
+    call('crm.api.home.set_brief_doctype', { doctype }).then(() => {
+      resource.reload()
+      loadOtherCount()
+    })
+  }
+
+  return { tab, resource, counts, setDoctype }
 }
