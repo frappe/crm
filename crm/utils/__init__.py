@@ -395,7 +395,7 @@ def _record_email_interaction(doc: Communication):
 	from crm.api.interactions import record
 
 	direction = {"Received": "Inbound", "Sent": "Outbound"}.get(doc.sent_or_received)
-	if doc.communication_type != "Communication" or not direction:
+	if doc.communication_type != "Communication" or not direction or frappe.flags.crm_automated_email:
 		return
 	record(
 		doc.reference_doctype,

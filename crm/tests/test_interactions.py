@@ -96,6 +96,23 @@ class TestEmailInteractions(IntegrationTestCase):
 		self.assertIsNone(state.last_outbound_at)
 		self.assertEqual(state.awaiting_reply_since, at(0))
 
+	def test_email_sent_by_a_flow_is_not_a_reply(self):
+		from frappe.core.doctype.communication.communication import Communication
+
+		from crm.automation.actions import SendEmailToRecord
+
+		frappe.db.set_value("CRM Lead", self.lead, "email", "customer@example.com")
+		make_communication("CRM Lead", self.lead, "Received", at(0))
+		with (
+			patch.object(Communication, "get_outgoing_email_account", return_value=True),
+			patch.object(Communication, "send_email"),
+		):
+			SendEmailToRecord().execute(frappe.get_doc("CRM Lead", self.lead), {"subject": "Thanks"}, {})
+		state = self.state()
+		self.assertIsNone(state.last_outbound_at)
+		self.assertEqual(state.awaiting_reply_since, at(0))
+		self.assertFalse(frappe.flags.crm_automated_email)
+
 	def test_non_crm_reference_is_ignored(self):
 		todo = frappe.get_doc({"doctype": "ToDo", "description": "interactions"}).insert()
 		make_communication("ToDo", todo.name, "Received", at(0))
