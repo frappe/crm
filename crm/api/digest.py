@@ -5,6 +5,7 @@ from datetime import timedelta
 
 import frappe
 from frappe import _
+from frappe.email.doctype.email_account.email_account import EmailAccount
 from frappe.query_builder.functions import Coalesce
 from frappe.utils import (
 	create_batch,
@@ -39,8 +40,18 @@ CHANNEL_TABS = {"email": "emails", "whatsapp": "whatsapp"}
 def send_morning_digests():
 	if not frappe.db.get_single_value("FCRM Settings", "enable_morning_digest"):
 		return
+	# Without a sender every digest would fail, once per user per hour.
+	if not has_outgoing_email_account():
+		frappe.logger("crm").warning("Morning digest skipped: no default outgoing email account")
+		return
 	for batch in create_batch(sales_users(), BATCH_SIZE):
 		frappe.enqueue(send_digests, queue="long", users=batch, now=frappe.flags.in_test)
+
+
+@frappe.whitelist()
+def has_outgoing_email_account() -> bool:
+	"""The digest names no sender, so it needs a default outgoing account or mail settings in site config."""
+	return bool(EmailAccount.find_outgoing())
 
 
 def send_digests(users: list):

@@ -88,6 +88,21 @@
               )
             }}
           </div>
+          <div
+            v-if="settings.doc.enable_morning_digest && sender.data === false"
+            class="mt-1 text-p-sm text-ink-amber-7"
+          >
+            {{
+              __("No default outgoing email account. Digests won't be sent.")
+            }}
+            <button
+              type="button"
+              class="underline underline-offset-2 hover:text-ink-amber-8"
+              @click="activeSettingsPage = 'Accounts'"
+            >
+              {{ __('Set one up') }}
+            </button>
+          </div>
         </div>
         <div>
           <Switch
@@ -152,10 +167,16 @@
 </template>
 
 <script setup>
+import { activeSettingsPage } from '@/composables/settings'
 import { getSettings } from '@/stores/settings'
-import { FormControl, Switch, toast } from 'frappe-ui'
+import { FormControl, Switch, createResource, toast } from 'frappe-ui'
 
 const { _settings: settings } = getSettings()
+
+const sender = createResource({
+  url: 'crm.api.digest.has_outgoing_email_account',
+  auto: true,
+})
 
 const timestampFormatOptions = [
   { label: __('Relative'), value: 'Relative' },

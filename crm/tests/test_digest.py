@@ -7,7 +7,13 @@ import frappe
 from frappe.desk.form.assign_to import add as assign
 from frappe.utils import add_days, add_to_date, get_system_timezone, now_datetime
 
-from crm.api.digest import LAST_RUN_KEY, OPT_OUT_KEY, MorningDigest, send_morning_digests
+from crm.api.digest import (
+	LAST_RUN_KEY,
+	OPT_OUT_KEY,
+	MorningDigest,
+	has_outgoing_email_account,
+	send_morning_digests,
+)
 from crm.api.home import set_morning_digest
 from crm.tests.test_home import AGENT, MANAGER, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
@@ -122,6 +128,23 @@ class TestDigestSending(DigestTestCase):
 			self.run_job(users=(MANAGER, AGENT))
 		log_error.assert_called_once()
 		self.assertEqual(len(queued()), 1)
+
+	def test_skips_everyone_without_an_outgoing_email_account(self):
+		self.lead(awaiting_reply_since=now_datetime())
+		with (
+			patch("crm.api.digest.EmailAccount.find_outgoing", return_value=None),
+			patch("crm.api.digest.frappe.logger") as logger,
+			patch("crm.api.digest.frappe.log_error") as log_error,
+		):
+			self.run_job()
+		logger.return_value.warning.assert_called_once()
+		log_error.assert_not_called()
+		self.assertEqual(queued(), [])
+		self.assertIsNone(frappe.defaults.get_user_default(LAST_RUN_KEY, AGENT))
+
+	def test_settings_can_tell_when_there_is_no_sender(self):
+		with patch("crm.api.digest.EmailAccount.find_outgoing", return_value=None):
+			self.assertFalse(has_outgoing_email_account())
 
 	def test_skips_when_every_section_is_empty(self):
 		self.run_job()
