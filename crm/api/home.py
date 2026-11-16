@@ -2,8 +2,8 @@ import frappe
 from frappe import _
 
 from crm.api.digest import OPT_OUT_KEY
+from crm.fcrm.doctype.crm_dashboard import brief
 from crm.fcrm.doctype.crm_dashboard.ask_flow import flow_available, start_flow_chat
-from crm.fcrm.doctype.crm_dashboard.brief import get_brief as build_brief
 from crm.fcrm.doctype.crm_dashboard.home_layout import (
 	DEFAULT_PERIOD,
 	WIDGETS,
@@ -98,7 +98,13 @@ def get_counts() -> dict:
 @frappe.whitelist()
 @sales_user_only
 def get_brief(tab: str = "mine") -> dict:
-	return build_brief(frappe.session.user, tab)
+	return brief.get_brief(frappe.session.user, tab)
+
+
+@frappe.whitelist()
+@sales_user_only
+def get_brief_count(tab: str) -> int:
+	return brief.get_brief_count(frappe.session.user, tab)
 
 
 @frappe.whitelist()

@@ -8,7 +8,7 @@
         v-if="isManager()"
         v-model="tab"
         :tabs="tabs"
-        :counts="resource.data?.counts"
+        :counts="counts"
       />
     </div>
 
@@ -128,6 +128,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   resource: { type: Object, required: true },
+  counts: { type: Object, default: () => ({}) },
 })
 
 const tab = defineModel('tab', { type: String, required: true })

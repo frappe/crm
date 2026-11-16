@@ -3,7 +3,13 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
-from crm.fcrm.doctype.crm_dashboard.brief import MineBrief, TeamBrief, allocate, get_brief
+from crm.fcrm.doctype.crm_dashboard.brief import (
+	MineBrief,
+	TeamBrief,
+	allocate,
+	get_brief,
+	get_brief_count,
+)
 from crm.tests.test_home import AGENT, MANAGER, make_lead, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
 from crm.tests.test_team_widgets import BOSS, TeamWidgetTestCase
@@ -226,6 +232,13 @@ class TestTeamBrief(TeamWidgetTestCase):
 		workload = TeamBrief(MANAGER).workload()
 		self.assertEqual([row["behind"] for row in workload], [1])
 
+	def test_a_record_with_no_owner_counts_for_its_first_assignee(self):
+		lead = self.lead(awaiting_reply_since=add_days(now_datetime(), -3))
+		assign({"assign_to": [AGENT], "doctype": "CRM Lead", "name": lead})
+		frappe.db.set_value("CRM Lead", lead, "lead_owner", None)
+		workload = TeamBrief(MANAGER).workload()
+		self.assertEqual([(row["member"], row["behind"]) for row in workload], [(AGENT, 1)])
+
 	def test_someone_with_no_records_is_not_named_as_having_room(self):
 		self.lead(awaiting_reply_since=add_days(now_datetime(), -3))
 		self.assertIsNone(TeamBrief(MANAGER).workload()[0]["lightest"])
@@ -260,17 +273,19 @@ class TestTeamBrief(TeamWidgetTestCase):
 
 
 class TestGetBrief(TeamWidgetTestCase):
-	def test_an_agent_gets_their_own_brief_with_no_tabs(self):
-		brief = get_brief(AGENT)
-		self.assertNotIn("counts", brief)
+	def test_an_agent_gets_their_own_brief(self):
+		self.assertEqual(get_brief(AGENT)["tab"], "mine")
 
-	def test_an_agent_cannot_read_the_team_brief(self):
+	def test_an_agent_cannot_read_the_team_brief_or_its_count(self):
 		with self.assertRaises(frappe.PermissionError):
 			get_brief(AGENT, "team")
+		with self.assertRaises(frappe.PermissionError):
+			get_brief_count(AGENT, "team")
 
-	def test_a_manager_gets_counts_for_both_tabs(self):
+	def test_the_brief_leaves_the_other_tab_to_its_own_count(self):
 		self.lead(lead_owner=MANAGER, awaiting_reply_since=now_datetime())
 		brief = get_brief(MANAGER, "team")
 		self.assertEqual(brief["tab"], "team")
-		self.assertEqual(set(brief["counts"]), {"team", "mine"})
-		self.assertEqual(brief["counts"]["mine"], 1)
+		self.assertNotIn("counts", brief)
+		self.assertEqual(get_brief_count(MANAGER, "mine"), 1)
+		self.assertEqual(get_brief_count(MANAGER, "team"), brief["total"])

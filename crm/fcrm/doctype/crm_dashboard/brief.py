@@ -140,7 +140,8 @@ def member_counts(widget: RecordWidget) -> Counter:
 		query = widget.query(doctype, table)
 		has_owner = Coalesce(owner, "") != ""
 		counts.update(dict(query.select(owner, Count("*")).where(has_owner).groupby(owner).run()))
-		for (assigned,) in query.select(table._assign).where(Coalesce(owner, "") == "").run():
+		ownerless_assigned = (Coalesce(owner, "") == "") & Coalesce(table._assign, "").notin(("", "[]"))
+		for (assigned,) in query.select(table._assign).where(ownerless_assigned).run():
 			first = next(iter(json.loads(assigned or "[]")), None)
 			if first:
 				counts[first] += 1
@@ -321,17 +322,23 @@ def last_email(doctype: str, name: str):
 	return emails[0] if emails and emails[0].date else None
 
 
+BRIEFS = {"mine": MineBrief, "team": TeamBrief}
+
+
 def get_brief(user: str, tab: str = "mine") -> dict:
 	"""The reply names its tab, so the page can tell a late reply for the other tab apart."""
-	if role_for(user) != "manager":
-		if tab != "mine":
-			frappe.throw(_("The team brief is only available to managers"), frappe.PermissionError)
-		return {**MineBrief(user).summary(), "tab": tab}
+	brief = brief_for(user, tab)
+	return {**brief.summary(), "tab": tab}
 
-	if tab not in ("team", "mine"):
+
+def get_brief_count(user: str, tab: str) -> int:
+	"""Asked for apart from the Brief, so the tab on screen does not wait for the other tab's count."""
+	return brief_for(user, tab).count()
+
+
+def brief_for(user: str, tab: str) -> MineBrief | TeamBrief:
+	if tab not in BRIEFS:
 		frappe.throw(_("Unknown brief tab {0}").format(tab))
-	active, other = (TeamBrief, MineBrief) if tab == "team" else (MineBrief, TeamBrief)
-	brief = active(user).summary()
-	brief["counts"] = {tab: brief["total"], "mine" if tab == "team" else "team": other(user).count()}
-	brief["tab"] = tab
-	return brief
+	if tab == "team" and role_for(user) != "manager":
+		frappe.throw(_("The team brief is only available to managers"), frappe.PermissionError)
+	return BRIEFS[tab](user)
