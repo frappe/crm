@@ -1,6 +1,6 @@
 ---
 name: frappe-crm
-description: Work with sales data in Frappe CRM on a Frappe site. Use to find, create or update leads, deals, contacts and organizations, convert a lead to a deal, read a lead's or deal's timeline, add notes, tasks or comments, send email from a lead or deal, or assign owners, when the site runs the CRM app.
+description: Work with sales data and the sales team in Frappe CRM on a Frappe site. Use for any question about agents, sales reps, salespeople or the sales team, their performance or workload, revenue, the pipeline, follow-ups or replies waiting, and to find, create or update leads, deals, contacts and organizations, convert a lead to a deal, read a lead's or deal's timeline, add notes, tasks or comments, send email from a lead or deal, or assign owners, when the site runs the CRM app.
 ---
 
 # Frappe CRM
@@ -45,3 +45,12 @@ CRM tracks sales in two documents. A `CRM Lead` is a prospect that is not yet qu
 - **Team questions.** Count a record for its owner, or its first assignee if it has no owner, and never for both. A manager in the Sales Hierarchy sees only their subtree, and does not see leads with no owner or assignee.
 - **Response time.** `first_response_time` and `first_responded_on` are wrong for WhatsApp and calls, and mix working hours with wall-clock time. To find records nobody answered in time, use `response_by` in the past with `first_responded_on` and `last_outbound_at` both empty.
 - **Pipeline.** `status_change_log` on a deal holds each move with `from`, `to` and `to_date`. Order stages by `CRM Deal Status.position`. Treat `Lost` and `On Hold` as exits, not steps. The open row, with no `to_date`, gives the time in the current stage.
+
+## 5. Questions about people and performance
+
+- **"Agent", "rep", "salesperson", "my team" and "my organization".** On a site with CRM these mean CRM sales users: enabled users with the Sales User or Sales Manager role, not Administrator. Do not ask whether the user means AI agents, telephony agents or employees.
+- **"Best", "top" or "performing" with no measure.** Rank by the value of deals won: deals whose status type is `Won`, by `deal_owner`, with `closed_date` in the period, summing `deal_value` × `exchange_rate` for the site's base currency. Show the number of deals won beside it. With no period given, use the last 30 days.
+- **Answer first, then offer other measures.** Give the ranking with one line on what it used, for example "By value of deals won in the last 30 days". Then offer other measures: deals won by count, open pipeline (`expected_deal_value`), replies waiting, overdue follow-ups, or calls made. Ask a question instead only when no measure fits.
+- **Win rate.** Only won deals get a `closed_date`. For lost deals in a period, use the `status_change_log` row whose `to` status has type `Lost`, with its `to_date`.
+- **Whose people.** Read records as the user, so the Sales Hierarchy applies: a manager in the hierarchy sees their subtree only. Say so when the answer covers only part of the team.
+
