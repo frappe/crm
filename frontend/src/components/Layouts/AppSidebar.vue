@@ -20,9 +20,15 @@
 
         <!-- overflow-y-auto forces overflow-x to clip too, which would slice the
              active row's shadow. Widen the scroll box to the sidebar edges and
-             pad the content back in so the shadow has room. -->
+             pad the content back in so the shadow has room.
+             Its rows are shrink-0: once the views overflow the box, flex would
+             otherwise squeeze them below their h-7. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          <SidebarItem :label="__('Search')" @click="onSearchClick">
+          <SidebarItem
+            class="shrink-0"
+            :label="__('Search')"
+            @click="onSearchClick"
+          >
             <template #prefix>
               <LucideSearch class="size-4 text-ink-gray-7" />
             </template>
@@ -36,6 +42,7 @@
 
           <SidebarItem
             id="notifications-btn"
+            class="shrink-0"
             :label="__('Notifications')"
             :route="mobile ? { name: 'Notifications' } : undefined"
             :active="mobile && activeItem === 'Notifications'"
