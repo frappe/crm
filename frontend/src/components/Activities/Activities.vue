@@ -41,7 +41,6 @@
           :messages="messages.messages"
           :loading="messages.loading"
           :sender-name="senderName"
-          :sender-image="doc.image"
           row-class="activity"
           :you-label="__('You')"
           :reacted-by-label="__('Reacted by')"
@@ -55,7 +54,21 @@
           @react="
             ({ messageName, emoji }) => messages.react(messageName, emoji)
           "
-        />
+        >
+          <!--
+            Incoming only. WhatsApp sends from one shared business number and the message
+            carries no owner, so an outgoing avatar could only be a guess at which agent
+            sent it.
+          -->
+          <template #avatar="{ message }">
+            <Avatar
+              v-if="message.direction === 'Incoming'"
+              size="lg"
+              :label="senderName"
+              :image="doc.image"
+            />
+          </template>
+        </MessageList>
       </div>
       <div
         v-else-if="title == 'Notes'"
@@ -617,7 +630,7 @@ import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { MessageInput, MessageList, useMessages } from '@whatsapp/ui'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { Button, createResource, toast } from 'frappe-ui'
+import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
 import {
   ref,
