@@ -854,13 +854,24 @@ def get_forecasted_revenue(from_date: str | None = None, to_date: str | None = N
 	}
 
 
+def owned_by(owner_field, user: str | None = None, owners: list | None = None):
+	"""One user's records, or those of a list of owners; None when neither narrows them."""
+	if owners is not None:
+		return owner_field.isin(owners or [None])
+	if user:
+		return owner_field == user
+	return None
+
+
 def get_funnel_conversion(
 	from_date: str | None = None,
 	to_date: str | None = None,
 	user: str | None = None,
+	owners: list | None = None,
 ):
 	"""
-	Leads created in the period, then the deals created in it counted at each stage.
+	Leads created in the period, then the deals created in it counted at each stage. `owners`
+	narrows to the records of a list of users, such as a manager's team on Home.
 	[
 		{ stage: 'Leads', count: 120 },
 		{ stage: 'Qualification', count: 100 },
@@ -878,11 +889,12 @@ def get_funnel_conversion(
 		.select(Count("*").as_("count"))
 		.where(Date(CRMLead.creation).between(from_date, to_date))
 	)
-	if user:
-		query = query.where(CRMLead.lead_owner == user)
+	owned = owned_by(CRMLead.lead_owner, user, owners)
+	if owned is not None:
+		query = query.where(owned)
 
 	result = [{"stage": "Leads", "count": query.run()[0][0]}]
-	result += get_funnel_stage_counts(from_date, to_date, user)
+	result += get_funnel_stage_counts(from_date, to_date, user, owners)
 
 	return {
 		"data": result or [],
@@ -1257,10 +1269,10 @@ def get_base_currency_symbol():
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
 
 
-def get_funnel_stage_counts(from_date, to_date, user: str | None = None) -> list:
+def get_funnel_stage_counts(from_date, to_date, user: str | None = None, owners: list | None = None) -> list:
 	"""Count each deal at every stage up to the furthest it reached, so the funnel always narrows:
 	a deal that skipped a stage still passed it, and a lost deal still counts where it got to."""
-	reached = get_furthest_stages(from_date, to_date, user)
+	reached = get_furthest_stages(from_date, to_date, user, owners)
 	stages = frappe.get_all(
 		"CRM Deal Status",
 		filters={"type": ["in", FUNNEL_STAGE_TYPES]},
@@ -1273,15 +1285,16 @@ def get_funnel_stage_counts(from_date, to_date, user: str | None = None) -> list
 	]
 
 
-def get_furthest_stages(from_date, to_date, user: str | None = None) -> list:
+def get_furthest_stages(from_date, to_date, user: str | None = None, owners: list | None = None) -> list:
 	"""The furthest stage position each deal created in the period reached."""
 	deal = DocType("CRM Deal")
 	log = DocType("CRM Status Change Log")
 	status = DocType("CRM Deal Status")
 
 	in_period = Date(deal.creation).between(from_date, to_date)
-	if user:
-		in_period &= deal.deal_owner == user
+	owned = owned_by(deal.deal_owner, user, owners)
+	if owned is not None:
+		in_period &= owned
 
 	def logged(column):
 		return (

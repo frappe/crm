@@ -1,8 +1,8 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Sales widgets follow /dashboard's rules, not the Home scopes: agents count the deals they own,
-managers everyone's. Amounts are in the base currency."""
+"""Sales widgets count by owner, not by the Home scopes: agents count the deals they own, a manager in
+the Sales Hierarchy their team's, and any other manager everyone's. Amounts are in the base currency."""
 
 from datetime import timedelta
 from itertools import accumulate
@@ -12,7 +12,7 @@ from frappe.query_builder import Case, DocType, Order
 from frappe.query_builder.functions import Coalesce, IfNull, Sum
 from frappe.utils import getdate, now_datetime
 
-from crm.api.dashboard import get_base_currency_symbol, get_funnel_conversion
+from crm.api.dashboard import get_base_currency_symbol, get_funnel_conversion, owned_by
 from crm.fcrm.doctype.crm_dashboard.home_layout import DEFAULT_PERIOD, period_days, role_for
 from crm.fcrm.doctype.crm_dashboard.home_scope import Team
 from crm.fcrm.doctype.crm_dashboard.home_widgets import ROW_LIMIT, Widget
@@ -25,7 +25,7 @@ class SalesWidget(Widget):
 	def __init__(self, doctypes: tuple, scope, period: str = DEFAULT_PERIOD):
 		super().__init__(doctypes, scope)
 		self.days = period_days(period)
-		self.owner = None if role_for(scope.user) == "manager" else scope.user
+		self.owners = deal_owners(scope.user)
 		self.deal = DocType("CRM Deal")
 		self.status = DocType("CRM Deal Status")
 		self.today = getdate()
@@ -35,9 +35,11 @@ class SalesWidget(Widget):
 		query = frappe.qb.from_(deal).join(status).on(deal.status == status.name)
 		if types:
 			query = query.where(status.type.isin(types))
-		if self.owner:
-			query = query.where(deal.deal_owner == self.owner)
-		return query
+		return self.owned(query)
+
+	def owned(self, query):
+		owned = owned_by(self.deal.deal_owner, owners=self.owners)
+		return query if owned is None else query.where(owned)
 
 	def value(self):
 		return IfNull(self.deal.deal_value, 0) * IfNull(self.deal.exchange_rate, 1)
@@ -48,20 +50,12 @@ class FunnelConversion(SalesWidget):
 
 	def summary(self) -> dict:
 		since = self.today - timedelta(days=self.days - 1)
-		stages = get_funnel_conversion(since, self.today, self.owner)["data"]
+		stages = get_funnel_conversion(since, self.today, owners=self.owners)["data"]
 		return {"rows": stages if any(stage["count"] for stage in stages) else []}
 
 
 class Won(SalesWidget):
-	"""Value won over the period, against the period before it. A manager in the Sales Hierarchy counts
-	their team's deals, unlike the other sales widgets."""
-
-	def deals(self, *types):
-		query = super().deals(*types)
-		if self.owner:
-			return query
-		team = Team(self.scope.user)
-		return query if team.sees_everyone else query.where(self.deal.deal_owner.isin(team.members or [None]))
+	"""Value won over the period, against the period before it."""
 
 	def summary(self) -> dict:
 		start = self.today - timedelta(days=self.days - 1)
@@ -131,9 +125,7 @@ class ExpectedRevenue(SalesWidget):
 			)
 			.select(*(Sum(Case().when(in_stage_at(at), weighted).else_(0)) for at in points))
 		)
-		if self.owner:
-			query = query.where(deal.deal_owner == self.owner)
-		return [amount or 0 for amount in query.run()[0]]
+		return [amount or 0 for amount in self.owned(query).run()[0]]
 
 
 class TopOpenDeals(SalesWidget):
@@ -168,6 +160,14 @@ SALES_WIDGET_DATA = {
 	"expected_revenue": ExpectedRevenue,
 	"top_open_deals": TopOpenDeals,
 }
+
+
+def deal_owners(user: str) -> list | None:
+	"""Whose deals the user's sales widgets count; None for everyone's."""
+	if role_for(user) != "manager":
+		return [user]
+	team = Team(user)
+	return None if team.sees_everyone else team.members
 
 
 def percent_change(now: float, before: float) -> float | None:

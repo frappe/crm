@@ -144,3 +144,40 @@ class TestWonByTeam(SalesWidgetTestCase, TeamWidgetTestCase):
 	def test_a_manager_outside_the_hierarchy_counts_everyone(self):
 		self.closed(100, self.won, deal_owner=OUTSIDER)
 		self.assertGreater(self.widget("won_this_month", BOSS)["value"], 0)
+
+	def test_expected_revenue_counts_only_the_team(self):
+		frappe.db.set_single_value("FCRM Settings", "enable_forecasting", 1)
+		probability = frappe.db.get_value("CRM Deal Status", self.open_deal, "probability") / 100
+
+		def expected_revenue():
+			return self.widget("expected_revenue", MANAGER)["value"]
+
+		def forecast(owner):
+			self.deal(
+				deal_owner=owner, expected_deal_value=1000, expected_closure_date=add_days(getdate(), 30)
+			)
+
+		before = expected_revenue()
+		forecast(OUTSIDER)
+		self.assertAlmostEqual(expected_revenue(), before)
+		forecast(AGENT)
+		self.assertAlmostEqual(expected_revenue(), before + 1000 * probability)
+
+	def test_funnel_counts_only_the_team(self):
+		def leads(user=MANAGER):
+			rows = self.widget("funnel_conversion", user)["rows"]
+			return {row["stage"]: row["count"] for row in rows}.get("Leads", 0)
+
+		before = leads()
+		self.lead(lead_owner=OUTSIDER)
+		self.assertEqual(leads(), before)
+		self.lead(lead_owner=AGENT)
+		self.assertEqual(leads(), before + 1)
+
+	def test_top_open_deals_leave_out_deals_outside_the_team(self):
+		outside = self.deal(10**9, deal_owner=OUTSIDER)
+		mine = self.deal(100, deal_owner=MANAGER)
+		team = [row["name"] for row in self.widget("top_open_deals", MANAGER)["rows"]]
+		self.assertIn(mine, team)
+		self.assertNotIn(outside, team)
+		self.assertIn(outside, [row["name"] for row in self.widget("top_open_deals", BOSS)["rows"]])
