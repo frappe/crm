@@ -123,6 +123,12 @@ class TestWhatsAppInteractions(IntegrationTestCase):
 		make_whatsapp_message(self.lead, "Incoming", at(0), reaction="👍")
 		self.assertIsNone(self.state().last_inbound_at)
 
+	def test_incoming_message_counts_from_when_it_arrived(self):
+		"""The webhook's `timestamp` is in the server's time zone, here 5.5 hours behind the site's."""
+		make_whatsapp_message(self.lead, "Outgoing", at(0))
+		make_whatsapp_message(self.lead, "Incoming", at(10), timestamp=at(10 - 330))
+		self.assertEqual(self.state().awaiting_reply_since, at(10))
+
 
 class TestCallInteractions(IntegrationTestCase):
 	def setUp(self):
@@ -226,7 +232,7 @@ def get_state(doctype: str, name: str):
 	)
 
 
-def make_whatsapp_message(lead: str, direction: str, timestamp, reaction=None, submit=True):
+def make_whatsapp_message(lead: str, direction: str, received_at, reaction=None, submit=True, timestamp=None):
 	message = frappe.get_doc(
 		{
 			"doctype": "WA Message",
@@ -234,14 +240,14 @@ def make_whatsapp_message(lead: str, direction: str, timestamp, reaction=None, s
 			"status": "Sent",
 			"message": "Hello",
 			"reaction": reaction,
-			"timestamp": timestamp,
+			"timestamp": timestamp or received_at,
 			"reference_doctype": "CRM Lead",
 			"reference_docname": lead,
 			**make_whatsapp_recipient(),
 		}
 	)
 	message.flags.ignore_permissions = True
-	with patch.object(type(message), "_send"):
+	with patch.object(type(message), "_send"), IntegrationTestCase.freeze_time(received_at):
 		message.submit() if submit else message.insert()
 	return message
 

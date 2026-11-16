@@ -163,14 +163,16 @@ def update_reference_modified(doc, method=None):
 
 
 def record_interaction(doc, method=None):
-	"""A reaction is not a message, so it neither asks for nor gives a reply."""
+	"""A reaction is not a message, so it neither asks for nor gives a reply. `creation` and not
+	`timestamp`: the webhook stores an incoming `timestamp` in the server's own time zone, which can
+	differ from the site's, so it does not compare with the time of an email or an outgoing message."""
 	if doc.reaction or not doc.reference_docname:
 		return
 	record(
 		doc.reference_doctype,
 		doc.reference_docname,
 		INTERACTION_DIRECTIONS.get(doc.direction),
-		doc.timestamp or doc.creation,
+		doc.creation,
 		_whatsapp_reply(doc) if doc.direction == "Incoming" else None,
 	)
 

@@ -53,13 +53,12 @@ def _latest_whatsapp(references: dict) -> dict:
 	if not frappe.db.table_exists("WA Message"):
 		return {}
 	message = frappe.qb.DocType("WA Message")
-	# a reaction is not a message, as in crm.api.whatsapp.record_interaction
+	# a reaction is not a message, and `creation` is the time to compare, as in
+	# crm.api.whatsapp.record_interaction
 	inbound = (
 		(message.direction == "Incoming") & (message.docstatus == 1) & (Coalesce(message.reaction, "") == "")
 	)
-	return _latest(
-		message, message.reference_docname, Coalesce(message.timestamp, message.creation), inbound, references
-	)
+	return _latest(message, message.reference_docname, message.creation, inbound, references)
 
 
 def _latest(table, name_field, received_at, inbound, references: dict) -> dict:

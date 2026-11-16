@@ -345,6 +345,6 @@ def received_whatsapp(doctype, name, at):
 			"docstatus": 1,
 			"reference_doctype": doctype,
 			"reference_docname": name,
-			"timestamp": at,
+			"creation": at,
 		}
 	).db_insert()
