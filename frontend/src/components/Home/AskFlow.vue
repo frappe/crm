@@ -43,7 +43,7 @@
   </form>
 </template>
 <script setup>
-import { askFlowChips, flowSessionUrl } from '@/utils/brief'
+import { askFlowChips, openFlowSession } from '@/utils/brief'
 import { call, toast } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
@@ -77,7 +77,10 @@ async function send(text) {
   sending.value = true
   try {
     const { session } = await call('crm.api.home.ask_flow', { message: text })
-    window.location.assign(flowSessionUrl(session))
+    if (openFlowSession(session)) {
+      message.value = ''
+      sending.value = false
+    }
   } catch (error) {
     toast.error(error.messages?.[0] || __('Could not start Flow'))
     sending.value = false

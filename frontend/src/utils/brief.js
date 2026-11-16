@@ -267,6 +267,22 @@ export function flowSessionUrl(session) {
   return `/flow/s/${encodeURIComponent(session)}`
 }
 
+// In the page's Flow panel, as Cmd/Ctrl+I opens it. Frappe adds the panel only for Flow users on
+// versions that have it, so anything that goes wrong opens the full Flow page instead.
+// Returns whether the panel took it.
+export function openFlowSession(
+  session,
+  { flow = window.flow, assign = (url) => window.location.assign(url) } = {},
+) {
+  try {
+    flow.open({ path: `/s/${encodeURIComponent(session)}` })
+    return true
+  } catch {
+    assign(flowSessionUrl(session))
+    return false
+  }
+}
+
 export function askFlowChips({ team, repliesWaiting = 0, now = dayjs() }) {
   if (team) {
     return [
