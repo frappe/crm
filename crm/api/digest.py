@@ -215,7 +215,8 @@ class TasksDueTodaySection(Section, TaskWidget):
 
 def due_label(due: TaskDue, task) -> str:
 	if due.is_overdue(task):
-		return _("Overdue since {0}").format(format_date(due.user_time(task.due_date).date(), "d MMM"))
+		day = get_datetime(task.due_date).date() if task.all_day else due.user_time(task.due_date).date()
+		return _("Overdue since {0}").format(format_date(day, "d MMM"))
 	if task.all_day:
 		return _("Due today")
 	return _("Due at {0}").format(format_time(due.user_time(task.due_date), "HH:mm"))

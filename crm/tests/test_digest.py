@@ -11,10 +11,12 @@ from crm.api.digest import (
 	LAST_RUN_KEY,
 	OPT_OUT_KEY,
 	MorningDigest,
+	due_label,
 	has_outgoing_email_account,
 	send_morning_digests,
 )
 from crm.api.home import set_morning_digest
+from crm.fcrm.doctype.crm_task.rules import TaskDue
 from crm.tests.test_home import AGENT, MANAGER, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
 
@@ -185,6 +187,10 @@ class TestDigestSections(DigestTestCase):
 		sections = self.sections()
 		self.assertEqual(self.titles(sections["Follow-ups due"]), ["Recent miss", "Today"])
 		self.assertEqual(self.titles(sections["Tasks due today"]), ["Standalone"])
+
+	def test_overdue_all_day_task_keeps_its_day_in_any_time_zone(self):
+		task = frappe._dict(status="Open", all_day=1, due_date=datetime(2026, 1, 15))
+		self.assertEqual(due_label(TaskDue(MANAGER), task), "Overdue since 15 Jan")
 
 	def test_tasks_due_today_leave_out_other_days(self):
 		make_task(self.today(), all_day=1, assigned_to=AGENT, title="Today")
