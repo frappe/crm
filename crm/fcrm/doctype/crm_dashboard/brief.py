@@ -471,7 +471,8 @@ class TeamBrief(Brief):
 
 	def workload(self) -> list:
 		members = set(self.scope.members)
-		by_doctype = member_counts_by_doctype(self.behind_widget())
+		behind_widget = self.behind_widget()
+		by_doctype = member_counts_by_doctype(behind_widget)
 		behind = sum(by_doctype.values(), Counter())
 		behind = {member: count for member, count in behind.items() if member in members}
 		if not behind:
@@ -496,7 +497,7 @@ class TeamBrief(Brief):
 				"behind": count,
 				"doctype": RECORD_KEYS[linked[member]],
 				"linked": by_doctype[linked[member]][member],
-				"past_response": has_sla(),
+				"past_response": isinstance(behind_widget, PastResponse),
 				"lightest": lightest,
 				"lightest_open": open_records[lightest] if lightest else None,
 			}
