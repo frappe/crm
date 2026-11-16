@@ -95,6 +95,7 @@ def _create_deal(doc, action) -> str:
 	profile = frappe.get_cached_doc("WA Profile", doc.to)
 	contact = create_contact({"first_name": profile.profile_name, "mobile_no": profile.phone_number})
 	deal = frappe.new_doc("CRM Deal")
+	deal.first_name = profile.profile_name
 	deal.append("contacts", {"contact": contact, "is_primary": 1})
 	if frappe.db.exists("CRM Lead Source", LEAD_SOURCE):
 		deal.source = LEAD_SOURCE

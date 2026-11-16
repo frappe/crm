@@ -791,6 +791,7 @@ class TestLeadFromIncomingWhatsApp(FrappeTestCase):
 		self.assertEqual(doc.reference_doctype, "CRM Deal")
 		self.assertEqual(deal.source, LEAD_SOURCE)
 		self.assertEqual(deal.mobile_no, self.number)
+		self.assertEqual(deal.first_name, "Asha")
 		self.assertEqual(frappe.db.get_value("Contact", deal.contacts[0].contact, "first_name"), "Asha")
 		self.assertEqual(self._leads(), [])
 
