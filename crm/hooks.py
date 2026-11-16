@@ -279,6 +279,9 @@ doc_events = {
 		"after_insert": ["crm.utils.on_comment_insert"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
+	"WA Account": {
+		"validate": ["crm.api.whatsapp.validate_account"],
+	},
 	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
 		"on_submit": [
@@ -342,6 +345,10 @@ doc_events = {
 # The whatsapp app has no role model of its own; this gates its whitelisted
 # endpoints on CRM's sales roles.
 whatsapp_access_guard = ["crm.api.whatsapp.validate_access"]
+
+# CRM creates these from new senders itself; their WA Account append action rows are the
+# switch set from CRM's WhatsApp account settings.
+whatsapp_managed_doctypes = ["CRM Lead", "CRM Deal"]
 
 # Scheduled Tasks
 # ---------------

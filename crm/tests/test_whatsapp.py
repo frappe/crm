@@ -25,6 +25,7 @@ from crm.api.whatsapp import (
 	update_reference_modified,
 	validate,
 	validate_access,
+	validate_account,
 )
 from crm.patches.v1_0.add_whatsapp_lead_source import execute as add_whatsapp_lead_source
 
@@ -82,7 +83,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 				return_value="+15559999999",
 			),
 			patch("crm.api.whatsapp._link_profile_to_crm_entities"),
-			patch("crm.api.whatsapp._lead_append_action", return_value=None),
+			patch("crm.api.whatsapp._quick_create_action", return_value=None),
 			patch(
 				"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 				return_value=(None, None),
@@ -688,3 +689,39 @@ class TestLeadFromIncomingWhatsApp(FrappeTestCase):
 
 		self.assertEqual(doc.reference_docname, existing.name)
 		self.assertEqual(self._leads(), [existing.name])
+
+	def test_unknown_sender_becomes_a_deal_with_the_sender_as_primary_contact(self):
+		doc = self._message([{"append_to": "CRM Deal", "trigger_on": "Incoming"}])
+
+		validate(doc, None)
+
+		deal = frappe.get_doc("CRM Deal", doc.reference_docname)
+		self.assertEqual(doc.reference_doctype, "CRM Deal")
+		self.assertEqual(deal.source, LEAD_SOURCE)
+		self.assertEqual(deal.mobile_no, self.number)
+		self.assertEqual(deal.first_name, "Asha")
+		self.assertEqual(frappe.db.get_value("Contact", deal.contacts[0].contact, "first_name"), "Asha")
+		self.assertEqual(self._leads(), [])
+
+	def test_deal_reuses_the_contact_that_has_the_number(self):
+		contact = frappe.get_doc(
+			{"doctype": "Contact", "first_name": "Known", "phone_nos": [{"phone": self.number}]}
+		).insert()
+		doc = self._message([{"append_to": "CRM Deal", "trigger_on": "Incoming"}])
+
+		with patch("crm.api.whatsapp.find_contact_lead_or_deal_from_number", return_value=(None, None)):
+			validate(doc, None)
+
+		deal = frappe.get_doc("CRM Deal", doc.reference_docname)
+		self.assertEqual(deal.contacts[0].contact, contact.name)
+
+	def test_account_cannot_create_both_leads_and_deals(self):
+		account = frappe.get_doc(
+			{
+				"doctype": "WA Account",
+				"append_actions": [self._lead_action(), {"append_to": "CRM Deal", "trigger_on": "Incoming"}],
+			}
+		)
+
+		with self.assertRaises(frappe.ValidationError):
+			validate_account(account, None)

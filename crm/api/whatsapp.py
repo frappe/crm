@@ -13,6 +13,8 @@ from crm.utils import is_unattended, normalize_phone
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 LEAD_SOURCE = "WhatsApp"
 INTERACTION_DIRECTIONS = {"Incoming": "Inbound", "Outgoing": "Outbound"}
+# declared as the whatsapp app's `whatsapp_managed_doctypes`: CRM creates these itself
+QUICK_CREATE_DOCTYPES = ("CRM Lead", "CRM Deal")
 CONFIRM_PARAM = "confirm_whatsapp_recipient_change"
 
 
@@ -48,34 +50,34 @@ def _resolve_reference(doc, phone_number: str) -> None:
 		return
 
 	if not name and doc.direction == "Incoming":
-		action = _lead_append_action(doc.whatsapp_account)
+		action = _quick_create_action(doc.whatsapp_account)
 		if action:
-			name, doctype = _create_lead(doc, action), "CRM Lead"
+			create = _create_lead if action.append_to == "CRM Lead" else _create_deal
+			name, doctype = create(doc, action), action.append_to
 
 	if name:
 		doc.reference_doctype = doctype
 		doc.reference_docname = name
 
 
-def _lead_append_action(account: str | None):
-	"""An account that appends incoming messages to CRM Lead has asked for leads from new
-	senders; that configuration is the opt-in, there is no separate switch."""
+def _quick_create_action(account: str | None):
+	"""The account's CRM Lead or CRM Deal append action is its switch for creating one from
+	a new sender; CRM's account settings keep at most one of the two."""
 	if not account:
 		return None
 	for action in frappe.get_cached_doc("WA Account", account).get("append_actions", []):
-		if action.append_to == "CRM Lead" and action.trigger_on in ("Incoming", "Both"):
+		if action.append_to in QUICK_CREATE_DOCTYPES and action.trigger_on in ("Incoming", "Both"):
 			return action
 	return None
 
 
 def _create_lead(doc, action) -> str:
-	"""Built as the whatsapp app's append action would build it, so the message's reference
-	is set before that action runs and it finds nothing left to do. The source is the one
-	thing the whatsapp app cannot know."""
+	"""The row's own mappings still apply, so an account set up before the switch existed
+	keeps filling the fields it chose."""
 	profile = frappe.get_cached_doc("WA Profile", doc.to)
 	lead = frappe.new_doc("CRM Lead")
-	lead.set(action.sender_field, profile.phone_number)
-	lead.set(action.sender_name_field, profile.profile_name)
+	lead.set(action.sender_field or "mobile_no", profile.phone_number)
+	lead.set(action.sender_name_field or "first_name", profile.profile_name)
 	if action.message_field:
 		lead.set(action.message_field, doc.message)
 	if action.timestamp_field:
@@ -84,6 +86,32 @@ def _create_lead(doc, action) -> str:
 		lead.source = LEAD_SOURCE
 	lead.insert(ignore_permissions=True)
 	return lead.name
+
+
+def _create_deal(doc, action) -> str:
+	"""A deal's mobile number comes from its primary contact, so the sender becomes that
+	contact; an existing contact with the number is reused."""
+	from crm.fcrm.doctype.crm_deal.crm_deal import create_contact
+
+	profile = frappe.get_cached_doc("WA Profile", doc.to)
+	contact = create_contact({"first_name": profile.profile_name, "mobile_no": profile.phone_number})
+	deal = frappe.new_doc("CRM Deal")
+	deal.first_name = profile.profile_name
+	deal.append("contacts", {"contact": contact, "is_primary": 1})
+	if frappe.db.exists("CRM Lead Source", LEAD_SOURCE):
+		deal.source = LEAD_SOURCE
+	deal.insert(ignore_permissions=True)
+	return deal.name
+
+
+def validate_account(doc, method) -> None:
+	"""A new sender becomes a lead or a deal, never both."""
+	quick_create = [row.append_to for row in doc.append_actions if row.append_to in QUICK_CREATE_DOCTYPES]
+	if len(quick_create) > 1:
+		frappe.throw(
+			_("An account can create either leads or deals from new WhatsApp senders, not both."),
+			title=_("Choose leads or deals"),
+		)
 
 
 def _get_phone_number_from_profile(doc) -> str | None:
