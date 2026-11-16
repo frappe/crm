@@ -96,7 +96,8 @@ class TestUnassigned(TeamWidgetTestCase):
 
 	def test_new_records_without_an_assignee_newest_first(self):
 		older = self.unassigned()
-		frappe.db.set_value("CRM Lead", older, "creation", add_days(now_datetime(), -1))
+		# a second, not a day: records made earlier in the run would otherwise be newer
+		frappe.db.set_value("CRM Lead", older, "creation", add_to_date(now_datetime(), seconds=-1))
 		newer = self.unassigned()
 		deal = make_deal(status=status("CRM Deal Status", "Open"))
 		self.lead()
@@ -104,7 +105,7 @@ class TestUnassigned(TeamWidgetTestCase):
 		self.unassigned(converted=1)
 
 		rows = names(self.merged("unassigned", BOSS))
-		self.assertEqual(rows[: rows.index(older) + 1], [deal, newer, older])
+		self.assertEqual(rows[:3], [deal, newer, older])
 		self.assertNotIn(deal, names(self.merged("unassigned", BOSS, "Lead")))
 
 	def test_count_stops_at_the_cap(self):
