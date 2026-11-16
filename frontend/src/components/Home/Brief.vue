@@ -39,12 +39,33 @@
         </div>
       </li>
     </ol>
-    <HomeEmptyState
+    <div
       v-else-if="!items.length"
-      icon="lucide-check"
-      class="rounded-4 border border-outline-gray-2 p-6"
-      :text="__('Nothing needs you today')"
-    />
+      class="flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-4 border border-outline-gray-2 bg-surface-elevation-2 p-6 text-center"
+    >
+      <span
+        aria-hidden="true"
+        class="flex size-7 items-center justify-center rounded-4 bg-surface-gray-2 text-ink-gray-7"
+      >
+        <span class="lucide-check-check size-4" />
+      </span>
+      <div class="flex flex-col items-center gap-1">
+        <span class="text-base-medium text-ink-gray-9">
+          {{ __("You're all caught up") }}
+        </span>
+        <span class="text-p-sm text-ink-gray-6">
+          {{ emptyLine.text }}
+          <button
+            v-if="emptyLine.team"
+            type="button"
+            class="text-ink-gray-8 underline underline-offset-2 hover:text-ink-gray-9"
+            @click="tab = 'team'"
+          >
+            {{ __('View team') }}
+          </button>
+        </span>
+      </div>
+    </div>
     <ol
       v-else
       class="divide-y divide-outline-gray-2 rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
@@ -117,7 +138,6 @@
 </template>
 <script setup>
 import BriefAction from '@/components/Home/BriefAction.vue'
-import HomeEmptyState from '@/components/Home/HomeEmptyState.vue'
 import HomeTabs from '@/components/Home/HomeTabs.vue'
 import PeriodPicker from '@/components/Home/PeriodPicker.vue'
 import { usersStore } from '@/stores/users'
@@ -126,6 +146,7 @@ import {
   briefBadge,
   briefCount,
   briefDetail,
+  briefEmptyLine,
   briefIcon,
   briefMoreLinks,
   briefOlderLinks,
@@ -172,6 +193,15 @@ const PLACEHOLDER_ROWS = 5
 const loaded = computed(() => props.resource.data?.tab === tab.value)
 
 const items = computed(() => props.resource.data?.items || [])
+
+const emptyLine = computed(() =>
+  briefEmptyLine({
+    tab: tab.value,
+    isManager: isManager(),
+    counts: props.counts,
+    older: props.resource.data?.older,
+  }),
+)
 
 const footerLinks = computed(() => [
   ...briefMoreLinks(props.resource.data?.more),
