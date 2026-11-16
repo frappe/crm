@@ -485,13 +485,17 @@ class TeamBrief(Brief):
 			if member != self.scope.user and open_records[member] and active[member]
 		]
 		lightest = min(spare, key=lambda member: (open_records[member], member), default=None)
+		# A link opens one list, so it goes to the type holding most of the member's records.
+		linked = {
+			member: max(by_doctype, key=lambda doctype: by_doctype[doctype][member]) for member in behind
+		}
 		return [
 			{
 				"kind": "workload",
 				"member": member,
 				"behind": count,
-				# The list a link can open: the type holding most of this member's records.
-				"doctype": RECORD_KEYS[max(by_doctype, key=lambda doctype: by_doctype[doctype][member])],
+				"doctype": RECORD_KEYS[linked[member]],
+				"linked": by_doctype[linked[member]][member],
 				"past_response": has_sla(),
 				"lightest": lightest,
 				"lightest_open": open_records[lightest] if lightest else None,

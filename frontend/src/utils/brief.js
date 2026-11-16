@@ -257,11 +257,18 @@ const ACTIONS = {
     label: () => __('View tasks'),
     icon: 'lucide-square-check',
   },
-  workload: {
-    label: (item) =>
-      item.doctype === 'Deal' ? __('View deals') : __('View leads'),
-    icon: 'lucide-user',
-  },
+  workload: { label: workloadActionLabel, icon: 'lucide-user' },
+}
+
+// The link opens one record type, so name the count when the other type is left out.
+function workloadActionLabel(item) {
+  const deals = item.doctype === 'Deal'
+  if (!item.linked || item.linked >= item.behind)
+    return deals ? __('View deals') : __('View leads')
+  if (item.linked === 1) return deals ? __('View 1 deal') : __('View 1 lead')
+  return deals
+    ? __('View {0} deals', [item.linked])
+    : __('View {0} leads', [item.linked])
 }
 
 export function briefActionLabel(item) {

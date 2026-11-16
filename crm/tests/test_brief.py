@@ -523,6 +523,7 @@ class TestBriefMemberRecords(TeamWidgetTestCase):
 		row = self.workload_row()
 		self.assertEqual(row["behind"], 3)
 		self.assertEqual(row["doctype"], "Deal")
+		self.assertEqual(row["linked"], 2)
 
 	def test_behind_names_are_the_members_records_of_that_type(self):
 		deals = get_brief_records(MANAGER, "team", "behind", "Deal", AGENT)

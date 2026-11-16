@@ -407,6 +407,15 @@ describe('routes and actions', () => {
     expect(briefActionLabel({ ...item, doctype: 'Lead' })).toBe('View leads')
   })
 
+  it('names the count when the link leaves out the other record type', () => {
+    const item = { kind: 'workload', doctype: 'Deal', behind: 3, linked: 2 }
+    expect(briefActionLabel(item)).toBe('View 2 deals')
+    expect(briefActionLabel({ ...item, doctype: 'Lead', linked: 1 })).toBe(
+      'View 1 lead',
+    )
+    expect(briefActionLabel({ ...item, linked: 3 })).toBe('View deals')
+  })
+
   it("opens a member's overdue follow-ups in Tasks", () => {
     expect(
       briefRoute({ kind: 'overdue_person', member: 'asha@x.com' }),
