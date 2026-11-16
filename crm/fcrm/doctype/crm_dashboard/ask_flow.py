@@ -4,14 +4,16 @@
 import frappe
 from frappe import _
 
-FLOW_ROLE = "Flow User"
 APPROVAL_MODE = "Ask"
 
 
 def flow_available() -> bool:
-	"""Frappe v16 has no Flow, and a site without a provider has nothing to answer with."""
+	"""Frappe v16 has no Flow, a site without a provider has nothing to answer with, and only a Flow
+	User or a System Manager may start a chat. CRM gives Flow User to everyone who joins it."""
 	return bool(
-		frappe.db.exists("DocType", "Flow Session") and frappe.db.exists("Flow Provider", {"enabled": 1})
+		frappe.db.exists("DocType", "Flow Session")
+		and frappe.db.exists("Flow Provider", {"enabled": 1})
+		and frappe.has_permission("Flow Session", "create")
 	)
 
 
@@ -21,20 +23,8 @@ def start_flow_chat(message: str) -> str:
 	if not (message or "").strip():
 		frappe.throw(_("Tell Flow what you want to get done"))
 
-	grant_flow_role(frappe.session.user)
-
 	from frappe.flow.api import create_session, run
 
 	session = create_session(approval_mode=APPROVAL_MODE)["name"]
 	run(session, message)
 	return session
-
-
-def grant_flow_role(user: str):
-	if FLOW_ROLE in frappe.get_roles(user):
-		return
-	doc = frappe.get_doc("User", user)
-	doc.append("roles", {"role": FLOW_ROLE})
-	doc.flags.ignore_permissions = True
-	doc.save()
-	frappe.clear_cache(user=user)
