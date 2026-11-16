@@ -24,7 +24,7 @@ def backfill(times_query: str):
 
 
 def merge_times(doctype: str, times_query: str):
-	frappe.db.sql(
+	frappe.db.sql(  # only constants are formatted in; doctype is a bound parameter  # nosemgrep
 		f"""
 		UPDATE `tab{doctype}` record
 		JOIN ({times_query}) times ON times.reference_name = record.name
@@ -37,7 +37,7 @@ def merge_times(doctype: str, times_query: str):
 
 
 def forward_converted_leads():
-	frappe.db.sql(
+	frappe.db.sql(  # only constants are formatted in  # nosemgrep
 		f"""
 		UPDATE `tabCRM Deal` deal
 		JOIN (
@@ -53,7 +53,7 @@ def forward_converted_leads():
 
 
 def set_awaiting_reply_since(doctype: str):
-	frappe.db.sql(
+	frappe.db.sql(  # doctype is CRM Lead or CRM Deal, set by the patch  # nosemgrep
 		f"""
 		UPDATE `tab{doctype}`
 		SET awaiting_reply_since = CASE
