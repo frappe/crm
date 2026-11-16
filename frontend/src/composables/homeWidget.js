@@ -15,11 +15,18 @@ export function useHomeWidget(widget, config = () => ({})) {
       widget,
       doctype: config().doctype,
       period: config().period,
+      filters: config().filters,
     }),
     auto: true,
   })
-  watch([homeVersion, () => config().doctype, () => config().period], () =>
-    resource.reload(),
+  watch(
+    [
+      homeVersion,
+      () => config().doctype,
+      () => config().period,
+      () => JSON.stringify(config().filters || {}),
+    ],
+    () => resource.reload(),
   )
   return resource
 }

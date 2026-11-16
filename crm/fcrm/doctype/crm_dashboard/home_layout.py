@@ -21,6 +21,7 @@ class Widget:
 	manager_only: bool = False
 	doctype_setting: bool = True
 	period_setting: bool = False
+	filter_setting: bool = False
 	min_w: int = 1
 	min_h: int = 1
 
@@ -37,7 +38,7 @@ WIDGETS = {
 	"won_this_month": Widget(doctype_setting=False, period_setting=True),
 	"expected_revenue": Widget(doctype_setting=False, period_setting=True),
 	"top_open_deals": Widget(doctype_setting=False),
-	"team_overview": Widget(manager_only=True, doctype_setting=False, period_setting=True, min_h=10),
+	"team_overview": Widget(manager_only=True, period_setting=True, filter_setting=True, min_h=10),
 	"team_replies_waiting": Widget(manager_only=True),
 	"overdue_and_unassigned": Widget(manager_only=True, doctype_setting=False),
 }
@@ -179,6 +180,8 @@ def _config(name: str, config) -> dict:
 	allowed = {"doctype"} if widget.doctype_setting else set()
 	if widget.period_setting:
 		allowed.add("period")
+	if widget.filter_setting:
+		allowed.add("filters")
 	if not isinstance(config, dict) or set(config) - allowed:
 		frappe.throw(_("Home widget {0} has no such setting").format(name))
 
@@ -191,6 +194,10 @@ def _config(name: str, config) -> dict:
 		if config["period"] not in PERIOD_DAYS:
 			frappe.throw(_("Home widget {0} can only compare last week, month or 3 months").format(name))
 		settings["period"] = config["period"]
+	if config.get("filters"):
+		if not isinstance(config["filters"], dict):
+			frappe.throw(_("Home widget {0} has invalid filters").format(name))
+		settings["filters"] = config["filters"]
 	return settings
 
 

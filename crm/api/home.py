@@ -143,12 +143,18 @@ def get_tab(widget: str, tab: str, doctype: str | None = None) -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_widget(widget: str, doctype: str | None = None, period: str | None = None) -> dict:
-	return get_widget_data(widget, doctype, period=period)
+def get_widget(
+	widget: str, doctype: str | None = None, period: str | None = None, filters: dict | str | None = None
+) -> dict:
+	return get_widget_data(widget, doctype, period=period, filters=filters)
 
 
 def get_widget_data(
-	widget: str, doctype: str | None = None, user: str | None = None, period: str | None = None
+	widget: str,
+	doctype: str | None = None,
+	user: str | None = None,
+	period: str | None = None,
+	filters: dict | str | None = None,
 ) -> dict:
 	user = user or frappe.session.user
 	doctype = doctype or "Both"
@@ -169,7 +175,8 @@ def get_widget_data(
 	args = (DOCTYPES[doctype], Team(user))
 	if WIDGETS[widget].period_setting:
 		args += (period or DEFAULT_PERIOD,)
-	return TEAM_WIDGET_DATA[widget](*args).summary()
+	kwargs = {"filters": frappe.parse_json(filters) or {}} if WIDGETS[widget].filter_setting else {}
+	return TEAM_WIDGET_DATA[widget](*args, **kwargs).summary()
 
 
 def get_tab_data(widget: str, tab: str, doctype: str | None = None, user: str | None = None) -> dict:

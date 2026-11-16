@@ -75,6 +75,29 @@ export function sortRows(rows, { descending }, valueOf) {
   })
 }
 
+// Only fields that mean the same on leads and deals can filter both at once.
+export function fieldsOnBoth(leadFields, dealFields) {
+  const deals = new Map(
+    (dealFields || []).map((field) => [field.fieldname, field]),
+  )
+  if (!leadFields || !deals.size) return []
+  return leadFields.filter((field) => {
+    const deal = deals.get(field.fieldname)
+    return (
+      deal &&
+      deal.fieldtype === field.fieldtype &&
+      (deal.options || '') === (field.options || '')
+    )
+  })
+}
+
+export function filtersFor(filters, fields) {
+  const names = new Set(fields.map((field) => field.fieldname))
+  return Object.fromEntries(
+    Object.entries(filters || {}).filter(([name]) => names.has(name)),
+  )
+}
+
 // A percentage over a near-empty start says nothing past "much more"; the arrow carries the sign.
 export function formatPercentChange(value) {
   return value > 999 ? '999+' : String(Math.round(value))
