@@ -8,7 +8,7 @@
         v-if="isManager()"
         v-model="tab"
         :tabs="tabs"
-        :counts="counts"
+        :counts="shownCounts"
       />
     </div>
 
@@ -114,6 +114,7 @@ import { usersStore } from '@/stores/users'
 import {
   briefAge,
   briefBadge,
+  briefCount,
   briefDetail,
   briefIcon,
   briefMoreLinks,
@@ -134,6 +135,15 @@ const props = defineProps({
 const tab = defineModel('tab', { type: String, required: true })
 
 const { getUser, isManager } = usersStore()
+
+const shownCounts = computed(() =>
+  Object.fromEntries(
+    Object.entries(props.counts).map(([name, count]) => [
+      name,
+      briefCount(count),
+    ]),
+  ),
+)
 
 const tabs = [
   { label: __('Team'), value: 'team' },

@@ -5,6 +5,7 @@ import {
   briefActionRoute,
   briefAge,
   briefBadge,
+  briefCount,
   briefDetail,
   briefIcon,
   briefMoreLinks,
@@ -89,6 +90,14 @@ describe('briefSummary', () => {
     )
     expect(briefSummary({ count: 8, flow: false })).toBe(
       '8 things need you today.',
+    )
+  })
+
+  it('caps a large count at 500+', () => {
+    expect(briefCount(500)).toBe(500)
+    expect(briefCount(501)).toBe('500+')
+    expect(briefSummary({ count: 2067, team: true })).toBe(
+      'Your team has 500+ things that need you today.',
     )
   })
 

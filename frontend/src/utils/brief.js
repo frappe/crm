@@ -40,15 +40,22 @@ function dayAge(days) {
   return __('{0} wk', [Math.floor(days / 7)])
 }
 
+const COUNT_CAP = 500
+
+// Past a few hundred the exact number stops meaning anything to the reader.
+export function briefCount(count) {
+  return count > COUNT_CAP ? `${COUNT_CAP}+` : count
+}
+
 export function briefSummary({ count, team, flow }) {
   if (!count) return __('Nothing needs you today')
   const things = team
     ? count === 1
       ? __('Your team has 1 thing that needs you today')
-      : __('Your team has {0} things that need you today', [count])
+      : __('Your team has {0} things that need you today', [briefCount(count)])
     : count === 1
       ? __('1 thing needs you today')
-      : __('{0} things need you today', [count])
+      : __('{0} things need you today', [briefCount(count)])
   return flow
     ? __('{0}. Or ask Flow to get something done.', [things])
     : `${things}.`
