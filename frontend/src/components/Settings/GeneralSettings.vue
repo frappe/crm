@@ -27,7 +27,7 @@
           <Switch
             v-model="settings.doc.update_timestamp_on_new_communication"
             size="sm"
-            @click.stop="toggle('update_timestamp_on_new_communication')"
+            @update:modelValue="toggle('update_timestamp_on_new_communication')"
           />
         </div>
       </div>
@@ -49,7 +49,7 @@
           <Switch
             v-model="settings.doc.auto_mark_replied_on_response"
             size="sm"
-            @click.stop="toggle('auto_mark_replied_on_response')"
+            @update:modelValue="toggle('auto_mark_replied_on_response')"
           />
         </div>
       </div>
@@ -71,7 +71,7 @@
           <Switch
             v-model="settings.doc.auto_reopen_on_new_communication"
             size="sm"
-            @click.stop="toggle('auto_reopen_on_new_communication')"
+            @update:modelValue="toggle('auto_reopen_on_new_communication')"
           />
         </div>
       </div>
@@ -108,7 +108,7 @@
           <Switch
             v-model="settings.doc.enable_morning_digest"
             size="sm"
-            @click.stop="toggle('enable_morning_digest')"
+            @update:modelValue="toggle('enable_morning_digest')"
           />
         </div>
       </div>
