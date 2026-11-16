@@ -12,7 +12,8 @@
       rows="3"
       class="w-full resize-none border-0 bg-transparent p-1 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
       :placeholder="placeholder"
-      @keydown.enter.exact.prevent="send(message)"
+      @keydown.meta.enter.exact.prevent="send(message)"
+      @keydown.ctrl.enter.exact.prevent="send(message)"
     />
     <div class="flex items-end gap-2.5">
       <div class="flex min-w-0 flex-1 flex-wrap gap-2">
@@ -22,15 +23,9 @@
           :label="chip"
           iconLeft="lucide-sparkles"
           :disabled="sending"
-          @click="send(chip)"
+          @click="sendChip(chip)"
         />
       </div>
-      <span
-        class="flex h-7 shrink-0 items-center gap-1 text-sm text-ink-gray-5"
-      >
-        <span aria-hidden="true" class="lucide-lock size-3.5" />
-        {{ __('Private') }}
-      </span>
       <Button
         type="submit"
         variant="solid"
@@ -71,6 +66,12 @@ const chips = computed(() =>
     repliesWaiting: props.resource.data?.replies_waiting,
   }),
 )
+
+// The chip's text goes into the box first, so the message being sent stays in view.
+function sendChip(chip) {
+  message.value = chip
+  send(chip)
+}
 
 async function send(text) {
   if (!text.trim() || sending.value) return
