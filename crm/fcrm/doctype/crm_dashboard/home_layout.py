@@ -7,6 +7,8 @@ from dataclasses import dataclass
 import frappe
 from frappe import _
 
+from crm.fcrm.doctype.crm_dashboard.home_widgets import DOCTYPES, check_filters
+
 HOME_PREFIX = "Home - "
 MANAGER_ROLES = ("Sales Manager", "System Manager")
 DOCTYPE_OPTIONS = ("Lead", "Deal", "Both")
@@ -195,8 +197,7 @@ def _config(name: str, config) -> dict:
 			frappe.throw(_("Home widget {0} can only compare last week, month or 3 months").format(name))
 		settings["period"] = config["period"]
 	if config.get("filters"):
-		if not isinstance(config["filters"], dict):
-			frappe.throw(_("Home widget {0} has invalid filters").format(name))
+		check_filters(DOCTYPES[settings.get("doctype", "Both")], config["filters"])
 		settings["filters"] = config["filters"]
 	return settings
 

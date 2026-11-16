@@ -9,7 +9,6 @@ from functools import reduce
 from typing import ClassVar
 
 import frappe
-from frappe import _
 from frappe.query_builder import Case, Field
 from frappe.query_builder.functions import Coalesce, Count, Sum
 from frappe.utils import now_datetime
@@ -24,6 +23,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	TabbedWidget,
 	TaskWidget,
 	Widget,
+	check_filters,
 )
 
 OVERDUE_DAYS = 30
@@ -71,17 +71,7 @@ class TeamOverview(Widget):
 		self.since = now_datetime() - timedelta(days=period_days(period))
 		self.period = period
 		self.filters = filters or {}
-		self.check_filters()
-
-	def check_filters(self):
-		if not isinstance(self.filters, dict):
-			frappe.throw(_("Team workload filters must name a field and a value"))
-		for doctype in self.doctypes:
-			unknown = set(self.filters) - set(frappe.db.get_table_columns(doctype))
-			if unknown:
-				frappe.throw(
-					_("Team workload cannot filter {0} on {1}").format(_(doctype), ", ".join(sorted(unknown)))
-				)
+		check_filters(doctypes, self.filters)
 
 	def summary(self) -> dict:
 		key = overview_cache_key(self.scope.key, self.period, self.doctypes, self.filters)

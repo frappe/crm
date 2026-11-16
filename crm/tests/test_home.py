@@ -159,6 +159,15 @@ class TestHomeLayout(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			save_layout([widget("leads_and_deals", config={"filters": filters})])
 
+	def test_team_workload_refuses_a_filter_on_a_missing_field(self):
+		frappe.set_user(MANAGER)
+		for config in (
+			{"filters": {"no_such_field": 1}},
+			{"doctype": "Lead", "filters": {"deal_owner": MANAGER}},
+		):
+			with self.assertRaises(frappe.ValidationError):
+				save_layout([widget("team_overview", h=10, config=config)])
+
 	def test_number_cards_keep_a_comparison_period(self):
 		frappe.set_user(AGENT)
 		saved = save_layout([widget("won_this_month", h=4, config={"period": "last_week"})])["layout"][0]
