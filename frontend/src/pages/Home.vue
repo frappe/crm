@@ -50,7 +50,7 @@
 
     <div class="flex flex-1 flex-col overflow-y-auto">
       <div
-        class="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-8 px-6 pb-12 pt-9"
+        class="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-10 px-6 pb-12 pt-9"
       >
         <template v-if="target === 'mine'">
           <HomeHeader
