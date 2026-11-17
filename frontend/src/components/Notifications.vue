@@ -25,13 +25,14 @@
           />
         </div>
       </div>
+      <NotificationFilters v-model:read="read" v-model:category="category" />
       <div class="flex h-full">
         <div
-          v-if="notifications.data?.length"
+          v-if="shownGroups.length"
           class="w-full divide-y divide-outline-elevation-2 overflow-auto text-base"
         >
           <NotificationRow
-            v-for="group in groups"
+            v-for="group in shownGroups"
             :key="group.key"
             :group="group"
             @click="markAsRead(group.docs)"
@@ -39,8 +40,16 @@
         </div>
         <EmptyState
           v-else
-          :title="__('No New Notifications')"
-          :description="__('You have no new notifications')"
+          :title="
+            notifications.data?.length
+              ? __('Nothing Here')
+              : __('No New Notifications')
+          "
+          :description="
+            notifications.data?.length
+              ? __('No notifications match these filters')
+              : __('You have no new notifications')
+          "
           :icon="NotificationsIcon"
           width="lg"
         />
@@ -52,6 +61,7 @@
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
+import NotificationFilters from '@/components/NotificationFilters.vue'
 import NotificationRow from '@/components/NotificationRow.vue'
 import {
   visible,
@@ -59,8 +69,8 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
-import { groupNotifications } from '@/utils/notifications'
-import { onClickOutside } from '@vueuse/core'
+import { groupNotifications, notificationCategory } from '@/utils/notifications'
+import { onClickOutside, useEventListener } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
@@ -68,12 +78,33 @@ const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { capture } = useTelemetry()
 
+const read = ref('all')
+const category = ref('')
+
 const groups = computed(() => groupNotifications(notifications.data || []))
+const shownGroups = computed(() =>
+  groups.value.filter(
+    (g) =>
+      (read.value === 'all' || g.unread) &&
+      (!category.value || notificationCategory(g.latest) === category.value),
+  ),
+)
 
 const target = ref(null)
+// An open menu makes the page inert, so its dismiss click lands outside the
+// panel; the menu is gone by click time, so note it on pointerdown.
+let menuWasOpen = false
+useEventListener(
+  window,
+  'pointerdown',
+  () => (menuWasOpen = !!document.querySelector("[role='menu']")),
+  { capture: true },
+)
+
 onClickOutside(
   target,
   () => {
+    if (menuWasOpen) return
     if (visible.value) toggle()
   },
   {
