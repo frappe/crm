@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <div
     v-if="visible"
@@ -32,6 +31,7 @@
           />
         </div>
       </div>
+<<<<<<< HEAD
       <div
         v-if="notifications.data?.length"
         class="divide-y divide-outline-elevation-2 overflow-auto text-base"
@@ -72,6 +72,27 @@
             </div>
           </div>
         </RouterLink>
+=======
+      <div class="flex h-full">
+        <div
+          v-if="notifications.data?.length"
+          class="w-full overflow-auto p-1.5 text-base"
+        >
+          <NotificationRow
+            v-for="group in groups"
+            :key="group.key"
+            :group="group"
+            @click="markAsRead(group.docs)"
+          />
+        </div>
+        <EmptyState
+          v-else
+          :title="__('No New Notifications')"
+          :description="__('You have no new notifications')"
+          :icon="NotificationsIcon"
+          width="lg"
+        />
+>>>>>>> e801129 (feat: readable notifications)
       </div>
       <EmptyState
         v-else
@@ -88,21 +109,27 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
+<<<<<<< HEAD
 import UserAvatar from '@/components/UserAvatar.vue'
+=======
+import NotificationRow from '@/components/NotificationRow.vue'
+>>>>>>> e801129 (feat: readable notifications)
 import {
   visible,
   notifications,
   notificationsStore,
 } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
-import { timeAgo, sanitizeHTML } from '@/utils'
+import { groupNotifications } from '@/utils/notifications'
 import { onClickOutside } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { capture } = useTelemetry()
+
+const groups = computed(() => groupNotifications(notifications.data || []))
 
 const target = ref(null)
 onClickOutside(
@@ -115,9 +142,9 @@ onClickOutside(
   },
 )
 
-function markAsRead(doc) {
+function markAsRead(docs) {
   capture('notification_mark_as_read')
-  mark_doc_as_read(doc)
+  mark_doc_as_read(docs)
 }
 
 function markAllAsRead() {
@@ -134,21 +161,4 @@ onMounted(() => {
     notifications.reload()
   })
 })
-
-function getRoute(notification) {
-  let params = {
-    leadId: notification.reference_name,
-  }
-  if (notification.route_name === 'Deal') {
-    params = {
-      dealId: notification.reference_name,
-    }
-  }
-
-  return {
-    name: notification.route_name,
-    params: params,
-    hash: notification.hash,
-  }
-}
 </script>
