@@ -15,7 +15,7 @@
         </span>
       </div>
       <HomeTabs
-        v-if="isManager()"
+        v-if="isManager() && tab"
         v-model="tab"
         :tabs="tabs"
         :counts="shownCounts"
@@ -161,17 +161,17 @@ import { Avatar, Badge } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
-  resource: { type: Object, required: true },
+  brief: { type: Object, default: null },
   counts: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:doctype'])
 
-const tab = defineModel('tab', { type: String, required: true })
+const tab = defineModel('tab', { type: String, default: null })
 
 const { getUser, isManager } = usersStore()
 
-const doctype = computed(() => props.resource.data?.doctype || 'Both')
+const doctype = computed(() => props.brief?.doctype || 'Both')
 
 const shownCounts = computed(() =>
   Object.fromEntries(
@@ -190,22 +190,22 @@ const tabs = [
 // As many rows as the Brief shows at most
 const PLACEHOLDER_ROWS = 5
 
-const loaded = computed(() => props.resource.data?.tab === tab.value)
+const loaded = computed(() => Boolean(props.brief))
 
-const items = computed(() => props.resource.data?.items || [])
+const items = computed(() => props.brief?.items || [])
 
 const emptyLine = computed(() =>
   briefEmptyLine({
     tab: tab.value,
     isManager: isManager(),
     counts: props.counts,
-    older: props.resource.data?.older,
+    older: props.brief?.older,
   }),
 )
 
 const footerLinks = computed(() => [
-  ...briefMoreLinks(props.resource.data?.more),
-  ...briefOlderLinks(props.resource.data),
+  ...briefMoreLinks(props.brief?.more),
+  ...briefOlderLinks(props.brief || {}),
 ])
 
 function fullName(user) {

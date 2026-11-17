@@ -54,15 +54,16 @@
       >
         <template v-if="target === 'mine'">
           <HomeHeader
-            :count="brief.data?.total"
-            :team="brief.data?.tab === 'team'"
+            :count="brief?.total"
+            :team="brief?.tab === 'team'"
             :flow="askFlow.data?.available"
           />
           <AskFlow :resource="askFlow" :team="isManager()" />
           <Brief
-            v-model:tab="briefTab"
-            :resource="brief"
+            :tab="briefTab"
+            :brief="brief"
             :counts="briefCounts"
+            @update:tab="setBriefTab"
             @update:doctype="setBriefDoctype"
           />
         </template>
@@ -139,8 +140,9 @@ load()
 
 const {
   tab: briefTab,
-  resource: brief,
+  brief,
   counts: briefCounts,
+  setTab: setBriefTab,
   setDoctype: setBriefDoctype,
 } = useBrief()
 
