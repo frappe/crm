@@ -1,7 +1,7 @@
 <template>
   <RouterLink
     :to="route"
-    class="flex cursor-pointer items-center gap-3 px-4 py-2.5 hover:bg-surface-gray-2"
+    class="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-surface-gray-2"
   >
     <NotificationIcon :notification="n" />
     <div class="min-w-0 flex-1">
@@ -17,11 +17,13 @@
         <span v-if="group.count > 1" class="shrink-0 text-sm text-ink-gray-5">
           {{ group.count }}
         </span>
-        <span class="ml-auto shrink-0 text-sm text-ink-gray-5">
-          {{ prettyDate(n.creation, true) }}
-        </span>
+        <Tooltip :text="formatDate(n.creation)">
+          <span class="ml-auto shrink-0 text-sm text-ink-gray-5">
+            {{ prettyDate(n.creation, true) }}
+          </span>
+        </Tooltip>
       </div>
-      <div class="mt-0.5 flex items-center gap-2">
+      <div class="mt-1 flex items-center gap-2">
         <div class="truncate text-sm text-ink-gray-5">
           <span v-if="n.sender" class="text-ink-gray-7">{{ n.sender }}:</span>
           {{ n.preview }}
@@ -36,7 +38,8 @@
 </template>
 <script setup lang="ts">
 import NotificationIcon from '@/components/NotificationIcon.vue'
-import { prettyDate } from '@/utils'
+import { formatDate, prettyDate } from '@/utils'
+import { Tooltip } from 'frappe-ui'
 import type { NotificationGroup } from '@/utils/notifications'
 import { computed } from 'vue'
 
