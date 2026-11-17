@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <div
     v-if="visible"
@@ -29,43 +28,14 @@
       <div class="flex h-full">
         <div
           v-if="notifications.data?.length"
-          class="divide-y divide-outline-elevation-2 overflow-auto text-base"
+          class="w-full overflow-auto p-1.5 text-base"
         >
-          <RouterLink
-            v-for="n in notifications.data"
-            :key="n.comment"
-            :to="getRoute(n)"
-            class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-surface-gray-2"
-            @click="markAsRead(n.comment || n.notification_type_doc)"
-          >
-            <div class="mt-1 flex items-center gap-2.5">
-              <div
-                class="size-[5px] rounded-full"
-                :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-10']"
-              />
-              <NotificationIcon :notification="n" />
-            </div>
-            <div>
-              <div
-                v-if="n.notification_text"
-                v-html="sanitizeHTML(n.notification_text)"
-              />
-              <div v-else class="mb-2 space-x-1 leading-5 text-ink-gray-5">
-                <span class="font-medium text-ink-gray-9">
-                  {{ n.from_user.full_name }}
-                </span>
-                <span>
-                  {{ __('mentioned you in {0}', [n.reference_doctype]) }}
-                </span>
-                <span class="font-medium text-ink-gray-9">
-                  {{ n.reference_name }}
-                </span>
-              </div>
-              <div class="text-sm text-ink-gray-5">
-                {{ __(timeAgo(n.creation)) }}
-              </div>
-            </div>
-          </RouterLink>
+          <NotificationRow
+            v-for="group in groups"
+            :key="group.key"
+            :group="group"
+            @click="markAsRead(group.docs)"
+          />
         </div>
         <EmptyState
           v-else
@@ -82,21 +52,23 @@
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
-import NotificationIcon from '@/components/NotificationIcon.vue'
+import NotificationRow from '@/components/NotificationRow.vue'
 import {
   visible,
   notifications,
   notificationsStore,
 } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
-import { timeAgo, sanitizeHTML } from '@/utils'
+import { groupNotifications } from '@/utils/notifications'
 import { onClickOutside } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { capture } = useTelemetry()
+
+const groups = computed(() => groupNotifications(notifications.data || []))
 
 const target = ref(null)
 onClickOutside(
@@ -109,9 +81,9 @@ onClickOutside(
   },
 )
 
-function markAsRead(doc) {
+function markAsRead(docs) {
   capture('notification_mark_as_read')
-  mark_doc_as_read(doc)
+  mark_doc_as_read(docs)
 }
 
 function markAllAsRead() {
@@ -126,21 +98,4 @@ onBeforeUnmount(() => {
 onMounted(() => {
   $socket.on('crm_notification', () => notifications.reload())
 })
-
-function getRoute(notification) {
-  let params = {
-    leadId: notification.reference_name,
-  }
-  if (notification.route_name === 'Deal') {
-    params = {
-      dealId: notification.reference_name,
-    }
-  }
-
-  return {
-    name: notification.route_name,
-    params: params,
-    hash: notification.hash,
-  }
-}
 </script>

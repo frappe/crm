@@ -1,5 +1,10 @@
+from html import unescape
+
 import frappe
 from frappe.query_builder import Order
+from frappe.utils import strip_html_tags
+
+from crm.fcrm.doctype.crm_notification.crm_notification import get_record_title
 
 # The panel shows the latest ones; older history is never rendered, and
 # loading all of it took seconds for users with thousands of notifications.
@@ -36,8 +41,14 @@ def get_notifications():
 		)
 	)
 
+	senders = get_reply_senders(notifications)
+	titles = {}
+
 	_notifications = []
 	for notification in notifications:
+		record = (notification.reference_doctype, notification.reference_name)
+		if notification.reference_name and record not in titles:
+			titles[record] = get_record_title(*record)
 		_notifications.append(
 			{
 				"creation": notification.creation,
@@ -54,11 +65,52 @@ def get_notifications():
 				"notification_type_doc": notification.notification_type_doc,
 				"reference_doctype": ("deal" if notification.reference_doctype == "CRM Deal" else "lead"),
 				"reference_name": notification.reference_name,
+				"title": titles.get(record),
+				"sender": senders.get(notification.notification_type_doc)
+				or (notification.type == "Mention" and full_names.get(notification.from_user))
+				or None,
+				"preview": get_preview(notification),
 				"route_name": ("Deal" if notification.reference_doctype == "CRM Deal" else "Lead"),
 			}
 		)
 
 	return _notifications
+
+
+def get_reply_senders(notifications) -> dict:
+	# Customers are rarely users, so the name comes from the email or WhatsApp message.
+	docs = {"Communication": [], "WA Message": []}
+	for n in notifications:
+		if n.type == "Reply" and n.notification_type_doctype in docs:
+			docs[n.notification_type_doctype].append(n.notification_type_doc)
+
+	senders = {}
+	if docs["Communication"]:
+		for c in frappe.get_all(
+			"Communication",
+			filters={"name": ["in", docs["Communication"]]},
+			fields=["name", "sender_full_name", "sender"],
+		):
+			senders[c.name] = c.sender_full_name or c.sender
+	if docs["WA Message"]:
+		profiles = frappe.qb.DocType("WA Profile")
+		messages = frappe.qb.DocType("WA Message")
+		for m in (
+			frappe.qb.from_(messages)
+			.left_join(profiles)
+			.on(profiles.name == messages.to)
+			.select(messages.name, profiles.profile_name, profiles.phone_number)
+			.where(messages.name.isin(docs["WA Message"]))
+		).run(as_dict=True):
+			senders[m.name] = m.profile_name or m.phone_number
+	return senders
+
+
+def get_preview(notification) -> str:
+	# The message itself for replies and mentions, what happened for everything else.
+	has_message = notification.type in ("Reply", "Mention", "WhatsApp")
+	text = (has_message and notification.message) or notification.notification_text or ""
+	return " ".join(unescape(strip_html_tags(text)).split())[:200]
 
 
 @frappe.whitelist()
@@ -67,7 +119,7 @@ def get_unread_count() -> int:
 
 
 @frappe.whitelist()
-def mark_as_read(doc: str | None = None):
+def mark_as_read(doc: str | None = None, docs: list[str] | None = None):
 	"""Mark the user's unread notifications as read with a single update.
 
 	Saving them one by one sent a realtime event per notification, and every
@@ -75,11 +127,12 @@ def mark_as_read(doc: str | None = None):
 	"""
 	user = frappe.session.user
 	filters = {"to_user": user, "read": 0}
-	if doc:
+	docs = [doc] if doc else docs
+	if docs:
 		names = frappe.get_all(
 			"CRM Notification",
 			filters=filters,
-			or_filters={"comment": doc, "notification_type_doc": doc},
+			or_filters={"comment": ["in", docs], "notification_type_doc": ["in", docs]},
 			pluck="name",
 		)
 		if not names:
