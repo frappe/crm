@@ -17,8 +17,13 @@
     </template>
   </LayoutHeader>
   <div class="flex flex-col overflow-hidden text-ink-gray-9">
+    <NotificationFilters
+      v-model:read="read"
+      v-model:category="category"
+      class="pt-3"
+    />
     <div
-      v-if="notifications.data?.length"
+      v-if="shownGroups.length"
       class="divide-y divide-outline-gray-1 overflow-y-auto text-base"
     >
 <<<<<<< HEAD
@@ -60,7 +65,7 @@
       </RouterLink>
 =======
       <NotificationRow
-        v-for="group in groups"
+        v-for="group in shownGroups"
         :key="group.key"
         :group="group"
         @click="mark_doc_as_read(group.docs)"
@@ -81,20 +86,34 @@ import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import UserAvatar from '@/components/UserAvatar.vue'
 =======
+=======
+import NotificationFilters from '@/components/NotificationFilters.vue'
+>>>>>>> 0134c4d (feat: filter notifications by unread and category)
 import NotificationRow from '@/components/NotificationRow.vue'
 >>>>>>> e801129 (feat: readable notifications)
 import { notifications, notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
-import { groupNotifications } from '@/utils/notifications'
+import { groupNotifications, notificationCategory } from '@/utils/notifications'
 import { Breadcrumbs } from 'frappe-ui'
-import { computed, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, mark_doc_as_read } = notificationsStore()
 
+const read = ref('all')
+const category = ref('')
+
 const groups = computed(() => groupNotifications(notifications.data || []))
+const shownGroups = computed(() =>
+  groups.value.filter(
+    (g) =>
+      (read.value === 'all' || g.unread) &&
+      (!category.value || notificationCategory(g.latest) === category.value),
+  ),
+)
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')

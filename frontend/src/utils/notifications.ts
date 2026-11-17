@@ -58,3 +58,19 @@ export function groupNotifications(
   })
   return [...groups.values()]
 }
+
+export type NotificationCategory =
+  | 'replies'
+  | 'mentions'
+  | 'assignments'
+  | 'reminders'
+
+export function notificationCategory(
+  n: CRMNotification,
+): NotificationCategory | null {
+  if (n.type === 'Reply' || n.type === 'WhatsApp') return 'replies'
+  if (n.type === 'Mention') return 'mentions'
+  if (n.type === 'Assignment' || n.type === 'Task') return 'assignments'
+  if (n.type === 'Reminder') return 'reminders'
+  return null
+}
