@@ -1,30 +1,30 @@
 <template>
-  <WhatsAppIcon v-if="kind === 'whatsapp'" class="size-7" />
   <div
-    v-else-if="kind"
     class="flex size-7 shrink-0 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-7"
   >
-    <EmailIcon v-if="kind === 'email'" class="size-4" />
-    <span v-else class="lucide-alarm-clock size-4" aria-hidden="true" />
+    <WhatsAppIcon v-if="category === 'whatsapp'" class="size-4" />
+    <EmailIcon v-else-if="category === 'emails'" class="size-4" />
+    <span v-else :class="icon" class="size-4" aria-hidden="true" />
   </div>
-  <UserAvatar v-else :user="notification.from_user.name" size="lg" />
 </template>
 
 <script setup>
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
+import { notificationCategory } from '@/utils/notifications'
 import { computed } from 'vue'
 
 const props = defineProps({
   notification: { type: Object, required: true },
 })
 
-const kind = computed(() => {
-  const { type, notification_type_doctype } = props.notification
-  if (type === 'WhatsApp') return 'whatsapp'
-  if (type === 'Reminder') return 'reminder'
-  if (type !== 'Reply') return null
-  return notification_type_doctype === 'WA Message' ? 'whatsapp' : 'email'
-})
+// Same icons as the category filter, so a row's icon says what kind it is.
+const ICONS = {
+  mentions: 'lucide-at-sign',
+  assignments: 'lucide-user-plus',
+  reminders: 'lucide-alarm-clock',
+}
+
+const category = computed(() => notificationCategory(props.notification))
+const icon = computed(() => ICONS[category.value] || 'lucide-bell')
 </script>
