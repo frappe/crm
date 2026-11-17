@@ -5,13 +5,13 @@ export default function translationPlugin(app) {
   window.__ = translate
 }
 
-function format(message, replace) {
+function format(message, replace = []) {
   return message.replace(/{(\d+)}/g, function (match, number) {
     return typeof replace[number] != 'undefined' ? replace[number] : match
   })
 }
 
-function translate(message, replace, context = null) {
+export function translate(message, replace, context = null) {
   let translatedMessages = getConfig('translatedMessages') || {}
   let translatedMessage = ''
 

@@ -12,8 +12,7 @@
       rows="3"
       class="w-full resize-none border-0 bg-transparent p-1 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
       :placeholder="placeholder"
-      @keydown.meta.enter.exact.prevent="send(message)"
-      @keydown.ctrl.enter.exact.prevent="send(message)"
+      @keydown.enter="sendOnEnter"
     />
     <div class="flex items-end gap-2.5">
       <div class="flex min-w-0 flex-1 flex-wrap gap-2">
@@ -71,6 +70,12 @@ const chips = computed(() =>
 function sendChip(chip) {
   message.value = chip
   send(chip)
+}
+
+function sendOnEnter(event) {
+  if (event.shiftKey || event.isComposing) return
+  event.preventDefault()
+  send(message.value)
 }
 
 async function send(text) {

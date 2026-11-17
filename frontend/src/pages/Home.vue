@@ -50,19 +50,20 @@
 
     <div class="flex flex-1 flex-col overflow-y-auto">
       <div
-        class="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-8 px-6 pb-12 pt-9"
+        class="mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-10 px-6 pb-12 pt-9"
       >
         <template v-if="target === 'mine'">
           <HomeHeader
-            :count="brief.data?.total"
-            :team="brief.data?.tab === 'team'"
+            :count="brief?.total"
+            :team="brief?.tab === 'team'"
             :flow="askFlow.data?.available"
           />
           <AskFlow :resource="askFlow" :team="isManager()" />
           <Brief
-            v-model:tab="briefTab"
-            :resource="brief"
+            :tab="briefTab"
+            :brief="brief"
             :counts="briefCounts"
+            @update:tab="setBriefTab"
             @update:doctype="setBriefDoctype"
           />
         </template>
@@ -139,8 +140,9 @@ load()
 
 const {
   tab: briefTab,
-  resource: brief,
+  brief,
   counts: briefCounts,
+  setTab: setBriefTab,
   setDoctype: setBriefDoctype,
 } = useBrief()
 
