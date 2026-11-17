@@ -19,7 +19,7 @@
   <div class="flex flex-col overflow-hidden text-ink-gray-9">
     <div
       v-if="notifications.data?.length"
-      class="overflow-y-auto p-1.5 text-base"
+      class="divide-y divide-outline-gray-1 overflow-y-auto text-base"
     >
 <<<<<<< HEAD
       <RouterLink

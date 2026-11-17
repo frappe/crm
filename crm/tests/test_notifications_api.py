@@ -160,3 +160,12 @@ class TestNotificationsAPI(IntegrationTestCase):
 			"CRM Notification", {"to_user": USER1, "read": 0}, pluck="notification_type_doc"
 		)
 		self.assertEqual(unread, ["MSG-3"])
+
+	def test_mention_links_to_its_tab_and_row(self):
+		make_notification(USER1, notification_type_doctype="Comment", notification_type_doc="COMMENT-1")
+		make_notification(USER1, notification_type_doctype="FCRM Note", notification_type_doc="NOTE-1")
+
+		frappe.set_user(USER1)
+		hashes = {n["notification_type_doc"]: n["hash"] for n in get_notifications()}
+
+		self.assertEqual(hashes, {"COMMENT-1": "#comments/COMMENT-1", "NOTE-1": "#notes/NOTE-1"})

@@ -1,7 +1,7 @@
 <template>
   <RouterLink
     :to="route"
-    class="flex cursor-pointer items-center gap-3 rounded px-2.5 py-2 hover:bg-surface-gray-2"
+    class="flex cursor-pointer items-center gap-3 px-4 py-2.5 hover:bg-surface-gray-2"
   >
     <NotificationIcon :notification="n" />
     <div class="min-w-0 flex-1">
