@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <LayoutHeader>
     <template #left-header>
@@ -20,8 +19,9 @@
   <div class="flex flex-col overflow-hidden text-ink-gray-9">
     <div
       v-if="notifications.data?.length"
-      class="divide-y divide-outline-gray-1 overflow-y-auto text-base"
+      class="overflow-y-auto p-1.5 text-base"
     >
+<<<<<<< HEAD
       <RouterLink
         v-for="n in notifications.data"
         :key="n.comment"
@@ -58,6 +58,14 @@
           </div>
         </div>
       </RouterLink>
+=======
+      <NotificationRow
+        v-for="group in groups"
+        :key="group.key"
+        :group="group"
+        @click="mark_doc_as_read(group.docs)"
+      />
+>>>>>>> e801129 (feat: readable notifications)
     </div>
     <div v-else class="flex flex-1 flex-col items-center justify-center gap-2">
       <NotificationsIcon class="h-20 w-20 text-ink-gray-2" />
@@ -72,15 +80,21 @@ import LayoutHeader from '@/components/LayoutHeader.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
+<<<<<<< HEAD
 import UserAvatar from '@/components/UserAvatar.vue'
+=======
+import NotificationRow from '@/components/NotificationRow.vue'
+>>>>>>> e801129 (feat: readable notifications)
 import { notifications, notificationsStore } from '@/stores/notifications'
 import { globalStore } from '@/stores/global'
-import { timeAgo, sanitizeHTML } from '@/utils'
+import { groupNotifications } from '@/utils/notifications'
 import { Breadcrumbs } from 'frappe-ui'
-import { onMounted, onBeforeUnmount } from 'vue'
+import { computed, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, mark_doc_as_read } = notificationsStore()
+
+const groups = computed(() => groupNotifications(notifications.data || []))
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')
@@ -91,20 +105,4 @@ onMounted(() => {
     notifications.reload()
   })
 })
-
-function getRoute(notification) {
-  let params = {
-    leadId: notification.reference_name,
-  }
-  if (notification.route_name === 'Deal') {
-    params = {
-      dealId: notification.reference_name,
-    }
-  }
-  return {
-    name: notification.route_name,
-    params: params,
-    hash: notification.hash,
-  }
-}
 </script>
