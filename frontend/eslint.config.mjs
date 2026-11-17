@@ -28,6 +28,7 @@ export default [
         ...globals.node,
         frappe: 'readonly',
         __: 'readonly',
+        __WHATSAPP_UI__: 'readonly',
       },
     },
   },
@@ -42,7 +43,7 @@ export default [
       ],
     },
     rules: {
-      'import-x/no-unresolved': ['error', { ignore: ['^~icons/', '^@framework/ui'] }],
+      'import-x/no-unresolved': ['error', { ignore: ['^~icons/', '^@framework/ui', '^@whatsapp/ui'] }],
       'vue/multi-word-component-names': 'off',
       'vue/prop-name-casing': 'off',
       'vue/attribute-hyphenation': 'off',

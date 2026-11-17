@@ -17,6 +17,19 @@ def before_install():
 	pass
 
 
+def after_app_install(app_name: str) -> None:
+	"""WhatsApp is optional. A site that adds it after CRM already ran the patches that
+	set it up, while it was missing, so they run again here."""
+	if app_name != "whatsapp":
+		return
+
+	from crm.api.whatsapp import add_roles
+	from crm.patches.v1_0.migrate_from_frappe_whatsapp import execute as migrate_from_frappe_whatsapp
+
+	add_roles()
+	migrate_from_frappe_whatsapp()
+
+
 def after_install(force=False):
 	add_default_lead_statuses()
 	add_default_deal_statuses()

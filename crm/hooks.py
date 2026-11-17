@@ -13,7 +13,6 @@ app_icon_route = "/crm"
 # Apps
 # ------------------
 
-required_apps = ["whatsapp"]
 add_to_apps_screen = [
 	{
 		"name": "crm",
@@ -119,7 +118,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Name of the app being installed is passed as an argument
 
 # before_app_install = "crm.utils.before_app_install"
-# after_app_install = "crm.utils.after_app_install"
+after_app_install = "crm.install.after_app_install"
 
 # Integration Cleanup
 # -------------------
