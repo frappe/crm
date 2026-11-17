@@ -7,7 +7,7 @@ from frappe import _
 from frappe.desk.form.load import get_docinfo
 from frappe.query_builder import JoinType
 from frappe.translate import get_translated_doctypes
-from frappe.utils import get_datetime
+from frappe.utils import cint, get_datetime
 
 from crm.fcrm.doctype.crm_call_log.crm_call_log import parse_call_log
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
@@ -122,7 +122,9 @@ def get_deal_activities(name: str):
 			"activity_type": "attachment_log",
 			"creation": attachment_log.creation,
 			"owner": attachment_log.owner,
-			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type, file_index),
+			"data": parse_attachment_log(
+				attachment_log.content, attachment_log.comment_type, file_index, attachment_log.creation
+			),
 			"is_lead": False,
 		}
 		activities.append(activity)
@@ -227,7 +229,9 @@ def get_lead_activities(name: str):
 			"activity_type": "attachment_log",
 			"creation": attachment_log.creation,
 			"owner": attachment_log.owner,
-			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type, file_index),
+			"data": parse_attachment_log(
+				attachment_log.content, attachment_log.comment_type, file_index, attachment_log.creation
+			),
 			"is_lead": True,
 		}
 		activities.append(activity)
@@ -582,28 +586,62 @@ def get_linked_tasks(name: str):
 	return tasks or []
 
 
-def get_file_index(files: list) -> tuple[dict, dict]:
-	by_url = {f.file_url: f for f in files if f.file_url}
-	by_disk_name = {}
-	for file in by_url.values():
-		by_disk_name.setdefault(get_disk_name(file.file_url), []).append(file)
-	return by_url, by_disk_name
+def get_file_index(files: list) -> dict:
+	"""Index when each current attachment owned each of its recorded URLs."""
+	by_name = {file.name: file for file in files}
+	by_url = {}
+	if not by_name:
+		return by_url
+
+	versions = frappe.db.get_all(
+		"Version",
+		filters={
+			"ref_doctype": "File",
+			"docname": ["in", list(by_name)],
+			"data": ["like", '%"file_url"%'],
+		},
+		fields=["docname", "data", "creation"],
+		limit_page_length=0,
+	)
+	changes_by_name = {}
+	for version in versions:
+		for fieldname, old_url, new_url in json.loads(version.data).get("changed", []):
+			if fieldname == "file_url":
+				changes_by_name.setdefault(version.docname, []).append(
+					(get_datetime(version.creation), old_url, new_url)
+				)
+
+	for file in files:
+		changes = sorted(changes_by_name.get(file.name, []), key=lambda change: change[0])
+		start = get_datetime(file.creation)
+		active_url = changes[0][1] if changes else file.file_url
+		for changed_at, old_url, new_url in changes:
+			if active_url == old_url and active_url and changed_at >= start:
+				by_url.setdefault(active_url, []).append((file, start, changed_at))
+			active_url = new_url
+			start = changed_at
+		if active_url == file.file_url and active_url:
+			by_url.setdefault(active_url, []).append((file, start, None))
+
+	return by_url
 
 
-def get_disk_name(file_url: str) -> str:
-	return unquote(file_url.rsplit("/", 1)[-1])
+def resolve_attached_file(file_url: str, file_index: dict, log_creation=None):
+	if not log_creation:
+		return None
+	log_time = get_datetime(log_creation)
+	candidates = {
+		file.name: file
+		for file, start, end in file_index.get(unquote(file_url), [])
+		if start <= log_time and (end is None or log_time < end)
+	}
+	# Identical uploads share one file_url, so several Files may match; that is
+	# only ambiguous when they disagree on where the link should point.
+	targets = {(file.file_url, cint(file.is_private)) for file in candidates.values()}
+	return next(iter(candidates.values())) if len(targets) == 1 else None
 
 
-def resolve_attached_file(file_url: str, file_index: tuple[dict, dict]):
-	by_url, by_disk_name = file_index
-	if file := by_url.get(unquote(file_url)):
-		return file
-
-	matches = by_disk_name.get(get_disk_name(file_url), [])
-	return matches[0] if len(matches) == 1 else None
-
-
-def parse_attachment_log(html: str, type: str, file_index: tuple[dict, dict] | None = None):
+def parse_attachment_log(html: str, type: str, file_index: dict | None = None, log_creation=None):
 	soup = BeautifulSoup(html, "html.parser")
 	a_tag = soup.find("a")
 	type = "added" if type == "Attachment" else "removed"
@@ -618,10 +656,12 @@ def parse_attachment_log(html: str, type: str, file_index: tuple[dict, dict] | N
 	file_url = a_tag["href"]
 	is_private = "private/files" in file_url
 
-	if type == "added" and file_index:
-		if file := resolve_attached_file(file_url, file_index):
+	if type == "added" and file_index is not None:
+		if file := resolve_attached_file(file_url, file_index, log_creation):
 			file_url = file.file_url
 			is_private = bool(file.is_private)
+		else:
+			file_url = ""
 
 	return {
 		"type": type,
