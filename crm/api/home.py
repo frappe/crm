@@ -97,8 +97,14 @@ def get_counts() -> dict:
 
 @frappe.whitelist()
 @sales_user_only
-def get_brief(tab: str = "mine") -> dict:
+def get_brief(tab: str | None = None) -> dict:
 	return brief.get_brief(frappe.session.user, tab)
+
+
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def set_brief_tab(tab: str):
+	brief.set_brief_tab(frappe.session.user, tab)
 
 
 @frappe.whitelist(methods=["POST"])

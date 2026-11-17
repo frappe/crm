@@ -33,6 +33,7 @@ from crm.fcrm.doctype.crm_dashboard.team_widgets import (
 )
 
 DOCTYPE_KEY = "crm_brief_doctype"
+TAB_KEY = "crm_brief_tab"
 RECORD_DOCTYPES = {"Lead": "CRM Lead", "Deal": "CRM Deal"}
 RECORD_KEYS = {doctype: key for key, doctype in RECORD_DOCTYPES.items()}
 NEW_FOR_YOU_DAYS = 7
@@ -541,8 +542,9 @@ def last_email(doctype: str, name: str):
 BRIEFS = {"mine": MineBrief, "team": TeamBrief}
 
 
-def get_brief(user: str, tab: str = "mine") -> dict:
+def get_brief(user: str, tab: str | None = None) -> dict:
 	"""The reply names its tab, so the page can tell a late reply for the other tab apart."""
+	tab = tab or brief_tab(user)
 	brief = brief_for(user, tab)
 	return {**brief.summary(), "tab": tab, "doctype": brief.doctype}
 
@@ -571,6 +573,20 @@ def set_brief_doctype(user: str, doctype: str):
 		frappe.defaults.clear_user_default(DOCTYPE_KEY, user)
 	else:
 		frappe.defaults.set_user_default(DOCTYPE_KEY, doctype, user)
+
+
+def brief_tab(user: str) -> str:
+	"""A user who stops being a manager keeps the saved team tab, but can no longer read it."""
+	tab = frappe.defaults.get_user_default(TAB_KEY, user)
+	return "team" if tab == "team" and role_for(user) == "manager" else "mine"
+
+
+def set_brief_tab(user: str, tab: str):
+	brief_for(user, tab)
+	if tab == "mine":
+		frappe.defaults.clear_user_default(TAB_KEY, user)
+	else:
+		frappe.defaults.set_user_default(TAB_KEY, tab, user)
 
 
 def brief_for(user: str, tab: str) -> MineBrief | TeamBrief:
