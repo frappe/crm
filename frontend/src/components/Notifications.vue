@@ -76,7 +76,7 @@
       <div class="flex h-full">
         <div
           v-if="notifications.data?.length"
-          class="w-full overflow-auto p-1.5 text-base"
+          class="w-full divide-y divide-outline-elevation-2 overflow-auto text-base"
         >
           <NotificationRow
             v-for="group in groups"

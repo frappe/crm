@@ -139,9 +139,9 @@ def mark_as_read(doc: str | None = None, docs: list[str] | None = None):
 def get_hash(notification):
 	_hash = ""
 	if notification.type == "Mention" and notification.notification_type_doc:
-		_hash = "#" + notification.notification_type_doc
-		if notification.notification_type_doctype == "FCRM Note":
-			_hash = "#notes"
+		# "<tab>/<row>" opens the tab and scrolls to the comment or note.
+		tab = "notes" if notification.notification_type_doctype == "FCRM Note" else "comments"
+		_hash = f"#{tab}/{notification.notification_type_doc}"
 
 	if notification.type == "WhatsApp":
 		_hash = "#whatsapp"
