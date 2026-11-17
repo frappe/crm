@@ -31,7 +31,8 @@ const categories: {
   icon: string
 }[] = [
   { label: __('All categories'), value: '', icon: 'lucide-list' },
-  { label: __('Replies'), value: 'replies', icon: 'lucide-message-circle' },
+  { label: __('Emails'), value: 'emails', icon: 'lucide-mail' },
+  { label: __('WhatsApp'), value: 'whatsapp', icon: 'lucide-message-circle' },
   { label: __('Mentions'), value: 'mentions', icon: 'lucide-at-sign' },
   { label: __('Assignments'), value: 'assignments', icon: 'lucide-user-plus' },
   { label: __('Reminders'), value: 'reminders', icon: 'lucide-alarm-clock' },
