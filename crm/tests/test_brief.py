@@ -4,9 +4,10 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
-from crm.api.home import get_tab_data, set_brief_doctype
+from crm.api.home import get_tab_data, set_brief_doctype, set_brief_tab
 from crm.fcrm.doctype.crm_dashboard.brief import (
 	DOCTYPE_KEY,
+	TAB_KEY,
 	MineBrief,
 	TeamBrief,
 	allocate,
@@ -447,6 +448,46 @@ class TestGetBrief(TeamWidgetTestCase):
 		self.assertNotIn("counts", brief)
 		self.assertEqual(get_brief_count(MANAGER, "mine"), 1)
 		self.assertEqual(get_brief_count(MANAGER, "team"), brief["total"])
+
+
+class TestBriefTab(TeamWidgetTestCase):
+	def tearDown(self):
+		super().tearDown()
+		for user in (AGENT, MANAGER):
+			clear_defaults_cache(user)
+
+	def set_tab(self, user, tab):
+		frappe.set_user(user)
+		try:
+			set_brief_tab(tab)
+		finally:
+			frappe.set_user("Administrator")
+
+	def test_a_manager_who_has_not_chosen_sees_their_own_brief(self):
+		self.assertEqual(get_brief(MANAGER)["tab"], "mine")
+
+	def test_a_manager_comes_back_to_the_tab_they_left(self):
+		self.set_tab(MANAGER, "team")
+		self.assertEqual(get_brief(MANAGER)["tab"], "team")
+		self.set_tab(MANAGER, "mine")
+		self.assertIsNone(frappe.defaults.get_user_default(TAB_KEY, MANAGER))
+		self.assertEqual(get_brief(MANAGER)["tab"], "mine")
+
+	def test_the_tab_asked_for_wins_over_the_saved_one(self):
+		self.set_tab(MANAGER, "team")
+		self.assertEqual(get_brief(MANAGER, "mine")["tab"], "mine")
+
+	def test_an_agent_cannot_save_the_team_tab(self):
+		with self.assertRaises(frappe.PermissionError):
+			self.set_tab(AGENT, "team")
+
+	def test_a_saved_team_tab_falls_back_once_the_user_is_no_manager(self):
+		frappe.defaults.set_user_default(TAB_KEY, "team", AGENT)
+		self.assertEqual(get_brief(AGENT)["tab"], "mine")
+
+	def test_only_known_tabs_can_be_saved(self):
+		with self.assertRaises(frappe.ValidationError):
+			self.set_tab(MANAGER, "everyone")
 
 
 class TestBriefRecords(TeamWidgetTestCase):

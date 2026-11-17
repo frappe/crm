@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex h-full w-full flex-col overflow-hidden rounded-4 border border-outline-gray-1 bg-surface-elevation-2"
+    class="flex h-full w-full flex-col overflow-hidden rounded-4 border border-outline-elevation-2 bg-surface-elevation-2"
   >
     <div class="flex shrink-0 items-start gap-2 pb-3 pl-4 pr-2 pt-4">
       <div class="flex min-w-0 flex-1 flex-col gap-1">
