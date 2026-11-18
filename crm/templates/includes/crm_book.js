@@ -62,14 +62,30 @@ or cancelling. Rendered with the page, so its Jinja (strings, PAGE) still applie
           $("page-location").textContent =
             PAGE.location_type === "In person" && PAGE.location ? PAGE.location : T.locations[PAGE.location_type] || PAGE.location_type;
           $("page-description").textContent = PAGE.description;
+          const brand = PAGE.brand || {};
+          if (brand.logo) {
+            const logo = $("brand-logo");
+            logo.src = brand.logo;
+            logo.alt = brand.name || "";
+            logo.onerror = () => (logo.hidden = true);
+            logo.hidden = false;
+          }
           const avatars = $("host-avatars");
           PAGE.hosts.slice(0, 4).forEach((h) => {
+            // with a brand logo shown, a host without a photo needs no initial bubble
+            if (!h.image && brand.logo) return;
             const el = document.createElement("div");
             el.className = "avatar";
             if (h.image) {
               const img = document.createElement("img");
               img.src = h.image;
               img.alt = "";
+              // a photo that won't load falls back to the initial, never a broken image
+              img.onerror = () => {
+                if (brand.logo) return el.remove();
+                img.remove();
+                el.textContent = (h.full_name || "?").charAt(0).toUpperCase();
+              };
               el.appendChild(img);
             } else {
               el.textContent = (h.full_name || "?").charAt(0).toUpperCase();
@@ -95,7 +111,8 @@ or cancelling. Rendered with the page, so its Jinja (strings, PAGE) still applie
         }
 
         function formatTime(date) {
-          return new Intl.DateTimeFormat(undefined, { timeZone: state.tz, hour: "numeric", minute: "2-digit" }).format(date);
+          // 12-hour clock everywhere (11:00 AM), the same as the booking emails
+          return new Intl.DateTimeFormat("en-US", { timeZone: state.tz, hour: "numeric", minute: "2-digit", hour12: true }).format(date);
         }
 
         function formatDay(date, opts) {
@@ -540,6 +557,7 @@ or cancelling. Rendered with the page, so its Jinja (strings, PAGE) still applie
           loadMonth();
         });
         $("change-time").addEventListener("click", () => show("pick"));
+        $("details-back").addEventListener("click", () => show("pick"));
         $("details-form").addEventListener("submit", submitDetails);
         $("reschedule-btn").addEventListener("click", () => {
           state.rescheduling = true;

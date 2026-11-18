@@ -285,13 +285,33 @@ def public_page(page) -> dict:
 		"location": page.location if page.location_type == "In person" else "",
 		"timezone": page_timezone(page),
 		"max_days_ahead": cint(page.max_days_ahead) or 30,
+		"brand": public_brand(),
 		"hosts": [
-			{"full_name": u.full_name, "image": u.user_image}
+			{"full_name": u.full_name, "image": public_file_url(u.user_image)}
 			for u in frappe.get_all(
 				"User", filters={"name": ["in", hosts]}, fields=["full_name", "user_image"]
 			)
 		],
 		"confirmation_message": page.confirmation_message or "",
+	}
+
+
+def public_file_url(url: str | None) -> str:
+	"""`url` if a visitor can load it. Private files need a login, so they'd show broken."""
+	url = (url or "").strip()
+	return "" if not url or url.startswith("/private/") else url
+
+
+def public_brand() -> dict:
+	"""The business's logo, name and favicon from CRM Settings → Branding, for public pages."""
+	logo, name, favicon = frappe.db.get_value(
+		"FCRM Settings", "FCRM Settings", ["brand_logo", "brand_name", "favicon"]
+	) or (None, None, None)
+	logo = public_file_url(logo)
+	return {
+		"logo": logo or "/assets/crm/images/logo.svg",
+		"name": name or ("" if logo else "Frappe CRM"),
+		"favicon": public_file_url(favicon) or logo or "/assets/crm/images/logo.svg",
 	}
 
 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ page_data.title|e }}</title>
     <meta name="robots" content="noindex" />
+    <link rel="icon" href="{{ page_data.brand.favicon|e }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -22,6 +23,7 @@
     {% endif %}
     <div class="card" id="card">
       <aside class="about">
+        <img class="brand-logo" id="brand-logo" alt="" hidden />
         <div class="hosts" id="host-avatars"></div>
         <div class="host-names" id="host-names"></div>
         <h1 class="title" id="page-title"></h1>
@@ -78,7 +80,8 @@
           </div>
           <form id="details-form" novalidate>
             {% include "crm/templates/includes/crm_form_fields.html" %}
-            <div class="actions">
+            <div class="actions split">
+              <button type="button" class="btn subtle" id="details-back">{{ _("Back") }}</button>
               <button type="submit" class="btn solid" id="confirm-btn">{{ _("Book meeting") }}</button>
             </div>
           </form>

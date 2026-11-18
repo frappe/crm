@@ -17,6 +17,8 @@
       .about { padding: 28px; border-right: 1px solid var(--border); }
       @media (max-width: 760px) { .about { border-right: none; border-bottom: 1px solid var(--border); } }
       .card.narrow .about { display: none; }
+      .brand-logo { display: block; height: 28px; max-width: 160px; object-fit: contain; margin-bottom: 16px; }
+      .brand-logo[hidden] { display: none; }
       .hosts { display: flex; margin-bottom: 14px; }
       .avatar {
         width: 36px; height: 36px; border-radius: 999px; background: var(--field); color: var(--muted);
@@ -68,6 +70,7 @@
       .chosen strong { color: var(--ink-strong); font-weight: 500; }
       .link-btn { font: inherit; font-size: 13px; border: none; background: none; color: var(--ink-strong); text-decoration: underline; cursor: pointer; padding: 0; }
       .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
+      .actions.split { justify-content: space-between; }
       .btn {
         font: inherit; font-size: 14px; font-weight: 500; border: none; border-radius: 8px; padding: 8px 18px; cursor: pointer;
         transition: background 0.12s;
