@@ -586,7 +586,7 @@ import { validateEmail, deepClone, sanitizeHTML, getFormat } from '@/utils'
 import {
   normalizeParticipants,
   buildEndTimeOptions,
-  computeAutoToTime,
+  changeTime,
   validateTimeRange,
   parseEventDoc,
   spanFrom,
@@ -823,29 +823,8 @@ function updateDate(d) {
 }
 
 function updateTime(t, fromTime = false) {
-  error.value = null
-  const prevTo = _event.value.toTime
-  if (fromTime) {
-    _event.value.fromTime = t
-    if (!_event.value.toTime || _event.value.toTime <= t) {
-      _event.value.toTime = computeAutoToTime(t)
-    }
-  } else {
-    _event.value.toTime = t
-  }
-  const { valid, error: err } = validateTimeRange({
-    fromDate: _event.value.fromDate,
-    toDate: _event.value.toDate,
-    fromTime: _event.value.fromTime,
-    toTime: _event.value.toTime,
-    isFullDay: _event.value.isFullDay,
-  })
-  if (!valid) {
-    error.value = err
-    _event.value.toTime = prevTo
-  } else {
-    sync()
-  }
+  error.value = changeTime(_event.value, t, fromTime)
+  if (!error.value) sync()
 }
 
 function saveEvent() {

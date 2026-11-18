@@ -8,6 +8,8 @@ import { createDialog } from '@/utils/dialogs'
 // Lists events the usual way, plus ones linked to a lead or deal you can read,
 // so a teammate's meeting on a lead shows on that lead (see crm/api/event.py)
 export const EVENT_LIST_URL = 'crm.api.event.get_event_list'
+// the server's cap (MAX_EVENT_ROWS in crm/api/event.py)
+const MAX_EVENT_ROWS = 2000
 
 // Event times are saved in the system timezone and shown in the user's, as tasks
 // are. An all-day event holds only its day, so it isn't shifted.
@@ -74,7 +76,7 @@ export function useEvent({
     ],
     filters: filters,
     auto: true,
-    limit: 50,
+    pageLength: 50,
     orderBy: 'creation desc',
   })
 
@@ -83,6 +85,7 @@ export function useEvent({
     url: EVENT_LIST_URL,
     fields: ['*'],
     parent: 'Event',
+    pageLength: MAX_EVENT_ROWS,
   })
 
   const eventNotificationsResource = createListResource({
@@ -90,6 +93,7 @@ export function useEvent({
     url: EVENT_LIST_URL,
     fields: ['*'],
     parent: 'Event',
+    pageLength: MAX_EVENT_ROWS,
   })
 
   const events = computed(() => {
@@ -261,6 +265,32 @@ export function computeAutoToTime(fromTime) {
     nm = 59
   }
   return `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`
+}
+
+// Sets a start or end time and returns an error, leaving the end as it was if
+// the change would make the meeting end before it starts.
+export function changeTime(event, time, isStart = false) {
+  const { toDate, toTime } = event
+  if (isStart) {
+    event.fromTime = time
+    if (!event.toTime || event.toTime <= time) {
+      event.toTime = computeAutoToTime(time)
+    }
+  } else {
+    event.toTime = time
+  }
+  const days = dayjs(toDate).diff(dayjs(event.fromDate), 'day') || 0
+  if (event.fromTime && event.toTime && days <= 1) {
+    event.toDate = endDateFor(event.fromDate, event.fromTime, event.toTime)
+  }
+  const { error } = validateTimeRange(event)
+  if (error) Object.assign(event, { toDate, toTime })
+  return error
+}
+
+export function endDateFor(fromDate, fromTime, toTime) {
+  if (toTime > fromTime) return fromDate
+  return dayjs(fromDate).add(1, 'day').format('YYYY-MM-DD')
 }
 
 // Moving a meeting to another day keeps how many days it spans.

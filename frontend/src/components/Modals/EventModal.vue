@@ -167,6 +167,28 @@
             />
           </div>
         </div>
+        <div v-if="meetLink" class="flex items-center">
+          <div class="text-base text-ink-gray-7 w-3/12">
+            {{ __('Meeting Link') }}
+          </div>
+          <div class="flex w-9/12 items-center gap-2">
+            <a
+              :href="meetLink"
+              target="_blank"
+              rel="noopener"
+              class="min-w-0 flex-1 truncate text-base text-ink-gray-8 hover:underline"
+              :title="meetLink"
+            >
+              {{ meetLink.replace(/^https?:\/\//, '') }}
+            </a>
+            <Button
+              size="sm"
+              variant="solid"
+              :label="__('Join')"
+              :href="meetLink"
+            />
+          </div>
+        </div>
         <div class="flex">
           <div class="mt-2 text-base text-ink-gray-7 w-3/12">
             {{ __('Description') }}
@@ -213,7 +235,7 @@
                   ? __('Duplicate')
                   : __('Create')
             "
-            :disabled="!dirty"
+            :disabled="!dirty || loadingEvent"
             :loading="
               mode === 'edit'
                 ? eventsResource.setValue.loading
@@ -247,7 +269,7 @@ import {
   useEvent,
   normalizeParticipants,
   buildEndTimeOptions,
-  computeAutoToTime,
+  changeTime,
   validateTimeRange,
   spanFrom,
   bookingOf,
@@ -286,6 +308,8 @@ const mode = computed(() => {
 })
 
 const oldEvent = ref({})
+const loadingEvent = ref(false)
+const meetLink = ref('')
 const _event = ref({
   title: '',
   description: '',
@@ -345,10 +369,29 @@ onMounted(() => {
     }
 
     oldEvent.value = JSON.parse(JSON.stringify(_event.value))
+    meetLink.value = props.event.google_meet_link || ''
 
     setTimeout(() => title.value?.el?.focus(), 100)
+    if (props.event.name) loadEventRows(props.event.name)
   }
 })
+
+// the list holds only some of the events' participants and notifications, and
+// saving fewer would delete the rest
+async function loadEventRows(name) {
+  loadingEvent.value = true
+  try {
+    const doc = await call('crm.api.event.get_event', { name })
+    for (const e of [_event.value, oldEvent.value]) {
+      e.event_participants = doc.event_participants || []
+      e.notifications = doc.notifications || []
+    }
+    meetLink.value = doc.google_meet_link || ''
+    loadingEvent.value = false
+  } catch (err) {
+    error.value = err.messages?.[0] || __('Could not load the event')
+  }
+}
 
 function updateDate(d) {
   _event.value.toDate = spanFrom(_event.value, d)
@@ -356,27 +399,7 @@ function updateDate(d) {
 }
 
 function updateTime(t, fromTime = false) {
-  error.value = null
-  const prevTo = _event.value.toTime
-  if (fromTime) {
-    _event.value.fromTime = t
-    if (!_event.value.toTime || _event.value.toTime <= t) {
-      _event.value.toTime = computeAutoToTime(t)
-    }
-  } else {
-    _event.value.toTime = t
-  }
-  const { valid, error: err } = validateTimeRange({
-    fromDate: _event.value.fromDate,
-    toDate: _event.value.toDate,
-    fromTime: _event.value.fromTime,
-    toTime: _event.value.toTime,
-    isFullDay: _event.value.isFullDay,
-  })
-  if (!valid) {
-    error.value = err
-    _event.value.toTime = prevTo
-  }
+  error.value = changeTime(_event.value, t, fromTime)
 }
 
 function update() {

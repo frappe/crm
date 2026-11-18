@@ -14,7 +14,7 @@
           variant="solid"
           :label="__('Create')"
           :disabled="isCreateDisabled"
-          @click="newEvent"
+          @click="newEvent()"
         >
           <template #prefix
             ><span class="lucide-plus h-4" aria-hidden="true"
@@ -196,6 +196,7 @@ import { useRoute } from 'vue-router'
 import { activeSettingsPage, showSettings } from '@/composables/settings'
 import {
   EVENT_LIST_URL,
+  endDateFor,
   bookingOf,
   confirmBookingMove,
   deleteEventMessage,
@@ -580,11 +581,13 @@ function newEvent(e = {}, duplicate = false) {
   let base = { ...e }
   if (!duplicate) {
     const [fromTime, toTime] = getFromToTime(e.time)
-    const fromDate = dayjs(e.date).format('YYYY-MM-DD')
+    const fromDate = (e.date ? dayjs(e.date) : dayjsLocal()).format(
+      'YYYY-MM-DD',
+    )
     base = {
       ...base,
       fromDate,
-      toDate: fromDate,
+      toDate: e.isFullDay ? fromDate : endDateFor(fromDate, fromTime, toTime),
       fromTime,
       toTime,
       isFullDay: e.isFullDay,
