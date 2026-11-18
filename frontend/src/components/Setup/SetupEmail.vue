@@ -56,8 +56,18 @@
         type="email"
         :label="__('Email address')"
         placeholder="you@company.com"
+        :description="
+          googleSignIn
+            ? __('The Gmail or Google Workspace email ID you\'re connecting.')
+            : undefined
+        "
         :error="errorOn('email_id')"
         required
+        @blur="checkGmailAddress"
+      />
+      <SetupGmailAdminSteps
+        v-if="googleSignIn && workspace"
+        :client-id="oneClick.data?.GMail?.client_id"
       />
       <template v-if="selected.kind === 'frappe-mail'">
         <FormControl
@@ -179,10 +189,19 @@
           @click="confirmSkip = true"
         />
         <Button
+          v-if="googleSignIn && workspace"
+          :label="__('Set up manually')"
+          :disabled="connecting"
+          @click="setUpManually"
+        />
+        <Button
           v-if="selected"
           variant="solid"
           :label="googleSignIn ? __('Continue') : __('Create')"
-          :loading="saving"
+          :icon-right="
+            googleSignIn && workspace ? 'lucide-arrow-up-right' : undefined
+          "
+          :loading="saving || connecting"
           @click="create"
         />
         <Button
@@ -223,6 +242,7 @@
 
 <script setup>
 import LucideMail from '~icons/lucide/mail'
+import SetupGmailAdminSteps from '@/components/Setup/SetupGmailAdminSteps.vue'
 import { useCrmOnboarding } from '@/composables/onboarding'
 import {
   Alert,
@@ -268,6 +288,9 @@ const connected = shallowRef(null)
 // Gmail with one-click sign-in: a Workspace address signs in, a personal one needs an app password
 const googleSignIn = ref(false)
 const PERSONAL_GMAIL = /@(gmail|googlemail)\.com$/i
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// a Workspace address, whose admin must allow Frappe before it can sign in
+const workspace = ref(false)
 
 const preview = inject('setupPreview', null)
 watch(
@@ -329,6 +352,7 @@ function back() {
   if (!canGoBack.value) return false
   selected.value = null
   googleSignIn.value = false
+  workspace.value = false
   form.value = emptyForm()
   invalid.value = null
   error.value = ''
@@ -364,18 +388,29 @@ async function create() {
   }
 }
 
+// checked when the field is left, as typing would flash the steps in and out
+function checkGmailAddress() {
+  const email = form.value.email_id.trim()
+  if (!googleSignIn.value || !EMAIL.test(email)) return
+  if (PERSONAL_GMAIL.test(email)) setUpManually()
+  else workspace.value = true
+}
+
+function setUpManually() {
+  googleSignIn.value = false
+  workspace.value = false
+}
+
 async function continueWithGoogle() {
   const email = form.value.email_id.trim()
-  invalid.value = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  invalid.value = EMAIL.test(email)
     ? null
     : { field: 'email_id', message: __('Enter a valid email address') }
   if (invalid.value) return
-  if (PERSONAL_GMAIL.test(email)) {
-    googleSignIn.value = false
-    return
-  }
+  if (PERSONAL_GMAIL.test(email)) return setUpManually()
+  workspace.value = true
   error.value = ''
-  if (!(await signIn('GMail', email))) googleSignIn.value = false
+  if (!(await signIn('GMail', email))) setUpManually()
 }
 
 function markConnected(service, email) {
@@ -414,6 +449,13 @@ if (returned?.result === 'connected') {
   markConnected(SIGN_IN_SERVICES[returned.provider], returned.mailbox)
 } else if (returned?.result) {
   error.value = oauthMessage(returned.result, returned.provider)
+  // back on the Gmail form with the address and the admin steps
+  if (returned.provider === 'google' && returned.mailbox) {
+    selected.value = services.find((s) => s.service === 'GMail')
+    form.value.email_id = returned.mailbox
+    googleSignIn.value = true
+    workspace.value = true
+  }
 }
 watch(
   () => controller.signIn?.account,
