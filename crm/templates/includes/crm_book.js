@@ -111,7 +111,8 @@ or cancelling. Rendered with the page, so its Jinja (strings, PAGE) still applie
         }
 
         function formatTime(date) {
-          return new Intl.DateTimeFormat(undefined, { timeZone: state.tz, hour: "numeric", minute: "2-digit" }).format(date);
+          // 12-hour clock everywhere (11:00 AM), the same as the booking emails
+          return new Intl.DateTimeFormat("en-US", { timeZone: state.tz, hour: "numeric", minute: "2-digit", hour12: true }).format(date);
         }
 
         function formatDay(date, opts) {
