@@ -22,10 +22,12 @@ export const useEventNotifications = () => {
 }
 
 const eventNotificationAlerts = useStorage('eventNotificationAlerts', [])
+// shared by the popup and the sidebar, which each use this composable, so a reminder
+// dismissed in one is done in the other and neither saves over the other's list
+const completedEvents = ref([])
 
 export const useEventNotificationAlert = () => {
   const { save: saveUserSettings } = useUserSettings()
-  const completedEvents = ref([])
 
   // Load user settings on initialization
   const loadNotificationSettings = async () => {

@@ -69,7 +69,7 @@
         </div>
       </div>
       <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
-      <div v-if="_event.location" class="px-4.5 py-2">
+      <div v-if="shownLocation" class="px-4.5 py-2">
         <!-- a meeting link (e.g. from a booking page) is something to join, not a place -->
         <div
           v-if="locationIsLink"
@@ -77,24 +77,24 @@
         >
           <LucideVideo class="size-4 shrink-0" />
           <a
-            :href="_event.location"
+            :href="shownLocation"
             target="_blank"
             rel="noopener"
             class="min-w-0 flex-1 truncate hover:underline"
-            :title="_event.location"
+            :title="shownLocation"
           >
-            {{ _event.location.replace(/^https?:\/\//, '') }}
+            {{ shownLocation.replace(/^https?:\/\//, '') }}
           </a>
           <Button
             size="sm"
             variant="solid"
             :label="__('Join')"
-            :href="_event.location"
+            :href="shownLocation"
           />
         </div>
         <div v-else class="flex gap-3 text-ink-gray-7">
           <MapIcon class="size-4 shrink-0" />
-          <div>{{ __(_event.location) }}</div>
+          <div>{{ __(shownLocation) }}</div>
         </div>
       </div>
       <div v-if="_event.eventType" class="px-4.5 py-2">
@@ -589,6 +589,7 @@ import {
   computeAutoToTime,
   validateTimeRange,
   parseEventDoc,
+  spanFrom,
 } from '@/composables/event'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
@@ -815,8 +816,8 @@ function sync() {
 }
 
 function updateDate(d) {
+  _event.value.toDate = spanFrom(_event.value, d)
   _event.value.fromDate = d
-  _event.value.toDate = d
 
   sync()
 }
@@ -834,6 +835,7 @@ function updateTime(t, fromTime = false) {
   }
   const { valid, error: err } = validateTimeRange({
     fromDate: _event.value.fromDate,
+    toDate: _event.value.toDate,
     fromTime: _event.value.fromTime,
     toTime: _event.value.toTime,
     isFullDay: _event.value.isFullDay,
@@ -858,6 +860,7 @@ function saveEvent() {
 
   const { valid, error: err } = validateTimeRange({
     fromDate: _event.value.fromDate,
+    toDate: _event.value.toDate,
     fromTime: _event.value.fromTime,
     toTime: _event.value.toTime,
     isFullDay: _event.value.isFullDay,
@@ -1008,9 +1011,10 @@ const colors = Object.keys(colorMap).map((color) => ({
   },
 }))
 
-const locationIsLink = computed(() =>
-  /^https?:\/\//.test(_event.value?.location || ''),
+const shownLocation = computed(
+  () => _event.value?.location || _event.value?.meetLink || '',
 )
+const locationIsLink = computed(() => /^https?:\/\//.test(shownLocation.value))
 
 // the lead's name or the deal's organization, instead of its ID
 const referenceTitle = ref('')

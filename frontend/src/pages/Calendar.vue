@@ -181,6 +181,7 @@ import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   createListResource,
   dayjs,
+  dayjsLocal,
   DatePicker,
   Tooltip,
   call,
@@ -280,7 +281,8 @@ const events = createListResource({
   filters: buildEventFilters(),
   orFilters: buildEventOrFilters(),
   pageLength: 9999,
-  auto: true,
+  // the calendar's first rangeChange loads the visible range
+  auto: false,
   transform: (data) =>
     data
       .map((ev) => ({
@@ -425,8 +427,9 @@ async function updateEvent(_event, afterDrag = false) {
             if (showEventPanel.value) showDetails({ id: e.name }, true)
           },
           onError: (err) => {
-            toast.error(err.messages[0])
-            console.error('Failed updating event', err)
+            toast.error(err.messages?.[0] || __('Could not move this event'))
+            // the calendar already shows the new time; put the event back
+            events.reload()
           },
         },
       )
@@ -531,8 +534,8 @@ useKeyboardShortcuts({
       guard: () => !isCreateDisabled.value,
       action: () =>
         newEvent({
-          date: dayjs().format('YYYY-MM-DD'),
-          time: dayjs().format('HH:mm'),
+          date: dayjsLocal().format('YYYY-MM-DD'),
+          time: dayjsLocal().format('HH:mm'),
           isFullDay: false,
         }),
     },
@@ -614,7 +617,7 @@ function close() {
 // utils
 function getFromToTime(time) {
   const pad = (v) => String(v).padStart(2, '0')
-  let now = dayjs()
+  let now = dayjsLocal()
   let h = now.hour()
   let m = Math.floor(now.minute() / 15) * 15
   let fromHour = h

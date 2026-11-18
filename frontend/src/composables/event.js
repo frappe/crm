@@ -263,13 +263,26 @@ export function computeAutoToTime(fromTime) {
   return `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`
 }
 
-export function validateTimeRange({ fromDate, fromTime, toTime, isFullDay }) {
+// Moving a meeting to another day keeps how many days it spans.
+export function spanFrom(event, fromDate) {
+  const days = dayjs(event.toDate).diff(dayjs(event.fromDate), 'day') || 0
+  return dayjs(fromDate).add(days, 'day').format('YYYY-MM-DD')
+}
+
+export function validateTimeRange({
+  fromDate,
+  toDate,
+  fromTime,
+  toTime,
+  isFullDay,
+}) {
   if (isFullDay) return { valid: true, error: null }
   if (!fromTime || !toTime) {
     return { valid: false, error: __('Start & End Time Are Required') }
   }
   const start = dayjs(fromDate + ' ' + fromTime)
-  const end = dayjs(fromDate + ' ' + toTime)
+  // a meeting can end the next day, as one seen from another timezone often does
+  const end = dayjs((toDate || fromDate) + ' ' + toTime)
   if (!start.isValid() || !end.isValid()) {
     return { valid: false, error: __('Invalid Start Or End Time') }
   }
@@ -294,8 +307,9 @@ export function parseEventDoc(doc) {
     toTime: eventTime(doc.ends_on, doc.all_day).format('HH:mm'),
     isFullDay: doc.all_day,
     eventType: doc.event_type,
-    // a meeting synced to Google keeps its Meet link apart from the location
-    location: doc.location || doc.google_meet_link || '',
+    // the Meet link is shown, not saved: saving it as the location would pin it there
+    location: doc.location || '',
+    meetLink: doc.google_meet_link || '',
     color: doc.color,
     attending: doc.attending,
     referenceDoctype: doc.reference_doctype,

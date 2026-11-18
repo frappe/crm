@@ -236,7 +236,7 @@ import {
   Dialog,
   DatePicker,
   TimePicker,
-  dayjs,
+  dayjsLocal,
   Dropdown,
   call,
   toast,
@@ -249,6 +249,7 @@ import {
   buildEndTimeOptions,
   computeAutoToTime,
   validateTimeRange,
+  spanFrom,
   bookingOf,
   confirmBookingMove,
   deleteEventMessage,
@@ -321,8 +322,8 @@ onMounted(() => {
     let end = eventTime(props.event.ends_on, props.event.all_day)
 
     if (!props.event.name) {
-      start = dayjs()
-      end = dayjs().add(1, 'hour')
+      start = dayjsLocal()
+      end = dayjsLocal().add(1, 'hour')
     }
 
     _event.value = {
@@ -335,7 +336,7 @@ onMounted(() => {
       toTime: end.format('HH:mm'),
       isFullDay: props.event.all_day,
       eventType: props.event.event_type,
-      location: props.event.location || props.event.google_meet_link || '',
+      location: props.event.location || '',
       color: props.event.color,
       referenceDoctype: props.event.reference_doctype,
       referenceDocname: props.event.reference_docname,
@@ -350,8 +351,8 @@ onMounted(() => {
 })
 
 function updateDate(d) {
+  _event.value.toDate = spanFrom(_event.value, d)
   _event.value.fromDate = d
-  _event.value.toDate = d
 }
 
 function updateTime(t, fromTime = false) {
@@ -367,6 +368,7 @@ function updateTime(t, fromTime = false) {
   }
   const { valid, error: err } = validateTimeRange({
     fromDate: _event.value.fromDate,
+    toDate: _event.value.toDate,
     fromTime: _event.value.fromTime,
     toTime: _event.value.toTime,
     isFullDay: _event.value.isFullDay,
@@ -387,6 +389,7 @@ function update() {
 
   const { valid, error: err } = validateTimeRange({
     fromDate: _event.value.fromDate,
+    toDate: _event.value.toDate,
     fromTime: _event.value.fromTime,
     toTime: _event.value.toTime,
     isFullDay: _event.value.isFullDay,
