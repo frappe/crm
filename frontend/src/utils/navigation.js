@@ -1,3 +1,4 @@
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -23,6 +24,12 @@ export const navigationItems = [
   { label: 'Organizations', icon: OrganizationsIcon, route: 'Organizations' },
   { label: 'Notes', icon: NoteIcon, route: 'Notes' },
   { label: 'Tasks', icon: TaskIcon, route: 'Tasks' },
+  {
+    label: 'Calendar',
+    icon: CalendarIcon,
+    route: 'Calendar',
+    desktopOnly: true,
+  },
   { label: 'Call Logs', icon: PhoneIcon, route: 'Call Logs' },
 ]
 

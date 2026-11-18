@@ -1,7 +1,10 @@
 <template>
   <div class="flex h-full flex-col text-ink-gray-8">
     <!-- header -->
-    <div class="flex items-center justify-between px-6 pt-8 pb-4">
+    <div
+      v-if="!embedded"
+      class="flex items-center justify-between px-6 pt-8 pb-4"
+    >
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -47,15 +50,22 @@
       </div>
     </div>
 
-    <div v-if="loaded" class="flex-1 overflow-y-auto px-6 pb-6">
+    <div
+      v-if="loaded"
+      :class="embedded ? '' : 'flex-1 overflow-y-auto px-6 pb-6'"
+    >
       <!-- EDIT MODE -->
-      <div v-if="mode === 'edit'" class="wf-tabs">
-        <Tabs v-model="activeTab" as="div" :tabs="tabs">
+      <div
+        v-if="mode === 'edit'"
+        class="wf-tabs"
+        :class="{ 'wf-embedded': embedded }"
+      >
+        <Tabs v-model="activeTab" as="div" :tabs="visibleTabs">
           <template #tab-panel="{ tab }">
             <!-- EDITOR TAB -->
-            <div v-if="tab.value === 'editor'" class="pt-5">
+            <div v-if="tab.value === 'editor'" :class="{ 'pt-5': !embedded }">
               <!-- form masthead (title + description) — typed right on the canvas -->
-              <div class="mb-5 px-1">
+              <div v-if="!embedded" class="mb-5 px-1">
                 <input
                   v-model="form.title"
                   :placeholder="__('Form title')"
@@ -175,6 +185,9 @@
                                 :field="f"
                                 :expanded="expanded === f.fieldname"
                                 :locked="isMandatory(f.fieldname)"
+                                :always-asked="
+                                  lockedFields.includes(f.fieldname)
+                                "
                                 :guest-select-missing="
                                   f.fieldtype === 'Link' &&
                                   guestSelect[f.options] === false
@@ -697,7 +710,14 @@ const { capture } = useTelemetry()
 
 const BREAK_TYPES = ['Section Break', 'Column Break']
 
-const props = defineProps({ name: { type: String, required: true } })
+const props = defineProps({
+  name: { type: String, required: true },
+  // just the field editor, for a page that holds its own form (booking pages):
+  // no header, title, settings or share; the host page calls save()
+  embedded: { type: Boolean, default: false },
+  // fields that can't be removed or made optional beyond the doctype's own
+  lockedFields: { type: Array, default: () => [] },
+})
 const emit = defineEmits(['back', 'saved'])
 
 const targetOptions = [
@@ -718,6 +738,7 @@ const tabs = [
   { value: 'settings', label: __('Settings'), iconLeft: LucideSettings },
   { value: 'share', label: __('Share'), iconLeft: LucideShare2 },
 ]
+const visibleTabs = computed(() => (props.embedded ? tabs.slice(0, 1) : tabs))
 const expanded = ref(null) // fieldname of the expanded field editor
 const descInput = ref(null)
 // while a draft still has an auto-generated route, keep it in sync with the
@@ -789,7 +810,9 @@ const mandatorySet = computed(
     ),
 )
 function isMandatory(fieldname) {
-  return mandatorySet.value.has(fieldname)
+  return (
+    mandatorySet.value.has(fieldname) || props.lockedFields.includes(fieldname)
+  )
 }
 function catalogDefault(fieldname) {
   const c = (availableFields.data || []).find((f) => f.fieldname === fieldname)
@@ -1322,6 +1345,10 @@ function updateField(f, patch) {
 }
 
 function removeField(f) {
+  if (props.lockedFields.includes(f.fieldname)) {
+    toast.info(__('{0} is always asked on this form', [f.label || f.fieldname]))
+    return
+  }
   form.fields = form.fields.filter((x) => x !== f)
   if (expanded.value === f.fieldname) expanded.value = null
   // a mandatory field isn't deleted — it moves to the hidden section so its
@@ -1535,6 +1562,8 @@ function togglePublish() {
   form.published = form.published ? 0 : 1
   markDirty()
 }
+
+defineExpose({ save, dirty })
 </script>
 
 <style>
@@ -1547,6 +1576,10 @@ function togglePublish() {
 
 /* The frappe-ui Tabs root is overflow-hidden, which would trap a sticky child;
    relax it so the tab list can stick to the outer scroll container. */
+.wf-embedded [role='tablist'] {
+  display: none;
+}
+
 .wf-tabs > div {
   overflow: visible;
 }

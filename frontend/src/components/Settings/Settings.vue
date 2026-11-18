@@ -58,6 +58,7 @@ import MonitorCogIcon from '~icons/lucide/monitor-cog'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -75,6 +76,8 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
+import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
+import BookingPagesSettings from '@/components/Settings/BookingPages/BookingPagesSettings.vue'
 import HomeActions from '@/components/Settings/HomeActions.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
@@ -148,6 +151,11 @@ const tabs = computed(() => {
           icon: SparkleIcon,
           component: markRaw(BrandSettings),
         },
+        {
+          label: __('Calendar'),
+          icon: CalendarIcon,
+          component: markRaw(CalendarSettings),
+        },
       ],
       condition: () => isManager(),
     },
@@ -193,34 +201,44 @@ const tabs = computed(() => {
     },
     {
       label: __('Automation & Rules'),
+      // managers see every item; sales users only their booking pages
       items: [
         {
           label: __('Workflow Automations'),
           icon: LucideWorkflow,
           component: markRaw(WorkflowAutomationPage),
+          condition: () => isManager(),
         },
         {
           label: __('Assignment Rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
+          condition: () => isManager(),
         },
         {
           label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
+          condition: () => isManager(),
         },
         {
           label: __('Forms'),
           component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Booking Pages'),
+          icon: CalendarIcon,
+          component: markRaw(BookingPagesSettings),
         },
         {
           label: __('Enrichment'),
           component: markRaw(EnrichmentSettings),
           icon: markRaw(LucideZap),
+          condition: () => isManager(),
         },
       ],
-      condition: () => isManager(),
     },
     {
       label: __('Customization'),

@@ -110,6 +110,11 @@ const routes = [
     name: 'Data Imports',
     component: () => import('@/pages/DataImports.vue'),
   },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    component: () => import('@/pages/Calendar.vue'),
+  },
   // one page across these routes, so an import stays open when its URL changes
   // after the first save
   {

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_data.title|e }}</title>
+    <meta name="robots" content="noindex" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+{% include "crm/templates/includes/crm_public_form.css" %}
+{% include "crm/templates/includes/crm_book.css" %}
+    </style>
+  </head>
+  <body class="{% if embed %}embed{% endif %}">
+    {% if draft_preview %}
+    <div class="draft-banner">{{ _("Preview. This page is disabled, so only people who can edit it see it.") }}</div>
+    {% endif %}
+    <div class="card" id="card">
+      <aside class="about">
+        <div class="hosts" id="host-avatars"></div>
+        <div class="host-names" id="host-names"></div>
+        <h1 class="title" id="page-title"></h1>
+        <div class="meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="page-duration"></span>
+        </div>
+        <div class="meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="page-location"></span>
+        </div>
+        <div class="description" id="page-description"></div>
+      </aside>
+
+      <main class="main">
+        <div class="error" id="error"></div>
+
+        <!-- 1. pick a time -->
+        <section id="step-pick">
+          <div class="step-title" id="pick-title">{{ _("Pick a time") }}</div>
+          <div class="picker">
+            <div>
+              <div class="month-head">
+                <div class="month-label" id="month-label"></div>
+                <div class="nav">
+                  <button class="icon-btn" id="prev-month" aria-label="{{ _('Previous month') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <button class="icon-btn" id="next-month" aria-label="{{ _('Next month') }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="weekdays" id="weekdays"></div>
+              <div class="days" id="days"></div>
+              <div class="tz field">
+                <label for="bk-timezone">{{ _("Timezone") }}</label>
+                <select id="bk-timezone"></select>
+              </div>
+            </div>
+            <div>
+              <div class="slots-head" id="slots-head"></div>
+              <div class="slots" id="slots"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. details -->
+        <section id="step-details" hidden>
+          <div class="step-title">{{ _("Your details") }}</div>
+          <div class="chosen">
+            <strong id="chosen-time"></strong>
+            <button class="link-btn" id="change-time">{{ _("Change") }}</button>
+          </div>
+          <form id="details-form" novalidate>
+            {% include "crm/templates/includes/crm_form_fields.html" %}
+            <div class="actions">
+              <button type="submit" class="btn solid" id="confirm-btn">{{ _("Book meeting") }}</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- 3. confirm a reschedule -->
+        <section id="step-move" hidden>
+          <div class="step-title">{{ _("Move your meeting") }}</div>
+          <div class="chosen"><span>{{ _("From") }}</span><strong id="move-from"></strong></div>
+          <div class="chosen">
+            <span>{{ _("To") }}</span><strong id="move-to"></strong>
+          </div>
+          <div class="actions">
+            <button class="btn subtle" id="move-back">{{ _("Back") }}</button>
+            <button class="btn solid" id="move-confirm">{{ _("Move meeting") }}</button>
+          </div>
+        </section>
+
+        <!-- 4. cancel -->
+        <section id="step-cancel" hidden>
+          <div class="step-title">{{ _("Cancel your meeting") }}</div>
+          <div class="chosen"><strong id="cancel-time"></strong></div>
+          <div class="field">
+            <label for="cancel-reason">{{ _("Reason (optional)") }}</label>
+            <textarea id="cancel-reason"></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn subtle" id="cancel-back">{{ _("Back") }}</button>
+            <button class="btn danger" id="cancel-confirm">{{ _("Cancel meeting") }}</button>
+          </div>
+        </section>
+
+        <!-- 5. a booking: just made, or opened from the email link. Laid out like
+             Frappe Meet and Suite status screens: state icon, title, one line, actions -->
+        <section id="step-done" hidden>
+          <div class="done">
+            <div class="state-icon" id="done-icon"></div>
+            <h2 id="done-title"></h2>
+            <p id="done-note"></p>
+            <div class="host-message" id="done-message" hidden></div>
+            <div class="details" id="done-details"></div>
+            <div class="done-actions" id="done-manage">
+              <button class="btn outline" id="reschedule-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg>
+                {{ _("Reschedule") }}
+              </button>
+              <button class="btn outline" id="cancel-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m14 14-4 4"/><path d="m10 14 4 4"/></svg>
+                {{ _("Cancel meeting") }}
+              </button>
+            </div>
+            <div class="done-actions" id="done-again" hidden>
+              <button class="btn outline" id="book-again-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M3 10h18"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>
+                {{ _("Book another time") }}
+              </button>
+            </div>
+          </div>
+        </section>
+        <template id="icon-booked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></template>
+        <template id="icon-moved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg></template>
+        <template id="icon-cancelled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m14 14-4 4"/><path d="m10 14 4 4"/></svg></template>
+        <template id="icon-upcoming"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></template>
+        <template id="icon-past"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></template>
+        <template id="icon-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></template>
+        <template id="icon-person"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></template>
+        <template id="icon-video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></template>
+      </main>
+    </div>
+
+    <script>
+{% include "crm/templates/includes/crm_book.js" %}
+    </script>
+  </body>
+</html>

@@ -20,7 +20,10 @@ export let Dialogs = {
         position={dialog.position}
         actions={dialog.actions}
         open={dialog.show}
-        onUpdate:open={(val) => (dialog.show = val)}
+        onUpdate:open={(val) => {
+          dialog.show = val
+          if (!val) dialog.onClose?.()
+        }}
       >
         {{
           default: () => {

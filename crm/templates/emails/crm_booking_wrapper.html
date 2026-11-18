@@ -1,0 +1,44 @@
+{#- Frappe's card layout (templates/emails/auth_email.html) with the CRM's brand in the footer -#}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="color-scheme" content="light" />
+	<meta name="supported-color-schemes" content="light" />
+	<title>{{ (subject or "")|e }}</title>
+</head>
+
+<body>
+	<table class="body-table auth-email" cellpadding="0" cellspacing="0">
+		<tr>
+			<td class="body-content" align="center" valign="top">
+				<!--[if mso]><table role="presentation" align="center" width="600" border="0" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+				<div class="email-card">
+					<div class="email-content">
+						{{ header or "" }}
+						{{ content }}
+					</div>
+					<div class="email-divider"></div>
+					<div class="email-footer">
+						{#- the business's brand from CRM Settings → Brand, else Frappe CRM -#}
+						{%- set crm_logo = frappe.db.get_single_value("FCRM Settings", "brand_logo") -%}
+						{%- set crm_name = frappe.db.get_single_value("FCRM Settings", "brand_name") -%}
+						<a href="{{ site_url or '/' }}">
+							<img class="email-brand-logo" src="{{ crm_logo or '/assets/crm/images/logo.png' }}" alt="{{ crm_name or 'Frappe CRM' }}" />
+							<span class="email-brand-name">&nbsp;{{ (crm_name or ('' if crm_logo else 'Frappe CRM'))|e }}</span>
+						</a>
+					</div>
+				</div>
+				<!--[if mso]></td></tr></table><![endif]-->
+				<div class="email-footer-meta">
+					<div data-email-footer="true">{{ footer }}</div>
+					<div class="print-html">{{ print_html or "" }}</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
+
+</html>

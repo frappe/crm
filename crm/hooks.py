@@ -75,6 +75,7 @@ doctype_js = {
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
 	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
+	{"from_route": "/crm-book/<route>", "to_route": "crm_book"},
 ]
 
 # Generators
@@ -144,6 +145,7 @@ permission_query_conditions = {
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
 	"Data Import": "crm.permissions.data_import.get_permission_query_conditions",
+	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -152,6 +154,8 @@ has_permission = {
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.has_permission",
 	"Data Import": "crm.permissions.data_import.has_permission",
+	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.has_permission",
+	"CRM Booking Page": "crm.fcrm.doctype.crm_booking_page.crm_booking_page.has_permission",
 }
 
 # Automation Engine
@@ -255,6 +259,10 @@ if int(frappe.__version__.split(".")[0]) < 16:
 # Hook on document methods and events
 
 doc_events = {
+	"Event": {
+		"on_update": ["crm.api.booking.sync_booking_from_event"],
+		"on_trash": ["crm.api.booking.sync_booking_from_event"],
+	},
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
@@ -353,7 +361,11 @@ whatsapp_managed_doctypes = ["CRM Lead", "CRM Deal"]
 # ---------------
 
 scheduler_events = {
-	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"all": [
+		"crm.api.event.trigger_offset_event_notifications",
+		"crm.api.booking.send_guest_reminders",
+		"crm.api.booking.cancel_bookings_closed_elsewhere",
+	],
 	"hourly": [
 		"crm.api.event.trigger_hourly_event_notifications",
 		"crm.automation.events.emit_overdue_tasks",

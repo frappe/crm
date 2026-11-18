@@ -150,7 +150,11 @@ export default defineConfig(() => {
 
   config.plugins.unshift(
     frappeui({
-      frappeProxy: true,
+      // the public web form and booking pages are server-rendered by Frappe,
+      // so dev must hand them to the web server instead of the SPA fallback
+      frappeProxy: {
+        source: '^/(desk|app|login|api|assets|files|private|crm-form|crm-book)',
+      },
       lucideIcons: true,
       jinjaBootData: true,
       // its esbuild helper breaks Vite 8's dependency scan

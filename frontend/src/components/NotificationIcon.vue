@@ -26,5 +26,9 @@ const ICONS = {
 }
 
 const category = computed(() => notificationCategory(props.notification))
-const icon = computed(() => ICONS[category.value] || 'lucide-bell')
+const icon = computed(() =>
+  props.notification.type === 'Booking'
+    ? 'lucide-calendar'
+    : ICONS[category.value] || 'lucide-bell',
+)
 </script>

@@ -371,6 +371,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -801,6 +802,12 @@ const tabs = computed(() => {
       value: 'data',
       label: __('Data'),
       iconLeft: DetailsIcon,
+    },
+    {
+      name: 'Events',
+      value: 'events',
+      label: __('Events'),
+      iconLeft: EventIcon,
     },
     {
       name: 'Calls',
