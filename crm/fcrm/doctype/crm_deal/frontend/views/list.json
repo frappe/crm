@@ -1,0 +1,19 @@
+{
+ "columns": [
+  {
+   "fieldname": "organization"
+  },
+  {
+   "fieldname": "annual_revenue"
+  },
+  {
+   "fieldname": "status"
+  },
+  {
+   "fieldname": "_assign"
+  },
+  {
+   "fieldname": "modified"
+  }
+ ]
+}

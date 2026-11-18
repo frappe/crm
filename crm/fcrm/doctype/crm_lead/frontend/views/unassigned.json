@@ -1,0 +1,39 @@
+{
+ "label": "Unassigned",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "lead_name"
+   },
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "source"
+   },
+   {
+    "fieldname": "territory"
+   },
+   {
+    "fieldname": "creation"
+   }
+  ],
+  "filters": [
+   [
+    "_assign",
+    "is",
+    "not set"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ]
+ },
+ "type": "List"
+}

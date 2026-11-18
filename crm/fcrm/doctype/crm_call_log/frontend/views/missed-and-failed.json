@@ -1,0 +1,44 @@
+{
+ "label": "Missed and failed",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "type"
+   },
+   {
+    "fieldname": "from"
+   },
+   {
+    "fieldname": "to"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "receiver"
+   },
+   {
+    "fieldname": "creation"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "in",
+    [
+     "No Answer",
+     "Busy",
+     "Failed",
+     "Canceled"
+    ]
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ]
+ },
+ "type": "List"
+}

@@ -1,0 +1,25 @@
+{
+ "columns": [
+  {
+   "fieldname": "lead_name"
+  },
+  {
+   "fieldname": "organization"
+  },
+  {
+   "fieldname": "status"
+  },
+  {
+   "fieldname": "email"
+  },
+  {
+   "fieldname": "mobile_no"
+  },
+  {
+   "fieldname": "_assign"
+  },
+  {
+   "fieldname": "modified"
+  }
+ ]
+}

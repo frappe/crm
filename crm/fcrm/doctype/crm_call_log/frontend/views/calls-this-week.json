@@ -1,0 +1,39 @@
+{
+ "label": "This week",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "type"
+   },
+   {
+    "fieldname": "from"
+   },
+   {
+    "fieldname": "to"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "receiver"
+   },
+   {
+    "fieldname": "creation"
+   }
+  ],
+  "filters": [
+   [
+    "creation",
+    "timespan",
+    "this week"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ]
+ },
+ "type": "List"
+}

@@ -1,0 +1,28 @@
+{
+ "columns": [
+  {
+   "fieldname": "caller"
+  },
+  {
+   "fieldname": "receiver"
+  },
+  {
+   "fieldname": "type"
+  },
+  {
+   "fieldname": "status"
+  },
+  {
+   "fieldname": "duration"
+  },
+  {
+   "fieldname": "creation"
+  }
+ ],
+ "sort": [
+  {
+   "direction": "desc",
+   "fieldname": "creation"
+  }
+ ]
+}

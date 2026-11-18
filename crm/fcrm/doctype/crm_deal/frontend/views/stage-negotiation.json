@@ -1,0 +1,36 @@
+{
+ "label": "Negotiation",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "deal_value"
+   },
+   {
+    "fieldname": "expected_closure_date"
+   },
+   {
+    "fieldname": "_assign"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "=",
+    "Negotiation"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "asc",
+    "fieldname": "expected_closure_date"
+   }
+  ]
+ },
+ "type": "List"
+}

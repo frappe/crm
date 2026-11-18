@@ -1,0 +1,39 @@
+{
+ "label": "Done",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "title"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "priority"
+   },
+   {
+    "fieldname": "due_date"
+   },
+   {
+    "fieldname": "assigned_to"
+   },
+   {
+    "fieldname": "modified"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "=",
+    "Done"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "asc",
+    "fieldname": "due_date"
+   }
+  ]
+ },
+ "type": "List"
+}

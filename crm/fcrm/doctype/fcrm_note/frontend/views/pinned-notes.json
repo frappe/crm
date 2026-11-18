@@ -1,0 +1,21 @@
+{
+ "label": "Pinned",
+ "settings": {
+  "body_field": "content",
+  "filters": [
+   [
+    "pinned",
+    "=",
+    1
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "pinned_on"
+   }
+  ],
+  "title_field": "title"
+ },
+ "type": "Cards"
+}

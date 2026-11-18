@@ -1,0 +1,48 @@
+{
+ "label": "Due this week",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "title"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "priority"
+   },
+   {
+    "fieldname": "due_date"
+   },
+   {
+    "fieldname": "assigned_to"
+   },
+   {
+    "fieldname": "modified"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "in",
+    [
+     "Backlog",
+     "Todo",
+     "In Progress"
+    ]
+   ],
+   [
+    "due_date",
+    "timespan",
+    "this week"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "asc",
+    "fieldname": "due_date"
+   }
+  ]
+ },
+ "type": "List"
+}

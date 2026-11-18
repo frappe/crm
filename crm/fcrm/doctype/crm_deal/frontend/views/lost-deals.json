@@ -1,0 +1,36 @@
+{
+ "label": "Lost",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "deal_value"
+   },
+   {
+    "fieldname": "lost_reason"
+   },
+   {
+    "fieldname": "closed_date"
+   },
+   {
+    "fieldname": "_assign"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "=",
+    "Lost"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "modified"
+   }
+  ]
+ },
+ "type": "List"
+}
