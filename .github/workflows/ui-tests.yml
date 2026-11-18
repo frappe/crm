@@ -98,6 +98,7 @@ jobs:
         with:
           path: |
             ~/pilot/benches
+            ~/.local/share/uv/python
           key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}-arc
 
       - name: Setup Pilot bench
@@ -128,6 +129,7 @@ jobs:
         with:
           path: |
             ~/pilot/benches
+            ~/.local/share/uv/python
           key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM

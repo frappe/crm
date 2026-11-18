@@ -95,6 +95,7 @@ jobs:
               with:
                   path: |
                       ~/pilot/benches
+                      ~/.local/share/uv/python
                       ~/.config/systemd/user
                       ~/db-snapshot
                   key: ${{ steps.bench-key.outputs.key }}
@@ -165,6 +166,7 @@ jobs:
               with:
                   path: |
                       ~/pilot/benches
+                      ~/.local/share/uv/python
                       ~/.config/systemd/user
                       ~/db-snapshot
                   key: ${{ steps.bench-key.outputs.key }}

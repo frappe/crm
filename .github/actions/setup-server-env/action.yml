@@ -67,6 +67,7 @@ runs:
           with:
               path: |
                   ~/pilot/benches
+                  ~/.local/share/uv/python
                   ~/pilot/databases
                   ~/.config/systemd/user
                   ~/db-snapshot
@@ -87,6 +88,7 @@ runs:
           with:
               path: |
                   ~/pilot/benches
+                  ~/.local/share/uv/python
                   ~/pilot/databases
                   ~/.config/systemd/user
                   ~/db-snapshot
