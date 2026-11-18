@@ -24,7 +24,9 @@ runs:
         - name: Install from cache
           if: steps.cache.outputs.cache-hit == 'true'
           shell: bash
-          run: sudo apt-get install -y --no-install-recommends ~/apt-cache/*.deb
+          env:
+              DEBIAN_FRONTEND: noninteractive
+          run: sudo -E apt-get install -y --no-install-recommends ~/apt-cache/*.deb
 
         # Installing mariadb-client also removes the runner's preinstalled mysql packages.
         - name: Download and install
@@ -32,9 +34,10 @@ runs:
           shell: bash
           env:
               PACKAGES: ${{ inputs.packages }}
+              DEBIAN_FRONTEND: noninteractive
           run: |
               sudo apt-get update
-              sudo apt-get install -y --no-install-recommends -o APT::Keep-Downloaded-Packages=true $PACKAGES
+              sudo -E apt-get install -y --no-install-recommends -o APT::Keep-Downloaded-Packages=true $PACKAGES
               mkdir -p ~/apt-cache
               cp /var/cache/apt/archives/*.deb ~/apt-cache/
 

@@ -48,6 +48,12 @@ runs:
           shell: bash
           run: npm install -g yarn
 
+        # frappe-arc runs a bare image: install the build packages of the frappe/suite runner image.
+        - name: Install system packages
+          uses: ./.github/actions/apt-install
+          with:
+              packages: build-essential pkg-config libmariadb-dev mariadb-client libffi-dev libssl-dev libjpeg-dev libcairo2-dev libpango1.0-dev cron
+
         - name: Add to hosts file
           shell: bash
           run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
@@ -62,6 +68,7 @@ runs:
               restore-keys: |
                   ${{ runner.os }}-py-deps-
 
+<<<<<<< HEAD
         - name: Cache node modules
           uses: actions/cache@v4
           env:
@@ -73,6 +80,14 @@ runs:
                   ${{ runner.os }}-build-${{ env.cache-name }}-
                   ${{ runner.os }}-build-
                   ${{ runner.os }}-
+=======
+        # Stable key; drift is detected post-restore (see install.sh), so schema churn never forces a reprovision.
+        - name: Compute bench cache key
+          id: bench-key
+          shell: bash
+          run: |
+              echo "key=${{ runner.os }}-pilot-bench-crm-${{ inputs.frappe-branch }}-py3.14-extdb-erpnext-${{ inputs.install-erpnext }}-arc" >> "$GITHUB_OUTPUT"
+>>>>>>> d41d34a (ci: run server, migration and frontend jobs on frappe-arc)
 
         - name: Get yarn cache directory path
           id: yarn-cache-dir-path

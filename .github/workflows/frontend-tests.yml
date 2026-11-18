@@ -23,7 +23,7 @@ concurrency:
 jobs:
     frontend:
         name: Lint, Build & Test
-        runs-on: ubuntu-latest
+        runs-on: frappe-arc
         timeout-minutes: 15
 
         steps:
@@ -43,14 +43,17 @@ jobs:
               with:
                   node-version: "24"
 
+            - name: Install Yarn
+              run: corepack enable && corepack prepare yarn@1.22.22 --activate
+
             # The lockfile rarely changes, so restoring node_modules beats a fresh yarn install.
             - name: Cache node_modules
               uses: actions/cache@v4
               with:
                   path: frontend/node_modules
-                  key: node-modules-${{ runner.os }}-node24-${{ hashFiles('frontend/yarn.lock') }}
+                  key: node-modules-${{ runner.os }}-node24-arc-${{ hashFiles('frontend/yarn.lock') }}
                   restore-keys: |
-                      node-modules-${{ runner.os }}-node24-
+                      node-modules-${{ runner.os }}-node24-arc-
 
             - name: Install dependencies
               run: cd frontend && yarn install --frozen-lockfile
