@@ -10,7 +10,6 @@ on:
       - version-16-hotfix
   pull_request:
     branches:
-      - develop
       - main-hotfix
       - version-15-hotfix
       - version-16-hotfix
