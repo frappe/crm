@@ -296,7 +296,7 @@
                               <Button
                                 variant="ghost"
                                 icon="lucide-copy"
-                                :tooltip="__('Copy times to…')"
+                                :tooltip="__('Copy to other days')"
                                 :class="open ? '' : hoverAction"
                                 @click="copyTargets = []"
                               />
