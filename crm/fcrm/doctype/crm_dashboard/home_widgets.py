@@ -323,7 +323,7 @@ def set_reference_titles(rows: list, user: str):
 def idle_since(table):
 	"""Emails and calls record interactions without touching `modified`."""
 	return Function(
-		"GREATEST",
+		"MAX" if frappe.db.db_type == "sqlite" else "GREATEST",
 		table.modified,
 		Coalesce(table.last_inbound_at, table.modified),
 		Coalesce(table.last_outbound_at, table.modified),
