@@ -589,6 +589,35 @@ class TestBooking(IntegrationTestCase):
 		self.assertEqual(self.booking_for(second).status, "Confirmed")
 		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday())
 
+	def test_filters_tell_nothing_about_hidden_events(self):
+		"""The caller's filters must not use a hidden event to fill the page: what came
+		back would tell whether that event matched, a letter at a time."""
+		from crm.api.event import get_event_list
+
+		hidden = self.add_event(HOSTS[0], self.at(11), self.at(11, 30), subject="Secret plan")
+		mine = self.add_event(HOSTS[1], self.at(13), self.at(13, 30))
+		frappe.set_user(HOSTS[1])
+		try:
+
+			def probe(prefix):
+				return get_event_list(
+					"Event",
+					["name"],
+					{"name": ["in", [mine.name, hidden.name]]},
+					[["name", "=", mine.name], ["subject", "like", f"{prefix}%"]],
+					"creation asc",
+					1,
+				)
+
+			self.assertEqual([r.name for r in probe("Secret")], [mine.name])
+			self.assertEqual([r.name for r in probe("Nothing")], [mine.name])
+			participants = get_event_list(
+				"Event Participants", ["name", "parent"], {"parent": ["in", [hidden.name]]}
+			)
+			self.assertEqual(participants, [])
+		finally:
+			frappe.set_user("Administrator")
+
 	def test_teammates_see_a_booked_meeting_on_the_lead_but_not_private_ones(self):
 		from crm.api.event import get_event, get_event_list
 
@@ -638,12 +667,20 @@ class TestBooking(IntegrationTestCase):
 
 		booking = self.booking_for(self.book_as_guest(self.at(9)))
 		other = self.add_event(HOSTS[0], self.at(11), self.at(11, 30))
-		guests = {e.name: e.booking_guest for e in get_event_list("Event", ["name"], {"owner": HOSTS[0]})}
-		self.assertEqual(guests, {booking.event: "visitor@example.com", other.name: None})
-		self.assertEqual(get_event(booking.event)["booking_guest"], "visitor@example.com")
+		frappe.set_user(HOSTS[0])
+		try:
+			guests = {e.name: e.booking_guest for e in get_event_list("Event", ["name"], {"owner": HOSTS[0]})}
+			self.assertEqual(guests, {booking.event: "visitor@example.com", other.name: None})
+			self.assertEqual(get_event(booking.event)["booking_guest"], "visitor@example.com")
+		finally:
+			frappe.set_user("Administrator")
 
 		cancel_booking(booking.token)
-		self.assertIsNone(get_event(booking.event)["booking_guest"])
+		frappe.set_user(HOSTS[0])
+		try:
+			self.assertIsNone(get_event(booking.event)["booking_guest"])
+		finally:
+			frappe.set_user("Administrator")
 
 	def connect_google(self, user):
 		# skips Google Settings validation; nothing here talks to Google

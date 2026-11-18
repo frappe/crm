@@ -468,13 +468,8 @@ def _send_system_notification(notification, interval):
 
 EVENT_DOCTYPES = ("Event", "Event Participants", "Event Notifications")
 MAX_EVENT_ROWS = 2000
-
-
-def can_see_event(row: dict) -> bool:
-	if frappe.has_permission("Event", "read", doc=row["name"]):
-		return True
-	doctype, name = row.get("reference_doctype"), row.get("reference_docname")
-	return doctype in ("CRM Lead", "CRM Deal") and bool(name) and frappe.has_permission(doctype, "read", name)
+# matches are only names, so scanning more is cheap; past this, ask for narrower filters
+MAX_EVENT_MATCHES = 20000
 
 
 @frappe.whitelist()
@@ -492,33 +487,65 @@ def get_event_list(
 	if doctype not in EVENT_DOCTYPES:
 		frappe.throw(_("Not an event list"), frappe.PermissionError)
 	frappe.has_permission("Event", "read", throw=True)
-	# each row gets its own permission check, so never load an unbounded list
 	limit = min(cint(limit) or MAX_EVENT_ROWS, MAX_EVENT_ROWS)
 	fields = plain_fields(doctype, frappe.parse_json(fields) or ["*"])
-	rows = frappe.get_all(
+	event_of = "name" if doctype == "Event" else "parent"
+
+	# Visibility comes before the limit: if a hidden row the caller's filters match took
+	# a place in the page, what came back would tell whether it matched.
+	matches = frappe.get_all(
 		doctype,
-		# the visibility check needs the event's link
-		fields=fields
-		if doctype != "Event" or "*" in fields
-		else list(dict.fromkeys([*fields, "name", "reference_doctype", "reference_docname"])),
+		fields=["name", event_of],
 		filters=frappe.parse_json(filters),
 		or_filters=frappe.parse_json(or_filters),
 		order_by=order_by or "creation desc",
-		limit=limit,
-		start=limit_start,
+		limit=MAX_EVENT_MATCHES + 1,
 	)
-	if doctype == "Event":
-		return add_booking_guests([row for row in rows if can_see_event(row)])
+	if len(matches) > MAX_EVENT_MATCHES:
+		frappe.throw(_("Too many events match. Narrow the dates or filters."))
+	visible = visible_events({m[event_of] for m in matches})
+	page = [m.name for m in matches if m[event_of] in visible][cint(limit_start) : cint(limit_start) + limit]
+	if not page:
+		return []
 
-	# participants and notifications follow the events they belong to
-	parents = {row.get("parent") for row in rows}
-	events = frappe.get_all(
+	fetch = fields if "*" in fields else list(dict.fromkeys([*fields, "name"]))
+	rows = frappe.get_all(doctype, fields=fetch, filters={"name": ["in", page]})
+	position = {name: i for i, name in enumerate(page)}
+	rows.sort(key=lambda row: position.get(row.get("name"), len(page)))
+	return add_booking_guests(rows) if doctype == "Event" else rows
+
+
+def visible_events(names: set[str]) -> set[str]:
+	"""Of these events, the ones the user may see: by Frappe's own Event rules, or by
+	reading the lead or deal the event is linked to. Checked in bulk, in SQL."""
+	names = list(names - {None, ""})
+	if not names:
+		return set()
+	visible = set(
+		frappe.get_list("Event", filters={"name": ["in", names]}, pluck="name", limit_page_length=0)
+	)
+	linked = frappe.get_all(
 		"Event",
-		filters={"name": ["in", list(parents) or [""]]},
+		filters={
+			"name": ["in", [n for n in names if n not in visible] or [""]],
+			"reference_doctype": ["in", ["CRM Lead", "CRM Deal"]],
+		},
 		fields=["name", "reference_doctype", "reference_docname"],
 	)
-	visible = {e.name for e in events if can_see_event(e)}
-	return [row for row in rows if row.get("parent") in visible]
+	for doctype in ("CRM Lead", "CRM Deal"):
+		events = [e for e in linked if e.reference_doctype == doctype and e.reference_docname]
+		if not events:
+			continue
+		readable = set(
+			frappe.get_list(
+				doctype,
+				filters={"name": ["in", list({e.reference_docname for e in events})]},
+				pluck="name",
+				limit_page_length=0,
+			)
+		)
+		visible |= {e.name for e in events if e.reference_docname in readable}
+	return visible
 
 
 def plain_fields(doctype: str, fields: list) -> list[str]:
@@ -546,8 +573,7 @@ def delete_event(name: str):
 @frappe.whitelist()
 def get_event(name: str) -> dict:
 	"""An event to look at, under the same rule as get_event_list."""
-	row = frappe.db.get_value("Event", name, ["name", "reference_doctype", "reference_docname"], as_dict=True)
-	if not row or not can_see_event(row):
+	if name not in visible_events({name}):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 	return add_booking_guests([frappe.get_doc("Event", name).as_dict()])[0]
 
