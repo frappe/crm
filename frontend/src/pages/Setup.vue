@@ -211,6 +211,7 @@ async function finishSetup(skipped) {
 }
 
 async function markSetupDone() {
+  window.crm_setup_pending = false
   try {
     localStorage.setItem(SETUP_DONE_KEY, '1')
   } catch (error) {
