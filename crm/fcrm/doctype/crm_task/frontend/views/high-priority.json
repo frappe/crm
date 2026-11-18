@@ -1,0 +1,48 @@
+{
+ "label": "High priority",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "title"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "priority"
+   },
+   {
+    "fieldname": "due_date"
+   },
+   {
+    "fieldname": "assigned_to"
+   },
+   {
+    "fieldname": "modified"
+   }
+  ],
+  "filters": [
+   [
+    "priority",
+    "=",
+    "High"
+   ],
+   [
+    "status",
+    "in",
+    [
+     "Backlog",
+     "Todo",
+     "In Progress"
+    ]
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "asc",
+    "fieldname": "due_date"
+   }
+  ]
+ },
+ "type": "List"
+}

@@ -1,0 +1,36 @@
+{
+ "label": "Outgoing",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "caller"
+   },
+   {
+    "fieldname": "to"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "duration"
+   },
+   {
+    "fieldname": "creation"
+   }
+  ],
+  "filters": [
+   [
+    "type",
+    "=",
+    "Outgoing"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ]
+ },
+ "type": "List"
+}

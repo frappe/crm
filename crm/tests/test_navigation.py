@@ -47,9 +47,70 @@ SETUP_ROWS = (
 	"failed-lead-syncs",
 )
 
+# The view sidebars of the list items: a "Views" heading over the saved views of one doctype and,
+# where the doctype has a status or stage to split by, a second heading over one row per value.
+VIEW_SIDEBARS = {
+	"doctype_crm_lead": (
+		"views",
+		"all",
+		"open-leads",
+		"unassigned",
+		"hot-leads",
+		"new-this-week",
+		"by-status",
+		"status-new",
+		"status-contacted",
+		"status-nurture",
+		"status-qualified",
+		"status-converted",
+		"status-unqualified",
+		"status-junk",
+	),
+	"doctype_crm_deal": (
+		"views",
+		"all",
+		"open-deals",
+		"closing-this-month",
+		"closing-next-month",
+		"won-this-month",
+		"lost-deals",
+		"by-stage",
+		"stage-qualification",
+		"stage-demo-making",
+		"stage-proposal-quotation",
+		"stage-negotiation",
+		"stage-ready-to-close",
+	),
+	"doctype_crm_task": (
+		"views",
+		"all",
+		"open-tasks",
+		"due-today",
+		"due-this-week",
+		"high-priority",
+		"by-status",
+		"status-backlog",
+		"status-todo",
+		"status-in-progress",
+		"status-done",
+		"status-canceled",
+	),
+	"doctype_fcrm_note": ("views", "all", "pinned-notes", "notes-this-week"),
+	"doctype_crm_call_log": (
+		"views",
+		"all",
+		"calls-today",
+		"calls-this-week",
+		"missed-and-failed",
+		"incoming",
+		"outgoing",
+	),
+}
+
 # What a Sales User reads, by the scrubbed address boot files it under -- which is also the
 # string the rail item of type `Sidebar` carries in `link_to`.
 SIDEBARS = {
+	**VIEW_SIDEBARS,
 	"module_def_fcrm": tuple(
 		key
 		for key in SETUP_ROWS
@@ -68,7 +129,7 @@ SIDEBARS = {
 			"lead-sync-sources",
 			"failed-lead-syncs",
 		)
-	)
+	),
 }
 
 MANAGER_SIDEBAR = tuple(
@@ -96,7 +157,7 @@ SETUP_DOCTYPES = (
 )
 
 # The rail items that open their list with no panel.
-INDEPENDENT = ("leads", "deals", "contacts", "organizations", "tasks", "notes", "call-logs")
+INDEPENDENT = ("contacts", "organizations")
 
 
 class TestCRMNavigation(IntegrationTestCase):
@@ -161,13 +222,26 @@ class TestCRMNavigation(IntegrationTestCase):
 		for row in linked:
 			self.assertIn(row.link_to, addresses, row.key)
 
+	def test_the_list_items_open_their_view_sidebar(self):
+		rail = {item["key"]: item for item in resolve_navigation("crm")["rail"]}
+
+		for key, address in {
+			"leads": "doctype_crm_lead",
+			"deals": "doctype_crm_deal",
+			"tasks": "doctype_crm_task",
+			"notes": "doctype_fcrm_note",
+			"call-logs": "doctype_crm_call_log",
+		}.items():
+			self.assertEqual(rail[key]["item_type"], "Sidebar", key)
+			self.assertEqual(rail[key]["link_to"], address, key)
+
 	def test_the_independent_items_open_nothing(self):
 		rail = {item["key"]: item for item in resolve_navigation("crm")["rail"]}
 
 		for key in INDEPENDENT:
 			self.assertEqual(rail[key]["item_type"], "DocType")
 
-	def test_the_containers_are_the_rail_and_the_setup_sidebar(self):
+	def test_the_containers_are_the_rail_and_its_sidebars(self):
 		"""What `every_container()` finds, which four tests below iterate and would otherwise
 		pass over in silence if the fixtures had not been imported at all."""
 		self.assertEqual(

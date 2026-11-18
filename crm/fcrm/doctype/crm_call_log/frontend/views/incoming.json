@@ -1,0 +1,36 @@
+{
+ "label": "Incoming",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "from"
+   },
+   {
+    "fieldname": "receiver"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "duration"
+   },
+   {
+    "fieldname": "creation"
+   }
+  ],
+  "filters": [
+   [
+    "type",
+    "=",
+    "Incoming"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ]
+ },
+ "type": "List"
+}

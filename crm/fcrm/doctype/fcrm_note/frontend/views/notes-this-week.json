@@ -1,0 +1,21 @@
+{
+ "label": "This week",
+ "settings": {
+  "body_field": "content",
+  "filters": [
+   [
+    "creation",
+    "timespan",
+    "this week"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ],
+  "title_field": "title"
+ },
+ "type": "Cards"
+}

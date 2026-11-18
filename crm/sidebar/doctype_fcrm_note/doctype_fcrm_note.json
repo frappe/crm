@@ -1,0 +1,72 @@
+{
+ "app": "crm",
+ "creation": "2026-11-18 12:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Sidebar",
+ "idx": 0,
+ "items": [],
+ "link_doctype": "DocType",
+ "link_to": "FCRM Note",
+ "modified": "2026-11-18 12:10:00.000000",
+ "modified_by": "Administrator",
+ "name": "doctype_fcrm_note",
+ "navigation_items": [
+  {
+   "added": 0,
+   "collapsible": 1,
+   "hidden": 0,
+   "item_type": "Section",
+   "keep_closed": 0,
+   "key": "views",
+   "label": "Views",
+   "link_doctype": "",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "View",
+   "keep_closed": 0,
+   "key": "all",
+   "label": "All notes",
+   "link_doctype": "DocType",
+   "link_to": "FCRM Note",
+   "parent_key": "views",
+   "payload": "{\"view\":\"notes\"}",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "View",
+   "keep_closed": 0,
+   "key": "pinned-notes",
+   "label": "Pinned",
+   "link_doctype": "DocType",
+   "link_to": "FCRM Note",
+   "parent_key": "views",
+   "payload": "{\"view\":\"pinned-notes\"}",
+   "switches_app": 0
+  },
+  {
+   "added": 0,
+   "collapsible": 0,
+   "hidden": 0,
+   "item_type": "View",
+   "keep_closed": 0,
+   "key": "notes-this-week",
+   "label": "This week",
+   "link_doctype": "DocType",
+   "link_to": "FCRM Note",
+   "parent_key": "views",
+   "payload": "{\"view\":\"notes-this-week\"}",
+   "switches_app": 0
+  }
+ ],
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "FCRM Note",
+ "user": ""
+}

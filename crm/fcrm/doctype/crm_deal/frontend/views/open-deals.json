@@ -1,0 +1,39 @@
+{
+ "label": "Open",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "deal_value"
+   },
+   {
+    "fieldname": "expected_closure_date"
+   },
+   {
+    "fieldname": "_assign"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "not in",
+    [
+     "Won",
+     "Lost"
+    ]
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "asc",
+    "fieldname": "expected_closure_date"
+   }
+  ]
+ },
+ "type": "List"
+}

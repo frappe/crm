@@ -11,6 +11,7 @@ Group "Account"
     desk/profile/email-accounts  [added by crm-frappe]
     desk/profile/telephony  [added by crm-frappe]
     desk/profile/password
+    desk/profile/agents
 
 Group "Workspace"
   crm/general
@@ -37,3 +38,4 @@ Group "Integrations"
 
 Hidden: desk/system
 Hidden: desk/profile/session-defaults
+Notice: desk/profile/agents is not in arrangement.panes["desk/profile"].blocks or hidden. It goes at the end of desk/profile.

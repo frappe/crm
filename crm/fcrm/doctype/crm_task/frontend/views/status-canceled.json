@@ -1,0 +1,39 @@
+{
+ "label": "Canceled",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "title"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "priority"
+   },
+   {
+    "fieldname": "due_date"
+   },
+   {
+    "fieldname": "assigned_to"
+   },
+   {
+    "fieldname": "modified"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "=",
+    "Canceled"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "asc",
+    "fieldname": "due_date"
+   }
+  ]
+ },
+ "type": "List"
+}

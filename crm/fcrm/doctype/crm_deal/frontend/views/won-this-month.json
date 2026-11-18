@@ -1,0 +1,38 @@
+{
+ "label": "Won this month",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "deal_value"
+   },
+   {
+    "fieldname": "closed_date"
+   },
+   {
+    "fieldname": "_assign"
+   }
+  ],
+  "filters": [
+   [
+    "status",
+    "=",
+    "Won"
+   ],
+   [
+    "closed_date",
+    "timespan",
+    "this month"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "closed_date"
+   }
+  ]
+ },
+ "type": "List"
+}

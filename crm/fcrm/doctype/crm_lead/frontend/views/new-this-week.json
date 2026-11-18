@@ -1,0 +1,39 @@
+{
+ "label": "New this week",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "lead_name"
+   },
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "source"
+   },
+   {
+    "fieldname": "_assign"
+   },
+   {
+    "fieldname": "creation"
+   }
+  ],
+  "filters": [
+   [
+    "creation",
+    "timespan",
+    "this week"
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "creation"
+   }
+  ]
+ },
+ "type": "List"
+}

@@ -1,0 +1,44 @@
+{
+ "label": "Hot",
+ "settings": {
+  "columns": [
+   {
+    "fieldname": "lead_name"
+   },
+   {
+    "fieldname": "organization"
+   },
+   {
+    "fieldname": "status"
+   },
+   {
+    "fieldname": "lead_temperature"
+   },
+   {
+    "fieldname": "_assign"
+   },
+   {
+    "fieldname": "modified"
+   }
+  ],
+  "filters": [
+   [
+    "lead_temperature",
+    "=",
+    "Hot"
+   ],
+   [
+    "converted",
+    "=",
+    0
+   ]
+  ],
+  "sort": [
+   {
+    "direction": "desc",
+    "fieldname": "modified"
+   }
+  ]
+ },
+ "type": "List"
+}
