@@ -3,7 +3,7 @@
     <section class="flex min-h-screen flex-col px-6 py-5">
       <div class="flex h-8 items-center justify-between">
         <Button
-          v-if="canGoBack"
+          v-if="canGoBack || activeStepView?.canGoBack"
           variant="ghost"
           icon-left="lucide-arrow-left"
           :label="__('Back')"
