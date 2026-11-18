@@ -324,8 +324,9 @@ export function bookingOf(doc) {
 
 export function movesBooking(booking, { fromDate, fromTime, toDate, toTime }) {
   if (!booking) return false
-  // the booking's times are system time, the edited ones the user's
-  const same = (a, b) => eventTime(a).isSame(dayjs(b), 'minute')
+  // the booking's times are system time, the edited ones the CRM user's, which
+  // needn't be the browser's, so compare both as system time
+  const same = (a, b) => dayjs(a).isSame(dayjs(toSystemTime(b)), 'minute')
   return (
     !same(booking.startsOn, `${fromDate} ${fromTime}`) ||
     !same(booking.endsOn, `${toDate || fromDate} ${toTime}`)
