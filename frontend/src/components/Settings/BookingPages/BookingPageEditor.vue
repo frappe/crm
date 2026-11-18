@@ -136,40 +136,24 @@
               />
             </section>
 
-            <!-- Hosts: same picker and chips as assignment rule assignees -->
             <section class="mt-8">
-              <div class="flex items-center justify-between gap-2">
-                <SectionTitle
-                  class="!mb-0"
-                  :title="__('Hosts')"
-                  :description="
-                    __(
-                      'With more than one host, each booking goes to a free host in turn.',
-                    )
-                  "
-                />
-                <AssigneeSearch
-                  :label="__('Add Host')"
-                  @add-assignee="dirty = true"
-                />
-              </div>
-              <div class="mt-4 flex flex-wrap gap-2">
-                <div
-                  v-for="host in doc.hosts"
-                  :key="String(host.user)"
-                  class="flex w-max select-none items-center gap-2 rounded-5 bg-surface-gray-2 p-1 px-2 text-sm"
-                >
-                  <UserAvatar :user="String(host.user)" size="sm" />
-                  <div class="text-ink-gray-7">
-                    {{ getUser(String(host.user))?.full_name || host.user }}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    icon="lucide-x"
-                    @click="removeHost(host)"
-                  />
-                </div>
-              </div>
+              <SectionTitle
+                :title="__('Hosts')"
+                :description="
+                  __(
+                    'With more than one host, each booking goes to a free host in turn.',
+                  )
+                "
+              />
+              <MultiEmailInput
+                :model-value="hostIds"
+                :options="hostOptions"
+                :validate="() => false"
+                :placeholder="__('Add hosts')"
+                :empty-text="__('No CRM users found')"
+                @update:model-value="setHosts"
+                @update:query="(q: string) => (hostQuery = q)"
+              />
               <ErrorMessage
                 v-if="!doc.hosts.length"
                 class="mt-2"
@@ -640,7 +624,6 @@
 
 <script setup lang="ts">
 import Link from '@/components/Controls/Link.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
 import { usersStore } from '@/stores/users'
 import { copyToClipboard } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
@@ -659,17 +642,16 @@ import {
   call,
   toast,
 } from 'frappe-ui'
+import { MultiEmailInput } from 'frappe-ui/experimental'
 import {
   computed,
   defineComponent,
   h,
   onBeforeUnmount,
   onMounted,
-  provide,
   ref,
   watch,
 } from 'vue'
-import AssigneeSearch from '@/components/Settings/AssignmentRules/AssigneeSearch.vue'
 import FormBuilderPanel from '@/components/Settings/Forms/FormBuilderPanel.vue'
 import LucideCalendarSync from '~icons/lucide/calendar-sync'
 import LucideCopy from '~icons/lucide/copy'
@@ -765,15 +747,40 @@ const SectionTitle = defineComponent({
     ]),
 })
 
-const { getUser } = usersStore()
-
-// AssigneeSearch adds to and filters by `assignmentRuleData.users`; here that's the hosts
-provide(
-  'assignmentRuleData',
-  computed(() => ({ users: doc.value?.hosts || [] })),
-)
+const { getUser, users } = usersStore()
 
 const doc = ref<BookingPageDoc | null>(null)
+
+const hostQuery = ref('')
+const hostIds = computed(() =>
+  (doc.value?.hosts || []).map((h) => String(h.user)),
+)
+// selected hosts stay in the options so their chips keep a name and avatar while filtering
+const hostOptions = computed(() => {
+  const q = hostQuery.value.trim().toLowerCase()
+  return (users.data?.crmUsers || [])
+    .filter((u) => u.name !== 'Administrator')
+    .filter(
+      (u) =>
+        hostIds.value.includes(u.name) ||
+        u.name.toLowerCase().includes(q) ||
+        u.full_name?.toLowerCase().includes(q),
+    )
+    .map((u) => ({
+      label: u.full_name || u.name,
+      value: u.name,
+      avatar: u.user_image,
+    }))
+})
+
+function setHosts(ids: string[]) {
+  if (!doc.value) return
+  const existing = doc.value.hosts
+  doc.value.hosts = ids.map(
+    (id) => existing.find((h) => h.user === id) || { user: id },
+  )
+  dirty.value = true
+}
 
 const reminderOptions = [
   { label: __('No reminder'), value: 'No reminder' },
@@ -1004,12 +1011,6 @@ const recordLabel = computed(() =>
 )
 // the page and its form save together from the header
 const unsaved = computed(() => dirty.value || Boolean(formBuilder.value?.dirty))
-
-function removeHost(row: Row) {
-  if (!doc.value) return
-  doc.value.hosts = doc.value.hosts.filter((h) => h !== row)
-  dirty.value = true
-}
 
 // Saving
 

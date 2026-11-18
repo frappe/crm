@@ -5,7 +5,7 @@
         <Button
           variant="subtle"
           icon-left="lucide-plus"
-          :label="label || __('Add Assignee')"
+          :label="__('Add Assignee')"
         />
       </template>
       <template #default="{ close }">
@@ -101,7 +101,6 @@ import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
 import { activeSettingsPage } from '@/composables/settings'
 
-defineProps({ label: { type: String, default: '' } })
 const emit = defineEmits(['addAssignee'])
 const query = ref('')
 const { users } = usersStore()
