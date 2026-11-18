@@ -535,10 +535,14 @@ def plain_filters(filters):
 		for field in filters:
 			plain_filter_field(field)
 	elif isinstance(filters, list | tuple):
-		if len(filters) in (3, 4) and all(isinstance(f, str) for f in filters[:2]):
-			if len(filters) == 4 and filters[0] not in EVENT_DOCTYPES:
-				frappe.throw(_("Filter not allowed: {0}").format(filters[0]), frappe.PermissionError)
-			plain_filter_field(filters[len(filters) - 3])
+		if filters and isinstance(filters[0], str) and filters[0].lower() not in ("and", "or"):
+			# a condition: [field, ...] or, with 4 or more items, [doctype, field, ...]
+			if len(filters) >= 4:
+				if filters[0] not in EVENT_DOCTYPES:
+					frappe.throw(_("Filter not allowed: {0}").format(filters[0]), frappe.PermissionError)
+				plain_filter_field(filters[1])
+			else:
+				plain_filter_field(filters[0])
 		else:
 			for item in filters:
 				if not isinstance(item, str):

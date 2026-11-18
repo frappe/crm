@@ -960,8 +960,13 @@ class TestBooking(IntegrationTestCase):
 		):
 			with self.assertRaises(frappe.PermissionError):
 				get_event_list("Event", ["name"], filters, or_filters)
-		with self.assertRaises(frappe.PermissionError):
-			get_event_list("Event", ["name"], [["Google Calendar", "calendar_name", "like", "a%"]])
+		for shape in (
+			[["Google Calendar", "calendar_name", "like", "a%"]],
+			[["google_calendar.calendar_name", "a%"]],
+			[["Event", "google_calendar.calendar_name", "like", "a%", None]],
+		):
+			with self.assertRaises(frappe.PermissionError):
+				get_event_list("Event", ["name"], shape)
 		get_event_list("Event", ["name"], [["Event Participants", "email", "like", "a%"]])
 
 	def test_an_events_owner_can_delete_it(self):
