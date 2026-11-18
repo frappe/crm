@@ -952,6 +952,17 @@ class TestBooking(IntegrationTestCase):
 		self.assertTrue(get_event_list("Event", fields=["name", "subject"]) is not None)
 		with self.assertRaises(frappe.PermissionError):
 			get_event_list("Event", fields=["name", "subject", "google_calendar as name"])
+		linked = [["google_calendar.calendar_name", "like", "a%"]]
+		for filters, or_filters in (
+			(linked, None),
+			(None, linked),
+			({"google_calendar.user": HOSTS[0]}, None),
+		):
+			with self.assertRaises(frappe.PermissionError):
+				get_event_list("Event", ["name"], filters, or_filters)
+		with self.assertRaises(frappe.PermissionError):
+			get_event_list("Event", ["name"], [["Google Calendar", "calendar_name", "like", "a%"]])
+		get_event_list("Event", ["name"], [["Event Participants", "email", "like", "a%"]])
 
 	def test_an_events_owner_can_delete_it(self):
 		from crm.api.event import delete_event

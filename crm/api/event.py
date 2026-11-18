@@ -15,6 +15,7 @@ reminders even if users don't configure them individually.
 """
 
 import hashlib
+import re
 from datetime import datetime, timedelta
 
 import frappe
@@ -495,8 +496,8 @@ def get_event_list(
 	query = frappe.get_all(
 		doctype,
 		fields=fields,
-		filters=frappe.parse_json(filters),
-		or_filters=frappe.parse_json(or_filters),
+		filters=plain_filters(frappe.parse_json(filters)),
+		or_filters=plain_filters(frappe.parse_json(or_filters)),
 		order_by=order_by or "creation desc",
 		limit_start=cint(limit_start),
 		limit_page_length=limit,
@@ -525,6 +526,29 @@ def plain_fields(doctype: str, fields: list) -> list[str]:
 		if field != "*" and field not in columns:
 			frappe.throw(_("Field not allowed: {0}").format(field), frappe.PermissionError)
 	return fields
+
+
+def plain_filters(filters):
+	"""Only plain fields of the event doctypes. Frappe also takes `link.field`, which
+	would read the linked record without checking the user may."""
+	if isinstance(filters, dict):
+		for field in filters:
+			plain_filter_field(field)
+	elif isinstance(filters, list | tuple):
+		if len(filters) in (3, 4) and all(isinstance(f, str) for f in filters[:2]):
+			if len(filters) == 4 and filters[0] not in EVENT_DOCTYPES:
+				frappe.throw(_("Filter not allowed: {0}").format(filters[0]), frappe.PermissionError)
+			plain_filter_field(filters[len(filters) - 3])
+		else:
+			for item in filters:
+				if not isinstance(item, str):
+					plain_filters(item)
+	return filters
+
+
+def plain_filter_field(field):
+	if not re.fullmatch(r"\w+", str(field)):
+		frappe.throw(_("Filter not allowed: {0}").format(field), frappe.PermissionError)
 
 
 @frappe.whitelist(methods=["POST"])
