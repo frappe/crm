@@ -5,13 +5,16 @@ from frappe.query_builder.functions import Count
 from frappe.utils import now
 from pypika import Criterion
 
-from crm.api.doc import get_assigned_users
-from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
+from crm.api.interactions import record
+from crm.api.reply_alerts import Reply
 from crm.integrations.api import find_by_phone, find_contact_lead_or_deal_from_number
-from crm.utils import normalize_phone
+from crm.utils import is_unattended, normalize_phone
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 LEAD_SOURCE = "WhatsApp"
+INTERACTION_DIRECTIONS = {"Incoming": "Inbound", "Outgoing": "Outbound"}
+# declared as the whatsapp app's `whatsapp_managed_doctypes`: CRM creates these itself
+QUICK_CREATE_DOCTYPES = ("CRM Lead", "CRM Deal")
 CONFIRM_PARAM = "confirm_whatsapp_recipient_change"
 
 
@@ -47,34 +50,34 @@ def _resolve_reference(doc, phone_number: str) -> None:
 		return
 
 	if not name and doc.direction == "Incoming":
-		action = _lead_append_action(doc.whatsapp_account)
+		action = _quick_create_action(doc.whatsapp_account)
 		if action:
-			name, doctype = _create_lead(doc, action), "CRM Lead"
+			create = _create_lead if action.append_to == "CRM Lead" else _create_deal
+			name, doctype = create(doc, action), action.append_to
 
 	if name:
 		doc.reference_doctype = doctype
 		doc.reference_docname = name
 
 
-def _lead_append_action(account: str | None):
-	"""An account that appends incoming messages to CRM Lead has asked for leads from new
-	senders; that configuration is the opt-in, there is no separate switch."""
+def _quick_create_action(account: str | None):
+	"""The account's CRM Lead or CRM Deal append action is its switch for creating one from
+	a new sender; CRM's account settings keep at most one of the two."""
 	if not account:
 		return None
 	for action in frappe.get_cached_doc("WA Account", account).get("append_actions", []):
-		if action.append_to == "CRM Lead" and action.trigger_on in ("Incoming", "Both"):
+		if action.append_to in QUICK_CREATE_DOCTYPES and action.trigger_on in ("Incoming", "Both"):
 			return action
 	return None
 
 
 def _create_lead(doc, action) -> str:
-	"""Built as the whatsapp app's append action would build it, so the message's reference
-	is set before that action runs and it finds nothing left to do. The source is the one
-	thing the whatsapp app cannot know."""
+	"""The row's own mappings still apply, so an account set up before the switch existed
+	keeps filling the fields it chose."""
 	profile = frappe.get_cached_doc("WA Profile", doc.to)
 	lead = frappe.new_doc("CRM Lead")
-	lead.set(action.sender_field, profile.phone_number)
-	lead.set(action.sender_name_field, profile.profile_name)
+	lead.set(action.sender_field or "mobile_no", profile.phone_number)
+	lead.set(action.sender_name_field or "first_name", profile.profile_name)
 	if action.message_field:
 		lead.set(action.message_field, doc.message)
 	if action.timestamp_field:
@@ -83,6 +86,32 @@ def _create_lead(doc, action) -> str:
 		lead.source = LEAD_SOURCE
 	lead.insert(ignore_permissions=True)
 	return lead.name
+
+
+def _create_deal(doc, action) -> str:
+	"""A deal's mobile number comes from its primary contact, so the sender becomes that
+	contact; an existing contact with the number is reused."""
+	from crm.fcrm.doctype.crm_deal.crm_deal import create_contact
+
+	profile = frappe.get_cached_doc("WA Profile", doc.to)
+	contact = create_contact({"first_name": profile.profile_name, "mobile_no": profile.phone_number})
+	deal = frappe.new_doc("CRM Deal")
+	deal.first_name = profile.profile_name
+	deal.append("contacts", {"contact": contact, "is_primary": 1})
+	if frappe.db.exists("CRM Lead Source", LEAD_SOURCE):
+		deal.source = LEAD_SOURCE
+	deal.insert(ignore_permissions=True)
+	return deal.name
+
+
+def validate_account(doc, method) -> None:
+	"""A new sender becomes a lead or a deal, never both."""
+	quick_create = [row.append_to for row in doc.append_actions if row.append_to in QUICK_CREATE_DOCTYPES]
+	if len(quick_create) > 1:
+		frappe.throw(
+			_("An account can create either leads or deals from new WhatsApp senders, not both."),
+			title=_("Choose leads or deals"),
+		)
 
 
 def _get_phone_number_from_profile(doc) -> str | None:
@@ -150,40 +179,6 @@ def _link_profile_to_crm_entities(doc) -> None:
 		frappe.log_error(frappe.get_traceback(), "CRM WhatsApp: failed to link profile to CRM entities")
 
 
-def notify_agent(doc, method=None):
-	if doc.direction == "Incoming":
-		if not doc.reference_doctype or not doc.reference_docname:
-			return
-		doctype = doc.reference_doctype
-		if doctype and doctype.startswith("CRM "):
-			doctype = doctype[4:].lower()
-		safe_reference_title = frappe.utils.escape_html(
-			get_record_title(doc.reference_doctype, doc.reference_docname)
-		)
-		notification_text = f"""
-            <div class="mb-2 leading-5 text-ink-gray-5">
-                <span class="font-medium text-ink-gray-9">{_("You")}</span>
-                <span>{_("received a whatsapp message in {0}").format(doctype)}</span>
-                <span class="font-medium text-ink-gray-9">{safe_reference_title}</span>
-            </div>
-        """
-		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_docname)
-		for user in assigned_users:
-			notify_user(
-				{
-					"owner": doc.owner,
-					"assigned_to": user,
-					"notification_type": "WhatsApp",
-					"message": doc.message,
-					"notification_text": notification_text,
-					"reference_doctype": "WA Message",
-					"reference_docname": doc.name,
-					"redirect_to_doctype": doc.reference_doctype,
-					"redirect_to_docname": doc.reference_docname,
-				}
-			)
-
-
 def update_reference_modified(doc, method=None):
 	"""A sent or received message bumps its lead or deal's modified time, as an email does."""
 	if doc.reference_doctype not in ("CRM Lead", "CRM Deal") or not doc.reference_docname:
@@ -195,16 +190,30 @@ def update_reference_modified(doc, method=None):
 	)
 
 
-def get_record_title(doctype: str, name: str) -> str:
-	"""The name people know a lead or deal by, as mention notifications show it."""
-	if doctype == "CRM Lead":
-		title = frappe.db.get_value(doctype, name, "lead_name")
-	elif doctype == "CRM Deal":
-		deal = frappe.db.get_value(doctype, name, ["organization", "lead_name"], as_dict=True)
-		title = deal and (deal.organization or deal.lead_name)
-	else:
-		title = None
-	return title or name
+def record_interaction(doc, method=None):
+	"""A reaction is not a message, so it neither asks for nor gives a reply. `creation` and not
+	`timestamp`: the webhook stores an incoming `timestamp` in the server's own time zone, which can
+	differ from the site's, so it does not compare with the time of an email or an outgoing message."""
+	if doc.reaction or not doc.reference_docname:
+		return
+	record(
+		doc.reference_doctype,
+		doc.reference_docname,
+		INTERACTION_DIRECTIONS.get(doc.direction),
+		doc.creation,
+		_whatsapp_reply(doc) if doc.direction == "Incoming" else None,
+	)
+
+
+def _whatsapp_reply(doc) -> Reply:
+	profile = frappe.db.get_value("WA Profile", doc.to, ["profile_name", "phone_number"], as_dict=True)
+	return Reply(
+		channel="WhatsApp",
+		source_doctype=doc.doctype,
+		source_name=doc.name,
+		sender_name=(profile and (profile.profile_name or profile.phone_number)) or _("A customer"),
+		preview=doc.message,
+	)
 
 
 def guard_doc_recipient_change(doc) -> None:
@@ -223,7 +232,7 @@ def guard_recipient_change(
 	showing on the record after the change, so the user has to know before it happens."""
 	if not old_number or normalize_phone(old_number) == normalize_phone(new_number):
 		return
-	if frappe.form_dict.get(CONFIRM_PARAM) or _is_unattended() or not is_whatsapp_installed():
+	if frappe.form_dict.get(CONFIRM_PARAM) or is_unattended() or not is_whatsapp_installed():
 		return
 
 	count = count_conversation(doctype, docname, old_number)
@@ -273,12 +282,6 @@ def count_conversation(doctype: str, docname: str, phone_number: str) -> int:
 	).run()
 
 	return sum(count for phone, count in rows if normalize_phone(phone) == target)
-
-
-def _is_unattended() -> bool:
-	"""No one is there to confirm: data import, patches, install and migrate."""
-	flags = frappe.flags
-	return bool(flags.in_import or flags.in_patch or flags.in_install or flags.in_migrate)
 
 
 @frappe.whitelist()
@@ -347,3 +350,8 @@ def add_roles():
 			update_permission_property(doctype, role, 0, "print", 1)
 			update_permission_property(doctype, role, 0, "report", 1)
 			update_permission_property(doctype, role, 0, "export", 1)
+
+	# Read only: the template form links to an account, but accounts hold Meta credentials.
+	for role in role_list:
+		if not frappe.db.exists("Custom DocPerm", {"parent": "WA Account", "role": role}):
+			add_permission("WA Account", role, 0, "read")

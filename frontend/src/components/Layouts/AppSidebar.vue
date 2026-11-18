@@ -20,9 +20,15 @@
 
         <!-- overflow-y-auto forces overflow-x to clip too, which would slice the
              active row's shadow. Widen the scroll box to the sidebar edges and
-             pad the content back in so the shadow has room. -->
+             pad the content back in so the shadow has room.
+             Its rows are shrink-0: once the views overflow the box, flex would
+             otherwise squeeze them below their h-7. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          <SidebarItem :label="__('Search')" @click="onSearchClick">
+          <SidebarItem
+            class="shrink-0"
+            :label="__('Search')"
+            @click="onSearchClick"
+          >
             <template #prefix>
               <LucideSearch class="size-4 text-ink-gray-7" />
             </template>
@@ -36,6 +42,7 @@
 
           <SidebarItem
             id="notifications-btn"
+            class="shrink-0"
             :label="__('Notifications')"
             :route="mobile ? { name: 'Notifications' } : undefined"
             :active="mobile && activeItem === 'Notifications'"
@@ -127,7 +134,7 @@
             />
             <TrialCard v-if="!isCollapsed" />
             <GettingStartedBanner
-              v-if="!isOnboardingStepsCompleted"
+              v-if="showGettingStarted"
               :isSidebarCollapsed="isCollapsed"
             />
           </div>
@@ -142,7 +149,7 @@
             </template>
           </SidebarItem>
           <SidebarItem
-            v-if="isOnboardingStepsCompleted"
+            v-if="isOnboardingStepsCompleted && !onboardingDisabled"
             :label="__('Help')"
             @click="toggleHelpModal"
           >
@@ -170,7 +177,7 @@
   <template v-if="!mobile">
     <Settings />
     <HelpModal
-      v-if="showHelpModal"
+      v-if="showHelpModal && !onboardingDisabled"
       v-model="showHelpModal"
       v-model:articles="articles"
       :logo="CRMLogo"
@@ -219,6 +226,7 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
+import { getSettings } from '@/stores/settings'
 import { sessionStore } from '@/stores/session'
 import {
   showSettings,
@@ -396,6 +404,14 @@ const { user } = sessionStore()
 const { users, isManager } = usersStore()
 const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
 const { flushPendingSteps } = useCrmOnboarding()
+const { _settings } = getSettings()
+
+const onboardingDisabled = computed(
+  () => !_settings.doc || Boolean(_settings.doc.disable_onboarding),
+)
+const showGettingStarted = computed(
+  () => !isOnboardingStepsCompleted.value && !onboardingDisabled.value,
+)
 
 // The onboarding composable persists the checklist as a positional
 // [{name, completed}] list, seeds it from the current steps ONLY when empty,

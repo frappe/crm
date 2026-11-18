@@ -34,7 +34,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "Mention\nTask\nAssignment\nWhatsApp\nAutomation\nBooking",
+   "options": "Mention\nTask\nAssignment\nWhatsApp\nAutomation\nReply\nReminder\nBooking",
    "reqd": 1
   },
   {

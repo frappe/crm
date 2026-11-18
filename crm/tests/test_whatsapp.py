@@ -22,10 +22,10 @@ from crm.api.whatsapp import (
 	guard_recipient_change,
 	is_whatsapp_enabled,
 	is_whatsapp_installed,
-	notify_agent,
 	update_reference_modified,
 	validate,
 	validate_access,
+	validate_account,
 )
 from crm.patches.v1_0.add_whatsapp_lead_source import execute as add_whatsapp_lead_source
 
@@ -83,7 +83,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 				return_value="+15559999999",
 			),
 			patch("crm.api.whatsapp._link_profile_to_crm_entities"),
-			patch("crm.api.whatsapp._lead_append_action", return_value=None),
+			patch("crm.api.whatsapp._quick_create_action", return_value=None),
 			patch(
 				"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 				return_value=(None, None),
@@ -114,66 +114,6 @@ class TestWhatsAppHooks(FrappeTestCase):
 			validate(doc, None)  # must not raise
 
 		mock_log.assert_called_once()
-
-	# --- notify_agent() ---
-
-	def test_notify_agent_returns_early_when_no_reference(self):
-		"""notify_agent() skips notification when reference_doctype and reference_docname are absent"""
-		doc = MagicMock()
-		doc.direction = "Incoming"
-		doc.reference_doctype = None
-		doc.reference_docname = None
-
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
-			notify_agent(doc)  # must not raise
-
-		mock_users.assert_not_called()
-
-	def test_notify_agent_returns_early_when_reference_doctype_missing(self):
-		"""notify_agent() skips notification when only reference_doctype is absent"""
-		doc = MagicMock()
-		doc.direction = "Incoming"
-		doc.reference_doctype = ""
-		doc.reference_docname = "LEAD-0001"
-
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
-			notify_agent(doc)
-
-		mock_users.assert_not_called()
-
-	def test_notify_agent_notifies_each_assigned_user(self):
-		doc = frappe._dict(
-			name="MSG-1",
-			owner="Administrator",
-			direction="Incoming",
-			message="Hi",
-			reference_doctype="CRM Lead",
-			reference_docname="<b>LEAD-1</b>",
-		)
-
-		with (
-			patch("crm.api.whatsapp.get_assigned_users", return_value=["a@example.com", "b@example.com"]),
-			patch("crm.api.whatsapp.notify_user") as mock_notify,
-		):
-			notify_agent(doc)
-
-		self.assertEqual(
-			[c.args[0]["assigned_to"] for c in mock_notify.call_args_list], ["a@example.com", "b@example.com"]
-		)
-		sent = mock_notify.call_args.args[0]
-		self.assertEqual(sent["notification_type"], "WhatsApp")
-		self.assertEqual(sent["reference_doctype"], "WA Message")
-		self.assertEqual(sent["redirect_to_docname"], "<b>LEAD-1</b>")
-		self.assertIn("in lead", sent["notification_text"])
-		self.assertNotIn("<b>LEAD-1</b>", sent["notification_text"])
-
-	def test_notify_agent_ignores_outgoing_messages(self):
-		doc = frappe._dict(direction="Outgoing", reference_doctype="CRM Lead", reference_docname="LEAD-1")
-
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
-			notify_agent(doc)
-
-		mock_users.assert_not_called()
 
 	# --- _get_phone_number_from_profile() ---
 
@@ -370,10 +310,25 @@ class TestAddRoles(FrappeTestCase):
 		self.assertEqual(
 			mock_add.call_args_list,
 			[
-				call(doctype, "Sales Manager", 0, "write")
-				for doctype in ("WA Message", "WA Template", "WA Settings", "WA Profile")
+				*(
+					call(doctype, "Sales Manager", 0, "write")
+					for doctype in ("WA Message", "WA Template", "WA Settings", "WA Profile")
+				),
+				call("WA Account", "Sales Manager", 0, "read"),
 			],
 		)
+
+	def test_sales_roles_can_read_but_not_write_accounts(self):
+		add_roles()
+
+		for role in ("Sales Manager", "Sales User"):
+			perm = frappe.db.get_value(
+				"Custom DocPerm",
+				{"parent": "WA Account", "role": role, "permlevel": 0},
+				["read", "write", "create", "delete"],
+				as_dict=True,
+			)
+			self.assertEqual(perm, {"read": 1, "write": 0, "create": 0, "delete": 0})
 
 
 class TestGetAccountUsage(FrappeTestCase):
@@ -734,3 +689,39 @@ class TestLeadFromIncomingWhatsApp(FrappeTestCase):
 
 		self.assertEqual(doc.reference_docname, existing.name)
 		self.assertEqual(self._leads(), [existing.name])
+
+	def test_unknown_sender_becomes_a_deal_with_the_sender_as_primary_contact(self):
+		doc = self._message([{"append_to": "CRM Deal", "trigger_on": "Incoming"}])
+
+		validate(doc, None)
+
+		deal = frappe.get_doc("CRM Deal", doc.reference_docname)
+		self.assertEqual(doc.reference_doctype, "CRM Deal")
+		self.assertEqual(deal.source, LEAD_SOURCE)
+		self.assertEqual(deal.mobile_no, self.number)
+		self.assertEqual(deal.first_name, "Asha")
+		self.assertEqual(frappe.db.get_value("Contact", deal.contacts[0].contact, "first_name"), "Asha")
+		self.assertEqual(self._leads(), [])
+
+	def test_deal_reuses_the_contact_that_has_the_number(self):
+		contact = frappe.get_doc(
+			{"doctype": "Contact", "first_name": "Known", "phone_nos": [{"phone": self.number}]}
+		).insert()
+		doc = self._message([{"append_to": "CRM Deal", "trigger_on": "Incoming"}])
+
+		with patch("crm.api.whatsapp.find_contact_lead_or_deal_from_number", return_value=(None, None)):
+			validate(doc, None)
+
+		deal = frappe.get_doc("CRM Deal", doc.reference_docname)
+		self.assertEqual(deal.contacts[0].contact, contact.name)
+
+	def test_account_cannot_create_both_leads_and_deals(self):
+		account = frappe.get_doc(
+			{
+				"doctype": "WA Account",
+				"append_actions": [self._lead_action(), {"append_to": "CRM Deal", "trigger_on": "Incoming"}],
+			}
+		)
+
+		with self.assertRaises(frappe.ValidationError):
+			validate_account(account, None)

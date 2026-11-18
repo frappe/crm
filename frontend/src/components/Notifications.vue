@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <div
     v-if="visible"
@@ -26,58 +25,31 @@
           />
         </div>
       </div>
+      <NotificationFilters v-model:read="read" v-model:category="category" />
       <div class="flex h-full">
         <div
-          v-if="notifications.data?.length"
-          class="divide-y divide-outline-elevation-2 overflow-auto text-base"
+          v-if="shownGroups.length"
+          class="w-full divide-y divide-outline-elevation-2 overflow-auto text-base"
         >
-          <RouterLink
-            v-for="n in notifications.data"
-            :key="n.comment"
-            :to="getRoute(n)"
-            class="flex cursor-pointer items-start gap-2.5 px-4 py-2.5 hover:bg-surface-gray-2"
-            @click="markAsRead(n.comment || n.notification_type_doc)"
-          >
-            <div class="mt-1 flex items-center gap-2.5">
-              <div
-                class="size-[5px] rounded-full"
-                :class="[n.read ? 'bg-transparent' : 'bg-surface-gray-10']"
-              />
-              <WhatsAppIcon v-if="n.type == 'WhatsApp'" class="size-7" />
-              <div
-                v-else-if="n.type == 'Booking'"
-                class="flex size-7 items-center justify-center rounded-full bg-surface-gray-2"
-              >
-                <CalendarIcon class="size-4 text-ink-gray-6" />
-              </div>
-              <UserAvatar v-else :user="n.from_user.name" size="lg" />
-            </div>
-            <div>
-              <div
-                v-if="n.notification_text"
-                v-html="sanitizeHTML(n.notification_text)"
-              />
-              <div v-else class="mb-2 space-x-1 leading-5 text-ink-gray-5">
-                <span class="font-medium text-ink-gray-9">
-                  {{ n.from_user.full_name }}
-                </span>
-                <span>
-                  {{ __('mentioned you in {0}', [n.reference_doctype]) }}
-                </span>
-                <span class="font-medium text-ink-gray-9">
-                  {{ n.reference_name }}
-                </span>
-              </div>
-              <div class="text-sm text-ink-gray-5">
-                {{ __(timeAgo(n.creation)) }}
-              </div>
-            </div>
-          </RouterLink>
+          <NotificationRow
+            v-for="group in shownGroups"
+            :key="group.key"
+            :group="group"
+            @click="markAsRead(group.docs)"
+          />
         </div>
         <EmptyState
           v-else
-          :title="__('No New Notifications')"
-          :description="__('You have no new notifications')"
+          :title="
+            notifications.data?.length
+              ? __('Nothing Here')
+              : __('No New Notifications')
+          "
+          :description="
+            notifications.data?.length
+              ? __('No notifications match these filters')
+              : __('You have no new notifications')
+          "
           :icon="NotificationsIcon"
           width="lg"
         />
@@ -86,12 +58,11 @@
   </div>
 </template>
 <script setup>
-import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
-import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import MarkAsDoneIcon from '@/components/Icons/MarkAsDoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
-import UserAvatar from '@/components/UserAvatar.vue'
+import NotificationFilters from '@/components/NotificationFilters.vue'
+import NotificationRow from '@/components/NotificationRow.vue'
 import {
   visible,
   notifications,
@@ -99,20 +70,43 @@ import {
 } from '@/stores/notifications'
 import { useEventNotificationAlert } from '@/data/notifications'
 import { globalStore } from '@/stores/global'
-import { timeAgo, sanitizeHTML } from '@/utils'
-import { onClickOutside } from '@vueuse/core'
+import { groupNotifications, notificationCategory } from '@/utils/notifications'
+import { onClickOutside, useEventListener } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const { $socket } = globalStore()
 const { mark_as_read, toggle, mark_doc_as_read } = notificationsStore()
 const { handleEventNotification } = useEventNotificationAlert()
 const { capture } = useTelemetry()
 
+const read = ref('all')
+const category = ref('')
+
+const groups = computed(() => groupNotifications(notifications.data || []))
+const shownGroups = computed(() =>
+  groups.value.filter(
+    (g) =>
+      (read.value === 'all' || g.unread) &&
+      (!category.value || notificationCategory(g.latest) === category.value),
+  ),
+)
+
 const target = ref(null)
+// An open menu makes the page inert, so its dismiss click lands outside the
+// panel; the menu is gone by click time, so note it on pointerdown.
+let menuWasOpen = false
+useEventListener(
+  window,
+  'pointerdown',
+  () => (menuWasOpen = !!document.querySelector("[role='menu']")),
+  { capture: true },
+)
+
 onClickOutside(
   target,
   () => {
+    if (menuWasOpen) return
     if (visible.value) toggle()
   },
   {
@@ -120,9 +114,9 @@ onClickOutside(
   },
 )
 
-function markAsRead(doc) {
+function markAsRead(docs) {
   capture('notification_mark_as_read')
-  mark_doc_as_read(doc)
+  mark_doc_as_read(docs)
 }
 
 function markAllAsRead() {
@@ -132,28 +126,10 @@ function markAllAsRead() {
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')
-  $socket.off('event_notification')
 })
 
 onMounted(() => {
   $socket.on('crm_notification', () => notifications.reload())
   $socket.on('event_notification', (data) => handleEventNotification(data))
 })
-
-function getRoute(notification) {
-  let params = {
-    leadId: notification.reference_name,
-  }
-  if (notification.route_name === 'Deal') {
-    params = {
-      dealId: notification.reference_name,
-    }
-  }
-
-  return {
-    name: notification.route_name,
-    params: params,
-    hash: notification.hash,
-  }
-}
 </script>
