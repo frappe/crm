@@ -83,10 +83,13 @@ describe('booking page weekly hours', () => {
       '13:00:00',
       '15:00:00',
     ])
-    expect(nextRange(row('Monday', '20:00:00', '23:00:00'))).toEqual([
+    expect(nextRange(row('Monday', '19:00:00', '21:00:00'))).toEqual([
       '22:00:00',
       '23:00:00',
     ])
+    // no room an hour after a late range, rather than a range that overlaps it
+    expect(nextRange(row('Monday', '20:00:00', '22:30:00'))).toBeNull()
+    expect(nextRange(row('Monday', '20:00:00', '23:00:00'))).toBeNull()
   })
 
   it('copies a day’s hours to other days, replacing theirs', () => {

@@ -99,12 +99,11 @@ export function moveStart(
   return moved
 }
 
-// The next range on a day starts an hour after its last one ends
-export function nextRange(last?: HoursRow): [string, string] {
-  const from = Math.min(
-    Number(hhmm(last?.end_time || '08:00').split(':')[0]) + 1,
-    22,
-  )
+// The next range on a day starts an hour after its last one ends, or there's
+// none when that would run past the day
+export function nextRange(last?: HoursRow): [string, string] | null {
+  const from = Number(hhmm(last?.end_time || '08:00').split(':')[0]) + 1
+  if (from > 22) return null
   const pad = (hour: number) => `${String(hour).padStart(2, '0')}:00:00`
   return [pad(from), pad(Math.min(from + 2, 23))]
 }

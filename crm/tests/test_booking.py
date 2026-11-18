@@ -1037,3 +1037,16 @@ class TestBooking(IntegrationTestCase):
 		frappe.cache.set_value(key, [(to_iso(self.at(9)), to_iso(self.at(9, 30)))])
 		cancel_booking(booking.token)
 		self.assertIsNone(frappe.cache.get_value(key))
+
+	def test_a_manager_cannot_hide_the_booking_email_either(self):
+		from crm.api.form import get_form_config, save_form
+
+		config = get_form_config(self.page.web_form)
+		fields = [
+			{**f, "depends_on": "eval:doc.first_name", "reqd": 0} if f["fieldname"] == "email" else f
+			for f in config["fields"]
+		]
+		save_form(self.page.web_form, {**config, "fields": fields})
+		form = frappe.get_doc("Web Form", self.page.web_form)
+		email = next(f for f in form.web_form_fields if f.fieldname == "email")
+		self.assertEqual((email.reqd, email.depends_on), (1, ""))

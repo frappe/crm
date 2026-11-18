@@ -19,7 +19,7 @@
         />
       </div>
       <div v-if="doc" class="flex items-center gap-4">
-        <div class="flex h-7 items-center gap-2">
+        <div v-if="canEdit" class="flex h-7 items-center gap-2">
           <Switch
             size="sm"
             :model-value="Boolean(doc.enabled)"
@@ -31,6 +31,7 @@
           <template #prefix><LucideEye class="h-4 w-4" /></template>
         </Button>
         <Button
+          v-if="canEdit"
           variant="solid"
           :label="__('Save')"
           :disabled="!unsaved || hoursErrors.size > 0"
@@ -41,486 +42,510 @@
     </div>
 
     <div v-if="!doc" class="mt-12 flex justify-center">
-      <LoadingIndicator class="w-4" />
+      <ErrorMessage v-if="loadError" :message="loadError" />
+      <LoadingIndicator v-else class="w-4" />
     </div>
     <div v-else class="bp-tabs flex-1 overflow-y-auto px-6 pb-8">
       <ErrorMessage v-if="error" class="mt-2 mb-2" :message="error" />
+      <p v-if="!canEdit" class="mt-2 mb-2 text-p-sm text-ink-gray-5">
+        {{ __("Only this page's hosts and Sales Managers can change it.") }}
+      </p>
       <Tabs v-model="activeTab" as="div" :tabs="tabs">
         <template #tab-panel="{ tab }">
-          <div v-if="tab.value === 'details'" class="pt-5">
-            <!-- Details -->
-            <section class="flex flex-col gap-4">
-              <div class="grid grid-cols-2 gap-4">
-                <FormControl
-                  :model-value="doc.title"
-                  type="text"
-                  :label="__('Title')"
-                  @update:model-value="(v: string) => set('title', v)"
-                />
-                <div>
-                  <div class="mb-1.5 text-sm text-ink-gray-5">
-                    {{ __('Route') }}
-                  </div>
-                  <div
-                    class="flex h-7 items-center rounded-4 border border-transparent bg-surface-gray-2 px-2.5 text-base focus-within:border-outline-gray-4 focus-within:bg-surface-base"
-                  >
-                    <span class="shrink-0 text-ink-gray-4">{{
-                      ROUTE_PREFIX
-                    }}</span>
-                    <input
-                      :value="doc.route"
-                      class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 focus:outline-none focus:ring-0"
-                      @input="
-                        set('route', ($event.target as HTMLInputElement).value)
-                      "
-                      @blur="set('route', slugify(doc.route))"
-                    />
-                  </div>
-                </div>
-                <FormControl
-                  :model-value="String(doc.duration)"
-                  type="select"
-                  :label="__('Duration')"
-                  :options="durationOptions"
-                  @update:model-value="
-                    (v: string) => set('duration', Number(v))
-                  "
-                />
-                <FormControl
-                  :model-value="doc.location_type"
-                  type="select"
-                  :label="__('Location')"
-                  :options="locationOptions"
-                  @update:model-value="(v: string) => set('location_type', v)"
-                />
-                <FormControl
-                  v-if="
-                    ['In person', 'Custom link'].includes(doc.location_type)
-                  "
-                  class="col-span-2"
-                  :model-value="doc.location"
-                  type="text"
-                  :label="
-                    doc.location_type === 'In person'
-                      ? __('Address')
-                      : __('Link')
-                  "
-                  @update:model-value="(v: string) => set('location', v)"
-                />
-                <FormControl
-                  :model-value="
-                    doc.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
-                  "
-                  type="text"
-                  :label="__('Each booking creates a')"
-                  :description="__('Set when the page was created')"
-                  disabled
-                />
-                <div
-                  v-if="doc.location_type === 'Google Meet'"
-                  class="col-span-2 text-p-sm text-ink-gray-5"
-                >
-                  {{
-                    __(
-                      "Meet links come from each host's Google Calendar. A host without one is asked to send the guest a link.",
-                    )
-                  }}
-                </div>
-              </div>
-              <FormControl
-                :model-value="doc.description"
-                type="textarea"
-                :label="__('Description')"
-                :placeholder="__('What the meeting is for, shown on the page')"
-                @update:model-value="(v: string) => set('description', v)"
-              />
-            </section>
-
-            <section class="mt-8">
-              <SectionTitle
-                :title="__('Hosts')"
-                :description="
-                  __(
-                    'With more than one host, each booking goes to a free host in turn.',
-                  )
-                "
-              />
-              <MultiEmailInput
-                :model-value="hostIds"
-                :options="hostOptions"
-                :validate="() => false"
-                :placeholder="__('Add hosts')"
-                :empty-text="__('No CRM users found')"
-                @update:model-value="setHosts"
-                @update:query="(q: string) => (hostQuery = q)"
-              />
-              <ErrorMessage
-                v-if="!doc.hosts.length"
-                class="mt-2"
-                :message="__('Add at least one host')"
-              />
-              <!-- Google Calendar: the CRM has no connect screen yet, so point to the desk -->
-              <div
-                v-if="googleNote"
-                class="mt-4 flex items-start justify-between gap-4 rounded-6 border border-outline-gray-2 p-3"
-              >
-                <div class="flex gap-2.5">
-                  <LucideCalendarSync
-                    class="mt-0.5 size-4 shrink-0 text-ink-gray-5"
+          <!-- a disabled fieldset makes every control inside read-only; sharing stays usable -->
+          <fieldset
+            :disabled="!canEdit && tab.value !== 'share'"
+            class="contents"
+          >
+            <div v-if="tab.value === 'details'" class="pt-5">
+              <!-- Details -->
+              <section class="flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <FormControl
+                    :model-value="doc.title"
+                    type="text"
+                    :label="__('Title')"
+                    @update:model-value="(v: string) => set('title', v)"
                   />
-                  <div class="flex flex-col gap-1 text-p-sm text-ink-gray-6">
-                    <span>{{ googleNote }}</span>
-                    <span v-if="othersUnconnected.length">
-                      {{
-                        __(
-                          'Not connected yet: {0}. They each connect their own calendar by opening this page.',
-                          [othersUnconnected.join(', ')],
-                        )
-                      }}
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  v-if="googleAction"
-                  class="shrink-0"
-                  :label="googleAction.label"
-                  :href="googleAction.href"
-                  iconRight="lucide-external-link"
-                />
-              </div>
-            </section>
-          </div>
-          <div v-else-if="tab.value === 'availability'" class="pt-5">
-            <!-- Weekly hours -->
-            <section>
-              <SectionTitle
-                :title="__('Weekly hours')"
-                :description="
-                  __(
-                    'When people can book. Busy times on the host\'s calendar are left out.',
-                  )
-                "
-              />
-              <div class="flex flex-col">
-                <div
-                  v-for="day in WEEKDAYS"
-                  :key="day"
-                  class="group flex items-start gap-4 border-b border-outline-gray-1 py-2.5 last:border-0"
-                >
-                  <div class="flex h-7 w-36 shrink-0 items-center gap-2.5">
-                    <Switch
-                      size="sm"
-                      :model-value="hoursFor(day).length > 0"
-                      @update:model-value="(on: boolean) => toggleDay(day, on)"
-                    />
-                    <span
-                      class="text-base"
-                      :class="
-                        hoursFor(day).length
-                          ? 'text-ink-gray-8'
-                          : 'text-ink-gray-5'
-                      "
+                  <div>
+                    <div class="mb-1.5 text-sm text-ink-gray-5">
+                      {{ __('Route') }}
+                    </div>
+                    <div
+                      class="flex h-7 items-center rounded-4 border border-transparent bg-surface-gray-2 px-2.5 text-base focus-within:border-outline-gray-4 focus-within:bg-surface-base"
                     >
-                      {{ __(day) }}
-                    </span>
-                  </div>
-                  <div
-                    v-if="!hoursFor(day).length"
-                    class="flex h-7 items-center text-base text-ink-gray-4"
-                  >
-                    {{ __('Unavailable') }}
-                  </div>
-                  <div v-else class="flex flex-col gap-2">
-                    <template
-                      v-for="(row, i) in hoursFor(day)"
-                      :key="row.name || row._key"
-                    >
-                      <div class="flex items-center gap-2">
-                        <TimePicker
-                          class="w-28"
-                          :interval="15"
-                          format="h:mm a"
-                          :model-value="hhmm(row.start_time)"
-                          @update:model-value="
-                            (v: string) => setTime(row, 'start_time', v)
-                          "
-                        />
-                        <span class="text-ink-gray-4">–</span>
-                        <TimePicker
-                          class="w-28"
-                          :interval="15"
-                          format="h:mm a"
-                          :options="endTimeOptions(row)"
-                          :model-value="hhmm(row.end_time)"
-                          @update:model-value="
-                            (v: string) => setTime(row, 'end_time', v)
-                          "
-                        />
-                        <!-- a day's only range goes with the switch, not here -->
-                        <Button
-                          v-if="hoursFor(day).length > 1"
-                          variant="ghost"
-                          icon="lucide-x"
-                          :tooltip="__('Remove')"
-                          :class="hoverAction"
-                          @click="removeHoursRow(row)"
-                        />
-                        <template v-if="i === 0">
-                          <Button
-                            variant="ghost"
-                            icon="lucide-plus"
-                            :tooltip="__('Add hours')"
-                            :class="hoverAction"
-                            @click="addHours(day)"
-                          />
-                          <Popover side="bottom" align="end" bare>
-                            <template #trigger="{ open }">
-                              <Button
-                                variant="ghost"
-                                icon="lucide-copy"
-                                :tooltip="__('Copy to other days')"
-                                :class="open ? '' : hoverAction"
-                                @click="copyTargets = []"
-                              />
-                            </template>
-                            <template #default="{ close }">
-                              <div
-                                class="mt-1 w-52 rounded-6 bg-surface-base p-1.5 shadow-2xl"
-                              >
-                                <div
-                                  class="px-2 pb-1.5 pt-1 text-sm text-ink-gray-5"
-                                >
-                                  {{ __('Copy times to') }}
-                                </div>
-                                <Checkbox
-                                  v-for="target in WEEKDAYS"
-                                  :key="target"
-                                  padded
-                                  :label="__(target)"
-                                  :disabled="target === day"
-                                  :model-value="
-                                    target === day ||
-                                    copyTargets.includes(target)
-                                  "
-                                  @update:model-value="
-                                    (on: boolean) =>
-                                      toggleCopyTarget(target, on)
-                                  "
-                                />
-                                <Button
-                                  class="mt-1.5 w-full"
-                                  variant="solid"
-                                  :label="__('Apply')"
-                                  :disabled="!copyTargets.length"
-                                  @click="copyTimes(day), close()"
-                                />
-                              </div>
-                            </template>
-                          </Popover>
-                        </template>
-                      </div>
-                      <ErrorMessage
-                        v-if="hoursErrors.get(row)"
-                        class="-mt-1"
-                        :message="hoursErrors.get(row)"
+                      <span class="shrink-0 text-ink-gray-4">{{
+                        ROUTE_PREFIX
+                      }}</span>
+                      <input
+                        :value="doc.route"
+                        class="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink-gray-8 focus:outline-none focus:ring-0"
+                        @input="
+                          set(
+                            'route',
+                            ($event.target as HTMLInputElement).value,
+                          )
+                        "
+                        @blur="
+                          slugify(doc.route) !== doc.route &&
+                            set('route', slugify(doc.route))
+                        "
                       />
-                    </template>
+                    </div>
+                  </div>
+                  <FormControl
+                    :model-value="String(doc.duration)"
+                    type="select"
+                    :label="__('Duration')"
+                    :options="durationOptions"
+                    @update:model-value="
+                      (v: string) => set('duration', Number(v))
+                    "
+                  />
+                  <FormControl
+                    :model-value="doc.location_type"
+                    type="select"
+                    :label="__('Location')"
+                    :options="locationOptions"
+                    @update:model-value="(v: string) => set('location_type', v)"
+                  />
+                  <FormControl
+                    v-if="
+                      ['In person', 'Custom link'].includes(doc.location_type)
+                    "
+                    class="col-span-2"
+                    :model-value="doc.location"
+                    type="text"
+                    :label="
+                      doc.location_type === 'In person'
+                        ? __('Address')
+                        : __('Link')
+                    "
+                    @update:model-value="(v: string) => set('location', v)"
+                  />
+                  <FormControl
+                    :model-value="
+                      doc.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
+                    "
+                    type="text"
+                    :label="__('Each booking creates a')"
+                    :description="__('Set when the page was created')"
+                    disabled
+                  />
+                  <div
+                    v-if="doc.location_type === 'Google Meet'"
+                    class="col-span-2 text-p-sm text-ink-gray-5"
+                  >
+                    {{
+                      __(
+                        "Meet links come from each host's Google Calendar. A host without one is asked to send the guest a link.",
+                      )
+                    }}
                   </div>
                 </div>
-              </div>
-              <div class="mt-4 grid grid-cols-2 gap-4">
                 <FormControl
-                  :model-value="doc.timezone"
-                  type="select"
-                  :label="__('Timezone')"
-                  :options="timezoneOptions"
-                  @update:model-value="(v: string) => set('timezone', v)"
+                  :model-value="doc.description"
+                  type="textarea"
+                  :label="__('Description')"
+                  :placeholder="
+                    __('What the meeting is for, shown on the page')
+                  "
+                  @update:model-value="(v: string) => set('description', v)"
                 />
-                <div>
-                  <div class="mb-1.5 text-sm text-ink-gray-5">
-                    {{ __('Holidays') }}
+              </section>
+
+              <section class="mt-8">
+                <SectionTitle
+                  :title="__('Hosts')"
+                  :description="
+                    __(
+                      'With more than one host, each booking goes to a free host in turn.',
+                    )
+                  "
+                />
+                <MultiEmailInput
+                  :model-value="hostIds"
+                  :options="hostOptions"
+                  :validate="() => false"
+                  :placeholder="__('Add hosts')"
+                  :empty-text="__('No CRM users found')"
+                  @update:model-value="setHosts"
+                  @update:query="(q: string) => (hostQuery = q)"
+                />
+                <ErrorMessage
+                  v-if="!doc.hosts.length"
+                  class="mt-2"
+                  :message="__('Add at least one host')"
+                />
+                <!-- Google Calendar: the CRM has no connect screen yet, so point to the desk -->
+                <div
+                  v-if="googleNote"
+                  class="mt-4 flex items-start justify-between gap-4 rounded-6 border border-outline-gray-2 p-3"
+                >
+                  <div class="flex gap-2.5">
+                    <LucideCalendarSync
+                      class="mt-0.5 size-4 shrink-0 text-ink-gray-5"
+                    />
+                    <div class="flex flex-col gap-1 text-p-sm text-ink-gray-6">
+                      <span>{{ googleNote }}</span>
+                      <span v-if="othersUnconnected.length">
+                        {{
+                          __(
+                            'Not connected yet: {0}. They each connect their own calendar by opening this page.',
+                            [othersUnconnected.join(', ')],
+                          )
+                        }}
+                      </span>
+                    </div>
                   </div>
-                  <Link
-                    doctype="CRM Holiday List"
-                    :model-value="doc.holiday_list"
-                    :placeholder="__('None')"
-                    @update:model-value="(v: string) => set('holiday_list', v)"
+                  <Button
+                    v-if="googleAction"
+                    class="shrink-0"
+                    :label="googleAction.label"
+                    :href="googleAction.href"
+                    iconRight="lucide-external-link"
                   />
                 </div>
-              </div>
-            </section>
-
-            <!-- Limits -->
-            <section class="mt-8">
-              <SectionTitle :title="__('Limits')" />
-              <div class="grid grid-cols-2 gap-4">
-                <FormControl
-                  :model-value="doc.min_notice"
-                  type="number"
-                  min="0"
-                  :label="__('Minimum notice (hours)')"
-                  @update:model-value="
-                    (v: string) => set('min_notice', Number(v))
-                  "
-                />
-                <FormControl
-                  :model-value="doc.max_days_ahead"
-                  type="number"
-                  min="1"
-                  :label="__('Bookable days ahead')"
-                  @update:model-value="
-                    (v: string) => set('max_days_ahead', Number(v))
-                  "
-                />
-                <FormControl
-                  :model-value="doc.buffer"
-                  type="number"
-                  min="0"
-                  :label="__('Buffer between meetings (minutes)')"
-                  @update:model-value="(v: string) => set('buffer', Number(v))"
-                />
-                <FormControl
-                  :model-value="String(doc.slot_interval || 0)"
-                  type="select"
-                  :label="__('Start times')"
-                  :description="startTimesHint"
-                  :options="intervalOptions"
-                  @update:model-value="
-                    (v: string) => set('slot_interval', Number(v))
-                  "
-                />
-              </div>
-            </section>
-          </div>
-          <!-- The form tab is rendered below, outside the panel -->
-          <div v-else-if="tab.value === 'form'" />
-          <div v-else class="flex flex-col pt-5">
-            <p v-if="!doc.enabled" class="mb-5 text-p-sm text-ink-gray-5">
-              {{
-                __(
-                  'This page isn’t live yet. Turn on Live to make the link and embeds work.',
-                )
-              }}
-            </p>
-
-            <div>
-              <div class="flex flex-col gap-1">
-                <span class="text-lg-semibold text-ink-gray-8">{{
-                  __('Link')
-                }}</span>
-                <span class="text-p-sm text-ink-gray-6">{{
-                  __('Send people straight to the booking page.')
-                }}</span>
-              </div>
-              <div class="mt-3.5 flex items-center gap-2">
-                <TextInput
-                  class="flex-1"
-                  size="sm"
-                  readonly
-                  :model-value="publicUrl"
-                >
-                  <template #suffix>
-                    <button
-                      class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
-                      :title="__('Copy link')"
-                      @click="copyToClipboard(publicUrl)"
-                    >
-                      <LucideCopy class="h-4 w-4" />
-                    </button>
-                  </template>
-                </TextInput>
-                <a :href="publicUrl" target="_blank">
-                  <Button :label="__('Open')">
-                    <template #prefix
-                      ><LucideExternalLink class="h-4 w-4"
-                    /></template>
-                  </Button>
-                </a>
-              </div>
+              </section>
             </div>
-
-            <hr class="my-8 border-outline-gray-2" />
-
-            <div>
-              <div class="flex flex-col gap-1">
-                <span class="text-lg-semibold text-ink-gray-8">{{
-                  __('Embed')
-                }}</span>
-                <span class="text-p-sm text-ink-gray-6">{{
-                  __('Put the booking calendar on your own website.')
-                }}</span>
-              </div>
-              <div class="relative mt-3.5">
-                <textarea
-                  readonly
-                  rows="8"
-                  class="w-full resize-none rounded-5 border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
-                  :value="iframeSnippet"
-                />
-                <button
-                  class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
-                  :title="__('Copy')"
-                  @click="copyToClipboard(iframeSnippet)"
-                >
-                  <LucideCopy class="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-
-            <hr class="my-8 border-outline-gray-2" />
-
-            <div>
-              <div class="flex flex-col gap-1">
-                <span class="text-lg-semibold text-ink-gray-8">{{
-                  __('Allowed domains')
-                }}</span>
-                <span class="text-p-sm text-ink-gray-6">
-                  {{
+            <div v-else-if="tab.value === 'availability'" class="pt-5">
+              <!-- Weekly hours -->
+              <section>
+                <SectionTitle
+                  :title="__('Weekly hours')"
+                  :description="
                     __(
-                      'Sites where this page may be embedded, one per line. Browsers block the iframe on any site not listed here.',
+                      'When people can book. Busy times on the host\'s calendar are left out.',
                     )
-                  }}
-                </span>
-              </div>
-              <textarea
-                :value="doc.allowed_embedding_domains"
-                rows="3"
-                spellcheck="false"
-                placeholder="https://www.example.com"
-                class="mt-3.5 w-full resize-none rounded-5 border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
-                @input="
-                  set(
-                    'allowed_embedding_domains',
-                    ($event.target as HTMLTextAreaElement).value,
-                  )
-                "
-              />
-              <p
-                v-if="invalidDomains.length"
-                class="mt-1.5 text-xs text-ink-red-5"
-              >
-                {{
-                  __('Not a valid domain and will be ignored: {0}', [
-                    invalidDomains.join(', '),
-                  ])
-                }}
-              </p>
-              <p
-                v-else-if="!embeddingDomains.length"
-                class="mt-1.5 text-xs text-ink-gray-5"
-              >
+                  "
+                />
+                <div class="flex flex-col">
+                  <div
+                    v-for="day in WEEKDAYS"
+                    :key="day"
+                    class="group flex items-start gap-4 border-b border-outline-gray-1 py-2.5 last:border-0"
+                  >
+                    <div class="flex h-7 w-36 shrink-0 items-center gap-2.5">
+                      <Switch
+                        size="sm"
+                        :model-value="hoursFor(day).length > 0"
+                        @update:model-value="
+                          (on: boolean) => toggleDay(day, on)
+                        "
+                      />
+                      <span
+                        class="text-base"
+                        :class="
+                          hoursFor(day).length
+                            ? 'text-ink-gray-8'
+                            : 'text-ink-gray-5'
+                        "
+                      >
+                        {{ __(day) }}
+                      </span>
+                    </div>
+                    <div
+                      v-if="!hoursFor(day).length"
+                      class="flex h-7 items-center text-base text-ink-gray-4"
+                    >
+                      {{ __('Unavailable') }}
+                    </div>
+                    <div v-else class="flex flex-col gap-2">
+                      <template
+                        v-for="(row, i) in hoursFor(day)"
+                        :key="row.name || row._key"
+                      >
+                        <div class="flex items-center gap-2">
+                          <TimePicker
+                            class="w-28"
+                            :interval="15"
+                            format="h:mm a"
+                            :model-value="hhmm(row.start_time)"
+                            @update:model-value="
+                              (v: string) => setTime(row, 'start_time', v)
+                            "
+                          />
+                          <span class="text-ink-gray-4">–</span>
+                          <TimePicker
+                            class="w-28"
+                            :interval="15"
+                            format="h:mm a"
+                            :options="endTimeOptions(row)"
+                            :model-value="hhmm(row.end_time)"
+                            @update:model-value="
+                              (v: string) => setTime(row, 'end_time', v)
+                            "
+                          />
+                          <!-- a day's only range goes with the switch, not here -->
+                          <Button
+                            v-if="hoursFor(day).length > 1"
+                            variant="ghost"
+                            icon="lucide-x"
+                            :tooltip="__('Remove')"
+                            :class="hoverAction"
+                            @click="removeHoursRow(row)"
+                          />
+                          <template v-if="i === 0">
+                            <Button
+                              variant="ghost"
+                              icon="lucide-plus"
+                              :tooltip="__('Add hours')"
+                              :class="hoverAction"
+                              @click="addHours(day)"
+                            />
+                            <Popover side="bottom" align="end" bare>
+                              <template #trigger="{ open }">
+                                <Button
+                                  variant="ghost"
+                                  icon="lucide-copy"
+                                  :tooltip="__('Copy to other days')"
+                                  :class="open ? '' : hoverAction"
+                                  @click="copyTargets = []"
+                                />
+                              </template>
+                              <template #default="{ close }">
+                                <div
+                                  class="mt-1 w-52 rounded-6 bg-surface-base p-1.5 shadow-2xl"
+                                >
+                                  <div
+                                    class="px-2 pb-1.5 pt-1 text-sm text-ink-gray-5"
+                                  >
+                                    {{ __('Copy times to') }}
+                                  </div>
+                                  <Checkbox
+                                    v-for="target in WEEKDAYS"
+                                    :key="target"
+                                    padded
+                                    :label="__(target)"
+                                    :disabled="target === day"
+                                    :model-value="
+                                      target === day ||
+                                      copyTargets.includes(target)
+                                    "
+                                    @update:model-value="
+                                      (on: boolean) =>
+                                        toggleCopyTarget(target, on)
+                                    "
+                                  />
+                                  <Button
+                                    class="mt-1.5 w-full"
+                                    variant="solid"
+                                    :label="__('Apply')"
+                                    :disabled="!copyTargets.length"
+                                    @click="copyTimes(day), close()"
+                                  />
+                                </div>
+                              </template>
+                            </Popover>
+                          </template>
+                        </div>
+                        <ErrorMessage
+                          v-if="hoursErrors.get(row)"
+                          class="-mt-1"
+                          :message="hoursErrors.get(row)"
+                        />
+                      </template>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                  <FormControl
+                    :model-value="doc.timezone"
+                    type="select"
+                    :label="__('Timezone')"
+                    :options="timezoneOptions"
+                    @update:model-value="(v: string) => set('timezone', v)"
+                  />
+                  <div>
+                    <div class="mb-1.5 text-sm text-ink-gray-5">
+                      {{ __('Holidays') }}
+                    </div>
+                    <Link
+                      doctype="CRM Holiday List"
+                      :model-value="doc.holiday_list"
+                      :placeholder="__('None')"
+                      @update:model-value="
+                        (v: string) => set('holiday_list', v)
+                      "
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <!-- Limits -->
+              <section class="mt-8">
+                <SectionTitle :title="__('Limits')" />
+                <div class="grid grid-cols-2 gap-4">
+                  <FormControl
+                    :model-value="doc.min_notice"
+                    type="number"
+                    min="0"
+                    :label="__('Minimum notice (hours)')"
+                    @update:model-value="
+                      (v: string) => set('min_notice', Number(v))
+                    "
+                  />
+                  <FormControl
+                    :model-value="doc.max_days_ahead"
+                    type="number"
+                    min="1"
+                    :label="__('Bookable days ahead')"
+                    @update:model-value="
+                      (v: string) => set('max_days_ahead', Number(v))
+                    "
+                  />
+                  <FormControl
+                    :model-value="doc.buffer"
+                    type="number"
+                    min="0"
+                    :label="__('Buffer between meetings (minutes)')"
+                    @update:model-value="
+                      (v: string) => set('buffer', Number(v))
+                    "
+                  />
+                  <FormControl
+                    :model-value="String(doc.slot_interval || 0)"
+                    type="select"
+                    :label="__('Start times')"
+                    :description="startTimesHint"
+                    :options="intervalOptions"
+                    @update:model-value="
+                      (v: string) => set('slot_interval', Number(v))
+                    "
+                  />
+                </div>
+              </section>
+            </div>
+            <!-- The form tab is rendered below, outside the panel -->
+            <div v-else-if="tab.value === 'form'" />
+            <div v-else class="flex flex-col pt-5">
+              <p v-if="!doc.enabled" class="mb-5 text-p-sm text-ink-gray-5">
                 {{
                   __(
-                    'No domains added. The embed will only work on this site until you add one.',
+                    'This page isn’t live yet. Turn on Live to make the link and embeds work.',
                   )
                 }}
               </p>
+
+              <div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-lg-semibold text-ink-gray-8">{{
+                    __('Link')
+                  }}</span>
+                  <span class="text-p-sm text-ink-gray-6">{{
+                    __('Send people straight to the booking page.')
+                  }}</span>
+                </div>
+                <div class="mt-3.5 flex items-center gap-2">
+                  <TextInput
+                    class="flex-1"
+                    size="sm"
+                    readonly
+                    :model-value="publicUrl"
+                  >
+                    <template #suffix>
+                      <button
+                        class="flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
+                        :title="__('Copy link')"
+                        @click="copyToClipboard(publicUrl)"
+                      >
+                        <LucideCopy class="h-4 w-4" />
+                      </button>
+                    </template>
+                  </TextInput>
+                  <a :href="publicUrl" target="_blank">
+                    <Button :label="__('Open')">
+                      <template #prefix
+                        ><LucideExternalLink class="h-4 w-4"
+                      /></template>
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
+              <hr class="my-8 border-outline-gray-2" />
+
+              <div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-lg-semibold text-ink-gray-8">{{
+                    __('Embed')
+                  }}</span>
+                  <span class="text-p-sm text-ink-gray-6">{{
+                    __('Put the booking calendar on your own website.')
+                  }}</span>
+                </div>
+                <div class="relative mt-3.5">
+                  <textarea
+                    readonly
+                    rows="8"
+                    class="w-full resize-none rounded-5 border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                    :value="iframeSnippet"
+                  />
+                  <button
+                    class="absolute right-2 top-2 flex text-ink-gray-5 transition-colors hover:text-ink-gray-8"
+                    :title="__('Copy')"
+                    @click="copyToClipboard(iframeSnippet)"
+                  >
+                    <LucideCopy class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <hr class="my-8 border-outline-gray-2" />
+
+              <div>
+                <div class="flex flex-col gap-1">
+                  <span class="text-lg-semibold text-ink-gray-8">{{
+                    __('Allowed domains')
+                  }}</span>
+                  <span class="text-p-sm text-ink-gray-6">
+                    {{
+                      __(
+                        'Sites where this page may be embedded, one per line. Browsers block the iframe on any site not listed here.',
+                      )
+                    }}
+                  </span>
+                </div>
+                <textarea
+                  :value="doc.allowed_embedding_domains"
+                  rows="3"
+                  spellcheck="false"
+                  placeholder="https://www.example.com"
+                  class="mt-3.5 w-full resize-none rounded-5 border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                  @input="
+                    set(
+                      'allowed_embedding_domains',
+                      ($event.target as HTMLTextAreaElement).value,
+                    )
+                  "
+                />
+                <p
+                  v-if="invalidDomains.length"
+                  class="mt-1.5 text-xs text-ink-red-5"
+                >
+                  {{
+                    __('Not a valid domain and will be ignored: {0}', [
+                      invalidDomains.join(', '),
+                    ])
+                  }}
+                </p>
+                <p
+                  v-else-if="!embeddingDomains.length"
+                  class="mt-1.5 text-xs text-ink-gray-5"
+                >
+                  {{
+                    __(
+                      'No domains added. The embed will only work on this site until you add one.',
+                    )
+                  }}
+                </p>
+              </div>
             </div>
-          </div>
+          </fieldset>
         </template>
       </Tabs>
       <!-- Kept mounted so unsaved form edits survive switching tabs -->
-      <div v-show="activeTab === 'form'" class="pt-5">
+      <fieldset v-show="activeTab === 'form'" :disabled="!canEdit" class="pt-5">
         <!-- Form: the page's own web form, in the Forms field editor -->
         <section>
           <SectionTitle
@@ -533,7 +558,7 @@
             "
           />
           <FormBuilderPanel
-            v-if="doc.web_form"
+            v-if="doc.web_form && canEdit"
             ref="formBuilder"
             :name="doc.web_form"
             embedded
@@ -617,7 +642,7 @@
             />
           </div>
         </section>
-      </div>
+      </fieldset>
     </div>
   </div>
 </template>
@@ -747,7 +772,7 @@ const SectionTitle = defineComponent({
     ]),
 })
 
-const { getUser, users } = usersStore()
+const { getUser, users, isManager } = usersStore()
 
 const doc = ref<BookingPageDoc | null>(null)
 
@@ -862,6 +887,13 @@ const googleAction = computed(() => {
 const dirty = ref(false)
 const saving = ref(false)
 const error = ref('')
+const loadError = ref('')
+const savedRoute = ref('')
+// who may change the page is decided by the hosts as saved (validate_editor)
+const savedHosts = ref<string[]>([])
+const canEdit = computed(
+  () => isManager() || savedHosts.value.includes(getUser().name),
+)
 let nextKey = 1
 
 const durationOptions = [15, 20, 30, 45, 60, 90, 120].map((m) => ({
@@ -905,10 +937,20 @@ const timezoneOptions = computed(() => {
 onMounted(load)
 
 async function load() {
-  doc.value = await call('frappe.client.get', {
-    doctype: 'CRM Booking Page',
-    name: props.name,
-  })
+  loadError.value = ''
+  try {
+    doc.value = await call('frappe.client.get', {
+      doctype: 'CRM Booking Page',
+      name: props.name,
+    })
+  } catch (e) {
+    loadError.value =
+      (e as { messages?: string[] })?.messages?.[0] ||
+      __('Could not open this page')
+    return
+  }
+  savedRoute.value = doc.value?.route || ''
+  savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
   dirty.value = false
 }
 
@@ -972,8 +1014,12 @@ const hoverAction =
 // the new range starts an hour after the day's last one ends
 function addHours(day: string) {
   if (!doc.value) return
-  const [start, end] = nextRange(hoursFor(day).at(-1))
-  doc.value.availability.push(newRow(day, start, end))
+  const range = nextRange(hoursFor(day).at(-1))
+  if (!range) {
+    toast.info(__('No room for more hours on this day'))
+    return
+  }
+  doc.value.availability.push(newRow(day, range[0], range[1]))
   dirty.value = true
 }
 
@@ -1032,6 +1078,8 @@ async function save() {
         hhmm(a.start_time).localeCompare(hhmm(b.start_time)),
     )
     doc.value = await call('frappe.client.save', { doc: doc.value })
+    savedRoute.value = doc.value?.route || ''
+    savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
     dirty.value = false
     toast.success(__('Booking page saved'))
   } catch (e) {
@@ -1043,7 +1091,10 @@ async function save() {
   }
 }
 
-const publicUrl = computed(() => (doc.value ? pageUrl(doc.value.route) : ''))
+// the live page is at the saved route, not one still being typed
+const publicUrl = computed(() =>
+  savedRoute.value ? pageUrl(savedRoute.value) : '',
+)
 const embeddingDomains = computed(() =>
   (doc.value?.allowed_embedding_domains || '').split(/\s+/).filter(Boolean),
 )
@@ -1052,12 +1103,12 @@ const invalidDomains = computed(() =>
 )
 const iframeSnippet = computed(() =>
   doc.value
-    ? embedSnippet(publicUrl.value, doc.value.route, doc.value.title)
+    ? embedSnippet(publicUrl.value, savedRoute.value, doc.value.title)
     : '',
 )
 
 function openPage() {
-  if (doc.value) window.open(pageUrl(doc.value.route), '_blank')
+  if (savedRoute.value) window.open(pageUrl(savedRoute.value), '_blank')
 }
 
 function goBack() {

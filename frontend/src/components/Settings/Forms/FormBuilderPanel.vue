@@ -185,6 +185,9 @@
                                 :field="f"
                                 :expanded="expanded === f.fieldname"
                                 :locked="isMandatory(f.fieldname)"
+                                :always-asked="
+                                  lockedFields.includes(f.fieldname)
+                                "
                                 :guest-select-missing="
                                   f.fieldtype === 'Link' &&
                                   guestSelect[f.options] === false

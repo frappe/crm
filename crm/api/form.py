@@ -460,17 +460,18 @@ def save_form(name: str | None, form: dict | str) -> dict:
 	_check_manager(name)
 	if isinstance(form, str):
 		form = json.loads(form or "{}")
-	if not set(frappe.get_roles()) & {"System Manager", "Sales Manager"}:
-		form = _booking_form_edit(name, form)
+	if name and frappe.db.exists("CRM Booking Page", {"web_form": name}):
+		if not set(frappe.get_roles()) & {"System Manager", "Sales Manager"}:
+			form = _booking_form_edit(name, form)
+		_always_ask_email(form)
 	return _save_form(name, form)
 
 
 def _booking_form_edit(name: str, form: dict) -> dict:
 	"""A booking page's host edits only the questions on its form. Publishing, the
-	route, the redirect and the target doctype stay as the page set them, and the
-	email a booking needs is always asked."""
+	route, the redirect and the target doctype stay as the page set them."""
 	saved = _get_crm_form(name)
-	form = {
+	return {
 		**form,
 		"published": saved.crm_published,
 		"route": saved.route,
@@ -478,13 +479,18 @@ def _booking_form_edit(name: str, form: dict) -> dict:
 		"redirect_url": saved.success_url,
 		"allowed_embedding_domains": saved.allowed_embedding_domains,
 	}
+
+
+def _always_ask_email(form: dict):
+	"""Every booking needs the guest's email, so a booking form always asks for it:
+	required, and never hidden or locked by a condition."""
 	fields = form.get("fields")
-	if fields is not None:
-		email = next((f for f in fields if f.get("fieldname") == "email"), None)
-		if not email:
-			frappe.throw(_("A booking form must ask for an email"))
-		email.update({"reqd": 1, "depends_on": "", "mandatory_depends_on": "", "read_only_depends_on": ""})
-	return form
+	if fields is None:
+		return
+	email = next((f for f in fields if f.get("fieldname") == "email"), None)
+	if not email:
+		frappe.throw(_("A booking form must ask for an email"))
+	email.update({"reqd": 1, "depends_on": "", "mandatory_depends_on": "", "read_only_depends_on": ""})
 
 
 def _save_form(name: str | None, form: dict | str) -> dict:

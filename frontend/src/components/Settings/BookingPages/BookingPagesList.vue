@@ -300,8 +300,8 @@ async function deletePage(page: BookingPageRow) {
 function rowOptions(page: BookingPageRow) {
   return [
     {
-      label: __('Edit'),
-      icon: 'lucide-edit-2',
+      label: canChange(page) ? __('Edit') : __('View'),
+      icon: canChange(page) ? 'lucide-edit-2' : 'lucide-eye',
       onClick: () => emit('open', page.name),
     },
     {
