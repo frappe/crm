@@ -221,7 +221,7 @@
                 <div
                   v-for="day in WEEKDAYS"
                   :key="day"
-                  class="flex items-start gap-4 border-b border-outline-gray-1 py-2.5 last:border-0"
+                  class="group flex items-start gap-4 border-b border-outline-gray-1 py-2.5 last:border-0"
                 >
                   <div class="flex h-7 w-36 shrink-0 items-center gap-2.5">
                     <Switch
@@ -272,10 +272,15 @@
                             (v: string) => setTime(row, 'end_time', v)
                           "
                         />
+                        <!-- a day's only range goes with the switch, not here -->
                         <Button
                           variant="ghost"
                           icon="lucide-x"
                           :tooltip="__('Remove')"
+                          :class="[
+                            hoverAction,
+                            { invisible: hoursFor(day).length === 1 },
+                          ]"
                           @click="removeHoursRow(row)"
                         />
                         <template v-if="i === 0">
@@ -283,14 +288,16 @@
                             variant="ghost"
                             icon="lucide-plus"
                             :tooltip="__('Add hours')"
+                            :class="hoverAction"
                             @click="addHours(day)"
                           />
                           <Popover side="bottom" align="end" bare>
-                            <template #trigger>
+                            <template #trigger="{ open }">
                               <Button
                                 variant="ghost"
                                 icon="lucide-copy"
                                 :tooltip="__('Copy times to…')"
+                                :class="open ? '' : hoverAction"
                                 @click="copyTargets = []"
                               />
                             </template>
@@ -394,6 +401,7 @@
                   :model-value="String(doc.slot_interval || 0)"
                   type="select"
                   :label="__('Start times')"
+                  :description="startTimesHint"
                   :options="intervalOptions"
                   @update:model-value="
                     (v: string) => set('slot_interval', Number(v))
@@ -862,6 +870,15 @@ const intervalOptions = [
     value: String(m),
   })),
 ]
+// Spells out the setting with sample times, e.g. "9:00, 9:30, 10:00 and so on"
+const startTimesHint = computed(() => {
+  const step = doc.value?.slot_interval || doc.value?.duration || 30
+  const times = [0, 1, 2].map((i) => {
+    const m = 9 * 60 + i * step
+    return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`
+  })
+  return __('How often open times begin: {0}, {1}, {2} and so on', times)
+})
 const locationOptions = [
   'Google Meet',
   'Phone call',
@@ -942,6 +959,10 @@ function toggleDay(day: string, on: boolean) {
   doc.value.availability = rows
   dirty.value = true
 }
+
+// row actions show on hover, or on keyboard focus
+const hoverAction =
+  'opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100'
 
 // the new range starts an hour after the day's last one ends
 function addHours(day: string) {
