@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, START_LOCATION } from 'vue-router'
-import { call } from 'frappe-ui'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
@@ -8,25 +7,19 @@ import { getLandingPage, landingRoute, viewRoute } from '@/utils/landingPage'
 let setupChecked = false
 export const SETUP_DONE_KEY = 'crm_setup_completed'
 
-async function needsSetup() {
-  // Client-side flag guards against re-prompting if the server persist failed.
-  if (localStorage.getItem(SETUP_DONE_KEY)) return false
-  const completed = await call('frappe.client.get_single_value', {
-    doctype: 'FCRM Settings',
-    field: 'setup_completed',
-  })
-  return !completed
+// sent with the page boot, so the redirect needs no request and nothing renders first;
+// the client flag guards against re-prompting if saving setup_completed failed
+function needsSetup() {
+  return (
+    Boolean(window.crm_setup_pending) && !localStorage.getItem(SETUP_DONE_KEY)
+  )
 }
 
-async function getSetupRedirect(to, isAdminUser) {
-  if (to.name === 'Setup') {
-    const allowed = isAdminUser && (await needsSetup().catch(() => false))
-    return allowed ? null : { name: 'Home' }
-  }
-  if (!isAdminUser || setupChecked) return null
+function getSetupRedirect(to) {
+  if (to.name === 'Setup') return needsSetup() ? null : { name: 'Home' }
+  if (setupChecked) return null
   setupChecked = true
-  const required = await needsSetup().catch(() => false)
-  return required ? { name: 'Setup' } : null
+  return needsSetup() ? { name: 'Setup' } : null
 }
 
 const routes = [
@@ -184,8 +177,13 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   router.previousRoute = from
 
-  const { isLoggedIn, user } = sessionStore()
-  const { users, isCrmUser, isAdmin } = usersStore()
+  const { isLoggedIn } = sessionStore()
+  const { users, isCrmUser } = usersStore()
+
+  if (isLoggedIn) {
+    const redirect = getSetupRedirect(to)
+    if (redirect) return next(redirect)
+  }
 
   if (isLoggedIn && !users.fetched) {
     try {
@@ -196,12 +194,6 @@ router.beforeEach(async (to, from, next) => {
         return next(false)
       }
     }
-  }
-
-  if (isLoggedIn && isCrmUser()) {
-    const isAdminUser = isAdmin() || user === 'Administrator'
-    const redirect = await getSetupRedirect(to, isAdminUser)
-    if (redirect) return next(redirect)
   }
 
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
