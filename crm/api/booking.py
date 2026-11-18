@@ -422,6 +422,12 @@ def lock_hosts(hosts: list[str]):
 		locks.append(lock)
 		held[host] = lock
 	if locks:
+		# Only reads have run so far, but under REPEATABLE READ they fixed this
+		# transaction's snapshot, which can predate a booking that committed while we
+		# waited. Committing starts a fresh one without locking rows of tabEvent.
+		# Tests keep one transaction to roll back, so they skip it.
+		if not frappe.flags.in_test:
+			frappe.db.commit()
 		frappe.db.after_commit.add(lambda: release_locks(locks))
 		frappe.db.after_rollback.add(lambda: release_locks(locks))
 
@@ -595,8 +601,7 @@ def event_busy_times(host, start_utc, end_utc, exclude_event=None) -> list[tuple
 				coalesce(e.ends_on, e.starts_on) > %(start)s
 				or (e.repeat_this_event = 1 and coalesce(e.repeat_till, '3000-01-01') >= date(%(start)s))
 			)
-		"""
-		+ latest_rows(host),
+		""",
 		{"host": host, "emails": tuple(emails), "start": start, "end": end, "exclude": exclude_event or ""},
 		as_dict=True,
 	)
@@ -605,14 +610,6 @@ def event_busy_times(host, start_utc, end_utc, exclude_event=None) -> list[tuple
 		for occ_start, occ_end in occurrences(e, start, end):
 			busy.append((to_utc(occ_start), to_utc(occ_end)))
 	return busy
-
-
-def latest_rows(host) -> str:
-	"""Under the host's lock, read what's committed now, not the transaction's snapshot:
-	on MariaDB that snapshot can predate a booking that finished while this one waited."""
-	if host in held_host_locks() and frappe.db.db_type == "mariadb":
-		return " lock in share mode"
-	return ""
 
 
 def occurrences(event, start, end):

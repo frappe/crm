@@ -482,6 +482,21 @@ class TestBooking(IntegrationTestCase):
 	def booking_for(self, result):
 		return frappe.get_doc("CRM Booking", {"token": result["token"]})
 
+	def test_the_host_lock_reads_fresh_data_without_locking_events(self):
+		"""Under REPEATABLE READ the reads before the lock fix a snapshot that can miss a
+		booking committed while we waited. A commit after the lock starts a fresh one; a
+		locking read of tabEvent instead would block every Event write and deadlock two
+		bookings for different hosts."""
+		from crm.api.booking import event_busy_times, lock_hosts
+
+		with patch.dict(frappe.flags, {"in_test": False}), patch.object(frappe.db, "commit") as commit:
+			lock_hosts([HOSTS[0]])
+			commit.assert_called_once()
+			with patch.object(frappe.db, "sql", wraps=frappe.db.sql) as sql:
+				event_busy_times(HOSTS[0], self.at(9), self.at(12))
+		self.assertNotIn("lock in share mode", sql.call_args.args[0].lower())
+		self.assertNotIn("for update", sql.call_args.args[0].lower())
+
 	def test_a_booked_slot_cannot_be_booked_again(self):
 		self.book_as_guest(self.at(9), "first@example.com")
 		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday())
