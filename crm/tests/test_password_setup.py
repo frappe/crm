@@ -7,8 +7,12 @@ import frappe
 from frappe.utils import sha256_hash
 from frappe.utils.password import update_password
 
+<<<<<<< HEAD
 from crm.api.user import has_password, needs_password_setup
 from crm.tests import CRMTestCase
+=======
+from crm.api.user import has_password, needs_password_setup, set_password
+>>>>>>> ff4de48 (test: cover guided setup password step)
 from crm.www.crm import get_context, redirect_to_set_password
 
 STRONG_PASSWORD = "Qx7#mLp2vT9!"
@@ -34,6 +38,7 @@ def make_user(email, roles=None):
 class TestPasswordSetup(CRMTestCase):
 	def setUp(self):
 		self.user = make_user("no-password@example.com", roles=["System Manager"])
+		frappe.db.set_single_value("FCRM Settings", "setup_completed", 1)
 		frappe.set_user(self.user.name)
 
 	def tearDown(self):
@@ -121,3 +126,46 @@ class TestPasswordSetup(CRMTestCase):
 			get_context()
 
 		self.assertIn("/update-password?key=", frappe.local.flags.redirect_location)
+
+	# ---- guided setup ----
+
+	def test_no_redirect_while_guided_setup_is_pending(self):
+		"""The guided setup asks for the password in its first step."""
+		frappe.db.set_single_value("FCRM Settings", "setup_completed", 0)
+
+		redirect_to_set_password()
+
+		self.assertIsNone(frappe.local.flags.redirect_location)
+
+	def test_redirects_non_admin_while_guided_setup_is_pending(self):
+		frappe.db.set_single_value("FCRM Settings", "setup_completed", 0)
+		frappe.set_user("Administrator")
+		self.user.remove_roles("System Manager")
+		self.user.append_roles("Sales User")
+		frappe.set_user(self.user.name)
+
+		with self.assertRaises(frappe.Redirect):
+			redirect_to_set_password()
+
+	def test_set_password_from_guided_setup(self):
+		set_password(STRONG_PASSWORD)
+
+		self.assertTrue(has_password(self.user.name))
+		self.assertFalse(needs_password_setup())
+
+	def test_set_password_rejects_weak_password(self):
+		frappe.db.set_single_value(
+			"System Settings", {"enable_password_policy": 1, "minimum_password_score": 2}
+		)
+		frappe.local.system_settings = None
+
+		with self.assertRaises(frappe.ValidationError):
+			set_password("abc")
+
+		self.assertFalse(has_password(self.user.name))
+
+	def test_set_password_refuses_user_who_has_a_password(self):
+		update_password(user=self.user.name, pwd=STRONG_PASSWORD)
+
+		with self.assertRaises(frappe.PermissionError):
+			set_password("An0ther#Strong!")
