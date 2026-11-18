@@ -126,11 +126,6 @@ const tabs = computed(() => {
           icon: SlidersIcon,
           component: markRaw(PreferencesSettings),
         },
-        {
-          label: __('Booking Pages'),
-          icon: CalendarIcon,
-          component: markRaw(BookingPagesSettings),
-        },
       ],
     },
     {
@@ -206,34 +201,44 @@ const tabs = computed(() => {
     },
     {
       label: __('Automation & Rules'),
+      // managers see every item; sales users only their booking pages
       items: [
         {
           label: __('Workflow Automations'),
           icon: LucideWorkflow,
           component: markRaw(WorkflowAutomationPage),
+          condition: () => isManager(),
         },
         {
           label: __('Assignment Rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
+          condition: () => isManager(),
         },
         {
           label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
+          condition: () => isManager(),
         },
         {
           label: __('Forms'),
           component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Booking Pages'),
+          icon: CalendarIcon,
+          component: markRaw(BookingPagesSettings),
         },
         {
           label: __('Enrichment'),
           component: markRaw(EnrichmentSettings),
           icon: markRaw(LucideZap),
+          condition: () => isManager(),
         },
       ],
-      condition: () => isManager(),
     },
     {
       label: __('Customization'),
