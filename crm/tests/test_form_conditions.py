@@ -90,6 +90,11 @@ class TestFormConditions(IntegrationTestCase):
 		self.assertEqual(form_value_errors([agree], {"agree": 0}), "Please fill in: I agree")
 		self.assertIsNone(form_value_errors([agree], {"agree": 1}))
 
+	def test_length_of_text_like_the_page(self):
+		self.assertTrue(truthy("eval:doc.notes.length > 3", {"notes": "hello"}, False))
+		self.assertFalse(truthy("eval:!doc.notes.length", {"notes": "hello"}, False))
+		self.assertTrue(truthy("eval:!doc.notes.length", {"notes": ""}, False))
+
 
 class TestWebFormSubmissionRules(IntegrationTestCase):
 	"""A CRM web form's own required fields hold for a submission that skips the page."""

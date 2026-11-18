@@ -365,6 +365,7 @@ scheduler_events = {
 	"all": [
 		"crm.api.event.trigger_offset_event_notifications",
 		"crm.api.booking.send_guest_reminders",
+		"crm.api.booking.cancel_bookings_closed_elsewhere",
 	],
 	"hourly": [
 		"crm.api.event.trigger_hourly_event_notifications",

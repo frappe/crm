@@ -964,3 +964,76 @@ class TestBooking(IntegrationTestCase):
 		frappe.set_user("Administrator")
 		self.assertFalse(frappe.db.exists("Event", own.name))
 		self.assertTrue(frappe.db.exists("Event", other.name))
+
+	def test_a_synced_meeting_never_has_google_mail_the_guest(self):
+		"""Google mails a meeting's description, which holds the guest's own answers, to
+		every participant from the host's account; the guest gets the CRM's .ics instead."""
+		self.connect_google(HOSTS[0])
+		with (
+			patch("crm.api.booking.fetch_google_busy", return_value=[]),
+			patch(
+				"frappe.integrations.doctype.google_calendar.google_calendar.insert_event_in_google_calendar"
+			),
+		):
+			booking = self.booking_for(self.book_as_guest(self.at(9), "someone-else@example.com"))
+		event = frappe.get_doc("Event", booking.event)
+		self.assertTrue(event.sync_with_google_calendar)
+		self.assertEqual(event.event_participants, [])
+		self.assertEqual(event.reference_docname, booking.reference_docname)
+		messages = frappe.get_all(
+			"Email Queue",
+			filters={"reference_doctype": "CRM Booking", "reference_name": booking.name},
+			pluck="message",
+		)
+		self.assertTrue(any("invite.ics" in m for m in messages))
+
+	def test_a_meeting_cancelled_in_google_cancels_its_booking(self):
+		from crm.api.booking import cancel_bookings_closed_elsewhere
+
+		booking = self.booking_for(self.book_as_guest(self.at(9)))
+		# Google's pull closes the Event straight in the database, so no hook runs
+		frappe.db.set_value("Event", booking.event, "status", "Closed")
+		cancel_bookings_closed_elsewhere()
+		booking.reload()
+		self.assertEqual(booking.status, "Cancelled")
+
+	def test_a_number_answered_zero_is_kept(self):
+		form = frappe.get_doc("Web Form", self.page.web_form)
+		form.append(
+			"web_form_fields",
+			{"fieldname": "annual_revenue", "fieldtype": "Currency", "label": "Revenue", "reqd": 1},
+		)
+		form.save(ignore_permissions=True)
+		booking = self.booking_for(self.book_as_guest(self.at(9), values={"annual_revenue": 0}))
+		self.assertEqual(booking.status, "Confirmed")
+
+	def test_round_robin_skips_cancelled_bookings(self):
+		from crm.api.booking import pick_host
+
+		page = self.make_page(HOSTS)
+		first = self.booking_for(self.book_as_guest(self.at(9), "one@example.com", page))
+		second = self.booking_for(self.book_as_guest(self.at(10), "two@example.com", page))
+		# the later host's guest cancels, so that host is the one booked longest ago
+		later = max((first, second), key=lambda b: b.creation)
+		cancel_booking(later.token)
+		self.assertEqual(pick_host(page, list(HOSTS)), later.host)
+
+	def test_a_merged_google_block_frees_only_the_bookings_own_time(self):
+		from crm.api.booking import without
+
+		own = (self.at(9), self.at(9, 30))
+		self.assertEqual(without([(self.at(9), self.at(10))], own), [(self.at(9, 30), self.at(10))])
+		self.assertEqual(without([(self.at(8), self.at(8, 30))], own), [(self.at(8), self.at(8, 30))])
+		self.assertEqual(without([(self.at(9), self.at(9, 30))], own), [])
+
+	def test_cancelling_clears_the_cached_google_day(self):
+		from crm.api.booking import google_busy_key
+
+		self.connect_google(HOSTS[0])
+		with patch("crm.api.booking.fetch_google_busy", return_value=[]):
+			booking = self.booking_for(self.book_as_guest(self.at(9)))
+		day = self.at(9).replace(hour=0, minute=0)
+		key = google_busy_key(HOSTS[0], day)
+		frappe.cache.set_value(key, [(to_iso(self.at(9)), to_iso(self.at(9, 30)))])
+		cancel_booking(booking.token)
+		self.assertIsNone(frappe.cache.get_value(key))

@@ -238,4 +238,7 @@ class _Parser:
 	def member(base, key):
 		if isinstance(base, dict):
 			return base.get(str(key), _UNDEFINED)
+		# as in JavaScript, where text and lists have a length
+		if key == "length" and isinstance(base, str | list | tuple):
+			return len(base)
 		return _UNDEFINED
