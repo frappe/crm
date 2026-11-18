@@ -183,7 +183,8 @@ class TestBooking(IntegrationTestCase):
 		event = frappe.get_doc("Event", booking.event)
 		self.assertEqual(event.owner, HOSTS[0])
 		self.assertEqual(event.reference_docname, lead.name)
-		self.assertEqual(event.event_participants[0].email, "visitor@example.com")
+		# the guest gets the CRM's .ics; as a participant they would get its reminders too
+		self.assertEqual(event.event_participants, [])
 		self.assertEqual(frappe.utils.get_datetime(event.starts_on), to_system(self.at(9)))
 
 		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday())
@@ -996,6 +997,68 @@ class TestBooking(IntegrationTestCase):
 		cancel_bookings_closed_elsewhere()
 		booking.reload()
 		self.assertEqual(booking.status, "Cancelled")
+
+	def test_closing_a_past_meeting_keeps_its_booking(self):
+		booking = self.booking_for(self.book_as_guest(self.at(9)))
+		past = frappe.utils.add_days(frappe.utils.now_datetime(), -1)
+		booking.db_set({"starts_on": past, "ends_on": frappe.utils.add_to_date(past, minutes=30)})
+		event = frappe.get_doc("Event", booking.event)
+		event.status = "Closed"
+		event.save(ignore_permissions=True)
+		booking.reload()
+		self.assertEqual(booking.status, "Confirmed")
+
+		frappe.delete_doc("Event", booking.event, ignore_permissions=True)
+		booking.reload()
+		self.assertEqual((booking.status, booking.event), ("Confirmed", None))
+
+	def test_a_meeting_marked_completed_keeps_its_booking(self):
+		from crm.api.booking import cancel_bookings_closed_elsewhere
+
+		booking = self.booking_for(self.book_as_guest(self.at(9)))
+		frappe.db.set_value("Event", booking.event, "status", "Completed")
+		cancel_bookings_closed_elsewhere()
+		booking.reload()
+		self.assertEqual(booking.status, "Confirmed")
+
+	def guest_invites(self, booking):
+		import email
+
+		return [
+			part.get_payload(decode=True).decode()
+			for message in frappe.get_all(
+				"Email Queue",
+				filters={"reference_doctype": "CRM Booking", "reference_name": booking.name},
+				pluck="message",
+				order_by="creation asc",
+			)
+			for part in email.message_from_string(message).walk()
+			if part.get_filename() == "invite.ics"
+		]
+
+	def test_guest_invites_update_and_cancel_the_same_calendar_entry(self):
+		import re
+
+		def later(seconds):
+			return patch(
+				"frappe.model.document.now", return_value=str(frappe.utils.add_to_date(None, seconds=seconds))
+			)
+
+		booking = self.booking_for(self.book_as_guest(self.at(9)))
+		with later(5):
+			frappe.set_user("Guest")
+			reschedule_booking(booking.token, to_iso(self.at(10)))
+			frappe.set_user("Administrator")
+		with later(10):
+			cancel_booking(booking.token)
+		invites = self.guest_invites(booking)
+		self.assertEqual(len(invites), 3)
+		uids = {re.search(r"UID:(\S+)", i).group(1) for i in invites}
+		sequences = [int(re.search(r"SEQUENCE:(\d+)", i).group(1)) for i in invites]
+		self.assertEqual(len(uids), 1)
+		self.assertEqual(sequences, sorted(set(sequences)))
+		self.assertIn("METHOD:CANCEL", invites[-1])
+		self.assertIn("STATUS:CANCELLED", invites[-1])
 
 	def test_a_number_answered_zero_is_kept(self):
 		form = frappe.get_doc("Web Form", self.page.web_form)

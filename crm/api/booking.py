@@ -15,6 +15,7 @@ system timezone, so everything is converted at the edges.
 
 import re
 import secrets
+from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -84,7 +85,6 @@ def book(
 	doc_values, answers = clean_form_values(page, frappe.parse_json(values) or {})
 	email = guest_email(doc_values.get("email"))
 	doc_values["email"] = email
-	check_booking_limits(page, email)
 	full_name = (
 		" ".join(str(doc_values.get(f) or "") for f in ("first_name", "last_name")).strip()
 		or email.split("@")[0]
@@ -94,7 +94,8 @@ def book(
 	start_utc = parse_utc(start)
 	end_utc = start_utc + timedelta(minutes=page.duration)
 	hosts = page_hosts(page)
-	lock_hosts(hosts)
+	lock_hosts([*hosts, email])
+	check_booking_limits(page, email)
 	free_hosts = available_slots(page, start_utc, end_utc, hosts).get(start_utc)
 	if not free_hosts:
 		frappe.throw(_("That time was just taken. Please pick another one."), exc=SlotUnavailableError)
@@ -416,7 +417,8 @@ def link_values(doctype: str | None) -> set[str]:
 
 
 def lock_hosts(hosts: list[str]):
-	"""Serialise bookings per host so two visitors can't take the same slot.
+	"""Serialise bookings per host so two visitors can't take the same slot, and per
+	guest address so parallel requests can't slip past the booking limits.
 
 	A named lock in Redis, held until the booking commits or rolls back, so the
 	free/busy checks and Google calls inside it don't hold database row locks.
@@ -724,7 +726,8 @@ def fetch_google_busy(calendar, start_utc, end_utc) -> list[tuple[str, str]] | N
 	from frappe.integrations.doctype.google_calendar.google_calendar import get_google_calendar_object
 
 	try:
-		service, account = get_google_calendar_object(calendar)
+		with without_messages():
+			service, account = get_google_calendar_object(calendar)
 		# the host's own meetings live in "primary"; Frappe may sync into a calendar of its own
 		ids = {"primary", account.google_calendar_id} - {None, ""}
 		result = (
@@ -773,7 +776,7 @@ def plain(value) -> str:
 
 
 def create_event(page, booking, values: dict | None = None):
-	def build(with_guest=True):
+	def build():
 		event = frappe.new_doc("Event")
 		event.update(
 			{
@@ -789,31 +792,23 @@ def create_event(page, booking, values: dict | None = None):
 		if booking.reference_doctype:
 			event.reference_doctype = booking.reference_doctype
 			event.reference_docname = booking.reference_docname
-		if booking.reference_doctype and with_guest:
-			event.append(
-				"event_participants",
-				{
-					"reference_doctype": booking.reference_doctype,
-					"reference_docname": booking.reference_docname,
-					"email": booking.guest_email,
-				},
-			)
 		return event
 
 	calendar = frappe.db.get_value(
 		"Google Calendar", {"user": booking.host, "enable": 1, "push_to_google_calendar": 1}, "name"
 	)
-	# Google mails every participant the meeting's description, which holds the guest's
-	# own answers, from the host's account: a guest could send any text to any address.
-	# So a synced meeting has no guest participant; the guest gets the CRM's .ics instead.
-	event = build(with_guest=not calendar)
+	# The guest is never a participant: Google and the CRM's reminders would mail them the
+	# description, which holds their own answers, and a typed CRM user's address would put
+	# the meeting on that user's calendar. The guest gets the CRM's .ics instead.
+	event = build()
 	if calendar:
 		event.sync_with_google_calendar = 1
 		event.google_calendar = calendar
 		event.add_video_conferencing = int(page.location_type == "Google Meet")
 		frappe.db.savepoint("crm_booking_event")
 		try:
-			event.insert(ignore_permissions=True)
+			with without_messages():
+				event.insert(ignore_permissions=True)
 		except Exception:
 			# keep the booking even if Google is unreachable; it just won't sync
 			frappe.db.rollback(save_point="crm_booking_event")
@@ -840,13 +835,26 @@ def event_description(booking) -> str:
 	return "".join(lines)
 
 
+@contextmanager
+def without_messages():
+	"""Frappe's Google sync shows messages ("Event Synced with Google Calendar") meant
+	for a Desk user; keep them out of the response a guest gets."""
+	messages = frappe.local.message_log
+	frappe.local.message_log = []
+	try:
+		yield
+	finally:
+		frappe.local.message_log = messages
+
+
 def cancel_google_event(event):
 	if not (event.sync_with_google_calendar and event.google_calendar_event_id):
 		return
 	from frappe.integrations.doctype.google_calendar.google_calendar import delete_event_from_google_calendar
 
 	try:
-		delete_event_from_google_calendar(event)
+		with without_messages():
+			delete_event_from_google_calendar(event)
 	except Exception:
 		frappe.log_error(title=f"CRM Booking: Google cancel failed for {event.name}")
 
@@ -858,7 +866,10 @@ def save_event(event, values: dict):
 	event.flags.from_crm_booking = True
 	frappe.db.savepoint("crm_booking_event_save")
 	try:
-		event.save(ignore_permissions=True)  # the guest's, by token  # nosemgrep: frappe-ignore-permissions
+		with without_messages():
+			event.save(
+				ignore_permissions=True
+			)  # the guest's, by token  # nosemgrep: frappe-ignore-permissions
 	except Exception:
 		frappe.db.rollback(save_point="crm_booking_event_save")
 		frappe.log_error(title=f"CRM Booking: Google sync failed for {event.name}")
@@ -894,6 +905,11 @@ def sync_booking_from_event(event, method=None):
 	page = frappe.get_doc("CRM Booking Page", booking.booking_page)
 
 	if method == "on_trash" or event.status in ("Cancelled", "Closed"):
+		if get_datetime(booking.starts_on) <= now_datetime():
+			# a past meeting closed or deleted is done, not cancelled
+			if method == "on_trash":
+				booking.db_set("event", None, update_modified=False)
+			return
 		if method == "on_trash":
 			# the meeting is going; keep the booking as a record without it
 			booking.event = None
@@ -929,7 +945,9 @@ def cancel_bookings_closed_elsewhere():
 		.on(Event.name == Booking.event)
 		.select(Booking.name)
 		.where(
-			(Booking.status == "Confirmed") & (Booking.starts_on > now_datetime()) & (Event.status != "Open")
+			(Booking.status == "Confirmed")
+			& (Booking.starts_on > now_datetime())
+			& Event.status.isin(["Closed", "Cancelled"])
 		)
 	).run(pluck=True)
 	for name in names:
@@ -955,9 +973,9 @@ def send_booking_emails(page, booking, event, action: str, to_host: bool = True)
 
 	guest_when = format_when(booking, booking.guest_timezone or page_timezone(page))
 	attachments = []
-	if action in ("confirmed", "rescheduled"):
+	if action != "reminder":
 		attachments.append(
-			{"fname": "invite.ics", "fcontent": ics(page, booking, host_name, host_email, link)}
+			{"fname": "invite.ics", "fcontent": ics(page, booking, host_name, host_email, link, action)}
 		)
 	frappe.sendmail(
 		recipients=[booking.guest_email],
@@ -1172,7 +1190,7 @@ def format_when(booking, tz_name) -> str:
 	return f"{start:%A, %-d %B %Y}, {start:%-I:%M %p} – {end:%-I:%M %p} ({tz.key})"
 
 
-def ics(page, booking, host_name, host_email, link) -> str:
+def ics(page, booking, host_name, host_email, link, action="confirmed") -> str:
 	def stamp(dt):
 		return dt.strftime("%Y%m%dT%H%M%SZ")
 
@@ -1195,9 +1213,12 @@ def ics(page, booking, host_name, host_email, link) -> str:
 			"BEGIN:VCALENDAR",
 			"VERSION:2.0",
 			"PRODID:-//Frappe CRM//Booking//EN",
-			"METHOD:REQUEST",
+			"METHOD:CANCEL" if action == "cancelled" else "METHOD:REQUEST",
 			"BEGIN:VEVENT",
 			f"UID:{booking.name}@{frappe.local.site}",
+			# calendars apply a change to the same UID only with a higher sequence
+			f"SEQUENCE:{int((get_datetime(booking.modified) - get_datetime(booking.creation)).total_seconds())}",
+			"STATUS:CANCELLED" if action == "cancelled" else "STATUS:CONFIRMED",
 			f"DTSTAMP:{stamp(datetime.now(UTC))}",
 			f"DTSTART:{stamp(to_utc(booking.starts_on))}",
 			f"DTEND:{stamp(to_utc(booking.ends_on))}",
