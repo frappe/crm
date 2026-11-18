@@ -497,6 +497,41 @@ class TestBooking(IntegrationTestCase):
 		self.assertNotIn("lock in share mode", sql.call_args.args[0].lower())
 		self.assertNotIn("for update", sql.call_args.args[0].lower())
 
+	def test_a_host_edits_only_the_questions_on_their_page_form(self):
+		from crm.api.form import get_form_config, save_form
+
+		saved = frappe.get_doc("Web Form", self.page.web_form)
+		frappe.set_user(HOSTS[0])
+		try:
+			config = get_form_config(saved.name)
+			save_form(
+				saved.name,
+				{
+					**config,
+					"published": 1,
+					"route": "taken-over",
+					"redirect_url": "https://evil.example",
+					"document_type": "CRM Deal",
+					"fields": [
+						{**f, "depends_on": "eval:doc.first_name"} if f["fieldname"] == "email" else f
+						for f in config["fields"]
+					],
+				},
+			)
+			without_email = [f for f in config["fields"] if f["fieldname"] != "email"]
+			with self.assertRaises(frappe.ValidationError):
+				save_form(saved.name, {**config, "fields": without_email})
+		finally:
+			frappe.set_user("Administrator")
+
+		form = frappe.get_doc("Web Form", saved.name)
+		self.assertEqual(
+			(form.crm_published, form.published, form.route, form.success_url, form.doc_type),
+			(saved.crm_published, saved.published, saved.route, saved.success_url, saved.doc_type),
+		)
+		email = next(f for f in form.web_form_fields if f.fieldname == "email")
+		self.assertEqual((email.reqd, email.depends_on), (1, ""))
+
 	def test_a_booked_slot_cannot_be_booked_again(self):
 		self.book_as_guest(self.at(9), "first@example.com")
 		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday())

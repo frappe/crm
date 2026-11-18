@@ -458,7 +458,33 @@ def _validated_hidden_fields(document_type: str, hidden: list[dict]) -> list[dic
 def save_form(name: str | None, form: dict | str) -> dict:
 	"""Create/update a native Web Form scoped to CRM doctypes."""
 	_check_manager(name)
+	if isinstance(form, str):
+		form = json.loads(form or "{}")
+	if not set(frappe.get_roles()) & {"System Manager", "Sales Manager"}:
+		form = _booking_form_edit(name, form)
 	return _save_form(name, form)
+
+
+def _booking_form_edit(name: str, form: dict) -> dict:
+	"""A booking page's host edits only the questions on its form. Publishing, the
+	route, the redirect and the target doctype stay as the page set them, and the
+	email a booking needs is always asked."""
+	saved = _get_crm_form(name)
+	form = {
+		**form,
+		"published": saved.crm_published,
+		"route": saved.route,
+		"document_type": saved.doc_type,
+		"redirect_url": saved.success_url,
+		"allowed_embedding_domains": saved.allowed_embedding_domains,
+	}
+	fields = form.get("fields")
+	if fields is not None:
+		email = next((f for f in fields if f.get("fieldname") == "email"), None)
+		if not email:
+			frappe.throw(_("A booking form must ask for an email"))
+		email.update({"reqd": 1, "depends_on": "", "mandatory_depends_on": "", "read_only_depends_on": ""})
+	return form
 
 
 def _save_form(name: str | None, form: dict | str) -> dict:
