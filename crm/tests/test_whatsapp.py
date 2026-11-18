@@ -28,6 +28,7 @@ from crm.api.whatsapp import (
 	validate_account,
 )
 from crm.patches.v1_0.add_whatsapp_lead_source import execute as add_whatsapp_lead_source
+from crm.tests import requires_whatsapp
 
 COUNT = "crm.api.whatsapp.count_conversation"
 OLD = "+91 98765 43220"
@@ -219,6 +220,7 @@ class TestUpdateReferenceModified(FrappeTestCase):
 		update_reference_modified(self._message())
 		self.assertEqual(self._modified(), "2026-01-01 00:00:00")
 
+	@requires_whatsapp
 	def test_reply_submitted_from_the_webhook_bumps_the_lead(self):
 		account = frappe.get_doc(
 			{
@@ -318,6 +320,7 @@ class TestAddRoles(FrappeTestCase):
 			],
 		)
 
+	@requires_whatsapp
 	def test_sales_roles_can_read_but_not_write_accounts(self):
 		add_roles()
 
@@ -400,6 +403,7 @@ class TestGuardRecipientChange(FrappeTestCase):
 		with patch(COUNT, return_value=0):
 			guard_recipient_change("CRM Lead", "LEAD-1", OLD, NEW)
 
+	@requires_whatsapp
 	def test_moving_off_a_number_with_a_conversation_is_refused(self):
 		with patch(COUNT, return_value=3), self.assertRaises(WhatsAppRecipientChangeError) as refused:
 			guard_recipient_change("CRM Deal", "DEAL-1", OLD, NEW)
@@ -409,6 +413,7 @@ class TestGuardRecipientChange(FrappeTestCase):
 		self.assertIn(NEW, message)
 		self.assertIn("3", message)
 
+	@requires_whatsapp
 	def test_clearing_the_number_says_they_can_no_longer_be_messaged(self):
 		with patch(COUNT, return_value=1), self.assertRaises(WhatsAppRecipientChangeError) as refused:
 			guard_recipient_change("CRM Lead", "LEAD-1", OLD, "")
@@ -432,6 +437,7 @@ class TestGuardRecipientChange(FrappeTestCase):
 		count.assert_not_called()
 
 
+@requires_whatsapp
 class TestRecipientChangePaths(FrappeTestCase):
 	"""Every path that moves a Lead or Deal off its number has to go through the guard."""
 
@@ -553,6 +559,7 @@ class TestGuardDocRecipientChange(FrappeTestCase):
 		guard.assert_called_once_with("CRM Lead", "LEAD-1", OLD, NEW)
 
 
+@requires_whatsapp
 class TestCountConversation(FrappeTestCase):
 	def _profile(self, phone_number: str) -> str:
 		profile = frappe.get_doc(
@@ -594,6 +601,7 @@ class TestCountConversation(FrappeTestCase):
 		self.assertEqual(count_conversation("CRM Lead", self.lead, ""), 0)
 
 
+@requires_whatsapp
 class TestLeadFromIncomingWhatsApp(FrappeTestCase):
 	"""An account that appends incoming messages to CRM Lead gets a Lead for each new sender,
 	stamped with the WhatsApp source, before the whatsapp app's own append action runs."""
