@@ -35,11 +35,13 @@ runs:
           env:
               PACKAGES: ${{ inputs.packages }}
               DEBIAN_FRONTEND: noninteractive
+          # Download outside /var/cache/apt/archives: container images delete the .deb files there after each install.
           run: |
               sudo apt-get update
-              sudo -E apt-get install -y --no-install-recommends -o APT::Keep-Downloaded-Packages=true $PACKAGES
-              mkdir -p ~/apt-cache
-              cp /var/cache/apt/archives/*.deb ~/apt-cache/
+              mkdir -p ~/apt-cache/partial
+              sudo -E apt-get install -y --no-install-recommends --download-only -o Dir::Cache::archives="$HOME/apt-cache" $PACKAGES
+              sudo -E apt-get install -y --no-install-recommends -o Dir::Cache::archives="$HOME/apt-cache" $PACKAGES
+              sudo rm -rf ~/apt-cache/partial ~/apt-cache/lock
 
         - name: Save apt packages
           if: steps.cache.outputs.cache-hit != 'true'
