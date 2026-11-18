@@ -96,6 +96,7 @@
                   <FormControl
                     :model-value="String(doc.duration)"
                     type="select"
+                    :disabled="!canEdit"
                     :label="__('Duration')"
                     :options="durationOptions"
                     @update:model-value="
@@ -105,6 +106,7 @@
                   <FormControl
                     :model-value="doc.location_type"
                     type="select"
+                    :disabled="!canEdit"
                     :label="__('Location')"
                     :options="locationOptions"
                     @update:model-value="(v: string) => set('location_type', v)"
@@ -258,6 +260,7 @@
                         <div class="flex items-center gap-2">
                           <TimePicker
                             class="w-28"
+                            :disabled="!canEdit"
                             :interval="15"
                             format="h:mm a"
                             :model-value="hhmm(row.start_time)"
@@ -268,6 +271,7 @@
                           <span class="text-ink-gray-4">–</span>
                           <TimePicker
                             class="w-28"
+                            :disabled="!canEdit"
                             :interval="15"
                             format="h:mm a"
                             :options="endTimeOptions(row)"
@@ -352,6 +356,7 @@
                   <FormControl
                     :model-value="doc.timezone"
                     type="select"
+                    :disabled="!canEdit"
                     :label="__('Timezone')"
                     :options="timezoneOptions"
                     @update:model-value="(v: string) => set('timezone', v)"
@@ -362,6 +367,7 @@
                     </div>
                     <Link
                       doctype="CRM Holiday List"
+                      :disabled="!canEdit"
                       :model-value="doc.holiday_list"
                       :placeholder="__('None')"
                       @update:model-value="
@@ -406,6 +412,7 @@
                   <FormControl
                     :model-value="String(doc.slot_interval || 0)"
                     type="select"
+                    :disabled="!canEdit"
                     :label="__('Start times')"
                     :description="startTimesHint"
                     :options="intervalOptions"
@@ -419,7 +426,10 @@
             <!-- The form tab is rendered below, outside the panel -->
             <div v-else-if="tab.value === 'form'" />
             <div v-else class="flex flex-col pt-5">
-              <p v-if="!doc.enabled" class="mb-5 text-p-sm text-ink-gray-5">
+              <p
+                v-if="!doc.enabled && canEdit"
+                class="mb-5 text-p-sm text-ink-gray-5"
+              >
                 {{
                   __(
                     'This page isn’t live yet. Turn on Live to make the link and embeds work.',
@@ -508,6 +518,7 @@
                 </div>
                 <textarea
                   :value="doc.allowed_embedding_domains"
+                  :readonly="!canEdit"
                   rows="3"
                   spellcheck="false"
                   placeholder="https://www.example.com"
@@ -631,6 +642,7 @@
             <FormControl
               :model-value="doc.guest_reminder || 'No reminder'"
               type="select"
+              :disabled="!canEdit"
               :label="__('Remind guest')"
               :options="reminderOptions"
               :description="
@@ -799,7 +811,7 @@ const hostOptions = computed(() => {
 })
 
 function setHosts(ids: string[]) {
-  if (!doc.value) return
+  if (!doc.value || !canEdit.value) return
   const existing = doc.value.hosts
   doc.value.hosts = ids.map(
     (id) => existing.find((h) => h.user === id) || { user: id },
@@ -958,12 +970,13 @@ function set<K extends keyof BookingPageDoc>(
   field: K,
   value: BookingPageDoc[K],
 ) {
-  if (!doc.value) return
+  if (!doc.value || !canEdit.value) return
   doc.value[field] = value
   dirty.value = true
 }
 
 function setRow(row: Row, field: string, value: RowValue) {
+  if (!canEdit.value) return
   row[field] = value
   dirty.value = true
 }
@@ -1000,7 +1013,7 @@ function newRow(day: string, start: string, end: string): Row {
 }
 
 function toggleDay(day: string, on: boolean) {
-  if (!doc.value) return
+  if (!doc.value || !canEdit.value) return
   const rows = doc.value.availability.filter((r) => r.workday !== day)
   if (on) rows.push(newRow(day, '09:00:00', '17:00:00'))
   doc.value.availability = rows
@@ -1013,7 +1026,7 @@ const hoverAction =
 
 // the new range starts an hour after the day's last one ends
 function addHours(day: string) {
-  if (!doc.value) return
+  if (!doc.value || !canEdit.value) return
   const range = nextRange(hoursFor(day).at(-1))
   if (!range) {
     toast.info(__('No room for more hours on this day'))
@@ -1024,7 +1037,7 @@ function addHours(day: string) {
 }
 
 function removeHoursRow(row: Row) {
-  if (!doc.value) return
+  if (!doc.value || !canEdit.value) return
   doc.value.availability = doc.value.availability.filter((r) => r !== row)
   dirty.value = true
 }
@@ -1039,7 +1052,7 @@ function toggleCopyTarget(day: string, on: boolean) {
 }
 
 function copyTimes(day: string) {
-  if (!doc.value) return
+  if (!doc.value || !canEdit.value) return
   doc.value.availability = copyHours(
     doc.value.availability,
     day,
