@@ -3,7 +3,7 @@
     <section class="flex min-h-screen flex-col px-6 py-5">
       <div class="flex h-8 items-center justify-between">
         <Button
-          v-if="current > 0"
+          v-if="canGoBack"
           variant="ghost"
           icon-left="lucide-arrow-left"
           :label="__('Back')"
@@ -11,6 +11,7 @@
         />
         <span v-else />
         <Button
+          v-if="activeStep.name !== 'set_password'"
           variant="ghost"
           class="!text-ink-gray-5"
           :label="__('Skip setup')"
@@ -58,6 +59,7 @@
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import SetupPreview from '@/components/Setup/SetupPreview.vue'
+import SetupPassword from '@/components/Setup/SetupPassword.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
 import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
@@ -75,10 +77,14 @@ const { capture } = useTelemetry()
 const { $dialog } = globalStore()
 
 const steps = [
+  window.needs_password_setup && {
+    name: 'set_password',
+    component: markRaw(SetupPassword),
+  },
   { name: 'connect_email', component: markRaw(SetupEmail) },
   { name: 'bring_leads', component: markRaw(SetupLeads) },
   { name: 'invite_team', component: markRaw(SetupInvite) },
-]
+].filter(Boolean)
 
 const current = ref(0)
 const activeStepView = ref(null)
@@ -98,6 +104,9 @@ provide('setupPreview', previewState)
 const activeStep = computed(() => steps[current.value])
 const progress = computed(() => ((current.value + 1) / steps.length) * 100)
 const isLastStep = computed(() => current.value === steps.length - 1)
+const canGoBack = computed(
+  () => current.value > 0 && steps[current.value - 1].name !== 'set_password',
+)
 
 const setupStartedAt = Date.now()
 let stepStartedAt = setupStartedAt
