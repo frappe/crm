@@ -7,8 +7,8 @@
 set -eo pipefail
 
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
-# WhatsApp's default branch reports 1.0.0-dev; CRM requires >=1.3.0,<2.0.0.
-WHATSAPP_REF="v1.3.0"
+# Track WhatsApp releases; its default develop branch reports 1.0.0-dev.
+WHATSAPP_BRANCH="main"
 BENCH_NAME="frappe-bench"
 BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
 PILOT_CACHE_HIT="${PILOT_CACHE_HIT:-}"
@@ -36,7 +36,7 @@ cd "$BENCH_PATH"
 
 APPS="frappe whatsapp"
 pip_apps=(-e "apps/frappe[test]" -e apps/whatsapp)
-pilot get-app https://github.com/frappe/whatsapp --branch "$WHATSAPP_REF" --skip-assets
+pilot get-app https://github.com/frappe/whatsapp --branch "$WHATSAPP_BRANCH" --skip-assets
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
   APPS="$APPS erpnext"
   pip_apps+=(-e apps/erpnext)
@@ -85,7 +85,7 @@ else
   gunzip -c "$HOME/db-snapshot/test_site.sql.gz" | mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" "$db_name"
   # Fast-forward cached checkouts; the final migrate below covers schema drift.
   refresh_app frappe "refs/heads/$FRAPPE_BRANCH"
-  refresh_app whatsapp "refs/tags/$WHATSAPP_REF"
+  refresh_app whatsapp "refs/heads/$WHATSAPP_BRANCH"
   if [ "${INSTALL_ERPNEXT}" = "true" ]; then
     refresh_app erpnext "refs/heads/$FRAPPE_BRANCH"
   fi
