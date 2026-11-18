@@ -34,6 +34,12 @@ runs:
           with:
               node-version: ${{ inputs.node-version }}
 
+        # frappe-arc runs a bare image: install the build packages of the frappe/suite runner image.
+        - name: Install system packages
+          uses: ./.github/actions/apt-install
+          with:
+              packages: build-essential pkg-config libmariadb-dev mariadb-client libffi-dev libssl-dev libjpeg-dev libcairo2-dev libpango1.0-dev cron
+
         - name: Add to hosts file
           shell: bash
           run: echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
@@ -53,7 +59,7 @@ runs:
           id: bench-key
           shell: bash
           run: |
-              echo "key=${{ runner.os }}-pilot-bench-crm-${{ inputs.frappe-branch }}-py3.14-extdb-erpnext-${{ inputs.install-erpnext }}" >> "$GITHUB_OUTPUT"
+              echo "key=${{ runner.os }}-pilot-bench-crm-${{ inputs.frappe-branch }}-py3.14-extdb-erpnext-${{ inputs.install-erpnext }}-arc" >> "$GITHUB_OUTPUT"
 
         - name: Restore Pilot bench
           id: bench-cache

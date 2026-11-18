@@ -40,7 +40,7 @@ jobs:
     migrate:
         name: Upgrade base branch -> PR (frappe ${{ matrix.frappe-branch }})
         needs: setup
-        runs-on: ubuntu-latest
+        runs-on: frappe-arc
         timeout-minutes: 60
         strategy:
             fail-fast: false
@@ -76,12 +76,18 @@ jobs:
               with:
                   node-version: "24"
 
+            # frappe-arc runs a bare image: install the build packages of the frappe/suite runner image.
+            - name: Install system packages
+              uses: ./pr-crm/.github/actions/apt-install
+              with:
+                  packages: build-essential pkg-config libmariadb-dev mariadb-client libffi-dev libssl-dev libjpeg-dev libcairo2-dev libpango1.0-dev cron rsync
+
             # Stable key; drift is handled post-restore like server tests.
             - name: Compute bench cache key
               id: bench-key
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
-                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb2" >> "$GITHUB_OUTPUT"
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb2-arc" >> "$GITHUB_OUTPUT"
 
             - name: Restore Pilot bench
               id: bench-cache
