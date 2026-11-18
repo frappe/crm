@@ -968,6 +968,10 @@ class TestBooking(IntegrationTestCase):
 			with self.assertRaises(frappe.PermissionError):
 				get_event_list("Event", ["name"], shape)
 		get_event_list("Event", ["name"], [["Event Participants", "email", "like", "a%"]])
+		get_event_list("Event", ["name"], order_by="starts_on asc, creation DESC")
+		for order_by in ("google_calendar.calendar_name asc", "`tabGoogle Calendar`.calendar_name"):
+			with self.assertRaises(frappe.PermissionError):
+				get_event_list("Event", ["name"], order_by=order_by)
 
 	def test_an_events_owner_can_delete_it(self):
 		from crm.api.event import delete_event

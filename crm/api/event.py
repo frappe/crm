@@ -498,7 +498,7 @@ def get_event_list(
 		fields=fields,
 		filters=plain_filters(frappe.parse_json(filters)),
 		or_filters=plain_filters(frappe.parse_json(or_filters)),
-		order_by=order_by or "creation desc",
+		order_by=plain_order_by(order_by) or "creation desc",
 		limit_start=cint(limit_start),
 		limit_page_length=limit,
 		run=False,
@@ -548,6 +548,14 @@ def plain_filters(filters):
 				if not isinstance(item, str):
 					plain_filters(item)
 	return filters
+
+
+def plain_order_by(order_by: str | None) -> str | None:
+	"""Only plain fields, each with an optional direction, for the same reason."""
+	for term in (order_by or "").split(","):
+		if order_by and not re.fullmatch(r"\s*\w+(\s+(asc|desc))?\s*", term, re.IGNORECASE):
+			frappe.throw(_("Order not allowed: {0}").format(term.strip()), frappe.PermissionError)
+	return order_by
 
 
 def plain_filter_field(field):
