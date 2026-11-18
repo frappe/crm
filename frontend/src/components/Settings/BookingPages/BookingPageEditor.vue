@@ -274,13 +274,11 @@
                         />
                         <!-- a day's only range goes with the switch, not here -->
                         <Button
+                          v-if="hoursFor(day).length > 1"
                           variant="ghost"
                           icon="lucide-x"
                           :tooltip="__('Remove')"
-                          :class="[
-                            hoverAction,
-                            { invisible: hoursFor(day).length === 1 },
-                          ]"
+                          :class="hoverAction"
                           @click="removeHoursRow(row)"
                         />
                         <template v-if="i === 0">
