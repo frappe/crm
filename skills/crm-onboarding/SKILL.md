@@ -1,5 +1,5 @@
 ---
-name: crm-implementation
+name: crm-onboarding
 description: Set up Frappe CRM for a business and see it through to daily use. Ask how they sell, agree a setup plan in their words, set up stages, lost reasons, sources, products, currency, forecasting, the team, assignment and email, then check every step on the site's data. Use when someone wants to set up, implement or start using CRM, asks what to do next in their CRM setup, or asks whether their team is really using it, when the site runs the CRM app.
 ---
 
