@@ -115,6 +115,7 @@ jobs:
               with:
                   path: |
                       ~/pilot/benches
+                      ~/.local/share/uv/python
                       ~/.config/systemd/user
                       ~/db-snapshot
                   key: ${{ steps.bench-key.outputs.key }}
@@ -154,7 +155,25 @@ jobs:
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO 'test_frappe'@'localhost'"
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "FLUSH PRIVILEGES"
 
+<<<<<<< HEAD
             - name: Init bench with frappe
+=======
+            - name: Save Pilot bench
+              if: steps.bench-cache.outputs.cache-hit != 'true'
+              uses: actions/cache/save@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/.local/share/uv/python
+                      ~/.config/systemd/user
+                      ~/db-snapshot
+                  key: ${{ steps.bench-key.outputs.key }}
+
+            - name: Restore snapshot and migrate PR code
+              working-directory: /home/runner/pilot/benches/frappe-bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+>>>>>>> fa9d2a7 (ci: cache uv's Python with the pilot bench)
               run: |
                   pip install frappe-bench
                   git clone "https://github.com/frappe/frappe" --branch "${{ steps.frappe.outputs.branch }}" --depth 1 ~/frappe

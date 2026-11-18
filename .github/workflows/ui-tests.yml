@@ -122,6 +122,7 @@ jobs:
 =======
           path: |
             ~/pilot/benches
+            ~/.local/share/uv/python
           key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}-arc
 >>>>>>> 166841c (ci: run UI tests on frappe-arc with an external MariaDB)
 
@@ -171,7 +172,11 @@ jobs:
 =======
           path: |
             ~/pilot/benches
+<<<<<<< HEAD
 >>>>>>> 166841c (ci: run UI tests on frappe-arc with an external MariaDB)
+=======
+            ~/.local/share/uv/python
+>>>>>>> fa9d2a7 (ci: cache uv's Python with the pilot bench)
           key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM
