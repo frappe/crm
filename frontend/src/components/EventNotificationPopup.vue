@@ -53,7 +53,8 @@
 <script setup>
 import { useEventNotificationAlert } from '@/data/notifications'
 import { usersStore } from '@/stores/users'
-import { Button, dayjs } from 'frappe-ui'
+import { Button } from 'frappe-ui'
+import { eventTime } from '@/composables/event'
 import { computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -77,7 +78,10 @@ function openEvent(e) {
     name: 'Calendar',
     query: {
       eventId: e.notification.event_name,
-      date: dayjs(e.notification.starts_on).format('YYYY-MM-DD'),
+      date: eventTime(
+        e.notification.starts_on,
+        e.notification.all_day_event,
+      ).format('YYYY-MM-DD'),
     },
   })
 }
@@ -92,8 +96,8 @@ function formatEventTime(notification) {
   if (notification.all_day_event) {
     return __('All Day')
   } else if (notification.starts_on) {
-    const startTime = dayjs(notification.starts_on).format('h:mm a')
-    const endTime = dayjs(notification.ends_on).format('h:mm a')
+    const startTime = eventTime(notification.starts_on).format('h:mm a')
+    const endTime = eventTime(notification.ends_on).format('h:mm a')
     return `${startTime} - ${endTime}`
   }
   return ''

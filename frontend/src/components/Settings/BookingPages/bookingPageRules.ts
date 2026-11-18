@@ -145,9 +145,10 @@ export function embedSnippet(
   title: string,
 ): string {
   const id = `crm-book-${route}`
+  const label = escapeAttribute(title || 'Book a meeting')
   const origin = new URL(url).origin
   return [
-    `<iframe id="${id}" src="${url}?embed=1" width="100%" height="720" style="border:0" title="${title || 'Book a meeting'}"></iframe>`,
+    `<iframe id="${id}" src="${url}?embed=1" width="100%" height="720" style="border:0" title="${label}"></iframe>`,
     '<script>',
     '  addEventListener("message", (e) => {',
     `    if (e.origin === "${origin}" && e.data?.type === "crm-book:height" && e.data.route === "${route}")`,
@@ -176,4 +177,13 @@ export function googleConnectHref(
       push_to_google_calendar: '1',
     })
   )
+}
+
+// the page title goes inside the snippet's title="…"
+function escapeAttribute(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
 }

@@ -199,12 +199,14 @@ import {
   confirmBookingMove,
   deleteEventMessage,
   movesBooking,
+  eventTime,
+  toSystemTime,
 } from '@/composables/event'
 
 const { user } = sessionStore()
 
 function openBookingPages() {
-  activeSettingsPage.value = 'Booking Pages'
+  activeSettingsPage.value = __('Booking Pages')
   showSettings.value = true
 }
 const { $dialog } = globalStore()
@@ -237,10 +239,13 @@ async function updateUser(u) {
 function buildEventFilters(range) {
   const filters = [['status', '=', 'Open']]
   if (range?.startDate && range?.endDate) {
-    const start = dayjs(range.startDate)
-      .startOf('day')
-      .format('YYYY-MM-DD HH:mm:ss')
-    const end = dayjs(range.endDate).endOf('day').format('YYYY-MM-DD HH:mm:ss')
+    // the range is in the user's days; events are stored in system time
+    const start = toSystemTime(
+      dayjs(range.startDate).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    )
+    const end = toSystemTime(
+      dayjs(range.endDate).endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    )
     filters.push(['starts_on', '<=', end])
     filters.push(['ends_on', '>=', start])
   }
@@ -283,10 +288,10 @@ const events = createListResource({
         title: ev.subject,
         description: ev.description,
         status: ev.status,
-        fromDate: dayjs(ev.starts_on).format('YYYY-MM-DD'),
-        toDate: dayjs(ev.ends_on).format('YYYY-MM-DD'),
-        fromTime: dayjs(ev.starts_on).format('HH:mm'),
-        toTime: dayjs(ev.ends_on).format('HH:mm'),
+        fromDate: eventTime(ev.starts_on, ev.all_day).format('YYYY-MM-DD'),
+        toDate: eventTime(ev.ends_on, ev.all_day).format('YYYY-MM-DD'),
+        fromTime: eventTime(ev.starts_on, ev.all_day).format('HH:mm'),
+        toTime: eventTime(ev.ends_on, ev.all_day).format('HH:mm'),
         isFullDay: ev.all_day,
         eventType: ev.event_type,
         location: ev.location,
@@ -339,8 +344,14 @@ function buildEventPayload(_event) {
   return {
     subject: _event.title,
     description: _event.description,
-    starts_on: `${_event.fromDate} ${_event.fromTime}`,
-    ends_on: `${_event.toDate} ${_event.toTime}`,
+    starts_on: toSystemTime(
+      `${_event.fromDate} ${_event.fromTime}`,
+      _event.isFullDay,
+    ),
+    ends_on: toSystemTime(
+      `${_event.toDate} ${_event.toTime}`,
+      _event.isFullDay,
+    ),
     all_day: _event.isFullDay || false,
     event_type: _event.eventType,
     location: _event.location,
@@ -443,16 +454,16 @@ function deleteEvent(eventID) {
         variant: 'solid',
         theme: 'red',
         onClick: (close) => {
-          events.delete.submit(eventID, {
-            onSuccess: () => {
+          // Frappe lets only System Managers delete events; the CRM lets owners too
+          call('crm.api.event.delete_event', { name: eventID })
+            .then(() => {
               toast.success(__('Event deleted successfully'))
               events.reload()
-            },
-            onError: (err) => {
-              toast.error(err.messages[0])
+            })
+            .catch((err) => {
+              toast.error(err.messages?.[0] || __('Could not delete the event'))
               console.error('Failed deleting event', err)
-            },
-          })
+            })
           showEventPanel.value = false
           event.value = {}
           activeEvent.value = ''

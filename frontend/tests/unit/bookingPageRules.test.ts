@@ -120,6 +120,14 @@ describe('booking page sharing', () => {
       '<iframe id="crm-book-demo" src="https://acme.frappe.cloud/crm-book/demo?embed=1"',
     )
     expect(code).toContain('title="Product demo"')
+    // a title can't break out of the attribute it's pasted into
+    expect(
+      embedSnippet(
+        'https://acme.frappe.cloud/crm-book/x',
+        'x',
+        'A "quick" <chat>',
+      ),
+    ).toContain('title="A &quot;quick&quot; &lt;chat&gt;"')
     // only height messages from the CRM site, for this page, are trusted
     expect(code).toContain('e.origin === "https://acme.frappe.cloud"')
     expect(code).toContain('e.data.route === "demo"')

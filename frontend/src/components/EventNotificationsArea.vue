@@ -91,6 +91,7 @@ import EventIcon from '@/components/Icons/EventIcon.vue'
 import { useEventNotifications } from '@/data/notifications'
 import { notificationsStore } from '@/stores/notifications'
 import { dayjs } from 'frappe-ui'
+import { eventTime } from '@/composables/event'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -119,7 +120,7 @@ const computedEvents = computed(() => {
 
     // Starting Now: Event is within [now - 5 min, now + 5 min]
     if (
-      dayjs(event.starts_on).isBetween(
+      eventTime(event.starts_on, event.all_day).isBetween(
         dayjs().subtract(5, 'minute'),
         dayjs().add(5, 'minute'),
       )
@@ -127,13 +128,19 @@ const computedEvents = computed(() => {
       type = 'startingNow'
     }
     // Upcoming: Event is greater than now + 5 min
-    else if (dayjs(event.starts_on).isAfter(dayjs().add(5, 'minute'))) {
+    else if (
+      eventTime(event.starts_on, event.all_day).isAfter(
+        dayjs().add(5, 'minute'),
+      )
+    ) {
       type = 'upcoming'
     }
     // Ongoing: Event is currently happening (now is between starts_on + 5 min and ends_on)
     else if (
-      dayjs(event.starts_on).isBefore(dayjs().add(5, 'minute')) &&
-      dayjs(event.ends_on).isAfter(dayjs())
+      eventTime(event.starts_on, event.all_day).isBefore(
+        dayjs().add(5, 'minute'),
+      ) &&
+      eventTime(event.ends_on, event.all_day).isAfter(dayjs())
     ) {
       type = 'ongoing'
     }
@@ -141,9 +148,9 @@ const computedEvents = computed(() => {
     return {
       id: event.name,
       title: event.subject,
-      fromDate: dayjs(event.starts_on).format('YYYY-MM-DD'),
-      fromTime: dayjs(event.starts_on).format('h:mm a'),
-      toTime: dayjs(event.ends_on).format('h:mm a'),
+      fromDate: eventTime(event.starts_on, event.all_day).format('YYYY-MM-DD'),
+      fromTime: eventTime(event.starts_on, event.all_day).format('h:mm a'),
+      toTime: eventTime(event.ends_on, event.all_day).format('h:mm a'),
       color: event.color,
       allDay: event.all_day,
       owner: event.owner,

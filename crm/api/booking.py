@@ -72,11 +72,9 @@ def book(
 	timezone: str | None = None,
 ) -> dict:
 	"""Book `start` with the answers to the page's form, which include name and email."""
-	page = get_page(route)
+	page = get_page(route, enabled_only=True)
 	doc_values, answers = clean_form_values(page, frappe.parse_json(values) or {})
-	email = str(doc_values.get("email") or "").lower()
-	if not validate_email_address(email):
-		frappe.throw(_("Please enter a valid email address"))
+	email = guest_email(doc_values.get("email"))
 	doc_values["email"] = email
 	check_booking_limits(page, email)
 	full_name = (
@@ -146,15 +144,13 @@ def cancel_booking(token: str, reason: str | None = None) -> dict:
 	ensure_upcoming(booking)
 	booking.status = "Cancelled"
 	booking.cancel_reason = (reason or "").strip()[:500]
-	booking.save(ignore_permissions=True)
+	booking.save(ignore_permissions=True)  # the guest's, by token  # nosemgrep: frappe-ignore-permissions
 
 	page = frappe.get_doc("CRM Booking Page", booking.booking_page)
 	event = None
 	if booking.event and frappe.db.exists("Event", booking.event):
 		event = frappe.get_doc("Event", booking.event)
-		event.status = "Cancelled"
-		event.flags.from_crm_booking = True
-		event.save(ignore_permissions=True)
+		save_event(event, {"status": "Cancelled"})
 		cancel_google_event(event)
 	send_booking_emails(page, booking, event, "cancelled")
 	notify_host(page, booking, "cancelled")
@@ -167,7 +163,7 @@ def cancel_booking(token: str, reason: str | None = None) -> dict:
 def reschedule_booking(token: str, start: str) -> dict:
 	booking = get_booking_by_token(token)
 	ensure_upcoming(booking)
-	page = get_page(frappe.db.get_value("CRM Booking Page", booking.booking_page, "route"))
+	page = get_page(frappe.db.get_value("CRM Booking Page", booking.booking_page, "route"), enabled_only=True)
 
 	start_utc = parse_utc(start)
 	end_utc = start_utc + timedelta(minutes=page.duration)
@@ -177,16 +173,13 @@ def reschedule_booking(token: str, start: str) -> dict:
 
 	booking.starts_on = to_system(start_utc)
 	booking.ends_on = to_system(end_utc)
-	booking.save(ignore_permissions=True)
+	booking.save(ignore_permissions=True)  # the guest's, by token  # nosemgrep: frappe-ignore-permissions
 
 	event = None
 	if booking.event and frappe.db.exists("Event", booking.event):
 		event = frappe.get_doc("Event", booking.event)
-		event.starts_on = booking.starts_on
-		event.ends_on = booking.ends_on
-		event.flags.from_crm_booking = True
 		# saving pushes the new time to Google, which emails the attendees
-		event.save(ignore_permissions=True)
+		save_event(event, {"starts_on": booking.starts_on, "ends_on": booking.ends_on})
 	send_booking_emails(page, booking, event, "rescheduled")
 	notify_host(page, booking, "rescheduled")
 	return public_booking(booking, page, event)
@@ -248,10 +241,13 @@ def create_page(title: str, route: str, document_type: str = "CRM Lead") -> str:
 # Pages and bookings
 
 
-def get_page(route: str):
-	"""An enabled page by route. People who can edit pages may also open disabled ones, to preview."""
+def get_page(route: str, enabled_only: bool = False):
+	"""An enabled page by route. People who can edit pages may also open disabled ones, to
+	preview, but only a live page takes bookings."""
 	filters = {"route": route}
-	if not (frappe.session.user != "Guest" and frappe.has_permission("CRM Booking Page", "write")):
+	if enabled_only or not (
+		frappe.session.user != "Guest" and frappe.has_permission("CRM Booking Page", "write")
+	):
 		filters["enabled"] = 1
 	name = frappe.db.get_value("CRM Booking Page", filters)
 	if not name:
@@ -315,6 +311,14 @@ def get_booking_by_token(token: str | None, confirmed_only: bool = True):
 def ensure_upcoming(booking):
 	if to_utc(booking.starts_on) <= datetime.now(UTC):
 		frappe.throw(_("This meeting has already started"))
+
+
+def guest_email(value) -> str:
+	"""One bare address, lowercased, so the per-email limits and lead matching see one guest."""
+	email = validate_email_address(str(value or "").strip())
+	if not email or "," in email:
+		frappe.throw(_("Please enter a valid email address"))
+	return email.lower()
 
 
 def check_booking_limits(page, email: str):
@@ -591,7 +595,8 @@ def event_busy_times(host, start_utc, end_utc, exclude_event=None) -> list[tuple
 				coalesce(e.ends_on, e.starts_on) > %(start)s
 				or (e.repeat_this_event = 1 and coalesce(e.repeat_till, '3000-01-01') >= date(%(start)s))
 			)
-		""",
+		"""
+		+ latest_rows(host),
 		{"host": host, "emails": tuple(emails), "start": start, "end": end, "exclude": exclude_event or ""},
 		as_dict=True,
 	)
@@ -600,6 +605,14 @@ def event_busy_times(host, start_utc, end_utc, exclude_event=None) -> list[tuple
 		for occ_start, occ_end in occurrences(e, start, end):
 			busy.append((to_utc(occ_start), to_utc(occ_end)))
 	return busy
+
+
+def latest_rows(host) -> str:
+	"""Under the host's lock, read what's committed now, not the transaction's snapshot:
+	on MariaDB that snapshot can predate a booking that finished while this one waited."""
+	if host in held_host_locks() and frappe.db.db_type == "mariadb":
+		return " lock in share mode"
+	return ""
 
 
 def occurrences(event, start, end):
@@ -650,6 +663,9 @@ def google_busy_times(host, start_utc, end_utc) -> list[tuple[datetime, datetime
 	missing = [day for day, blocks in cached.items() if blocks is None]
 	if missing:
 		fetched = fetch_google_busy(calendar, missing[0], missing[-1] + timedelta(days=1))
+		if fetched is None:
+			# Google didn't answer; ask again next time rather than remember "free"
+			return [(parse_utc(s), parse_utc(e)) for day in days for s, e in cached[day] or []]
 		for day in missing:
 			# a block spanning midnight is kept on every day it touches
 			cached[day] = [
@@ -660,7 +676,7 @@ def google_busy_times(host, start_utc, end_utc) -> list[tuple[datetime, datetime
 	return [(parse_utc(s), parse_utc(e)) for s, e in blocks]
 
 
-def fetch_google_busy(calendar, start_utc, end_utc) -> list[tuple[str, str]]:
+def fetch_google_busy(calendar, start_utc, end_utc) -> list[tuple[str, str]] | None:
 	from frappe.integrations.doctype.google_calendar.google_calendar import get_google_calendar_object
 
 	try:
@@ -680,7 +696,7 @@ def fetch_google_busy(calendar, start_utc, end_utc) -> list[tuple[str, str]]:
 		)
 	except Exception:
 		frappe.log_error(title=f"CRM Booking: Google free/busy failed for {calendar}")
-		return []
+		return None
 	return [
 		(b["start"], b["end"]) for cal in result.get("calendars", {}).values() for b in cal.get("busy", [])
 	]
@@ -787,6 +803,20 @@ def cancel_google_event(event):
 		frappe.log_error(title=f"CRM Booking: Google cancel failed for {event.name}")
 
 
+def save_event(event, values: dict):
+	"""Change a booking's meeting. If Google rejects the change (a revoked token, say),
+	still change it in the CRM, so the guest's cancel or new time goes through."""
+	event.update(values)
+	event.flags.from_crm_booking = True
+	frappe.db.savepoint("crm_booking_event_save")
+	try:
+		event.save(ignore_permissions=True)  # the guest's, by token  # nosemgrep: frappe-ignore-permissions
+	except Exception:
+		frappe.db.rollback(save_point="crm_booking_event_save")
+		frappe.log_error(title=f"CRM Booking: Google sync failed for {event.name}")
+		event.db_set(values)
+
+
 def meeting_link(page, event) -> str:
 	if page.location_type == "Google Meet":
 		return (event and event.google_meet_link) or ""
@@ -800,6 +830,15 @@ def sync_booking_from_event(event, method=None):
 	it in the CRM: the visitor's booking page and emails then match the calendar."""
 	if event.flags.from_crm_booking or event.is_new():
 		return
+	if method == "on_trash":
+		# a booking cancelled earlier still links the meeting, which would block the delete
+		frappe.db.set_value(
+			"CRM Booking",
+			{"event": event.name, "status": ["!=", "Confirmed"]},
+			"event",
+			None,
+			update_modified=False,
+		)
 	name = frappe.db.get_value("CRM Booking", {"event": event.name, "status": "Confirmed"})
 	if not name:
 		return
@@ -950,7 +989,7 @@ def send_guest_reminders():
 def hosts_without_google(users: list | str) -> list[str]:
 	"""Hosts whose Google Calendar isn't connected to the CRM (enabled, pushing, and
 	authorized), so Google can't block their slots or give their meetings a Meet link."""
-	users = frappe.parse_json(users) or []
+	users = booking_hosts_to_check(users)
 	calendars = frappe.get_all(
 		"Google Calendar",
 		filters={"user": ["in", users or [""]], "enable": 1, "push_to_google_calendar": 1},
@@ -969,7 +1008,7 @@ def hosts_without_google(users: list | str) -> list[str]:
 def google_status(users: list | str) -> dict:
 	"""For a page's settings: whether Google is set up on the site, which hosts haven't
 	connected their calendar, and the current user's own Google Calendar record."""
-	users = frappe.parse_json(users) or []
+	users = booking_hosts_to_check(users)
 	configured = bool(frappe.db.get_single_value("Google Settings", "enable"))
 	return {
 		"configured": configured,
@@ -977,6 +1016,19 @@ def google_status(users: list | str) -> dict:
 		"unconnected": hosts_without_google(users) if configured else users,
 		"my_calendar": frappe.db.get_value("Google Calendar", {"user": frappe.session.user}, "name"),
 	}
+
+
+MAX_HOSTS_TO_CHECK = 50
+
+
+def booking_hosts_to_check(users) -> list[str]:
+	"""For people setting up a booking page: the CRM users among `users`."""
+	frappe.has_permission("CRM Booking Page", "write", throw=True)
+	from crm.fcrm.doctype.crm_booking_page.crm_booking_page import crm_users
+
+	users = (frappe.parse_json(users) or [])[:MAX_HOSTS_TO_CHECK]
+	allowed = crm_users(users)
+	return [u for u in users if u in allowed]
 
 
 def notify_host(page, booking, action: str):

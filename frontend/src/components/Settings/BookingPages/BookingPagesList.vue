@@ -170,7 +170,12 @@ interface BookingPageRow {
 }
 
 const emit = defineEmits<{ open: [name: string] }>()
-const { getUser } = usersStore()
+const { getUser, isManager } = usersStore()
+
+// only managers and a page's own hosts may change it (CRM Booking Page.validate_editor)
+function canChange(page: BookingPageRow) {
+  return isManager() || page.hosts.includes(getUser().name)
+}
 
 const pages = createResource({ url: 'crm.api.booking.list_pages', auto: true })
 const isConfirmingDelete = ref(false)
@@ -233,13 +238,20 @@ async function createPage() {
 }
 
 async function setEnabled(page: BookingPageRow, enabled: boolean) {
-  await call('frappe.client.set_value', {
-    doctype: 'CRM Booking Page',
-    name: page.name,
-    fieldname: 'enabled',
-    value: enabled ? 1 : 0,
-  })
-  pages.reload()
+  try {
+    await call('frappe.client.set_value', {
+      doctype: 'CRM Booking Page',
+      name: page.name,
+      fieldname: 'enabled',
+      value: enabled ? 1 : 0,
+    })
+    pages.reload()
+  } catch (e) {
+    toast.error(
+      (e as { messages?: string[] })?.messages?.[0] ||
+        __('Could not change the page'),
+    )
+  }
 }
 
 // a page with bookings is kept, so its bookings keep their history; it can be turned off
@@ -296,6 +308,7 @@ function rowOptions(page: BookingPageRow) {
       label: page.enabled ? __('Turn off') : __('Turn on'),
       icon: page.enabled ? 'lucide-eye-off' : 'lucide-eye',
       onClick: () => setEnabled(page, !page.enabled),
+      condition: () => canChange(page),
     },
     {
       label: __('Copy link'),
@@ -307,10 +320,12 @@ function rowOptions(page: BookingPageRow) {
       icon: 'lucide-external-link',
       onClick: () => window.open(pageUrl(page.route), '_blank'),
     },
-    ...ConfirmDelete({
-      isConfirmingDelete,
-      onConfirmDelete: () => deletePage(page),
-    }),
+    ...(canChange(page)
+      ? ConfirmDelete({
+          isConfirmingDelete,
+          onConfirmDelete: () => deletePage(page),
+        })
+      : []),
   ]
 }
 

@@ -5,8 +5,10 @@ import frappe
 from frappe.model.document import Document
 
 from crm.permissions.org_hierarchy import (
+	_in_hierarchy,
 	get_deal_permission_query_conditions,
 	get_lead_permission_query_conditions,
+	hierarchy_enabled,
 )
 
 
@@ -20,7 +22,13 @@ class CRMBooking(Document):
 
 
 def sees_all_bookings(user: str) -> bool:
-	return user == "Administrator" or bool({"System Manager", "Sales Manager"} & set(frappe.get_roles(user)))
+	"""As for leads: a Sales Manager inside the sales hierarchy sees only their subtree."""
+	if user == "Administrator":
+		return True
+	roles = frappe.get_roles(user)
+	if "System Manager" in roles:
+		return True
+	return "Sales Manager" in roles and not (hierarchy_enabled() and _in_hierarchy(user))
 
 
 def get_permission_query_conditions(user=None):

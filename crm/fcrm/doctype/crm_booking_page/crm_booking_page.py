@@ -18,6 +18,9 @@ class CRMBookingPage(Document):
 			frappe.throw(_("Route is required"))
 		if self.duration <= 0:
 			frappe.throw(_("Duration must be more than zero"))
+		for field in ("slot_interval", "buffer", "min_notice", "max_days_ahead"):
+			if (self.get(field) or 0) < 0:
+				frappe.throw(_("{0} can't be negative").format(_(self.meta.get_label(field))))
 		if self.timezone:
 			try:
 				ZoneInfo(self.timezone)
@@ -44,24 +47,9 @@ class CRMBookingPage(Document):
 		hosts = [h.user for h in self.hosts]
 		if len(hosts) != len(set(hosts)):
 			frappe.throw(_("A host is listed more than once"))
-		crm_users = set(
-			frappe.get_all(
-				"Has Role",
-				filters={
-					"parenttype": "User",
-					"parent": ["in", hosts or [""]],
-					"role": ["in", ["Sales User", "Sales Manager", "System Manager"]],
-				},
-				pluck="parent",
-			)
-		)
-		system_users = set(
-			frappe.get_all(
-				"User", filters={"name": ["in", hosts or [""]], "user_type": "System User"}, pluck="name"
-			)
-		)
+		allowed = crm_users(hosts)
 		for host in hosts:
-			if host == "Guest" or host not in crm_users or host not in system_users:
+			if host not in allowed:
 				frappe.throw(_("{0} can't host bookings: they aren't a CRM user").format(host))
 
 	def validate_location(self):
@@ -144,3 +132,20 @@ def has_permission(doc, ptype, user=None):
 			"CRM Booking Page Host", {"parent": doc.name, "parenttype": doc.doctype, "user": user}
 		)
 	)
+
+
+def crm_users(users: list[str]) -> set[str]:
+	"""The users who can host bookings: System Users with a CRM role."""
+	with_role = frappe.get_all(
+		"Has Role",
+		filters={
+			"parenttype": "User",
+			"parent": ["in", users or [""]],
+			"role": ["in", ["Sales User", "Sales Manager", "System Manager"]],
+		},
+		pluck="parent",
+	)
+	system_users = frappe.get_all(
+		"User", filters={"name": ["in", users or [""]], "user_type": "System User"}, pluck="name"
+	)
+	return (set(with_role) & set(system_users)) - {"Guest"}

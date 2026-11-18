@@ -126,6 +126,7 @@ function markAllAsRead() {
 
 onBeforeUnmount(() => {
   $socket.off('crm_notification')
+  $socket.off('event_notification')
 })
 
 onMounted(() => {

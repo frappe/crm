@@ -494,7 +494,7 @@ def get_event_list(
 	frappe.has_permission("Event", "read", throw=True)
 	# each row gets its own permission check, so never load an unbounded list
 	limit = min(cint(limit) or MAX_EVENT_ROWS, MAX_EVENT_ROWS)
-	fields = frappe.parse_json(fields) or ["*"]
+	fields = plain_fields(doctype, frappe.parse_json(fields) or ["*"])
 	rows = frappe.get_all(
 		doctype,
 		# the visibility check needs the event's link
@@ -519,6 +519,28 @@ def get_event_list(
 	)
 	visible = {e.name for e in events if can_see_event(e)}
 	return [row for row in rows if row.get("parent") in visible]
+
+
+def plain_fields(doctype: str, fields: list) -> list[str]:
+	"""Only the doctype's own columns. The visibility check reads name and the event's
+	link from each row, so an alias like "x as name" must not stand in for them."""
+	columns = set(frappe.get_meta(doctype).get_valid_columns())
+	for field in fields:
+		if field != "*" and field not in columns:
+			frappe.throw(_("Field not allowed: {0}").format(field), frappe.PermissionError)
+	return fields
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_event(name: str):
+	"""Frappe lets only System Managers delete an Event; in the CRM its owner may too."""
+	event = frappe.get_doc("Event", name)
+	if frappe.has_permission("Event", "delete", doc=event):
+		event.delete()
+		return
+	if event.owner != frappe.session.user:
+		frappe.throw(_("Only the event's owner can delete it"), frappe.PermissionError)
+	event.delete(ignore_permissions=True)  # its owner, checked above  # nosemgrep: frappe-ignore-permissions
 
 
 @frappe.whitelist()

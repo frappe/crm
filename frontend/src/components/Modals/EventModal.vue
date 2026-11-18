@@ -238,6 +238,8 @@ import {
   TimePicker,
   dayjs,
   Dropdown,
+  call,
+  toast,
 } from 'frappe-ui'
 import { globalStore } from '@/stores/global'
 import { validateEmail, getFormat } from '@/utils'
@@ -251,6 +253,8 @@ import {
   confirmBookingMove,
   deleteEventMessage,
   movesBooking,
+  eventTime,
+  toSystemTime,
 } from '@/composables/event'
 import { CalendarColorMap as colorMap } from 'frappe-ui/experimental'
 import { onMounted, ref, computed, h } from 'vue'
@@ -313,8 +317,8 @@ const peoples = computed({
 
 onMounted(() => {
   if (props.event) {
-    let start = dayjs(props.event.starts_on)
-    let end = dayjs(props.event.ends_on)
+    let start = eventTime(props.event.starts_on, props.event.all_day)
+    let end = eventTime(props.event.ends_on, props.event.all_day)
 
     if (!props.event.name) {
       start = dayjs()
@@ -409,8 +413,14 @@ function createEvent() {
     {
       subject: _event.value.title,
       description: _event.value.description,
-      starts_on: _event.value.fromDate + ' ' + _event.value.fromTime,
-      ends_on: _event.value.toDate + ' ' + _event.value.toTime,
+      starts_on: toSystemTime(
+        _event.value.fromDate + ' ' + _event.value.fromTime,
+        _event.value.isFullDay,
+      ),
+      ends_on: toSystemTime(
+        _event.value.toDate + ' ' + _event.value.toTime,
+        _event.value.isFullDay,
+      ),
       all_day: _event.value.isFullDay || false,
       event_type: _event.value.eventType,
       location: _event.value.location || '',
@@ -424,6 +434,9 @@ function createEvent() {
       onSuccess: async () => {
         await eventsResource.reload()
         show.value = false
+      },
+      onError: (err) => {
+        error.value = err.messages?.[0] || __('Could not save the event')
       },
     },
   )
@@ -440,8 +453,14 @@ function updateEvent() {
       name: _event.value.id,
       subject: _event.value.title,
       description: _event.value.description,
-      starts_on: _event.value.fromDate + ' ' + _event.value.fromTime,
-      ends_on: _event.value.toDate + ' ' + _event.value.toTime,
+      starts_on: toSystemTime(
+        _event.value.fromDate + ' ' + _event.value.fromTime,
+        _event.value.isFullDay,
+      ),
+      ends_on: toSystemTime(
+        _event.value.toDate + ' ' + _event.value.toTime,
+        _event.value.isFullDay,
+      ),
       all_day: _event.value.isFullDay,
       event_type: _event.value.eventType,
       location: _event.value.location || '',
@@ -455,6 +474,9 @@ function updateEvent() {
       onSuccess: async () => {
         await eventsResource.reload()
         show.value = false
+      },
+      onError: (err) => {
+        error.value = err.messages?.[0] || __('Could not save the event')
       },
     },
   )
@@ -481,14 +503,16 @@ function deleteEvent() {
         label: __('Delete'),
         variant: 'solid',
         theme: 'red',
-        onClick: (close) => {
-          eventsResource.delete.submit(_event.value.id, {
-            onSuccess: async () => {
-              await eventsResource.reload()
-              show.value = false
-              close()
-            },
-          })
+        onClick: async (close) => {
+          try {
+            await call('crm.api.event.delete_event', { name: _event.value.id })
+          } catch (err) {
+            toast.error(err.messages?.[0] || __('Could not delete the event'))
+            return
+          }
+          await eventsResource.reload()
+          show.value = false
+          close()
         },
       },
     ],

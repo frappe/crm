@@ -83,6 +83,13 @@ class TestFormConditions(IntegrationTestCase):
 		self.assertEqual(form_value_errors(fields, {"organization": "Acme"}), "Please fill in: Website")
 		self.assertIsNone(form_value_errors(fields, {"organization": "Acme", "website": "acme.com"}))
 
+	def test_zero_answers_a_number_but_not_a_checkbox(self):
+		seats = frappe._dict(fieldname="seats", fieldtype="Int", label="Seats", reqd=1)
+		agree = frappe._dict(fieldname="agree", fieldtype="Check", label="I agree", reqd=1)
+		self.assertIsNone(form_value_errors([seats], {"seats": 0}))
+		self.assertEqual(form_value_errors([agree], {"agree": 0}), "Please fill in: I agree")
+		self.assertIsNone(form_value_errors([agree], {"agree": 1}))
+
 
 class TestWebFormSubmissionRules(IntegrationTestCase):
 	"""A CRM web form's own required fields hold for a submission that skips the page."""

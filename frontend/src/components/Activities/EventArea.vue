@@ -57,7 +57,9 @@
                   startEndTime(event.starts_on, event.ends_on, event.all_day)
                 }}
               </div>
-              <div>{{ startDate(event.starts_on) }}</div>
+              <div>
+                {{ startDate(event.starts_on, undefined, event.all_day) }}
+              </div>
             </div>
           </div>
         </div>

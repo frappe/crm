@@ -1,5 +1,5 @@
 import { usersStore } from '@/stores/users'
-import { dayjs, createListResource } from 'frappe-ui'
+import { dayjs, dayjsLocal, createListResource, getConfig } from 'frappe-ui'
 import { sameArrayContents } from '@/utils'
 import { computed, ref } from 'vue'
 import { allTimeSlots } from '@/components/Calendar/utils'
@@ -8,6 +8,24 @@ import { createDialog } from '@/utils/dialogs'
 // Lists events the usual way, plus ones linked to a lead or deal you can read,
 // so a teammate's meeting on a lead shows on that lead (see crm/api/event.py)
 export const EVENT_LIST_URL = 'crm.api.event.get_event_list'
+
+// Event times are saved in the system timezone and shown in the user's, as tasks
+// are. An all-day event holds only its day, so it isn't shifted.
+export function eventTime(value, allDay = false) {
+  return allDay ? dayjs(value) : dayjsLocal(value)
+}
+
+export function toSystemTime(localValue, allDay = false) {
+  const systemTimezone = getConfig('systemTimezone')
+  if (allDay || !systemTimezone) return localValue
+  const localTimezone =
+    getConfig('localTimezone') ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  return dayjs
+    .tz(localValue, localTimezone)
+    .tz(systemTimezone)
+    .format('YYYY-MM-DD HH:mm:ss')
+}
 
 export const showEventModal = ref(false)
 export const activeEvent = ref(null)
@@ -169,18 +187,18 @@ export function useEvent({
     isFullDay = false,
     format = 'h:mm a',
   ) => {
-    const start = dayjs(startTime)
-    const end = dayjs(endTime)
-
     if (isFullDay) return __('All Day')
+    const start = eventTime(startTime)
+    const end = eventTime(endTime)
 
     return `${start.format(format)} - ${end.format(format)}`
   }
 
-  const startDate = (startTime, format = 'ddd, D MMM YYYY') => {
-    const start = dayjs(startTime)
-    return start.format(format)
-  }
+  const startDate = (
+    startTime,
+    format = 'ddd, D MMM YYYY',
+    isFullDay = false,
+  ) => eventTime(startTime, isFullDay).format(format)
 
   return {
     eventsResource,
@@ -270,10 +288,10 @@ export function parseEventDoc(doc) {
     title: doc.subject,
     description: doc.description,
     status: doc.status,
-    fromDate: dayjs(doc.starts_on).format('YYYY-MM-DD'),
-    toDate: dayjs(doc.ends_on).format('YYYY-MM-DD'),
-    fromTime: dayjs(doc.starts_on).format('HH:mm'),
-    toTime: dayjs(doc.ends_on).format('HH:mm'),
+    fromDate: eventTime(doc.starts_on, doc.all_day).format('YYYY-MM-DD'),
+    toDate: eventTime(doc.ends_on, doc.all_day).format('YYYY-MM-DD'),
+    fromTime: eventTime(doc.starts_on, doc.all_day).format('HH:mm'),
+    toTime: eventTime(doc.ends_on, doc.all_day).format('HH:mm'),
     isFullDay: doc.all_day,
     eventType: doc.event_type,
     // a meeting synced to Google keeps its Meet link apart from the location
@@ -306,7 +324,8 @@ export function bookingOf(doc) {
 
 export function movesBooking(booking, { fromDate, fromTime, toDate, toTime }) {
   if (!booking) return false
-  const same = (a, b) => dayjs(a).isSame(dayjs(b), 'minute')
+  // the booking's times are system time, the edited ones the user's
+  const same = (a, b) => eventTime(a).isSame(dayjs(b), 'minute')
   return (
     !same(booking.startsOn, `${fromDate} ${fromTime}`) ||
     !same(booking.endsOn, `${toDate || fromDate} ${toTime}`)

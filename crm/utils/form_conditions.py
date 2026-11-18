@@ -17,6 +17,7 @@ import re
 
 import frappe
 from frappe import _
+from frappe.utils import cint
 
 _NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
 _NAME = re.compile(r"[A-Za-z_$][\w$]*")
@@ -37,7 +38,9 @@ def form_value_errors(fields, values: dict) -> str | None:
 		if not field_required(f, values):
 			continue
 		value = values.get(f.fieldname)
-		if value in (None, "", 0) or (isinstance(value, str) and not value.strip()):
+		# 0 answers a number field; on a checkbox it means unticked
+		empty = value is None or (isinstance(value, str) and not value.strip())
+		if empty or (f.fieldtype == "Check" and not cint(value)):
 			return _("Please fill in: {0}").format(f.label or f.fieldname)
 	return None
 

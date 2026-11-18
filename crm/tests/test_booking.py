@@ -2,7 +2,7 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
 import frappe
-from frappe.tests.utils import FrappeTestCase
+from frappe.tests import IntegrationTestCase
 
 from crm.api.booking import (
 	SlotUnavailableError,
@@ -24,7 +24,7 @@ def next_monday() -> datetime:
 	return day + timedelta(days=(7 - day.weekday()) % 7)
 
 
-class TestBooking(FrappeTestCase):
+class TestBooking(IntegrationTestCase):
 	def setUp(self):
 		frappe.set_user("Administrator")
 		if not frappe.db.exists("Email Account", {"default_outgoing": 1}):
@@ -769,3 +769,111 @@ class TestBooking(FrappeTestCase):
 		booking = self.booking_for(self.book_as_guest(self.at(9), values={"job_title": "CEO"}))
 		self.assertNotIn("Role", frappe.parse_json(booking.answers))
 		self.assertFalse(frappe.db.get_value("CRM Lead", booking.reference_docname, "job_title"))
+
+	def test_limits_cannot_be_negative(self):
+		# a negative step would never reach the end of the day
+		self.page.slot_interval = -15
+		with self.assertRaises(frappe.ValidationError):
+			self.page.save()
+
+	def test_a_turned_off_page_previews_but_takes_no_bookings(self):
+		self.page.enabled = 0
+		self.page.save()
+		self.assertIn(
+			to_iso(self.at(9)), get_slots(self.page.route, to_iso(self.monday), to_iso(self.at(24)))
+		)
+		with self.assertRaises(frappe.DoesNotExistError):
+			book(self.page.route, to_iso(self.at(9)), values={"first_name": "Vera", "email": "v@example.com"})
+
+	def test_guest_email_is_one_bare_address(self):
+		booking = self.booking_for(self.book_as_guest(self.at(9), " Vera@Example.com "))
+		self.assertEqual(booking.guest_email, "vera@example.com")
+		with self.assertRaises(frappe.ValidationError):
+			self.book_as_guest(self.at(10), "a@example.com, b@example.com")
+
+	def test_meeting_of_a_guest_cancelled_booking_can_be_deleted(self):
+		result = self.book_as_guest(self.at(9))
+		frappe.set_user("Guest")
+		cancel_booking(result["token"])
+		frappe.set_user("Administrator")
+		booking = self.booking_for(result)
+		frappe.delete_doc("Event", booking.event, ignore_permissions=True)
+		booking.reload()
+		self.assertEqual((booking.status, booking.event), ("Cancelled", None))
+
+	def test_guest_can_cancel_and_move_when_google_rejects_the_change(self):
+		def google_down(doc, method=None):
+			raise ConnectionError("Google is down")
+
+		result = self.book_as_guest(self.at(9))
+		event = self.booking_for(result).event
+		hook = "frappe.integrations.doctype.google_calendar.google_calendar.update_event_in_google_calendar"
+		frappe.set_user("Guest")
+		try:
+			with patch(hook, google_down):
+				frappe.db.set_value("Event", event, "sync_with_google_calendar", 1)
+				reschedule_booking(result["token"], to_iso(self.at(10)))
+				cancel_booking(result["token"])
+		finally:
+			frappe.set_user("Administrator")
+		self.assertEqual(
+			frappe.db.get_value("Event", event, ["status", "starts_on"]),
+			("Cancelled", to_system(self.at(10))),
+		)
+
+	def test_google_not_answering_is_not_remembered_as_free(self):
+		self.connect_google(HOSTS[0])
+		frappe.cache.delete_keys("crm_booking_google_busy")
+		with patch("crm.api.booking.fetch_google_busy", return_value=None):
+			self.assertIn(to_iso(self.at(10)), self.slots_on_monday())
+		busy = [(to_iso(self.at(10)), to_iso(self.at(11)))]
+		with patch("crm.api.booking.fetch_google_busy", return_value=busy):
+			self.assertNotIn(to_iso(self.at(10)), self.slots_on_monday())
+
+	def test_google_status_needs_a_page_editor_and_checks_only_crm_users(self):
+		from crm.api.booking import google_status, hosts_without_google
+
+		self.assertEqual(hosts_without_google(["Guest", HOSTS[0]]), [HOSTS[0]])
+		frappe.set_user("Guest")
+		with self.assertRaises(frappe.PermissionError):
+			google_status(HOSTS)
+
+	def test_a_manager_inside_the_sales_hierarchy_sees_only_their_teams_bookings(self):
+		from crm.fcrm.doctype.crm_booking.crm_booking import sees_all_bookings
+
+		manager = "booking-manager@example.com"
+		if not frappe.db.exists("User", manager):
+			frappe.get_doc(
+				{
+					"doctype": "User",
+					"email": manager,
+					"first_name": "Mona",
+					"roles": [{"role": "Sales Manager"}],
+				}
+			).insert(ignore_permissions=True)
+		self.assertTrue(sees_all_bookings(manager))
+		frappe.get_doc({"doctype": "CRM Sales Hierarchy", "user": manager}).insert(ignore_permissions=True)
+		frappe.db.set_single_value("FCRM Settings", "enable_sales_hierarchy", 1)
+		self.assertFalse(sees_all_bookings(manager))
+
+	def test_event_lists_take_only_plain_fields(self):
+		from crm.api.event import get_event_list
+
+		self.add_event(HOSTS[0], self.at(9), self.at(10))
+		frappe.set_user(HOSTS[1])
+		self.assertTrue(get_event_list("Event", fields=["name", "subject"]) is not None)
+		with self.assertRaises(frappe.PermissionError):
+			get_event_list("Event", fields=["name", "subject", "google_calendar as name"])
+
+	def test_an_events_owner_can_delete_it(self):
+		from crm.api.event import delete_event
+
+		own = self.add_event(HOSTS[0], self.at(9), self.at(10))
+		other = self.add_event(HOSTS[1], self.at(11), self.at(12))
+		frappe.set_user(HOSTS[0])
+		delete_event(own.name)
+		with self.assertRaises(frappe.PermissionError):
+			delete_event(other.name)
+		frappe.set_user("Administrator")
+		self.assertFalse(frappe.db.exists("Event", own.name))
+		self.assertTrue(frappe.db.exists("Event", other.name))
