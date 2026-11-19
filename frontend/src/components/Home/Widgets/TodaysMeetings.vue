@@ -30,28 +30,29 @@
         <RouterLink
           v-if="next(rows)"
           :to="meetingRoute(next(rows))"
-          class="flex items-center gap-3 rounded-4 p-2 hover:bg-surface-gray-2"
+          class="flex items-center gap-3 rounded p-2 hover:bg-surface-gray-2"
         >
           <div
-            class="w-1 self-stretch rounded-full"
+            class="w-0.5 self-stretch rounded-full"
             :style="{ backgroundColor: meetingColor(next(rows)) }"
           />
-          <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
             <div class="flex items-center gap-1">
               <Badge
                 v-if="isOngoing(next(rows))"
+                size="sm"
                 variant="solid"
                 theme="violet"
                 :label="__('Now')"
               />
-              <Badge :label="meetingCountdown(next(rows))" />
+              <Badge size="sm" :label="meetingCountdown(next(rows))" />
             </div>
             <div
-              class="line-clamp-2 break-words text-lg-semibold text-ink-gray-9"
+              class="line-clamp-2 break-words text-base-medium text-ink-gray-8"
             >
               {{ next(rows).subject || __('(No title)') }}
             </div>
-            <div class="truncate text-base text-ink-gray-6">
+            <div class="truncate text-sm text-ink-gray-5">
               {{
                 [meetingStart(next(rows)), meetingPlace(next(rows))]
                   .filter(Boolean)
@@ -60,7 +61,7 @@
             </div>
             <div
               v-if="next(rows).attendees.length"
-              class="flex items-center -space-x-1.5 pt-0.5"
+              class="flex items-center -space-x-1 pt-1"
             >
               <Tooltip
                 v-for="person in next(rows).attendees.slice(0, 3)"
@@ -70,7 +71,7 @@
                 <Avatar
                   class="ring-2 ring-outline-base"
                   shape="circle"
-                  size="md"
+                  size="sm"
                   :image="person.image"
                   :label="person.name || person.email"
                 />
@@ -79,17 +80,16 @@
                 v-if="next(rows).attendees.length > 3"
                 :text="moreNames(next(rows).attendees, 3)"
               >
-                <span
-                  class="flex size-6 items-center justify-center rounded-full bg-surface-gray-3 text-xs-medium text-ink-gray-8 ring-2 ring-outline-base"
-                >
-                  {{ next(rows).attendees.length - 3 }}
-                </span>
+                <Badge
+                  class="ring-2 ring-outline-base"
+                  size="sm"
+                  :label="String(next(rows).attendees.length - 3)"
+                />
               </Tooltip>
             </div>
           </div>
           <Button
             v-if="meetingLink(next(rows))"
-            size="md"
             iconLeft="lucide-video"
             :label="__('Join')"
             :href="meetingLink(next(rows))"
@@ -99,43 +99,33 @@
 
         <div
           v-if="next(rows) && rest(rows).length"
-          class="mx-2 my-2 border-t border-outline-gray-2"
+          class="mx-2 my-1.5 border-t border-outline-gray-2"
         />
 
-        <RouterLink
-          v-for="row in rest(rows).slice(0, LIST_LIMIT)"
+        <ItemListRow
+          v-for="row in rest(rows)"
           :key="row.name"
+          :as="RouterLink"
           :to="meetingRoute(row)"
-          class="flex h-8 items-center gap-2.5 rounded px-2 hover:bg-surface-gray-2"
+          size="md"
+          class="hover:bg-surface-gray-2"
           :class="{ 'opacity-50': hasEnded(row) }"
         >
-          <span
-            class="size-2 shrink-0 rounded-full"
-            :style="{ backgroundColor: meetingColor(row) }"
-          />
-          <span class="flex-1 truncate text-base-medium text-ink-gray-8">
-            {{ row.subject || __('(No title)') }}
-          </span>
-          <span class="shrink-0 text-sm text-ink-gray-5">
-            {{ meetingStart(row) }}
-          </span>
-        </RouterLink>
-
-        <RouterLink
-          v-if="more(rows)"
-          :to="{ name: 'Calendar' }"
-          class="ml-auto mt-1 flex items-center gap-1.5 rounded px-2 py-1 text-sm text-ink-gray-5 hover:text-ink-gray-8"
-        >
-          <span class="flex -space-x-0.5">
+          <template #prefix>
             <span
-              v-for="row in hidden(rows).slice(0, 3)"
-              :key="row.name"
-              class="size-2 rounded-full ring-1 ring-outline-base"
+              class="size-2 rounded-full"
               :style="{ backgroundColor: meetingColor(row) }"
             />
-          </span>
-          {{ __('{0} more', [more(rows)]) }}
-        </RouterLink>
+          </template>
+          <template #label>
+            <span class="block truncate">
+              {{ row.subject || __('(No title)') }}
+            </span>
+          </template>
+          <template #suffix>
+            <span class="text-sm text-ink-gray-5">{{ meetingStart(row) }}</span>
+          </template>
+        </ItemListRow>
       </div>
     </template>
   </HomeWidget>
@@ -156,7 +146,7 @@ import {
   nextMeeting,
   type Meeting,
 } from '@/utils/meetings'
-import { Avatar, Badge, Button, dayjs, Tooltip } from 'frappe-ui'
+import { Avatar, Badge, Button, dayjs, ItemListRow, Tooltip } from 'frappe-ui'
 import { CalendarColorMap } from 'frappe-ui/experimental'
 import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
@@ -168,9 +158,6 @@ interface Attendee {
 }
 
 type Row = Meeting & { attendees: Attendee[] }
-
-// Below the next meeting, the rest of the day; the others sit behind "N more".
-const LIST_LIMIT = 4
 
 // Declared so Home's `config` does not fall through to HomeWidget and show the doctype setting
 defineProps<{ config?: Record<string, unknown> | null }>()
@@ -193,18 +180,6 @@ function rest(rows: Row[]): Row[] {
     ...others.filter((row) => !hasEnded(row)),
     ...others.filter((row) => hasEnded(row)),
   ]
-}
-
-function hidden(rows: Row[]): Row[] {
-  return rest(rows).slice(LIST_LIMIT)
-}
-
-// Counted from the total, since the server sends only the first rows.
-function more(rows: Row[]): number {
-  return Math.max(
-    0,
-    total.value - (next(rows) ? 1 : 0) - rest(rows).slice(0, LIST_LIMIT).length,
-  )
 }
 
 // Events store a calendar colour name or a CSS colour; the calendar shows none as green.
