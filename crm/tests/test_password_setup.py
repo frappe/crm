@@ -7,12 +7,8 @@ import frappe
 from frappe.utils import sha256_hash
 from frappe.utils.password import update_password
 
-<<<<<<< HEAD
-from crm.api.user import has_password, needs_password_setup
-from crm.tests import CRMTestCase
-=======
 from crm.api.user import has_password, needs_password_setup, set_password
->>>>>>> ff4de48 (test: cover guided setup password step)
+from crm.tests import CRMTestCase
 from crm.www.crm import get_context, redirect_to_set_password
 
 STRONG_PASSWORD = "Qx7#mLp2vT9!"
