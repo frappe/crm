@@ -260,7 +260,7 @@ if int(frappe.__version__.split(".")[0]) < 16:
 
 doc_events = {
 	"Event": {
-		"before_insert": ["crm.api.event.hold_google_sync"],
+		"before_validate": ["crm.api.event.hold_google_sync"],
 		"after_insert": ["crm.api.event.push_to_google"],
 		"on_update": ["crm.api.booking.sync_booking_from_event"],
 		"on_trash": ["crm.api.booking.sync_booking_from_event"],

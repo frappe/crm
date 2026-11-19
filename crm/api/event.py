@@ -613,7 +613,8 @@ def connected_google_calendar(user: str) -> str | None:
 
 
 def hold_google_sync(doc, method=None):
-	"""Event before_insert: defer a CRM event's Google sync until it's saved."""
+	"""Event before_validate: a CRM event asks for sync without picking a calendar, which
+	Frappe rejects. Pick the creator's after insert; on later saves, leave it unsynced."""
 	if doc.sync_with_google_calendar and not doc.google_calendar and not doc.pulled_from_google_calendar:
 		doc.sync_with_google_calendar = 0
 		doc.flags.push_to_google = True
@@ -626,16 +627,17 @@ def push_to_google(doc, method=None):
 	calendar = connected_google_calendar(doc.owner)
 	if not calendar:
 		return
+	calendar_id = frappe.db.get_value("Google Calendar", calendar, "google_calendar_id")
+	if not calendar_id:
+		# Frappe makes the calendar in Google on its first sync and commits mid-request,
+		# which would end the savepoint below; the next scheduled sync makes it
+		return
 
 	from frappe.integrations.doctype.google_calendar.google_calendar import insert_event_in_google_calendar
 
 	from crm.api.booking import without_messages
 
-	google = {
-		"sync_with_google_calendar": 1,
-		"google_calendar": calendar,
-		"google_calendar_id": frappe.db.get_value("Google Calendar", calendar, "google_calendar_id"),
-	}
+	google = {"sync_with_google_calendar": 1, "google_calendar": calendar, "google_calendar_id": calendar_id}
 	frappe.db.savepoint("crm_event_google")
 	try:
 		doc.update(google)

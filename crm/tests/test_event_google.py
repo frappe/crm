@@ -22,6 +22,22 @@ def new_event(**values):
 
 
 class TestEventGoogleSync(IntegrationTestCase):
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		# skips Google Settings validation; nothing here talks to Google
+		frappe.get_doc(
+			{
+				"doctype": "Google Calendar",
+				"name": "_Test Calendar",
+				"calendar_name": "_Test Calendar",
+				"user": "Administrator",
+				"enable": 1,
+				"push_to_google_calendar": 1,
+				"google_calendar_id": "test@group.calendar.google.com",
+			}
+		).db_insert()
+
 	def setUp(self):
 		frappe.set_user("Administrator")
 		self.pushed = []
@@ -80,3 +96,30 @@ class TestEventGoogleSync(IntegrationTestCase):
 		hold_google_sync(event)
 		self.assertEqual(event.sync_with_google_calendar, 1)
 		self.assertFalse(event.flags.push_to_google)
+
+	def test_editing_an_event_that_asks_for_sync_still_saves(self):
+		with (
+			patch("crm.api.event.connected_google_calendar", return_value="_Test Calendar"),
+			patch(PUSH, self.record_push),
+		):
+			event = new_event()
+			event.sync_with_google_calendar = 1
+			event.save()
+		self.assertEqual(frappe.db.get_value("Event", event.name, "sync_with_google_calendar"), 0)
+		self.assertEqual(self.pushed, [])
+
+	def test_calendar_not_yet_made_in_google_is_not_pushed(self):
+		frappe.db.set_value("Google Calendar", "_Test Calendar", "google_calendar_id", "")
+		try:
+			with (
+				patch("crm.api.event.connected_google_calendar", return_value="_Test Calendar"),
+				patch(PUSH, self.record_push),
+			):
+				event = new_event(sync_with_google_calendar=1)
+		finally:
+			frappe.db.set_value(
+				"Google Calendar", "_Test Calendar", "google_calendar_id", "test@group.calendar.google.com"
+			)
+		self.assertEqual(self.pushed, [])
+		self.assertEqual(frappe.db.get_value("Event", event.name, "sync_with_google_calendar"), 0)
+		self.assertFalse(frappe.db.get_value("Event", event.name, "google_calendar"))

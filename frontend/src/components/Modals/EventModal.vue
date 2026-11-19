@@ -497,8 +497,6 @@ function updateEvent() {
       reference_docname: props.docname,
       event_participants: _event.value.event_participants,
       notifications: _event.value.notifications,
-      // the server adds it to the creator's Google Calendar when one is connected
-      sync_with_google_calendar: 1,
     },
     {
       onSuccess: async () => {
