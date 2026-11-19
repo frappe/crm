@@ -41,6 +41,23 @@
           </SidebarItem>
 
           <SidebarItem
+            v-if="showFlow"
+            class="shrink-0"
+            :label="__('Flow')"
+            @click="onFlowClick"
+          >
+            <template #prefix>
+              <FlowIcon class="size-4 text-ink-gray-7" />
+            </template>
+            <span class="flex-1 truncate text-sm leading-tighter">
+              {{ __('Flow') }}
+            </span>
+            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
+              I
+            </KeyboardShortcut>
+          </SidebarItem>
+
+          <SidebarItem
             id="notifications-btn"
             class="shrink-0"
             :label="__('Notifications')"
@@ -190,6 +207,8 @@ import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import Notifications from '@/components/Notifications.vue'
 import KeyboardShortcut from '@/components/KeyboardShortcut.vue'
 import LucideSearch from '~icons/lucide/search'
+import FlowIcon from '@/components/Icons/FlowIcon.vue'
+import { hasFlowLauncher } from '@/utils/flowLauncher'
 import { openCommandPalette } from '@/composables/useCommandPalette'
 import Settings from '@/components/Settings/Settings.vue'
 import { viewsStore } from '@/stores/views'
@@ -232,6 +251,7 @@ const isFCSite = ref(window.is_fc_site)
 const isDemoSite = ref(window.is_demo_site)
 
 const links = getNavigationItems({ mobile: props.mobile })
+const showFlow = hasFlowLauncher()
 
 const allViews = computed(() => {
   let _views = [
@@ -338,6 +358,11 @@ watch(
 function onSearchClick() {
   if (props.mobile) closeMobileSidebar(openCommandPalette)
   else openCommandPalette()
+}
+
+function onFlowClick() {
+  if (props.mobile) closeMobileSidebar(() => window.flow.toggle())
+  else window.flow.toggle()
 }
 
 function onNotificationsClick(event) {
