@@ -60,11 +60,7 @@ export function groupNotifications(
 }
 
 export type NotificationCategory =
-  | 'emails'
-  | 'whatsapp'
-  | 'mentions'
-  | 'assignments'
-  | 'reminders'
+  'emails' | 'whatsapp' | 'mentions' | 'assignments' | 'reminders' | 'events'
 
 export function notificationCategory(
   n: CRMNotification,
@@ -75,5 +71,6 @@ export function notificationCategory(
   if (n.type === 'Mention') return 'mentions'
   if (n.type === 'Assignment' || n.type === 'Task') return 'assignments'
   if (n.type === 'Reminder') return 'reminders'
+  if (n.type === 'Booking') return 'events'
   return null
 }

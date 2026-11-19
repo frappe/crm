@@ -36,6 +36,7 @@ const categories: {
   { label: __('Mentions'), value: 'mentions', icon: 'lucide-at-sign' },
   { label: __('Assignments'), value: 'assignments', icon: 'lucide-user-plus' },
   { label: __('Reminders'), value: 'reminders', icon: 'lucide-alarm-clock' },
+  { label: __('Events'), value: 'events', icon: 'lucide-calendar' },
 ]
 
 const categoryOptions = categories.map((c) => ({
