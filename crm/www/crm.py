@@ -90,6 +90,7 @@ def get_boot():
 			"demo_data_created": frappe.db.get_default("crm_demo_data_created") == "1",
 			"is_fc_site": is_fc_site(),
 			"needs_password_setup": frappe.session.user != "Guest" and needs_password_setup(),
+			"crm_setup_pending": will_see_guided_setup(),
 			"cloud_settings": get_cloud_settings(),
 			"translated_doctypes": get_translated_doctypes(),
 			"translated_messages": get_messages_for_boot(),
