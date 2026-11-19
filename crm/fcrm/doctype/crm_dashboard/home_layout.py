@@ -28,7 +28,6 @@ class Widget:
 	min_h: int = 1
 
 
-# My tasks leaves room beside it for two stacked cards.
 WIDGETS = {
 	"tasks": Widget(doctype_setting=False, min_w=12, min_h=8),
 	"leads_and_deals": Widget(),
@@ -36,6 +35,7 @@ WIDGETS = {
 	"deals": Widget(doctype_setting=False),
 	"recently_opened": Widget(),
 	"no_next_step": Widget(),
+	"todays_meetings": Widget(doctype_setting=False),
 	"funnel_conversion": Widget(doctype_setting=False, period_setting=True),
 	"won_this_month": Widget(doctype_setting=False, period_setting=True),
 	"expected_revenue": Widget(doctype_setting=False, period_setting=True),
@@ -228,19 +228,18 @@ def _item(name: str, x: int, y: int, w: int = 10, h: int = 10, period: str | Non
 	return {"name": name, "config": config, "layout": {"x": x, "y": y, "w": w, "h": h, "i": name}}
 
 
+# Today's calls sits beside the main widget, as tall as it.
 def agent_default() -> list:
 	return [
-		_item("tasks", 0, 0, w=15, h=8),
-		_item("expected_revenue", 15, 0, w=5, h=4, period="last_3_months"),
-		_item("won_this_month", 15, 4, w=5, h=4, period="last_3_months"),
+		_item("tasks", 0, 0, w=14, h=8),
+		_item("todays_meetings", 14, 0, w=6, h=8),
 	]
 
 
 def manager_default() -> list:
 	return [
-		_item("team_overview", 0, 0, w=15, h=10),
-		_item("won_this_month", 15, 0, w=5, h=5),
-		_item("expected_revenue", 15, 5, w=5, h=5),
+		_item("team_overview", 0, 0, w=14, h=10),
+		_item("todays_meetings", 14, 0, w=6, h=10),
 	]
 
 

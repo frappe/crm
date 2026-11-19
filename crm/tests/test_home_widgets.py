@@ -2,7 +2,7 @@ import frappe
 from frappe.desk.form.assign_to import add as assign
 from frappe.desk.form.assign_to import remove as unassign
 from frappe.tests import IntegrationTestCase
-from frappe.utils import add_days, add_to_date, now_datetime, nowdate
+from frappe.utils import add_days, add_to_date, get_datetime, now_datetime, nowdate
 
 from crm.api.home import get_counts, get_tab_data, get_widget_data
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine
@@ -246,6 +246,61 @@ class TestTasksWidget(HomeWidgetTestCase):
 	def test_unknown_tab_is_rejected(self):
 		with self.assertRaises(frappe.ValidationError):
 			self.tasks("done")
+
+
+class TestTodaysMeetings(HomeWidgetTestCase):
+	def meeting(self, start, end=None, owner=AGENT, attendee=None, **kwargs):
+		lead = self.lead()
+		event = frappe.get_doc(
+			{
+				"doctype": "Event",
+				"subject": "Meeting",
+				"event_type": "Private",
+				"starts_on": f"{nowdate()} {start}" if "-" not in start else start,
+				"ends_on": end and (f"{nowdate()} {end}" if "-" not in end else end),
+				"reference_doctype": "CRM Lead",
+				"reference_docname": lead,
+				"event_participants": [
+					{"reference_doctype": "CRM Lead", "reference_docname": lead, "email": attendee}
+				]
+				if attendee
+				else [],
+				**kwargs,
+			}
+		).insert()
+		frappe.db.set_value("Event", event.name, "owner", owner)
+		return event.name
+
+	def meetings(self):
+		with IntegrationTestCase.freeze_time(get_datetime(f"{nowdate()} 12:00:00")):
+			return get_widget_data("todays_meetings", user=AGENT)
+
+	def test_lists_my_meetings_today_all_day_first_then_soonest(self):
+		hosting = self.meeting("14:00", "15:00")
+		attending = self.meeting("13:00", "13:30", owner=MANAGER, attendee=AGENT)
+		ongoing = self.meeting("11:30", "12:30")
+		all_day = self.meeting(nowdate(), nowdate(), all_day=1)
+		ended = self.meeting("09:00", "10:00")
+		self.meeting(f"{add_days(nowdate(), 1)} 10:00:00", f"{add_days(nowdate(), 1)} 11:00:00")
+		self.meeting("15:00", "16:00", status="Cancelled")
+		self.meeting("16:00", "17:00", owner=MANAGER)
+
+		data = self.meetings()
+		self.assertEqual(names(data), [all_day, ended, ongoing, attending, hosting])
+		self.assertEqual(data["total"], 5)
+
+	def test_attendees_are_everyone_else_host_first(self):
+		self.meeting("13:00", "13:30", owner=MANAGER, attendee=AGENT)
+		self.meeting("14:00", "15:00", attendee=MANAGER)
+
+		attendees = [[person["email"] for person in row["attendees"]] for row in self.meetings()["rows"]]
+		self.assertEqual(attendees, [[MANAGER], [MANAGER]])
+
+	def test_an_all_day_meeting_spanning_today_is_listed(self):
+		spanning = self.meeting(add_days(nowdate(), -1), add_days(nowdate(), 1), all_day=1)
+		self.meeting(add_days(nowdate(), -2), add_days(nowdate(), -1), all_day=1)
+
+		self.assertEqual(names(self.meetings()), [spanning])
 
 
 class TestLeadsAndDealsWidget(HomeWidgetTestCase):

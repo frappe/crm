@@ -17,7 +17,7 @@
 					{{ item.title | e }}
 				</a>
 				<div style="margin-top: 2px; font-size: 13px; color: {{ '#d14343' if item.overdue else '#525252' }}">
-					{{ item.detail | e }}
+					{{ item.detail | e }}{% if item.join_url %} · <a href="{{ item.join_url | e }}" style="color: #171717; font-weight: 500">{{ _("Join") }}</a>{% endif %}
 				</div>
 			</td>
 		</tr>

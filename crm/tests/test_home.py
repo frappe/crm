@@ -218,27 +218,16 @@ class TestHomeLayout(IntegrationTestCase):
 		position = get_layout()["layout"][1]["layout"]
 		self.assertEqual((position["x"], position["w"], position["h"]), (0, 12, 8))
 
-	def test_two_stacked_cards_fit_beside_my_tasks(self):
-		items = {item["name"]: item["layout"] for item in agent_default()}
-		tasks, won, expected = items["tasks"], items["won_this_month"], items["expected_revenue"]
-		self.assertEqual(won["w"], expected["w"])
-		self.assertEqual(tasks["w"] + won["w"], GRID_COLUMNS)
-		self.assertEqual(won["h"] + expected["h"], tasks["h"])
-		self.assertGreaterEqual(tasks["w"], WIDGETS["tasks"].min_w)
-		self.assertGreaterEqual(tasks["h"], WIDGETS["tasks"].min_h)
+	def test_agent_default_has_todays_meetings_beside_my_tasks(self):
+		layout = positions(agent_default())
+		self.assertEqual(layout, {"tasks": (0, 0, 14, 8), "todays_meetings": (14, 0, 6, 8)})
+		self.assertGreaterEqual(layout["tasks"][2], WIDGETS["tasks"].min_w)
+		self.assertGreaterEqual(layout["tasks"][3], WIDGETS["tasks"].min_h)
 
-	def test_manager_default_has_team_workload_beside_two_stacked_cards(self):
-		layout = {item["name"]: item["layout"] for item in manager_default()}
-		positions = {
-			name: tuple(position[key] for key in ("x", "y", "w", "h")) for name, position in layout.items()
-		}
+	def test_manager_default_has_todays_meetings_beside_team_workload(self):
 		self.assertEqual(
-			positions,
-			{
-				"team_overview": (0, 0, 15, 10),
-				"won_this_month": (15, 0, 5, 5),
-				"expected_revenue": (15, 5, 5, 5),
-			},
+			positions(manager_default()),
+			{"team_overview": (0, 0, 14, 10), "todays_meetings": (14, 0, 6, 10)},
 		)
 
 	def test_built_in_defaults_respect_min_widths(self):
@@ -377,3 +366,7 @@ def make_task(due_date, **kwargs):
 	return frappe.get_doc(
 		{"doctype": "CRM Task", "title": "Follow up", "due_date": due_date, **kwargs}
 	).insert()
+
+
+def positions(layout: list) -> dict:
+	return {item["name"]: tuple(item["layout"][key] for key in ("x", "y", "w", "h")) for item in layout}
