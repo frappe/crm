@@ -126,10 +126,13 @@
               :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
             />
             <TrialCard v-if="!isCollapsed" />
+<<<<<<< HEAD
             <GettingStartedBanner
               v-if="!isOnboardingStepsCompleted"
               :isSidebarCollapsed="isCollapsed"
             />
+=======
+>>>>>>> fd97f2f (fix: remove getting started checklist)
           </div>
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
@@ -141,11 +144,15 @@
               <BrushCleaningIcon class="size-4" />
             </template>
           </SidebarItem>
+<<<<<<< HEAD
           <SidebarItem
             v-if="isOnboardingStepsCompleted"
             :label="__('Help')"
             @click="toggleHelpModal"
           >
+=======
+          <SidebarItem :label="__('Help')" @click="openDocs">
+>>>>>>> fd97f2f (fix: remove getting started checklist)
             <template #prefix>
               <HelpIcon class="size-4 text-ink-gray-7" />
             </template>
@@ -169,6 +176,7 @@
 
   <template v-if="!mobile">
     <Settings />
+<<<<<<< HEAD
     <HelpModal
       v-if="showHelpModal"
       v-model="showHelpModal"
@@ -184,15 +192,13 @@
       v-model="showIntermediateModal"
       :currentStep="currentStep"
     />
+=======
+>>>>>>> fd97f2f (fix: remove getting started checklist)
   </template>
 </template>
 
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
-import CRMLogo from '@/components/Icons/CRMLogo.vue'
-import InviteIcon from '@/components/Icons/InviteIcon.vue'
-import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -204,7 +210,6 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
@@ -219,6 +224,7 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
+<<<<<<< HEAD
 import { sessionStore } from '@/stores/session'
 import {
   showSettings,
@@ -228,24 +234,18 @@ import {
 } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast.js'
 import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+=======
+import { mobileSidebarOpened, closeMobileSidebar } from '@/composables/settings'
+import { Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+>>>>>>> fd97f2f (fix: remove getting started checklist)
 import { SignupBanner } from '@framework/ui/components/SignupBanner'
 import { TrialBanner } from '@framework/ui/components/TrialBanner'
 import TrialCard from '@/components/Layouts/TrialCard.vue'
 import { isCloudSettingsAvailable } from '@/composables/cloudSettings'
-import {
-  HelpModal,
-  GettingStartedBanner,
-  useOnboarding,
-  showHelpModal,
-  minimize,
-  IntermediateStepModal,
-} from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
-import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
-import { useCrmOnboarding } from '@/composables/onboarding'
-import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -257,8 +257,8 @@ const route = useRoute()
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
+const { isManager } = usersStore()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
-const { send } = useBroadcast()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -386,10 +386,10 @@ function onNotificationsClick(event) {
   }
 }
 
-function toggleHelpModal() {
-  showHelpModal.value = minimize.value ? true : !showHelpModal.value
-  minimize.value = !showHelpModal.value
+function openDocs() {
+  window.open('https://docs.frappe.io/crm', '_blank', 'noopener')
 }
+<<<<<<< HEAD
 
 // onboarding
 const { user } = sessionStore()
@@ -692,4 +692,6 @@ const articles = ref([
     ],
   },
 ])
+=======
+>>>>>>> fd97f2f (fix: remove getting started checklist)
 </script>
