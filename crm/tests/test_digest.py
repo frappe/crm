@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 import frappe
 from frappe.cache_manager import clear_defaults_cache
 from frappe.desk.form.assign_to import add as assign
+from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, get_system_timezone, now_datetime
 
 from crm.api.digest import (
@@ -175,7 +176,7 @@ class TestDigestSending(DigestTestCase):
 		self.assertEqual(digest.subject(digest.sections()), "Your CRM morning: 2 follow-ups, 1 reply waiting")
 
 	def test_subject_caps_large_counts(self):
-		sections = [frappe._dict(total=1200), frappe._dict(total=501)]
+		sections = [frappe._dict(kind="follow_ups", total=1200), frappe._dict(kind="replies", total=501)]
 		subject = MorningDigest(AGENT).subject(sections)
 		self.assertEqual(subject, "Your CRM morning: 500+ follow-ups, 500+ replies waiting")
 
@@ -260,3 +261,69 @@ def make_outgoing_email_account():
 			"no_smtp_authentication": 1,
 		}
 	).insert(ignore_permissions=True)
+
+
+class TestDigestMeetings(DigestTestCase):
+	def at(self, hour, minute=0):
+		"""System time for the agent's clock showing hour:minute today."""
+		day = self.morning.date()
+		return system_time(ZONES[AGENT], day.year, day.month, day.day, hour, minute)
+
+	def setUp(self):
+		super().setUp()
+		day = MorningDigest(AGENT).due.today
+		self.morning = datetime(day.year, day.month, day.day, 9)
+
+	def meeting(self, start, end, owner=AGENT, attendee=None, **kwargs):
+		event = frappe.get_doc(
+			{
+				"doctype": "Event",
+				"subject": kwargs.pop("subject", "Meeting"),
+				"event_type": "Private",
+				"starts_on": start,
+				"ends_on": end,
+				"event_participants": [
+					{"reference_doctype": "CRM Lead", "reference_docname": self.lead(), "email": attendee}
+				]
+				if attendee
+				else [],
+				**kwargs,
+			}
+		).insert()
+		frappe.db.set_value("Event", event.name, "owner", owner)
+		return event.name
+
+	def digest_at_nine(self):
+		with IntegrationTestCase.freeze_time(self.at(9)):
+			digest = MorningDigest(AGENT)
+			sections = digest.sections()
+			return digest, sections, {section.kind: section for section in sections}
+
+	def test_lists_meetings_still_to_come_with_a_join_link(self):
+		self.meeting(self.at(8), self.at(8, 30), subject="Done already")
+		self.meeting(
+			self.at(10),
+			self.at(10, 30),
+			attendee=MANAGER,
+			subject="Demo",
+			google_meet_link="https://meet.google.com/abc-defg-hij",
+		)
+		_digest, _sections, by_kind = self.digest_at_nine()
+		meetings = by_kind["meetings"]
+		self.assertEqual(meetings.total, 1)
+		item = meetings["items"][0]
+		self.assertEqual(item["title"], "Demo")
+		self.assertTrue(item["detail"].startswith("10:00–10:30 · with "))
+		self.assertEqual(item["join_url"], "https://meet.google.com/abc-defg-hij")
+
+	def test_subject_counts_meetings_first(self):
+		self.meeting(self.at(10), self.at(10, 30))
+		self.meeting(self.at(15), self.at(16))
+		self.follow_up(now_datetime())
+		digest, sections, _by_kind = self.digest_at_nine()
+		self.assertTrue(digest.subject(sections).startswith("Your CRM morning: 2 meetings"))
+
+	def test_leaves_out_other_peoples_meetings(self):
+		self.meeting(self.at(10), self.at(11), owner=MANAGER)
+		_digest, _sections, by_kind = self.digest_at_nine()
+		self.assertEqual(by_kind["meetings"].total, 0)
