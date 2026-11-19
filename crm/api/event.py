@@ -599,3 +599,53 @@ def add_booking_guests(rows: list[dict]) -> list[dict]:
 	for row in rows:
 		row["booking_guest"] = guests.get(row.get("name"))
 	return rows
+
+
+def connected_google_calendar(user: str) -> str | None:
+	"""The user's Google Calendar record, if it's enabled, pushes, and has been authorized."""
+	if not frappe.db.get_single_value("Google Settings", "enable"):
+		return None
+	name = frappe.db.get_value(
+		"Google Calendar", {"user": user, "enable": 1, "push_to_google_calendar": 1}, "name"
+	)
+	if name and frappe.get_doc("Google Calendar", name).get_password("refresh_token", raise_exception=False):
+		return name
+
+
+def hold_google_sync(doc, method=None):
+	"""Event before_validate: a CRM event asks for sync without picking a calendar, which
+	Frappe rejects. Pick the creator's after insert; on later saves, leave it unsynced."""
+	if doc.sync_with_google_calendar and not doc.google_calendar and not doc.pulled_from_google_calendar:
+		doc.sync_with_google_calendar = 0
+		doc.flags.push_to_google = True
+
+
+def push_to_google(doc, method=None):
+	"""Event after_insert: put the event on its creator's Google Calendar, if connected."""
+	if not doc.flags.push_to_google:
+		return
+	calendar = connected_google_calendar(doc.owner)
+	if not calendar:
+		return
+	calendar_id = frappe.db.get_value("Google Calendar", calendar, "google_calendar_id")
+	if not calendar_id:
+		# Frappe makes the calendar in Google on its first sync and commits mid-request,
+		# which would end the savepoint below; the next scheduled sync makes it
+		return
+
+	from frappe.integrations.doctype.google_calendar.google_calendar import insert_event_in_google_calendar
+
+	from crm.api.booking import without_messages
+
+	google = {"sync_with_google_calendar": 1, "google_calendar": calendar, "google_calendar_id": calendar_id}
+	frappe.db.savepoint("crm_event_google")
+	try:
+		doc.update(google)
+		with without_messages():
+			insert_event_in_google_calendar(doc)
+		doc.db_set(google, update_modified=False)
+	except Exception:
+		# a Google error shouldn't stop the event being created; it just won't sync
+		frappe.db.rollback(save_point="crm_event_google")
+		doc.update({"sync_with_google_calendar": 0, "google_calendar": None, "google_calendar_id": None})
+		frappe.log_error(title=f"CRM: Google Calendar sync failed for event {doc.name}")
