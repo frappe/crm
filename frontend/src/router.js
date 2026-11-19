@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, START_LOCATION } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
