@@ -119,6 +119,22 @@ class TestEmailInteractions(IntegrationTestCase):
 		make_communication("ToDo", todo.name, "Received", at(0))
 		self.assertIsNone(self.state().last_inbound_at)
 
+	def test_email_sent_by_a_flow_goes_out_from_the_senders_email(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		from crm.automation.actions import SendEmailToRecord
+
+		frappe.db.set_value("CRM Lead", self.lead, "email", "customer@example.com")
+		with (
+			test_user(roles=["Sales User"], generated_id=True) as sender,
+			patch("frappe.core.doctype.communication.email.make") as make,
+		):
+			SendEmailToRecord().execute(
+				frappe.get_doc("CRM Lead", self.lead), {"subject": "Thanks", "sender": sender.name}, {}
+			)
+
+		self.assertEqual(make.call_args.kwargs["sender"], sender.email)
+
 
 @requires_whatsapp
 class TestWhatsAppInteractions(IntegrationTestCase):

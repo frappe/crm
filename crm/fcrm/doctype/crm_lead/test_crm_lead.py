@@ -627,6 +627,17 @@ class TestCRMLead(IntegrationTestCase):
 				create_lead(first_name="Duplicate", email="unique.lead@example.com")
 			lead.save()
 
+	def test_lead_owner_cannot_be_same_as_email_with_a_generated_user_id(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		with (
+			test_user(roles=["Sales User"], generated_id=True) as owner,
+			self.assertRaises(frappe.ValidationError) as context,
+		):
+			create_lead(first_name="Test", email=owner.email, lead_owner=owner.name)
+
+		self.assertIn("Lead Owner cannot be same as the Lead Email Address", str(context.exception))
+
 
 def create_lead(**kwargs):
 	"""Helper function to create a CRM Lead for testing"""

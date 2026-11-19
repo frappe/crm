@@ -7,7 +7,7 @@ import frappe
 from frappe import _
 from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
-from frappe.utils import validate_email_address
+from frappe.utils import get_email_address, validate_email_address
 
 from crm.api.whatsapp import guard_doc_recipient_change
 from crm.automation.events import emit_lead_converted
@@ -160,7 +160,7 @@ class CRMLead(Document):
 			if not self.flags.ignore_email_validation:
 				validate_email_address(self.email, throw=True)
 
-			if self.email == self.lead_owner:
+			if self.lead_owner and self.email == get_email_address(self.lead_owner):
 				frappe.throw(_("Lead Owner cannot be same as the Lead Email Address"))
 
 	def validate_unique_fields(self):

@@ -304,7 +304,7 @@ const from = computed(() => {
       }
     })
 
-  if (emails.length == 1 && emails[0].email_id === sessionUser) return []
+  if (emails.length == 1 && emails[0].email_id === user.doc.email) return []
 
   return emails
 })

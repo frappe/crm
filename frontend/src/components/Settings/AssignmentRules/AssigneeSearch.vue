@@ -119,23 +119,24 @@ const usersList = computed(() => {
     .filter(
       (user) =>
         user.name?.includes(query.value) ||
+        user.email?.includes(query.value) ||
         user.full_name?.includes(query.value),
     )
     .filter((user) => {
-      return !assignmentRuleData.value.users.some((u) => u.user === user.email)
+      return !assignmentRuleData.value.users.some((u) => u.user === user.name)
     })
 })
 
 const addAssignee = (user) => {
   const userExists = assignmentRuleData.value.users.some(
-    (u) => u.user === user.user,
+    (u) => u.user === user.name,
   )
   if (!userExists) {
     assignmentRuleData.value.users.push({
       full_name: user.full_name,
       email: user.email,
       user_image: user.user_image,
-      user: user.email,
+      user: user.name,
     })
     emit('addAssignee', user)
   }

@@ -165,3 +165,21 @@ class TestPasswordSetup(IntegrationTestCase):
 
 		with self.assertRaises(frappe.PermissionError):
 			set_password("An0ther#Strong!")
+
+	def test_demo_user_cannot_change_password(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		from crm.api.live_demo import validate_reset_password, validate_user
+
+		with (
+			test_user(roles=["Sales User"], generated_id=True) as user,
+			patch.dict(frappe.conf, {"demo_username": user.email}),
+		):
+			frappe.set_user(user.name)
+
+			with self.assertRaises(frappe.PermissionError):
+				validate_user(frappe._dict(new_password=STRONG_PASSWORD), "before_validate")
+			with self.assertRaises(frappe.PermissionError):
+				validate_reset_password(None, "validate_reset_password")
+
+			frappe.set_user(self.user.name)

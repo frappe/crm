@@ -4,7 +4,7 @@ from frappe import _
 from frappe.core.api.file import get_max_file_size
 from frappe.rate_limiter import rate_limit
 from frappe.translate import get_all_translations
-from frappe.utils import cstr, split_emails, validate_email_address
+from frappe.utils import cstr, get_user_by_email, split_emails, validate_email_address
 
 from crm.utils import is_frappe_version
 
@@ -118,10 +118,10 @@ def accept_invitation(key: str | None = None):
 		if is_new_user:
 			# a new user has no password yet, send them to the set password page
 			# which logs them in and redirects to /crm once the password is set
-			user = frappe.get_doc("User", invitation.email)
+			user = frappe.get_doc("User", get_user_by_email(invitation.email))
 			frappe.local.response["location"] = user._reset_password()
 		else:
-			frappe.local.login_manager.login_as(invitation.email)
+			frappe.local.login_manager.login_as(get_user_by_email(invitation.email))
 			frappe.local.response["location"] = "/crm"
 
 

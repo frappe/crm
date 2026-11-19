@@ -553,8 +553,13 @@ def action(idx, key, action_type, params, target="trigger", **extra) -> dict:
 def email_step(idx, key, template, sender=None, **extra) -> dict:
 	params = {"email_template": template}
 	if sender:
-		params["sender"] = sender
+		params["sender"] = _user(sender)
 	return action(idx, key, "SendCRMEmail", params, **extra)
+
+
+def _user(email):
+	"""The flows name people by email; assignees and senders are user IDs."""
+	return frappe.utils.get_user_by_email(email) or email
 
 
 def assign_step(idx, key, user, description, target="trigger", **extra) -> dict:
@@ -562,7 +567,7 @@ def assign_step(idx, key, user, description, target="trigger", **extra) -> dict:
 		idx,
 		key,
 		"AssignToUser",
-		{"assign_to": [user], "description": description},
+		{"assign_to": [_user(user)], "description": description},
 		target=target,
 		**extra,
 	)

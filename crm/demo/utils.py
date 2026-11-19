@@ -14,10 +14,15 @@ def resolve_owners(demo_users):
 
 
 def build_full_names(session_user):
-	"""Return {email: full_name} mapping for all demo users plus session_user."""
-	from crm.demo.users import DEMO_USERS
+	"""Return {user: full_name} mapping for all demo users plus session_user."""
+	from crm.demo.users import DEMO_USERS, demo_user_ids
 
-	names = {u["email"]: f"{u['first_name']} {u['last_name']}" for u in DEMO_USERS}
+	user_ids = demo_user_ids()
+	names = {
+		user_ids[u["email"]]: f"{u['first_name']} {u['last_name']}"
+		for u in DEMO_USERS
+		if u["email"] in user_ids
+	}
 	names[session_user] = frappe.utils.get_fullname(session_user)
 	return names
 
@@ -51,7 +56,7 @@ def fix_auto_records(doctype, docname, owner, ts):
 		frappe.qb.update(Comment)
 		.set(Comment.owner, owner)
 		.set(Comment.modified_by, owner)
-		.set(Comment.comment_email, owner)
+		.set(Comment.comment_email, frappe.utils.get_email_address(owner))
 		.set(Comment.creation, ts)
 		.set(Comment.modified, ts)
 		.where(
@@ -72,7 +77,7 @@ def insert_comment(reference_doctype, reference_name, owner, content, full_names
 			"reference_doctype": reference_doctype,
 			"reference_name": reference_name,
 			"content": content,
-			"comment_email": owner,
+			"comment_email": frappe.utils.get_email_address(owner),
 			"comment_by": full_names.get(owner, owner),
 		}
 	).insert(ignore_permissions=True)
