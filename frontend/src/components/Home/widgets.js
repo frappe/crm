@@ -7,7 +7,7 @@ const lazy = (name) =>
 // 16px gutter), sized to fit content. List rows are 40px with 1px dividers:
 // border 2 + title and subtitle 75 + column header 40 + 6 rows (245) + footer 32 = 394 ≤ 10 × 42 − 16.
 // Team replies waiting has five columns, so it defaults to full width. My tasks is 15 × 8 with 4 rows and can shrink to
-// 12 columns, with two cards (4 rows high each) stacked beside it to match its height.
+// 12 columns; the default Home puts Today's meetings beside it.
 export const widgets = [
   {
     key: 'tasks',
@@ -52,6 +52,13 @@ export const widgets = [
     icon: 'lucide-calendar-x',
     size: { w: 10, h: 10 },
     component: lazy('NoNextStep'),
+  },
+  {
+    key: 'todays_meetings',
+    label: "Today's meetings",
+    icon: 'lucide-calendar',
+    size: { w: 6, h: 12 },
+    component: lazy('TodaysMeetings'),
   },
   {
     key: 'funnel_conversion',
