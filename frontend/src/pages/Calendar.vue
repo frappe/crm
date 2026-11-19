@@ -369,7 +369,9 @@ function buildEventPayload(_event) {
 
 function createEvent(_event) {
   if (!_event?.title) return
-  events.insert.submit(buildEventPayload(_event), {
+  // the server adds it to the creator's Google Calendar when one is connected
+  const payload = { ...buildEventPayload(_event), sync_with_google_calendar: 1 }
+  events.insert.submit(payload, {
     onSuccess: async (e) => {
       await updateUser(user)
       toast.success(__('Event created successfully'))
