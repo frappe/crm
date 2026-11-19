@@ -3,16 +3,16 @@
     :title="todayTitle"
     subtitle=""
     :resource="resource"
-    :emptyText="__('No meetings today.')"
+    :emptyText="__('No calls today.')"
     emptyIcon="lucide-calendar-check"
   >
     <template #subtitle>
       <span class="truncate text-base text-ink-gray-5">
         {{
           total === 1
-            ? __('1 meeting today')
+            ? __('1 call today')
             : total
-              ? __('{0} meetings today', [total])
+              ? __('{0} calls today', [total])
               : __('Nothing on the calendar')
         }}
       </span>
@@ -21,7 +21,7 @@
       <Button
         icon="lucide-plus"
         class="rounded-full"
-        :tooltip="__('New meeting')"
+        :tooltip="__('New call')"
         @click="showNewMeeting = true"
       />
     </template>
@@ -164,7 +164,9 @@ defineProps<{ config?: Record<string, unknown> | null }>()
 
 const resource = useHomeWidget('todays_meetings')
 const total = computed<number>(() => resource.data?.total || 0)
-const todayTitle = computed(() => dayjs().format('ddd D'))
+const todayTitle = computed(
+  () => `${__("Today's calls")}: ${dayjs().format('ddd D')}`,
+)
 
 const showNewMeeting = ref(false)
 watch(showNewMeeting, (open) => open || refreshHome())

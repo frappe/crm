@@ -220,14 +220,14 @@ class TestHomeLayout(IntegrationTestCase):
 
 	def test_agent_default_has_todays_meetings_beside_my_tasks(self):
 		layout = positions(agent_default())
-		self.assertEqual(layout, {"tasks": (0, 0, 15, 8), "todays_meetings": (15, 0, 5, 8)})
+		self.assertEqual(layout, {"tasks": (0, 0, 14, 8), "todays_meetings": (14, 0, 6, 8)})
 		self.assertGreaterEqual(layout["tasks"][2], WIDGETS["tasks"].min_w)
 		self.assertGreaterEqual(layout["tasks"][3], WIDGETS["tasks"].min_h)
 
 	def test_manager_default_has_todays_meetings_beside_team_workload(self):
 		self.assertEqual(
 			positions(manager_default()),
-			{"team_overview": (0, 0, 15, 10), "todays_meetings": (15, 0, 5, 10)},
+			{"team_overview": (0, 0, 14, 10), "todays_meetings": (14, 0, 6, 10)},
 		)
 
 	def test_built_in_defaults_respect_min_widths(self):

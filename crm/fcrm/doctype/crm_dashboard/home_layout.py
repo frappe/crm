@@ -228,18 +228,18 @@ def _item(name: str, x: int, y: int, w: int = 10, h: int = 10, period: str | Non
 	return {"name": name, "config": config, "layout": {"x": x, "y": y, "w": w, "h": h, "i": name}}
 
 
-# Today's meetings sits beside the main widget, as tall as it.
+# Today's calls sits beside the main widget, as tall as it.
 def agent_default() -> list:
 	return [
-		_item("tasks", 0, 0, w=15, h=8),
-		_item("todays_meetings", 15, 0, w=5, h=8),
+		_item("tasks", 0, 0, w=14, h=8),
+		_item("todays_meetings", 14, 0, w=6, h=8),
 	]
 
 
 def manager_default() -> list:
 	return [
-		_item("team_overview", 0, 0, w=15, h=10),
-		_item("todays_meetings", 15, 0, w=5, h=10),
+		_item("team_overview", 0, 0, w=14, h=10),
+		_item("todays_meetings", 14, 0, w=6, h=10),
 	]
 
 
