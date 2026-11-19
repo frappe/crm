@@ -196,7 +196,7 @@ class TestCRMInvitation(FrappeTestCase):
 		key = invitation.key
 		self.set_sales_manager()
 
-		self.assertNotIn("key", client_get("CRM Invitation", invitation.name))
+		self.assertIsNone(client_get("CRM Invitation", invitation.name).get("key"))
 
 		doc = frappe.get_doc("CRM Invitation", invitation.name)
 		doc.key = "changed"
