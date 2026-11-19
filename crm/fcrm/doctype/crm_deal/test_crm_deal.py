@@ -19,6 +19,7 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 	remove_contact,
 	set_primary_contact,
 )
+from crm.permissions.test_org_hierarchy import make_user
 from crm.tests import CRMTestCase as FrappeTestCase
 
 
