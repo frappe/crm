@@ -126,10 +126,6 @@
               :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
             />
             <TrialCard v-if="!isCollapsed" />
-            <GettingStartedBanner
-              v-if="showGettingStarted"
-              :isSidebarCollapsed="isCollapsed"
-            />
           </div>
           <SidebarItem
             v-if="isManager() && isDemoDataCreated"
@@ -141,11 +137,7 @@
               <BrushCleaningIcon class="size-4" />
             </template>
           </SidebarItem>
-          <SidebarItem
-            v-if="isOnboardingStepsCompleted && !onboardingDisabled"
-            :label="__('Help')"
-            @click="toggleHelpModal"
-          >
+          <SidebarItem :label="__('Help')" @click="openDocs">
             <template #prefix>
               <HelpIcon class="size-4 text-ink-gray-7" />
             </template>
@@ -169,30 +161,11 @@
 
   <template v-if="!mobile">
     <Settings />
-    <HelpModal
-      v-if="showHelpModal && !onboardingDisabled"
-      v-model="showHelpModal"
-      v-model:articles="articles"
-      :logo="CRMLogo"
-      :afterSkip="(step) => capture('onboarding_step_skipped_' + step)"
-      :afterSkipAll="() => capture('onboarding_steps_skipped')"
-      :afterReset="(step) => capture('onboarding_step_reset_' + step)"
-      :afterResetAll="() => capture('onboarding_steps_reset')"
-      docsLink="https://docs.frappe.io/crm"
-    />
-    <IntermediateStepModal
-      v-model="showIntermediateModal"
-      :currentStep="currentStep"
-    />
   </template>
 </template>
 
 <script setup>
 import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
-import CRMLogo from '@/components/Icons/CRMLogo.vue'
-import InviteIcon from '@/components/Icons/InviteIcon.vue'
-import ConvertIcon from '@/components/Icons/ConvertIcon.vue'
-import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -204,7 +177,6 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import HelpIcon from '@/components/Icons/HelpIcon.vue'
@@ -219,34 +191,16 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { usersStore } from '@/stores/users'
-import { getSettings } from '@/stores/settings'
-import { sessionStore } from '@/stores/session'
-import {
-  showSettings,
-  activeSettingsPage,
-  mobileSidebarOpened,
-  closeMobileSidebar,
-} from '@/composables/settings'
-import { useBroadcast } from '@/composables/useBroadcast.js'
-import { call, Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+import { mobileSidebarOpened, closeMobileSidebar } from '@/composables/settings'
+import { Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
 import { SignupBanner } from '@framework/ui/components/SignupBanner'
 import { TrialBanner } from '@framework/ui/components/TrialBanner'
 import TrialCard from '@/components/Layouts/TrialCard.vue'
 import { isCloudSettingsAvailable } from '@/composables/cloudSettings'
-import {
-  HelpModal,
-  GettingStartedBanner,
-  useOnboarding,
-  showHelpModal,
-  minimize,
-  IntermediateStepModal,
-} from '@framework/ui/components/Onboarding'
 import { useTelemetry } from '@framework/ui/telemetry'
-import router from '@/router'
 import { useStorage } from '@vueuse/core'
 import { useDemoData } from '@/composables/demoData'
-import { useCrmOnboarding } from '@/composables/onboarding'
-import { ref, reactive, computed, markRaw, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 const props = defineProps({
@@ -258,8 +212,8 @@ const route = useRoute()
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
 const { capture } = useTelemetry()
+const { isManager } = usersStore()
 const { clearDemoData, isDemoDataCreated } = useDemoData()
-const { send } = useBroadcast()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
@@ -387,318 +341,7 @@ function onNotificationsClick(event) {
   }
 }
 
-function toggleHelpModal() {
-  showHelpModal.value = minimize.value ? true : !showHelpModal.value
-  minimize.value = !showHelpModal.value
+function openDocs() {
+  window.open('https://docs.frappe.io/crm', '_blank', 'noopener')
 }
-
-// onboarding
-const { user } = sessionStore()
-const { users, isManager } = usersStore()
-const { isOnboardingStepsCompleted, setUp } = useOnboarding('frappecrm')
-const { flushPendingSteps } = useCrmOnboarding()
-const { _settings } = getSettings()
-
-const onboardingDisabled = computed(
-  () => !_settings.doc || Boolean(_settings.doc.disable_onboarding),
-)
-const showGettingStarted = computed(
-  () => !isOnboardingStepsCompleted.value && !onboardingDisabled.value,
-)
-
-// The onboarding composable persists the checklist as a positional
-// [{name, completed}] list, seeds it from the current steps ONLY when empty,
-// and never adds newly introduced steps to an existing list. So once a step is
-// added (e.g. connect_your_email), a saved list is missing it — skip / reset
-// / complete become no-ops (findIndex returns -1) and the total is wrong.
-//
-// Reconcile the saved list to the current steps while never losing progress:
-//   - operate on localStorage, the copy the composable actually reads on load
-//     (checking the server instead would let a reconciled browser and a stale
-//     browser keep overwriting each other);
-//   - order the currently-visible steps to match the UI and preserve their
-//     completion by name; new steps start incomplete;
-//   - keep steps that are saved but not currently visible (e.g. role-only steps
-//     when the role is temporarily absent) so a role change can't erase them;
-//   - skip entirely once onboarding is finished, so a completed checklist is
-//     never rewritten or reopened.
-// It is idempotent: an already-reconciled list produces no change.
-const ONBOARDING_KEY = 'frappecrm_onboarding_status'
-
-async function reconcileOnboarding(currentSteps) {
-  // `user` is the unwrapped session user id string (Pinia unwraps the ref on
-  // destructure) — the same key the composable uses. Not user.value.
-  let store
-  try {
-    store = JSON.parse(localStorage.getItem('onboardingStatus') || '{}')
-  } catch {
-    return
-  }
-  const persisted = store?.[user]?.[ONBOARDING_KEY]
-  if (!persisted?.length) return // composable seeds an empty list itself
-  if (persisted.every((s) => s.completed)) return // finished: leave untouched
-
-  const doneByName = new Map(persisted.map((s) => [s.name, s.completed]))
-  const currentNames = new Set(currentSteps.map((s) => s.name))
-  const visible = currentSteps.map((s) => ({
-    name: s.name,
-    completed: doneByName.get(s.name) ?? false,
-  }))
-  // Preserve saved-but-not-visible steps (e.g. manager-only steps for a user
-  // whose role was removed) so their completion survives role changes.
-  // Drop steps that no longer exist so they can't block completion.
-  const knownNames = new Set(steps.map((s) => s.name))
-  const hidden = persisted.filter(
-    (s) => !currentNames.has(s.name) && knownNames.has(s.name),
-  )
-  const merged = [...visible, ...hidden]
-
-  const unchanged =
-    merged.length === persisted.length &&
-    merged.every(
-      (m, i) =>
-        persisted[i]?.name === m.name &&
-        persisted[i]?.completed === m.completed,
-    )
-  if (unchanged) return
-
-  store[user][ONBOARDING_KEY] = merged
-  try {
-    localStorage.setItem('onboardingStatus', JSON.stringify(store))
-    await call('frappe.onboarding.update_user_onboarding_status', {
-      steps: JSON.stringify(merged),
-      appName: 'frappecrm',
-    })
-  } catch {
-    return
-  }
-  // Reload once so the composable re-reads the reconciled list. Only reached
-  // while onboarding is unfinished (completed users returned above), so a
-  // finished checklist is never reopened.
-  window.location.reload()
-}
-
-async function getFirstLead() {
-  return await getFirstRecord('firstLead', 'crm.api.onboarding.get_first_lead')
-}
-
-async function getFirstDeal() {
-  return await getFirstRecord('firstDeal', 'crm.api.onboarding.get_first_deal')
-}
-
-// the cached id may point to a record that was deleted (or a lead that was
-// converted) since it was stored, so let the server validate it and fall back
-async function getFirstRecord(key, method) {
-  let storageKey = key + user
-  let cached = localStorage.getItem(storageKey)
-  let name = await call(method, { name: cached })
-  if (name) {
-    localStorage.setItem(storageKey, name)
-  } else {
-    localStorage.removeItem(storageKey)
-  }
-  return name
-}
-
-const showIntermediateModal = ref(false)
-const currentStep = ref({})
-
-const steps = reactive([
-  {
-    name: 'create_first_lead',
-    title: __('Add your first lead'),
-    icon: markRaw(LeadsIcon),
-    completed: false,
-    onClick: () => {
-      minimize.value = true
-      router.push({ name: 'Leads' })
-      send('trigger_lead_create', true)
-      capture('onboarding_step_clicked_create_first_lead')
-    },
-  },
-  {
-    name: 'connect_your_email',
-    title: __('Connect your email'),
-    icon: markRaw(EmailIcon),
-    completed: false,
-    onClick: () => {
-      minimize.value = true
-      showSettings.value = true
-      activeSettingsPage.value = __('Accounts')
-      capture('onboarding_step_clicked_connect_your_email')
-    },
-    condition: () => isManager(),
-  },
-  {
-    name: 'invite_your_team',
-    title: __('Invite your team'),
-    icon: markRaw(InviteIcon),
-    completed: false,
-    onClick: () => {
-      minimize.value = true
-      showSettings.value = true
-      activeSettingsPage.value = 'Invite User'
-      capture('onboarding_step_clicked_invite_your_team')
-    },
-    condition: () => isManager(),
-  },
-  {
-    name: 'convert_lead_to_deal',
-    title: __('Convert lead to deal'),
-    icon: markRaw(ConvertIcon),
-    completed: false,
-    dependsOn: 'create_first_lead',
-    onClick: async () => {
-      minimize.value = true
-      capture('onboarding_step_clicked_convert_lead_to_deal')
-      currentStep.value = {
-        title: __('Convert lead to deal'),
-        buttonLabel: __('Convert'),
-        videoURL: '/assets/crm/videos/convertToDeal.mov',
-        onClick: async () => {
-          showIntermediateModal.value = false
-          currentStep.value = {}
-
-          let lead = await getFirstLead()
-          if (lead) {
-            router.push({ name: 'Lead', params: { leadId: lead } })
-          } else {
-            router.push({ name: 'Leads' })
-          }
-        },
-      }
-      showIntermediateModal.value = true
-    },
-  },
-  {
-    name: 'create_first_task',
-    title: __('Schedule a follow-up task'),
-    icon: markRaw(TaskIcon),
-    completed: false,
-    onClick: async () => {
-      minimize.value = true
-      let deal = await getFirstDeal()
-      capture('onboarding_step_clicked_create_first_task')
-
-      if (deal) {
-        router.push({
-          name: 'Deal',
-          params: { dealId: deal },
-          hash: '#tasks',
-        })
-      } else {
-        router.push({ name: 'Tasks' })
-      }
-    },
-  },
-])
-
-onMounted(async () => {
-  if (props.mobile) return
-
-  await users.promise
-
-  const filteredSteps = steps.filter((step) => {
-    if (step.condition) {
-      return step.condition()
-    }
-    return true
-  })
-
-  // Bring an existing saved checklist in line with the current steps (adds
-  // newly introduced steps, preserves completion). No-op when already aligned.
-  await reconcileOnboarding(filteredSteps)
-  setUp(filteredSteps)
-  flushPendingSteps()
-})
-
-// help center
-const articles = ref([
-  {
-    title: __('Introduction'),
-    opened: false,
-    subArticles: [
-      { name: 'introduction', title: __('Introduction') },
-      { name: 'setting-up', title: __('Setting Up') },
-    ],
-  },
-  {
-    title: __('Settings'),
-    opened: false,
-    subArticles: [
-      { name: 'profile-and-preferences', title: __('Profile') },
-      { name: 'custom-branding', title: __('Custom Branding') },
-      { name: 'home-actions', title: __('Home Actions') },
-      { name: 'inviting-your-team', title: __('Invite Users') },
-    ],
-  },
-  {
-    title: __('Masters'),
-    opened: false,
-    subArticles: [
-      { name: 'lead', title: __('Lead') },
-      { name: 'deal', title: __('Deal') },
-      { name: 'contact', title: __('Contact') },
-      { name: 'organization', title: __('Organization') },
-      { name: 'note', title: __('Note') },
-      { name: 'task', title: __('Task') },
-      { name: 'call-log', title: __('Call Log') },
-      { name: 'email-template', title: __('Email Template') },
-    ],
-  },
-  {
-    title: __('Capturing Leads'),
-    opened: false,
-    subArticles: [{ name: 'capturing-leads/web-form', title: __('Web Form') }],
-  },
-  {
-    title: __('Views'),
-    opened: false,
-    subArticles: [
-      { name: 'view', title: __('Saved View') },
-      { name: 'public-view', title: __('Public View') },
-      { name: 'pinned-view', title: __('Pinned View') },
-    ],
-  },
-  {
-    title: __('Other Features'),
-    opened: false,
-    subArticles: [
-      { name: 'email-communication', title: __('Email Communication') },
-      { name: 'comment', title: __('Comment') },
-      { name: 'data', title: __('Data') },
-      { name: 'service-level-agreement', title: __('Service Level Agreement') },
-      { name: 'assignment-rule', title: __('Assignment Rule') },
-      { name: 'notification', title: __('Notification') },
-    ],
-  },
-  {
-    title: __('Customization'),
-    opened: false,
-    subArticles: [
-      { name: 'custom-fields', title: __('Custom Fields') },
-      { name: 'custom-actions', title: __('Custom Actions') },
-      { name: 'custom-statuses', title: __('Custom Statuses') },
-      { name: 'custom-list-actions', title: __('Custom List Actions') },
-      { name: 'quick-entry-layout', title: __('Quick Entry Layout') },
-    ],
-  },
-  {
-    title: __('Integration'),
-    opened: false,
-    subArticles: [
-      { name: 'twilio', title: __('Twilio') },
-      { name: 'exotel', title: __('Exotel') },
-      { name: 'whatsapp', title: __('WhatsApp') },
-      { name: 'erpnext', title: __('ERPNext') },
-    ],
-  },
-  {
-    title: __('Frappe CRM mobile'),
-    opened: false,
-    subArticles: [
-      { name: 'mobile-app-installation', title: __('Mobile App Installation') },
-    ],
-  },
-])
 </script>

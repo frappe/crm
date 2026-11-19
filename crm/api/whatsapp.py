@@ -4,7 +4,7 @@ import frappe
 from frappe import _
 from frappe.permissions import add_permission, update_permission_property
 
-from crm.api.doc import get_assigned_users
+from crm.api.doc import get_assignees
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 from crm.integrations.api import get_contact_lead_or_deal_from_number
 
@@ -76,7 +76,7 @@ def notify_agent(doc):
                 <span class="font-medium text-ink-gray-9">{safe_reference_name}</span>
             </div>
         """
-		assigned_users = get_assigned_users(doc.reference_doctype, doc.reference_name)
+		assigned_users = get_assignees(doc.reference_doctype, doc.reference_name)
 		for user in assigned_users:
 			notify_user(
 				{

@@ -103,7 +103,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		doc.reference_doctype = None
 		doc.reference_name = None
 
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
+		with patch("crm.api.whatsapp.get_assignees") as mock_users:
 			notify_agent(doc)  # must not raise
 
 		mock_users.assert_not_called()
@@ -115,7 +115,39 @@ class TestWhatsAppHooks(FrappeTestCase):
 		doc.reference_doctype = ""
 		doc.reference_name = "LEAD-0001"
 
-		with patch("crm.api.whatsapp.get_assigned_users") as mock_users:
+		with patch("crm.api.whatsapp.get_assignees") as mock_users:
 			notify_agent(doc)
 
 		mock_users.assert_not_called()
+
+	def test_notify_agent_runs_as_guest_like_the_webhook(self):
+		"""notify_agent() notifies the assignees when the Guest webhook user has no read access to the lead"""
+		lead = frappe.get_doc({"doctype": "CRM Lead", "first_name": "Webhook"}).insert(
+			ignore_permissions=True
+		)
+		frappe.get_doc(
+			{
+				"doctype": "ToDo",
+				"allocated_to": "Administrator",
+				"reference_type": "CRM Lead",
+				"reference_name": lead.name,
+				"description": "Assigned",
+			}
+		).insert(ignore_permissions=True)
+		doc = frappe._dict(
+			name="MSG-1",
+			owner="Guest",
+			type="Incoming",
+			message="Hi",
+			reference_doctype="CRM Lead",
+			reference_name=lead.name,
+		)
+
+		frappe.set_user("Guest")
+		try:
+			with patch("crm.api.whatsapp.notify_user") as mock_notify:
+				notify_agent(doc)
+		finally:
+			frappe.set_user("Administrator")
+
+		self.assertEqual([c.args[0]["assigned_to"] for c in mock_notify.call_args_list], ["Administrator"])

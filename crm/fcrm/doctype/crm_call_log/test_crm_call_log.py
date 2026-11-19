@@ -615,6 +615,50 @@ class TestCRMCallLog(FrappeTestCase):
 		with patch("crm.integrations.api.frappe.get_single", return_value=settings):
 			self.assertEqual(_get_recording_credentials("Exotel"), ("exotel_key", "exotel_token"))
 
+	def test_recording_proxy_auth_for_edited_url(self):
+		call = create_test_call_log(
+			telephony_medium="Twilio",
+			recording_url="https://api.twilio.com/2010-04-01/Accounts/AC1/Recordings/RE1",
+		)
+		frappe.set_user(create_sales_user())
+		try:
+			doc = frappe.get_doc("CRM Call Log", call.name)
+			doc.recording_url = "http://example.com/recording.mp3"
+			doc.save()
+			self.assertIsNone(_proxy_recording_auth(call.name))
+		finally:
+			frappe.set_user("Administrator")
+
+	def test_recording_proxy_auth_for_provider_url(self):
+		urls = {
+			"Twilio": "https://api.twilio.com/2010-04-01/Accounts/AC1/Recordings/RE1",
+			"Exotel": "https://recordings.exotel.com/exotelrecordings/acme/abc.mp3",
+		}
+		for medium, url in urls.items():
+			call = create_test_call_log(telephony_medium=medium, recording_url=url)
+			self.assertEqual(_proxy_recording_auth(call.name), ("key", "secret"))
+
+	def test_recording_proxy_auth_for_http_url(self):
+		call = create_test_call_log(
+			telephony_medium="Twilio",
+			recording_url="http://api.twilio.com/2010-04-01/Accounts/AC1/Recordings/RE1",
+		)
+		self.assertIsNone(_proxy_recording_auth(call.name))
+
+
+def _proxy_recording_auth(call_log_name):
+	from crm.integrations.api import get_recording_url
+
+	upstream = MagicMock(status_code=200, headers={})
+	upstream.iter_content.return_value = iter([])
+	with (
+		patch("crm.integrations.api._get_recording_credentials", return_value=("key", "secret")),
+		patch("crm.integrations.api._fetch_recording", return_value=upstream) as fetch,
+		patch("crm.integrations.api.frappe.get_request_header", return_value=None),
+	):
+		get_recording_url(call_log_name)
+	return fetch.call_args.args[1]
+
 
 def create_sales_user():
 	if not frappe.db.exists("User", "sales-user@example.com"):

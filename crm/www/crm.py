@@ -39,7 +39,7 @@ def redirect_to_set_password():
 	"""
 	from crm.api.user import needs_password_setup
 
-	if not needs_password_setup():
+	if not needs_password_setup() or will_see_guided_setup():
 		return
 
 	user = frappe.get_doc("User", frappe.session.user)
@@ -58,6 +58,13 @@ def redirect_to_set_password():
 	raise redirect
 
 
+def will_see_guided_setup() -> bool:
+	"""The guided setup asks for the password itself, so the redirect is skipped."""
+	if "System Manager" not in frappe.get_roles():
+		return False
+	return not frappe.db.get_single_value("FCRM Settings", "setup_completed")
+
+
 @frappe.whitelist(methods=["POST"], allow_guest=True)  # nosemgrep: guest-whitelisted-method
 def get_context_for_dev():
 	if not frappe.conf.developer_mode:
@@ -66,6 +73,8 @@ def get_context_for_dev():
 
 
 def get_boot():
+	from crm.api.user import needs_password_setup
+
 	return frappe._dict(
 		{
 			"frappe_version": frappe.__version__,
@@ -80,6 +89,8 @@ def get_boot():
 			"is_demo_site": frappe.conf.get("is_demo_site"),
 			"demo_data_created": frappe.db.get_default("crm_demo_data_created") == "1",
 			"is_fc_site": is_fc_site(),
+			"needs_password_setup": frappe.session.user != "Guest" and needs_password_setup(),
+			"crm_setup_pending": will_see_guided_setup(),
 			"cloud_settings": get_cloud_settings(),
 			"translated_doctypes": get_translated_doctypes(),
 			"translated_messages": get_messages_for_boot(),

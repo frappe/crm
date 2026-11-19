@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-11-08 16:10+0000\n"
-"PO-Revision-Date: 2026-11-08 16:10+0000\n"
+"POT-Creation-Date: 2026-11-15 16:30+0000\n"
+"PO-Revision-Date: 2026-11-15 16:30+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -5034,7 +5034,7 @@ msgstr ""
 msgid "Integration"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:86
 msgid "Integration Not Enabled"
 msgstr ""
 
@@ -7450,7 +7450,7 @@ msgstr ""
 msgid "Please set an email address to send emails"
 msgstr ""
 
-#: crm/integrations/exotel/handler.py:84
+#: crm/integrations/exotel/handler.py:86
 msgid "Please setup Exotel integration"
 msgstr ""
 
@@ -8379,10 +8379,10 @@ msgstr ""
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:215
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json:191
 #: crm/fcrm/doctype/crm_availability_status/crm_availability_status.json:89
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.json:191
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json:192
 #: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json:50
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json:83
-#: crm/fcrm/doctype/crm_deal/crm_deal.json:545
+#: crm/fcrm/doctype/crm_deal/crm_deal.json:546
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json:88
 #: crm/fcrm/doctype/crm_exotel_settings/crm_exotel_settings.json:121
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json:76
@@ -8392,16 +8392,16 @@ msgstr ""
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:51
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:95
-#: crm/fcrm/doctype/crm_lead/crm_lead.json:510
+#: crm/fcrm/doctype/crm_lead/crm_lead.json:511
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:60
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:81
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json:57
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:145
-#: crm/fcrm/doctype/crm_organization/crm_organization.json:152
+#: crm/fcrm/doctype/crm_organization/crm_organization.json:153
 #: crm/fcrm/doctype/crm_product/crm_product.json:102
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:116
 #: crm/fcrm/doctype/crm_service_level_agreement/crm_service_level_agreement.json:164
-#: crm/fcrm/doctype/crm_task/crm_task.json:120
+#: crm/fcrm/doctype/crm_task/crm_task.json:121
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json:127
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:116
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.json:157
@@ -8425,10 +8425,10 @@ msgstr ""
 #. Option for the 'Role' (Select) field in DocType 'CRM Invitation'
 #: crm/domain_enrichment/doctype/crm_enrichment_run/crm_enrichment_run.json:224
 #: crm/fcrm/doctype/crm_availability_status/crm_availability_status.json:97
-#: crm/fcrm/doctype/crm_call_log/crm_call_log.json:203
+#: crm/fcrm/doctype/crm_call_log/crm_call_log.json:205
 #: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json:62
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json:93
-#: crm/fcrm/doctype/crm_deal/crm_deal.json:557
+#: crm/fcrm/doctype/crm_deal/crm_deal.json:559
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json:100
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json:86
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json:102
@@ -8437,15 +8437,15 @@ msgstr ""
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:63
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
 #: crm/fcrm/doctype/crm_invitation/crm_invitation.json:105
-#: crm/fcrm/doctype/crm_lead/crm_lead.json:522
+#: crm/fcrm/doctype/crm_lead/crm_lead.json:524
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:70
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:93
 #: crm/fcrm/doctype/crm_lost_reason/crm_lost_reason.json:69
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:157
-#: crm/fcrm/doctype/crm_organization/crm_organization.json:164
+#: crm/fcrm/doctype/crm_organization/crm_organization.json:166
 #: crm/fcrm/doctype/crm_product/crm_product.json:114
 #: crm/fcrm/doctype/crm_sales_hierarchy/crm_sales_hierarchy.json:121
-#: crm/fcrm/doctype/crm_task/crm_task.json:132
+#: crm/fcrm/doctype/crm_task/crm_task.json:134
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json:139
 #: crm/fcrm/doctype/crm_territory/crm_territory.json:128
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:230

@@ -2,7 +2,8 @@
   <FrappeUIProvider>
     <NotPermitted v-if="$route.name === 'Not Permitted'" />
     <router-view v-else-if="$route.name === 'Setup'" />
-    <Layout v-else-if="session.isLoggedIn" class="isolate">
+    <!-- no shell until the first route resolves, which may be the setup -->
+    <Layout v-else-if="session.isLoggedIn && $route.name" class="isolate">
       <router-view :key="$route.meta.viewKey || $route.fullPath" />
     </Layout>
     <Dialogs />
