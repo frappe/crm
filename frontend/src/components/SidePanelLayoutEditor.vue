@@ -158,7 +158,6 @@ const restrictedFieldTypes = [
   'Column Break',
   'Tab Break',
   'Table',
-  'Table MultiSelect',
   'Signature',
   'Image',
 ]
@@ -176,6 +175,7 @@ const fields = computed(() => {
       value: field.fieldname,
       fieldname: field.fieldname,
       fieldtype: field.fieldtype,
+      options: field.options,
     }
   })
 })

@@ -100,7 +100,7 @@
                           class="flex h-7 cursor-pointer items-center px-2 py-1 text-ink-gray-5"
                         >
                           <Tooltip :text="__(field.tooltip)">
-                            <div>{{ doc[field.fieldname] }}</div>
+                            <div>{{ readOnlyValue(field) }}</div>
                           </Tooltip>
                         </div>
                         <PrimaryDropdown
@@ -196,6 +196,12 @@
                           :grouping="field.grouping"
                           :placeholder="field.placeholder"
                           :onCreate="field.create"
+                          @change="(v) => fieldChange(v, field)"
+                        />
+                        <TableMultiselectInput
+                          v-else-if="field.fieldtype === 'Table MultiSelect'"
+                          v-model="doc[field.fieldname]"
+                          :doctype="field.options"
                           @change="(v) => fieldChange(v, field)"
                         />
                         <div
@@ -426,6 +432,7 @@ import AttachControl from '@/components/Controls/AttachControl.vue'
 import HtmlControl from '@/components/Controls/HtmlControl.vue'
 import GeolocationControl from '@/components/Controls/GeolocationControl.vue'
 import TextEditorControl from '@/components/Controls/TextEditorControl.vue'
+import TableMultiselectInput from '@/components/Controls/TableMultiselectInput.vue'
 import ButtonControl, {
   getButtonTheme,
   getButtonVariant,
@@ -515,6 +522,18 @@ const _sections = computed(() => {
     return _section
   })
 })
+
+function readOnlyValue(field) {
+  const value = doc.value[field.fieldname]
+  if (field.fieldtype !== 'Table MultiSelect') return value
+
+  // rows are child docs: show the value of their Link field, like the input does
+  const linkField = getMeta(field.options)
+    .getFields()
+    ?.find((df) => ['Link', 'User'].includes(df.fieldtype))
+  if (!linkField) return ''
+  return (value || []).map((row) => row[linkField.fieldname]).join(', ')
+}
 
 function parsedField(field) {
   // Clone to avoid mutating the cached layout data
