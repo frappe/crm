@@ -413,7 +413,7 @@
                     :model-value="String(doc.slot_interval || 0)"
                     type="select"
                     :disabled="!canEdit"
-                    :label="__('Start times')"
+                    :label="__('Offer a time every')"
                     :description="startTimesHint"
                     :options="intervalOptions"
                     @update:model-value="
@@ -556,7 +556,12 @@
         </template>
       </Tabs>
       <!-- Kept mounted so unsaved form edits survive switching tabs -->
-      <fieldset v-show="activeTab === 'form'" :disabled="!canEdit" class="pt-5">
+      <!-- min-w-0: a fieldset is otherwise as wide as its widest field label -->
+      <fieldset
+        v-show="activeTab === 'form'"
+        :disabled="!canEdit"
+        class="min-w-0 pt-5"
+      >
         <!-- Form: the page's own web form, in the Forms field editor -->
         <section>
           <SectionTitle
@@ -912,21 +917,28 @@ const durationOptions = [15, 20, 30, 45, 60, 90, 120].map((m) => ({
   label: __('{0} minutes', [m]),
   value: String(m),
 }))
-const intervalOptions = [
-  { label: __('Every meeting length'), value: '0' },
-  ...[15, 30, 60].map((m) => ({
-    label: __('Every {0} minutes', [m]),
-    value: String(m),
-  })),
-]
-// Spells out the setting with sample times, e.g. "9:00, 9:30, 10:00 and so on"
+// 0 steps by the meeting's own length, so that length isn't listed twice
+const intervalOptions = computed(() => {
+  const duration = doc.value?.duration || 30
+  return [
+    { label: __('{0} minutes (meeting length)', [duration]), value: '0' },
+    ...[15, 30, 60]
+      .filter((m) => m !== duration)
+      .map((m) => ({ label: __('{0} minutes', [m]), value: String(m) })),
+  ]
+})
+// Spells out the setting with sample times, e.g. "9:00, 9:30, 10:00"
 const startTimesHint = computed(() => {
-  const step = doc.value?.slot_interval || doc.value?.duration || 30
+  const duration = doc.value?.duration || 30
+  const step = doc.value?.slot_interval || duration
   const times = [0, 1, 2].map((i) => {
     const m = 9 * 60 + i * step
     return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`
   })
-  return __('How often open times begin: {0}, {1}, {2} and so on', times)
+  return __(
+    'Guests pick from {0}, {1}, {2} and so on. Each meeting is {3} minutes.',
+    [...times, duration],
+  )
 })
 const locationOptions = [
   'Google Meet',
