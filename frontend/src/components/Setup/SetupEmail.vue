@@ -174,15 +174,11 @@
 
     <ErrorMessage v-if="error" class="mt-3" :message="error" />
 
-    <div class="relative mt-auto pt-8">
+    <div class="mt-auto pt-8">
       <div v-if="connected" class="flex justify-end">
         <Button variant="solid" :label="__('Continue')" @click="finish" />
       </div>
-      <div
-        v-else
-        class="flex items-center justify-end gap-2"
-        :class="{ invisible: confirmSkip }"
-      >
+      <div v-else-if="!confirmSkip" class="flex items-center justify-end gap-2">
         <Button
           :label="__('Set up later')"
           :disabled="saving || connecting"
@@ -213,10 +209,7 @@
           @click="next"
         />
       </div>
-      <div
-        v-if="confirmSkip"
-        class="absolute inset-x-0 bottom-0 bg-surface-base pt-4"
-      >
+      <div v-else>
         <Alert
           :title="__('Skip email for now?')"
           :description="
