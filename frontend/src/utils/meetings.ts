@@ -54,3 +54,50 @@ export function meetingRoute(meeting: Meeting) {
     query: { eventId: meeting.name, date: date.format('YYYY-MM-DD') },
   }
 }
+
+function duration(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (!h) return __('{0}m', [m])
+  return m ? __('{0}h {1}m', [h, m]) : __('{0}h', [h])
+}
+
+// "23m left" while it's on, "in 25m" before it starts.
+export function meetingCountdown(meeting: Meeting, now = dayjs()): string {
+  if (meeting.all_day) return __('All day')
+  if (isOngoing(meeting, now)) {
+    const left = Math.max(1, dayjsLocal(meeting.ends_on).diff(now, 'minute'))
+    return __('{0} left', [duration(left)])
+  }
+  const until = Math.max(1, dayjsLocal(meeting.starts_on).diff(now, 'minute'))
+  return __('in {0}', [duration(until)])
+}
+
+// The first meeting still to come, or the one that's on now; all-day ones aren't featured.
+export function nextMeeting<T extends Meeting>(
+  meetings: T[],
+  now = dayjs(),
+): T | null {
+  return meetings.find((m) => !m.all_day && !hasEnded(m, now)) || null
+}
+
+const PROVIDERS: [RegExp, string][] = [
+  [/meet\.google\.com/, 'Google Meet'],
+  [/zoom\.us/, 'Zoom'],
+  [/teams\.microsoft\.com|teams\.live\.com/, 'Teams'],
+]
+
+// Where it happens: the room for an in-person meeting, else the video provider.
+export function meetingPlace(meeting: Meeting): string | null {
+  const link = meetingLink(meeting)
+  if (!link) return meeting.location || null
+  return (
+    PROVIDERS.find(([pattern]) => pattern.test(link))?.[1] || __('Video call')
+  )
+}
+
+export function meetingStart(meeting: Meeting): string {
+  return meeting.all_day
+    ? __('All day')
+    : dayjsLocal(meeting.starts_on).format(TIME)
+}
