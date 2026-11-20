@@ -67,11 +67,7 @@
         <TransitionGroup v-bind="fade">
           <div v-for="r in rows" :key="r.name">
             <ListRows v-slot="{ item, value }" :items="[r]" row-key="name">
-              <ListRow
-                :value="value"
-                class="transition-colors duration-[1500ms]"
-                :class="item.fresh && 'bg-surface-gray-2'"
-              >
+              <ListRow :value="value">
                 <ListCell>
                   <span
                     class="flex min-w-0 items-center gap-2 text-base text-ink-gray-9"
@@ -193,10 +189,7 @@ const ownerAt = (lead, i) =>
     : lead.owner
 
 const rows = computed(() => {
-  const imported = IMPORTED_LEADS.slice(0, importedCount.value).map((l) => ({
-    ...l,
-    fresh: !invitees.value.length,
-  }))
+  const imported = IMPORTED_LEADS.slice(0, importedCount.value)
   return [...imported, ...SAMPLE_LEADS].map((l, i) => ({
     ...l,
     owner: ownerAt(l, i),
