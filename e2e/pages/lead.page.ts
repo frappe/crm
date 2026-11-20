@@ -17,12 +17,7 @@ export class LeadPage {
 	 * keeping the flow deterministic across tests that share storage state.
 	 */
 	async clearComposerDraft() {
-		await this.page.evaluate(() => {
-			// Keep the guided setup skipped across the reload.
-			const setupDone = localStorage.getItem('crm_setup_completed')
-			localStorage.clear()
-			if (setupDone) localStorage.setItem('crm_setup_completed', setupDone)
-		})
+		await this.page.evaluate(() => localStorage.clear())
 		await this.page.reload()
 		await this.page.waitForLoadState('networkidle')
 	}
