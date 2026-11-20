@@ -141,4 +141,9 @@ class TestDemoData(FrappeTestCase):
 		)
 		self.assertEqual(demo_emails, [])
 
+		from crm.api.digest import is_opted_out
+
+		for email in DEMO_USER_EMAILS:
+			self.assertTrue(is_opted_out(email))
+
 		clear_demo_data()
