@@ -29,6 +29,10 @@ def _get_enabled_settings():
 	return settings
 
 
+def _check_deal_permission(crm_deal: str):
+	frappe.has_permission("CRM Deal", "read", doc=crm_deal, throw=True)
+
+
 class ERPNextCRMSettings(Document):
 	# begin: auto-generated types
 	# This code is auto-generated. Do not modify anything in this block.
@@ -348,6 +352,7 @@ def get_local_customer(crm_deal: str):
 
 @frappe.whitelist()
 def get_customer_link(crm_deal: str):
+	_check_deal_permission(crm_deal)
 	erpnext_crm_settings = _get_enabled_settings()
 
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
@@ -458,6 +463,7 @@ def notify_deal_quotation_change(doc, method=None):
 
 @frappe.whitelist()
 def get_quotation_url(crm_deal: str, organization: str | None = None):
+	_check_deal_permission(crm_deal)
 	erpnext_crm_settings = _get_enabled_settings()
 
 	contact = get_primary_contact(crm_deal)
@@ -533,6 +539,7 @@ def prefill_quotation_items(crm_deal: str):
 	if not frappe.db.exists("CRM Deal", crm_deal):
 		return []
 	deal = frappe.get_doc("CRM Deal", crm_deal)
+	deal.check_permission("read")
 	items = []
 	for row in deal.products:
 		item_code = frappe.db.get_value("CRM Product", row.product_code, "erpnext_item_code")
@@ -635,9 +642,11 @@ def check_customer_for_quotation(quotation: str):
 	"""Create/fetch the Customer for the CRM Deal behind a quotation. Called when a
 	Sales Order form is opened from a CRM Deal quotation that has no customer yet.
 	"""
+	frappe.has_permission("Quotation", "read", doc=quotation, throw=True)
 	crm_deal = frappe.db.get_value("Quotation", quotation, "crm_deal")
 	if not crm_deal:
 		return None
+	_check_deal_permission(crm_deal)
 	return check_customer_for_deal(crm_deal)
 
 
