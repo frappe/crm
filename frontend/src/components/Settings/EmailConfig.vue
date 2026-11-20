@@ -6,7 +6,10 @@
     <div v-else-if="step === 'email-list'" class="flex min-h-0 flex-1 flex-col">
       <EmailAccountList @update:step="updateStep" />
     </div>
-    <div v-else-if="step === 'email-edit'" class="min-h-0 flex-1 overflow-y-auto">
+    <div
+      v-else-if="step === 'email-edit'"
+      class="min-h-0 flex-1 overflow-y-auto"
+    >
       <EmailEdit :account-data="accountData" @update:step="updateStep" />
     </div>
   </div>
