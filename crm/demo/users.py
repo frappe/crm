@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 import frappe
 from frappe.query_builder import DocType
 
+from crm.api.digest import OPT_OUT_KEY as DIGEST_OPT_OUT_KEY
+
 DEMO_USERS = [
 	{
 		"email": "sarah.demo@example.com",
@@ -60,6 +62,7 @@ def create_demo_users():
 	# demo users have fake addresses; seeding assigns records to them, which would email them
 	for email in DEMO_USER_EMAILS:
 		frappe.db.set_value("Notification Settings", email, "enable_email_notifications", 0)
+		frappe.defaults.set_user_default(DIGEST_OPT_OUT_KEY, "0", email)
 
 	# Backdate auto-created contacts and set their image
 	_ts = datetime.now() - timedelta(days=70)
