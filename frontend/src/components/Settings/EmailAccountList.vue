@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex min-h-0 flex-1 flex-col">
     <!-- header -->
     <div class="flex justify-between text-ink-gray-8">
       <div class="flex flex-col gap-1 w-9/12">
@@ -28,7 +28,7 @@
     <!-- list accounts -->
     <div
       v-if="!emailAccounts.loading && Boolean(emailAccounts.data?.length)"
-      class="mt-4"
+      class="mt-4 min-h-0 flex-1 overflow-y-auto"
     >
       <div
         v-for="(emailAccount, i) in emailAccounts.data"
