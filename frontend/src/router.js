@@ -5,14 +5,10 @@ import { viewsStore } from '@/stores/views'
 import { getLandingPage, landingRoute, viewRoute } from '@/utils/landingPage'
 
 let setupChecked = false
-export const SETUP_DONE_KEY = 'crm_setup_completed'
 
-// sent with the page boot, so the redirect needs no request and nothing renders first;
-// the client flag guards against re-prompting if saving setup_completed failed
+// sent with the page boot, so the redirect needs no request and nothing renders first
 function needsSetup() {
-  return (
-    Boolean(window.crm_setup_pending) && !localStorage.getItem(SETUP_DONE_KEY)
-  )
+  return Boolean(window.crm_setup_pending)
 }
 
 function getSetupRedirect(to) {
