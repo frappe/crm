@@ -39,7 +39,7 @@
         />
 
         <div
-          class="absolute inset-0 flex flex-col overflow-hidden rounded-[16px] border border-outline-gray-2 bg-surface-base shadow-2xl"
+          class="absolute inset-0 flex flex-col overflow-hidden rounded-[16px] border border-outline-gray-2 bg-surface-base"
         >
           <div
             class="relative flex h-11 shrink-0 items-end gap-1 bg-surface-gray-2 px-3"
