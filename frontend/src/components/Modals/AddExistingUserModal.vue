@@ -32,7 +32,7 @@
           :validate="validateEmail"
           :fetchUsers="true"
           :existingEmails="[
-            ...users.data.crmUsers.map((user) => user.name),
+            ...users.data.crmUsers.map((user) => user.email),
             'admin@example.com',
           ]"
           :error-message="
@@ -71,7 +71,7 @@ import { usersStore } from '@/stores/users'
 import { createResource, toast } from 'frappe-ui'
 import { ref, computed } from 'vue'
 
-const { users, isAdmin } = usersStore()
+const { users, allUsers, isAdmin } = usersStore()
 
 const show = defineModel({ type: Boolean })
 
@@ -100,7 +100,13 @@ const roleOptions = computed(() => {
 const addNewUser = createResource({
   url: 'crm.api.user.add_existing_users',
   makeParams: () => ({
-    users: JSON.stringify(newUsers.value),
+    // the picker gives emails, the API takes user IDs
+    users: JSON.stringify(
+      newUsers.value.map(
+        (email) =>
+          allUsers.value?.find((u) => u.email === email)?.name || email,
+      ),
+    ),
     role: role.value,
   }),
   onSuccess: () => {

@@ -582,6 +582,7 @@ import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import RichTextField from '@/components/RichTextField.vue'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/users'
 import { validateEmail, deepClone, sanitizeHTML, getFormat } from '@/utils'
 import {
   normalizeParticipants,
@@ -629,6 +630,7 @@ const emit = defineEmits([
 const router = useRouter()
 const { $dialog } = globalStore()
 const { user } = sessionStore()
+const { getUser } = usersStore()
 
 const show = defineModel({ type: Boolean })
 const event = defineModel('event', { type: Object, default: () => ({}) })
@@ -698,7 +700,9 @@ const title = computed(() => {
 })
 
 const currentAttendee = computed(() => {
-  return _event.value?.event_participants?.find((p) => p.email === user)
+  return _event.value?.event_participants?.find(
+    (p) => p.email === getUser(user).email,
+  )
 })
 
 const attending = computed({

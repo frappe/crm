@@ -22,9 +22,7 @@ export const usersStore = defineStore('crm-users', () => {
       crmUsers = normalizeUsers(crmUsers)
       for (let user of allUsers) {
         usersByName[user.name] = user
-        if (user.name === 'Administrator') {
-          usersByName[user.email] = user
-        }
+        indexByEmail(user)
       }
       return { allUsers, crmUsers }
     },
@@ -58,6 +56,7 @@ export const usersStore = defineStore('crm-users', () => {
         } else {
           usersByName[user.name] = user
         }
+        indexByEmail(usersByName[user.name])
       }
       return { allUsers }
     },
@@ -102,9 +101,18 @@ export const usersStore = defineStore('crm-users', () => {
       const records = await r.fetch()
       for (const u of normalizeUsers(records || [])) {
         usersByName[u.name] = { ...usersByName[u.name], ...u }
+        indexByEmail(usersByName[u.name])
       }
     } catch (e) {
       // best-effort — the synthesized stub remains on failure
+    }
+  }
+
+  // A user ID is not always the email, but many places only have the email
+  // (participants, mail senders), so a user is found by either.
+  function indexByEmail(user) {
+    if (user.email && user.email !== user.name) {
+      usersByName[user.email] = user
     }
   }
 

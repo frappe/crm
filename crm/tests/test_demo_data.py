@@ -127,3 +127,35 @@ class TestDemoData(IntegrationTestCase):
 		self.assertIsNone(frappe.db.get_default(DEMO_CALL_LOGS_KEY))
 		self.assertIsNone(frappe.db.get_default(DEMO_ACTIVITIES_KEY))
 		self.assertIsNone(frappe.db.get_default(DEMO_DEALS_KEY))
+
+	def test_demo_users_are_found_by_email(self):
+		from unittest.mock import patch
+
+		from crm.demo import users as demo_users
+
+		# not test_user: delete_demo_users deletes it
+		email = f"{frappe.generate_hash()}@example.com"
+		user = frappe.new_doc("User", email=email, first_name="Demo", send_welcome_email=0)
+		# a random ID, like frappe's test_user(generated_id=True)
+		user.flags.skip_email_from_name = True
+		user.insert(set_name=frappe.generate_hash(length=10))
+
+		with (
+			patch.object(demo_users, "DEMO_USERS", [{**demo_users.DEMO_USERS[0], "email": email}]),
+			patch.object(demo_users, "DEMO_USER_EMAILS", [email]),
+		):
+			self.assertEqual(demo_users.create_demo_users(), [user.name])
+			demo_users.delete_demo_users([email])
+
+		self.assertFalse(frappe.db.exists("User", user.name))
+
+	def test_demo_comment_is_by_the_owners_email(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		from crm.demo.utils import insert_comment
+
+		todo = frappe.get_doc({"doctype": "ToDo", "description": "demo comment"}).insert()
+		with test_user(roles=["Sales User"], generated_id=True) as owner:
+			comment = insert_comment("ToDo", todo.name, owner.name, "Hello", {}, frappe.utils.now_datetime())
+
+			self.assertEqual(frappe.db.get_value("Comment", comment, "comment_email"), owner.email)

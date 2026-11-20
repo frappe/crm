@@ -252,7 +252,7 @@ class SendEmailToRecord(AutomationAction):
 				recipients=recipient,
 				communication_type="Communication",
 				send_email=True,
-				sender=sender or None,
+				sender=frappe.utils.get_email_address(sender) if sender else None,
 				sender_full_name=frappe.db.get_value("User", sender, "full_name") if sender else None,
 			)
 		finally:
