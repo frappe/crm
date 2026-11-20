@@ -63,7 +63,7 @@ def will_see_guided_setup() -> bool:
 	return not frappe.db.get_single_value("FCRM Settings", "setup_completed")
 
 
-@frappe.whitelist(methods=["POST"], allow_guest=True)  # nosemgrep: guest-whitelisted-method
+@frappe.whitelist(methods=["POST"], allow_guest=True, rate_limit=None)  # nosemgrep: guest-whitelisted-method
 def get_context_for_dev():
 	if not frappe.conf.developer_mode:
 		frappe.throw(_("This method is only meant for developer mode"))
