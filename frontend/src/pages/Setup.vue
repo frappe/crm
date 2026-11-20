@@ -105,6 +105,7 @@ const current = ref(0)
 const activeStepView = ref(null)
 const stepStatus = reactive({})
 const previewState = reactive({
+  passwordLength: 0,
   provider: null,
   email: '',
   importStage: null,
