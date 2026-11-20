@@ -80,9 +80,9 @@ class TestPasswordSetup(IntegrationTestCase):
 
 		self.assertFalse(needs_password_setup())
 
-	def test_does_not_need_setup_on_frappe_cloud_v2(self):
+	def test_needs_setup_on_frappe_cloud_v2(self):
 		with patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}):
-			self.assertFalse(needs_password_setup())
+			self.assertTrue(needs_password_setup())
 
 	# ---- redirect ----
 
