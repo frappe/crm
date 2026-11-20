@@ -22,6 +22,19 @@ class TestDemoData(IntegrationTestCase):
 				return True
 		return False
 
+	def test_demo_users_opted_out_of_morning_digest(self):
+		from crm.api.digest import is_opted_out
+		from crm.demo.api import clear_demo_data, create_demo_data
+		from crm.demo.users import DEMO_USER_EMAILS
+
+		clear_demo_data()
+		create_demo_data()
+
+		for email in DEMO_USER_EMAILS:
+			self.assertTrue(is_opted_out(email))
+
+		clear_demo_data()
+
 	def test_demo_data_lifecycle(self):
 		from crm.demo.api import clear_demo_data, create_demo_data
 		from crm.demo.users import DEMO_USERS
