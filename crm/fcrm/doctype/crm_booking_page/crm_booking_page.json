@@ -1,0 +1,280 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-03 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "route",
+  "enabled",
+  "column_break_head",
+  "duration",
+  "location_type",
+  "location",
+  "section_break_description",
+  "description",
+  "hosts_section",
+  "hosts",
+  "availability_section",
+  "timezone",
+  "availability",
+  "holiday_list",
+  "column_break_limits",
+  "slot_interval",
+  "buffer",
+  "min_notice",
+  "max_days_ahead",
+  "form_section",
+  "document_type",
+  "web_form",
+  "after_booking_section",
+  "create_lead",
+  "lead_source",
+  "event_title",
+  "confirmation_message",
+  "guest_reminder",
+  "allowed_embedding_domains"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "description": "The page opens at /crm-book/<route>"
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_head",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Int",
+   "label": "Duration (minutes)",
+   "default": "30",
+   "reqd": 1
+  },
+  {
+   "fieldname": "location_type",
+   "fieldtype": "Select",
+   "label": "Location",
+   "options": "Google Meet\nPhone call\nIn person\nCustom link",
+   "default": "Google Meet"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location details",
+   "depends_on": "eval:doc.location_type!='Google Meet'",
+   "description": "Address for in person, link for custom link. Leave blank for phone calls."
+  },
+  {
+   "fieldname": "section_break_description",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "hosts_section",
+   "fieldtype": "Section Break",
+   "label": "Hosts"
+  },
+  {
+   "fieldname": "hosts",
+   "fieldtype": "Table",
+   "label": "Hosts",
+   "options": "CRM Booking Page Host",
+   "reqd": 1,
+   "description": "With more than one host, each booking goes to a free host in turn."
+  },
+  {
+   "fieldname": "availability_section",
+   "fieldtype": "Section Break",
+   "label": "Availability"
+  },
+  {
+   "fieldname": "timezone",
+   "fieldtype": "Data",
+   "label": "Timezone",
+   "description": "Hours below are in this timezone. Defaults to the system timezone."
+  },
+  {
+   "fieldname": "availability",
+   "fieldtype": "Table",
+   "label": "Weekly hours",
+   "options": "CRM Service Day",
+   "reqd": 1
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "CRM Holiday List"
+  },
+  {
+   "fieldname": "column_break_limits",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "slot_interval",
+   "fieldtype": "Int",
+   "label": "Start a slot every (minutes)",
+   "default": "0",
+   "description": "0 uses the duration"
+  },
+  {
+   "fieldname": "buffer",
+   "fieldtype": "Int",
+   "label": "Buffer between meetings (minutes)",
+   "default": "0"
+  },
+  {
+   "fieldname": "min_notice",
+   "fieldtype": "Int",
+   "label": "Minimum notice (hours)",
+   "default": "4"
+  },
+  {
+   "fieldname": "max_days_ahead",
+   "fieldtype": "Int",
+   "label": "Bookable days ahead",
+   "default": "30"
+  },
+  {
+   "fieldname": "form_section",
+   "fieldtype": "Section Break",
+   "label": "Form"
+  },
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Select",
+   "label": "Creates",
+   "options": "CRM Lead\nCRM Deal",
+   "default": "CRM Lead",
+   "set_only_once": 1,
+   "description": "What a booking from someone new creates"
+  },
+  {
+   "fieldname": "web_form",
+   "fieldtype": "Link",
+   "label": "Form",
+   "options": "Web Form",
+   "description": "This page's own form, edited on the page. Name and email go to the lead or deal.",
+   "read_only": 1
+  },
+  {
+   "fieldname": "after_booking_section",
+   "fieldtype": "Section Break",
+   "label": "After booking"
+  },
+  {
+   "fieldname": "create_lead",
+   "fieldtype": "Check",
+   "label": "Create a record for new people",
+   "default": "1"
+  },
+  {
+   "fieldname": "lead_source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "options": "CRM Lead Source",
+   "depends_on": "create_lead",
+   "description": "Set on the lead or deal a booking creates"
+  },
+  {
+   "fieldname": "event_title",
+   "fieldtype": "Data",
+   "label": "Meeting title",
+   "description": "The meeting's name on the calendar. Use {guest}, {host}, {page} or a form field like {organization_name}. Blank: {page} with {guest}"
+  },
+  {
+   "fieldname": "confirmation_message",
+   "fieldtype": "Small Text",
+   "label": "Confirmation message"
+  },
+  {
+   "fieldname": "guest_reminder",
+   "fieldtype": "Select",
+   "label": "Remind guest",
+   "options": "No reminder\n1 hour before\n1 day before",
+   "default": "1 day before"
+  },
+  {
+   "fieldname": "allowed_embedding_domains",
+   "fieldtype": "Small Text",
+   "label": "Allowed embedding domains",
+   "description": "Sites where this page may be embedded, one per line"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-04 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Booking Page",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "email": 1
+  },
+  {
+   "role": "Sales Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1,
+   "email": 1
+  },
+  {
+   "role": "Sales User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "write": 1,
+   "create": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "hash",
+ "title_field": "title",
+ "track_changes": 1
+}

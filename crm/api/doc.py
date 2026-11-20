@@ -407,6 +407,8 @@ def get_data(
 		if meta.track_seen and "_seen" not in rows:
 			rows.append("_seen")
 
+		add_task_all_day(doctype, rows)
+
 		data = (
 			frappe.get_list(
 				doctype,
@@ -450,6 +452,8 @@ def get_data(
 		for field in kanban_fields:
 			if field not in rows:
 				rows.append(field)
+
+		add_task_all_day(doctype, rows)
 
 		for kc in kanban_columns:
 			# Start with base filters
@@ -597,6 +601,11 @@ def get_data(
 	}
 
 
+def add_task_all_day(doctype, rows):
+	if doctype == "CRM Task" and "due_date" in rows and "all_day" not in rows:
+		rows.append("all_day")
+
+
 def parse_list_data(data, doctype):
 	_list = get_controller(doctype)
 	if hasattr(_list, "parse_list_data"):
@@ -664,6 +673,7 @@ def add_seen(doctype: str, name: str):
 	doc = frappe.get_doc(doctype, name)
 	doc.check_permission("read")
 	doc.add_seen()
+	doc.add_viewed()
 
 
 @frappe.whitelist()

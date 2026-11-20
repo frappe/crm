@@ -70,57 +70,7 @@ def get_deal_activities(name: str):
 	docinfo.versions.reverse()
 
 	for version in docinfo.versions:
-		data = json.loads(version.data)
-		if not data.get("changed"):
-			continue
-
-		if change := data.get("changed")[0]:
-			field = deal_fields.get(change[0], None)
-
-			if not field or change[0] in avoid_fields or (not change[1] and not change[2]):
-				continue
-
-			field_label = field.get("label") or change[0]
-			field_option = field.get("options") or None
-
-			activity_type = "changed"
-			data = {
-				"field": change[0],
-				"field_label": field_label,
-				"old_value": change[1],
-				"value": change[2],
-			}
-
-			if not change[1] and change[2]:
-				activity_type = "added"
-				data = {
-					"field": change[0],
-					"field_label": field_label,
-					"value": change[2],
-				}
-			elif change[1] and not change[2]:
-				activity_type = "removed"
-				data = {
-					"field": change[0],
-					"field_label": field_label,
-					"value": change[1],
-				}
-
-			if data.get("value") and field_option and is_translatable(field_option):
-				data["value"] = _(data["value"])
-
-				if data.get("old_value"):
-					data["old_value"] = _(data["old_value"])
-
-		activity = {
-			"activity_type": activity_type,
-			"creation": version.creation,
-			"owner": version.owner,
-			"data": data,
-			"is_lead": False,
-			"options": field_option,
-		}
-		activities.append(activity)
+		activities += get_field_change_activities(version, deal_fields, avoid_fields, is_lead=False)
 
 	for comment in docinfo.comments:
 		activity = {
@@ -222,57 +172,7 @@ def get_lead_activities(name: str):
 	docinfo.versions.reverse()
 
 	for version in docinfo.versions:
-		data = json.loads(version.data)
-		if not data.get("changed"):
-			continue
-
-		if change := data.get("changed")[0]:
-			field = lead_fields.get(change[0], None)
-
-			if not field or change[0] in avoid_fields or (not change[1] and not change[2]):
-				continue
-
-			field_label = field.get("label") or change[0]
-			field_option = field.get("options") or None
-
-			activity_type = "changed"
-			data = {
-				"field": change[0],
-				"field_label": field_label,
-				"old_value": change[1],
-				"value": change[2],
-			}
-
-			if not change[1] and change[2]:
-				activity_type = "added"
-				data = {
-					"field": change[0],
-					"field_label": field_label,
-					"value": change[2],
-				}
-			elif change[1] and not change[2]:
-				activity_type = "removed"
-				data = {
-					"field": change[0],
-					"field_label": field_label,
-					"value": change[1],
-				}
-
-			if data.get("value") and field_option and is_translatable(field_option):
-				data["value"] = _(data["value"])
-
-				if data.get("old_value"):
-					data["old_value"] = _(data["old_value"])
-
-		activity = {
-			"activity_type": activity_type,
-			"creation": version.creation,
-			"owner": version.owner,
-			"data": data,
-			"is_lead": True,
-			"options": field_option,
-		}
-		activities.append(activity)
+		activities += get_field_change_activities(version, lead_fields, avoid_fields, is_lead=True)
 
 	for comment in docinfo.comments:
 		activity = {
@@ -380,6 +280,43 @@ def get_send_after(communication) -> str | None:
 	if communication.delivery_status != "Scheduled":
 		return None
 	return frappe.db.get_value("Communication", communication.name, "send_after")
+
+
+def get_field_change_activities(version, fields: dict, avoid_fields: list, is_lead: bool):
+	activities = []
+	for fieldname, old_value, value in json.loads(version.data).get("changed") or []:
+		field = fields.get(fieldname)
+		if not field or fieldname in avoid_fields or (not old_value and not value):
+			continue
+
+		data = {"field": fieldname, "field_label": field.get("label") or fieldname}
+		if not old_value:
+			activity_type = "added"
+			data["value"] = value
+		elif not value:
+			activity_type = "removed"
+			data["value"] = old_value
+		else:
+			activity_type = "changed"
+			data.update(old_value=old_value, value=value)
+
+		field_option = field.get("options") or None
+		if data.get("value") and field_option and is_translatable(field_option):
+			data["value"] = _(data["value"])
+			if data.get("old_value"):
+				data["old_value"] = _(data["old_value"])
+
+		activities.append(
+			{
+				"activity_type": activity_type,
+				"creation": version.creation,
+				"owner": version.owner,
+				"data": data,
+				"is_lead": is_lead,
+				"options": field_option,
+			}
+		)
+	return activities
 
 
 def handle_multiple_versions(versions: list):
@@ -542,6 +479,7 @@ def get_linked_calls(name: str):
 				"description",
 				"assigned_to",
 				"due_date",
+				"all_day",
 				"priority",
 				"status",
 				"modified",
@@ -628,6 +566,7 @@ def get_linked_tasks(name: str):
 			"description",
 			"assigned_to",
 			"due_date",
+			"all_day",
 			"priority",
 			"status",
 			"modified",

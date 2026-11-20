@@ -3,19 +3,30 @@
     <section class="flex min-h-screen flex-col px-6 py-5">
       <div class="flex h-8 items-center justify-between">
         <Button
-          v-if="current > 0"
+          v-if="canGoBack || activeStepView?.canGoBack"
           variant="ghost"
           icon-left="lucide-arrow-left"
           :label="__('Back')"
           @click="goBack"
         />
         <span v-else />
-        <Button
-          variant="ghost"
-          class="!text-ink-gray-5"
-          :label="__('Skip setup')"
-          @click="confirmSkipSetup"
-        />
+        <div class="flex items-center gap-1">
+          <Button
+            v-if="activeStep.name !== 'set_password'"
+            variant="ghost"
+            class="!text-ink-gray-5"
+            :label="__('Skip setup')"
+            @click="confirmSkipSetup"
+          />
+          <Button
+            variant="ghost"
+            class="!text-ink-gray-5"
+            :icon="isDark ? 'lucide-sun' : 'lucide-moon'"
+            :tooltip="themeLabel"
+            :aria-label="themeLabel"
+            @click="toggleColorScheme"
+          />
+        </div>
       </div>
       <main
         class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10"
@@ -58,14 +69,14 @@
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import SetupPreview from '@/components/Setup/SetupPreview.vue'
+import SetupPassword from '@/components/Setup/SetupPassword.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
 import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
 import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 import { setupFeedback } from '@/composables/modals'
-import { SETUP_DONE_KEY } from '@/router'
 import { globalStore } from '@/stores/global'
-import { Button, Progress, call, usePageMeta } from 'frappe-ui'
+import { Button, Progress, call, useColorScheme, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { computed, markRaw, provide, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -73,17 +84,28 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const { capture } = useTelemetry()
 const { $dialog } = globalStore()
+const { resolvedColorScheme, toggleColorScheme } = useColorScheme()
+
+const isDark = computed(() => resolvedColorScheme.value === 'dark')
+const themeLabel = computed(() =>
+  isDark.value ? __('Switch to light mode') : __('Switch to dark mode'),
+)
 
 const steps = [
+  window.needs_password_setup && {
+    name: 'set_password',
+    component: markRaw(SetupPassword),
+  },
   { name: 'connect_email', component: markRaw(SetupEmail) },
   { name: 'bring_leads', component: markRaw(SetupLeads) },
   { name: 'invite_team', component: markRaw(SetupInvite) },
-]
+].filter(Boolean)
 
 const current = ref(0)
 const activeStepView = ref(null)
 const stepStatus = reactive({})
 const previewState = reactive({
+  passwordLength: 0,
   provider: null,
   email: '',
   importStage: null,
@@ -98,6 +120,9 @@ provide('setupPreview', previewState)
 const activeStep = computed(() => steps[current.value])
 const progress = computed(() => ((current.value + 1) / steps.length) * 100)
 const isLastStep = computed(() => current.value === steps.length - 1)
+const canGoBack = computed(
+  () => current.value > 0 && steps[current.value - 1].name !== 'set_password',
+)
 
 const setupStartedAt = Date.now()
 let stepStartedAt = setupStartedAt
@@ -186,11 +211,7 @@ async function finishSetup(skipped) {
 }
 
 async function markSetupDone() {
-  try {
-    localStorage.setItem(SETUP_DONE_KEY, '1')
-  } catch (error) {
-    console.error('Failed to cache setup status', error)
-  }
+  window.crm_setup_pending = false
   try {
     await call('frappe.client.set_value', {
       doctype: 'FCRM Settings',
