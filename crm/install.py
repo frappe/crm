@@ -17,6 +17,19 @@ def before_install():
 	pass
 
 
+def after_app_install(app_name: str) -> None:
+	"""WhatsApp is optional. A site that adds it after CRM already ran the patches that
+	set it up, while it was missing, so they run again here."""
+	if app_name != "whatsapp":
+		return
+
+	from crm.api.whatsapp import add_roles
+	from crm.patches.v1_0.migrate_from_frappe_whatsapp import execute as migrate_from_frappe_whatsapp
+
+	add_roles()
+	migrate_from_frappe_whatsapp()
+
+
 def after_install(force=False):
 	add_default_lead_statuses()
 	add_default_deal_statuses()
@@ -40,6 +53,7 @@ def after_install(force=False):
 	add_assignment_rule_property_setters()
 	add_data_import_permissions()
 	seed_default_rules_and_mappings()
+	add_assignment_index()
 	frappe.db.commit()  # persist seeded defaults, also run from restore_defaults  # nosemgrep
 
 
@@ -197,7 +211,7 @@ def add_default_fields_layout(force=False):
 		},
 		"CRM Task-Quick Entry": {
 			"doctype": "CRM Task",
-			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
+			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date","all_day"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
 		},
 	}
 
@@ -620,6 +634,11 @@ def add_default_scripts():
 	for doctype in ["CRM Lead", "CRM Deal"]:
 		create_product_details_script(doctype)
 	create_forecasting_script()
+
+
+def add_assignment_index():
+	# ToDo is a framework doctype, so its index for CRM's assignment lookups is added here
+	frappe.db.add_index("ToDo", ["reference_type", "status", "allocated_to", "reference_name"])
 
 
 def add_assignment_rule_property_setters():

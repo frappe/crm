@@ -16,7 +16,7 @@
     <div class="mt-8 flex flex-col gap-2">
       <div
         v-for="(row, index) in rows"
-        :key="index"
+        :key="row.id"
         class="flex flex-col gap-1"
       >
         <div class="flex items-center gap-2">
@@ -37,6 +37,14 @@
               :aria-label="__('Role for teammate {0}', [index + 1])"
             />
           </div>
+          <Button
+            variant="ghost"
+            icon="lucide-x"
+            :disabled="rows.length === 1"
+            :tooltip="__('Remove')"
+            :aria-label="__('Remove teammate {0}', [index + 1])"
+            @click="rows.splice(index, 1)"
+          />
         </div>
         <ErrorMessage
           v-if="isInvalid(row)"
@@ -88,6 +96,7 @@ const { isAdmin } = usersStore()
 const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 
+let nextRowId = 0
 const rows = ref([newRow(), newRow()])
 const sending = ref(false)
 const error = ref('')
@@ -117,7 +126,7 @@ const canSend = computed(
 )
 
 function newRow() {
-  return { email: '', role: 'Sales User' }
+  return { id: nextRowId++, email: '', role: 'Sales User' }
 }
 
 function addRow() {

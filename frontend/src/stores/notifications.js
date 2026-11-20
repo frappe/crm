@@ -37,9 +37,13 @@ export const notificationsStore = defineStore('crm-notifications', () => {
     visible.value = !visible.value
   }
 
-  function mark_doc_as_read(doc) {
-    mark_as_read.params = { doc: doc }
-    mark_as_read.reload()
+  function mark_doc_as_read(docs) {
+    docs = [].concat(docs || [])
+    // An empty list would mark every notification as read.
+    if (docs.length) {
+      mark_as_read.params = { docs }
+      mark_as_read.reload()
+    }
     toggle()
   }
 
