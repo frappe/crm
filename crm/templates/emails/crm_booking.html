@@ -1,0 +1,41 @@
+<h1 class="email-title">
+	{% if guest %}
+	{% if action == "confirmed" %}{{ _("{0} booked a meeting with you").format(guest)|e }}
+	{% elif action == "rescheduled" %}{{ _("{0} moved your meeting").format(guest)|e }}
+	{% else %}{{ _("{0} cancelled your meeting").format(guest)|e }}{% endif %}
+	{% elif action == "confirmed" %}{{ _("Your meeting is booked") }}
+	{% elif action == "rescheduled" %}{{ _("Your meeting has moved") }}
+	{% elif action == "reminder" %}{{ _("Your meeting is coming up") }}
+	{% else %}{{ _("Your meeting was cancelled") }}{% endif %}
+</h1>
+<div class="email-body">
+	<p>
+		<b>{{ title|e }}</b><br />
+		{% if action == "cancelled" %}<s>{{ when|e }}</s>{% else %}{{ when|e }}{% endif %}<br />
+		{{ _("With") }} {{ with_name|e }}
+		{% if location and not link and action != "cancelled" %}<br />{{ location|e }}{% endif %}
+	</p>
+	{% if note %}<p><b>{{ note|e }}</b></p>{% endif %}
+	{% if reason %}<p><span class="email-subhead">{{ _("Reason") }}:</span> {{ reason|e }}</p>{% endif %}
+	{% if message %}<p>{{ message|e }}</p>{% endif %}
+	{% if answers %}
+	<p>
+		{% for question, answer in answers.items() %}<span class="email-subhead">{{ question|e }}</span><br />{{ answer|e }}{% if not loop.last %}<br />{% endif %}{% endfor %}
+	</p>
+	{% endif %}
+	{% if link and action != "cancelled" %}
+	<div class="email-action">
+		<a class="email-btn email-btn-primary" href="{{ link|e }}">{{ _("Join meeting") }}</a>
+	</div>
+	<div class="email-copy">
+		<p>{{ _("Or copy and paste:") }}</p>
+		<a href="{{ link|e }}">{{ link|e }}</a>
+	</div>
+	{% endif %}
+	{% if record_url or manage_url %}
+	<div class="email-action">
+		{% if record_url %}<a class="email-btn" href="{{ record_url|e }}">{{ _("Open in CRM") }}</a>{% endif %}
+		{% if manage_url %}<a class="email-btn" href="{{ manage_url|e }}">{{ _("Reschedule or cancel") }}</a>{% endif %}
+	</div>
+	{% endif %}
+</div>

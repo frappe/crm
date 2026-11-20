@@ -1,5 +1,7 @@
+import functools
 import json
 import os
+import unittest
 
 import frappe
 
@@ -20,3 +22,18 @@ def load_crm_user_test_records():
 			if not frappe.db.exists("User", record.get("email")):
 				doc = frappe.get_doc(record)
 				doc.insert(ignore_permissions=True, ignore_if_duplicate=True)
+
+
+def requires_whatsapp(test):
+	"""Skip a test case or a test on a site without the optional whatsapp app."""
+	if isinstance(test, type):
+		test.setUp = requires_whatsapp(test.setUp)
+		return test
+
+	@functools.wraps(test)
+	def run_with_whatsapp(*args, **kwargs):
+		if "whatsapp" not in frappe.get_installed_apps():
+			raise unittest.SkipTest("WhatsApp is not installed")
+		return test(*args, **kwargs)
+
+	return run_with_whatsapp

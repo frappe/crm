@@ -24,9 +24,19 @@ env:
 
 jobs:
   ui-tests:
-    runs-on: ubuntu-latest
+    runs-on: frappe-arc
     timeout-minutes: 60
     name: Playwright E2E Tests
+
+    # Pilot's own MariaDB is a systemd user unit, and frappe-arc pods have no systemd.
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mariadb-admin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
       - name: Clone
@@ -41,8 +51,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           check-latest: true
+
+      - name: Install Yarn
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
 
       - name: Add to Hosts
         run: echo "127.0.0.1 crm.test" | sudo tee -a /etc/hosts
@@ -85,19 +98,28 @@ jobs:
         with:
           path: |
             ~/pilot/benches
-            ~/pilot/databases
-            ~/.config/systemd/user
-          key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}
+            ~/.local/share/uv/python
+          key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}-arc
 
       - name: Setup Pilot bench
         run: |
           export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
           printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
-          echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$GITHUB_ENV"
-          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh
-          [ -d "$HOME/pilot/benches/frappe-bench" ] || pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
+          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
+          if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
+            pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
+            pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+            pilot -b frappe-bench set-bench-config mariadb_existing true
+            pilot -b frappe-bench set-bench-config mariadb_host 127.0.0.1
+            pilot -b frappe-bench set-bench-config mariadb_port 3306
+            pilot -b frappe-bench set-bench-config mariadb_admin_user root
+            pilot -b frappe-bench set-bench-config mariadb_password root
+          fi
           pilot -b frappe-bench init
-          pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+          # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+          printf '[client]\nskip-ssl\n' > ~/.my.cnf
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
         env:
           CI: "Yes"
 
@@ -107,8 +129,7 @@ jobs:
         with:
           path: |
             ~/pilot/benches
-            ~/pilot/databases
-            ~/.config/systemd/user
+            ~/.local/share/uv/python
           key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM

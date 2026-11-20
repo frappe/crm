@@ -19,9 +19,9 @@
       </div>
       <div class="flex w-3/12 justify-end gap-2">
         <Button
-          :label="preview ? __('Edit') : __('Preview')"
-          :icon-left="preview ? 'lucide-edit-2' : 'lucide-eye'"
-          @click="preview = !preview"
+          :label="__('Preview')"
+          icon-left="lucide-eye"
+          @click="preview = true"
         />
         <Button
           v-if="template.editable && (template.isDirty || template.isNew)"
@@ -41,9 +41,13 @@
     <!-- p-1/-m-1 leaves the scroll box a little slack beyond the content, so a
          focused control's ring isn't clipped by the edge it sits flush against. -->
     <div v-else class="-m-1 flex-1 overflow-y-auto p-1">
-      <TemplateForm v-if="!preview" :controller="template" />
-      <TemplatePreview v-else :controller="template" />
+      <TemplateForm :controller="template" />
     </div>
+    <Dialog v-model:open="preview" :title="__('Preview')" size="sm">
+      <template #default>
+        <TemplatePreview :controller="template" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -54,7 +58,7 @@ import {
   TemplatePreview,
   useTemplate,
 } from '@whatsapp/ui'
-import { LoadingIndicator, toast } from 'frappe-ui'
+import { Dialog, LoadingIndicator, toast } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const props = defineProps({

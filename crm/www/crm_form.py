@@ -54,7 +54,17 @@ def get_context(context):
 	context.submit_label = doc.button_label or "Submit"
 	context.success_message = doc.success_message or "Thank you!"
 	context.success_url = doc.success_url or ""
-	context.fields = [
+	context.update(form_fields_context(doc))
+	return context
+
+
+def form_fields_context(doc, skip: set | None = None) -> dict:
+	"""A web form's fields, section layout and Link options, as its page renders them.
+
+	`skip` leaves out fieldnames a host page asks for itself (booking pages ask name,
+	email and phone before the form)."""
+	skip = skip or set()
+	fields = [
 		{
 			"fieldname": f.fieldname,
 			# breaks (Section/Column) keep an empty label when blank so unlabeled
@@ -71,16 +81,17 @@ def get_context(context):
 			"read_only_depends_on": f.read_only_depends_on or "",
 		}
 		for f in doc.web_form_fields
+		if f.fieldname not in skip
 	]
-	context.layout = build_layout(context.fields)
+	layout = build_layout(fields)
 	# Link fields render as a server-populated dropdown of existing records. Resolve
 	# resolve Link options here (keyed by fieldname) so the template stays presentation-only.
-	context.link_options = {
+	link_options = {
 		f["fieldname"]: _link_field_options(f["options"])
-		for f in context.fields
+		for f in fields
 		if f["fieldtype"] == "Link" and f["options"]
 	}
-	return context
+	return {"fields": fields, "layout": layout, "link_options": link_options}
 
 
 def _link_field_options(doctype: str) -> list[dict]:

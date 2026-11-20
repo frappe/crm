@@ -20,6 +20,7 @@
         }
       "
       @layout-ready="layoutReady = true"
+      @layout-updated="emit('layout-updated')"
     >
       <GridItem
         v-for="({ layout: l }, index) in items"
@@ -46,11 +47,13 @@
                 : ''
             "
           >
-            <DashboardItem
-              :index="index"
-              :item="items[index]"
-              :editing="editing"
-            />
+            <slot name="item" :item="items[index]" :index="index">
+              <DashboardItem
+                :index="index"
+                :item="items[index]"
+                :editing="editing"
+              />
+            </slot>
           </div>
           <div
             v-if="editing"
@@ -58,7 +61,7 @@
           >
             <div
               class="rounded-4 p-1 hover:bg-surface-gray-8"
-              @click="items.splice(index, 1)"
+              @click="remove(index)"
             >
               <span
                 class="lucide-trash-2 size-3 text-ink-base"
@@ -81,7 +84,13 @@ defineProps({
 
 const items = defineModel({ type: Array, default: () => [] })
 
+const emit = defineEmits(['layout-updated'])
+
 const layoutReady = ref(false)
+
+function remove(index) {
+  items.value = items.value.filter((_, i) => i !== index)
+}
 </script>
 
 <style scoped>
@@ -100,12 +109,19 @@ const layoutReady = ref(false)
   --vgl-resizer-border-width: 2px;
 }
 
+/* Inset by the item's p-2, so the drop shadow matches the card it stands for */
 :deep(.vgl-item--placeholder) {
   z-index: var(--vgl-placeholder-z-index, 2);
   user-select: none;
-  background-color: var(--vgl-placeholder-bg);
   opacity: var(--vgl-placeholder-opacity);
   transition-duration: 100ms;
+}
+
+:deep(.vgl-item--placeholder)::before {
+  position: absolute;
+  inset: 0.5rem;
+  content: '';
+  background-color: var(--vgl-placeholder-bg);
   border-radius: 0.5rem;
 }
 
@@ -117,6 +133,11 @@ const layoutReady = ref(false)
   width: var(--vgl-resizer-size);
   height: var(--vgl-resizer-size);
   cursor: se-resize;
+}
+
+:deep(.vgl-item--placeholder .vgl-item__resizer),
+:deep(.vgl-item:not(:hover) .vgl-item__resizer) {
+  opacity: 0;
 }
 
 :deep(.vgl-item__resizer:before) {

@@ -1,5 +1,5 @@
 <template>
-  <EmailItem :email="email">
+  <EmailItem :email="email" show-subject>
     <template #actions>
       <Badge
         v-if="activity.communication_type == 'Automated Message'"
@@ -31,13 +31,23 @@
         class="text-ink-gray-7"
         @click="reply(activity.data, true)"
       />
+      <Dropdown v-if="!scheduled" :options="emailActions" align="end">
+        <Button
+          variant="ghost"
+          icon="lucide-ellipsis"
+          class="text-ink-gray-7"
+          :aria-label="__('Email actions')"
+        />
+      </Dropdown>
     </template>
   </EmailItem>
 </template>
 <script setup>
 import ReplyIcon from '@/components/Icons/ReplyIcon.vue'
 import ReplyAllIcon from '@/components/Icons/ReplyAllIcon.vue'
+import { openFollowUpForm, useAddFollowUp } from '@/composables/followUp'
 import { createDialog } from '@/utils/dialogs'
+import { followUpPresets } from '@/utils/task'
 import { EmailItem } from '@framework/ui/components/ActivityTimeline'
 import { Badge, Dropdown, call, dayjsLocal, toast } from 'frappe-ui'
 import { reactive, computed, ref } from 'vue'
@@ -45,6 +55,8 @@ import { reactive, computed, ref } from 'vue'
 const props = defineProps({
   activity: { type: Object, default: () => ({}) },
   emailBox: { type: Object, default: () => ({}) },
+  doctype: { type: String, default: '' },
+  docname: { type: String, default: '' },
 })
 
 const emit = defineEmits(['reload'])
@@ -57,6 +69,54 @@ const scheduled = computed(() => {
 })
 
 const busy = ref(false)
+
+const { addFollowUp, recordCreated } = useAddFollowUp('email')
+
+const emailActions = computed(() => [
+  {
+    group: __('Follow up in'),
+    options: followUpPresets().map((preset) => ({
+      label: preset.label,
+      icon: 'lucide-calendar-clock',
+      onClick: () => followUp(preset.date),
+    })),
+  },
+  {
+    group: __('More'),
+    hideLabel: true,
+    options: [
+      {
+        label: __('Follow up with more options…'),
+        icon: 'lucide-list-plus',
+        onClick: () =>
+          openFollowUpForm({
+            ...followUpFields(),
+            afterInsert: () => {
+              recordCreated(props.doctype)
+              emit('reload')
+            },
+          }),
+      },
+    ],
+  },
+])
+
+function followUpFields() {
+  return {
+    doctype: props.doctype,
+    docname: props.docname,
+    title: __('Follow up on: {0}', [props.activity.data.subject]),
+  }
+}
+
+async function followUp(dueDate) {
+  try {
+    await addFollowUp({ ...followUpFields(), dueDate })
+    emit('reload')
+  } catch (error) {
+    toast.error(error.messages?.[0] || __('Could not add the follow-up'))
+  }
+}
 
 const scheduledActions = [
   { label: __('Send now'), icon: 'lucide-send', onClick: sendNow },

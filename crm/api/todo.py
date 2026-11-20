@@ -62,6 +62,9 @@ def clear_owner_on_unassign(doc):
 
 
 def notify_assigned_user(doc, is_cancelled=False):
+	# a booking assigns its lead or deal as Guest; it sends the host its own notification
+	if frappe.flags.in_crm_booking:
+		return
 	_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
 	owner = frappe.get_cached_value("User", frappe.session.user, "full_name")
 	notification_text = get_notification_text(owner, doc, _doc, is_cancelled)

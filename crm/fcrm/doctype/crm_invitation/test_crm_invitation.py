@@ -90,24 +90,54 @@ class TestCRMInvitation(FrappeTestCase):
 		self.assertEqual(frappe.local.response["type"], "redirect")
 		self.assertIn("/update-password?key=", frappe.local.response["location"])
 
-	def test_accept_invitation_logs_in_existing_user(self):
-		"""An existing user already has a password, so log them straight in."""
-		from crm.api import accept_invitation
-
-		frappe.get_doc(
+	def make_user(self, email, *roles):
+		user = frappe.get_doc(
 			doctype="User",
 			user_type="System User",
-			email="existing-invitee@example.com",
+			email=email,
 			send_welcome_email=0,
-			first_name="Existing Invitee",
+			first_name=email.split("@")[0],
 		).insert(ignore_permissions=True)
+		if roles:
+			user.add_roles(*roles)
+		return user
+
+	def test_accept_invitation_sends_existing_user_to_login(self):
+		"""An existing user must sign in first, the key alone does not accept or log in."""
+		from crm.api import accept_invitation
+
+		self.make_user("existing-invitee@example.com")
 		invitation = self.make_invitation(email="existing-invitee@example.com")
 
 		with patch.object(frappe.local, "login_manager", create=True) as login_manager:
 			accept_invitation(key=invitation.key)
 
-		login_manager.login_as.assert_called_once_with("existing-invitee@example.com")
+		login_manager.login_as.assert_not_called()
+		self.assertTrue(frappe.local.response["location"].startswith("/login?redirect-to="))
+		self.assertEqual(frappe.db.get_value("CRM Invitation", invitation.name, "status"), "Pending")
+
+	def test_accept_invitation_sends_signed_in_existing_user_to_crm(self):
+		from crm.api import accept_invitation
+
+		self.make_user("self-invitee@example.com")
+		invitation = self.make_invitation(email="self-invitee@example.com")
+		frappe.set_user("self-invitee@example.com")
+		self.addCleanup(frappe.set_user, "Administrator")
+
+		accept_invitation(key=invitation.key)
+
 		self.assertEqual(frappe.local.response["location"], "/crm")
+		self.assertEqual(frappe.db.get_value("CRM Invitation", invitation.name, "status"), "Accepted")
+
+	def test_sales_manager_cannot_desk_accept_for_existing_user(self):
+		self.make_user("desk-target@example.com")
+		invitation = self.make_invitation(email="desk-target@example.com")
+		self.make_user("desk-sales-manager@example.com", "Sales Manager", "Sales User")
+		frappe.set_user("desk-sales-manager@example.com")
+		self.addCleanup(frappe.set_user, "Administrator")
+
+		with self.assertRaises(frappe.PermissionError):
+			invitation.accept_invitation()
 
 	def test_desk_accept_mails_new_user_a_set_password_link(self):
 		invitation = self.make_invitation(email="desk-invitee@example.com")
