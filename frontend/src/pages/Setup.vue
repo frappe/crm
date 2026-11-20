@@ -75,7 +75,6 @@ import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
 import SetupTelemetryConsent from '@/components/Setup/SetupTelemetryConsent.vue'
 import { setupFeedback } from '@/composables/modals'
-import { SETUP_DONE_KEY } from '@/router'
 import { globalStore } from '@/stores/global'
 import { Button, Progress, call, useColorScheme, usePageMeta } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
@@ -106,6 +105,7 @@ const current = ref(0)
 const activeStepView = ref(null)
 const stepStatus = reactive({})
 const previewState = reactive({
+  passwordLength: 0,
   provider: null,
   email: '',
   importStage: null,
@@ -212,11 +212,6 @@ async function finishSetup(skipped) {
 
 async function markSetupDone() {
   window.crm_setup_pending = false
-  try {
-    localStorage.setItem(SETUP_DONE_KEY, '1')
-  } catch (error) {
-    console.error('Failed to cache setup status', error)
-  }
   try {
     await call('frappe.client.set_value', {
       doctype: 'FCRM Settings',

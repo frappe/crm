@@ -37,7 +37,7 @@
 <script setup>
 import { sessionStore } from '@/stores/session'
 import { Button, ErrorMessage, Password, call } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
 
@@ -47,6 +47,9 @@ const password = ref('')
 const confirmPassword = ref('')
 const saving = ref(false)
 const error = ref('')
+
+const preview = inject('setupPreview', null)
+watch(password, (value) => preview && (preview.passwordLength = value.length))
 
 const mismatch = computed(
   () =>

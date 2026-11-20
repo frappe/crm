@@ -31,11 +31,6 @@ setup('authenticate', async ({ page }) => {
 	expect(userData.message).not.toBe('Guest')
 	console.log(`Authenticated as: ${userData.message}`)
 
-	// Skip the guided setup so tests land on the CRM.
-	await page.addInitScript(() =>
-		localStorage.setItem('crm_setup_completed', '1'),
-	)
-
 	// Load the CRM app so window.frappe.csrf_token is available.
 	await page.goto('/crm')
 	await page.waitForLoadState('networkidle')
@@ -54,6 +49,21 @@ setup('authenticate', async ({ page }) => {
 	// fail the setup loudly instead of proceeding with no CSRF header.
 	expect(csrfToken).toBeTruthy()
 	fs.writeFileSync(csrfFile, JSON.stringify({ csrf_token: csrfToken }))
+
+	// Skip the guided setup so tests land on the CRM.
+	const setupResponse = await page.request.post(
+		'/api/method/frappe.client.set_value',
+		{
+			headers: { 'X-Frappe-CSRF-Token': csrfToken as string },
+			data: {
+				doctype: 'FCRM Settings',
+				name: 'FCRM Settings',
+				fieldname: 'setup_completed',
+				value: 1,
+			},
+		},
+	)
+	expect(setupResponse.ok()).toBeTruthy()
 
 	await page.context().storageState({ path: authFile })
 })
