@@ -127,3 +127,17 @@ class TestDemoData(IntegrationTestCase):
 		self.assertIsNone(frappe.db.get_default(DEMO_CALL_LOGS_KEY))
 		self.assertIsNone(frappe.db.get_default(DEMO_ACTIVITIES_KEY))
 		self.assertIsNone(frappe.db.get_default(DEMO_DEALS_KEY))
+
+	def test_demo_users_get_no_emails(self):
+		from crm.demo.api import clear_demo_data, create_demo_data
+		from crm.demo.users import DEMO_USER_EMAILS
+
+		clear_demo_data()
+		create_demo_data()
+
+		demo_emails = frappe.get_all(
+			"Email Queue Recipient", filters={"recipient": ["in", DEMO_USER_EMAILS]}, pluck="parent"
+		)
+		self.assertEqual(demo_emails, [])
+
+		clear_demo_data()
