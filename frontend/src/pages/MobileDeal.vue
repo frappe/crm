@@ -278,6 +278,7 @@ import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
@@ -476,6 +477,12 @@ const tabs = computed(() => {
       value: 'data',
       label: __('Data'),
       iconLeft: DetailsIcon,
+    },
+    {
+      name: 'Events',
+      value: 'events',
+      label: __('Events'),
+      iconLeft: EventIcon,
     },
     {
       name: 'Calls',

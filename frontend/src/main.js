@@ -45,7 +45,6 @@ setConfig('resourceFetcher', frappeRequest)
 app.use(FrappeUI)
 app.use(spritePlugin)
 app.use(pinia)
-app.use(router)
 app.use(translationPlugin)
 for (let key in globalComponents) {
   app.component(key, globalComponents[key])
@@ -63,12 +62,15 @@ if (import.meta.env.DEV) {
       }
       socket = initSocket()
       app.config.globalProperties.$socket = socket
+      // after the boot, so the first navigation sees it
+      app.use(router)
       app.mount('#app')
     },
   )
 } else {
   socket = initSocket()
   app.config.globalProperties.$socket = socket
+  app.use(router)
   app.mount('#app')
 }
 

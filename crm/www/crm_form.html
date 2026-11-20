@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ form_title }}</title>
+    <title>{{ form_title|e }}</title>
     <meta name="robots" content="noindex" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,39 +12,8 @@
       rel="stylesheet"
     />
     <style>
-      :root {
-        /* espresso / frappe-ui light-theme tokens (pure-neutral grays) */
-        --ink-strong: oklch(0.168 0 0);       /* ink-gray-9 — headings */
-        --ink: oklch(0.205 0 0);              /* ink-gray-8 — field text */
-        --muted: oklch(0.586 0 0);            /* ink-gray-5 — labels */
-        --faint: oklch(0.683 0 0);            /* ink-gray-4 — placeholders */
-        --border: oklch(0.913 0 0);           /* outline-gray-2 */
-        --border-focus: oklch(0.83 0 0);      /* outline-gray-3 */
-        --bg: oklch(0.964 0 0);               /* surface-gray-2 — page */
-        --card: oklch(1 0 0);                 /* white surface */
-        --field: oklch(0.964 0 0);            /* surface-gray-2 — inputs */
-        --accent: oklch(0.205 0 0);           /* surface-gray-10 — button */
-        --accent-hover: oklch(0.341 0 0);     /* surface-gray-9 */
-        --danger: oklch(0.507 0.165 25.286);  /* ink-red-5 */
-        --danger-bg: oklch(0.978 0.011 17.34); /* surface-red-1 */
-        --success-bg: oklch(0.965 0.03 155.987); /* surface-green-2 */
-        --success-ink: oklch(0.506 0.118 155.358); /* ink-green-5 */
-        --ring: oklch(0.586 0 0 / 0.15);
-      }
-      * { box-sizing: border-box; }
-      html, body { margin: 0; padding: 0; }
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: var(--bg);
-        color: var(--ink);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 48px 16px;
-        -webkit-font-smoothing: antialiased;
-      }
+{% include "crm/templates/includes/crm_public_form.css" %}
+      body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
       .card {
         width: 100%;
         max-width: 560px;
@@ -54,63 +23,12 @@
         padding: 28px 28px 26px;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.05);
       }
-      /* embed mode (?embed=1): drop the page chrome so the form sits flush inside
-         the host page — no gray backdrop, no card border/shadow, full width */
-      body.embed { background: transparent; padding: 0; min-height: 0; }
+      /* embed mode: no card border or shadow, full width */
       body.embed .card { max-width: none; border: none; border-radius: 0; box-shadow: none; padding: 0; }
       body.embed .draft-banner { max-width: none; }
-      .title { font-size: 20px; font-weight: 600; color: var(--ink-strong); margin: 0 0 14px; letter-spacing: -0.01em; line-height: 1.3; }
       /* with no description, the title supplies the gap the subtitle normally would */
       .title.title-only { margin-bottom: 22px; }
       .subtitle { font-size: 14px; color: var(--muted); margin: 0 0 22px; line-height: 1.5; white-space: pre-wrap; }
-      .section { margin-bottom: 4px; }
-      .section-title { font-size: 15px; font-weight: 600; color: var(--ink-strong); margin: 20px 0 12px; }
-      .section:first-child .section-title { margin-top: 0; }
-      .cols { display: grid; gap: 0 20px; }
-      @media (max-width: 520px) { .cols { grid-template-columns: 1fr !important; } }
-      .field { margin-bottom: 16px; }
-      .field label { display: block; font-size: 13px; font-weight: 400; margin-bottom: 6px; color: var(--muted); }
-      .field .req { color: var(--danger); margin-left: 2px; }
-      .field .desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
-      input[type="text"], input[type="email"], input[type="tel"], input[type="number"],
-      input[type="date"], input[type="datetime-local"], textarea, select {
-        width: 100%;
-        font: inherit;
-        font-size: 14px;
-        line-height: 1.4;
-        color: var(--ink);
-        background: var(--field);
-        border: 1px solid transparent;
-        border-radius: 8px;
-        padding: 6px 10px;
-        outline: none;
-        transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
-      }
-      ::placeholder { color: var(--faint); }
-      textarea { min-height: 68px; resize: vertical; }
-      select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        padding-right: 32px;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7c7c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        cursor: pointer;
-      }
-      input:focus, textarea:focus, select:focus {
-        border-color: var(--border-focus);
-        box-shadow: 0 0 0 2px var(--ring);
-        background: var(--card);
-      }
-      .has-error, .has-error:focus {
-        border-color: var(--danger);
-        box-shadow: 0 0 0 2px var(--danger-bg);
-      }
-      .check { display: flex; align-items: center; gap: 9px; }
-      .check input { width: 16px; height: 16px; accent-color: var(--accent); }
-      .check label { margin: 0; font-weight: 400; font-size: 14px; }
-      .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }
       button.submit, button.discard {
         font: inherit;
         font-size: 14px;
@@ -126,11 +44,11 @@
       button.submit:active { transform: translateY(1px); }
       button.submit:disabled { opacity: 0.5; cursor: default; }
       button.discard { color: var(--ink); background: var(--field); }
-      button.discard:hover { background: var(--border); }
+      button.discard:hover { background: var(--field-hover); }
       .form-error {
         display: none;
         background: var(--danger-bg);
-        color: var(--danger);
+        color: var(--danger-ink);
         font-size: 13px;
         border-radius: 9px;
         padding: 10px 12px;
@@ -178,75 +96,25 @@
     {% endif %}
     <div class="card">
       <div id="form-view">
-        <h1 class="title{% if not form_description %} title-only{% endif %}">{{ form_title }}</h1>
-        {% if form_description %}<p class="subtitle">{{ form_description }}</p>{% endif %}
+        <h1 class="title{% if not form_description %} title-only{% endif %}">{{ form_title|e }}</h1>
+        {% if form_description %}<p class="subtitle">{{ form_description|e }}</p>{% endif %}
 
         <div class="form-error" id="form-error"></div>
         <div class="form-ok" id="form-ok"></div>
 
         <form id="web-form" novalidate>
-          {% for section in layout %}
-          <div class="section">
-            {% if section.label %}<div class="section-title">{{ section.label }}</div>{% endif %}
-            <div class="cols" style="grid-template-columns: repeat({{ section.columns|length }}, minmax(0, 1fr))">
-              {% for col in section.columns %}
-              <div class="col">
-                {% for f in col %}
-                <div class="field">
-                  {% if f.fieldtype == "Check" %}
-                  <div class="check">
-                    <input type="checkbox" id="{{ f.fieldname }}" name="{{ f.fieldname }}" />
-                    <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
-                  </div>
-                  {% else %}
-                  <label for="{{ f.fieldname }}">{{ f.label }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
-                  {% if f.fieldtype in ("Small Text", "Text", "Long Text", "Text Editor", "HTML Editor", "Markdown Editor") %}
-                  <textarea id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %}></textarea>
-                  {% elif f.fieldtype == "Select" %}
-                  <select id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %}>
-                    <option value="">Select…</option>
-                    {% for opt in f.options.split("\n") %}{% if opt %}<option value="{{ opt }}">{{ opt }}</option>{% endif %}{% endfor %}
-                  </select>
-                  {% elif f.fieldtype == "Link" %}
-                  <select id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %}>
-                    <option value="">{{ f.placeholder or "Select…" }}</option>
-                    {% for opt in link_options.get(f.fieldname, []) %}<option value="{{ opt.value }}">{{ opt.label }}</option>{% endfor %}
-                  </select>
-                  {% elif f.fieldtype in ("Int", "Float", "Currency", "Percent") %}
-                  <input type="number" id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
-                  {% elif f.fieldtype == "Date" %}
-                  <input type="date" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
-                  {% elif f.fieldtype == "Datetime" %}
-                  <input type="datetime-local" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
-                  {% elif f.fieldtype == "Time" %}
-                  <input type="time" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
-                  {% elif f.fieldtype == "Color" %}
-                  <input type="color" id="{{ f.fieldname }}" name="{{ f.fieldname }}" {% if f.reqd %}required{% endif %} />
-                  {% else %}
-                  <input
-                    type="{% if f.options == 'Email' %}email{% elif f.options == 'Phone' or f.fieldtype == 'Phone' %}tel{% else %}text{% endif %}"
-                    id="{{ f.fieldname }}" name="{{ f.fieldname }}" placeholder="{{ f.placeholder }}" {% if f.reqd %}required{% endif %} />
-                  {% endif %}
-                  {% endif %}
-                  {% if f.description %}<div class="desc">{{ f.description }}</div>{% endif %}
-                </div>
-                {% endfor %}
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-          {% endfor %}
+          {% include "crm/templates/includes/crm_form_fields.html" %}
 
           <div class="actions">
             <button type="reset" class="discard" id="discard-btn">{{ _("Discard") }}</button>
-            <button type="submit" class="submit" id="submit-btn">{{ submit_label }}</button>
+            <button type="submit" class="submit" id="submit-btn">{{ submit_label|e }}</button>
           </div>
         </form>
       </div>
 
       <div class="success" id="success-view" style="display: none">
         <div class="check-ring">&#10003;</div>
-        <h2 id="success-title">{{ success_message }}</h2>
+        <h2 id="success-title">{{ success_message|e }}</h2>
         <p id="success-note">Your response has been recorded.</p>
         <p class="redirect-note" id="redirect-note" style="display: none"></p>
       </div>
@@ -268,194 +136,7 @@
         var btn = document.getElementById("submit-btn");
         var BREAKS = { "Section Break": 1, "Column Break": 1 };
 
-        // Field interdependencies: apply the DocType's depends_on / mandatory_depends_on
-        // / read_only_depends_on client-side, same rules as the Desk form.
-        function collectDoc() {
-          var doc = {};
-          FIELDS.forEach(function (f) {
-            if (BREAKS[f.fieldtype]) return;
-            var el = document.getElementById(f.fieldname);
-            if (!el) return;
-            doc[f.fieldname] = f.fieldtype === "Check" ? (el.checked ? 1 : 0) : el.value;
-          });
-          return doc;
-        }
-        // security boundary; tested by frontend/tests/unit/webFormConditionalEval.test.js
-        // [conditional-eval:start]
-        function coerce(v) {
-          return Array.isArray(v) ? v.length > 0 : !!v;
-        }
-        // Parse (never execute) an "eval:" expression, so stored metadata can't run JS on
-        // this public page. Supports doc/parent access, literals, comparisons, && || !,
-        // and parentheses; anything else throws → caller's fallback.
-        function safeEval(src, doc, parent) {
-          var i = 0;
-          function ws() {
-            while (i < src.length && /\s/.test(src[i])) i++;
-          }
-          function starts(tok) {
-            ws();
-            return src.substr(i, tok.length) === tok;
-          }
-          function primary() {
-            ws();
-            if (starts("(")) {
-              i++;
-              var e = orExpr();
-              ws();
-              if (!starts(")")) throw new Error("expected )");
-              i++;
-              return e;
-            }
-            if (starts("!")) {
-              i++;
-              return !coerce(primary());
-            }
-            var ch = src[i];
-            if (ch === '"' || ch === "'") {
-              i++;
-              var str = "";
-              while (i < src.length && src[i] !== ch) {
-                if (src[i] === "\\") i++;
-                str += src[i++];
-              }
-              i++;
-              return str;
-            }
-            var num = /^-?\d+(?:\.\d+)?/.exec(src.slice(i));
-            if (num) {
-              i += num[0].length;
-              return parseFloat(num[0]);
-            }
-            var id = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
-            if (!id) throw new Error("unexpected token");
-            i += id[0].length;
-            if (id[0] === "true") return true;
-            if (id[0] === "false") return false;
-            if (id[0] === "null") return null;
-            var base;
-            if (id[0] === "doc") base = doc;
-            else if (id[0] === "parent") base = parent;
-            else throw new Error("unknown identifier: " + id[0]); // no globals reachable
-            for (;;) {
-              ws();
-              if (src[i] === ".") {
-                i++;
-                var m = /^[A-Za-z_$][\w$]*/.exec(src.slice(i));
-                if (!m) throw new Error("bad member");
-                i += m[0].length;
-                base = base == null ? undefined : base[m[0]];
-              } else if (src[i] === "[") {
-                i++;
-                var key = orExpr();
-                ws();
-                if (!starts("]")) throw new Error("expected ]");
-                i++;
-                base = base == null ? undefined : base[key];
-              } else break;
-            }
-            return base;
-          }
-          function cmp() {
-            var l = primary();
-            ws();
-            var ops = ["===", "!==", "==", "!=", "<=", ">=", "<", ">"];
-            for (var k = 0; k < ops.length; k++) {
-              if (src.substr(i, ops[k].length) === ops[k]) {
-                i += ops[k].length;
-                var r = primary();
-                switch (ops[k]) {
-                  case "===":
-                  case "==":
-                    return l == r; // eslint-disable-line eqeqeq
-                  case "!==":
-                  case "!=":
-                    return l != r; // eslint-disable-line eqeqeq
-                  case "<":
-                    return l < r;
-                  case "<=":
-                    return l <= r;
-                  case ">":
-                    return l > r;
-                  case ">=":
-                    return l >= r;
-                }
-              }
-            }
-            return l;
-          }
-          function andExpr() {
-            var l = cmp();
-            while (starts("&&")) {
-              i += 2;
-              var r = cmp();
-              l = coerce(l) && coerce(r);
-            }
-            return l;
-          }
-          function orExpr() {
-            var l = andExpr();
-            while (starts("||")) {
-              i += 2;
-              var r = andExpr();
-              l = coerce(l) || coerce(r);
-            }
-            return l;
-          }
-          var out = orExpr();
-          ws();
-          if (i < src.length) throw new Error("trailing input");
-          return out;
-        }
-        // `fallback` covers an empty, unsupported, or invalid expression
-        function truthy(expr, doc, fallback) {
-          var s = expr ? String(expr).trim() : "";
-          if (!s) return fallback;
-          try {
-            if (s.slice(0, 5) === "eval:") return coerce(safeEval(s.slice(5), doc, doc));
-            if (s.slice(0, 3) === "fn:") return fallback;
-            return coerce(doc[s]);
-          } catch (e) {
-            return fallback;
-          }
-        }
-        // [conditional-eval:end]
-        function isVisible(f, doc) {
-          return truthy(f.depends_on, doc, true);
-        }
-        function isRequired(f, doc) {
-          return f.reqd ? true : truthy(f.mandatory_depends_on, doc, false);
-        }
-        function isReadOnly(f, doc) {
-          return truthy(f.read_only_depends_on, doc, false);
-        }
-
-        // apply the rules to the DOM: toggle visibility, read-only, and the required *
-        function refreshDeps() {
-          var doc = collectDoc();
-          FIELDS.forEach(function (f) {
-            if (BREAKS[f.fieldtype]) return;
-            var el = document.getElementById(f.fieldname);
-            if (!el) return;
-            var wrap = el.closest(".field");
-            var visible = isVisible(f, doc);
-            if (wrap) wrap.style.display = visible ? "" : "none";
-
-            var ro = isReadOnly(f, doc);
-            // selects/checkboxes have no readOnly; disable them (JS still reads .value)
-            if (f.fieldtype === "Check" || f.fieldtype === "Select" || f.fieldtype === "Link") {
-              el.disabled = ro;
-            } else {
-              el.readOnly = ro;
-            }
-
-            // toggle the * for a conditionally-mandatory field (static ones keep theirs)
-            if (wrap && !f.reqd) {
-              var star = wrap.querySelector(".req");
-              if (star) star.style.display = visible && isRequired(f, doc) ? "" : "none";
-            }
-          });
-        }
+        {% include "crm/templates/includes/crm_form_logic.js" %}
 
         function showError(msg) {
           errBox.textContent = msg || "Something went wrong. Please try again.";

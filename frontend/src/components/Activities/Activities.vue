@@ -29,6 +29,9 @@
       <LoadingIndicator class="h-6 w-6" />
       <span>{{ __('Loading...') }}</span>
     </div>
+    <div v-else-if="title == 'Events'" class="h-full activity">
+      <EventArea :doctype="doctype" :docname="docname" />
+    </div>
     <div
       v-else-if="
         activities?.length || (messages.messages.length && title == 'WhatsApp')
@@ -229,6 +232,8 @@
             <EmailArea
               :activity="activity"
               :emailBox="emailBox"
+              :doctype="doctype"
+              :docname="docname"
               @reload="all_activities.reload()"
             />
           </div>
@@ -596,12 +601,14 @@ import UserAvatar from '@/components/UserAvatar.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
+import EventArea from '@/components/Activities/EventArea.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -627,6 +634,7 @@ import { useTimelinePreferences } from '@/composables/useTimelinePreferences'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { useDocument } from '@/data/document'
 import { MessageInput, MessageList, useMessages } from '@whatsapp/ui'
+import { subscribeToDoc } from '@framework/ui/socket'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { useElementVisibility } from '@vueuse/core'
@@ -755,13 +763,16 @@ watch(
   () => nextTick(() => scroll()),
 )
 
+// counted, so leaving here does not drop the WhatsApp thread sharing this room out of it
+let leaveRoom = () => {}
+
 onBeforeUnmount(() => {
   $socket.off('docinfo_update', handleDocinfoUpdate)
-  $socket.emit('doc_unsubscribe', props.doctype, props.docname)
+  leaveRoom()
 })
 
 onMounted(() => {
-  $socket.emit('doc_subscribe', props.doctype, props.docname)
+  leaveRoom = subscribeToDoc($socket, props.doctype, props.docname)
   $socket.on('docinfo_update', handleDocinfoUpdate)
 
   nextTick(() => scrollToHash(route.hash))
@@ -1008,6 +1019,9 @@ function timelineIcon(activity_type, is_lead) {
     case 'comment':
       icon = CommentIcon
       break
+    case 'event':
+      icon = CalendarIcon
+      break
     case 'incoming_call':
       icon = InboundCallIcon
       break
@@ -1039,7 +1053,7 @@ watch([reload, reload_email], ([reload_value, reload_email_value]) => {
 })
 
 function scroll(hash) {
-  if (['tasks', 'notes'].includes(route.hash?.slice(1))) return
+  if (['tasks', 'notes', 'events'].includes(route.hash?.slice(1))) return
   setTimeout(() => {
     let el
     if (!hash) {

@@ -4,6 +4,10 @@ from frappe.auth import LoginAttemptTracker
 from frappe.rate_limiter import rate_limit
 from frappe.utils.password import check_password, update_password
 
+from crm.fcrm.doctype.crm_dashboard.home_scope import SALES_ROLES
+
+FLOW_ROLE = "Flow User"
+
 
 @frappe.whitelist()
 @rate_limit(limit=5, seconds=300)  # 5 attempts per 5 minutes per user/IP
@@ -33,17 +37,34 @@ def change_password(old_password: str, new_password: str):
 	else:
 		tracker.add_success_attempt()
 
-	# Validate new password strength (server-side enforcement)
+	validate_password_strength(new_password)
+	update_password(user=user, pwd=new_password, logout_all_sessions=False)
+	return _("Password Updated Successfully")
+
+
+@frappe.whitelist(methods=["POST"])
+@rate_limit(limit=5, seconds=300)
+def set_password(new_password: str):
+	"""Set a first password for a user who has none, from the guided setup."""
+	if not needs_password_setup():
+		frappe.throw(_("You already have a password"), frappe.PermissionError)
+
+	validate_password_strength(new_password)
+	update_password(user=frappe.session.user, pwd=new_password, logout_all_sessions=False)
+
+
+def validate_password_strength(password: str):
 	from frappe.core.doctype.user.user import test_password_strength
 
-	result = test_password_strength(new_password)
+	# empty when the password policy is disabled
+	result = test_password_strength(password)
+	if not result:
+		return
+
 	feedback = result.get("feedback", {})
 	if not feedback.get("password_policy_validation_passed", False):
 		suggestions = feedback.get("suggestions", [])
 		frappe.throw(_("Password is too weak. {0}").format(" ".join(suggestions) if suggestions else ""))
-
-	update_password(user=user, pwd=new_password, logout_all_sessions=False)
-	return _("Password Updated Successfully")
 
 
 def needs_password_setup() -> bool:
@@ -154,6 +175,7 @@ def update_user_role(user: str, new_role: str):
 
 	user_doc = frappe.get_doc("User", user)
 	validate_no_role_profile(user_doc)
+	add_flow_role_on_joining(user_doc)
 	target_roles = [d.role for d in user_doc.roles]
 	target_is_system_manager = "System Manager" in target_roles
 
@@ -240,6 +262,14 @@ def validate_no_role_profile(user_doc):
 			),
 			title=_("Role Profile Assigned"),
 		)
+
+
+def add_flow_role_on_joining(user_doc):
+	"""Flow is on for everyone who joins the CRM. Only joining gives the role, so a user an admin
+	took it from does not get it back on a later role change. Frappe v16 has no Flow."""
+	joining = not any(row.role in SALES_ROLES for row in user_doc.roles)
+	if joining and frappe.db.exists("Role", FLOW_ROLE):
+		user_doc.append_roles(FLOW_ROLE)
 
 
 def remove_roles(self, *roles):

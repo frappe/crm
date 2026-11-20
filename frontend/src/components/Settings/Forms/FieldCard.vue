@@ -85,9 +85,11 @@
         <Tooltip
           v-if="locked"
           :text="
-            __(
-              'This field is required by the record and can\'t be made optional. Remove it to move it to hidden fields.',
-            )
+            alwaysAsked
+              ? __('Every booking needs this, so the form always asks for it.')
+              : __(
+                  'This field is required by the record and can\'t be made optional. Remove it to move it to hidden fields.',
+                )
           "
         >
           <!-- shown on + non-interactive (disabled would grey it out, reading as off) -->
@@ -112,7 +114,10 @@
         :placeholder="__('Helper text under the field (optional)')"
       />
       <!-- conditional logic: show / require / lock this field based on other answers -->
-      <div class="space-y-3 border-t border-outline-gray-2 pt-3">
+      <div
+        v-if="!alwaysAsked"
+        class="space-y-3 border-t border-outline-gray-2 pt-3"
+      >
         <div class="flex items-center gap-1.5">
           <span class="text-base text-ink-gray-5">{{
             __('Conditional logic')
@@ -196,6 +201,8 @@ const props = defineProps({
   field: { type: Object, required: true },
   expanded: { type: Boolean, default: false },
   locked: { type: Boolean, default: false },
+  // asked on every submission (a booking's email), so no condition may hide it
+  alwaysAsked: { type: Boolean, default: false },
   guestSelectMissing: { type: Boolean, default: false },
   granting: { type: Boolean, default: false },
 })

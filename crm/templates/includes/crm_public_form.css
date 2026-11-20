@@ -1,0 +1,86 @@
+{#- Styles shared by the public CRM pages, www/crm_form.html and www/crm_book.html:
+frappe-ui's light-theme tokens, the page basics, and the form fields from
+crm_form_fields.html. Each page adds its own layout after this. -#}
+      :root {
+        /* frappe-ui light-theme tokens */
+        --ink-strong: oklch(0.168 0 0);           /* ink-gray-9 — headings */
+        --ink: oklch(0.205 0 0);                  /* ink-gray-8 — text */
+        --muted: oklch(0.586 0 0);                /* ink-gray-5 — labels */
+        --faint: oklch(0.683 0 0);                /* ink-gray-4 — placeholders */
+        --border: oklch(0.913 0 0);               /* outline-gray-2 */
+        --border-focus: oklch(0.83 0 0);          /* outline-gray-3 */
+        --bg: oklch(0.964 0 0);                   /* surface-gray-2 — page */
+        --card: oklch(1 0 0);                     /* surface-base */
+        --field: oklch(0.964 0 0);                /* surface-gray-2 — inputs */
+        --field-hover: oklch(0.946 0 0);          /* surface-gray-3 */
+        --accent: oklch(0.205 0 0);               /* surface-gray-10 — solid button */
+        --accent-hover: oklch(0.341 0 0);         /* surface-gray-9 */
+        --danger: oklch(0.556 0.198 26.552);      /* surface-red-7 — red solid button */
+        --danger-hover: oklch(0.497 0.185 27.335); /* surface-red-8 */
+        --danger-ink: oklch(0.497 0.185 27.335);  /* ink-red-7 — error text */
+        --danger-bg: oklch(0.978 0.011 17.34);    /* surface-red-1 */
+        --success-bg: oklch(0.965 0.03 155.987);  /* surface-green-2 */
+        --success-ink: oklch(0.53 0.122 156.15);  /* ink-green-7 */
+        --ring: oklch(0.586 0 0 / 0.15);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        min-height: 100vh;
+        padding: 48px 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* embed mode (?embed=1): no page backdrop, so the page sits flush in the host site */
+      body.embed { background: transparent; padding: 0; min-height: 0; }
+      [hidden] { display: none !important; }
+      .title { font-size: 20px; font-weight: 600; color: var(--ink-strong); margin: 0 0 14px; letter-spacing: -0.01em; line-height: 1.3; }
+
+      /* form fields (crm_form_fields.html) */
+      .section { margin-bottom: 4px; }
+      .section-title { font-size: 15px; font-weight: 600; color: var(--ink-strong); margin: 20px 0 12px; }
+      .section:first-child .section-title { margin-top: 0; }
+      .cols { display: grid; gap: 0 20px; }
+      @media (max-width: 520px) { .cols { grid-template-columns: 1fr !important; } }
+      .field { margin-bottom: 16px; }
+      .field label { display: block; font-size: 13px; font-weight: 400; margin-bottom: 6px; color: var(--muted); }
+      .field .req { color: var(--danger-ink); margin-left: 2px; }
+      .field .desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+      /* :where() keeps this as light as a plain `input`, so .has-error and :focus win */
+      input:where(:not([type="checkbox"], [type="radio"], [type="color"])), textarea, select {
+        width: 100%;
+        font: inherit;
+        font-size: 14px;
+        line-height: 1.4;
+        color: var(--ink);
+        background: var(--field);
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 6px 10px;
+        outline: none;
+        transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+      }
+      ::placeholder { color: var(--faint); }
+      textarea { min-height: 68px; resize: vertical; }
+      select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding-right: 32px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237c7c7c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        cursor: pointer;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 2px var(--ring);
+        background: var(--card);
+      }
+      .has-error, .has-error:focus { border-color: var(--danger); box-shadow: 0 0 0 2px var(--danger-bg); }
+      .check { display: flex; align-items: center; gap: 9px; }
+      .check input { width: 16px; height: 16px; accent-color: var(--accent); }
+      .check label { margin: 0; font-size: 14px; color: var(--ink); }
+      .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; }

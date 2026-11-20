@@ -3,9 +3,6 @@ import mimetypes
 import frappe
 from frappe.utils import strip_html_tags
 from frappe.utils.password import get_decrypted_password
-from whatsapp.whatsapp.api.utils import HEADER_TYPES, TEMPLATE_TYPES, get_template_variables
-from whatsapp.whatsapp.doctype.wa_profile.wa_profile import get_or_create_profile
-from whatsapp.whatsapp.doctype.wa_template.wa_template import _ensure_language
 
 from crm.patches.v1_0.link_existing_whatsapp_profiles_to_crm import execute as link_profiles_to_crm
 
@@ -23,7 +20,7 @@ OUTGOING_STATUS = {
 	"failed": "Failed",
 }
 TEMPLATE_STATUS = {"APPROVED": "Approved", "REJECTED": "Rejected", "DELETED": "Deleted"}
-TEMPLATE_TYPE = {**TEMPLATE_TYPES, "TRANSACTIONAL": "Utility", "OTP": "Authentication"}
+OLD_TEMPLATE_TYPES = {"TRANSACTIONAL": "Utility", "OTP": "Authentication"}
 
 MESSAGE_LINK_FIELDS = (
 	("File", "attached_to_doctype"),
@@ -34,8 +31,11 @@ MESSAGE_LINK_FIELDS = (
 
 def execute():
 	"""The whatsapp app's rename patches leave DocTypes another app owns alone, so a site
-	coming from frappe_whatsapp has its history stranded in the old tables."""
-	if not frappe.db.exists("DocType", OLD_MESSAGE):
+	coming from frappe_whatsapp has its history stranded in the old tables.
+
+	The whatsapp app is optional, so its modules are imported where they are used: CRM
+	runs this again from `after_app_install` when the app is added later."""
+	if "whatsapp" not in frappe.get_installed_apps() or not frappe.db.exists("DocType", OLD_MESSAGE):
 		return
 
 	# Read before the account copy: the first WA Account inserted makes itself the default.
@@ -89,6 +89,9 @@ def _copy_settings() -> None:
 
 
 def _copy_template(old) -> str:
+	from whatsapp.whatsapp.api.utils import HEADER_TYPES, TEMPLATE_TYPES
+	from whatsapp.whatsapp.doctype.wa_template.wa_template import _ensure_language
+
 	template_name = old.actual_name or old.template_name
 	language = old.language_code or old.language
 	_ensure_language(language)
@@ -106,7 +109,7 @@ def _copy_template(old) -> str:
 		template_name=template_name,
 		whatsapp_template_id=old.id,
 		status=TEMPLATE_STATUS.get(old.status, "Pending"),
-		template_type=TEMPLATE_TYPE.get(old.category, "Utility"),
+		template_type={**TEMPLATE_TYPES, **OLD_TEMPLATE_TYPES}.get(old.category, "Utility"),
 		language=language,
 		message=old.template,
 		header_type=HEADER_TYPES.get(old.header_type, "Text"),
@@ -125,6 +128,8 @@ def _copy_template(old) -> str:
 
 def _template_variables(old) -> list[dict]:
 	"""The old app kept body examples as one comma-separated string in placeholder order."""
+	from whatsapp.whatsapp.api.utils import get_template_variables
+
 	examples = old.sample_values.split(",") if old.sample_values else []
 	rows = {
 		name: examples[index].strip() if index < len(examples) else name
@@ -149,6 +154,8 @@ def _old_messages():
 
 
 def _copy_message(old, templates: dict) -> None:
+	from whatsapp.whatsapp.doctype.wa_profile.wa_profile import get_or_create_profile
+
 	if old.type == "Incoming":
 		wa_id = old.get("from")
 		profile = get_or_create_profile(f"+{wa_id}", old.whatsapp_account, old.profile_name, wa_id)
