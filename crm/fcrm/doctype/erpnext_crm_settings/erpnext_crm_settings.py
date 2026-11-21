@@ -503,6 +503,16 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 		if address and not isinstance(address, dict):
 			address = address.as_dict()
 
+		# Territory and Industry are separate lists in the CRM and in ERPNext. A value ERPNext does not have would make
+		# it reject the Prospect, so leave it empty, as create_customer does.
+		territory = doc.territory
+		if territory and not client.get_list("Territory", filters={"name": territory}):
+			territory = ""
+
+		industry = doc.industry
+		if industry and not client.get_list("Industry Type", filters={"name": industry}):
+			industry = ""
+
 		return client.post_api(
 			"erpnext.crm.frappe_crm_api.create_prospect_against_crm_deal",
 			{
@@ -511,8 +521,8 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 				"no_of_employees": doc.no_of_employees,
 				"deal_owner": doc.deal_owner,
 				"crm_deal": doc.name,
-				"territory": doc.territory,
-				"industry": doc.industry,
+				"territory": territory,
+				"industry": industry,
 				"website": doc.website,
 				"annual_revenue": doc.annual_revenue,
 				"contacts": json.dumps(contacts) if contacts else None,
