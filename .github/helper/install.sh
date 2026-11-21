@@ -1,97 +1,94 @@
 #!/bin/bash
 
+# Provision a bench for backend-only CI: framework + dependency apps, no
+# frontend assets, external MariaDB. Cache hits restore the DB snapshot and
+# fast-forward drifted checkouts instead of reinstalling everything.
+
 set -eo pipefail
 
-cd ~ || ex
-
-export BENCH_USE_UV=1
-
-# Frappe (and erpnext) branch to test against; set by CI matrix, defaults to develop.
 FRAPPE_BRANCH="${FRAPPE_BRANCH:-develop}"
-FRAPPE_REF=$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}")
+BENCH_NAME="frappe-bench"
+BENCH_PATH="$HOME/pilot/benches/$BENCH_NAME"
+PILOT_CACHE_HIT="${PILOT_CACHE_HIT:-}"
+DB_HOST="127.0.0.1"
+DB_PORT="3306"
+DB_ROOT_PASSWORD="root"
 
-# Restored from cache by setup-server-env when the schema is unchanged.
-DB_SNAPSHOT="${DB_SNAPSHOT:-$HOME/db-snapshot}"
+export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-pip install frappe-bench
-[ -d ~/frappe ] || git clone "https://github.com/frappe/frappe" --branch "${FRAPPE_REF}" --depth 1
-bench init --skip-assets --frappe-path ~/frappe --python "$(which python)" frappe-bench
+curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
 
-mkdir ~/frappe-bench/sites/test_site
+if [ ! -d "$BENCH_PATH" ]; then
+  pilot new "$BENCH_NAME" --frappe-branch "$FRAPPE_BRANCH"
+  pilot -b "$BENCH_NAME" set-bench-config admin_allow_site_to_pilot_communication false
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_existing true
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_host "$DB_HOST"
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_port "$DB_PORT"
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_admin_user root
+  pilot -b "$BENCH_NAME" set-bench-config mariadb_password "$DB_ROOT_PASSWORD"
+fi
+pilot -b "$BENCH_NAME" init --skip-frontend
 
-cp -r "${GITHUB_WORKSPACE}/.github/helper/site_config.json" ~/frappe-bench/sites/test_site/site_config.json
+cd "$BENCH_PATH"
 
-# The MariaDB 11.4+ client requires SSL by default; the mariadb:10.6 service has none.
-printf '[client]\nskip-ssl\n' > ~/.my.cnf
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER 'test_frappe'@'localhost' IDENTIFIED BY 'test_frappe'"
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE DATABASE test_frappe"
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO 'test_frappe'@'localhost'"
-
-mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "FLUSH PRIVILEGES"
-
-install_whktml() {
-    wget -O /tmp/wkhtmltox.tar.xz https://github.com/frappe/wkhtmltopdf/raw/master/wkhtmltox-0.12.3_linux-generic-amd64.tar.xz
-    tar -xf /tmp/wkhtmltox.tar.xz -C /tmp
-    sudo mv /tmp/wkhtmltox/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
-    sudo chmod o+x /usr/local/bin/wkhtmltopdf
-}
-install_whktml &
-
-install_site() {
-    bench --site test_site reinstall --yes
-
-    if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-        bench --verbose --site test_site install-app erpnext crm
-    else
-        bench --verbose --site test_site install-app crm
-    fi
-
-    mkdir -p "${DB_SNAPSHOT}"
-    mariadb-dump --host 127.0.0.1 --port 3306 -u root -proot --single-transaction --quick test_frappe | gzip > "${DB_SNAPSHOT}/test_site.sql.gz"
-    cp sites/test_site/site_config.json "${DB_SNAPSHOT}/site_config.json"
-}
-
-restore_site() {
-    cp "${DB_SNAPSHOT}/site_config.json" sites/test_site/site_config.json
-    mkdir -p sites/test_site/{public/files,private/files,private/backups,locks,logs}
-
-    db_user=$(python -c "import json; c = json.load(open('sites/test_site/site_config.json')); print(c.get('db_user') or c['db_name'])")
-    db_password=$(python -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_password'])")
-    mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "CREATE USER IF NOT EXISTS '${db_user}'@'%' IDENTIFIED BY '${db_password}'"
-    mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO '${db_user}'@'%'"
-
-    gunzip -c "${DB_SNAPSHOT}/test_site.sql.gz" | mariadb --host 127.0.0.1 --port 3306 -u root -proot test_frappe
-}
-
-cd ~/frappe-bench || exit
-
-sed -i 's/watch:/# watch:/g' Procfile
-sed -i 's/schedule:/# schedule:/g' Procfile
-sed -i 's/socketio:/# socketio:/g' Procfile
-sed -i 's/redis_socketio:/# redis_socketio:/g' Procfile
-
-# Server tests never load the built frontend, so skip its yarn install and builds.
-YARN_IGNORE_SCRIPTS=true bench get-app --skip-assets crm "${GITHUB_WORKSPACE}"
-
-# Only pull erpnext when the integration is under test, to keep other runs fast.
+APPS="frappe whatsapp"
+pip_apps=(-e "apps/frappe[test]" -e apps/whatsapp)
+pilot get-app https://github.com/frappe/whatsapp --skip-assets
 if [ "${INSTALL_ERPNEXT}" = "true" ]; then
-    bench get-app --skip-assets erpnext --branch "$(bash "${GITHUB_WORKSPACE}/.github/helper/frappe_ref.sh" "${FRAPPE_BRANCH}" erpnext)"
+  APPS="$APPS erpnext"
+  pip_apps+=(-e apps/erpnext)
+  pilot get-app "https://github.com/frappe/erpnext" --branch "$FRAPPE_BRANCH" --skip-assets
 fi
 
-bench setup requirements --dev
+pilot -b "$BENCH_NAME" start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+  http://127.0.0.1:7000/api/v1/health
 
-bench start &>> ~/frappe-bench/bench_start.log &
-CI=Yes bench build --app frappe &
-build_pid=$!
+# The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+printf '[client]\nskip-ssl\n' > ~/.my.cnf
+mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
+mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
-if [ -f "${DB_SNAPSHOT}/test_site.sql.gz" ]; then
-    restore_site
+# Files whose change means more than new code, requiring reinstall + migrate.
+SCHEMA_PATHS=( '*.json' 'hooks.py' 'patches.txt' '*requirements*.txt' 'pyproject.toml' 'setup.py' 'setup.cfg' )
+schema_drift=""
+refresh_app() {
+  local current remote_sha
+  current=$(git -C "apps/$1" rev-parse HEAD)
+  remote_sha=$(git ls-remote "$(git -C "apps/$1" remote get-url origin)" "$2" | cut -f1)
+  [ "$current" != "$remote_sha" ] || return 0
+  git -C "apps/$1" fetch --depth 1 origin "$2"
+  git -C "apps/$1" diff --quiet HEAD FETCH_HEAD -- "${SCHEMA_PATHS[@]}" || schema_drift=1
+  git -C "apps/$1" reset --quiet --hard FETCH_HEAD
+}
+
+if [ "$PILOT_CACHE_HIT" != "true" ]; then
+  # shellcheck disable=SC2086
+  pilot new-site test_site --admin-password admin --apps $APPS --skip-assets
+  # Emails resolve CSS through assets.json; tests never load the built bundles.
+  mkdir -p sites/assets && echo '{}' > sites/assets/assets.json
+  mkdir -p "$HOME/db-snapshot"
+  db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+  cp sites/test_site/site_config.json "$HOME/db-snapshot/site_config.json"
+  mariadb-dump --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" \
+    --single-transaction --quick "$db_name" | gzip > "$HOME/db-snapshot/test_site.sql.gz"
 else
-    install_site
+  db_name=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_name'])")
+  db_user=$(python3 -c "import json; c = json.load(open('sites/test_site/site_config.json')); print(c.get('db_user') or c['db_name'])")
+  db_password=$(python3 -c "import json; print(json.load(open('sites/test_site/site_config.json'))['db_password'])")
+  mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$db_name\`"
+  mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "CREATE USER IF NOT EXISTS '${db_user}'@'%' IDENTIFIED BY '${db_password}'"
+  mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON \`$db_name\`.* TO '${db_user}'@'%'"
+  gunzip -c "$HOME/db-snapshot/test_site.sql.gz" | mariadb --host "$DB_HOST" --port "$DB_PORT" -u root -p"$DB_ROOT_PASSWORD" "$db_name"
+  # Fast-forward cached checkouts; the final migrate below covers schema drift.
+  refresh_app frappe "refs/heads/$FRAPPE_BRANCH"
+  refresh_app whatsapp HEAD
+  if [ "${INSTALL_ERPNEXT}" = "true" ]; then
+    refresh_app erpnext "refs/heads/$FRAPPE_BRANCH"
+  fi
 fi
-
-# A restored snapshot finishes before the build; tests need its assets.json
-wait "$build_pid"
+uv pip install --python env/bin/python "${pip_apps[@]}"
+if [ -n "$schema_drift" ]; then
+  pilot frappe --site test_site migrate
+fi
