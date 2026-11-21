@@ -53,6 +53,8 @@ class TestWhatsAppHooks(FrappeTestCase):
 		"""validate() links the doc when a matching Contact/Lead is found"""
 		doc = MagicMock()
 		doc.direction = "Incoming"
+		doc.reference_doctype = None
+		doc.reference_docname = None
 
 		with (
 			patch(
@@ -98,6 +100,8 @@ class TestWhatsAppHooks(FrappeTestCase):
 		"""validate() catches lookup exceptions and logs them instead of raising"""
 		doc = MagicMock()
 		doc.direction = "Incoming"
+		doc.reference_doctype = None
+		doc.reference_docname = None
 
 		with (
 			patch(
@@ -315,20 +319,22 @@ class TestAddRoles(FrappeTestCase):
 					for doctype in ("WA Message", "WA Template", "WA Settings", "WA Profile")
 				),
 				call("WA Account", "Sales Manager", 0, "read"),
+				call("WA Flow", "Sales Manager", 0, "read"),
 			],
 		)
 
-	def test_sales_roles_can_read_but_not_write_accounts(self):
+	def test_sales_roles_can_read_but_not_write_accounts_and_flows(self):
 		add_roles()
 
-		for role in ("Sales Manager", "Sales User"):
-			perm = frappe.db.get_value(
-				"Custom DocPerm",
-				{"parent": "WA Account", "role": role, "permlevel": 0},
-				["read", "write", "create", "delete"],
-				as_dict=True,
-			)
-			self.assertEqual(perm, {"read": 1, "write": 0, "create": 0, "delete": 0})
+		for doctype in ("WA Account", "WA Flow"):
+			for role in ("Sales Manager", "Sales User"):
+				perm = frappe.db.get_value(
+					"Custom DocPerm",
+					{"parent": doctype, "role": role, "permlevel": 0},
+					["read", "write", "create", "delete"],
+					as_dict=True,
+				)
+				self.assertEqual(perm, {"read": 1, "write": 0, "create": 0, "delete": 0}, (doctype, role))
 
 
 class TestGetAccountUsage(FrappeTestCase):
@@ -689,6 +695,17 @@ class TestLeadFromIncomingWhatsApp(FrappeTestCase):
 
 		self.assertEqual(doc.reference_docname, existing.name)
 		self.assertEqual(self._leads(), [existing.name])
+
+	def test_incoming_message_keeps_the_reference_it_arrived_with(self):
+		"""A Flow response is linked by the whatsapp app to the Deal that sent the form."""
+		frappe.get_doc({"doctype": "CRM Lead", "first_name": "Known", "mobile_no": self.number}).insert()
+		deal = frappe.get_doc({"doctype": "CRM Deal", "first_name": "Asha"}).insert()
+		doc = self._message([self._lead_action()])
+		doc.reference_doctype, doc.reference_docname = "CRM Deal", deal.name
+
+		validate(doc, None)
+
+		self.assertEqual((doc.reference_doctype, doc.reference_docname), ("CRM Deal", deal.name))
 
 	def test_unknown_sender_becomes_a_deal_with_the_sender_as_primary_contact(self):
 		doc = self._message([{"append_to": "CRM Deal", "trigger_on": "Incoming"}])

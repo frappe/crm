@@ -31,10 +31,8 @@ def validate_access() -> None:
 
 
 def validate(doc, method):
-	# preserve the user's chosen reference for outgoing messages
-	if doc.direction == "Outgoing" and doc.reference_doctype and doc.reference_docname:
-		pass
-	else:
+	# A set reference is the sender's choice, or for a Flow response the record that sent the form.
+	if not (doc.reference_doctype and doc.reference_docname):
 		phone_number = _get_phone_number_from_profile(doc)
 		if phone_number:
 			_resolve_reference(doc, phone_number)
@@ -351,7 +349,8 @@ def add_roles():
 			update_permission_property(doctype, role, 0, "report", 1)
 			update_permission_property(doctype, role, 0, "export", 1)
 
-	# Read only: the template form links to an account, but accounts hold Meta credentials.
-	for role in role_list:
-		if not frappe.db.exists("Custom DocPerm", {"parent": "WA Account", "role": role}):
-			add_permission("WA Account", role, 0, "read")
+	# Read only: the template form links to accounts and Flows, and accounts hold Meta credentials.
+	for doctype in ("WA Account", "WA Flow"):
+		for role in role_list:
+			if not frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role}):
+				add_permission(doctype, role, 0, "read")

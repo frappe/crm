@@ -36,6 +36,7 @@
       class="activities"
     >
       <div v-if="title == 'WhatsApp' && messages.messages.length">
+        <!-- `['{0}']` keeps the placeholder for MessageList: `__` throws on a placeholder without values -->
         <MessageList
           class="px-3 pb-4 sm:px-10"
           :messages="messages.messages"
@@ -50,6 +51,14 @@
           :failed-message-label="__('Failed to send message')"
           :today-label="__('Today')"
           :yesterday-label="__('Yesterday')"
+          :flow-submitted-label="__('Form submitted')"
+          :flow-sensitive-label="
+            __('Hidden: the form marks this answer as sensitive')
+          "
+          :flow-yes-label="__('Yes')"
+          :flow-no-label="__('No')"
+          :flow-one-file-label="__('1 file')"
+          :flow-files-label="__('{0} files', ['{0}'])"
           @reply="messages.setReplyTo"
           @react="
             ({ messageName, emoji }) => messages.react(messageName, emoji)
