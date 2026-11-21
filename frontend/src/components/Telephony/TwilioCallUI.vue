@@ -47,11 +47,13 @@
             class="rounded-full"
             @click="toggleMute"
           />
-          <!-- <Button class="rounded-full">
-          <template #icon>
-            <DialpadIcon class="cursor-pointer rounded-full" />
-          </template>
-        </Button> -->
+          <Button
+            class="cursor-pointer rounded-full"
+            :class="{ 'bg-surface-gray-7': showKeypad }"
+            :tooltip="__('Dialpad')"
+            :icon="DialpadIcon"
+            @click="toggleKeypad"
+          />
           <Button
             class="cursor-pointer rounded-full"
             :tooltip="__('Add a Note')"
@@ -63,6 +65,19 @@
             :tooltip="__('Hang Up')"
             :icon="PhoneIcon"
             @click="hangUpCall"
+          />
+        </div>
+        <div
+          v-if="onCall && showKeypad"
+          class="grid w-full grid-cols-3 gap-2 pt-1"
+        >
+          <Button
+            v-for="digit in keypadDigits"
+            :key="digit"
+            variant="subtle"
+            class="!h-9 justify-center text-base font-medium"
+            :label="digit"
+            @click="sendDigit(digit)"
           />
         </div>
         <div v-else-if="calling || callStatus == 'initiating'">
@@ -172,6 +187,7 @@
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import MinimizeIcon from '@/components/Icons/MinimizeIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
+import DialpadIcon from '@/components/Icons/DialpadIcon.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { Device } from '@twilio/voice-sdk'
@@ -191,9 +207,12 @@ let showSmallCallWindow = ref(false)
 let onCall = ref(false)
 let calling = ref(false)
 let muted = ref(false)
+let showKeypad = ref(false)
 let callPopup = ref(null)
 let counterUp = ref(null)
 let callStatus = ref('')
+
+const keypadDigits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#']
 
 const phoneNumber = ref('')
 
@@ -315,6 +334,16 @@ function toggleMute() {
   }
 }
 
+function toggleKeypad() {
+  showKeypad.value = !showKeypad.value
+}
+
+function sendDigit(digit) {
+  if (_call && onCall.value) {
+    _call.sendDigits(digit)
+  }
+}
+
 function handleIncomingCall(call) {
   log.value = `Incoming call from ${call.parameters.From}`
   phoneNumber.value = call.parameters.From
@@ -344,6 +373,7 @@ function rejectIncomingCall() {
   log.value = 'Rejected incoming call'
   showCallPopup.value = false
   showSmallCallWindow.value = false
+  showKeypad.value = false
 
   callStatus.value = ''
   muted.value = false
@@ -355,6 +385,7 @@ function hangUpCall() {
   onCall.value = false
   callStatus.value = ''
   muted.value = false
+  showKeypad.value = false
   note.value = {
     name: '',
     title: '',
@@ -367,6 +398,7 @@ function handleDisconnectedIncomingCall() {
   log.value = `Call ended from handle disconnected Incoming call.`
   showCallPopup.value = false
   showSmallCallWindow.value = false
+  showKeypad.value = false
   _call = null
   muted.value = false
   onCall.value = false
@@ -415,6 +447,7 @@ async function makeOutgoingCall(number) {
         onCall.value = false
         showCallPopup.value = false
         showSmallCallWindow.value = false
+        showKeypad.value = false
         _call = null
         callStatus.value = ''
         muted.value = false
@@ -431,6 +464,7 @@ async function makeOutgoingCall(number) {
         onCall.value = false
         showCallPopup.value = false
         showSmallCallWindow.value = false
+        showKeypad.value = false
         _call = null
         callStatus.value = ''
         muted.value = false
@@ -455,6 +489,7 @@ function cancelCall() {
   showSmallCallWindow.value = false
   calling.value = false
   onCall.value = false
+  showKeypad.value = false
   callStatus.value = ''
   muted.value = false
   note.value = {
@@ -468,6 +503,12 @@ function toggleCallWindow() {
   showCallPopup.value = !showCallPopup.value
   showSmallCallWindow.value = !showSmallCallWindow.value
 }
+
+watch(onCall, (value) => {
+  if (!value) {
+    showKeypad.value = false
+  }
+})
 
 watch(
   () => log.value,
