@@ -349,6 +349,9 @@ def get_local_customer(crm_deal: str):
 def get_customer_link(crm_deal: str):
 	erpnext_crm_settings = _get_enabled_settings()
 
+	if not frappe.has_permission("CRM Deal", "read", crm_deal):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	if not erpnext_crm_settings.is_erpnext_in_different_site:
 		customer = get_local_customer(crm_deal)
 		return get_url_to_form("Customer", customer) if customer else ""
@@ -459,6 +462,9 @@ def notify_deal_quotation_change(doc, method=None):
 def get_quotation_url(crm_deal: str, organization: str | None = None):
 	erpnext_crm_settings = _get_enabled_settings()
 
+	if not frappe.has_permission("CRM Deal", "read", crm_deal):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
 	contact = get_primary_contact(crm_deal)
 	address = get_organization_address(organization)
 	address_name = address.get("name") if address else None
@@ -531,6 +537,8 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 def prefill_quotation_items(crm_deal: str):
 	if not frappe.db.exists("CRM Deal", crm_deal):
 		return []
+	if not frappe.has_permission("CRM Deal", "read", crm_deal):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 	deal = frappe.get_doc("CRM Deal", crm_deal)
 	items = []
 	for row in deal.products:
