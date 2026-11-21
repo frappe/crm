@@ -183,6 +183,7 @@ import { ref, watch } from 'vue'
 const { capture } = useTelemetry()
 
 let device = ''
+let micOpened = false
 let log = ref('Connecting...')
 let _call = null
 
@@ -284,6 +285,25 @@ function intitializeDevice(token) {
   device.register()
 }
 
+// The Twilio SDK keeps the default microphone stream open for the lifetime of
+// the Device, so the browser keeps showing the mic as "in use" after a call
+// ends. Destroying the Device stops the stream; re-create it with the same
+// token so the softphone can still receive and make calls.
+function releaseMicrophone() {
+  if (!micOpened || !device || _call) return
+  micOpened = false
+
+  const token = device.token
+  device.destroy()
+  device = ''
+
+  if (token) {
+    intitializeDevice(token)
+  } else {
+    startupClient()
+  }
+}
+
 function addDeviceListeners() {
   device.on('registered', () => {
     log.value = 'Ready to make and receive calls!'
@@ -335,6 +355,7 @@ function handleIncomingCall(call) {
 async function acceptIncomingCall() {
   log.value = 'Accepted incoming call.'
   onCall.value = true
+  micOpened = true
   await _call.accept()
   counterUp.value.start()
 }
@@ -371,6 +392,7 @@ function handleDisconnectedIncomingCall() {
   muted.value = false
   onCall.value = false
   counterUp.value.stop()
+  releaseMicrophone()
 }
 
 async function makeOutgoingCall(number) {
@@ -384,6 +406,7 @@ async function makeOutgoingCall(number) {
         params: { To: number },
       })
 
+      micOpened = true
       showCallPopup.value = true
       callStatus.value = 'initiating'
 
@@ -424,6 +447,7 @@ async function makeOutgoingCall(number) {
           title: '',
           content: '',
         }
+        releaseMicrophone()
       })
       _call.on('cancel', () => {
         log.value = `Call ended from makeOutgoing call cancel.`
@@ -440,6 +464,7 @@ async function makeOutgoingCall(number) {
           content: '',
         }
         counterUp.value.stop()
+        releaseMicrophone()
       })
     } catch (error) {
       log.value = `Could not connect call: ${error.message}`
