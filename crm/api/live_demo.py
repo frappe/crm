@@ -4,9 +4,11 @@
 import frappe
 from frappe import _
 from frappe.auth import LoginManager
+from frappe.rate_limiter import rate_limit
 
 
-@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
+@frappe.whitelist(allow_guest=True, methods=["GET"])  # nosemgrep: guest-whitelisted-method
+@rate_limit(limit=10, seconds=60)
 def login():
 	if not frappe.conf.demo_username or not frappe.conf.demo_password:
 		return
