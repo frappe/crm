@@ -4,7 +4,7 @@ import frappe
 from frappe import _
 from frappe.query_builder import Case, DocType, Field
 from frappe.query_builder.functions import Avg, Coalesce, Count, Date, DateFormat, IfNull, Max, Sum
-from pypika.functions import Function
+from pypika.functions import Cast, Function
 
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.utils import sales_user_only
@@ -17,6 +17,18 @@ FUNNEL_STAGE_TYPES = ("Open", "Ongoing", "Won")
 class TimestampDiff(Function):
 	def __init__(self, unit, start, end, **kwargs):
 		super().__init__("TIMESTAMPDIFF", unit, start, end, **kwargs)
+
+
+class JulianDay(Function):
+	def __init__(self, term, **kwargs):
+		super().__init__("julianday", term, **kwargs)
+
+
+def get_days_between(start, end):
+	"""Whole days from `start` to `end`, truncated toward zero like `TIMESTAMPDIFF(DAY, start, end)`."""
+	if frappe.db.db_type == "sqlite":
+		return Cast(JulianDay(end) - JulianDay(start), "INTEGER")
+	return TimestampDiff(frappe.qb.terms.LiteralValue("DAY"), start, end)
 
 
 @frappe.whitelist()
@@ -575,9 +587,7 @@ def get_average_time_to_close_a_lead(
 	prev_cond = (Deal.closed_date >= prev_from_date) & (Deal.closed_date < prev_to_date)
 
 	# Calculate time difference from lead/deal creation to deal closure
-	time_diff = TimestampDiff(
-		frappe.qb.terms.LiteralValue("DAY"), Coalesce(Lead.creation, Deal.creation), Deal.closed_date
-	)
+	time_diff = get_days_between(Coalesce(Lead.creation, Deal.creation), Deal.closed_date)
 
 	# Build query
 	query = (
@@ -640,7 +650,7 @@ def get_average_time_to_close_a_deal(
 	prev_cond = (Deal.closed_date >= prev_from_date) & (Deal.closed_date < prev_to_date)
 
 	# Calculate time difference from deal creation to deal closure
-	time_diff = TimestampDiff(frappe.qb.terms.LiteralValue("DAY"), Deal.creation, Deal.closed_date)
+	time_diff = get_days_between(Deal.creation, Deal.closed_date)
 
 	# Build query
 	query = (

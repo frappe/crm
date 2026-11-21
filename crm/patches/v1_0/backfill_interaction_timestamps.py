@@ -24,31 +24,47 @@ def backfill(times_query: str):
 
 
 def merge_times(doctype: str, times_query: str):
-	frappe.db.sql(  # only constants are formatted in; doctype is a bound parameter  # nosemgrep
+	rows = frappe.db.sql(  # only constants are formatted in; doctype is a bound parameter  # nosemgrep
 		f"""
-		UPDATE `tab{doctype}` record
+		SELECT record.name,
+			{latest("record.last_inbound_at", "times.inbound")} last_inbound_at,
+			{latest("record.last_outbound_at", "times.outbound")} last_outbound_at
+		FROM `tab{doctype}` record
 		JOIN ({times_query}) times ON times.reference_name = record.name
-		SET
-			record.last_inbound_at = {latest("record.last_inbound_at", "times.inbound")},
-			record.last_outbound_at = {latest("record.last_outbound_at", "times.outbound")}
 		""",
 		{"doctype": doctype},
+		as_dict=True,
 	)
+	write_times(doctype, rows)
 
 
 def forward_converted_leads():
-	frappe.db.sql(  # only constants are formatted in  # nosemgrep
+	rows = frappe.db.sql(  # only constants are formatted in  # nosemgrep
 		f"""
-		UPDATE `tabCRM Deal` deal
+		SELECT deal.name,
+			{latest("deal.last_inbound_at", "lead_record.last_inbound_at")} last_inbound_at,
+			{latest("deal.last_outbound_at", "lead_record.last_outbound_at")} last_outbound_at
+		FROM `tabCRM Deal` deal
 		JOIN (
 			SELECT `lead`, MAX(creation) creation FROM `tabCRM Deal`
 			WHERE IFNULL(`lead`, '') != '' GROUP BY `lead`
 		) latest ON latest.`lead` = deal.`lead` AND latest.creation = deal.creation
 		JOIN `tabCRM Lead` lead_record ON lead_record.name = deal.`lead` AND lead_record.converted = 1
-		SET
-			deal.last_inbound_at = {latest("deal.last_inbound_at", "lead_record.last_inbound_at")},
-			deal.last_outbound_at = {latest("deal.last_outbound_at", "lead_record.last_outbound_at")}
-		"""
+		""",
+		as_dict=True,
+	)
+	write_times("CRM Deal", rows)
+
+
+def write_times(doctype: str, rows: list):
+	"""Update through `bulk_update`, as a multi-table UPDATE does not run on SQLite."""
+	frappe.db.bulk_update(
+		doctype,
+		{
+			row.name: {"last_inbound_at": row.last_inbound_at, "last_outbound_at": row.last_outbound_at}
+			for row in rows
+		},
+		update_modified=False,
 	)
 
 
