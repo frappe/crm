@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   define: { __WHATSAPP_UI__: 'false' },
   test: {
+    server: { deps: { inline: ['frappe-ui'] } },
     globals: true,
     environment: 'happy-dom',
     root: import.meta.dirname,
