@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 import frappe
 from frappe.query_builder import DocType
 
+from crm.api.digest import OPT_OUT_KEY as DIGEST_OPT_OUT_KEY
+
 DEMO_USERS = [
 	{
 		"email": "sarah.demo@example.com",
@@ -74,6 +76,10 @@ def create_demo_users():
 			{"image": _avatar_by_email.get(row.user, ""), "creation": _ts, "modified": _ts},
 			update_modified=False,
 		)
+
+	# demo users have fake addresses and tasks due, so the digest would bounce daily
+	for email in DEMO_USER_EMAILS:
+		frappe.defaults.set_user_default(DIGEST_OPT_OUT_KEY, "0", email)
 
 	return DEMO_USER_EMAILS
 
