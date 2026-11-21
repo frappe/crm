@@ -345,6 +345,19 @@ class TestCRMDeal(FrappeTestCase):
 		self.assertEqual([p["phone"] for p in result["phone_nos"]], ["+91-9000000001", "+91-8000000002"])
 		self.assertEqual({p["name"] for p in result["phone_nos"]}, {p.name for p in contact.phone_nos})
 
+	def test_get_deal_contacts_reports_contact_write_permission(self):
+		"""A deal reader without Contact write access gets can_write off, so the panel stays read-only"""
+		reader = create_test_user_with_role("deal-reader@example.com", "CRM Deal")
+		contact = create_test_contact(first_name="ReadOnly", email="readonly@example.com")
+		deal = create_test_deal(organization="Contact Write Org", deal_owner=reader)
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.save()
+
+		self.assertTrue(get_deal_contacts(deal.name)[0]["can_write"])
+
+		frappe.set_user(reader)
+		self.assertFalse(get_deal_contacts(deal.name)[0]["can_write"])
+
 	def test_create_deal_api(self):
 		"""Test create_deal API function"""
 		deal_name = create_deal(
