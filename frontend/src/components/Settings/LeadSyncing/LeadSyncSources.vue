@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col gap-6 text-ink-gray-8">
+  <div class="flex min-h-0 flex-1 flex-col gap-6 text-ink-gray-8">
     <!-- Header -->
     <div class="flex justify-between px-2 pt-2">
       <div class="flex flex-col gap-1 w-9/12">
@@ -49,7 +49,7 @@
     <!-- Lead source list -->
     <div
       v-if="!sources.loading && sources.data?.length"
-      class="flex flex-col overflow-hidden"
+      class="flex min-h-0 flex-1 flex-col overflow-hidden"
     >
       <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
         <div class="w-4/6">{{ __('Name') }}</div>
@@ -57,7 +57,7 @@
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
       <div class="h-px border-t mx-4 border-outline-elevation-2" />
-      <ul class="overflow-y-auto px-2">
+      <ul class="min-h-0 flex-1 overflow-y-auto px-2">
         <template v-for="(source, i) in sourcesList" :key="source.name">
           <li
             class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded-4"
