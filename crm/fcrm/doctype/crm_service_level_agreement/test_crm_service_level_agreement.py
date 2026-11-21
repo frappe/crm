@@ -472,6 +472,25 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		self.assertEqual(end_time.hour, 11)
 		self.assertEqual(end_time.day, 1)
 
+	def test_calc_time_without_working_time_gives_no_deadline(self):
+		"""No day with working time used to loop forever; there is simply no deadline"""
+		sla = create_test_sla_with_working_hours()
+		for row in sla.working_hours:
+			row.end_time = row.start_time
+
+		self.assertIsNone(sla.calc_time(get_datetime("2024-01-01 10:00:00"), 3600))
+		# a zero duration still answers with its start, as it always did
+		start = get_datetime("2024-01-01 10:00:00")
+		self.assertEqual(sla.calc_time(start, 0), start)
+
+	def test_working_hours_must_end_after_they_start(self):
+		"""A working-hours row with no working time cannot be saved"""
+		sla = create_test_sla_with_working_hours()
+		sla.working_hours[0].end_time = time(8, 0)
+
+		with self.assertRaises(frappe.ValidationError):
+			sla.save()
+
 	def test_calc_time_crosses_day(self):
 		"""Test calc_time when duration crosses to next day"""
 		sla = create_test_sla_with_working_hours()
