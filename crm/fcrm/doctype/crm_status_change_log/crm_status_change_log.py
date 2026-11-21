@@ -43,12 +43,14 @@ def get_duration(from_date, to_date):
 
 
 def add_status_change_log(doc):
-	to_status_type = frappe.db.get_value("CRM Deal Status", doc.status, "type") if doc.status else None
+	# leads and deals keep their statuses in separate doctypes
+	status_doctype = "CRM Lead Status" if doc.doctype == "CRM Lead" else "CRM Deal Status"
+	to_status_type = frappe.db.get_value(status_doctype, doc.status, "type") if doc.status else None
 
 	if not doc.is_new():
 		previous_status = doc.get_doc_before_save().status if doc.get_doc_before_save() else None
 		previous_status_type = (
-			frappe.db.get_value("CRM Deal Status", previous_status, "type") if previous_status else None
+			frappe.db.get_value(status_doctype, previous_status, "type") if previous_status else None
 		)
 		if not doc.status_change_log and previous_status:
 			now_minus_one_minute = add_to_date(datetime.now(), minutes=-1)

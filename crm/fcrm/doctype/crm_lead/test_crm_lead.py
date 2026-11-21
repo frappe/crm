@@ -31,6 +31,22 @@ class TestCRMLead(IntegrationTestCase):
 	def tearDown(self):
 		frappe.db.rollback()
 
+	def test_status_change_log_records_lead_status_types(self):
+		"""A lead's status types come from CRM Lead Status, not CRM Deal Status"""
+		for name, status_type in (("Log Test New", "Open"), ("Log Test Contacted", "Ongoing")):
+			frappe.get_doc({"doctype": "CRM Lead Status", "lead_status": name, "type": status_type}).insert(
+				ignore_permissions=True
+			)
+
+		lead = create_lead(first_name="Status Log", status="Log Test New")
+		lead.status = "Log Test Contacted"
+		lead.save()
+
+		first, last = lead.status_change_log[0], lead.status_change_log[-1]
+		self.assertEqual((first.get("from"), first.from_type), ("Log Test New", "Open"))
+		self.assertEqual((first.to, first.to_type), ("Log Test Contacted", "Ongoing"))
+		self.assertEqual((last.get("from"), last.from_type), ("Log Test Contacted", "Ongoing"))
+
 	def test_lead_creation_with_first_name(self):
 		"""Test creating a lead with first name"""
 		lead = create_lead(
