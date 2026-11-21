@@ -228,6 +228,8 @@ const unlinkLinkedDoc = (doc) => {
       items: selectedDocs,
       remove_contact: props.doctype == 'Contact',
       delete: doc.delete,
+      record_doctype: props.doctype,
+      record_docname: props.docname,
       ...confirm,
     }),
   ).then((removed) => {
