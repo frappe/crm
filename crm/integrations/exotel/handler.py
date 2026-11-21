@@ -4,6 +4,7 @@ from frappe import _
 from frappe.integrations.utils import create_request_log
 
 from crm.integrations.api import get_contact_by_phone_number
+from crm.utils import sales_user_only
 
 # Endpoints for webhook
 
@@ -78,18 +79,17 @@ def handle_request(**kwargs):
 
 
 # Outgoing Call
-@frappe.whitelist()
-def make_a_call(to_number: str, from_number: str | None = None, caller_id: str | None = None):
+@frappe.whitelist(methods=["POST"])
+@sales_user_only
+def make_a_call(to_number: str):
 	if not is_integration_enabled():
 		frappe.throw(_("Please setup Exotel integration"), title=_("Integration Not Enabled"))
 
 	endpoint = get_exotel_endpoint("Calls/connect.json?details=true")
 
-	if not from_number:
-		from_number = frappe.get_value("CRM Telephony Agent", {"user": frappe.session.user}, "mobile_no")
-
-	if not caller_id:
-		caller_id = frappe.get_value("CRM Telephony Agent", {"user": frappe.session.user}, "exotel_number")
+	from_number, caller_id = frappe.get_value(
+		"CRM Telephony Agent", {"user": frappe.session.user}, ["mobile_no", "exotel_number"]
+	) or (None, None)
 
 	if not caller_id:
 		frappe.throw(
