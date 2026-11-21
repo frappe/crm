@@ -637,6 +637,7 @@ const dealContacts = createResource({
         mobile_no: contact.mobile_no,
         email_ids: contact.email_ids,
         phone_nos: contact.phone_nos,
+        can_write: contact.can_write,
         image: contact.image,
         is_primary: contact.is_primary,
         opened: index === 0,
