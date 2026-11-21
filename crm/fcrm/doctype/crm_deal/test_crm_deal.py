@@ -555,6 +555,24 @@ class TestCRMDeal(IntegrationTestCase):
 			settings.enable_forecasting = original_value
 			settings.save()
 
+	def test_auto_update_fills_an_empty_expected_deal_value(self):
+		"""The products total becomes the expected deal value, also when it was empty"""
+		settings = frappe.get_single("FCRM Settings")
+		original_value = settings.auto_update_expected_deal_value
+		settings.auto_update_expected_deal_value = 1
+		settings.save()
+
+		try:
+			deal = create_test_deal(organization="Auto Value Org", total=9000, net_total=8000)
+			self.assertEqual(deal.expected_deal_value, 8000)
+
+			deal = create_test_deal(organization="Auto Value Org 2", expected_deal_value=1000, total=4000)
+			self.assertEqual(deal.expected_deal_value, 4000)
+
+		finally:
+			settings.auto_update_expected_deal_value = original_value
+			settings.save()
+
 	def test_single_contact_auto_primary(self):
 		"""Test that single contact is automatically set as primary"""
 		contact = create_test_contact(first_name="Auto", email="auto@example.com")
