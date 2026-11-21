@@ -25,10 +25,11 @@ env:
 
 jobs:
   ui-tests:
-    runs-on: ubuntu-latest
+    runs-on: frappe-arc
     timeout-minutes: 60
     name: Playwright E2E Tests
 
+<<<<<<< HEAD
     services:
       redis-cache:
         image: redis:alpine
@@ -40,6 +41,12 @@ jobs:
           - 11000:6379
       mariadb:
         image: mariadb:10.6
+=======
+    # Pilot's own MariaDB is a systemd user unit, and frappe-arc pods have no systemd.
+    services:
+      mariadb:
+        image: mariadb:11.8
+>>>>>>> 166841c (ci: run UI tests on frappe-arc with an external MariaDB)
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
@@ -61,6 +68,9 @@ jobs:
         with:
           node-version: 24
           check-latest: true
+
+      - name: Install Yarn
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
 
       - name: Add to Hosts
         run: echo "127.0.0.1 crm.test" | sudo tee -a /etc/hosts
@@ -106,11 +116,19 @@ jobs:
         id: bench-cache
         uses: actions/cache/restore@v4
         with:
+<<<<<<< HEAD
           path: ~/frappe-bench
           key: ${{ runner.os }}-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}
+=======
+          path: |
+            ~/pilot/benches
+            ~/.local/share/uv/python
+          key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}-arc
+>>>>>>> 166841c (ci: run UI tests on frappe-arc with an external MariaDB)
 
       - name: Setup Bench
         run: |
+<<<<<<< HEAD
           pip install frappe-bench
           FRAPPE_REF=$(bash "$GITHUB_WORKSPACE/.github/helper/frappe_ref.sh" "$FRAPPE_BRANCH")
           if [ -d ~/frappe-bench/apps/frappe ]; then
@@ -123,12 +141,42 @@ jobs:
           printf '[client]\nskip-ssl\n' > ~/.my.cnf
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+=======
+          export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+          printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
+          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
+          if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
+            pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
+            pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+            pilot -b frappe-bench set-bench-config mariadb_existing true
+            pilot -b frappe-bench set-bench-config mariadb_host 127.0.0.1
+            pilot -b frappe-bench set-bench-config mariadb_port 3306
+            pilot -b frappe-bench set-bench-config mariadb_admin_user root
+            pilot -b frappe-bench set-bench-config mariadb_password root
+          fi
+          pilot -b frappe-bench init
+          # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+          printf '[client]\nskip-ssl\n' > ~/.my.cnf
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+        env:
+          CI: "Yes"
+>>>>>>> 166841c (ci: run UI tests on frappe-arc with an external MariaDB)
 
       - name: Save bench
         if: steps.bench-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
+<<<<<<< HEAD
           path: ~/frappe-bench
+=======
+          path: |
+            ~/pilot/benches
+<<<<<<< HEAD
+>>>>>>> 166841c (ci: run UI tests on frappe-arc with an external MariaDB)
+=======
+            ~/.local/share/uv/python
+>>>>>>> fa9d2a7 (ci: cache uv's Python with the pilot bench)
           key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM

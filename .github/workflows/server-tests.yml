@@ -60,7 +60,7 @@ jobs:
     test:
         name: Tests (frappe ${{ matrix.frappe-branch }})
         needs: setup
-        runs-on: ubuntu-latest
+        runs-on: frappe-arc
         timeout-minutes: 60
         strategy:
             fail-fast: false

@@ -40,7 +40,7 @@ jobs:
     migrate:
         name: Upgrade base branch -> PR (frappe ${{ matrix.frappe-branch }})
         needs: setup
-        runs-on: ubuntu-latest
+        runs-on: frappe-arc
         timeout-minutes: 60
         strategy:
             fail-fast: false
@@ -82,6 +82,7 @@ jobs:
               with:
                   node-version: "24"
 
+<<<<<<< HEAD
             - name: Install system packages
               uses: ./pr-crm/.github/actions/apt-install
               with:
@@ -94,6 +95,58 @@ jobs:
               run: |
                   echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
                   # The MariaDB 11.4+ client requires SSL by default; the mariadb:10.6 service has none.
+=======
+            # frappe-arc runs a bare image: install the build packages of the frappe/suite runner image.
+            - name: Install system packages
+              uses: ./pr-crm/.github/actions/apt-install
+              with:
+                  packages: build-essential pkg-config libmariadb-dev mariadb-client libffi-dev libssl-dev libjpeg-dev libcairo2-dev libpango1.0-dev cron rsync
+
+            # Stable key; drift is handled post-restore like server tests.
+            - name: Compute bench cache key
+              id: bench-key
+              run: |
+                  echo "127.0.0.1 test_site" | sudo tee -a /etc/hosts
+                  echo "key=${{ runner.os }}-pilot-bench-crm-migrate-${{ steps.frappe.outputs.branch }}-py3.14-withbase-extdb2-arc" >> "$GITHUB_OUTPUT"
+
+            - name: Restore Pilot bench
+              id: bench-cache
+              uses: actions/cache/restore@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/.local/share/uv/python
+                      ~/.config/systemd/user
+                      ~/db-snapshot
+                  key: ${{ steps.bench-key.outputs.key }}
+
+            - name: Setup Pilot bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+              run: |
+                  export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+                  printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
+                  curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
+                  if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
+                    pilot new frappe-bench --frappe-branch "${{ steps.frappe.outputs.branch }}"
+                    pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+                    pilot -b frappe-bench set-bench-config mariadb_existing true
+                    pilot -b frappe-bench set-bench-config mariadb_host 127.0.0.1
+                    pilot -b frappe-bench set-bench-config mariadb_port 3306
+                    pilot -b frappe-bench set-bench-config mariadb_admin_user root
+                    pilot -b frappe-bench set-bench-config mariadb_password root
+                  fi
+                  pilot -b frappe-bench init --skip-frontend
+                  export BENCH_PATH=/home/runner/pilot/benches/frappe-bench
+                  cd "$BENCH_PATH"
+                  uv pip install --python "$BENCH_PATH/env/bin/python" -e "$BENCH_PATH/apps/frappe[test]"
+                  pilot get-app https://github.com/frappe/whatsapp --skip-assets
+                  pilot get-app "https://github.com/frappe/crm" --branch "$BASE_BRANCH" --skip-assets
+                  pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+                  curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+                    http://127.0.0.1:7000/api/v1/health
+                  # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+>>>>>>> d41d34a (ci: run server, migration and frontend jobs on frappe-arc)
                   printf '[client]\nskip-ssl\n' > ~/.my.cnf
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
@@ -102,7 +155,25 @@ jobs:
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "GRANT ALL PRIVILEGES ON \`test_frappe\`.* TO 'test_frappe'@'localhost'"
                   mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "FLUSH PRIVILEGES"
 
+<<<<<<< HEAD
             - name: Init bench with frappe
+=======
+            - name: Save Pilot bench
+              if: steps.bench-cache.outputs.cache-hit != 'true'
+              uses: actions/cache/save@v4
+              with:
+                  path: |
+                      ~/pilot/benches
+                      ~/.local/share/uv/python
+                      ~/.config/systemd/user
+                      ~/db-snapshot
+                  key: ${{ steps.bench-key.outputs.key }}
+
+            - name: Restore snapshot and migrate PR code
+              working-directory: /home/runner/pilot/benches/frappe-bench
+              env:
+                  BASE_BRANCH: ${{ github.base_ref || github.ref_name }}
+>>>>>>> fa9d2a7 (ci: cache uv's Python with the pilot bench)
               run: |
                   pip install frappe-bench
                   git clone "https://github.com/frappe/frappe" --branch "${{ steps.frappe.outputs.branch }}" --depth 1 ~/frappe
