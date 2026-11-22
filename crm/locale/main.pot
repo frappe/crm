@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-11-15 16:30+0000\n"
-"PO-Revision-Date: 2026-11-15 16:30+0000\n"
+"POT-Creation-Date: 2026-11-22 17:17+0000\n"
+"PO-Revision-Date: 2026-11-22 17:17+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -155,6 +155,10 @@ msgstr ""
 msgid "@John, can you please check this?"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupEmail.vue:104
+msgid "A 16-character password you create in your Google Account, not your Gmail password. Needs 2-Step Verification."
+msgstr ""
+
 #: crm/fcrm/doctype/crm_lead/crm_lead.py:142
 msgid "A Lead requires either a person's name or an organization's name"
 msgstr ""
@@ -228,7 +232,8 @@ msgstr ""
 msgid "API Token"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:61
+#: frontend/src/components/Setup/SetupEmail.vue:82
+#: frontend/src/components/Setup/SetupEmail.vue:306
 msgid "API key"
 msgstr ""
 
@@ -237,7 +242,7 @@ msgstr ""
 msgid "API key is required"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:62
+#: frontend/src/components/Setup/SetupEmail.vue:88
 msgid "API secret"
 msgstr ""
 
@@ -258,12 +263,12 @@ msgid "Accept Invitation"
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:54
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:58
 msgid "Accepted"
 msgstr ""
 
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:64
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:68
 msgid "Accepted At"
 msgstr ""
 
@@ -272,7 +277,7 @@ msgid "Access Denied"
 msgstr ""
 
 #. Label of the access_key (Data) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:119
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:127
 #: frontend/src/components/Settings/DashboardSettings.vue:133
 msgid "Access Key"
 msgstr ""
@@ -321,7 +326,6 @@ msgstr ""
 msgid "Account name is required"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:518
 #: frontend/src/components/Settings/Settings.vue:182
 msgid "Accounts"
 msgstr ""
@@ -358,7 +362,7 @@ msgstr ""
 
 #. Label of the activity_timeline_section (Section Break) field in DocType
 #. 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:162
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:170
 msgid "Activity Timeline"
 msgstr ""
 
@@ -439,6 +443,10 @@ msgstr ""
 #: frontend/src/components/Filter.vue:140
 #: frontend/src/components/ViewControls.vue:127
 msgid "Add Filter"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:85
+msgid "Add Frappe as an app"
 msgstr ""
 
 #: frontend/src/pages/Contact.vue:383
@@ -548,7 +556,7 @@ msgstr ""
 msgid "Add industry rule"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupInvite.vue:49
+#: frontend/src/components/Setup/SetupInvite.vue:57
 msgid "Add more"
 msgstr ""
 
@@ -594,10 +602,6 @@ msgstr ""
 msgid "Add website to auto enrich"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:500
-msgid "Add your first lead"
-msgstr ""
-
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:11
 msgid "Add, edit, and manage email templates for various CRM communications."
 msgstr ""
@@ -618,7 +622,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:132
 #: frontend/src/components/Settings/Users.vue:200
 #: frontend/src/components/Settings/Users.vue:236
-#: frontend/src/components/Setup/SetupInvite.vue:100
+#: frontend/src/components/Setup/SetupInvite.vue:109
 msgid "Admin"
 msgstr ""
 
@@ -649,6 +653,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:31
 msgid "All filters must match."
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:90
+msgid "All users, or the group that has the support mailbox."
 msgstr ""
 
 #. Label of the allowed_domains_section (Section Break) field in DocType 'CRM
@@ -712,12 +720,12 @@ msgid "An error occurred while updating the document"
 msgstr ""
 
 #. Description of the 'Favicon' (Attach) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:72
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:73
 msgid "An icon file with .ico extension. Should be 16 x 16 px. Generated using a favicon generator. [favicon-generator.org]"
 msgstr ""
 
 #. Description of the 'Logo' (Attach) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:56
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:57
 msgid "An image with 1:1 & 2:1 ratio is preferred"
 msgstr ""
 
@@ -756,7 +764,8 @@ msgstr ""
 msgid "App Name"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:64
+#: frontend/src/components/Setup/SetupEmail.vue:97
+#: frontend/src/components/Setup/SetupEmail.vue:309
 msgid "App password"
 msgstr ""
 
@@ -913,7 +922,6 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json:78
-#: frontend/src/components/Layouts/AppSidebar.vue:662
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRulesList.vue:16
 msgid "Assignment Rule"
 msgstr ""
@@ -1014,7 +1022,7 @@ msgstr ""
 
 #. Label of the auto_update_expected_deal_value (Check) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:131
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:139
 msgid "Auto update Expected Deal Value"
 msgstr ""
 
@@ -1046,13 +1054,13 @@ msgstr ""
 
 #. Description of the 'Reopen lead/deal on new communication' (Check) field in
 #. DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:149
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:157
 msgid "Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled"
 msgstr ""
 
 #. Description of the 'Mark lead/deal as replied on response' (Check) field in
 #. DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:142
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:150
 msgid "Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled"
 msgstr ""
 
@@ -1066,7 +1074,7 @@ msgstr ""
 
 #. Description of the 'Auto update Expected Deal Value' (Check) field in
 #. DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:128
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:136
 #: frontend/src/components/Settings/DashboardSettings.vue:51
 msgid "Automatically update \"Expected Deal Value\" based on the total value of associated products in a deal"
 msgstr ""
@@ -1281,7 +1289,7 @@ msgid "Brand Settings"
 msgstr ""
 
 #. Label of the branding_tab (Tab Break) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:53
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:54
 msgid "Branding"
 msgstr ""
 
@@ -1306,6 +1314,10 @@ msgstr ""
 #: frontend/src/components/EmailEditor.vue:43
 #: frontend/src/components/EmailEditor.vue:65
 msgid "CC"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupPreviewApp.vue:9
+msgid "CRM"
 msgstr ""
 
 #. Name of a DocType
@@ -1435,7 +1447,7 @@ msgid "CRM Industry"
 msgstr ""
 
 #. Name of a DocType
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:72
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:76
 msgid "CRM Invitation"
 msgstr ""
 
@@ -1557,10 +1569,6 @@ msgstr ""
 msgid "Call Details"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:636
-msgid "Call Log"
-msgstr ""
-
 #. Label of the receiver (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:115
 msgid "Call Received By"
@@ -1570,7 +1578,7 @@ msgstr ""
 msgid "Call connected, but the call log could not be saved. Please contact your administrator."
 msgstr ""
 
-#: crm/integrations/api.py:259 crm/integrations/twilio/api.py:174
+#: crm/integrations/api.py:270 crm/integrations/twilio/api.py:174
 #: crm/integrations/twilio/api.py:192
 msgid "Call log not found"
 msgstr ""
@@ -1628,7 +1636,7 @@ msgstr ""
 #: frontend/src/components/Telephony/TwilioCallUI.vue:73
 #: frontend/src/components/ViewControls.vue:77
 #: frontend/src/components/ViewControls.vue:174
-#: frontend/src/pages/Dashboard.vue:32 frontend/src/pages/Setup.vue:159
+#: frontend/src/pages/Dashboard.vue:32 frontend/src/pages/Setup.vue:184
 msgid "Cancel"
 msgstr ""
 
@@ -1639,7 +1647,7 @@ msgstr ""
 msgid "Canceled"
 msgstr ""
 
-#: crm/api/user.py:153
+#: crm/api/user.py:164
 msgid "Cannot assign this role"
 msgstr ""
 
@@ -1656,7 +1664,7 @@ msgstr ""
 msgid "Cannot convert a lost lead to deal"
 msgstr ""
 
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:70
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.py:71
 #, python-brace-format
 msgid "Cannot delete standard items {0}"
 msgstr ""
@@ -1670,7 +1678,7 @@ msgstr ""
 msgid "Cannot enable rule without adding users in it"
 msgstr ""
 
-#: crm/api/__init__.py:141
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:125
 msgid "Cannot invite for this role"
 msgstr ""
 
@@ -1691,10 +1699,6 @@ msgstr ""
 msgid "Capture leads and deals from public forms you embed on your website."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:641
-msgid "Capturing Leads"
-msgstr ""
-
 #. Label of the category (Select) field in DocType 'CRM Availability Status'
 #. Label of the category (Data) field in DocType 'Facebook Page'
 #: crm/fcrm/doctype/crm_availability_status/crm_availability_status.json:31
@@ -1703,7 +1707,6 @@ msgid "Category"
 msgstr ""
 
 #: frontend/src/components/Controls/ImageUploader.vue:14
-#: frontend/src/components/Setup/SetupEmail.vue:44
 msgid "Change"
 msgstr ""
 
@@ -1846,6 +1849,14 @@ msgstr ""
 msgid "Choose which {0} are affected by this un-assignment rule."
 msgstr ""
 
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:89
+msgid "Choose who can connect mailboxes"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:116
+msgid "Choose who can connect mailboxes (all users, or the group with the support mailbox)"
+msgstr ""
+
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowParamEditor.vue:33
 #, python-brace-format
 msgid "Choose {0}"
@@ -1868,7 +1879,7 @@ msgstr ""
 msgid "Clear Assignment"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:136
+#: frontend/src/components/Layouts/AppSidebar.vue:149
 #: frontend/src/composables/demoData.js:20
 msgid "Clear Demo Data"
 msgstr ""
@@ -1890,8 +1901,20 @@ msgstr ""
 msgid "Clear to pick a record instead"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:114
+msgid "Click Configure new app and search for Frappe"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:86
+msgid "Click Configure new app and search for this client ID."
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FieldCard.vue:28
 msgid "Click to rename"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:59
+msgid "Client ID copied"
 msgstr ""
 
 #: frontend/src/components/BulkDeleteLinkedDocModal.vue:16
@@ -1929,7 +1952,7 @@ msgstr ""
 msgid "Cold"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:154
+#: frontend/src/components/Layouts/AppSidebar.vue:163
 #: frontend/src/components/Settings/Forms/FieldCard.vue:63
 msgid "Collapse"
 msgstr ""
@@ -1973,7 +1996,6 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:118
 #: frontend/src/components/CommentBox.vue:73
 #: frontend/src/components/CommunicationArea.vue:28
-#: frontend/src/components/Layouts/AppSidebar.vue:659
 msgid "Comment"
 msgstr ""
 
@@ -2143,6 +2165,11 @@ msgstr ""
 msgid "Confirm Password"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPassword.vue:18
+#: frontend/src/components/Setup/SetupPassword.vue:19
+msgid "Confirm password"
+msgstr ""
+
 #: frontend/src/utils/index.js:788
 #, python-brace-format
 msgid "Confirm {0}"
@@ -2152,11 +2179,7 @@ msgstr ""
 msgid "Connect ERPNext to Frappe CRM"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:124
-msgid "Connect account"
-msgstr ""
-
-#: frontend/src/components/Setup/SetupEmail.vue:150
+#: frontend/src/components/Setup/SetupEmail.vue:222
 msgid "Connect email"
 msgstr ""
 
@@ -2168,16 +2191,18 @@ msgstr ""
 msgid "Connect your Email"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:512
 #: frontend/src/components/Setup/SetupEmail.vue:4
 msgid "Connect your email"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:33
+msgid "Connected"
 msgstr ""
 
 #. Label of the contact (Link) field in DocType 'CRM Contacts'
 #. Label of the contact (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_contacts/crm_contacts.json:23
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:352
-#: frontend/src/components/Layouts/AppSidebar.vue:632
 #: frontend/src/components/Modals/ConvertToDealModal.vue:46
 msgid "Contact"
 msgstr ""
@@ -2263,10 +2288,13 @@ msgstr ""
 msgid "Content is required"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:132
+#: frontend/src/components/Setup/SetupEmail.vue:179
+#: frontend/src/components/Setup/SetupEmail.vue:196
+#: frontend/src/components/Setup/SetupEmail.vue:206
 #: frontend/src/components/Setup/SetupImportMap.vue:60
 #: frontend/src/components/Setup/SetupImportReview.vue:70
 #: frontend/src/components/Setup/SetupLeads.vue:51
+#: frontend/src/components/Setup/SetupPassword.vue:29
 msgid "Continue"
 msgstr ""
 
@@ -2274,16 +2302,10 @@ msgstr ""
 msgid "Controls how numbers are displayed (e.g., commas, decimal separators)"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:547
 #: frontend/src/components/ListBulkActions.vue:87
 #: frontend/src/components/Modals/ConvertToDealModal.vue:78
 #: frontend/src/pages/MobileLead.vue:59
 msgid "Convert"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:538
-#: frontend/src/components/Layouts/AppSidebar.vue:546
-msgid "Convert lead to deal"
 msgstr ""
 
 #: frontend/src/components/ListBulkActions.vue:79
@@ -2291,6 +2313,10 @@ msgstr ""
 #: frontend/src/components/Modals/ConvertToDealModal.vue:6
 #: frontend/src/pages/Lead.vue:45
 msgid "Convert to Deal"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupPreviewLead.vue:17
+msgid "Convert to deal"
 msgstr ""
 
 #. Label of the converted (Check) field in DocType 'CRM Lead'
@@ -2310,6 +2336,11 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:57
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:58
+msgid "Copy client ID"
+msgstr ""
+
 #: frontend/src/components/Activities/NoteArea.vue:27
 #: frontend/src/components/Modals/NoteViewModal.vue:21
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:397
@@ -2318,12 +2349,17 @@ msgstr ""
 msgid "Copy link"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:22
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:23
+msgid "Copy steps for your admin"
+msgstr ""
+
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:61
 msgid "Core"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:237
-msgid "Could not connect: check your credentials"
+#: frontend/src/components/Setup/SetupEmail.vue:378
+msgid "Could not connect: check your details"
 msgstr ""
 
 #: frontend/src/components/Modals/DoctypeModal.vue:139
@@ -2392,13 +2428,21 @@ msgstr ""
 msgid "Could not save, try again"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupInvite.vue:147
+#: frontend/src/components/Setup/SetupInvite.vue:156
 msgid "Could not send invites"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupPassword.vue:74
+msgid "Could not set your password"
 msgstr ""
 
 #: frontend/src/components/EnrichFromWebsite.vue:285
 #: frontend/src/components/EnrichFromWebsite.vue:339
 msgid "Could not start enrichment."
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:334
+msgid "Could not start the sign-in"
 msgstr ""
 
 #: frontend/src/components/EnrichFromWebsite.vue:416
@@ -2423,6 +2467,10 @@ msgstr ""
 
 #: frontend/src/components/Setup/SetupImportUpload.vue:118
 msgid "Could not upload the file."
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:131
+msgid "Couldn't copy. Select the text and copy it yourself."
 msgstr ""
 
 #: crm/api/dashboard.py:647 crm/api/dashboard.py:795 crm/api/dashboard.py:852
@@ -2459,6 +2507,8 @@ msgstr ""
 #: frontend/src/components/Modals/ViewModal.vue:63
 #: frontend/src/components/Settings/EmailAdd.vue:86
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:30
+#: frontend/src/components/Setup/SetupEmail.vue:196
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:16
 #: frontend/src/pages/CallLogs.vue:13 frontend/src/pages/Contacts.vue:13
 #: frontend/src/pages/DataImports.vue:13 frontend/src/pages/Deals.vue:13
 #: frontend/src/pages/Leads.vue:13 frontend/src/pages/Notes.vue:9
@@ -2565,7 +2615,7 @@ msgstr ""
 #. Label of the currency_tab (Tab Break) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:358
 #: crm/fcrm/doctype/crm_organization/crm_organization.json:78
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:95
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:103
 #: frontend/src/components/Settings/DefaultsSettings.vue:31
 msgid "Currency"
 msgstr ""
@@ -2595,32 +2645,12 @@ msgstr ""
 msgid "Current pipeline distribution"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:671
-msgid "Custom Actions"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:621
-msgid "Custom Branding"
-msgstr ""
-
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowTriggerDetails.vue:68
 msgid "Custom Event"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:670
-msgid "Custom Fields"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:673
-msgid "Custom List Actions"
-msgstr ""
-
 #: frontend/src/pages/Dashboard.vue:233
 msgid "Custom Range"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:672
-msgid "Custom Statuses"
 msgstr ""
 
 #: frontend/src/components/ScheduleSendButton.vue:115
@@ -2635,7 +2665,6 @@ msgstr ""
 msgid "Customer Created Successfully"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:667
 #: frontend/src/components/Settings/Settings.vue:227
 msgid "Customization"
 msgstr ""
@@ -2672,7 +2701,6 @@ msgid "Dashboard settings updated successfully"
 msgstr ""
 
 #: frontend/src/components/Activities/DataFields.vue:7
-#: frontend/src/components/Layouts/AppSidebar.vue:660
 #: frontend/src/pages/Deal.vue:765 frontend/src/pages/Lead.vue:584
 #: frontend/src/pages/MobileDeal.vue:466 frontend/src/pages/MobileLead.vue:323
 msgid "Data"
@@ -2716,7 +2744,6 @@ msgstr ""
 msgid "Day"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:631
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:20
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:51
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:59
@@ -3062,6 +3089,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:250
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:27
 #: frontend/src/components/Settings/LeadSyncing/LeadSyncSourceForm.vue:203
+#: frontend/src/components/Setup/SetupPreviewLead.vue:126
 #: frontend/src/pages/MobileContact.vue:297
 #: frontend/src/pages/MobileDeal.vue:441 frontend/src/pages/MobileLead.vue:298
 #: frontend/src/pages/MobileOrganization.vue:332
@@ -3097,6 +3125,11 @@ msgstr ""
 
 #: frontend/src/components/Settings/ERPNextSettings.vue:660
 msgid "Disable ERPNext Integration"
+msgstr ""
+
+#. Label of the disable_onboarding (Check) field in DocType 'FCRM Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:97
+msgid "Disable Onboarding"
 msgstr ""
 
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:314
@@ -3260,7 +3293,7 @@ msgid "Drop the form into your own website."
 msgstr ""
 
 #. Label of the dropdown_items_tab (Tab Break) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:64
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:65
 msgid "Dropdown items"
 msgstr ""
 
@@ -3312,7 +3345,6 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:684
 #: frontend/src/components/Settings/Settings.vue:252
 msgid "ERPNext"
 msgstr ""
@@ -3489,6 +3521,8 @@ msgstr ""
 #: frontend/src/components/Activities/ActivityHeader.vue:113
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:67
 #: frontend/src/components/Settings/Settings.vue:179
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:64
+#: frontend/src/components/Setup/SetupPreviewLogin.vue:12
 #: frontend/src/pages/Contact.vue:431 frontend/src/pages/MobileContact.vue:386
 #: frontend/src/pages/MobileOrganization.vue:471
 #: frontend/src/pages/MobileOrganization.vue:499
@@ -3505,10 +3539,6 @@ msgstr ""
 msgid "Email Accounts"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:658
-msgid "Email Communication"
-msgstr ""
-
 #: frontend/src/components/EmailEditor.vue:238
 msgid "Email From Lead"
 msgstr ""
@@ -3522,7 +3552,7 @@ msgid "Email ID is required"
 msgstr ""
 
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:63
 msgid "Email Sent At"
 msgstr ""
 
@@ -3530,17 +3560,9 @@ msgstr ""
 msgid "Email Settings"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:637
-msgid "Email Template"
-msgstr ""
-
 #: frontend/src/components/Modals/EmailTemplateSelectorModal.vue:2
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:7
 msgid "Email Templates"
-msgstr ""
-
-#: frontend/src/components/Setup/SetupEmail.vue:226
-msgid "Email account connected"
 msgstr ""
 
 #: frontend/src/components/Settings/EmailAdd.vue:147
@@ -3551,7 +3573,7 @@ msgstr ""
 msgid "Email account updated successfully"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:52
+#: frontend/src/components/Setup/SetupEmail.vue:57
 msgid "Email address"
 msgstr ""
 
@@ -3559,7 +3581,7 @@ msgstr ""
 msgid "Email already exists"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:19
+#: frontend/src/components/Setup/SetupEmail.vue:139
 msgid "Email provider"
 msgstr ""
 
@@ -3584,6 +3606,7 @@ msgstr ""
 
 #: frontend/src/components/Kanban/KanbanActivityCounts.vue:45
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:50
+#: frontend/src/components/Setup/SetupPreviewLead.vue:41
 #: frontend/src/pages/Deal.vue:753 frontend/src/pages/Lead.vue:572
 #: frontend/src/pages/MobileDeal.vue:454 frontend/src/pages/MobileLead.vue:311
 msgid "Emails"
@@ -3627,7 +3650,7 @@ msgid "Enable Exotel integration to make and receive calls directly from your CR
 msgstr ""
 
 #. Label of the enable_forecasting (Check) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:82
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:83
 #: frontend/src/components/Settings/DashboardSettings.vue:29
 msgid "Enable Forecasting"
 msgstr ""
@@ -3645,7 +3668,7 @@ msgid "Enable Sales Hierarchy"
 msgstr ""
 
 #. Label of the enable_sales_hierarchy (Check) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:89
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:90
 msgid "Enable Sales Hierarchy Permissions"
 msgstr ""
 
@@ -3846,7 +3869,9 @@ msgstr ""
 msgid "Enter Value"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupInvite.vue:43
+#: frontend/src/components/Setup/SetupEmail.vue:366
+#: frontend/src/components/Setup/SetupEmail.vue:401
+#: frontend/src/components/Setup/SetupInvite.vue:51
 msgid "Enter a valid email address"
 msgstr ""
 
@@ -3953,7 +3978,7 @@ msgstr ""
 
 #. Option for the 'Timeline Timestamp Format' (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:170
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:178
 #: frontend/src/components/Settings/GeneralSettings.vue:140
 msgid "Exact"
 msgstr ""
@@ -3972,7 +3997,7 @@ msgstr ""
 
 #. Label of the exchange_rate_provider_section (Section Break) field in DocType
 #. 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:106
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:114
 #: frontend/src/components/Settings/DashboardSettings.vue:97
 msgid "Exchange Rate Provider"
 msgstr ""
@@ -3982,7 +4007,6 @@ msgstr ""
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:154
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json:88
-#: frontend/src/components/Layouts/AppSidebar.vue:682
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:52
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:198
 msgid "Exotel"
@@ -4015,7 +4039,7 @@ msgstr ""
 msgid "Exotel Settings"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:154
+#: frontend/src/components/Layouts/AppSidebar.vue:163
 msgid "Expand"
 msgstr ""
 
@@ -4038,7 +4062,7 @@ msgid "Expected deal value is required."
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:54
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:58
 msgid "Expired"
 msgstr ""
 
@@ -4074,7 +4098,7 @@ msgid "FCRM Note"
 msgstr ""
 
 #. Name of a DocType
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:195
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:203
 msgid "FCRM Settings"
 msgstr ""
 
@@ -4302,7 +4326,7 @@ msgid "False"
 msgstr ""
 
 #. Label of the favicon (Attach) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:75
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:76
 #: frontend/src/components/Settings/BrandSettings.vue:97
 msgid "Favicon"
 msgstr ""
@@ -4372,6 +4396,7 @@ msgid "Filled: {0}"
 msgstr ""
 
 #: frontend/src/components/Filter.vue:6
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:40
 msgid "Filter"
 msgstr ""
 
@@ -4448,6 +4473,8 @@ msgstr ""
 msgid "Float Precision"
 msgstr ""
 
+#: frontend/src/components/Layouts/AppSidebar.vue:40
+#: frontend/src/components/Layouts/AppSidebar.vue:47
 #: frontend/src/components/Settings/WorkflowAutomations/workflowBlocks.js:43
 msgid "Flow"
 msgstr ""
@@ -4529,15 +4556,11 @@ msgstr ""
 msgid "Frappe CRM"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:688
-msgid "Frappe CRM mobile"
-msgstr ""
-
 #: frontend/src/components/Settings/emailConfig.js:81
 msgid "Frappe Mail Site"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:58
+#: frontend/src/components/Setup/SetupEmail.vue:75
 msgid "Frappe Mail site"
 msgstr ""
 
@@ -4723,7 +4746,7 @@ msgstr ""
 msgid "Headline"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:146
+#: frontend/src/components/Layouts/AppSidebar.vue:157
 msgid "Help"
 msgstr ""
 
@@ -4733,6 +4756,10 @@ msgstr ""
 
 #: frontend/src/components/CommunicationArea.vue:72
 msgid "Hi John, \\n\\nCan you please provide more details on this..."
+msgstr ""
+
+#: frontend/src/components/Setup/setupPreviewData.js:12
+msgid "Hi,"
 msgstr ""
 
 #. Label of the hidden (Check) field in DocType 'CRM Dropdown Item'
@@ -4776,6 +4803,12 @@ msgstr ""
 msgid "Hide details"
 msgstr ""
 
+#. Description of the 'Disable Onboarding' (Check) field in DocType 'FCRM
+#. Settings'
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:94
+msgid "Hide the Getting Started checklist and Help panel for all users."
+msgstr ""
+
 #. Option for the 'Priority' (Select) field in DocType 'CRM Task'
 #: crm/fcrm/doctype/crm_task/crm_task.json:37
 msgid "High"
@@ -4799,7 +4832,6 @@ msgstr ""
 msgid "Holidays"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:622
 #: frontend/src/components/Settings/HomeActions.vue:7
 #: frontend/src/components/Settings/Settings.vue:230
 msgid "Home Actions"
@@ -4818,8 +4850,12 @@ msgstr ""
 
 #. Description of the 'Timeline Timestamp Format' (Select) field in DocType
 #. 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:166
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:174
 msgid "How timestamps are shown in the activity timeline for all users"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:114
+msgid "How to create one"
 msgstr ""
 
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:198
@@ -4839,6 +4875,10 @@ msgstr ""
 #: frontend/src/components/Settings/ERPNextSettings.vue:408
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:112
 msgid "ID"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:307
+msgid "IMAP and SMTP"
 msgstr ""
 
 #. Label of the icon (Code) field in DocType 'CRM Dropdown Item'
@@ -4909,6 +4949,10 @@ msgstr ""
 msgid "Import {0} leads"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:210
+msgid "Importing"
+msgstr ""
+
 #: frontend/src/components/Setup/SetupImportReview.vue:117
 msgid "Importing leads..."
 msgstr ""
@@ -4961,6 +5005,10 @@ msgstr ""
 
 #: frontend/src/components/Telephony/TwilioCallUI.vue:41
 msgid "Incoming call..."
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:121
+msgid "Incoming server (IMAP)"
 msgstr ""
 
 #: crm/api/user.py:32
@@ -5030,10 +5078,6 @@ msgstr ""
 msgid "Instagram"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:678
-msgid "Integration"
-msgstr ""
-
 #: crm/integrations/exotel/handler.py:86
 msgid "Integration Not Enabled"
 msgstr ""
@@ -5045,11 +5089,6 @@ msgstr ""
 #: frontend/src/components/Settings/Settings.vue:238
 msgctxt "FCRM"
 msgid "Integrations"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:609
-#: frontend/src/components/Layouts/AppSidebar.vue:612
-msgid "Introduction"
 msgstr ""
 
 #: crm/fcrm/doctype/crm_twilio_settings/crm_twilio_settings.py:57
@@ -5139,7 +5178,7 @@ msgid "Invalid maximum pages"
 msgstr ""
 
 #: crm/api/__init__.py:104 crm/api/__init__.py:108
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:66
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:71
 msgid "Invalid or expired key"
 msgstr ""
 
@@ -5147,8 +5186,8 @@ msgstr ""
 msgid "Invalid page or not permitted to access"
 msgstr ""
 
-#: crm/integrations/api.py:176 crm/integrations/api.py:180
-#: crm/integrations/api.py:218
+#: crm/integrations/api.py:187 crm/integrations/api.py:191
+#: crm/integrations/api.py:229
 msgid "Invalid recording URL"
 msgstr ""
 
@@ -5181,15 +5220,10 @@ msgstr ""
 msgid "Invite User"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:623
-msgid "Invite Users"
-msgstr ""
-
 #: frontend/src/components/Settings/InviteUserPage.vue:10
 msgid "Invite users to access CRM. Specify their roles to control access and permissions."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:525
 #: frontend/src/components/Setup/SetupInvite.vue:4
 msgid "Invite your team"
 msgstr ""
@@ -5199,7 +5233,7 @@ msgid "Invite your whole team."
 msgstr ""
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:42
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:46
 msgid "Invited By"
 msgstr ""
 
@@ -5274,7 +5308,7 @@ msgstr ""
 
 #. Description of the 'Enable Forecasting' (Check) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:79
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:80
 msgid "It will make deal's \"Expected Closure Date\" & \"Expected Deal Value\" mandatory to get accurate forecasting insights"
 msgstr ""
 
@@ -5352,7 +5386,7 @@ msgstr ""
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:36
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:38
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json:31
 msgid "Key"
 msgstr ""
@@ -5473,6 +5507,10 @@ msgstr ""
 msgid "Last Year"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:65
+msgid "Last modified"
+msgstr ""
+
 #. Label of the last_name (Data) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:337
 msgid "Last name"
@@ -5495,7 +5533,6 @@ msgstr ""
 
 #. Label of the lead (Link) field in DocType 'CRM Deal'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:120
-#: frontend/src/components/Layouts/AppSidebar.vue:630
 #: frontend/src/components/Settings/AssignmentRules/AssigneeRules.vue:19
 #: frontend/src/components/Settings/EmailTemplate/EditEmailTemplate.vue:55
 #: frontend/src/components/Settings/EmailTemplate/EmailTemplates.vue:76
@@ -5587,6 +5624,10 @@ msgstr ""
 msgid "Lead is now {0}"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:62
+msgid "Lead owner"
+msgstr ""
+
 #: crm/automation/scoring.py:29
 #, python-brace-format
 msgid "Lead score {0} → {1}{2}"
@@ -5620,6 +5661,9 @@ msgstr ""
 
 #. Label of a shortcut in the Frappe CRM Workspace
 #: crm/fcrm/workspace/frappe_crm/frappe_crm.json:39
+#: frontend/src/components/Setup/SetupPreview.vue:246
+#: frontend/src/components/Setup/SetupPreviewLead.vue:7
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:7
 #: frontend/src/pages/InvalidPage.vue:9 frontend/src/pages/Lead.vue:391
 #: frontend/src/pages/MobileLead.vue:253
 msgid "Leads"
@@ -5636,6 +5680,10 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:157
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:237
 msgid "Learn about conditions"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:51
+msgid "Learn more"
 msgstr ""
 
 #. Label of the lft (Int) field in DocType 'CRM Sales Hierarchy'
@@ -5708,6 +5756,7 @@ msgstr ""
 #. Label of the list_tab (Tab Break) field in DocType 'CRM View Settings'
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json:55
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:154
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:10
 #: frontend/src/components/ViewControls.vue:464
 #: frontend/src/components/ViewControls.vue:766 frontend/src/utils/view.js:12
 msgid "List"
@@ -5755,6 +5804,15 @@ msgstr ""
 msgid "Log a Call"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreview.vue:244
+#: frontend/src/components/Setup/SetupPreviewLogin.vue:43
+msgid "Login"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupPreviewLogin.vue:7
+msgid "Login to Frappe CRM"
+msgstr ""
+
 #: frontend/src/composables/frappecloud.js:23
 msgid "Login to Frappe Cloud?"
 msgstr ""
@@ -5765,7 +5823,7 @@ msgstr ""
 
 #. Label of the brand_logo (Attach) field in DocType 'FCRM Settings'
 #: crm/domain_enrichment/mapper.py:37
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:59
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:60
 msgid "Logo"
 msgstr ""
 
@@ -5903,7 +5961,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:86
 #: frontend/src/components/Settings/Users.vue:201
 #: frontend/src/components/Settings/Users.vue:243
-#: frontend/src/components/Setup/SetupInvite.vue:99
+#: frontend/src/components/Setup/SetupInvite.vue:108
 msgid "Manager"
 msgstr ""
 
@@ -5965,7 +6023,7 @@ msgstr ""
 
 #. Label of the auto_mark_replied_on_response (Check) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:145
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:153
 #: frontend/src/components/Settings/GeneralSettings.vue:38
 msgid "Mark lead/deal as replied on response"
 msgstr ""
@@ -5974,10 +6032,6 @@ msgstr ""
 #. Settings'
 #: crm/domain_enrichment/doctype/crm_enrichment_settings/crm_enrichment_settings.json:39
 msgid "Master switch for the Domain Enrichment feature."
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:627
-msgid "Masters"
 msgstr ""
 
 #. Label of the match_scope (Select) field in DocType 'CRM Enrichment Rule'
@@ -6074,10 +6128,6 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:609
 #, python-brace-format
 msgid "Missing mandatory fields: {0}"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:691
-msgid "Mobile App Installation"
 msgstr ""
 
 #. Label of the mobile_no (Data) field in DocType 'CRM Contacts'
@@ -6182,7 +6232,7 @@ msgstr ""
 #. Label of the brand_name (Data) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/crm_dashboard/crm_dashboard.json:35
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json:77
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:69
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:70
 #: frontend/src/components/Modals/CreateDocumentModal.vue:121
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:52
 #: frontend/src/components/Settings/AssignmentRules/AssignmentRuleView.vue:53
@@ -6194,6 +6244,8 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:62
 #: frontend/src/components/Settings/Sla/SlaPolicyView.vue:63
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:71
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:23
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:60
 #: frontend/src/components/ViewControls.vue:957
 #: frontend/src/pages/MobileOrganization.vue:494
 #: frontend/src/pages/Organization.vue:605
@@ -6245,6 +6297,8 @@ msgstr ""
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:23
 #: frontend/src/components/Settings/Users.vue:30
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:24
+#: frontend/src/components/Setup/SetupPreviewLead.vue:12
+#: frontend/src/components/Setup/SetupPreviewLead.vue:180
 msgid "New"
 msgstr ""
 
@@ -6269,6 +6323,8 @@ msgid "New Deal"
 msgstr ""
 
 #: frontend/src/components/Activities/ActivityHeader.vue:12
+#: frontend/src/components/Setup/SetupPreviewLead.vue:46
+#: frontend/src/components/Setup/SetupPreviewLead.vue:95
 msgid "New Email"
 msgstr ""
 
@@ -6329,6 +6385,10 @@ msgstr ""
 msgid "New contact will be created based on the person's details"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupEmail.vue:300
+msgid "New custom email account"
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FormsList.vue:102
 msgid "New form"
 msgstr ""
@@ -6354,9 +6414,14 @@ msgstr ""
 msgid "New {0}"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupEmail.vue:301
+#, python-brace-format
+msgid "New {0} account"
+msgstr ""
+
 #. Option for the 'Timeline Sort Order' (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:178
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:186
 #: frontend/src/components/Settings/GeneralSettings.vue:144
 msgid "Newest First"
 msgstr ""
@@ -6433,6 +6498,10 @@ msgstr ""
 
 #: frontend/src/pages/Deal.vue:270
 msgid "No Details Added"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupPreviewLead.vue:93
+msgid "No Email Communications"
 msgstr ""
 
 #: frontend/src/components/Activities/Activities.vue:859
@@ -6757,7 +6826,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:133
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.py:162
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.py:409
-#: crm/integrations/api.py:79 crm/integrations/api.py:104
+#: crm/integrations/api.py:90 crm/integrations/api.py:115
 msgid "Not permitted"
 msgstr ""
 
@@ -6781,7 +6850,6 @@ msgstr ""
 #. Label of the note (Link) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:108
 #: frontend/src/components/Activities/ActivityHeader.vue:134
-#: frontend/src/components/Layouts/AppSidebar.vue:634
 msgid "Note"
 msgstr ""
 
@@ -6826,7 +6894,6 @@ msgid "Nothing to update"
 msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:15
-#: frontend/src/components/Layouts/AppSidebar.vue:663
 msgid "Notification"
 msgstr ""
 
@@ -6847,9 +6914,10 @@ msgstr ""
 msgid "Notification Type Doctype"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:39
 #: frontend/src/components/Layouts/AppSidebar.vue:56
+#: frontend/src/components/Layouts/AppSidebar.vue:73
 #: frontend/src/components/Notifications.vue:17
+#: frontend/src/components/Setup/SetupPreviewApp.vue:23
 #: frontend/src/pages/MobileNotification.vue:7
 msgid "Notifications"
 msgstr ""
@@ -6919,7 +6987,7 @@ msgstr ""
 
 #. Option for the 'Timeline Sort Order' (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:178
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:186
 #: frontend/src/components/Settings/GeneralSettings.vue:123
 #: frontend/src/components/Settings/GeneralSettings.vue:143
 msgid "Oldest First"
@@ -6960,15 +7028,15 @@ msgstr ""
 msgid "Ongoing deals"
 msgstr ""
 
-#: crm/api/user.py:133 crm/api/user.py:167
+#: crm/api/user.py:144 crm/api/user.py:178
 msgid "Only System Managers can assign the Sales Manager role"
 msgstr ""
 
-#: crm/api/user.py:130 crm/api/user.py:161
+#: crm/api/user.py:141 crm/api/user.py:172
 msgid "Only System Managers can assign the System Manager role"
 msgstr ""
 
-#: crm/api/user.py:164 crm/api/user.py:209
+#: crm/api/user.py:175 crm/api/user.py:220
 msgid "Only System Managers can modify other System Managers"
 msgstr ""
 
@@ -7000,6 +7068,14 @@ msgstr ""
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:45
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:408
 msgid "Open"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:81
+msgid "Open API controls in the Admin console"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:44
+msgid "Open Google Admin console"
 msgstr ""
 
 #: frontend/src/components/ConditionsFilter/CFCondition.vue:97
@@ -7060,7 +7136,7 @@ msgstr ""
 
 #. Description of the 'Timeline Sort Order' (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:174
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:182
 msgid "Order of activities, emails, comments and calls in the timeline for all users"
 msgstr ""
 
@@ -7069,8 +7145,9 @@ msgstr ""
 #. Label of the organization (Data) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:91
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:219
-#: frontend/src/components/Layouts/AppSidebar.vue:633
 #: frontend/src/components/Modals/ConvertToDealModal.vue:20
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:23
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:63
 #: frontend/src/pages/Contact.vue:379 frontend/src/pages/Contact.vue:415
 #: frontend/src/pages/MobileContact.vue:370
 #: frontend/src/pages/MobileOrganization.vue:455
@@ -7124,10 +7201,6 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:655
-msgid "Other Features"
-msgstr ""
-
 #. Label of the organization_tab (Tab Break) field in DocType 'CRM Lead'
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:212
 #: frontend/src/components/Settings/WorkflowAutomations/workflowTriggers.js:145
@@ -7141,6 +7214,10 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Call Log'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:77
 msgid "Outgoing"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:128
+msgid "Outgoing server (SMTP)"
 msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/workflowCapabilities.js:130
@@ -7181,10 +7258,14 @@ msgstr ""
 
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:134
 #: frontend/src/components/Settings/emailConfig.js:71
+#: frontend/src/components/Setup/SetupEmail.vue:97
+#: frontend/src/components/Setup/SetupPassword.vue:13
+#: frontend/src/components/Setup/SetupPassword.vue:14
+#: frontend/src/components/Setup/SetupPreviewLogin.vue:20
 msgid "Password"
 msgstr ""
 
-#: crm/api/user.py:46
+#: crm/api/user.py:38
 msgid "Password Updated Successfully"
 msgstr ""
 
@@ -7197,7 +7278,7 @@ msgstr ""
 msgid "Password is required"
 msgstr ""
 
-#: crm/api/user.py:43
+#: crm/api/user.py:63
 #, python-brace-format
 msgid "Password is too weak. {0}"
 msgstr ""
@@ -7215,6 +7296,7 @@ msgid "Password updated successfully"
 msgstr ""
 
 #: frontend/src/components/Modals/ChangePasswordModal.vue:139
+#: frontend/src/components/Setup/SetupPassword.vue:59
 msgid "Passwords do not match"
 msgstr ""
 
@@ -7265,7 +7347,7 @@ msgid "Payment reminder from Frappé - (#{{ name }})"
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:54
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:58
 msgid "Pending"
 msgstr ""
 
@@ -7377,10 +7459,6 @@ msgstr ""
 msgid "Pinned On"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:651
-msgid "Pinned View"
-msgstr ""
-
 #: frontend/src/components/ViewControls.vue:866
 msgid "Pinned Views"
 msgstr ""
@@ -7396,6 +7474,10 @@ msgstr ""
 
 #: frontend/src/components/Activities/AudioPlayer.vue:171
 msgid "Playback Speed"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:102
+msgid "Please allow Frappe to access Gmail for our team (one-time, about 2 minutes):"
 msgstr ""
 
 #: crm/lead_syncing/doctype/lead_sync_source/facebook.py:189
@@ -7609,7 +7691,6 @@ msgstr ""
 msgid "Products"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:620
 #: frontend/src/components/Settings/Profile/ProfileSettings.vue:4
 #: frontend/src/components/Settings/Settings.vue:112
 msgid "Profile"
@@ -7628,10 +7709,6 @@ msgstr ""
 msgid "Public"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:650
-msgid "Public View"
-msgstr ""
-
 #: frontend/src/components/ViewControls.vue:860
 msgid "Public Views"
 msgstr ""
@@ -7643,10 +7720,6 @@ msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormsList.vue:84
 msgid "Published"
-msgstr ""
-
-#: frontend/src/components/Setup/SetupEmail.vue:99
-msgid "Pull replies into lead and deal timelines"
 msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowConditionEditor.vue:34
@@ -7679,10 +7752,6 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Fields Layout'
 #: crm/fcrm/doctype/crm_fields_layout/crm_fields_layout.json:30
 msgid "Quick Entry"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:674
-msgid "Quick Entry Layout"
 msgstr ""
 
 #. Option for the 'Type' (Select) field in DocType 'CRM Global Settings'
@@ -7722,6 +7791,10 @@ msgstr ""
 msgid "Re-enrich this record?"
 msgstr ""
 
+#: frontend/src/components/Setup/setupPreviewData.js:10
+msgid "Re: Pricing for 40 seats"
+msgstr ""
+
 #. Label of the read (Check) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:63
 msgid "Read"
@@ -7734,10 +7807,6 @@ msgstr ""
 #: crm/api/dashboard.py:940
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:30
 msgid "Reason"
-msgstr ""
-
-#: frontend/src/components/Setup/SetupEmail.vue:98
-msgid "Receive email"
 msgstr ""
 
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowStepEditor.vue:118
@@ -7781,11 +7850,11 @@ msgstr ""
 msgid "Recording URL"
 msgstr ""
 
-#: crm/integrations/api.py:184
+#: crm/integrations/api.py:195
 msgid "Recording URL is not allowed"
 msgstr ""
 
-#: crm/integrations/api.py:265
+#: crm/integrations/api.py:276
 msgid "Recording URL not found"
 msgstr ""
 
@@ -7873,7 +7942,7 @@ msgstr ""
 
 #. Option for the 'Timeline Timestamp Format' (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:170
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:178
 #: frontend/src/components/Settings/GeneralSettings.vue:98
 #: frontend/src/components/Settings/GeneralSettings.vue:139
 msgid "Relative"
@@ -7891,6 +7960,7 @@ msgstr ""
 #: frontend/src/components/Settings/Forms/FieldCard.vue:73
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:83
 #: frontend/src/components/Settings/Users.vue:228
+#: frontend/src/components/Setup/SetupInvite.vue:44
 #: frontend/src/pages/Deal.vue:862
 msgid "Remove"
 msgstr ""
@@ -7943,7 +8013,12 @@ msgstr ""
 msgid "Remove step"
 msgstr ""
 
-#: crm/api/user.py:183
+#: frontend/src/components/Setup/SetupInvite.vue:45
+#, python-brace-format
+msgid "Remove teammate {0}"
+msgstr ""
+
+#: crm/api/user.py:194
 msgid "Remove this user from the sales hierarchy before changing their role to Sales User"
 msgstr ""
 
@@ -7966,7 +8041,7 @@ msgstr ""
 
 #. Label of the auto_reopen_on_new_communication (Check) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:152
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:160
 #: frontend/src/components/Settings/GeneralSettings.vue:60
 msgid "Reopen lead/deal on new communication"
 msgstr ""
@@ -7982,10 +8057,6 @@ msgstr ""
 
 #: frontend/src/components/Activities/EmailArea.vue:49
 msgid "Reply All"
-msgstr ""
-
-#: frontend/src/components/Setup/SetupEmail.vue:105
-msgid "Reply and send from the CRM"
 msgstr ""
 
 #: frontend/src/components/Modals/AboutModal.vue:68
@@ -8090,19 +8161,19 @@ msgstr ""
 
 #. Label of the restore_defaults (Button) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:21
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:38
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:39
 msgid "Restore Defaults"
 msgstr ""
 
 #. Label of the restore_demo_data (Button) field in DocType 'FCRM Settings'
 #: crm/fcrm/doctype/fcrm_settings/fcrm_settings.js:53
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:157
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:165
 msgid "Restore Demo Data"
 msgstr ""
 
 #. Description of the 'Enable Sales Hierarchy Permissions' (Check) field in
 #. DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:86
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:87
 msgid "Restrict Lead and Deal visibility based on the Sales Hierarchy tree. Managers can see all records owned by or assigned to their reports."
 msgstr ""
 
@@ -8178,12 +8249,12 @@ msgid "Ringing..."
 msgstr ""
 
 #. Label of the role (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:29
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
 #: frontend/src/components/Modals/AddExistingUserModal.vue:48
 msgid "Role"
 msgstr ""
 
-#: crm/api/user.py:241
+#: crm/api/user.py:252
 msgid "Role Profile Assigned"
 msgstr ""
 
@@ -8192,7 +8263,7 @@ msgstr ""
 msgid "Role for teammate {0}"
 msgstr ""
 
-#: crm/api/user.py:238
+#: crm/api/user.py:249
 #, python-brace-format
 msgid "Roles of user {0} are managed by a Role Profile. Update the Role Profile instead."
 msgstr ""
@@ -8390,8 +8461,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json:76
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json:117
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:51
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:95
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:31
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:99
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:511
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:60
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:81
@@ -8408,7 +8479,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:218
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json:143
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json:103
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:214
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:222
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json:82
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json:83
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json:92
@@ -8435,8 +8506,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json:88
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json:105
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:63
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:105
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:31
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:109
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:524
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:70
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:93
@@ -8451,7 +8522,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:230
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json:151
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json:115
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:222
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:230
 #: frontend/src/components/Modals/AddExistingUserModal.vue:94
 #: frontend/src/components/Settings/Hierarchy/Hierarchy.vue:281
 #: frontend/src/components/Settings/InviteUserPage.vue:163
@@ -8459,7 +8530,7 @@ msgstr ""
 #: frontend/src/components/Settings/Users.vue:87
 #: frontend/src/components/Settings/Users.vue:202
 #: frontend/src/components/Settings/Users.vue:250
-#: frontend/src/components/Setup/SetupInvite.vue:96
+#: frontend/src/components/Setup/SetupInvite.vue:105
 #: frontend/src/pages/Dashboard.vue:95
 msgid "Sales User"
 msgstr ""
@@ -8541,20 +8612,12 @@ msgstr ""
 msgid "Save your changes before undoing"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:649
-msgid "Saved View"
-msgstr ""
-
 #: frontend/src/components/ViewControls.vue:854
 msgid "Saved Views"
 msgstr ""
 
 #: frontend/src/components/CommunicationArea.vue:355
 msgid "Schedule"
-msgstr ""
-
-#: frontend/src/components/Layouts/AppSidebar.vue:566
-msgid "Schedule a follow-up task"
 msgstr ""
 
 #: frontend/src/components/Telephony/TaskPanel.vue:8
@@ -8599,6 +8662,7 @@ msgstr ""
 #: frontend/src/components/Settings/AssignmentRules/AssigneeSearch.vue:22
 #: frontend/src/components/Settings/Sla/SlaPolicyList.vue:36
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:34
+#: frontend/src/components/Setup/SetupPreviewApp.vue:18
 #: frontend/src/components/frappe-ui/Autocomplete.vue:64
 msgid "Search"
 msgstr ""
@@ -8704,6 +8768,14 @@ msgstr ""
 msgid "Select Source Type"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:120
+msgid "Select Trusted and click Continue, then click Finish on the review screen"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:94
+msgid "Select Trusted and click Continue, then click Finish on the review screen."
+msgstr ""
+
 #: frontend/src/components/Settings/Sla/WorkDayModal.vue:15
 msgid "Select Workday"
 msgstr ""
@@ -8785,15 +8857,11 @@ msgstr ""
 msgid "Send and receive email from the CRM, and keep every conversation on the right lead or deal."
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:104
-msgid "Send email"
-msgstr ""
-
 #: frontend/src/components/Setup/SetupFeedback.vue:29
 msgid "Send feedback"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupInvite.vue:67
+#: frontend/src/components/Setup/SetupInvite.vue:75
 msgid "Send invites"
 msgstr ""
 
@@ -8826,6 +8894,10 @@ msgstr ""
 msgid "Sending email..."
 msgstr ""
 
+#: frontend/src/components/Setup/SetupEmail.vue:308
+msgid "Sending only"
+msgstr ""
+
 #. Option for the 'Type' (Select) field in DocType 'CRM Dropdown Item'
 #: crm/fcrm/doctype/crm_dropdown_item/crm_dropdown_item.json:31
 msgid "Separator"
@@ -8836,12 +8908,8 @@ msgstr ""
 msgid "Series"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:661
-msgid "Service Level Agreement"
-msgstr ""
-
 #. Label of the service_provider (Select) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:112
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:120
 msgid "Service Provider"
 msgstr ""
 
@@ -8892,6 +8960,10 @@ msgstr ""
 msgid "Set a website on this record before enriching."
 msgstr ""
 
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:93
+msgid "Set access to Trusted"
+msgstr ""
+
 #: frontend/src/components/FilesUploader/FilesUploader.vue:60
 msgid "Set all as private"
 msgstr ""
@@ -8926,7 +8998,7 @@ msgstr ""
 
 #. Description of the 'Setup Completed' (Check) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:182
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:190
 msgid "Set once the first admin finishes or skips the setup flow"
 msgstr ""
 
@@ -8955,7 +9027,7 @@ msgstr ""
 msgid "Set the name of your brand. Appears in the left sidebar."
 msgstr ""
 
-#: frontend/src/pages/Setup.vue:206
+#: frontend/src/pages/Setup.vue:227
 msgid "Set up Frappe CRM"
 msgstr ""
 
@@ -8963,8 +9035,12 @@ msgstr ""
 msgid "Set up enrichment availability and match website data to CRM fields."
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:116
+#: frontend/src/components/Setup/SetupEmail.vue:183
 msgid "Set up later"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupEmail.vue:189
+msgid "Set up manually"
 msgstr ""
 
 #: frontend/src/components/Settings/Sla/SlaHolidays.vue:9
@@ -8975,8 +9051,8 @@ msgstr ""
 msgid "Set your availability so your team knows when you're reachable."
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:613
-msgid "Setting Up"
+#: frontend/src/components/Setup/SetupPassword.vue:4
+msgid "Set your password"
 msgstr ""
 
 #: frontend/src/components/Settings/GeneralSettings.vue:153
@@ -9020,8 +9096,7 @@ msgid "Setting updated successfully"
 msgstr ""
 
 #. Label of the defaults_tab (Tab Break) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:48
-#: frontend/src/components/Layouts/AppSidebar.vue:617
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:49
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:718
 #: frontend/src/components/Settings/Settings.vue:10
 msgid "Settings"
@@ -9037,7 +9112,7 @@ msgid "Settings updated successfully"
 msgstr ""
 
 #. Label of the setup_completed (Check) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:186
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:194
 msgid "Setup Completed"
 msgstr ""
 
@@ -9122,6 +9197,14 @@ msgstr ""
 msgid "Sidebar Items"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupEmail.vue:305
+msgid "Sign in"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:82
+msgid "Sign in as a Google Workspace admin."
+msgstr ""
+
 #: frontend/src/components/Settings/Profile/UserEmailSettings.vue:33
 msgid "Signature"
 msgstr ""
@@ -9168,23 +9251,23 @@ msgstr ""
 msgid "Skip Patterns"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:155
+#: frontend/src/components/Setup/SetupEmail.vue:227
 msgid "Skip anyway"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupEmail.vue:142
+#: frontend/src/components/Setup/SetupEmail.vue:214
 msgid "Skip email for now?"
 msgstr ""
 
-#: frontend/src/components/Setup/SetupInvite.vue:60
+#: frontend/src/components/Setup/SetupInvite.vue:68
 msgid "Skip for now"
 msgstr ""
 
-#: frontend/src/pages/Setup.vue:16 frontend/src/pages/Setup.vue:161
+#: frontend/src/pages/Setup.vue:18 frontend/src/pages/Setup.vue:186
 msgid "Skip setup"
 msgstr ""
 
-#: frontend/src/pages/Setup.vue:154
+#: frontend/src/pages/Setup.vue:179
 msgid "Skip setup?"
 msgstr ""
 
@@ -9241,6 +9324,7 @@ msgstr ""
 msgid "Something went wrong, try again later"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:45
 #: frontend/src/components/SortBy.vue:10 frontend/src/components/SortBy.vue:24
 #: frontend/src/components/SortBy.vue:223
 msgid "Sort"
@@ -9406,13 +9490,15 @@ msgstr ""
 #: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json:16
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:159
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json:29
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:53
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:57
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:123
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:28
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json:32
 #: crm/fcrm/doctype/crm_task/crm_task.json:60
 #: frontend/src/components/Settings/Forms/FormsList.vue:55
 #: frontend/src/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue:73
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:32
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:61
 #: frontend/src/pages/Contact.vue:426 frontend/src/pages/MobileContact.vue:381
 #: frontend/src/pages/MobileOrganization.vue:466
 #: frontend/src/pages/Organization.vue:577
@@ -9443,9 +9529,13 @@ msgstr ""
 msgid "Step name"
 msgstr ""
 
-#: frontend/src/pages/Setup.vue:27
+#: frontend/src/pages/Setup.vue:38
 #, python-brace-format
 msgid "Step {0} of {1}"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:24
+msgid "Steps copied"
 msgstr ""
 
 #. Label of the subdomain (Data) field in DocType 'CRM Exotel Settings'
@@ -9529,6 +9619,14 @@ msgstr ""
 msgid "Switch between outgoing email accounts when sending emails"
 msgstr ""
 
+#: frontend/src/pages/Setup.vue:91
+msgid "Switch to dark mode"
+msgstr ""
+
+#: frontend/src/pages/Setup.vue:91
+msgid "Switch to light mode"
+msgstr ""
+
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:1382
 #, python-brace-format
 msgid "Switching to {0} will remove {1} field(s) that don't exist on {0}. This can't be undone."
@@ -9543,10 +9641,6 @@ msgstr ""
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.js:16
 #, python-brace-format
 msgid "Sync Successful, CRM Lead: {0}!"
-msgstr ""
-
-#: frontend/src/components/Setup/SetupEmail.vue:80
-msgid "Sync options"
 msgstr ""
 
 #: frontend/src/components/Settings/LeadSyncing/FailureLogs.vue:132
@@ -9600,8 +9694,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json:83
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json:64
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:39
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:83
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:31
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:87
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:498
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:48
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:69
@@ -9618,7 +9712,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_view_settings/crm_view_settings.json:206
 #: crm/fcrm/doctype/erpnext_crm_settings/erpnext_crm_settings.json:133
 #: crm/fcrm/doctype/fcrm_note/fcrm_note.json:91
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:204
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:212
 #: crm/lead_syncing/doctype/facebook_lead_form/facebook_lead_form.json:70
 #: crm/lead_syncing/doctype/facebook_page/facebook_page.json:71
 #: crm/lead_syncing/doctype/failed_lead_sync_log/failed_lead_sync_log.json:80
@@ -9664,7 +9758,6 @@ msgstr ""
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:37
 #: frontend/src/components/Activities/ActivityHeader.vue:139
-#: frontend/src/components/Layouts/AppSidebar.vue:635
 msgid "Task"
 msgstr ""
 
@@ -9762,6 +9855,10 @@ msgstr ""
 
 #: frontend/src/components/Settings/Forms/FormBuilderPanel.vue:531
 msgid "Thank you!"
+msgstr ""
+
+#: frontend/src/components/Setup/setupPreviewData.js:16
+msgid "Thanks, Daniel"
 msgstr ""
 
 #: frontend/src/components/Setup/SetupInvite.vue:7
@@ -9890,7 +9987,11 @@ msgstr ""
 msgid "This form isn’t published yet. Turn on Publish to make the link and embeds live."
 msgstr ""
 
-#: crm/www/crm.py:64
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:12
+msgid "This is a one-time step. Send these steps to your admin, or follow them if you are the admin."
+msgstr ""
+
+#: crm/www/crm.py:71
 msgid "This method is only meant for developer mode"
 msgstr ""
 
@@ -9951,13 +10052,13 @@ msgstr ""
 
 #. Label of the crm_timeline_sort_order (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:177
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:185
 msgid "Timeline Sort Order"
 msgstr ""
 
 #. Label of the crm_timeline_timestamp_format (Select) field in DocType 'FCRM
 #. Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:169
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:177
 msgid "Timeline Timestamp Format"
 msgstr ""
 
@@ -10008,6 +10109,7 @@ msgstr ""
 #. Label of the to (Data) field in DocType 'CRM Status Change Log'
 #: crm/fcrm/doctype/crm_status_change_log/crm_status_change_log.json:47
 #: frontend/src/components/Activities/EmailArea.vue:61
+#: frontend/src/components/Setup/SetupPreviewLead.vue:76
 msgid "To"
 msgstr ""
 
@@ -10068,7 +10170,7 @@ msgstr ""
 msgid "Too many failed attempts. Please try again after some time."
 msgstr ""
 
-#: crm/integrations/api.py:247
+#: crm/integrations/api.py:258
 msgid "Too many redirects while fetching recording"
 msgstr ""
 
@@ -10165,7 +10267,6 @@ msgstr ""
 #. Agent'
 #: crm/fcrm/doctype/crm_call_log/crm_call_log.json:154
 #: crm/fcrm/doctype/crm_telephony_agent/crm_telephony_agent.json:88
-#: frontend/src/components/Layouts/AppSidebar.vue:681
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:51
 #: frontend/src/components/Settings/Telephony/TelephonySettings.vue:171
 msgid "Twilio"
@@ -10434,7 +10535,7 @@ msgstr ""
 
 #. Description of the 'Update timestamp on new communication' (Check) field in
 #. DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:135
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:143
 msgid "Update the modified timestamp on new email communication & comment for leads & deals"
 msgstr ""
 
@@ -10444,7 +10545,7 @@ msgstr ""
 
 #. Label of the update_timestamp_on_new_communication (Check) field in DocType
 #. 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:138
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:146
 #: frontend/src/components/Settings/GeneralSettings.vue:16
 msgid "Update timestamp on new communication"
 msgstr ""
@@ -10562,7 +10663,7 @@ msgstr ""
 msgid "User {0} has been removed"
 msgstr ""
 
-#: crm/api/user.py:227
+#: crm/api/user.py:238
 #, python-brace-format
 msgid "User {0} has been removed from CRM roles."
 msgstr ""
@@ -10639,10 +10740,6 @@ msgstr ""
 msgid "View documentation"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:646
-msgid "Views"
-msgstr ""
-
 #: frontend/src/components/Settings/Forms/FieldCard.vue:134
 msgid "Visible if"
 msgstr ""
@@ -10684,12 +10781,12 @@ msgstr ""
 msgid "Watch one field and run when it moves to a new value."
 msgstr ""
 
-#: crm/integrations/twilio/api.py:108
-msgid "We're unable to connect your call right now. Please try again later."
+#: frontend/src/components/Setup/setupPreviewData.js:13
+msgid "We are rolling out to our sales team next month. Could you share pricing for 40 seats and whether onboarding is included?"
 msgstr ""
 
-#: frontend/src/components/Layouts/AppSidebar.vue:643
-msgid "Web Form"
+#: crm/integrations/twilio/api.py:108
+msgid "We're unable to connect your call right now. Please try again later."
 msgstr ""
 
 #. Label of the webhook_verify_token (Data) field in DocType 'CRM Exotel
@@ -10739,9 +10836,12 @@ msgstr ""
 msgid "Welcome {0}, lets add your first lead"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreview.vue:13
+msgid "What your team sees"
+msgstr ""
+
 #. Option for the 'Type' (Select) field in DocType 'CRM Notification'
 #: crm/fcrm/doctype/crm_notification/crm_notification.json:37
-#: frontend/src/components/Layouts/AppSidebar.vue:683
 #: frontend/src/components/Settings/Settings.vue:246
 #: frontend/src/pages/Deal.vue:795 frontend/src/pages/Lead.vue:614
 #: frontend/src/pages/MobileDeal.vue:497 frontend/src/pages/MobileLead.vue:353
@@ -10856,12 +10956,13 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: crm/api/__init__.py:138
-msgid "You are not allowed to invite Sales Managers"
+#: crm/api/user.py:46
+msgid "You already have a password"
 msgstr ""
 
-#: crm/api/__init__.py:135
-msgid "You are not allowed to invite System Managers"
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:128
+#, python-brace-format
+msgid "You are not allowed to invite {0}"
 msgstr ""
 
 #: crm/api/session.py:11
@@ -10896,7 +10997,7 @@ msgstr ""
 msgid "You can only change emails you scheduled"
 msgstr ""
 
-#: crm/api/user.py:201
+#: crm/api/user.py:212
 msgid "You cannot remove yourself."
 msgstr ""
 
@@ -10920,7 +11021,7 @@ msgstr ""
 msgid "You do not have permission to access this document"
 msgstr ""
 
-#: crm/api/__init__.py:174
+#: crm/api/__init__.py:166
 msgid "You don't have permission to delete this attachment"
 msgstr ""
 
@@ -10944,12 +11045,21 @@ msgstr ""
 msgid "You will need a Meta developer account and an access token to sync leads from Facebook. Read more"
 msgstr ""
 
-#: frontend/src/pages/Setup.vue:155
+#: frontend/src/components/Setup/SetupPassword.vue:7
+#, python-brace-format
+msgid "You will use it with {0} to sign in to the CRM."
+msgstr ""
+
+#: frontend/src/pages/Setup.vue:180
 msgid "You won't see this guided setup again. You can still connect email, import leads and invite your team from Settings."
 msgstr ""
 
 #: crm/domain_enrichment/mapper.py:47
 msgid "YouTube"
+msgstr ""
+
+#: frontend/src/components/Setup/SetupGmailAdminSteps.vue:8
+msgid "Your Google Workspace admin must allow Frappe first"
 msgstr ""
 
 #: crm/integrations/twilio/api.py:71
@@ -11154,12 +11264,12 @@ msgid "e.g. mastodon\\\\.social/@\\\\w+"
 msgstr ""
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:113
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:121
 msgid "exchangerate-api"
 msgstr ""
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:113
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:121
 msgid "exchangerate.host"
 msgstr ""
 
@@ -11170,7 +11280,7 @@ msgid "facebook"
 msgstr ""
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:113
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:121
 msgid "fawazahmed-exchange-api"
 msgstr ""
 
@@ -11185,7 +11295,7 @@ msgid "fields"
 msgstr ""
 
 #. Option for the 'Service Provider' (Select) field in DocType 'FCRM Settings'
-#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:113
+#: crm/fcrm/doctype/fcrm_settings/fcrm_settings.json:121
 msgid "frankfurter.app"
 msgstr ""
 
@@ -11228,7 +11338,6 @@ msgstr ""
 
 #: frontend/src/components/Settings/EmailAdd.vue:36
 #: frontend/src/components/Settings/EmailEdit.vue:25
-#: frontend/src/components/Setup/SetupEmail.vue:72
 msgid "here"
 msgstr ""
 
@@ -11394,6 +11503,7 @@ msgstr ""
 msgid "note updates from"
 msgstr ""
 
+#: frontend/src/components/Setup/SetupPreviewLead.vue:67
 #: frontend/src/utils/index.js:129 frontend/src/utils/index.js:149
 msgid "now"
 msgstr ""
@@ -11712,6 +11822,11 @@ msgstr ""
 #: crm/api/form.py:276
 #, python-brace-format
 msgid "{0} isn't a linkable field on a CRM form."
+msgstr ""
+
+#: frontend/src/components/Setup/SetupPreviewLeads.vue:204
+#, python-brace-format
+msgid "{0} leads imported"
 msgstr ""
 
 #: frontend/src/components/Setup/SetupImportResult.vue:39
