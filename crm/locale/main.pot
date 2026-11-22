@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Frappe CRM VERSION\n"
 "Report-Msgid-Bugs-To: shariq@frappe.io\n"
-"POT-Creation-Date: 2026-11-15 16:30+0000\n"
-"PO-Revision-Date: 2026-11-15 16:30+0000\n"
+"POT-Creation-Date: 2026-11-22 17:18+0000\n"
+"PO-Revision-Date: 2026-11-22 17:18+0000\n"
 "Last-Translator: shariq@frappe.io\n"
 "Language-Team: shariq@frappe.io\n"
 "MIME-Version: 1.0\n"
@@ -258,12 +258,12 @@ msgid "Accept Invitation"
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:54
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:58
 msgid "Accepted"
 msgstr ""
 
 #. Label of the accepted_at (Datetime) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:64
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:68
 msgid "Accepted At"
 msgstr ""
 
@@ -1435,7 +1435,7 @@ msgid "CRM Industry"
 msgstr ""
 
 #. Name of a DocType
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:72
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:76
 msgid "CRM Invitation"
 msgstr ""
 
@@ -1670,7 +1670,7 @@ msgstr ""
 msgid "Cannot enable rule without adding users in it"
 msgstr ""
 
-#: crm/api/__init__.py:141
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:125
 msgid "Cannot invite for this role"
 msgstr ""
 
@@ -3522,7 +3522,7 @@ msgid "Email ID is required"
 msgstr ""
 
 #. Label of the email_sent_at (Datetime) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:59
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:63
 msgid "Email Sent At"
 msgstr ""
 
@@ -4038,7 +4038,7 @@ msgid "Expected deal value is required."
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:54
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:58
 msgid "Expired"
 msgstr ""
 
@@ -5139,7 +5139,7 @@ msgid "Invalid maximum pages"
 msgstr ""
 
 #: crm/api/__init__.py:104 crm/api/__init__.py:108
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:66
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:71
 msgid "Invalid or expired key"
 msgstr ""
 
@@ -5199,7 +5199,7 @@ msgid "Invite your whole team."
 msgstr ""
 
 #. Label of the invited_by (Link) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:42
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:46
 msgid "Invited By"
 msgstr ""
 
@@ -5352,7 +5352,7 @@ msgstr ""
 
 #. Label of the key (Data) field in DocType 'CRM Invitation'
 #. Label of the key (Data) field in DocType 'Facebook Lead Form Question'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:36
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:38
 #: crm/lead_syncing/doctype/facebook_lead_form_question/facebook_lead_form_question.json:31
 msgid "Key"
 msgstr ""
@@ -7265,7 +7265,7 @@ msgid "Payment reminder from Frappé - (#{{ name }})"
 msgstr ""
 
 #. Option for the 'Status' (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:54
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:58
 msgid "Pending"
 msgstr ""
 
@@ -8178,7 +8178,7 @@ msgid "Ringing..."
 msgstr ""
 
 #. Label of the role (Select) field in DocType 'CRM Invitation'
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:29
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
 #: frontend/src/components/Modals/AddExistingUserModal.vue:48
 msgid "Role"
 msgstr ""
@@ -8390,8 +8390,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json:76
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json:117
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:51
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:95
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:31
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:99
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:510
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:60
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:81
@@ -8435,8 +8435,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json:88
 #: crm/fcrm/doctype/crm_holiday_list/crm_holiday_list.json:105
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:63
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:105
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:31
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:109
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:522
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:70
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:93
@@ -9406,7 +9406,7 @@ msgstr ""
 #: crm/fcrm/doctype/crm_communication_status/crm_communication_status.json:16
 #: crm/fcrm/doctype/crm_deal/crm_deal.json:159
 #: crm/fcrm/doctype/crm_deal_status/crm_deal_status.json:29
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:53
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:57
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:123
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:28
 #: crm/fcrm/doctype/crm_rolling_response_time/crm_rolling_response_time.json:32
@@ -9600,8 +9600,8 @@ msgstr ""
 #: crm/fcrm/doctype/crm_form_script/crm_form_script.json:83
 #: crm/fcrm/doctype/crm_global_settings/crm_global_settings.json:64
 #: crm/fcrm/doctype/crm_industry/crm_industry.json:39
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:30
-#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:83
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:31
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.json:87
 #: crm/fcrm/doctype/crm_lead/crm_lead.json:498
 #: crm/fcrm/doctype/crm_lead_source/crm_lead_source.json:48
 #: crm/fcrm/doctype/crm_lead_status/crm_lead_status.json:69
@@ -10856,12 +10856,9 @@ msgstr ""
 msgid "You"
 msgstr ""
 
-#: crm/api/__init__.py:138
-msgid "You are not allowed to invite Sales Managers"
-msgstr ""
-
-#: crm/api/__init__.py:135
-msgid "You are not allowed to invite System Managers"
+#: crm/fcrm/doctype/crm_invitation/crm_invitation.py:128
+#, python-brace-format
+msgid "You are not allowed to invite {0}"
 msgstr ""
 
 #: crm/api/session.py:11
@@ -10920,7 +10917,7 @@ msgstr ""
 msgid "You do not have permission to access this document"
 msgstr ""
 
-#: crm/api/__init__.py:174
+#: crm/api/__init__.py:166
 msgid "You don't have permission to delete this attachment"
 msgstr ""
 
