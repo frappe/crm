@@ -37,68 +37,78 @@
         :icon="h(CalendarIcon)"
       />
       <div v-else class="w-full">
+        <div class="mb-2 px-2 pt-0.5">
+          <TextInput
+            v-model="search"
+            :placeholder="__('Search by page, link or host')"
+            class="w-full"
+            :debounce="300"
+          >
+            <template #prefix>
+              <span
+                class="lucide-search h-4 w-4 text-ink-gray-6"
+                aria-hidden="true"
+              />
+            </template>
+          </TextInput>
+        </div>
         <div class="flex items-center p-2 text-sm text-ink-gray-5">
           <div class="w-6/12">{{ __('Page') }}</div>
           <div class="w-3/12">{{ __('Hosts') }}</div>
           <div class="w-3/12">{{ __('Status') }}</div>
         </div>
         <div class="mx-2 h-px border-t border-outline-elevation-2" />
-        <template v-for="section in sections" :key="section.key">
+        <div
+          v-if="!shownPages.length"
+          class="p-6 text-center text-p-base text-ink-gray-5"
+        >
+          {{ __('No booking pages match "{0}"', [search]) }}
+        </div>
+        <template v-for="(page, i) in shownPages" :key="page.name">
           <div
-            v-if="sections.length > 1"
-            class="px-2 pb-1 pt-4 text-sm-medium text-ink-gray-5"
+            class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2"
           >
-            {{ section.label }}
-          </div>
-          <template v-for="(page, i) in section.pages" :key="page.name">
             <div
-              class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2"
+              class="w-6/12 min-w-0 cursor-pointer"
+              @click="emit('open', page.name)"
             >
-              <div
-                class="w-6/12 min-w-0 cursor-pointer"
-                @click="emit('open', page.name)"
-              >
-                <div class="truncate text-base-medium text-ink-gray-7">
-                  {{ page.title }}
-                </div>
-                <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
-                  {{ __('{0} min', [page.duration]) }} ·
-                  {{
-                    page.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
-                  }}
-                  · {{ ROUTE_PREFIX }}{{ page.route }}
-                </div>
+              <div class="truncate text-base-medium text-ink-gray-7">
+                {{ page.title }}
               </div>
-              <div
-                class="w-3/12 cursor-pointer"
-                @click="emit('open', page.name)"
-              >
-                <MultipleAvatar
-                  class="w-fit"
-                  :avatars="page.hosts.map((u: string) => hostAvatar(u))"
-                  size="sm"
-                />
-              </div>
-              <div class="flex w-3/12 items-center justify-between">
-                <Badge
-                  :theme="page.enabled ? 'green' : 'gray'"
-                  variant="outline"
-                  size="md"
-                  :label="page.enabled ? __('Live') : __('Off')"
-                />
-                <Dropdown
-                  align="end"
-                  :options="rowOptions(page)"
-                  @update:open="
-                    (open: boolean) => open && (isConfirmingDelete = false)
-                  "
-                >
-                  <Button icon="lucide-more-horizontal" variant="ghost" />
-                </Dropdown>
+              <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
+                {{ __('{0} min', [page.duration]) }} ·
+                {{
+                  page.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
+                }}
+                · {{ ROUTE_PREFIX }}{{ page.route }}
               </div>
             </div>
-            <hr v-if="section.pages.length !== i + 1" class="mx-2" />
-          </template>
+            <div class="w-3/12 cursor-pointer" @click="emit('open', page.name)">
+              <MultipleAvatar
+                class="w-fit"
+                :avatars="page.hosts.map((u: string) => hostAvatar(u))"
+                size="sm"
+              />
+            </div>
+            <div class="flex w-3/12 items-center justify-between">
+              <Badge
+                :theme="page.enabled ? 'green' : 'gray'"
+                variant="outline"
+                size="md"
+                :label="page.enabled ? __('Live') : __('Off')"
+              />
+              <Dropdown
+                align="end"
+                :options="rowOptions(page)"
+                @update:open="
+                  (open: boolean) => open && (isConfirmingDelete = false)
+                "
+              >
+                <Button icon="lucide-more-horizontal" variant="ghost" />
+              </Dropdown>
+            </div>
+          </div>
+          <hr v-if="shownPages.length !== i + 1" class="mx-2" />
         </template>
       </div>
     </div>
@@ -162,6 +172,7 @@ import {
   ErrorMessage,
   FormControl,
   LoadingIndicator,
+  TextInput,
   call,
   createResource,
   toast,
@@ -190,16 +201,20 @@ function canChange(page: BookingPageRow) {
 
 const pages = createResource({ url: 'crm.api.booking.list_pages', auto: true })
 
-// the pages you host come first, so you don't scroll past the team's to find yours
-const sections = computed(() => {
-  const me = getUser().name
+// match the title, the link or a host's name or email
+const search = ref('')
+const shownPages = computed<BookingPageRow[]>(() => {
   const all: BookingPageRow[] = pages.data || []
-  const mine = all.filter((p) => p.hosts.includes(me))
-  const others = all.filter((p) => !p.hosts.includes(me))
-  return [
-    { key: 'mine', label: __('Your pages'), pages: mine },
-    { key: 'others', label: __('Other pages'), pages: others },
-  ].filter((section) => section.pages.length)
+  const q = search.value.trim().toLowerCase()
+  if (!q) return all
+  return all.filter((page) =>
+    [
+      page.title,
+      page.route,
+      ...page.hosts,
+      ...page.hosts.map((u) => getUser(u)?.full_name || ''),
+    ].some((text) => text?.toLowerCase().includes(q)),
+  )
 })
 const isConfirmingDelete = ref(false)
 
