@@ -345,6 +345,8 @@ export function parseEventDoc(doc) {
     referenceDoctype: doc.reference_doctype,
     referenceDocname: doc.reference_docname,
     event_participants: doc.event_participants || [],
+    // who booked it from a booking page and what they answered
+    bookingDetails: doc.booking_details || null,
     notifications: doc.notifications || [],
     owner: doc.owner
       ? {

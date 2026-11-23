@@ -303,6 +303,7 @@ const events = createListResource({
         referenceDoctype: ev.reference_doctype,
         referenceDocname: ev.reference_docname,
         booking: bookingOf(ev),
+        bookingDetails: ev.booking_details || null,
       }))
       .filter(
         (ev, index, self) => index === self.findIndex((e) => e.id === ev.id),
@@ -333,7 +334,14 @@ function openEvent(e, nextMode, reloadEvent = false) {
   if (!_e?.id || isTempEvent(_e.id)) return
   removeTempEvents()
   showEventPanel.value = true
-  event.value = { id: _e.id, reloadEvent }
+  // the panel loads the Event doc, which has no booking. Left undefined when the
+  // list hasn't loaded this event (opened by link), so the panel fetches it
+  const listed = events.data?.find((ev) => ev.id === _e.id)
+  event.value = {
+    id: _e.id,
+    reloadEvent,
+    bookingDetails: listed ? listed.bookingDetails : undefined,
+  }
   activeEvent.value = _e.id
   mode.value = nextMode
 }

@@ -401,6 +401,8 @@ def _send_email_notification(notification, event_start, before_value, interval):
 				if email:
 					recipients.add(email)
 
+		# a booking page sends its guest reminders of its own
+		recipients -= _booking_guests(notification.event_name)
 		recipients = _claim_new_recipients(
 			notification, interval, sorted(email for email in recipients if email)
 		)
@@ -435,6 +437,10 @@ def _send_email_notification(notification, event_start, before_value, interval):
 	except Exception as e:
 		frappe.db.rollback(save_point="send_event_reminder")
 		frappe.log_error(f"Failed to send email for event {notification.event_name}: {e!s}")
+
+
+def _booking_guests(event_name) -> set[str]:
+	return set(frappe.get_all("CRM Booking", filters={"event": event_name}, pluck="guest_email"))
 
 
 def _format_time_remaining(before_value, interval):
@@ -585,19 +591,26 @@ def get_event(name: str) -> dict:
 
 
 def add_booking_guests(rows: list[dict]) -> list[dict]:
-	"""Mark meetings booked from a booking page with the guest's email: moving or
-	deleting one emails them, so the CRM asks first."""
+	"""Mark booked meetings with the guest (moves and deletes email them) and their answers."""
 	names = [row.get("name") for row in rows if row.get("name")]
-	guests = dict(
-		frappe.get_all(
+	bookings = {
+		b.event: b
+		for b in frappe.get_all(
 			"CRM Booking",
 			filters={"event": ["in", names or [""]], "status": "Confirmed"},
-			fields=["event", "guest_email"],
-			as_list=True,
+			fields=["event", "guest_email", "guest_name", "guest_phone", "answers"],
 		)
-	)
+	}
 	for row in rows:
-		row["booking_guest"] = guests.get(row.get("name"))
+		booking = bookings.get(row.get("name"))
+		row["booking_guest"] = booking and booking.guest_email
+		# who booked and what they answered, shown on the meeting; it used to be its description
+		row["booking_details"] = booking and {
+			"name": booking.guest_name,
+			"email": booking.guest_email,
+			"phone": booking.guest_phone,
+			"answers": frappe.parse_json(booking.answers) or {},
+		}
 	return rows
 
 

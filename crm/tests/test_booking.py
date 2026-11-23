@@ -183,8 +183,7 @@ class TestBooking(IntegrationTestCase):
 		event = frappe.get_doc("Event", booking.event)
 		self.assertEqual(event.owner, HOSTS[0])
 		self.assertEqual(event.reference_docname, lead.name)
-		# the guest gets the CRM's .ics; as a participant they would get its reminders too
-		self.assertEqual(event.event_participants, [])
+		self.assertEqual([p.email for p in event.event_participants], ["visitor@example.com"])
 		self.assertEqual(frappe.utils.get_datetime(event.starts_on), to_system(self.at(9)))
 
 		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday())
@@ -986,27 +985,98 @@ class TestBooking(IntegrationTestCase):
 		self.assertFalse(frappe.db.exists("Event", own.name))
 		self.assertTrue(frappe.db.exists("Event", other.name))
 
-	def test_a_synced_meeting_never_has_google_mail_the_guest(self):
-		"""Google mails a meeting's description, which holds the guest's own answers, to
-		every participant from the host's account; the guest gets the CRM's .ics instead."""
+	def test_a_synced_meeting_lets_google_invite_the_guest(self):
+		"""Google invites the guest, so the CRM's email leaves out its own .ics."""
 		self.connect_google(HOSTS[0])
+
+		def synced(doc, method=None):
+			frappe.db.set_value("Event", doc.name, "google_calendar_event_id", "google-1")
+
 		with (
 			patch("crm.api.booking.fetch_google_busy", return_value=[]),
 			patch(
-				"frappe.integrations.doctype.google_calendar.google_calendar.insert_event_in_google_calendar"
+				"frappe.integrations.doctype.google_calendar.google_calendar.insert_event_in_google_calendar",
+				side_effect=synced,
 			),
 		):
 			booking = self.booking_for(self.book_as_guest(self.at(9), "someone-else@example.com"))
 		event = frappe.get_doc("Event", booking.event)
 		self.assertTrue(event.sync_with_google_calendar)
-		self.assertEqual(event.event_participants, [])
+		self.assertEqual([p.email for p in event.event_participants], ["someone-else@example.com"])
 		self.assertEqual(event.reference_docname, booking.reference_docname)
 		messages = frappe.get_all(
 			"Email Queue",
 			filters={"reference_doctype": "CRM Booking", "reference_name": booking.name},
 			pluck="message",
 		)
+		self.assertTrue(messages)
+		self.assertFalse(any("invite.ics" in m for m in messages))
+
+	def test_a_cancel_google_rejects_still_sends_the_guest_an_ics(self):
+		"""If Google can't cancel the meeting it never mails the guest, so the CRM's email carries the .ics."""
+		self.connect_google(HOSTS[0])
+
+		def synced(doc, method=None):
+			frappe.db.set_value("Event", doc.name, "google_calendar_event_id", "google-1")
+
+		with (
+			patch("crm.api.booking.fetch_google_busy", return_value=[]),
+			patch(
+				"frappe.integrations.doctype.google_calendar.google_calendar.insert_event_in_google_calendar",
+				side_effect=synced,
+			),
+		):
+			result = self.book_as_guest(self.at(9), "someone-else@example.com")
+		booking = self.booking_for(result)
+		frappe.db.delete("Email Queue", {"reference_doctype": "CRM Booking", "reference_name": booking.name})
+		with patch(
+			"frappe.integrations.doctype.google_calendar.google_calendar.update_event_in_google_calendar",
+			side_effect=Exception("token revoked"),
+		):
+			cancel_booking(result["token"])
+		self.assertEqual(frappe.db.get_value("Event", booking.event, "status"), "Cancelled")
+		messages = frappe.get_all(
+			"Email Queue",
+			filters={"reference_doctype": "CRM Booking", "reference_name": booking.name},
+			pluck="message",
+		)
 		self.assertTrue(any("invite.ics" in m for m in messages))
+
+	def test_a_guest_typing_a_users_email_is_not_an_attendee(self):
+		"""A colleague's email isn't added, or the meeting would land on their calendar."""
+		booking = self.booking_for(self.book_as_guest(self.at(9), HOSTS[1]))
+		self.assertEqual(frappe.get_doc("Event", booking.event).event_participants, [])
+
+	def test_answers_stay_off_the_meeting_description(self):
+		"""Google mails the description to every attendee; the answers are shown from the booking."""
+		from crm.api.event import get_event
+
+		self.add_fields()
+		booking = self.booking_for(self.book_as_guest(self.at(9), values={"organization": "Acme"}))
+		self.assertNotIn("Acme", frappe.db.get_value("Event", booking.event, "description") or "")
+		details = get_event(booking.event)["booking_details"]
+		self.assertEqual(details["email"], "visitor@example.com")
+		self.assertEqual(details["answers"]["Company"], "Acme")
+
+	def test_crm_reminders_leave_the_guest_to_the_booking_page(self):
+		"""A booking page sends its guest reminders of its own."""
+		from crm.api.event import _send_email_notification
+
+		booking = self.booking_for(self.book_as_guest(self.at(9)))
+		notification = frappe._dict(
+			event_name=booking.event,
+			subject="Meeting",
+			owner=HOSTS[0],
+			event_participants=["visitor@example.com"],
+		)
+		with (
+			patch("crm.api.event._claim_new_recipients", side_effect=lambda n, i, r: r),
+			patch("frappe.sendmail") as sendmail,
+		):
+			_send_email_notification(
+				notification, frappe.utils.get_datetime(booking.starts_on), 10, "minutes"
+			)
+		self.assertEqual(sendmail.call_args.kwargs["recipients"], [HOSTS[0]])
 
 	def test_a_meeting_cancelled_in_google_cancels_its_booking(self):
 		from crm.api.booking import cancel_bookings_closed_elsewhere

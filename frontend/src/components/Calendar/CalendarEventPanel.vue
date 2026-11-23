@@ -206,12 +206,19 @@
           <Button
             v-for="att in displayedPeoples"
             :key="att.email"
-            :label="att.email"
+            :label="isGuest(att) ? '' : att.email"
             variant="ghost"
             theme="gray"
             class="rounded-full w-fit !text-sm"
-            :tooltip="getTooltip(att)"
+            :class="{ '!h-8.5 !pr-3': isGuest(att) }"
+            :tooltip="isGuest(att) ? att.email : getTooltip(att)"
           >
+            <template v-if="isGuest(att)" #default>
+              <div class="flex flex-col items-start text-sm">
+                <div>{{ _event.bookingDetails.name || att.email }}</div>
+                <div class="text-ink-gray-5">{{ __('Guest') }}</div>
+              </div>
+            </template>
             <template #prefix>
               <div class="relative">
                 <UserAvatar :user="att.email" class="-ml-1 !size-5" />
@@ -277,6 +284,23 @@
           v-html="sanitizeHTML(_event.description)"
         />
       </div>
+      <template v-if="bookingRows.length">
+        <div class="mx-4.5 my-2.5 border-t border-outline-gray-1" />
+        <div class="flex gap-2 items-center text-ink-gray-7 px-4.5 py-1">
+          <span class="lucide-calendar-check size-4" aria-hidden="true" />
+          {{ __('Booking') }}
+        </div>
+        <div class="flex flex-col gap-2.5 px-4.5 py-2 text-p-base">
+          <div
+            v-for="row in bookingRows"
+            :key="row.label"
+            class="flex flex-col"
+          >
+            <span class="text-sm text-ink-gray-5">{{ row.label }}</span>
+            <span class="break-words text-ink-gray-8">{{ row.value }}</span>
+          </div>
+        </div>
+      </template>
     </div>
 
     <!-- Event new, duplicate & edit -->
@@ -747,6 +771,31 @@ watch(
   { immediate: true },
 )
 
+// the Event doc has no booking: use get_event's, else the one the calendar list loaded
+function withBooking(doc) {
+  return {
+    ...doc,
+    booking_details: doc.booking_details || event.value.bookingDetails,
+  }
+}
+
+function showEvent(doc) {
+  _event.value = parseEventDoc(withBooking(doc))
+  oldEvent.value = deepClone(_event.value)
+  handleReadonlyEvent()
+}
+
+// the CRM's get_event also sends the booking, and shows a teammate's meeting on a
+// lead or deal that Frappe hides
+async function showFromCrm(fallback) {
+  const id = event.value.id
+  const data = await call('crm.api.event.get_event', { name: id }).catch(
+    () => null,
+  )
+  if (event.value.id !== id) return
+  if (data || fallback) showEvent(data || fallback)
+}
+
 function fetchEvent(oldMode) {
   if (
     event.value.id &&
@@ -757,25 +806,20 @@ function fetchEvent(oldMode) {
       doctype: 'Event',
       name: event.value.id,
       fields: ['*'],
-      onSuccess: (data) => {
-        _event.value = parseEventDoc(data)
-        oldEvent.value = deepClone(_event.value)
-        handleReadonlyEvent()
-      },
-      // a teammate's meeting on a lead or deal: Frappe hides it, the CRM may show it
-      onError: async () => {
-        const data = await call('crm.api.event.get_event', {
-          name: event.value.id,
-        }).catch(() => null)
-        if (!data) return
-        _event.value = parseEventDoc(data)
-        oldEvent.value = deepClone(_event.value)
-        handleReadonlyEvent()
-      },
+      // opened by link, the calendar list may not have the booking yet
+      onSuccess: (data) =>
+        event.value.bookingDetails === undefined
+          ? showFromCrm(data)
+          : showEvent(data),
+      onError: () => showFromCrm(),
     })
     if (eventResource.value.doc && !event.value.reloadEvent) {
-      _event.value = parseEventDoc(eventResource.value.doc)
-      oldEvent.value = deepClone(_event.value)
+      if (event.value.bookingDetails === undefined) {
+        showFromCrm(eventResource.value.doc)
+      } else {
+        _event.value = parseEventDoc(withBooking(eventResource.value.doc))
+        oldEvent.value = deepClone(_event.value)
+      }
     } else {
       eventResource.value.reload()
     }
@@ -1027,6 +1071,30 @@ function redirect() {
     router.push({ name, params })
   }
 }
+
+// the guest who booked it from a booking page
+function isGuest(att) {
+  const guest = _event.value.bookingDetails?.email
+  return Boolean(guest) && att.email === guest
+}
+
+// who booked and what they answered, kept off the description that Google mails out
+const bookingRows = computed(() => {
+  const booking = _event.value?.bookingDetails
+  if (!booking) return []
+  const rows = [
+    { label: __('Name'), value: booking.name },
+    { label: __('Email'), value: booking.email },
+    { label: __('Phone'), value: booking.phone },
+    ...Object.entries(booking.answers || {}).map(([label, value]) => ({
+      label,
+      value: Array.isArray(value) ? value.join(', ') : value,
+    })),
+  ]
+  return rows.filter(
+    (row) => row.value !== null && row.value !== undefined && row.value !== '',
+  )
+})
 
 function getTooltip(m) {
   if (!m) return ''
