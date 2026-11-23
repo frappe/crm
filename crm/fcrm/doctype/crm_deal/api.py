@@ -20,6 +20,7 @@ def get_deal_contacts(name: str):
 			continue
 
 		is_primary = contact.is_primary
+		can_write = frappe.has_permission("Contact", "write", contact.contact)
 		contact = frappe.get_doc("Contact", contact.contact).as_dict()
 
 		_contact = {
@@ -32,7 +33,7 @@ def get_deal_contacts(name: str):
 			# Every email and phone, so the deal side panel can edit them in place
 			"email_ids": [{"name": e.name, "email_id": e.email_id} for e in contact.email_ids],
 			"phone_nos": [{"name": p.name, "phone": p.phone} for p in contact.phone_nos],
-			"can_write": frappe.has_permission("Contact", "write", contact.name),
+			"can_write": can_write,
 		}
 		deal_contacts.append(_contact)
 	return deal_contacts
