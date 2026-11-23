@@ -29,12 +29,23 @@
         >
           <Button icon="lucide-trash-2" variant="ghost" @click="deleteEvent" />
         </ShortcutTooltip>
+        <Button
+          v-if="mode === 'details'"
+          icon="lucide-copy"
+          variant="ghost"
+          :tooltip="__('Copy event details to share')"
+          @click="copyDetails"
+        />
         <ShortcutTooltip
           v-if="mode === 'edit' || mode === 'details'"
           :label="__('Duplicate Event')"
           combo="Mod+D"
         >
-          <Button icon="lucide-copy" variant="ghost" @click="duplicateEvent" />
+          <Button
+            icon="lucide-copy-plus"
+            variant="ghost"
+            @click="duplicateEvent"
+          />
         </ShortcutTooltip>
         <ShortcutTooltip :label="__('Close Panel')" combo="Esc">
           <Button icon="lucide-x" variant="ghost" @click="close" />
@@ -125,10 +136,12 @@
         v-if="_event.referenceDocname"
         class="mx-4.5 my-2.5 border-t border-outline-gray-1"
       />
-      <button
+      <a
         v-if="_event.referenceDocname"
+        :href="referenceUrl"
+        target="_blank"
+        rel="noopener"
         class="group mx-3 flex items-center gap-3 rounded-4 px-1.5 py-1.5 text-left text-ink-gray-7 hover:bg-surface-gray-2"
-        @click="redirect"
       >
         <component
           :is="_event.referenceDoctype == 'CRM Lead' ? LeadsIcon : DealsIcon"
@@ -141,7 +154,7 @@
         <ArrowUpRightIcon
           class="ml-auto size-4 shrink-0 text-ink-gray-5 group-hover:text-ink-gray-7"
         />
-      </button>
+      </a>
       <div
         v-if="peoples.length"
         class="mx-4.5 my-2.5 border-t border-outline-gray-1"
@@ -267,15 +280,19 @@
         v-if="_event.description && _event.description !== '<p></p>'"
         class="mx-4.5 my-2.5 border-t border-outline-gray-1"
       />
-      <div v-if="_event.description && _event.description !== '<p></p>'">
-        <div class="flex gap-2 items-center text-ink-gray-7 px-4.5 py-1">
-          <DescriptionIcon class="size-4" />
-          {{ __('Description') }}
+      <div
+        v-if="_event.description && _event.description !== '<p></p>'"
+        class="flex gap-3 px-4.5 py-2 text-ink-gray-7"
+      >
+        <DescriptionIcon class="size-4 shrink-0" />
+        <!-- the text sits under the label, in line with the other rows -->
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+          <div>{{ __('Description') }}</div>
+          <div
+            class="prose-sm text-p-base text-ink-gray-7 break-words [&_p]:my-0 [&_ol]:pl-4 [&_ul]:pl-4"
+            v-html="sanitizeHTML(_event.description)"
+          />
         </div>
-        <div
-          class="px-4.5 py-2 text-ink-gray-7 text-p-base"
-          v-html="sanitizeHTML(_event.description)"
-        />
       </div>
     </div>
 
@@ -582,7 +599,13 @@ import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import RichTextField from '@/components/RichTextField.vue'
 import { globalStore } from '@/stores/global'
 import { sessionStore } from '@/stores/session'
-import { validateEmail, deepClone, sanitizeHTML, getFormat } from '@/utils'
+import {
+  validateEmail,
+  deepClone,
+  sanitizeHTML,
+  getFormat,
+  copyToClipboard,
+} from '@/utils'
 import {
   normalizeParticipants,
   buildEndTimeOptions,
@@ -604,6 +627,7 @@ import {
   TabButtons,
   toast,
   call,
+  getConfig,
 } from 'frappe-ui'
 import {
   CalendarColorMap as colorMap,
@@ -1015,17 +1039,57 @@ watch(
   { immediate: true },
 )
 
-function redirect() {
-  if (_event.value.referenceDocname) {
-    let name = _event.value.referenceDoctype === 'CRM Lead' ? 'Lead' : 'Deal'
+// opens in a new tab, so the calendar stays where it was
+const referenceUrl = computed(() => {
+  const { referenceDoctype, referenceDocname } = _event.value || {}
+  if (!referenceDocname) return ''
+  const isLead = referenceDoctype === 'CRM Lead'
+  return router.resolve({
+    name: isLead ? 'Lead' : 'Deal',
+    params: isLead
+      ? { leadId: referenceDocname }
+      : { dealId: referenceDocname },
+  }).href
+})
 
-    let params =
-      _event.value.referenceDoctype == 'CRM Lead'
-        ? { leadId: _event.value.referenceDocname }
-        : { dealId: _event.value.referenceDocname }
+// what to send a client: title, when (with the timezone) and where to join.
+// The description stays out, it often holds internal notes.
+function shareableDetails() {
+  const e = _event.value
+  const lines = [e.title || __('(No Title)')]
 
-    router.push({ name, params })
+  const date = dayjs(e.fromDate).format('ddd, D MMM YYYY')
+  if (e.isFullDay) {
+    lines.push(`${date}, ${__('All Day')}`)
+  } else {
+    const time = formattedDateTime.value.replace(` ${date}`, '')
+    lines.push(`${date}, ${time} (${timezoneLabel(e.fromDate)})`)
   }
+
+  if (locationIsLink.value) {
+    lines.push(`${__('Join')}: ${shownLocation.value}`)
+  } else if (shownLocation.value) {
+    lines.push(`${__('Location')}: ${shownLocation.value}`)
+  }
+  return lines.join('\n')
+}
+
+function timezoneLabel(date) {
+  const timeZone =
+    getConfig('localTimezone') ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  const part = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    timeZoneName: 'short',
+  })
+    .formatToParts(new Date(date))
+    .find((p) => p.type === 'timeZoneName')
+  return part?.value || timeZone
+}
+
+function copyDetails() {
+  if (!_event.value?.title && !_event.value?.fromDate) return
+  copyToClipboard(shareableDetails())
 }
 
 function getTooltip(m) {
