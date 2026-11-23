@@ -771,9 +771,29 @@ watch(
   { immediate: true },
 )
 
-// the Event doc has no booking, so keep the one the calendar list loaded
+// the Event doc has no booking: use get_event's, else the one the calendar list loaded
 function withBooking(doc) {
-  return { booking_details: event.value.bookingDetails, ...doc }
+  return {
+    ...doc,
+    booking_details: doc.booking_details || event.value.bookingDetails,
+  }
+}
+
+function showEvent(doc) {
+  _event.value = parseEventDoc(withBooking(doc))
+  oldEvent.value = deepClone(_event.value)
+  handleReadonlyEvent()
+}
+
+// the CRM's get_event also sends the booking, and shows a teammate's meeting on a
+// lead or deal that Frappe hides
+async function showFromCrm(fallback) {
+  const id = event.value.id
+  const data = await call('crm.api.event.get_event', { name: id }).catch(
+    () => null,
+  )
+  if (event.value.id !== id) return
+  if (data || fallback) showEvent(data || fallback)
 }
 
 function fetchEvent(oldMode) {
@@ -786,25 +806,20 @@ function fetchEvent(oldMode) {
       doctype: 'Event',
       name: event.value.id,
       fields: ['*'],
-      onSuccess: (data) => {
-        _event.value = parseEventDoc(withBooking(data))
-        oldEvent.value = deepClone(_event.value)
-        handleReadonlyEvent()
-      },
-      // a teammate's meeting on a lead or deal: Frappe hides it, the CRM may show it
-      onError: async () => {
-        const data = await call('crm.api.event.get_event', {
-          name: event.value.id,
-        }).catch(() => null)
-        if (!data) return
-        _event.value = parseEventDoc(withBooking(data))
-        oldEvent.value = deepClone(_event.value)
-        handleReadonlyEvent()
-      },
+      // opened by link, the calendar list may not have the booking yet
+      onSuccess: (data) =>
+        event.value.bookingDetails === undefined
+          ? showFromCrm(data)
+          : showEvent(data),
+      onError: () => showFromCrm(),
     })
     if (eventResource.value.doc && !event.value.reloadEvent) {
-      _event.value = parseEventDoc(withBooking(eventResource.value.doc))
-      oldEvent.value = deepClone(_event.value)
+      if (event.value.bookingDetails === undefined) {
+        showFromCrm(eventResource.value.doc)
+      } else {
+        _event.value = parseEventDoc(withBooking(eventResource.value.doc))
+        oldEvent.value = deepClone(_event.value)
+      }
     } else {
       eventResource.value.reload()
     }

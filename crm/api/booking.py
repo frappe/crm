@@ -859,6 +859,9 @@ def google_invites_guest(event, booking) -> bool:
 	"""Google already mails a synced meeting's attendees, so the CRM's .ics would double it."""
 	if not (event and event.get("sync_with_google_calendar") and event.get("google_calendar_event_id")):
 		return False
+	# Google never heard of this change, so the guest needs the CRM's .ics to see it
+	if event.flags.google_sync_failed:
+		return False
 	return any(p.email == booking.guest_email for p in event.get("event_participants") or [])
 
 
@@ -901,6 +904,7 @@ def save_event(event, values: dict):
 		frappe.db.rollback(save_point="crm_booking_event_save")
 		frappe.log_error(title=f"CRM Booking: Google sync failed for {event.name}")
 		event.db_set(values)
+		event.flags.google_sync_failed = True
 
 
 def meeting_link(page, event) -> str:
