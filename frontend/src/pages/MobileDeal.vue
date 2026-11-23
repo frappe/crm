@@ -183,27 +183,11 @@
                             </div>
                           </div>
                         </template>
-<<<<<<< HEAD
-                        <div
-                          class="flex flex-col gap-1.5 text-base text-ink-gray-8"
-                        >
-                          <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
-                            <Email2Icon class="h-4 w-4" />
-                            {{ contact.email }}
-                          </div>
-                          <div class="flex items-center gap-3 p-1 py-1.5">
-                            <PhoneIcon class="h-4 w-4" />
-                            {{ contact.mobile_no }}
-                          </div>
-                        </div>
-                      </Section>
-=======
                         <DealContactDetails
                           :contact="contact"
                           :reload="reloadContactDetails"
                         />
-                      </CollapsibleSection>
->>>>>>> a35fa9c (feat: edit contact email and mobile from the deal side panel)
+                      </Section>
                     </div>
                     <div
                       v-if="i != section.contacts.length - 1"
