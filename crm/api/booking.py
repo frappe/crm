@@ -394,8 +394,8 @@ def booking_form(page):
 
 def clean_form_values(page, values: dict) -> tuple[dict, dict]:
 	"""The visitor's answers to the page's form, as field values for the lead or deal,
-	and as label → answer (name and contact details left out) for the meeting
-	description and emails.
+	and as label → answer (name and contact details left out) for the booking
+	and its emails.
 
 	Only the form's own fields are taken, and only those the form shows for these
 	answers. Required fields, including "required if" ones, are enforced here with
@@ -805,21 +805,20 @@ def create_event(page, booking, values: dict | None = None):
 				"event_type": "Private",
 				"starts_on": booking.starts_on,
 				"ends_on": booking.ends_on,
-				"description": event_description(booking),
+				# answers stay on the booking, since Google mails the description to every attendee
+				"description": page.description or "",
 				"location": page.location if page.location_type in ("In person", "Custom link") else "",
 			}
 		)
 		if booking.reference_doctype:
 			event.reference_doctype = booking.reference_doctype
 			event.reference_docname = booking.reference_docname
+		event.set("event_participants", guest_attendee(booking))
 		return event
 
 	calendar = frappe.db.get_value(
 		"Google Calendar", {"user": booking.host, "enable": 1, "push_to_google_calendar": 1}, "name"
 	)
-	# The guest is never a participant: Google and the CRM's reminders would mail them the
-	# description, which holds their own answers, and a typed CRM user's address would put
-	# the meeting on that user's calendar. The guest gets the CRM's .ics instead.
 	event = build()
 	if calendar:
 		event.sync_with_google_calendar = 1
@@ -844,15 +843,23 @@ def create_event(page, booking, values: dict | None = None):
 	return event
 
 
-def event_description(booking) -> str:
-	"""Who booked, then their answers, one per line."""
-	esc = frappe.utils.escape_html
-	contact = " · ".join(esc(v) for v in (booking.guest_name, booking.guest_email, booking.guest_phone) if v)
-	lines = [f"<p>{contact}</p>"]
-	answers = frappe.parse_json(booking.answers) or {}
-	if answers:
-		lines.append("<p>" + "<br>".join(f"{esc(q)}: {esc(a)}" for q, a in answers.items()) + "</p>")
-	return "".join(lines)
+def guest_attendee(booking) -> list[dict]:
+	"""The guest as an attendee, unless the email is a user's (it would land on their calendar)."""
+	email = (booking.guest_email or "").strip()
+	if not email or frappe.db.exists("User", {"email": email}):
+		return []
+	# a participant must point at a document: the lead or deal the booking made or found
+	reference = (booking.reference_doctype, booking.reference_docname)
+	if not all(reference):
+		reference = ("CRM Booking", booking.name)
+	return [{"email": email, "reference_doctype": reference[0], "reference_docname": reference[1]}]
+
+
+def google_invites_guest(event, booking) -> bool:
+	"""Google already mails a synced meeting's attendees, so the CRM's .ics would double it."""
+	if not (event and event.get("sync_with_google_calendar") and event.get("google_calendar_event_id")):
+		return False
+	return any(p.email == booking.guest_email for p in event.get("event_participants") or [])
 
 
 @contextmanager
@@ -993,7 +1000,7 @@ def send_booking_emails(page, booking, event, action: str, to_host: bool = True)
 
 	guest_when = format_when(booking, booking.guest_timezone or page_timezone(page))
 	attachments = []
-	if action != "reminder":
+	if action != "reminder" and not google_invites_guest(event, booking):
 		attachments.append(
 			{"fname": "invite.ics", "fcontent": ics(page, booking, host_name, host_email, link, action)}
 		)
