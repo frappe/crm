@@ -43,51 +43,62 @@
           <div class="w-3/12">{{ __('Status') }}</div>
         </div>
         <div class="mx-2 h-px border-t border-outline-elevation-2" />
-        <template v-for="(page, i) in pages.data" :key="page.name">
+        <template v-for="section in sections" :key="section.key">
           <div
-            class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2"
+            v-if="sections.length > 1"
+            class="px-2 pb-1 pt-4 text-sm-medium text-ink-gray-5"
           >
-            <div
-              class="w-6/12 min-w-0 cursor-pointer"
-              @click="emit('open', page.name)"
-            >
-              <div class="truncate text-base-medium text-ink-gray-7">
-                {{ page.title }}
-              </div>
-              <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
-                {{ __('{0} min', [page.duration]) }} ·
-                {{
-                  page.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
-                }}
-                · {{ ROUTE_PREFIX }}{{ page.route }}
-              </div>
-            </div>
-            <div class="w-3/12 cursor-pointer" @click="emit('open', page.name)">
-              <MultipleAvatar
-                class="w-fit"
-                :avatars="page.hosts.map((u: string) => hostAvatar(u))"
-                size="sm"
-              />
-            </div>
-            <div class="flex w-3/12 items-center justify-between">
-              <Badge
-                :theme="page.enabled ? 'green' : 'gray'"
-                variant="outline"
-                size="md"
-                :label="page.enabled ? __('Live') : __('Off')"
-              />
-              <Dropdown
-                align="end"
-                :options="rowOptions(page)"
-                @update:open="
-                  (open: boolean) => open && (isConfirmingDelete = false)
-                "
-              >
-                <Button icon="lucide-more-horizontal" variant="ghost" />
-              </Dropdown>
-            </div>
+            {{ section.label }}
           </div>
-          <hr v-if="pages.data.length !== i + 1" class="mx-2" />
+          <template v-for="(page, i) in section.pages" :key="page.name">
+            <div
+              class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2"
+            >
+              <div
+                class="w-6/12 min-w-0 cursor-pointer"
+                @click="emit('open', page.name)"
+              >
+                <div class="truncate text-base-medium text-ink-gray-7">
+                  {{ page.title }}
+                </div>
+                <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
+                  {{ __('{0} min', [page.duration]) }} ·
+                  {{
+                    page.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
+                  }}
+                  · {{ ROUTE_PREFIX }}{{ page.route }}
+                </div>
+              </div>
+              <div
+                class="w-3/12 cursor-pointer"
+                @click="emit('open', page.name)"
+              >
+                <MultipleAvatar
+                  class="w-fit"
+                  :avatars="page.hosts.map((u: string) => hostAvatar(u))"
+                  size="sm"
+                />
+              </div>
+              <div class="flex w-3/12 items-center justify-between">
+                <Badge
+                  :theme="page.enabled ? 'green' : 'gray'"
+                  variant="outline"
+                  size="md"
+                  :label="page.enabled ? __('Live') : __('Off')"
+                />
+                <Dropdown
+                  align="end"
+                  :options="rowOptions(page)"
+                  @update:open="
+                    (open: boolean) => open && (isConfirmingDelete = false)
+                  "
+                >
+                  <Button icon="lucide-more-horizontal" variant="ghost" />
+                </Dropdown>
+              </div>
+            </div>
+            <hr v-if="section.pages.length !== i + 1" class="mx-2" />
+          </template>
         </template>
       </div>
     </div>
@@ -155,7 +166,7 @@ import {
   createResource,
   toast,
 } from 'frappe-ui'
-import { h, reactive, ref } from 'vue'
+import { computed, h, reactive, ref } from 'vue'
 import { ROUTE_PREFIX, copyPageLink, pageUrl, slugify } from './bookingPages'
 
 interface BookingPageRow {
@@ -178,6 +189,18 @@ function canChange(page: BookingPageRow) {
 }
 
 const pages = createResource({ url: 'crm.api.booking.list_pages', auto: true })
+
+// the pages you host come first, so you don't scroll past the team's to find yours
+const sections = computed(() => {
+  const me = getUser().name
+  const all: BookingPageRow[] = pages.data || []
+  const mine = all.filter((p) => p.hosts.includes(me))
+  const others = all.filter((p) => !p.hosts.includes(me))
+  return [
+    { key: 'mine', label: __('Your pages'), pages: mine },
+    { key: 'others', label: __('Other pages'), pages: others },
+  ].filter((section) => section.pages.length)
+})
 const isConfirmingDelete = ref(false)
 
 function hostAvatar(email: string) {
