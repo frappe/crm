@@ -100,7 +100,7 @@ This app is compatible with the following versions of Frappe and ERPNext:
 
 Get started with your personal or business site with a few clicks on Frappe Cloud - our official hosting service.
 <div>
-	<a href="https://frappecloud.com/crm/signup" target="_blank">
+	<a href="https://dashboard.frappe.io/dashboard/signup?product=crm" target="_blank">
 		<picture>
 			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/try-on-fc-white.png">
 			<img src="https://frappe.io/files/try-on-fc-black.png" alt="Try on Frappe Cloud" height="28" />
