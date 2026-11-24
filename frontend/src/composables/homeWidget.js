@@ -8,16 +8,42 @@ export function refreshHome() {
   homeVersion.value++
 }
 
+// What Home last showed, for this session. A new Home, like the one setup opens or one
+// visited again, starts on it and refreshes in the background instead of loading from empty.
+const lastSeen = new Map()
+
+export function remember(key, data) {
+  lastSeen.set(JSON.stringify(key), data)
+  return data
+}
+
+export function recall(key) {
+  return lastSeen.get(JSON.stringify(key))
+}
+
+export function useAskFlow() {
+  const resource = createResource({
+    url: 'crm.api.home.get_ask_flow',
+    auto: true,
+    initialData: recall(['ask-flow']),
+    onSuccess: (data) => remember(['ask-flow'], data),
+  })
+  return resource
+}
+
 export function useHomeWidget(widget, config = () => ({})) {
+  const params = () => ({
+    widget,
+    doctype: config().doctype,
+    period: config().period,
+    filters: config().filters,
+  })
   const resource = createResource({
     url: 'crm.api.home.get_widget',
-    makeParams: () => ({
-      widget,
-      doctype: config().doctype,
-      period: config().period,
-      filters: config().filters,
-    }),
+    makeParams: params,
     auto: true,
+    initialData: recall(['widget', params()]),
+    onSuccess: (data) => remember(['widget', resource.params], data),
   })
   watch(
     [
@@ -32,14 +58,13 @@ export function useHomeWidget(widget, config = () => ({})) {
 }
 
 export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
+  const params = () => ({ widget, tab: tab.value, doctype: config().doctype })
   const resource = createResource({
     url: 'crm.api.home.get_tab',
-    makeParams: () => ({
-      widget,
-      tab: tab.value,
-      doctype: config().doctype,
-    }),
+    makeParams: params,
     auto: true,
+    initialData: recall(['tab', params()]),
+    onSuccess: (data) => remember(['tab', resource.params], data),
   })
   watch([homeVersion, tab, () => config().doctype], () => resource.reload())
   return resource
@@ -49,9 +74,20 @@ export function useTabbedHomeWidget(widget, tab, config = () => ({})) {
 // The tab starts empty: the first reply names the tab the user left Home on.
 export function useBrief() {
   const { isManager } = usersStore()
-  const tab = ref(null)
-  const briefs = ref({})
-  const counts = ref({})
+  const kept = recall(['brief'])
+  const tab = ref(kept?.tab ?? null)
+  const briefs = ref({ ...kept?.briefs })
+  const counts = ref({ ...kept?.counts })
+  watch(
+    [tab, briefs, counts],
+    () =>
+      remember(['brief'], {
+        tab: tab.value,
+        briefs: { ...briefs.value },
+        counts: { ...counts.value },
+      }),
+    { deep: true },
+  )
   const brief = computed(() => briefs.value[tab.value])
   // A refresh or a doctype change makes every reply asked for before it stale.
   let generation = 0

@@ -5,6 +5,8 @@
     :tabs="[{ title, active: true }]"
     :user="{ name: user.full_name, image: user.user_image }"
     :cursor="cursor"
+    :expanded="expanded"
+    @expanded="emit('handedOver')"
   >
     <template #tab-icon>
       <CRMLogo class="size-full" />
@@ -29,7 +31,10 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 const props = defineProps({
   step: { type: String, required: true },
   state: { type: Object, required: true },
+  /** True when setup ends: the preview goes Home and grows into the page CRM opens. */
+  handingOver: { type: Boolean, default: false },
 })
+const emit = defineEmits(['handedOver'])
 
 const SITE = window.location.host
 
@@ -54,6 +59,7 @@ const REST = {
   login: '[data-slot="setup-preview-login-submit"]',
   lead: { x: 620, y: 332 },
   leads: { x: 460, y: 352 },
+  home: '[data-preview-cursor="home"]',
 }
 const CLICKS = {
   'lead>leads': { x: 72, y: 224 },
@@ -87,8 +93,34 @@ watch(target, (to) => {
 })
 onBeforeUnmount(clearTimers)
 
+// Setup opens Home, so the preview clicks Home first; Home here is built from the real page,
+// so the window grows into the same page the app then shows.
+const expanded = ref(false)
+watch(
+  () => props.handingOver,
+  (handingOver) => {
+    if (!handingOver) return
+    clearTimers()
+    const grow = () => {
+      cursor.value = null
+      expanded.value = true
+    }
+    if (reducedMotion.value || page.value === 'home') {
+      page.value = 'home'
+      return grow()
+    }
+    cursor.value = REST.home
+    later(800, () => {
+      frame.value?.click()
+      page.value = 'home'
+      later(900, grow)
+    })
+  },
+)
+
 const PATHS = {
   login: '/login',
+  home: '/crm',
   lead: `/crm/leads/${SAMPLE_LEAD.id}`,
   leads: '/crm/leads/view/list',
 }
@@ -99,6 +131,7 @@ const title = computed(
       login: __('Login'),
       lead: SAMPLE_LEAD.name,
       leads: __('Leads'),
+      home: __('Home'),
     })[page.value],
 )
 

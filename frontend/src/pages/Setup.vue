@@ -14,7 +14,7 @@
       </div>
     </template>
     <template #step="{ step, done, skip, handleBack }">
-      <div class="flex min-h-[480px] flex-col">
+      <div class="flex flex-col">
         <Transition name="step" mode="out-in">
           <KeepAlive :include="['SetupLeads', 'SetupInvite']">
             <component
@@ -39,7 +39,13 @@
       />
     </template>
     <template #preview="{ step }">
-      <SetupPreview class="h-full" :step="step.name" :state="previewState" />
+      <SetupPreview
+        class="h-full"
+        :step="step.name"
+        :state="previewState"
+        :handing-over="handingOver"
+        @handed-over="openHome"
+      />
     </template>
   </SetupFlow>
 </template>
@@ -51,7 +57,7 @@ import SetupPassword from '@/components/Setup/SetupPassword.vue'
 import SetupEmail from '@/components/Setup/SetupEmail.vue'
 import SetupLeads from '@/components/Setup/SetupLeads.vue'
 import SetupInvite from '@/components/Setup/SetupInvite.vue'
-import { setupFeedback } from '@/composables/modals'
+import { preloadLayout } from '@/components/Layouts/layouts'
 import { call, usePageMeta } from 'frappe-ui'
 import { SetupFlow, TelemetryConsent } from '@framework/ui/components/SetupFlow'
 import { markRaw, provide, reactive, ref } from 'vue'
@@ -111,13 +117,24 @@ function bindBack(view, handleBack) {
   )
 }
 
-async function finishSetup({ skipped, completed, skippedSteps }) {
-  setupFeedback.value = {
-    skipped_setup: skipped,
-    completed_steps: completed,
-    skipped_steps: skippedSteps,
-  }
+// From lg up the preview goes Home and grows to fill the screen before Home opens, so setup
+// ends without a cut. Below lg the preview is hidden, so Home opens at once.
+const handingOver = ref(false)
+let shellReady = Promise.resolve()
+
+async function finishSetup() {
   await markSetupDone()
+  if (!window.matchMedia?.('(min-width: 1024px)').matches) return openHome()
+  // Home and the app shell load while the preview grows, so the switch shows no blank frame.
+  shellReady = Promise.all([
+    preloadLayout(window.innerWidth),
+    import('@/pages/Home.vue'),
+  ]).catch(() => {})
+  handingOver.value = true
+}
+
+async function openHome() {
+  await shellReady
   router.replace({ name: 'Home' })
 }
 
