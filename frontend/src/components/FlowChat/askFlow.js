@@ -29,6 +29,7 @@ export const askFlow = reactive({
   replies: [],
   multiSelect: false,
   rating: null,
+  approval: null, // { seq, calls, answers } while a run waits on the user
   context: null,
   useContext: true,
 })
@@ -55,6 +56,7 @@ const EMPTY_CHAT = {
   seconds: 0,
   replies: [],
   rating: null,
+  approval: null,
   context: null,
   useContext: true,
 }
@@ -152,6 +154,47 @@ export function retry() {
   // the failed turn is not kept among the earlier ones
   Object.assign(askFlow, { status: 'idle', answer: '' })
   return ask(question, { followUp: Boolean(askFlow.session) })
+}
+
+/**
+ * Answers one call of the waiting batch with "Approve", "Deny" or what to change, as
+ * Flow's panel does. A deny stops the run, so it denies the calls still undecided. The
+ * batch goes to Flow once every call has an answer.
+ */
+export async function answerApproval(callId, answer) {
+  const approval = askFlow.approval
+  if (!approval) return
+  approval.answers[callId] = answer
+  if (answer === 'Deny') {
+    for (const call of approval.calls)
+      if (!(call.id in approval.answers)) approval.answers[call.id] = 'Deny'
+  }
+  if (approval.calls.some((call) => !(call.id in approval.answers))) return
+  await sendApproval(approval)
+}
+
+export function approveAll() {
+  const approval = askFlow.approval
+  if (!approval) return
+  for (const call of approval.calls)
+    if (!(call.id in approval.answers)) approval.answers[call.id] = 'Approve'
+  return sendApproval(approval)
+}
+
+async function sendApproval(approval) {
+  Object.assign(askFlow, { status: 'working', label: __('Working') })
+  try {
+    await call('frappe.flow.api.resume', {
+      session: askFlow.session,
+      answers: { ...approval.answers },
+      approval_seq: approval.seq,
+    })
+  } catch (error) {
+    // the batch reopens, as Flow's panel does after a failed resume
+    approval.answers = {}
+    Object.assign(askFlow, { status: 'needs_you', label: '' })
+    throw error
+  }
 }
 
 /** Rates the chat's latest run as Flow's own thumbs do; "None" clears the rating. */

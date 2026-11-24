@@ -19,11 +19,13 @@ export function questionText(content) {
 export function foldFlowEvent(state, turn, event) {
   switch (event.type) {
     case 'run_started':
+      // a new run takes the batch it was resumed with
       Object.assign(state, {
         status: 'working',
         label: __('Working'),
         error: '',
         startedAt: event.ts || 0,
+        approval: null,
       })
       break
     case 'user_message':
@@ -46,8 +48,14 @@ export function foldFlowEvent(state, turn, event) {
       state.label = toolLabel(event)
       break
     case 'approval_required':
-      state.status = 'needs_you'
-      state.label = ''
+      Object.assign(state, {
+        status: 'needs_you',
+        label: '',
+        approval: { seq: event.seq, calls: event.calls || [], answers: {} },
+      })
+      break
+    case 'tool_result':
+      dropAnsweredCall(state, event.tool_call_id)
       break
     case 'run_error':
       Object.assign(state, { status: 'error', error: event.message, label: '' })
@@ -88,8 +96,16 @@ function commitAssistantText(state, turn, event) {
   state.label = ''
 }
 
+// A call answered elsewhere (Flow's panel, a cancel) leaves the batch.
+function dropAnsweredCall(state, callId) {
+  if (!state.approval) return
+  const calls = state.approval.calls.filter((call) => call.id !== callId)
+  state.approval = calls.length ? { ...state.approval, calls } : null
+}
+
 function endRun(state, { reason, ts }) {
   state.label = ''
+  if (reason !== 'paused') state.approval = null
   if (ts && state.startedAt)
     state.seconds = Math.max(1, Math.round(ts - state.startedAt))
   if (reason === 'paused') state.status = 'needs_you'
