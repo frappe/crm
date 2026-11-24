@@ -88,7 +88,7 @@
                         "
                         @blur="
                           slugify(doc.route) !== doc.route &&
-                          set('route', slugify(doc.route))
+                            set('route', slugify(doc.route))
                         "
                       />
                     </div>
@@ -424,7 +424,7 @@
                                     variant="solid"
                                     :label="__('Apply')"
                                     :disabled="!copyTargets.length"
-                                    @click="(copyTimes(day), close())"
+                                    @click="copyTimes(day), close()"
                                   />
                                 </div>
                               </template>
