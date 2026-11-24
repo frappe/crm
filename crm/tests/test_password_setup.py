@@ -1,14 +1,11 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-from unittest.mock import patch
-
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import sha256_hash
 from frappe.utils.password import update_password
 
-from crm.api.user import has_password, needs_password_setup, set_password
 from crm.www.crm import get_context, redirect_to_set_password
 
 STRONG_PASSWORD = "Qx7#mLp2vT9!"
@@ -49,40 +46,6 @@ class TestPasswordSetup(IntegrationTestCase):
 		self.user.append("social_logins", {"provider": "google", "userid": "1234567890"})
 		self.user.save(ignore_permissions=True)
 		frappe.set_user(self.user.name)
-
-	# ---- needs_password_setup ----
-
-	def test_needs_setup_for_user_without_password(self):
-		self.assertTrue(needs_password_setup())
-
-	def test_does_not_need_setup_once_password_exists(self):
-		update_password(user=self.user.name, pwd=STRONG_PASSWORD)
-
-		self.assertTrue(has_password(self.user.name))
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_for_sso_user(self):
-		"""No password is the correct state for someone who signs in via SSO."""
-		self.make_sso_user()
-
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_for_ldap_user(self):
-		frappe.db.set_single_value("LDAP Settings", "enabled", 1)
-
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_when_password_login_is_disabled(self):
-		# not change_settings: it saves the doc, and validating System Settings
-		# fails on a bare site that has no language or time zone set
-		frappe.db.set_single_value("System Settings", "disable_user_pass_login", 1)
-		frappe.local.system_settings = None
-
-		self.assertFalse(needs_password_setup())
-
-	def test_needs_setup_on_frappe_cloud_v2(self):
-		with patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}):
-			self.assertTrue(needs_password_setup())
 
 	# ---- redirect ----
 
@@ -142,26 +105,3 @@ class TestPasswordSetup(IntegrationTestCase):
 
 		with self.assertRaises(frappe.Redirect):
 			redirect_to_set_password()
-
-	def test_set_password_from_guided_setup(self):
-		set_password(STRONG_PASSWORD)
-
-		self.assertTrue(has_password(self.user.name))
-		self.assertFalse(needs_password_setup())
-
-	def test_set_password_rejects_weak_password(self):
-		frappe.db.set_single_value(
-			"System Settings", {"enable_password_policy": 1, "minimum_password_score": 2}
-		)
-		frappe.local.system_settings = None
-
-		with self.assertRaises(frappe.ValidationError):
-			set_password("abc")
-
-		self.assertFalse(has_password(self.user.name))
-
-	def test_set_password_refuses_user_who_has_a_password(self):
-		update_password(user=self.user.name, pwd=STRONG_PASSWORD)
-
-		with self.assertRaises(frappe.PermissionError):
-			set_password("An0ther#Strong!")

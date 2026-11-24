@@ -463,7 +463,7 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
-on_session_creation = ["crm.api.onboarding.complete_setup_for_fc_site"]
+setup_wizard_auto_complete = True
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",

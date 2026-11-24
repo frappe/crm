@@ -82,7 +82,7 @@ function back() {
   return true
 }
 
-defineExpose({ back })
+defineExpose({ back, canGoBack: importing })
 
 const options = [
   {
