@@ -448,6 +448,169 @@ class TestBooking(IntegrationTestCase):
 		self.page.location = "javascript:alert(1)"
 		with self.assertRaises(frappe.ValidationError):
 			self.page.save()
+		self.page.location = "https://meet.example/team"
+		self.page.hosts[0].meeting_link = "javascript:alert(1)"
+		with self.assertRaises(frappe.ValidationError):
+			self.page.save()
+
+	def test_each_host_gets_their_own_link_at_the_same_time(self):
+		page = self.make_page(HOSTS, location_type="Phone call")
+
+		def save_links(*links):
+			doc = frappe.get_doc("CRM Booking Page", page.name)
+			doc.location_type = "Custom link"
+			for host, link in zip(doc.hosts, links, strict=True):
+				host.meeting_link = link
+			doc.save()
+			return doc
+
+		# with more than one host, a missing or shared link would put two meetings in one room
+		with self.assertRaises(frappe.ValidationError):
+			save_links("https://meet.example/first", "")
+		with self.assertRaises(frappe.ValidationError):
+			save_links("https://meet.example/first", "https://meet.example/first/")
+		page = save_links("https://meet.example/first", "https://meet.example/second")
+
+		first = self.book_as_guest(self.at(9), "a@example.com", page)
+		second = self.book_as_guest(self.at(9), "b@example.com", page)
+		links = {
+			frappe.db.get_value("CRM Booking", {"token": r["token"]}, "host"): r["meeting_link"]
+			for r in (first, second)
+		}
+		self.assertEqual(
+			links, {HOSTS[0]: "https://meet.example/first", HOSTS[1]: "https://meet.example/second"}
+		)
+		event = frappe.db.get_value("CRM Booking", {"token": first["token"]}, "event")
+		self.assertEqual(frappe.db.get_value("Event", event, "location"), "https://meet.example/first")
+
+	def test_a_page_from_before_host_links_still_saves(self):
+		page = self.make_page(HOSTS, location_type="Phone call")
+		# as saved before host links existed: one shared custom link
+		frappe.db.set_value(
+			"CRM Booking Page",
+			page.name,
+			{"location_type": "Custom link", "location": "https://meet.example/team"},
+		)
+		page = frappe.get_doc("CRM Booking Page", page.name)
+		page.description = "Meet the team"
+		page.save()
+		page.hosts[0].meeting_link = "https://meet.example/first"
+		with self.assertRaises(frappe.ValidationError):
+			page.save()
+
+	def test_a_shared_link_is_never_in_two_meetings_at_once(self):
+		page = self.make_page(HOSTS, location_type="Phone call")
+		# a page saved before host links existed: both hosts fall back to one link
+		frappe.db.set_value(
+			"CRM Booking Page",
+			page.name,
+			{"location_type": "Custom link", "location": "https://meet.example/team"},
+		)
+		page = frappe.get_doc("CRM Booking Page", page.name)
+		self.book_as_guest(self.at(9), "a@example.com", page)
+		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday(page))
+		with self.assertRaises(SlotUnavailableError):
+			self.book_as_guest(self.at(9), "b@example.com", page)
+
+	def test_a_booking_keeps_its_link_when_the_host_link_changes(self):
+		from crm.api.booking import get_booking
+
+		page = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), page=page)["token"]
+		page.hosts[0].meeting_link = "https://meet.example/new"
+		page.save()
+		self.assertEqual(get_booking(token)["meeting_link"], "https://meet.example/old")
+
+	def custom_link_page(self, host, link):
+		page = self.make_page([host], location_type="Phone call")
+		page.location_type = "Custom link"
+		page.hosts[0].meeting_link = link
+		page.save()
+		return page
+
+	def test_two_pages_never_share_a_link_at_the_same_time(self):
+		first = self.custom_link_page(HOSTS[0], "https://meet.example/room")
+		second = self.custom_link_page(HOSTS[1], "https://meet.example/room/")
+		self.book_as_guest(self.at(9), "a@example.com", first)
+		with self.assertRaises(SlotUnavailableError):
+			self.book_as_guest(self.at(9), "b@example.com", second)
+
+	def test_a_moved_booking_checks_the_link_it_was_booked_with(self):
+		first = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), "a@example.com", first)["token"]
+		first.hosts[0].meeting_link = "https://meet.example/new"
+		first.save()
+		second = self.custom_link_page(HOSTS[1], "https://meet.example/old")
+		self.book_as_guest(self.at(10), "b@example.com", second)
+		frappe.set_user("Guest")
+		try:
+			with self.assertRaises(SlotUnavailableError):
+				reschedule_booking(token, to_iso(self.at(10)))
+		finally:
+			frappe.set_user("Administrator")
+
+	def test_a_booking_keeps_its_link_when_the_page_location_changes(self):
+		from crm.api.booking import get_booking
+
+		page = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), page=page)["token"]
+		page.location_type = "Phone call"
+		page.save()
+		self.assertEqual(get_booking(token)["meeting_link"], "https://meet.example/old")
+
+	def test_a_moved_booking_checks_its_link_after_the_page_location_changes(self):
+		first = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), "a@example.com", first)["token"]
+		first.location_type = "Phone call"
+		first.save()
+		second = self.custom_link_page(HOSTS[1], "https://meet.example/old")
+		self.book_as_guest(self.at(10), "b@example.com", second)
+		frappe.set_user("Guest")
+		try:
+			with self.assertRaises(SlotUnavailableError):
+				reschedule_booking(token, to_iso(self.at(10)))
+		finally:
+			frappe.set_user("Administrator")
+
+	def test_an_in_person_address_is_not_a_meeting_link(self):
+		in_person = self.make_page([HOSTS[0]], location_type="Phone call")
+		in_person.location_type = "In person"
+		in_person.location = "https://maps.example/office"
+		in_person.save()
+		result = self.book_as_guest(self.at(9), "a@example.com", in_person)
+		self.assertEqual(result["meeting_link"], "")
+		self.assertFalse(frappe.db.get_value("CRM Booking", {"token": result["token"]}, "meeting_link"))
+		# a custom-link page using the same text isn't blocked by the in-person meeting
+		custom = self.custom_link_page(HOSTS[1], "https://maps.example/office")
+		self.book_as_guest(self.at(9), "b@example.com", custom)
+
+	def test_bookings_lock_their_meeting_link(self):
+		from crm.api import booking as booking_api
+
+		page = self.custom_link_page(HOSTS[0], "https://meet.example/room/")
+		locked = []
+		real_lock_hosts = booking_api.lock_hosts
+
+		def record(names):
+			locked.append(set(names))
+			real_lock_hosts(names)
+
+		with patch.object(booking_api, "lock_hosts", record):
+			token = self.book_as_guest(self.at(9), page=page)["token"]
+			frappe.set_user("Guest")
+			try:
+				reschedule_booking(token, to_iso(self.at(10)))
+			finally:
+				frappe.set_user("Administrator")
+		self.assertEqual(len(locked), 2)
+		for names in locked:
+			self.assertIn("link:https://meet.example/room", names)
+
+	def test_a_single_host_uses_the_page_link(self):
+		self.page.location_type = "Custom link"
+		self.page.location = "https://meet.example/team"
+		self.page.save()
+		self.assertEqual(self.book_as_guest(self.at(9))["meeting_link"], "https://meet.example/team")
 
 	def test_visitor_text_in_titles_and_invites_stays_harmless(self):
 		from crm.api.booking import ics, plain

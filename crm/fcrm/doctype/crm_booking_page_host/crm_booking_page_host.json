@@ -6,7 +6,8 @@
  "engine": "InnoDB",
  "field_order": [
   "user",
-  "full_name"
+  "full_name",
+  "meeting_link"
  ],
  "fields": [
   {
@@ -24,11 +25,17 @@
    "fetch_from": "user.full_name",
    "read_only": 1,
    "in_list_view": 1
+  },
+  {
+   "fieldname": "meeting_link",
+   "fieldtype": "Data",
+   "label": "Meeting Link",
+   "description": "Used instead of the page's link when the location is a custom link"
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-03 12:00:00.000000",
+ "modified": "2026-11-24 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Booking Page Host",

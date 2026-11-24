@@ -53,9 +53,31 @@ class CRMBookingPage(Document):
 				frappe.throw(_("{0} can't host bookings: they aren't a CRM user").format(host))
 
 	def validate_location(self):
-		if self.location_type == "Custom link" and self.location:
-			if not re.match(r"^https?://", self.location.strip(), re.IGNORECASE):
+		if self.location_type != "Custom link":
+			return
+		links = [self.location, *(h.meeting_link for h in self.hosts)]
+		for link in [link for link in links if link]:
+			if not re.match(r"^https?://", link.strip(), re.IGNORECASE):
 				frappe.throw(_("The meeting link must start with https:// or http://"))
+		if len(self.hosts) > 1 and self.hosts_changed():
+			self.validate_host_links()
+
+	def hosts_changed(self) -> bool:
+		"""Pages saved before host links existed keep saving until their hosts or location change."""
+		before = self.get_doc_before_save()
+		return not before or host_links(before) != host_links(self)
+
+	def validate_host_links(self):
+		"""Hosts sharing a link would meet guests booked at the same time in one room."""
+		seen = {}
+		for host in self.hosts:
+			name = host.full_name or host.user
+			link = (host.meeting_link or "").strip().rstrip("/")
+			if not link:
+				frappe.throw(_("Add a meeting link for {0}").format(name))
+			if link in seen:
+				frappe.throw(_("{0} and {1} have the same meeting link").format(seen[link], name))
+			seen[link] = name
 
 	def validate_hours(self):
 		by_day = {}
@@ -104,6 +126,10 @@ class CRMBookingPage(Document):
 		# the page's own form goes with it (bookings block deleting a page that has any)
 		if self.web_form and frappe.db.exists("Web Form", self.web_form) and is_own_form(self.web_form):
 			frappe.delete_doc("Web Form", self.web_form, ignore_permissions=True, force=True)
+
+
+def host_links(page) -> tuple:
+	return page.location_type, page.location or "", [(h.user, h.meeting_link or "") for h in page.hosts]
 
 
 def is_page_manager(user: str | None = None) -> bool:

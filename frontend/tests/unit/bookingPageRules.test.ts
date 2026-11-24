@@ -4,6 +4,7 @@ import {
   embedSnippet,
   endTimeOptions,
   googleConnectHref,
+  hostLinkErrors,
   hoursErrors,
   hoursFor,
   invalidEmbeddingDomains,
@@ -165,5 +166,22 @@ describe('connecting Google Calendar', () => {
     expect(params.get('calendar_name')).toBe('Sarah Chen')
     expect(params.get('push_to_google_calendar')).toBe('1')
     expect(params.get('pull_from_google_calendar')).toBe('1')
+  })
+})
+
+describe('hostLinkErrors', () => {
+  it('needs a web link for every host, each one different', () => {
+    const hosts = [
+      { user: 'a', meeting_link: 'https://meet.example/a' },
+      { user: 'b', meeting_link: '' },
+      { user: 'c', meeting_link: 'meet.example/c' },
+      { user: 'd', meeting_link: 'https://meet.example/a/' },
+      { user: 'e', meeting_link: 'https://meet.example/e' },
+    ]
+    expect(hostLinkErrors(hosts)).toEqual([
+      'Add a meeting link for b',
+      "c's link must start with https:// or http://",
+      'a and d have the same meeting link',
+    ])
   })
 })
