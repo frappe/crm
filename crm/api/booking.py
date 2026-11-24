@@ -288,11 +288,10 @@ def public_page(page) -> dict:
 		"timezone": page_timezone(page),
 		"max_days_ahead": cint(page.max_days_ahead) or 30,
 		"brand": public_brand(),
+		# names only: the page shows the business's brand, not the hosts' photos
 		"hosts": [
-			{"full_name": u.full_name, "image": public_file_url(u.user_image)}
-			for u in frappe.get_all(
-				"User", filters={"name": ["in", hosts]}, fields=["full_name", "user_image"]
-			)
+			{"full_name": u.full_name}
+			for u in frappe.get_all("User", filters={"name": ["in", hosts]}, fields=["full_name"])
 		],
 		"confirmation_message": page.confirmation_message or "",
 	}

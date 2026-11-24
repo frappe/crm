@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  carryPageLink,
   copyHours,
   embedSnippet,
   endTimeOptions,
@@ -183,5 +184,42 @@ describe('hostLinkErrors', () => {
       "c's link must start with https:// or http://",
       'a and d have the same meeting link',
     ])
+  })
+
+  it('can leave empty links until Save', () => {
+    const hosts = [
+      { user: 'a', meeting_link: 'https://meet.example/a' },
+      { user: 'b' },
+      { user: 'c', meeting_link: 'meet.example/c' },
+    ]
+    expect(hostLinkErrors(hosts, undefined, { missing: false })).toEqual([
+      "c's link must start with https:// or http://",
+    ])
+  })
+})
+
+describe('carryPageLink', () => {
+  it("moves the page's link to the first host without one", () => {
+    const hosts = [
+      { user: 'a', meeting_link: 'https://meet.example/a' },
+      { user: 'b' },
+      { user: 'c' },
+    ]
+    carryPageLink(hosts, ' https://meet.example/team ')
+    expect(hosts.map((h) => h.meeting_link)).toEqual([
+      'https://meet.example/a',
+      'https://meet.example/team',
+      undefined,
+    ])
+  })
+
+  it('leaves hosts alone when a host has the link already or none is set', () => {
+    const hosts = [
+      { user: 'a', meeting_link: 'https://meet.example/a' },
+      { user: 'b' },
+    ]
+    carryPageLink(hosts, 'https://meet.example/a')
+    carryPageLink(hosts, '')
+    expect(hosts[1].meeting_link).toBeUndefined()
   })
 })

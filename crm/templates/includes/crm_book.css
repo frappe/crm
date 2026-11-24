@@ -19,13 +19,6 @@
       .card.narrow .about { display: none; }
       .brand-logo { display: block; height: 28px; max-width: 160px; object-fit: contain; margin-bottom: 16px; }
       .brand-logo[hidden] { display: none; }
-      .hosts { display: flex; margin-bottom: 14px; }
-      .avatar {
-        width: 36px; height: 36px; border-radius: 999px; background: var(--field); color: var(--muted);
-        display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;
-        border: 2px solid var(--card); margin-right: -8px; overflow: hidden;
-      }
-      .avatar img { width: 100%; height: 100%; object-fit: cover; }
       .host-names { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
       .meta { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); margin-bottom: 8px; }
       .meta svg { width: 16px; height: 16px; flex-shrink: 0; }

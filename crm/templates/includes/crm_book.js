@@ -70,28 +70,6 @@ or cancelling. Rendered with the page, so its Jinja (strings, PAGE) still applie
             logo.onerror = () => (logo.hidden = true);
             logo.hidden = false;
           }
-          const avatars = $("host-avatars");
-          PAGE.hosts.slice(0, 4).forEach((h) => {
-            // with a brand logo shown, a host without a photo needs no initial bubble
-            if (!h.image && brand.logo) return;
-            const el = document.createElement("div");
-            el.className = "avatar";
-            if (h.image) {
-              const img = document.createElement("img");
-              img.src = h.image;
-              img.alt = "";
-              // a photo that won't load falls back to the initial, never a broken image
-              img.onerror = () => {
-                if (brand.logo) return el.remove();
-                img.remove();
-                el.textContent = (h.full_name || "?").charAt(0).toUpperCase();
-              };
-              el.appendChild(img);
-            } else {
-              el.textContent = (h.full_name || "?").charAt(0).toUpperCase();
-            }
-            avatars.appendChild(el);
-          });
           $("host-names").textContent = PAGE.hosts.length === 1 ? PAGE.hosts[0].full_name : "";
         }
 
