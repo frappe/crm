@@ -1236,12 +1236,12 @@ async function save() {
         order(a.workday) - order(b.workday) ||
         hhmm(a.start_time).localeCompare(hhmm(b.start_time)),
     )
-    // a one-host page's link is its host's; older multi-host pages keep their shared fallback
+    // once every host has a link, drop the shared one so no host falls back to another's room
     if (
       doc.value.location_type === 'Custom link' &&
-      doc.value.hosts.length === 1
+      doc.value.hosts.every((h) => String(h.meeting_link || '').trim())
     )
-      doc.value.location = String(doc.value.hosts[0].meeting_link || '').trim()
+      doc.value.location = ''
     doc.value = await call('frappe.client.save', { doc: doc.value })
     savedRoute.value = doc.value?.route || ''
     savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
