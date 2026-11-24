@@ -55,8 +55,8 @@ jobs:
                   restore-keys: |
                       node-modules-${{ runner.os }}-node24-arc-
 
-            # No whatsapp clone: CRM must build without the optional app, and the
-            # builds and UI tests workflows cover the build with it.
+            # No whatsapp checkout beside CRM: the build uses the pinned release in
+            # frontend/whatsapp-ui.js, as the prebuilt assets do.
 
             - name: Install dependencies
               run: cd frontend && yarn install --frozen-lockfile

@@ -6,9 +6,10 @@ export default {
     './index.html',
     './src/**/*.{vue,js,ts,jsx,tsx}',
     ...frappeUIContent,
-    // linked @whatsapp/ui source — its icons are `lucide-*` utility classes, and an
-    // unscanned linked package fails silently: no error, every icon renders as blank space
+    // @whatsapp/ui source, beside CRM or the pinned release whatsapp-ui.js clones — its icons
+    // are `lucide-*` utility classes, and unscanned source fails silently as blank icons
     '../../whatsapp/ui/src/**/*.{vue,js,ts,jsx,tsx}',
+    './.cache/whatsapp/*/ui/src/**/*.{vue,js,ts,jsx,tsx}',
     // linked @framework/ui source, for the Grid and Link the account form uses
     '../../frappe/ui/src/**/*.{vue,js,ts,jsx,tsx}',
   ],
