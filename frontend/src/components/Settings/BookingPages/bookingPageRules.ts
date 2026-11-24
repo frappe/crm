@@ -225,11 +225,9 @@ export function hostLinkErrors<T extends HostRow>(
   return errors
 }
 
-// Pages from before host links kept one link for the page; it belongs to a host's row now.
+// A one-host page's own link shows in its host row; older multi-host pages keep sharing theirs.
 export function carryPageLink(hosts: HostRow[], pageLink?: string): void {
   const link = String(pageLink || '').trim()
-  if (!link || hosts.some((h) => String(h.meeting_link || '').trim() === link))
-    return
-  const host = hosts.find((h) => !String(h.meeting_link || '').trim())
-  if (host) host.meeting_link = link
+  if (link && hosts.length === 1 && !String(hosts[0].meeting_link || '').trim())
+    hosts[0].meeting_link = link
 }
