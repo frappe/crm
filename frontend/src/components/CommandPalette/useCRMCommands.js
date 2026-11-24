@@ -17,6 +17,7 @@ import {
 import { getNavigationItems } from '@/utils/navigation'
 import { activityHashFor } from '@/utils/activityHash'
 import { activityCommand } from './activityCommands'
+import { askFlowCommands } from './askFlowCommands'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -109,6 +110,7 @@ export function useCRMCommands() {
     isManager,
     whatsappInstalled: isWhatsAppInstalled,
     state,
+    route: useRoute(),
   }
   setCommandPaletteProvider(() => buildCommands(context))
   installWatchers(context)
@@ -146,6 +148,9 @@ function buildCommands(context) {
     ...state.activity.value.map((hit) =>
       tracked(activityCommand(hit, openActivity), 'activity'),
     ),
+    ...askFlowCommands(commandPaletteQuery.value, context.route).map(
+      (command) => tracked(command, 'ask-flow'),
+    ),
   ])
 }
 
@@ -170,7 +175,7 @@ function trackWith(capture) {
 }
 
 function installWatchers(context) {
-  const route = useRoute()
+  const { route } = context
   watch(commandPaletteOpen, (open) => onVisibility(open, context))
   watch(commandPaletteQuery, (query) => scheduleSearch(query, context))
   watch(route, () => rememberRoute(route, context.user), { immediate: true })
