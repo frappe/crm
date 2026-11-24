@@ -46,7 +46,7 @@
         v-else
         class="h-full min-h-[480px] overflow-hidden rounded-4 border border-outline-gray-2"
       >
-        <WorkflowFlow :nodes="nodes" :edges="edges" readonly />
+        <AutomationCanvas :nodes="nodes" :edges="edges" readonly />
       </div>
     </template>
   </SettingsLayoutBase>
@@ -54,9 +54,12 @@
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
-import WorkflowFlow from './WorkflowFlow.vue'
-import { workflowEdges, workflowNodes } from './workflowGraph'
-import { toTree } from './workflowSteps'
+import { AutomationCanvas } from '@framework/ui/components/AutomationCanvas'
+import {
+  automationEdges,
+  automationNodes,
+  automationTree,
+} from '@framework/ui/components/AutomationBuilder'
 import { Badge, Button, LoadingIndicator, call } from 'frappe-ui'
 import { computed, reactive, ref, watch } from 'vue'
 
@@ -69,10 +72,10 @@ defineEmits(['edit', 'back'])
 const loading = ref(false)
 const doc = reactive({})
 
-const tree = computed(() => toTree(doc.actions || []))
+const tree = computed(() => automationTree(doc.actions || []))
 const graphDoc = computed(() => ({ ...doc, actions: tree.value }))
-const nodes = computed(() => workflowNodes(graphDoc.value))
-const edges = computed(() => workflowEdges(tree.value))
+const nodes = computed(() => automationNodes(graphDoc.value))
+const edges = computed(() => automationEdges(tree.value))
 
 watch(() => props.automationName, load, { immediate: true })
 
