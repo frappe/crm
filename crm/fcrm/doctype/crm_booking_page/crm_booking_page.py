@@ -55,12 +55,16 @@ class CRMBookingPage(Document):
 	def validate_location(self):
 		if self.location_type != "Custom link":
 			return
-		links = [self.location, *(h.meeting_link for h in self.hosts)]
-		for link in [link for link in links if link]:
-			if not re.match(r"^https?://", link.strip(), re.IGNORECASE):
+		for link in [h.meeting_link for h in self.hosts if h.meeting_link]:
+			if not is_web_link(link):
 				frappe.throw(_("The meeting link must start with https:// or http://"))
-		if len(self.hosts) > 1 and self.hosts_changed():
+		if not self.hosts_changed():
+			return
+		if len(self.hosts) > 1:
 			self.validate_host_links()
+		elif self.hosts and not (self.hosts[0].meeting_link or is_web_link(self.location)):
+			host = self.hosts[0]
+			frappe.throw(_("Add a meeting link for {0}").format(host.full_name or host.user))
 
 	def hosts_changed(self) -> bool:
 		"""Pages saved before host links existed keep saving until their hosts or location change."""
@@ -126,6 +130,11 @@ class CRMBookingPage(Document):
 		# the page's own form goes with it (bookings block deleting a page that has any)
 		if self.web_form and frappe.db.exists("Web Form", self.web_form) and is_own_form(self.web_form):
 			frappe.delete_doc("Web Form", self.web_form, ignore_permissions=True, force=True)
+
+
+def is_web_link(value: str | None) -> bool:
+	"""A page's location can be an address left from In person; only a web link is a meeting room."""
+	return bool(re.match(r"^https?://", (value or "").strip(), re.IGNORECASE))
 
 
 def host_links(page) -> tuple:

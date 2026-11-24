@@ -34,7 +34,7 @@
           v-if="canEdit"
           variant="solid"
           :label="__('Save')"
-          :disabled="!unsaved || hoursErrors.size > 0 || hostErrors.length > 0"
+          :disabled="!unsaved || hoursErrors.size > 0"
           :loading="saving"
           @click="save"
         />

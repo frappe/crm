@@ -8,6 +8,7 @@ from crm.api.booking import (
 	SlotUnavailableError,
 	book,
 	cancel_booking,
+	custom_link,
 	get_slots,
 	reschedule_booking,
 	to_iso,
@@ -452,6 +453,23 @@ class TestBooking(IntegrationTestCase):
 		self.page.hosts[0].meeting_link = "javascript:alert(1)"
 		with self.assertRaises(frappe.ValidationError):
 			self.page.save()
+
+	def test_a_one_host_custom_link_page_needs_a_link(self):
+		def save(location="", link=""):
+			page = frappe.get_doc("CRM Booking Page", self.page.name)
+			page.location_type, page.location, page.hosts[0].meeting_link = "Custom link", location, link
+			page.save()
+			return page
+
+		with self.assertRaises(frappe.ValidationError):
+			save()
+		# an address left from In person is kept but never used as a meeting room
+		with self.assertRaises(frappe.ValidationError):
+			save(location="12 Main Street")
+		page = save(location="12 Main Street", link="https://meet.example/a")
+		self.assertEqual(custom_link(page, HOSTS[0]), "https://meet.example/a")
+		page.hosts[0].meeting_link = ""
+		self.assertEqual(custom_link(page, HOSTS[0]), "")
 
 	def test_each_host_gets_their_own_link_at_the_same_time(self):
 		page = self.make_page(HOSTS, location_type="Phone call")
