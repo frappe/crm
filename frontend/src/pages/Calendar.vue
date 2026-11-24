@@ -111,32 +111,37 @@
               @update:modelValue="updateActiveView($event)"
             />
 
-            <Link
+            <Autocomplete
+              v-if="people.data?.length > 1"
               class="form-control"
-              :value="getUser(currentUser).full_name"
-              doctype="User"
-              :placeholder="__('John Doe')"
-              :filters="{
-                name: ['in', users.data.crmUsers?.map((user) => user.name)],
-                ignore_user_type: 1,
-              }"
-              :hideMe="true"
-              @change="(option) => updateUser(option)"
+              :modelValue="currentUser"
+              :options="peopleOptions"
+              @update:modelValue="
+                (option) => option && updateUser(option.value)
+              "
             >
               <template #prefix>
-                <UserAvatar class="mr-2 !h-4 !w-4" :user="currentUser" />
+                <span
+                  v-if="currentUser === TEAM"
+                  class="lucide-users mr-2 size-4 text-ink-gray-6"
+                  aria-hidden="true"
+                />
+                <UserAvatar v-else class="mr-2 !h-4 !w-4" :user="currentUser" />
               </template>
               <template #item-prefix="{ option }">
-                <UserAvatar class="mr-2" :user="option.value" size="sm" />
+                <span
+                  v-if="option.value === TEAM"
+                  class="lucide-users mr-2 size-4 text-ink-gray-6"
+                  aria-hidden="true"
+                />
+                <UserAvatar
+                  v-else
+                  class="mr-2"
+                  :user="option.value"
+                  size="sm"
+                />
               </template>
-              <template #item-label="{ option }">
-                <Tooltip :text="option.value">
-                  <div class="cursor-pointer text-ink-gray-9">
-                    {{ getUser(option.value).full_name }}
-                  </div>
-                </Tooltip>
-              </template>
-            </Link>
+            </Autocomplete>
           </div>
         </div>
       </template>
@@ -172,7 +177,7 @@ import CalendarEventPanel from '@/components/Calendar/CalendarEventPanel.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
-import Link from '@/components/Controls/Link.vue'
+import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { globalStore } from '@/stores/global'
@@ -183,8 +188,8 @@ import {
   dayjs,
   dayjsLocal,
   DatePicker,
-  Tooltip,
   call,
+  createResource,
   toast,
 } from 'frappe-ui'
 import {
@@ -213,7 +218,7 @@ function openBookingPages() {
 }
 const { $dialog } = globalStore()
 const { settings } = getSettings()
-const { users, getUser } = usersStore()
+const { getUser } = usersStore()
 const route = useRoute()
 
 const modeMap = {
@@ -229,6 +234,29 @@ const defaultMode = computed(() => {
 const calendar = ref(null)
 const activeRangeKey = ref('')
 const currentUser = ref(user)
+
+// picking it shows everyone in the user's sales team at once
+const TEAM = '__team__'
+
+const people = createResource({
+  url: 'crm.api.event.get_calendar_people',
+  auto: true,
+})
+
+const peopleOptions = computed(() => [
+  {
+    group: 'team',
+    hideLabel: true,
+    items: [{ label: __('My team'), value: TEAM }],
+  },
+  {
+    group: __('People'),
+    items: (people.data || []).map((name) => ({
+      label: getUser(name).full_name,
+      value: name,
+    })),
+  },
+])
 
 async function updateUser(u) {
   currentUser.value = u
@@ -255,6 +283,12 @@ function buildEventFilters(range) {
 }
 
 function buildEventOrFilters() {
+  if (currentUser.value === TEAM) {
+    return [
+      ['owner', 'in', people.data],
+      ['Event Participants', 'email', 'in', people.data],
+    ]
+  }
   return [
     ['owner', '=', currentUser.value],
     ['Event Participants', 'email', '=', currentUser.value],
@@ -381,7 +415,9 @@ function createEvent(_event) {
   const payload = { ...buildEventPayload(_event), sync_with_google_calendar: 1 }
   events.insert.submit(payload, {
     onSuccess: async (e) => {
-      await updateUser(user)
+      // the team view already shows the user's own events
+      if (currentUser.value === TEAM) await events.reload()
+      else await updateUser(user)
       toast.success(__('Event created successfully'))
       showDetails({ id: e.name })
     },

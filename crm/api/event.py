@@ -23,6 +23,8 @@ from frappe import _
 from frappe.query_builder.functions import Max
 from frappe.utils import add_to_date, cint, now_datetime
 
+from crm.fcrm.doctype.crm_dashboard.home_scope import Team
+
 
 def trigger_offset_event_notifications():
 	"""Trigger event notifications for offset-based intervals (minutes)."""
@@ -567,6 +569,13 @@ def plain_order_by(order_by: str | None) -> str | None:
 def plain_filter_field(field):
 	if not re.fullmatch(r"\w+", str(field)):
 		frappe.throw(_("Filter not allowed: {0}").format(field), frappe.PermissionError)
+
+
+@frappe.whitelist()
+def get_calendar_people() -> list[str]:
+	"""Whose calendars the user can open: their sales team, or all of sales if not limited."""
+	user = frappe.session.user
+	return sorted(set(Team(user).members) | {user})
 
 
 @frappe.whitelist(methods=["POST"])

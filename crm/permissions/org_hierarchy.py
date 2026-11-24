@@ -117,3 +117,63 @@ def team_members_query(user: str):
 		.select(Member.user)
 		.where(Mgr.user == user)
 	)
+
+
+def call_log_query_conditions(user: str | None = None):
+	"""Caller, receiver, their managers, and anyone who can read the linked lead or deal."""
+	if not user:
+		user = frappe.session.user
+
+	if user == "Administrator":
+		return ""
+
+	roles = frappe.get_roles(user)
+	if "System Manager" in roles:
+		return ""
+
+	in_tree = hierarchy_enabled() and _in_hierarchy(user)
+	if "Sales Manager" in roles and not in_tree:
+		return ""
+
+	Call = frappe.qb.DocType("CRM Call Log")
+	Link = frappe.qb.DocType("Dynamic Link").as_("_link")
+
+	people = (Call.caller == user) | (Call.receiver == user)
+	if in_tree:
+		people |= Call.caller.isin(team_members_query(user)) | Call.receiver.isin(team_members_query(user))
+
+	conditions = people
+	for doctype in _OWNER_FIELD:
+		DT = frappe.qb.DocType(doctype)
+		readable = frappe.qb.from_(DT).select(DT.name).where(permission_query_conditions(user, doctype))
+		# manual logs set the reference, telephony integrations add links
+		conditions |= (Call.reference_doctype == doctype) & Call.reference_docname.isin(readable)
+		conditions |= Call.name.isin(
+			frappe.qb.from_(Link)
+			.select(Link.parent)
+			.where(
+				(Link.parenttype == "CRM Call Log")
+				& (Link.link_doctype == doctype)
+				& Link.link_name.isin(readable)
+			)
+		)
+	return conditions
+
+
+def get_call_log_permission_query_conditions(user=None):
+	cond = call_log_query_conditions(user)
+	return cond.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'") if cond else ""
+
+
+def has_call_log_permission(doc, ptype, user):
+	if ptype == "create" or not doc.name:
+		return True
+
+	conditions = call_log_query_conditions(user)
+	if not conditions:
+		return True
+
+	Call = frappe.qb.DocType("CRM Call Log")
+	return bool(
+		frappe.qb.from_(Call).select(Call.name).where(Call.name == doc.name).where(conditions).limit(1).run()
+	)
