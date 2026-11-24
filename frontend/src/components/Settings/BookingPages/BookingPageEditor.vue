@@ -917,6 +917,7 @@ const savedHostLinks = ref('')
 const hostLinksKey = () =>
   JSON.stringify([
     doc.value?.location_type,
+    doc.value?.location || '',
     (doc.value?.hosts || []).map((h) => [h.user, h.meeting_link || '']),
   ])
 const hostErrors = computed(() =>

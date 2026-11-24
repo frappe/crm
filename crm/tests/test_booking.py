@@ -498,6 +498,32 @@ class TestBooking(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			page.save()
 
+	def test_a_shared_link_is_never_in_two_meetings_at_once(self):
+		page = self.make_page(HOSTS, location_type="Phone call")
+		# a page saved before host links existed: both hosts fall back to one link
+		frappe.db.set_value(
+			"CRM Booking Page",
+			page.name,
+			{"location_type": "Custom link", "location": "https://meet.example/team"},
+		)
+		page = frappe.get_doc("CRM Booking Page", page.name)
+		self.book_as_guest(self.at(9), "a@example.com", page)
+		self.assertNotIn(to_iso(self.at(9)), self.slots_on_monday(page))
+		with self.assertRaises(SlotUnavailableError):
+			self.book_as_guest(self.at(9), "b@example.com", page)
+
+	def test_a_booking_keeps_its_link_when_the_host_link_changes(self):
+		from crm.api.booking import get_booking
+
+		page = self.make_page([HOSTS[0]], location_type="Phone call")
+		page.location_type = "Custom link"
+		page.hosts[0].meeting_link = "https://meet.example/old"
+		page.save()
+		token = self.book_as_guest(self.at(9), page=page)["token"]
+		page.hosts[0].meeting_link = "https://meet.example/new"
+		page.save()
+		self.assertEqual(get_booking(token)["meeting_link"], "https://meet.example/old")
+
 	def test_a_single_host_uses_the_page_link(self):
 		self.page.location_type = "Custom link"
 		self.page.location = "https://meet.example/team"

@@ -565,14 +565,53 @@ def available_slots(page, start_utc, end_utc, hosts, booking=None) -> dict[datet
 	duration = timedelta(minutes=page.duration)
 	buffer = timedelta(minutes=cint(page.buffer))
 	busy = {h: busy_times(h, slots[0] - buffer, slots[-1] + duration + buffer, booking) for h in hosts}
+	booked = booked_links(page, slots[0], slots[-1] + duration, booking)
 
 	out = {}
 	for slot in slots:
 		before, after = slot - buffer, slot + duration + buffer
 		free = [h for h in hosts if not any(b_start < after and b_end > before for b_start, b_end in busy[h])]
+		if booked:
+			# a link already in use at this time would put two meetings in one room
+			taken = {link for b_start, b_end, link in booked if b_start < slot + duration and b_end > slot}
+			free = [h for h in free if link_key(custom_link(page, h)) not in taken]
 		if free:
 			out[slot] = free
 	return out
+
+
+def booked_links(page, start_utc, end_utc, booking=None) -> list[tuple[datetime, datetime, str]]:
+	"""This page's meetings in [start_utc, end_utc) with the custom link each one uses."""
+	if page.location_type != "Custom link":
+		return []
+	rows = frappe.get_all(
+		"CRM Booking",
+		filters={
+			"booking_page": page.name,
+			"status": "Confirmed",
+			"starts_on": ["<", to_system(end_utc)],
+			"ends_on": [">", to_system(start_utc)],
+			"name": ["!=", booking.name if booking else ""],
+		},
+		fields=["host", "starts_on", "ends_on", "event"],
+	)
+	events = [r.event for r in rows if r.event]
+	locations = dict(
+		frappe.get_all("Event", filters={"name": ["in", events]}, fields=["name", "location"], as_list=True)
+		if events
+		else []
+	)
+	out = []
+	for row in rows:
+		link = meeting_link(page, frappe._dict(location=locations.get(row.event)), row.host)
+		if link_key(link):
+			out.append((to_utc(row.starts_on), to_utc(row.ends_on), link_key(link)))
+	return out
+
+
+def link_key(link: str | None) -> str:
+	"""Links that open the same room, such as with and without a trailing slash, match."""
+	return (link or "").strip().rstrip("/")
 
 
 def candidate_slots(page, start_utc, end_utc):
@@ -913,7 +952,9 @@ def meeting_link(page, event, host: str | None = None) -> str:
 	if page.location_type == "Google Meet":
 		return (event and event.google_meet_link) or ""
 	if page.location_type == "Custom link":
-		return custom_link(page, host)
+		# the booked meeting keeps its link when the page's links change later
+		booked = ((event and event.location) or "").strip()
+		return booked if re.match(r"^https?://", booked, re.IGNORECASE) else custom_link(page, host)
 	return ""
 
 

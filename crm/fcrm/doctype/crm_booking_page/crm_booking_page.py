@@ -129,7 +129,7 @@ class CRMBookingPage(Document):
 
 
 def host_links(page) -> tuple:
-	return page.location_type, [(h.user, h.meeting_link or "") for h in page.hosts]
+	return page.location_type, page.location or "", [(h.user, h.meeting_link or "") for h in page.hosts]
 
 
 def is_page_manager(user: str | None = None) -> bool:
