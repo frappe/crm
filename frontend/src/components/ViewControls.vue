@@ -636,6 +636,8 @@ function getParams() {
 }
 
 let listResource
+// set by reload() when it is called while a request is in flight
+let reloadQueued = false
 
 const pageFiltersKey = Object.keys(defaultFilters.value).length
   ? [JSON.stringify(defaultFilters.value)]
@@ -735,8 +737,21 @@ function getListParams() {
   return listResource.params
 }
 
+// A reload asked for while a request is in flight (e.g. the saved views load
+// after the first list request went out without the view's filters) must not
+// be dropped, or the list stays unfiltered. Run it once the request settles.
+// frappe-ui sets loading to false after onSuccess, so wait on loading itself.
+watch(isLoading, (loading) => {
+  if (loading || !reloadQueued) return
+  reloadQueued = false
+  reload()
+})
+
 function reload() {
-  if (isLoading.value) return
+  if (isLoading.value) {
+    reloadQueued = true
+    return
+  }
   listResource.params = getParams()
   listResource.reload()
 }
