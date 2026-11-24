@@ -186,3 +186,40 @@ function escapeAttribute(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
 }
+
+export interface HostRow {
+  user?: string | number
+  meeting_link?: string | number
+}
+
+// Each host needs their own web link; a trailing slash still opens the same room.
+export function hostLinkErrors<T extends HostRow>(
+  hosts: T[],
+  nameOf: (host: T) => string = (host) => String(host.user),
+): string[] {
+  const errors: string[] = []
+  const seen = new Map<string, T>()
+  for (const host of hosts) {
+    const link = String(host.meeting_link || '').trim()
+    if (!link) {
+      errors.push(__('Add a meeting link for {0}', [nameOf(host)]))
+    } else if (!/^https?:\/\//i.test(link)) {
+      errors.push(
+        __("{0}'s link must start with https:// or http://", [nameOf(host)]),
+      )
+    } else {
+      const key = link.replace(/\/+$/, '')
+      const other = seen.get(key)
+      if (other) {
+        errors.push(
+          __('{0} and {1} have the same meeting link', [
+            nameOf(other),
+            nameOf(host),
+          ]),
+        )
+      }
+      seen.set(key, host)
+    }
+  }
+  return errors
+}

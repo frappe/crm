@@ -34,7 +34,7 @@
           v-if="canEdit"
           variant="solid"
           :label="__('Save')"
-          :disabled="!unsaved || hoursErrors.size > 0"
+          :disabled="!unsaved || hoursErrors.size > 0 || hostErrors.length > 0"
           :loading="saving"
           @click="save"
         />
@@ -88,7 +88,7 @@
                         "
                         @blur="
                           slugify(doc.route) !== doc.route &&
-                            set('route', slugify(doc.route))
+                          set('route', slugify(doc.route))
                         "
                       />
                     </div>
@@ -113,7 +113,8 @@
                   />
                   <FormControl
                     v-if="
-                      ['In person', 'Custom link'].includes(doc.location_type)
+                      doc.location_type === 'In person' ||
+                      (doc.location_type === 'Custom link' && !showHostLinks)
                     "
                     class="col-span-2"
                     :model-value="doc.location"
@@ -160,25 +161,118 @@
                 <SectionTitle
                   :title="__('Hosts')"
                   :description="
-                    __(
-                      'With more than one host, each booking goes to a free host in turn.',
-                    )
+                    showHostLinks
+                      ? __(
+                          'Each booking goes to a free host in turn, using their own meeting link.',
+                        )
+                      : __(
+                          'With more than one host, each booking goes to a free host in turn.',
+                        )
                   "
                 />
-                <MultiEmailInput
-                  :model-value="hostIds"
-                  :options="hostOptions"
-                  :validate="() => false"
-                  :placeholder="__('Add hosts')"
-                  :empty-text="__('No CRM users found')"
-                  @update:model-value="setHosts"
-                  @update:query="(q: string) => (hostQuery = q)"
-                />
-                <ErrorMessage
-                  v-if="!doc.hosts.length"
-                  class="mt-2"
-                  :message="__('Add at least one host')"
-                />
+                <div
+                  class="rounded-5 border border-outline-gray-2 px-2 text-sm"
+                >
+                  <template v-if="doc.hosts.length">
+                    <div
+                      class="grid items-center p-3 px-4 text-ink-gray-5"
+                      :class="hostGrid"
+                    >
+                      <div>{{ __('Host') }}</div>
+                      <div v-if="showHostLinks">{{ __('Meeting link') }}</div>
+                    </div>
+                    <hr class="border-outline-gray-2" />
+                  </template>
+                  <div v-for="(host, i) in doc.hosts" :key="String(host.user)">
+                    <div
+                      class="grid items-center gap-2 px-4 py-3.5"
+                      :class="hostGrid"
+                    >
+                      <div class="flex min-w-0 items-center gap-2">
+                        <Avatar
+                          size="sm"
+                          :image="getUser(String(host.user)).user_image"
+                          :label="getUser(String(host.user)).full_name"
+                        />
+                        <span class="truncate text-base text-ink-gray-8">
+                          {{ getUser(String(host.user)).full_name }}
+                        </span>
+                      </div>
+                      <input
+                        v-if="showHostLinks"
+                        type="url"
+                        class="-ml-2 h-7 w-full truncate rounded-5 border-0 bg-transparent px-2 text-base text-ink-gray-8 placeholder-ink-gray-4 hover:bg-surface-gray-3 focus:bg-surface-gray-3 focus:ring-0 focus-visible:!ring-0"
+                        :value="host.meeting_link"
+                        :placeholder="__('Add link')"
+                        @input="
+                          (e) =>
+                            setHostLink(
+                              host,
+                              (e.target as HTMLInputElement).value,
+                            )
+                        "
+                      />
+                      <div class="flex justify-end">
+                        <Dropdown
+                          align="end"
+                          :options="[
+                            {
+                              label: __('Remove'),
+                              icon: 'lucide-trash-2',
+                              onClick: () => removeHost(String(host.user)),
+                            },
+                          ]"
+                        >
+                          <Button
+                            icon="lucide-more-horizontal"
+                            variant="ghost"
+                          />
+                        </Dropdown>
+                      </div>
+                    </div>
+                    <hr
+                      v-if="i !== doc.hosts.length - 1"
+                      class="border-outline-gray-2"
+                    />
+                  </div>
+                  <div
+                    v-if="!doc.hosts.length"
+                    class="p-4 text-center text-ink-gray-5"
+                  >
+                    {{ __('No hosts yet') }}
+                  </div>
+                </div>
+                <div class="mt-2.5 flex items-center justify-between">
+                  <Combobox
+                    v-if="hostOptions.length"
+                    :model-value="null"
+                    :options="hostOptions"
+                    trigger="button"
+                    @update:model-value="addHost"
+                  >
+                    <template #trigger>
+                      <Button
+                        variant="subtle"
+                        icon-left="lucide-plus"
+                        :label="__('Add Row')"
+                      />
+                    </template>
+                    <template #item-prefix="{ item }">
+                      <Avatar
+                        size="sm"
+                        :image="item.image"
+                        :label="item.label"
+                      />
+                    </template>
+                  </Combobox>
+                  <ErrorMessage
+                    :message="
+                      doc.hosts.length
+                        ? hostErrors[0]
+                        : __('Add at least one host')
+                    "
+                  />
+                </div>
                 <!-- Google Calendar: the CRM has no connect screen yet, so point to the desk -->
                 <div
                   v-if="googleNote"
@@ -336,7 +430,7 @@
                                     variant="solid"
                                     :label="__('Apply')"
                                     :disabled="!copyTargets.length"
-                                    @click="copyTimes(day), close()"
+                                    @click="(copyTimes(day), close())"
                                   />
                                 </div>
                               </template>
@@ -670,9 +764,12 @@ import { usersStore } from '@/stores/users'
 import { copyToClipboard } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
 import {
+  Avatar,
   Badge,
   Button,
   Checkbox,
+  Combobox,
+  Dropdown,
   ErrorMessage,
   FormControl,
   LoadingIndicator,
@@ -684,7 +781,6 @@ import {
   call,
   toast,
 } from 'frappe-ui'
-import { MultiEmailInput } from 'frappe-ui/experimental'
 import {
   computed,
   defineComponent,
@@ -710,6 +806,7 @@ import {
   endTimeOptions as endTimes,
   googleConnectHref,
   hhmm,
+  hostLinkErrors,
   hoursErrors as rowErrors,
   hoursFor as dayHours,
   invalidEmbeddingDomains,
@@ -793,34 +890,52 @@ const { getUser, users, isManager } = usersStore()
 
 const doc = ref<BookingPageDoc | null>(null)
 
-const hostQuery = ref('')
-const hostIds = computed(() =>
-  (doc.value?.hosts || []).map((h) => String(h.user)),
-)
-// selected hosts stay in the options so their chips keep a name and avatar while filtering
+// CRM users who aren't hosts yet
 const hostOptions = computed(() => {
-  const q = hostQuery.value.trim().toLowerCase()
+  const hosts = new Set((doc.value?.hosts || []).map((h) => String(h.user)))
   return (users.data?.crmUsers || [])
-    .filter((u) => u.name !== 'Administrator')
-    .filter(
-      (u) =>
-        hostIds.value.includes(u.name) ||
-        u.name.toLowerCase().includes(q) ||
-        u.full_name?.toLowerCase().includes(q),
-    )
+    .filter((u) => u.name !== 'Administrator' && !hosts.has(u.name))
     .map((u) => ({
       label: u.full_name || u.name,
       value: u.name,
-      avatar: u.user_image,
+      description: u.name,
+      image: u.user_image,
     }))
 })
 
-function setHosts(ids: string[]) {
+const hostName = (host: Row) =>
+  getUser(String(host.user)).full_name || String(host.user)
+
+// a shared custom link would put meetings at the same time in one room
+const showHostLinks = computed(
+  () =>
+    doc.value?.location_type === 'Custom link' &&
+    (doc.value?.hosts.length || 0) > 1,
+)
+const hostErrors = computed(() =>
+  showHostLinks.value && doc.value
+    ? hostLinkErrors(doc.value.hosts, hostName)
+    : [],
+)
+const hostGrid = computed(() =>
+  showHostLinks.value ? 'grid-cols-[2fr_3fr_22px]' : 'grid-cols-[1fr_22px]',
+)
+
+function addHost(user: string | number | null) {
+  if (!doc.value || !canEdit.value || !user) return
+  doc.value.hosts.push({ user: String(user) })
+  dirty.value = true
+}
+
+function removeHost(user: string) {
   if (!doc.value || !canEdit.value) return
-  const existing = doc.value.hosts
-  doc.value.hosts = ids.map(
-    (id) => existing.find((h) => h.user === id) || { user: id },
-  )
+  doc.value.hosts = doc.value.hosts.filter((h) => h.user !== user)
+  dirty.value = true
+}
+
+function setHostLink(host: Row, link: string) {
+  if (!canEdit.value) return
+  host.meeting_link = link
   dirty.value = true
 }
 
@@ -863,8 +978,9 @@ const othersUnconnected = computed(() =>
         .map((u) => getUser(u)?.full_name || u)
     : [],
 )
+// only Meet links need each host's Google Calendar
 const googleNote = computed(() => {
-  if (!google.value) return ''
+  if (!google.value || doc.value?.location_type !== 'Google Meet') return ''
   if (!google.value.configured) {
     return google.value.can_set_up
       ? __(
