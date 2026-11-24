@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import {
-  carryPageLink,
   copyHours,
   embedSnippet,
   endTimeOptions,
@@ -195,25 +194,5 @@ describe('hostLinkErrors', () => {
     expect(hostLinkErrors(hosts, undefined, { missing: false })).toEqual([
       "c's link must start with https:// or http://",
     ])
-  })
-})
-
-describe('carryPageLink', () => {
-  it("moves a one-host page's link into its host row", () => {
-    const hosts: { user: string; meeting_link?: string }[] = [{ user: 'a' }]
-    carryPageLink(hosts, ' https://meet.example/team ')
-    expect(hosts[0].meeting_link).toBe('https://meet.example/team')
-  })
-
-  it('leaves multi-host pages and existing links alone', () => {
-    const shared: { user: string; meeting_link?: string }[] = [
-      { user: 'a' },
-      { user: 'b' },
-    ]
-    carryPageLink(shared, 'https://meet.example/team')
-    expect(shared.map((h) => h.meeting_link)).toEqual([undefined, undefined])
-    const own = [{ user: 'a', meeting_link: 'https://meet.example/a' }]
-    carryPageLink(own, 'https://meet.example/team')
-    expect(own[0].meeting_link).toBe('https://meet.example/a')
   })
 })

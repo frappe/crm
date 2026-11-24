@@ -796,7 +796,6 @@ import LucideFileText from '~icons/lucide/file-text'
 import LucideShare2 from '~icons/lucide/share-2'
 import { ROUTE_PREFIX, pageUrl, slugify } from './bookingPages'
 import {
-  carryPageLink,
   copyHours,
   embedSnippet,
   endTimeOptions as endTimes,
@@ -1099,8 +1098,6 @@ async function load() {
       __('Could not open this page')
     return
   }
-  if (doc.value?.location_type === 'Custom link')
-    carryPageLink(doc.value.hosts, doc.value.location)
   savedRoute.value = doc.value?.route || ''
   savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
   savedHostLinks.value = hostLinksKey()
@@ -1236,9 +1233,10 @@ async function save() {
         order(a.workday) - order(b.workday) ||
         hhmm(a.start_time).localeCompare(hhmm(b.start_time)),
     )
-    // once every host has a link, drop the shared one so no host falls back to another's room
+    // once every host has a link, drop a shared link (never an address) so no host gets another's room
     if (
       doc.value.location_type === 'Custom link' &&
+      /^https?:\/\//i.test(String(doc.value.location || '').trim()) &&
       doc.value.hosts.every((h) => String(h.meeting_link || '').trim())
     )
       doc.value.location = ''

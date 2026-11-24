@@ -498,6 +498,25 @@ class TestBooking(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			page.save()
 
+	def test_a_one_host_page_link_moves_to_its_host(self):
+		from crm.patches.v1_0.move_booking_page_links_to_hosts import execute
+
+		one, shared = self.make_page([HOSTS[0]]), self.make_page(HOSTS)
+		for page in (one, shared):
+			frappe.db.set_value(
+				"CRM Booking Page",
+				page.name,
+				{"location_type": "Custom link", "location": "https://meet.example/" + page.name},
+			)
+		execute()
+		one, shared = (
+			frappe.get_doc("CRM Booking Page", one.name),
+			frappe.get_doc("CRM Booking Page", shared.name),
+		)
+		self.assertEqual((one.location, one.hosts[0].meeting_link), ("", "https://meet.example/" + one.name))
+		self.assertEqual(shared.location, "https://meet.example/" + shared.name)
+		self.assertFalse(any(h.meeting_link for h in shared.hosts))
+
 	def test_a_shared_link_is_never_in_two_meetings_at_once(self):
 		page = self.make_page(HOSTS, location_type="Phone call")
 		# a page saved before host links existed: both hosts fall back to one link
