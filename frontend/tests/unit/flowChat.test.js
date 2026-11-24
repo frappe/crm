@@ -16,7 +16,11 @@ const {
   recordContext,
   newChat,
   openChat,
+  answerApproval,
+  approveAll,
 } = await import('@/components/FlowChat/askFlow')
+const { summarizeCall, plainValue } =
+  await import('@/components/FlowChat/approvalSummary')
 const { foldFlowEvent, questionText, toolLabel } =
   await import('@/components/FlowChat/flowEvents')
 const { askFlowCommands } =
@@ -385,5 +389,133 @@ describe('openChat and newChat', () => {
       earlier: [],
       status: 'idle',
     })
+  })
+})
+
+const NOTE_CALL = {
+  id: 'C-1',
+  name: 'create',
+  prompt: 'Create 1 FCRM Note record\nCreate 1 FCRM Note record(s):',
+  args: {
+    doctype: 'FCRM Note',
+    records: [
+      {
+        title: 'Call back on Friday',
+        content: '<p>Call back on Friday</p>',
+        reference_docname: 'CRM-DEAL-2026-00003',
+      },
+    ],
+  },
+}
+
+describe('summarizeCall', () => {
+  it('shows the fields a create sets, under the title Flow gives the call', () => {
+    expect(summarizeCall(NOTE_CALL)).toEqual({
+      title: 'Create 1 FCRM Note record',
+      code: false,
+      description: '',
+      rows: [
+        { label: 'Title', value: 'Call back on Friday' },
+        { label: 'Content', value: 'Call back on Friday' },
+        { label: 'Reference docname', value: 'CRM-DEAL-2026-00003' },
+      ],
+    })
+  })
+
+  it('shows the records an update touches and the values it sets', () => {
+    const { rows } = summarizeCall({
+      name: 'update',
+      args: {
+        doctype: 'CRM Deal',
+        names: ['D-1', 'D-2'],
+        values: { status: 'Lost' },
+      },
+    })
+    expect(rows).toEqual([
+      { label: 'Records', value: 'D-1, D-2' },
+      { label: 'Status', value: 'Lost' },
+    ])
+  })
+
+  it('stands code for its description', () => {
+    const summary = summarizeCall({
+      name: 'execute',
+      args: {
+        code: 'frappe.db.delete("ToDo")',
+        description: 'Clear all ToDos',
+      },
+    })
+    expect(summary).toMatchObject({
+      code: true,
+      description: 'Clear all ToDos',
+      rows: [],
+    })
+  })
+
+  it('shows nested arguments of other tools as JSON', () => {
+    expect(plainValue({ to: ['a@example.com'] })).toBe(
+      '{\n  "to": [\n    "a@example.com"\n  ]\n}',
+    )
+    expect(plainValue(null)).toBe('—')
+  })
+})
+
+describe('approvals', () => {
+  const SECOND = { ...NOTE_CALL, id: 'C-2' }
+
+  beforeEach(() => {
+    call.mockReset()
+    call.mockResolvedValue({})
+    Object.assign(askFlow, {
+      session: 'S-A',
+      status: 'needs_you',
+      approval: { seq: 36, calls: [NOTE_CALL, SECOND], answers: {} },
+    })
+  })
+
+  it('waits for every call before resuming the run', async () => {
+    await answerApproval('C-1', 'Approve')
+    expect(call).not.toHaveBeenCalled()
+    await answerApproval('C-2', 'Tell it Monday instead')
+    expect(call).toHaveBeenCalledWith('frappe.flow.api.resume', {
+      session: 'S-A',
+      answers: { 'C-1': 'Approve', 'C-2': 'Tell it Monday instead' },
+      approval_seq: 36,
+    })
+    expect(askFlow.status).toBe('working')
+  })
+
+  it('denies the calls still undecided with a deny', async () => {
+    await answerApproval('C-2', 'Deny')
+    expect(call).toHaveBeenCalledWith('frappe.flow.api.resume', {
+      session: 'S-A',
+      answers: { 'C-1': 'Deny', 'C-2': 'Deny' },
+      approval_seq: 36,
+    })
+  })
+
+  it('approves every call at once', async () => {
+    await approveAll()
+    expect(call.mock.calls[0][1].answers).toEqual({
+      'C-1': 'Approve',
+      'C-2': 'Approve',
+    })
+  })
+
+  it('reopens the batch when Flow does not take the answers', async () => {
+    call.mockRejectedValue(new Error('offline'))
+    await expect(approveAll()).rejects.toThrow('offline')
+    expect(askFlow.approval.answers).toEqual({})
+    expect(askFlow.status).toBe('needs_you')
+  })
+
+  it('clears the batch once the resumed run starts', () => {
+    const state = fold([
+      { type: 'approval_required', seq: 36, calls: [NOTE_CALL] },
+      { type: 'run_ended', reason: 'paused' },
+    ])
+    expect(state).toMatchObject({ status: 'needs_you', approval: { seq: 36 } })
+    foldFlowEvent(state, { partial: '', echo: null }, { type: 'run_started' })
+    expect(state.approval).toBeNull()
   })
 })

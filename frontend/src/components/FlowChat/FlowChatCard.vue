@@ -1,5 +1,9 @@
 <template>
-  <div class="flex flex-col" :class="{ 'crm-command-palette': inPalette }">
+  <div
+    class="flex flex-col"
+    :class="{ 'crm-command-palette': inPalette }"
+    @keydown.esc="onEscape"
+  >
     <div
       class="flex h-11 shrink-0 items-center gap-1 px-2"
       :class="{ 'border-b border-outline-gray-1': inPalette }"
@@ -105,6 +109,12 @@
         @send="(reply) => ask(reply, { followUp: true })"
       />
 
+      <ApprovalCards
+        v-if="askFlow.status === 'needs_you' && askFlow.approval"
+        @ask-changes="askForChanges"
+        @review="handOff"
+      />
+
       <div
         v-if="askFlow.status === 'working' && askFlow.label"
         class="flex items-center gap-2 pt-4 text-base text-ink-gray-5"
@@ -134,7 +144,9 @@
       <input
         ref="inputRef"
         v-model="followUp"
-        :placeholder="__('Ask a follow-up…')"
+        :placeholder="
+          changeFor ? __('Tell Flow what to change…') : __('Ask a follow-up…')
+        "
         class="min-w-0 flex-1 border-none bg-transparent px-1 py-1.5 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
         autocomplete="off"
         spellcheck="false"
@@ -150,7 +162,7 @@
 </template>
 
 <script setup>
-import { Button } from 'frappe-ui'
+import { Button, toast } from 'frappe-ui'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import LucideChevronDown from '~icons/lucide/chevron-down'
 import LucideChevronUp from '~icons/lucide/chevron-up'
@@ -163,9 +175,11 @@ import {
   commandPaletteQuery,
 } from '@/composables/useCommandPalette'
 import AnswerActions from './AnswerActions.vue'
+import ApprovalCards from './ApprovalCards.vue'
 import ChatHistory from './ChatHistory.vue'
 import FlowAnswer from './FlowAnswer.vue'
 import {
+  answerApproval,
   ask,
   askFlow,
   hideAskFlow,
@@ -189,11 +203,19 @@ const inPalette = props.surface === 'palette'
 const inputRef = ref(null)
 const followUp = ref('')
 const showEarlier = ref(false)
+// the call whose changes the follow-up box is asking for
+const changeFor = ref(null)
 
 onMounted(() => nextTick(() => inputRef.value?.focus({ preventScroll: true })))
 watch(
   () => askFlow.session,
   () => (showEarlier.value = false),
+)
+watch(
+  () => askFlow.approval,
+  (approval) => {
+    if (!approval) changeFor.value = null
+  },
 )
 
 const earlierLabel = computed(() => {
@@ -209,7 +231,8 @@ const contextLabel = computed(() => {
 })
 
 const callout = computed(() => {
-  if (askFlow.status === 'needs_you')
+  // an approval the card cannot show: a tool's own form, a password, a sub-agent's
+  if (askFlow.status === 'needs_you' && !askFlow.approval)
     return {
       class: 'bg-surface-amber-2 text-ink-amber-6',
       message: __('Flow is waiting for your approval'),
@@ -242,19 +265,51 @@ function startNewChat() {
   emit('new-chat')
 }
 
+function askForChanges(callId) {
+  changeFor.value = callId
+  inputRef.value?.focus()
+}
+
+// From anywhere in the card: Esc first drops "Ask for changes", then goes back to search.
+function onEscape(event) {
+  if (changeFor.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    changeFor.value = null
+  } else if (inPalette) {
+    back(event)
+  }
+}
+
 function onKeydown(event) {
   const mod = event.metaKey || event.ctrlKey
-  if (inPalette && event.key === 'Escape') return back(event)
   if (inPalette && event.key === 'Backspace' && !followUp.value)
     return back(event)
   if (mod && event.key === 'Enter') return run(event, handOff)
   if (event.key === 'Enter' && !event.isComposing) run(event, sendFollowUp)
 }
 
+// Enter in the empty box presses the card's button: Review or Try again.
 function sendFollowUp() {
-  if (!followUp.value.trim() || askFlow.status === 'working') return
+  if (!followUp.value.trim()) return callout.value?.perform()
+  if (changeFor.value) return sendChanges()
+  if (askFlow.status === 'working') return
   ask(followUp.value, { followUp: true })
   followUp.value = ''
+}
+
+// What to change instead answers the call, as Flow's own "Ask for changes" does.
+async function sendChanges() {
+  const text = followUp.value.trim()
+  try {
+    await answerApproval(changeFor.value, text)
+    followUp.value = ''
+    changeFor.value = null
+  } catch (error) {
+    toast.error(
+      error?.messages?.[0] || __('Could not send your answer to Flow'),
+    )
+  }
 }
 
 function back(event) {
