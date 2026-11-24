@@ -324,7 +324,7 @@ def public_booking(booking, page, event=None) -> dict:
 		"guest_name": booking.guest_name,
 		"guest_email": booking.guest_email,
 		"host": frappe.db.get_value("User", booking.host, "full_name"),
-		"meeting_link": meeting_link(page, event),
+		"meeting_link": meeting_link(page, event, booking.host),
 		"page": {"title": page.title, "route": page.route, "duration": page.duration},
 		"upcoming": to_utc(booking.starts_on) > datetime.now(UTC),
 	}
@@ -807,7 +807,9 @@ def create_event(page, booking, values: dict | None = None):
 				"ends_on": booking.ends_on,
 				# answers stay on the booking, since Google mails the description to every attendee
 				"description": page.description or "",
-				"location": page.location if page.location_type in ("In person", "Custom link") else "",
+				"location": {"In person": page.location, "Custom link": custom_link(page, booking.host)}.get(
+					page.location_type, ""
+				),
 			}
 		)
 		if booking.reference_doctype:
@@ -907,12 +909,18 @@ def save_event(event, values: dict):
 		event.flags.google_sync_failed = True
 
 
-def meeting_link(page, event) -> str:
+def meeting_link(page, event, host: str | None = None) -> str:
 	if page.location_type == "Google Meet":
 		return (event and event.google_meet_link) or ""
 	if page.location_type == "Custom link":
-		return page.location or ""
+		return custom_link(page, host)
 	return ""
+
+
+def custom_link(page, host: str | None) -> str:
+	"""The host's own link, so meetings at the same time don't share a room, else the page's."""
+	own = next((h.meeting_link for h in page.hosts if h.user == host and h.meeting_link), None)
+	return (own or page.location or "").strip()
 
 
 def sync_booking_from_event(event, method=None):
@@ -991,7 +999,7 @@ def send_booking_emails(page, booking, event, action: str, to_host: bool = True)
 
 	`to_host` is off when the host made the change themselves."""
 	manage_url = get_url(f"/crm-book/{page.route}?booking={booking.token}")
-	link = meeting_link(page, event)
+	link = meeting_link(page, event, booking.host)
 	subjects = {
 		"confirmed": _("Confirmed: {0}"),
 		"rescheduled": _("Rescheduled: {0}"),
@@ -1211,6 +1219,8 @@ def location_text(page, link) -> str:
 		return link or _("Google Meet (link to follow)")
 	if page.location_type == "Phone call":
 		return _("Phone call")
+	if page.location_type == "Custom link":
+		return link or page.location_type
 	return page.location or page.location_type
 
 

@@ -448,6 +448,46 @@ class TestBooking(IntegrationTestCase):
 		self.page.location = "javascript:alert(1)"
 		with self.assertRaises(frappe.ValidationError):
 			self.page.save()
+		self.page.location = "https://meet.example/team"
+		self.page.hosts[0].meeting_link = "javascript:alert(1)"
+		with self.assertRaises(frappe.ValidationError):
+			self.page.save()
+
+	def test_each_host_gets_their_own_link_at_the_same_time(self):
+		page = self.make_page(HOSTS, location_type="Phone call")
+
+		def save_links(*links):
+			doc = frappe.get_doc("CRM Booking Page", page.name)
+			doc.location_type = "Custom link"
+			for host, link in zip(doc.hosts, links, strict=True):
+				host.meeting_link = link
+			doc.save()
+			return doc
+
+		# with more than one host, a missing or shared link would put two meetings in one room
+		with self.assertRaises(frappe.ValidationError):
+			save_links("https://meet.example/first", "")
+		with self.assertRaises(frappe.ValidationError):
+			save_links("https://meet.example/first", "https://meet.example/first/")
+		page = save_links("https://meet.example/first", "https://meet.example/second")
+
+		first = self.book_as_guest(self.at(9), "a@example.com", page)
+		second = self.book_as_guest(self.at(9), "b@example.com", page)
+		links = {
+			frappe.db.get_value("CRM Booking", {"token": r["token"]}, "host"): r["meeting_link"]
+			for r in (first, second)
+		}
+		self.assertEqual(
+			links, {HOSTS[0]: "https://meet.example/first", HOSTS[1]: "https://meet.example/second"}
+		)
+		event = frappe.db.get_value("CRM Booking", {"token": first["token"]}, "event")
+		self.assertEqual(frappe.db.get_value("Event", event, "location"), "https://meet.example/first")
+
+	def test_a_single_host_uses_the_page_link(self):
+		self.page.location_type = "Custom link"
+		self.page.location = "https://meet.example/team"
+		self.page.save()
+		self.assertEqual(self.book_as_guest(self.at(9))["meeting_link"], "https://meet.example/team")
 
 	def test_visitor_text_in_titles_and_invites_stays_harmless(self):
 		from crm.api.booking import ics, plain

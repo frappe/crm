@@ -53,9 +53,25 @@ class CRMBookingPage(Document):
 				frappe.throw(_("{0} can't host bookings: they aren't a CRM user").format(host))
 
 	def validate_location(self):
-		if self.location_type == "Custom link" and self.location:
-			if not re.match(r"^https?://", self.location.strip(), re.IGNORECASE):
+		if self.location_type != "Custom link":
+			return
+		for link in filter(None, [self.location, *(h.meeting_link for h in self.hosts)]):
+			if not re.match(r"^https?://", link.strip(), re.IGNORECASE):
 				frappe.throw(_("The meeting link must start with https:// or http://"))
+		if len(self.hosts) > 1:
+			self.validate_host_links()
+
+	def validate_host_links(self):
+		"""Hosts sharing a link would meet guests booked at the same time in one room."""
+		seen = {}
+		for host in self.hosts:
+			name = host.full_name or host.user
+			link = (host.meeting_link or "").strip().rstrip("/")
+			if not link:
+				frappe.throw(_("Add a meeting link for {0}").format(name))
+			if link in seen:
+				frappe.throw(_("{0} and {1} have the same meeting link").format(seen[link], name))
+			seen[link] = name
 
 	def validate_hours(self):
 		by_day = {}
