@@ -35,6 +35,8 @@ frappe = ">=16.0.0-dev,<=17.0.0-dev"
 build_dir = "./frontend"
 out_dir = "../crm/public/frontend"
 index_html_path = "../crm/www/crm.html"
+# Optional on a site, but the frontend builds its WhatsApp screens from its source.
+build_apps = ["whatsapp"]
 
 [tool.ruff]
 line-length = 110
