@@ -1216,7 +1216,9 @@ async function save() {
   if (!doc.value) return
   error.value = ''
   if (hostLinkProblems(true).length) {
+    // the message sits under the hosts table, so bring it into view
     triedSave.value = true
+    activeTab.value = 'details'
     return
   }
   saving.value = true
