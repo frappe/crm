@@ -566,6 +566,12 @@ def available_slots(page, start_utc, end_utc, hosts, booking=None) -> dict[datet
 	buffer = timedelta(minutes=cint(page.buffer))
 	busy = {h: busy_times(h, slots[0] - buffer, slots[-1] + duration + buffer, booking) for h in hosts}
 	booked = booked_links(page, slots[0], slots[-1] + duration, booking)
+	# a booking being moved keeps the link it was booked with
+	links = {h: link_key(custom_link(page, h)) for h in hosts}
+	if booking and booking.host in links and booking.event:
+		links[booking.host] = link_key(
+			meeting_link(page, frappe.get_doc("Event", booking.event), booking.host)
+		)
 
 	out = {}
 	for slot in slots:
@@ -574,38 +580,40 @@ def available_slots(page, start_utc, end_utc, hosts, booking=None) -> dict[datet
 		if booked:
 			# a link already in use at this time would put two meetings in one room
 			taken = {link for b_start, b_end, link in booked if b_start < slot + duration and b_end > slot}
-			free = [h for h in free if link_key(custom_link(page, h)) not in taken]
+			free = [h for h in free if links[h] not in taken]
 		if free:
 			out[slot] = free
 	return out
 
 
 def booked_links(page, start_utc, end_utc, booking=None) -> list[tuple[datetime, datetime, str]]:
-	"""This page's meetings in [start_utc, end_utc) with the custom link each one uses."""
+	"""Meetings booked in [start_utc, end_utc) on any page, with the link each one has."""
 	if page.location_type != "Custom link":
 		return []
 	rows = frappe.get_all(
 		"CRM Booking",
 		filters={
-			"booking_page": page.name,
 			"status": "Confirmed",
 			"starts_on": ["<", to_system(end_utc)],
 			"ends_on": [">", to_system(start_utc)],
 			"name": ["!=", booking.name if booking else ""],
+			"event": ["is", "set"],
 		},
-		fields=["host", "starts_on", "ends_on", "event"],
+		fields=["starts_on", "ends_on", "event"],
 	)
-	events = [r.event for r in rows if r.event]
-	locations = dict(
-		frappe.get_all("Event", filters={"name": ["in", events]}, fields=["name", "location"], as_list=True)
-		if events
-		else []
+	if not rows:
+		return []
+	events = frappe.get_all(
+		"Event",
+		filters={"name": ["in", [r.event for r in rows]]},
+		fields=["name", "location", "google_meet_link"],
 	)
+	events = {e.name: e for e in events}
 	out = []
 	for row in rows:
-		link = meeting_link(page, frappe._dict(location=locations.get(row.event)), row.host)
-		if link_key(link):
-			out.append((to_utc(row.starts_on), to_utc(row.ends_on), link_key(link)))
+		link = link_key(booked_link(events.get(row.event)))
+		if link:
+			out.append((to_utc(row.starts_on), to_utc(row.ends_on), link))
 	return out
 
 
@@ -949,13 +957,20 @@ def save_event(event, values: dict):
 
 
 def meeting_link(page, event, host: str | None = None) -> str:
-	if page.location_type == "Google Meet":
-		return (event and event.google_meet_link) or ""
-	if page.location_type == "Custom link":
-		# the booked meeting keeps its link when the page's links change later
-		booked = ((event and event.location) or "").strip()
-		return booked if re.match(r"^https?://", booked, re.IGNORECASE) else custom_link(page, host)
-	return ""
+	"""The booked meeting's own link, which stays when the page changes later, else the page's."""
+	booked = booked_link(event)
+	if booked or page.location_type != "Custom link":
+		return booked
+	return custom_link(page, host)
+
+
+def booked_link(event) -> str:
+	if not event:
+		return ""
+	if event.get("google_meet_link"):
+		return event.google_meet_link
+	location = (event.get("location") or "").strip()
+	return location if re.match(r"^https?://", location, re.IGNORECASE) else ""
 
 
 def custom_link(page, host: str | None) -> str:

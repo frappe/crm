@@ -515,12 +515,46 @@ class TestBooking(IntegrationTestCase):
 	def test_a_booking_keeps_its_link_when_the_host_link_changes(self):
 		from crm.api.booking import get_booking
 
-		page = self.make_page([HOSTS[0]], location_type="Phone call")
-		page.location_type = "Custom link"
-		page.hosts[0].meeting_link = "https://meet.example/old"
-		page.save()
+		page = self.custom_link_page(HOSTS[0], "https://meet.example/old")
 		token = self.book_as_guest(self.at(9), page=page)["token"]
 		page.hosts[0].meeting_link = "https://meet.example/new"
+		page.save()
+		self.assertEqual(get_booking(token)["meeting_link"], "https://meet.example/old")
+
+	def custom_link_page(self, host, link):
+		page = self.make_page([host], location_type="Phone call")
+		page.location_type = "Custom link"
+		page.hosts[0].meeting_link = link
+		page.save()
+		return page
+
+	def test_two_pages_never_share_a_link_at_the_same_time(self):
+		first = self.custom_link_page(HOSTS[0], "https://meet.example/room")
+		second = self.custom_link_page(HOSTS[1], "https://meet.example/room/")
+		self.book_as_guest(self.at(9), "a@example.com", first)
+		with self.assertRaises(SlotUnavailableError):
+			self.book_as_guest(self.at(9), "b@example.com", second)
+
+	def test_a_moved_booking_checks_the_link_it_was_booked_with(self):
+		first = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), "a@example.com", first)["token"]
+		first.hosts[0].meeting_link = "https://meet.example/new"
+		first.save()
+		second = self.custom_link_page(HOSTS[1], "https://meet.example/old")
+		self.book_as_guest(self.at(10), "b@example.com", second)
+		frappe.set_user("Guest")
+		try:
+			with self.assertRaises(SlotUnavailableError):
+				reschedule_booking(token, to_iso(self.at(10)))
+		finally:
+			frappe.set_user("Administrator")
+
+	def test_a_booking_keeps_its_link_when_the_page_location_changes(self):
+		from crm.api.booking import get_booking
+
+		page = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), page=page)["token"]
+		page.location_type = "Phone call"
 		page.save()
 		self.assertEqual(get_booking(token)["meeting_link"], "https://meet.example/old")
 
