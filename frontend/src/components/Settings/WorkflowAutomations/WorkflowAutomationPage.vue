@@ -142,33 +142,26 @@
     @back="backToList"
   />
 
-  <!-- The builder overlays the settings dialog: wider, taller, and dismissable only
-       through its own close button so a stray click can't drop unsaved steps. -->
-  <Dialog v-model:open="showBuilder" size="6xl" bare :dismissible="false">
-    <template #default>
-      <div class="h-[calc(100vh_-_6rem)]">
-        <WorkflowAutomationBuilder
-          v-if="showBuilder"
-          :automation-name="selectedAutomation"
-          @update:dirty="dirty = $event"
-          @close="requestClose"
-          @saved="onSaved"
-        />
-      </div>
-    </template>
-  </Dialog>
+  <AutomationBuilderDialog
+    v-model:open="showBuilder"
+    :automation-name="selectedAutomation"
+    doctype="CRM Lead"
+    :parent-label="__('Workflow Automation')"
+    @close="backToList"
+    @saved="onSaved"
+  />
 </template>
 
 <script setup>
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
-import WorkflowAutomationBuilder from './WorkflowAutomationBuilder.vue'
+import { AutomationBuilderDialog } from '@framework/ui/components/AutomationBuilder'
+import './automationStyles'
 import WorkflowAutomationDetail from './WorkflowAutomationDetail.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import WorkflowIcon from '~icons/lucide/workflow'
 import { ConfirmDelete } from '@/utils'
-import { createDialog } from '@/utils/dialogs'
 import { usersStore } from '@/stores/users'
 import { disableSettingModalOutsideClick } from '@/composables/settings'
 import {
@@ -182,7 +175,6 @@ import {
 import {
   Badge,
   Button,
-  Dialog,
   Dropdown,
   LoadingIndicator,
   Switch,
@@ -200,7 +192,6 @@ const search = ref('')
 const selectedAutomation = ref('')
 const confirmingDelete = ref('')
 const showBuilder = ref(false)
-const dirty = ref(false)
 const toggling = reactive(new Set())
 
 const listColumns = [
@@ -269,32 +260,6 @@ function newAutomation() {
 function openAutomation(automation) {
   selectedAutomation.value = automation.name
   screen.value = 'detail'
-}
-
-/** Closing the builder always lands back on the list, warning first about unsaved edits. */
-function requestClose() {
-  if (!dirty.value) return closeBuilder()
-  createDialog({
-    title: __('Unsaved changes'),
-    message: __('You have unsaved changes. Do you wish to exit?'),
-    size: 'sm',
-    actions: [
-      { label: __('Keep editing'), onClick: ({ close }) => close() },
-      {
-        label: __('Discard and exit'),
-        variant: 'solid',
-        theme: 'red',
-        onClick: closeBuilder,
-      },
-    ],
-  })
-}
-
-function closeBuilder({ close } = {}) {
-  close?.()
-  showBuilder.value = false
-  dirty.value = false
-  backToList()
 }
 
 function backToList() {
