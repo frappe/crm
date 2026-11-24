@@ -558,6 +558,54 @@ class TestBooking(IntegrationTestCase):
 		page.save()
 		self.assertEqual(get_booking(token)["meeting_link"], "https://meet.example/old")
 
+	def test_a_moved_booking_checks_its_link_after_the_page_location_changes(self):
+		first = self.custom_link_page(HOSTS[0], "https://meet.example/old")
+		token = self.book_as_guest(self.at(9), "a@example.com", first)["token"]
+		first.location_type = "Phone call"
+		first.save()
+		second = self.custom_link_page(HOSTS[1], "https://meet.example/old")
+		self.book_as_guest(self.at(10), "b@example.com", second)
+		frappe.set_user("Guest")
+		try:
+			with self.assertRaises(SlotUnavailableError):
+				reschedule_booking(token, to_iso(self.at(10)))
+		finally:
+			frappe.set_user("Administrator")
+
+	def test_an_in_person_address_is_not_a_meeting_link(self):
+		in_person = self.make_page([HOSTS[0]], location_type="Phone call")
+		in_person.location_type = "In person"
+		in_person.location = "https://maps.example/office"
+		in_person.save()
+		result = self.book_as_guest(self.at(9), "a@example.com", in_person)
+		self.assertEqual(result["meeting_link"], "")
+		self.assertFalse(frappe.db.get_value("CRM Booking", {"token": result["token"]}, "meeting_link"))
+		# a custom-link page using the same text isn't blocked by the in-person meeting
+		custom = self.custom_link_page(HOSTS[1], "https://maps.example/office")
+		self.book_as_guest(self.at(9), "b@example.com", custom)
+
+	def test_bookings_lock_their_meeting_link(self):
+		from crm.api import booking as booking_api
+
+		page = self.custom_link_page(HOSTS[0], "https://meet.example/room/")
+		locked = []
+		real_lock_hosts = booking_api.lock_hosts
+
+		def record(names):
+			locked.append(set(names))
+			real_lock_hosts(names)
+
+		with patch.object(booking_api, "lock_hosts", record):
+			token = self.book_as_guest(self.at(9), page=page)["token"]
+			frappe.set_user("Guest")
+			try:
+				reschedule_booking(token, to_iso(self.at(10)))
+			finally:
+				frappe.set_user("Administrator")
+		self.assertEqual(len(locked), 2)
+		for names in locked:
+			self.assertIn("link:https://meet.example/room", names)
+
 	def test_a_single_host_uses_the_page_link(self):
 		self.page.location_type = "Custom link"
 		self.page.location = "https://meet.example/team"

@@ -94,7 +94,7 @@ def book(
 	start_utc = parse_utc(start)
 	end_utc = start_utc + timedelta(minutes=page.duration)
 	hosts = page_hosts(page)
-	lock_hosts([*hosts, email])
+	lock_hosts([*hosts, email, *link_locks(host_links(page, hosts).values())])
 	check_booking_limits(page, email)
 	free_hosts = available_slots(page, start_utc, end_utc, hosts).get(start_utc)
 	if not free_hosts:
@@ -126,6 +126,8 @@ def make_booking(page, host, start_utc, guest, reference, answers=None, timezone
 			"reference_doctype": reference[0],
 			"reference_docname": reference[1],
 			"token": secrets.token_urlsafe(24),
+			# fixed now, so later changes to the page never move a booked meeting to another room
+			"meeting_link": custom_link(page, host) if page.location_type == "Custom link" else "",
 		}
 	).insert(ignore_permissions=True)
 
@@ -177,7 +179,7 @@ def reschedule_booking(token: str, start: str) -> dict:
 
 	start_utc = parse_utc(start)
 	end_utc = start_utc + timedelta(minutes=page.duration)
-	lock_hosts([booking.host])
+	lock_hosts([booking.host, *link_locks([booking.meeting_link])])
 	if not available_slots(page, start_utc, end_utc, [booking.host], booking).get(start_utc):
 		frappe.throw(_("That time was just taken. Please pick another one."), exc=SlotUnavailableError)
 
@@ -324,7 +326,7 @@ def public_booking(booking, page, event=None) -> dict:
 		"guest_name": booking.guest_name,
 		"guest_email": booking.guest_email,
 		"host": frappe.db.get_value("User", booking.host, "full_name"),
-		"meeting_link": meeting_link(page, event, booking.host),
+		"meeting_link": meeting_link(booking, event),
 		"page": {"title": page.title, "route": page.route, "duration": page.duration},
 		"upcoming": to_utc(booking.starts_on) > datetime.now(UTC),
 	}
@@ -437,8 +439,9 @@ def link_values(doctype: str | None) -> set[str]:
 
 
 def lock_hosts(hosts: list[str]):
-	"""Serialise bookings per host so two visitors can't take the same slot, and per
-	guest address so parallel requests can't slip past the booking limits.
+	"""Serialise bookings per host so two visitors can't take the same slot, per
+	guest address so parallel requests can't slip past the booking limits, and per
+	meeting link (see `link_locks`) so two pages can't book one room at once.
 
 	A named lock in Redis, held until the booking commits or rolls back, so the
 	free/busy checks and Google calls inside it don't hold database row locks.
@@ -565,13 +568,11 @@ def available_slots(page, start_utc, end_utc, hosts, booking=None) -> dict[datet
 	duration = timedelta(minutes=page.duration)
 	buffer = timedelta(minutes=cint(page.buffer))
 	busy = {h: busy_times(h, slots[0] - buffer, slots[-1] + duration + buffer, booking) for h in hosts}
-	booked = booked_links(page, slots[0], slots[-1] + duration, booking)
-	# a booking being moved keeps the link it was booked with
-	links = {h: link_key(custom_link(page, h)) for h in hosts}
-	if booking and booking.host in links and booking.event:
-		links[booking.host] = link_key(
-			meeting_link(page, frappe.get_doc("Event", booking.event), booking.host)
-		)
+	links = host_links(page, hosts)
+	# a booking being moved keeps the link it was booked with, whatever the page says now
+	if booking and booking.host in links:
+		links[booking.host] = link_key(booking.meeting_link)
+	booked = booked_links(set(links.values()), slots[0], slots[-1] + duration, booking)
 
 	out = {}
 	for slot in slots:
@@ -586,9 +587,18 @@ def available_slots(page, start_utc, end_utc, hosts, booking=None) -> dict[datet
 	return out
 
 
-def booked_links(page, start_utc, end_utc, booking=None) -> list[tuple[datetime, datetime, str]]:
-	"""Meetings booked in [start_utc, end_utc) on any page, with the link each one has."""
+def host_links(page, hosts) -> dict[str, str]:
+	"""Host → the link a meeting booked with them now would get, or "" when it gets none."""
 	if page.location_type != "Custom link":
+		return {h: "" for h in hosts}
+	return {h: link_key(custom_link(page, h)) for h in hosts}
+
+
+def booked_links(links, start_utc, end_utc, booking=None) -> list[tuple[datetime, datetime, str]]:
+	"""Meetings booked in [start_utc, end_utc) on any page with one of `links`, as
+	(start, end, link). Only links fixed at booking count: an in-person address isn't one."""
+	links = set(links) - {""}
+	if not links:
 		return []
 	rows = frappe.get_all(
 		"CRM Booking",
@@ -597,22 +607,14 @@ def booked_links(page, start_utc, end_utc, booking=None) -> list[tuple[datetime,
 			"starts_on": ["<", to_system(end_utc)],
 			"ends_on": [">", to_system(start_utc)],
 			"name": ["!=", booking.name if booking else ""],
-			"event": ["is", "set"],
+			"meeting_link": ["is", "set"],
 		},
-		fields=["starts_on", "ends_on", "event"],
+		fields=["starts_on", "ends_on", "meeting_link"],
 	)
-	if not rows:
-		return []
-	events = frappe.get_all(
-		"Event",
-		filters={"name": ["in", [r.event for r in rows]]},
-		fields=["name", "location", "google_meet_link"],
-	)
-	events = {e.name: e for e in events}
 	out = []
 	for row in rows:
-		link = link_key(booked_link(events.get(row.event)))
-		if link:
+		link = link_key(row.meeting_link)
+		if link in links:
 			out.append((to_utc(row.starts_on), to_utc(row.ends_on), link))
 	return out
 
@@ -620,6 +622,12 @@ def booked_links(page, start_utc, end_utc, booking=None) -> list[tuple[datetime,
 def link_key(link: str | None) -> str:
 	"""Links that open the same room, such as with and without a trailing slash, match."""
 	return (link or "").strip().rstrip("/")
+
+
+def link_locks(links) -> list[str]:
+	"""Names for `lock_hosts` that serialise bookings sharing a meeting link, across
+	hosts and pages, so two guests can't both find the same room free."""
+	return [f"link:{key}" for key in sorted({link_key(link) for link in links} - {""})]
 
 
 def candidate_slots(page, start_utc, end_utc):
@@ -854,7 +862,7 @@ def create_event(page, booking, values: dict | None = None):
 				"ends_on": booking.ends_on,
 				# answers stay on the booking, since Google mails the description to every attendee
 				"description": page.description or "",
-				"location": {"In person": page.location, "Custom link": custom_link(page, booking.host)}.get(
+				"location": {"In person": page.location, "Custom link": booking.meeting_link}.get(
 					page.location_type, ""
 				),
 			}
@@ -956,21 +964,10 @@ def save_event(event, values: dict):
 		event.flags.google_sync_failed = True
 
 
-def meeting_link(page, event, host: str | None = None) -> str:
-	"""The booked meeting's own link, which stays when the page changes later, else the page's."""
-	booked = booked_link(event)
-	if booked or page.location_type != "Custom link":
-		return booked
-	return custom_link(page, host)
-
-
-def booked_link(event) -> str:
-	if not event:
-		return ""
-	if event.get("google_meet_link"):
-		return event.google_meet_link
-	location = (event.get("location") or "").strip()
-	return location if re.match(r"^https?://", location, re.IGNORECASE) else ""
+def meeting_link(booking, event=None) -> str:
+	"""The link the guest joins: the one fixed at booking, which stays whatever the page
+	changes to later, else the meeting's Google Meet link."""
+	return booking.meeting_link or (event and event.get("google_meet_link")) or ""
 
 
 def custom_link(page, host: str | None) -> str:
@@ -1055,7 +1052,7 @@ def send_booking_emails(page, booking, event, action: str, to_host: bool = True)
 
 	`to_host` is off when the host made the change themselves."""
 	manage_url = get_url(f"/crm-book/{page.route}?booking={booking.token}")
-	link = meeting_link(page, event, booking.host)
+	link = meeting_link(booking, event)
 	subjects = {
 		"confirmed": _("Confirmed: {0}"),
 		"rescheduled": _("Rescheduled: {0}"),
@@ -1271,12 +1268,15 @@ def format_short_when(booking, tz_name) -> str:
 
 
 def location_text(page, link) -> str:
+	# a meeting booked with a link keeps it, even if the page has a different location now
+	if link:
+		return link
 	if page.location_type == "Google Meet":
-		return link or _("Google Meet (link to follow)")
+		return _("Google Meet (link to follow)")
 	if page.location_type == "Phone call":
 		return _("Phone call")
 	if page.location_type == "Custom link":
-		return link or page.location_type
+		return page.location_type
 	return page.location or page.location_type
 
 
