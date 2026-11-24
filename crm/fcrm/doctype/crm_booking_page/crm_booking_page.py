@@ -55,7 +55,8 @@ class CRMBookingPage(Document):
 	def validate_location(self):
 		if self.location_type != "Custom link":
 			return
-		for link in filter(None, [self.location, *(h.meeting_link for h in self.hosts)]):
+		links = [self.location, *(h.meeting_link for h in self.hosts)]
+		for link in [link for link in links if link]:
 			if not re.match(r"^https?://", link.strip(), re.IGNORECASE):
 				frappe.throw(_("The meeting link must start with https:// or http://"))
 		if len(self.hosts) > 1:
