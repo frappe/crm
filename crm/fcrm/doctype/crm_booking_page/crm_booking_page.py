@@ -59,8 +59,13 @@ class CRMBookingPage(Document):
 		for link in [link for link in links if link]:
 			if not re.match(r"^https?://", link.strip(), re.IGNORECASE):
 				frappe.throw(_("The meeting link must start with https:// or http://"))
-		if len(self.hosts) > 1:
+		if len(self.hosts) > 1 and self.hosts_changed():
 			self.validate_host_links()
+
+	def hosts_changed(self) -> bool:
+		"""Pages saved before host links existed keep saving until their hosts or location change."""
+		before = self.get_doc_before_save()
+		return not before or host_links(before) != host_links(self)
 
 	def validate_host_links(self):
 		"""Hosts sharing a link would meet guests booked at the same time in one room."""
@@ -121,6 +126,10 @@ class CRMBookingPage(Document):
 		# the page's own form goes with it (bookings block deleting a page that has any)
 		if self.web_form and frappe.db.exists("Web Form", self.web_form) and is_own_form(self.web_form):
 			frappe.delete_doc("Web Form", self.web_form, ignore_permissions=True, force=True)
+
+
+def host_links(page) -> tuple:
+	return page.location_type, [(h.user, h.meeting_link or "") for h in page.hosts]
 
 
 def is_page_manager(user: str | None = None) -> bool:

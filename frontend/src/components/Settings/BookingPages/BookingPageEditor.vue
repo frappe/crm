@@ -912,8 +912,15 @@ const showHostLinks = computed(
     doc.value?.location_type === 'Custom link' &&
     (doc.value?.hosts.length || 0) > 1,
 )
+// pages saved before host links existed only need them once hosts or location change
+const savedHostLinks = ref('')
+const hostLinksKey = () =>
+  JSON.stringify([
+    doc.value?.location_type,
+    (doc.value?.hosts || []).map((h) => [h.user, h.meeting_link || '']),
+  ])
 const hostErrors = computed(() =>
-  showHostLinks.value && doc.value
+  showHostLinks.value && doc.value && hostLinksKey() !== savedHostLinks.value
     ? hostLinkErrors(doc.value.hosts, hostName)
     : [],
 )
@@ -1091,6 +1098,7 @@ async function load() {
   }
   savedRoute.value = doc.value?.route || ''
   savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
+  savedHostLinks.value = hostLinksKey()
   dirty.value = false
 }
 
@@ -1221,6 +1229,7 @@ async function save() {
     doc.value = await call('frappe.client.save', { doc: doc.value })
     savedRoute.value = doc.value?.route || ''
     savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
+    savedHostLinks.value = hostLinksKey()
     dirty.value = false
     toast.success(__('Booking page saved'))
   } catch (e) {

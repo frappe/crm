@@ -483,6 +483,21 @@ class TestBooking(IntegrationTestCase):
 		event = frappe.db.get_value("CRM Booking", {"token": first["token"]}, "event")
 		self.assertEqual(frappe.db.get_value("Event", event, "location"), "https://meet.example/first")
 
+	def test_a_page_from_before_host_links_still_saves(self):
+		page = self.make_page(HOSTS, location_type="Phone call")
+		# as saved before host links existed: one shared custom link
+		frappe.db.set_value(
+			"CRM Booking Page",
+			page.name,
+			{"location_type": "Custom link", "location": "https://meet.example/team"},
+		)
+		page = frappe.get_doc("CRM Booking Page", page.name)
+		page.description = "Meet the team"
+		page.save()
+		page.hosts[0].meeting_link = "https://meet.example/first"
+		with self.assertRaises(frappe.ValidationError):
+			page.save()
+
 	def test_a_single_host_uses_the_page_link(self):
 		self.page.location_type = "Custom link"
 		self.page.location = "https://meet.example/team"
