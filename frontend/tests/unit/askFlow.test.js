@@ -7,6 +7,7 @@ vi.mock('frappe-ui', async () => {
   const { defineComponent, h } = await import('vue')
   return {
     call: (...args) => call(...args),
+    frappeRequest: vi.fn(),
     toast: { error: vi.fn() },
     Button: defineComponent({ setup: () => () => h('button') }),
   }
@@ -17,12 +18,24 @@ vi.mock('@/utils/brief', () => ({
   openFlowSession: () => true,
 }))
 
+vi.mock('@/components/FlowChat/FlowChatCard.vue', async () => {
+  const { h } = await import('vue')
+  return { default: { render: () => h('section', 'answer') } }
+})
+
+vi.mock('@/components/FlowChat/ChatHistory.vue', async () => {
+  const { h } = await import('vue')
+  return { default: { render: () => h('span') } }
+})
+
 const { default: AskFlow } = await import('@/components/Home/AskFlow.vue')
+const { askFlow, newChat } = await import('@/components/FlowChat/askFlow')
 
 let app
+let root
 
 function mountAskFlow() {
-  const root = document.createElement('div')
+  root = document.createElement('div')
   app = createApp(AskFlow, { resource: { data: { available: true } } })
   app.config.globalProperties.__ = (text) => text
   app.mount(root)
@@ -45,6 +58,7 @@ async function press(textarea, init) {
 afterEach(() => {
   app?.unmount()
   call.mockClear()
+  newChat()
 })
 
 describe('Ask Flow box', () => {
@@ -69,5 +83,13 @@ describe('Ask Flow box', () => {
   it('does not send while an IME is composing', async () => {
     await press(mountAskFlow(), { isComposing: true })
     expect(call).not.toHaveBeenCalled()
+  })
+
+  it('turns into the answer for the question sent', async () => {
+    const textarea = mountAskFlow()
+    await press(textarea, {})
+    expect(askFlow.question).toBe('Who is waiting on me?')
+    expect(root.querySelector('textarea')).toBeNull()
+    expect(root.querySelector('section').textContent).toBe('answer')
   })
 })

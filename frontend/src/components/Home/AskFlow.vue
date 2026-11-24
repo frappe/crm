@@ -1,6 +1,12 @@
 <template>
+  <div
+    v-if="resource.data?.available && hasChat"
+    class="rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
+  >
+    <FlowChatCard surface="home" @new-chat="focusBox" />
+  </div>
   <form
-    v-if="resource.data?.available"
+    v-else-if="resource.data?.available"
     :aria-label="__('Ask Flow')"
     class="flex flex-col gap-2.5 rounded-4 border border-outline-gray-2 bg-surface-elevation-2 p-3"
     @submit.prevent="send(message)"
@@ -8,6 +14,7 @@
     <label for="ask-flow" class="sr-only">{{ __('Ask Flow') }}</label>
     <textarea
       id="ask-flow"
+      ref="boxRef"
       v-model="message"
       rows="3"
       class="w-full resize-none border-0 bg-transparent p-1 text-p-base text-ink-gray-8 placeholder:text-ink-gray-4 focus:ring-0"
@@ -21,25 +28,27 @@
           :key="chip"
           :label="chip"
           iconLeft="lucide-sparkles"
-          :disabled="sending"
           @click="sendChip(chip)"
         />
       </div>
+      <ChatHistory />
       <Button
         type="submit"
         variant="solid"
         icon="lucide-arrow-up"
         :aria-label="__('Send to Flow')"
-        :loading="sending"
         :disabled="!message.trim()"
       />
     </div>
   </form>
 </template>
 <script setup>
-import { askFlowChips, openFlowSession } from '@/utils/brief'
-import { call, toast } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { askFlowChips } from '@/utils/brief'
+import { Button } from 'frappe-ui'
+import { computed, nextTick, ref } from 'vue'
+import ChatHistory from '@/components/FlowChat/ChatHistory.vue'
+import FlowChatCard from '@/components/FlowChat/FlowChatCard.vue'
+import { ask, askFlow } from '@/components/FlowChat/askFlow'
 
 const props = defineProps({
   resource: { type: Object, required: true },
@@ -47,7 +56,10 @@ const props = defineProps({
 })
 
 const message = ref('')
-const sending = ref(false)
+const boxRef = ref(null)
+
+// The chat open here is the one the command palette shows too.
+const hasChat = computed(() => Boolean(askFlow.session || askFlow.question))
 
 const placeholder = computed(() =>
   props.team
@@ -66,9 +78,7 @@ const chips = computed(() =>
   }),
 )
 
-// The chip's text goes into the box first, so the message being sent stays in view.
 function sendChip(chip) {
-  message.value = chip
   send(chip)
 }
 
@@ -78,18 +88,14 @@ function sendOnEnter(event) {
   send(message.value)
 }
 
-async function send(text) {
-  if (!text.trim() || sending.value) return
-  sending.value = true
-  try {
-    const { session } = await call('crm.api.home.ask_flow', { message: text })
-    if (openFlowSession(session)) {
-      message.value = ''
-      sending.value = false
-    }
-  } catch (error) {
-    toast.error(error.messages?.[0] || __('Could not start Flow'))
-    sending.value = false
-  }
+// The box turns into the answer; ask reports its own failure in the answer card.
+function send(text) {
+  if (!text.trim()) return
+  ask(text)
+  message.value = ''
+}
+
+function focusBox() {
+  nextTick(() => boxRef.value?.focus())
 }
 </script>
