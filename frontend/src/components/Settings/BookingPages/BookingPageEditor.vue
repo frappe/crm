@@ -34,7 +34,7 @@
           v-if="canEdit"
           variant="solid"
           :label="__('Save')"
-          :disabled="!unsaved || hoursErrors.size > 0 || hostErrors.length > 0"
+          :disabled="!unsaved || hoursErrors.size > 0"
           :loading="saving"
           @click="save"
         />
@@ -112,18 +112,11 @@
                     @update:model-value="(v: string) => set('location_type', v)"
                   />
                   <FormControl
-                    v-if="
-                      doc.location_type === 'In person' ||
-                      (doc.location_type === 'Custom link' && !showHostLinks)
-                    "
+                    v-if="doc.location_type === 'In person'"
                     class="col-span-2"
                     :model-value="doc.location"
                     type="text"
-                    :label="
-                      doc.location_type === 'In person'
-                        ? __('Address')
-                        : __('Link')
-                    "
+                    :label="__('Address')"
                     @update:model-value="(v: string) => set('location', v)"
                   />
                   <FormControl
@@ -161,7 +154,7 @@
                 <SectionTitle
                   :title="__('Hosts')"
                   :description="
-                    showHostLinks
+                    showHostLinks && doc.hosts.length > 1
                       ? __(
                           'Each booking goes to a free host in turn, using their own meeting link.',
                         )
@@ -203,6 +196,7 @@
                         type="url"
                         class="-ml-2 h-7 w-full truncate rounded-5 border-0 bg-transparent px-2 text-base text-ink-gray-8 placeholder-ink-gray-4 hover:bg-surface-gray-3 focus:bg-surface-gray-3 focus:ring-0 focus-visible:!ring-0"
                         :value="host.meeting_link"
+                        :data-host-link="host.user"
                         :placeholder="__('Add link')"
                         @input="
                           (e) =>
@@ -785,6 +779,7 @@ import {
   computed,
   defineComponent,
   h,
+  nextTick,
   onBeforeUnmount,
   onMounted,
   ref,
@@ -906,12 +901,10 @@ const hostOptions = computed(() => {
 const hostName = (host: Row) =>
   getUser(String(host.user)).full_name || String(host.user)
 
-// a shared custom link would put meetings at the same time in one room
-const showHostLinks = computed(
-  () =>
-    doc.value?.location_type === 'Custom link' &&
-    (doc.value?.hosts.length || 0) > 1,
-)
+// a shared custom link would put meetings at the same time in one room, so each host row has one
+const showHostLinks = computed(() => doc.value?.location_type === 'Custom link')
+// empty links are flagged once Save is clicked, not while hosts are being added
+const triedSave = ref(false)
 // pages saved before host links existed only need them once hosts or location change
 const savedHostLinks = ref('')
 const hostLinksKey = () =>
@@ -920,11 +913,11 @@ const hostLinksKey = () =>
     doc.value?.location || '',
     (doc.value?.hosts || []).map((h) => [h.user, h.meeting_link || '']),
   ])
-const hostErrors = computed(() =>
+const hostLinkProblems = (missing: boolean) =>
   showHostLinks.value && doc.value && hostLinksKey() !== savedHostLinks.value
-    ? hostLinkErrors(doc.value.hosts, hostName)
-    : [],
-)
+    ? hostLinkErrors(doc.value.hosts, hostName, { missing })
+    : []
+const hostErrors = computed(() => hostLinkProblems(triedSave.value))
 const hostGrid = computed(() =>
   showHostLinks.value ? 'grid-cols-[2fr_3fr_22px]' : 'grid-cols-[1fr_22px]',
 )
@@ -933,6 +926,14 @@ function addHost(user: string | number | null) {
   if (!doc.value || !canEdit.value || !user) return
   doc.value.hosts.push({ user: String(user) })
   dirty.value = true
+  if (showHostLinks.value)
+    nextTick(() =>
+      document
+        .querySelector<HTMLInputElement>(
+          `[data-host-link="${CSS.escape(String(user))}"]`,
+        )
+        ?.focus(),
+    )
 }
 
 function removeHost(user: string) {
@@ -1100,6 +1101,7 @@ async function load() {
   savedRoute.value = doc.value?.route || ''
   savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
   savedHostLinks.value = hostLinksKey()
+  triedSave.value = false
   dirty.value = false
 }
 
@@ -1213,6 +1215,12 @@ const unsaved = computed(() => dirty.value || Boolean(formBuilder.value?.dirty))
 async function save() {
   if (!doc.value) return
   error.value = ''
+  if (hostLinkProblems(true).length) {
+    // the message sits under the hosts table, so bring it into view
+    triedSave.value = true
+    activeTab.value = 'details'
+    return
+  }
   saving.value = true
   try {
     // the form toasts its own errors
@@ -1227,10 +1235,18 @@ async function save() {
         order(a.workday) - order(b.workday) ||
         hhmm(a.start_time).localeCompare(hhmm(b.start_time)),
     )
+    // once every host has a link, drop a shared link (never an address) so no host gets another's room
+    if (
+      doc.value.location_type === 'Custom link' &&
+      /^https?:\/\//i.test(String(doc.value.location || '').trim()) &&
+      doc.value.hosts.every((h) => String(h.meeting_link || '').trim())
+    )
+      doc.value.location = ''
     doc.value = await call('frappe.client.save', { doc: doc.value })
     savedRoute.value = doc.value?.route || ''
     savedHosts.value = (doc.value?.hosts || []).map((h) => String(h.user))
     savedHostLinks.value = hostLinksKey()
+    triedSave.value = false
     dirty.value = false
     toast.success(__('Booking page saved'))
   } catch (e) {

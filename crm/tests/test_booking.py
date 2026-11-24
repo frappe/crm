@@ -8,6 +8,7 @@ from crm.api.booking import (
 	SlotUnavailableError,
 	book,
 	cancel_booking,
+	custom_link,
 	get_slots,
 	reschedule_booking,
 	to_iso,
@@ -453,6 +454,23 @@ class TestBooking(IntegrationTestCase):
 		with self.assertRaises(frappe.ValidationError):
 			self.page.save()
 
+	def test_a_one_host_custom_link_page_needs_a_link(self):
+		def save(location="", link=""):
+			page = frappe.get_doc("CRM Booking Page", self.page.name)
+			page.location_type, page.location, page.hosts[0].meeting_link = "Custom link", location, link
+			page.save()
+			return page
+
+		with self.assertRaises(frappe.ValidationError):
+			save()
+		# an address left from In person is kept but never used as a meeting room
+		with self.assertRaises(frappe.ValidationError):
+			save(location="12 Main Street")
+		page = save(location="12 Main Street", link="https://meet.example/a")
+		self.assertEqual(custom_link(page, HOSTS[0]), "https://meet.example/a")
+		page.hosts[0].meeting_link = ""
+		self.assertEqual(custom_link(page, HOSTS[0]), "")
+
 	def test_each_host_gets_their_own_link_at_the_same_time(self):
 		page = self.make_page(HOSTS, location_type="Phone call")
 
@@ -497,6 +515,25 @@ class TestBooking(IntegrationTestCase):
 		page.hosts[0].meeting_link = "https://meet.example/first"
 		with self.assertRaises(frappe.ValidationError):
 			page.save()
+
+	def test_a_one_host_page_link_moves_to_its_host(self):
+		from crm.patches.v1_0.move_booking_page_links_to_hosts import execute
+
+		one, shared = self.make_page([HOSTS[0]]), self.make_page(HOSTS)
+		for page in (one, shared):
+			frappe.db.set_value(
+				"CRM Booking Page",
+				page.name,
+				{"location_type": "Custom link", "location": "https://meet.example/" + page.name},
+			)
+		execute()
+		one, shared = (
+			frappe.get_doc("CRM Booking Page", one.name),
+			frappe.get_doc("CRM Booking Page", shared.name),
+		)
+		self.assertEqual((one.location, one.hosts[0].meeting_link), ("", "https://meet.example/" + one.name))
+		self.assertEqual(shared.location, "https://meet.example/" + shared.name)
+		self.assertFalse(any(h.meeting_link for h in shared.hosts))
 
 	def test_a_shared_link_is_never_in_two_meetings_at_once(self):
 		page = self.make_page(HOSTS, location_type="Phone call")

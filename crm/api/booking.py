@@ -288,11 +288,10 @@ def public_page(page) -> dict:
 		"timezone": page_timezone(page),
 		"max_days_ahead": cint(page.max_days_ahead) or 30,
 		"brand": public_brand(),
+		# names only: the page shows the business's brand, not the hosts' photos
 		"hosts": [
-			{"full_name": u.full_name, "image": public_file_url(u.user_image)}
-			for u in frappe.get_all(
-				"User", filters={"name": ["in", hosts]}, fields=["full_name", "user_image"]
-			)
+			{"full_name": u.full_name}
+			for u in frappe.get_all("User", filters={"name": ["in", hosts]}, fields=["full_name"])
 		],
 		"confirmation_message": page.confirmation_message or "",
 	}
@@ -972,8 +971,10 @@ def meeting_link(booking, event=None) -> str:
 
 def custom_link(page, host: str | None) -> str:
 	"""The host's own link, so meetings at the same time don't share a room, else the page's."""
+	from crm.fcrm.doctype.crm_booking_page.crm_booking_page import is_web_link
+
 	own = next((h.meeting_link for h in page.hosts if h.user == host and h.meeting_link), None)
-	return (own or page.location or "").strip()
+	return (own or (page.location if is_web_link(page.location) else "") or "").strip()
 
 
 def sync_booking_from_event(event, method=None):
