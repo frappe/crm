@@ -19,15 +19,19 @@ const {
   answerApproval,
   approveAll,
 } = await import('@/components/FlowChat/askFlow')
-const { summarizeCall, plainValue } =
-  await import('@/components/FlowChat/approvalSummary')
-const { foldFlowEvent, questionText, toolLabel } =
-  await import('@/components/FlowChat/flowEvents')
-const { askFlowCommands } =
-  await import('@/components/CommandPalette/askFlowCommands')
+const { summarizeCall, plainValue } = await import(
+  '@/components/FlowChat/approvalSummary'
+)
+const { foldFlowEvent, questionText, toolLabel } = await import(
+  '@/components/FlowChat/flowEvents'
+)
+const { askFlowCommands } = await import(
+  '@/components/CommandPalette/askFlowCommands'
+)
 const { groupCommands } = await import('@/utils/commandPalette')
-const { isPlainClick, linkRecordNames } =
-  await import('@/components/FlowChat/flowAnswer')
+const { isPlainClick, linkRecordNames } = await import(
+  '@/components/FlowChat/flowAnswer'
+)
 
 function freshTurn() {
   const state = {
