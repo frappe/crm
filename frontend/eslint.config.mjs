@@ -28,7 +28,6 @@ export default [
         ...globals.node,
         frappe: 'readonly',
         __: 'readonly',
-        __WHATSAPP_UI__: 'readonly',
       },
     },
   },

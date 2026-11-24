@@ -1,22 +1,14 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import fs from 'fs'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 import frappeui from 'frappe-ui/vite'
+import { whatsappUISource } from './whatsapp-ui.js'
 
 // https://vitejs.dev/config/
-// The whatsapp app is optional: without it beside CRM, its UI is swapped for a
-// stand-in and WhatsApp stays hidden until CRM is built again with the app.
-const whatsappUI = path.resolve(import.meta.dirname, '../../whatsapp/ui/src')
-const hasWhatsAppUI = fs.existsSync(whatsappUI)
-
 export default defineConfig(() => {
   const config = {
-    define: {
-      __WHATSAPP_UI__: JSON.stringify(hasWhatsAppUI),
-    },
     plugins: [
       vue(),
       vueJsx(),
@@ -74,9 +66,7 @@ export default defineConfig(() => {
         ),
         // point at the package src dir (not index.ts) so subpath imports like
         // `@whatsapp/ui/components/Messages` resolve to a real file
-        '@whatsapp/ui': hasWhatsAppUI
-          ? whatsappUI
-          : path.resolve(import.meta.dirname, 'src/whatsapp/unavailable.js'),
+        '@whatsapp/ui': whatsappUISource(),
         // same shape for @framework/ui: its account form pieces (Grid, Link) are
         // what @whatsapp/ui's AccountForm is built on
         '@framework/ui': path.resolve(
