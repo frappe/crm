@@ -64,7 +64,7 @@ const SETTINGS_SECTIONS = [
       ['Brand', 'palette'],
       ['Dashboard', 'layout-dashboard'],
       ['Defaults', 'list-checks'],
-      ['Home Actions', 'house'],
+      ['App menu', 'menu', 'customize dropdown logo links'],
     ],
   },
   {
@@ -343,7 +343,7 @@ function settingsCommands(tracked, isManager, whatsappInstalled) {
         group: 'Account',
         icon: 'settings',
         keywords:
-          'configure preferences profile users brand telephony erpnext automations',
+          'configure preferences profile users brand telephony erpnext automations app menu',
         children: () =>
           settingsChildren(tracked, isManager(), whatsappInstalled),
       },
@@ -357,8 +357,8 @@ function settingsChildren(tracked, isManager, whatsappInstalled) {
     (section) => isManager || !section.manager,
   )
   const commands = sections.flatMap((section) =>
-    section.pages.map(([page, icon]) =>
-      settingsChild(page, icon, section.title),
+    section.pages.map(([page, icon, keywords]) =>
+      settingsChild(page, icon, section.title, keywords),
     ),
   )
   if (isManager && whatsappInstalled) {
@@ -367,13 +367,13 @@ function settingsChildren(tracked, isManager, whatsappInstalled) {
   return commands.map((command) => tracked(command, 'settings'))
 }
 
-function settingsChild(page, icon, group) {
+function settingsChild(page, icon, group, keywords = '') {
   return {
     id: `settings-${page}`,
     title: page,
     group,
     icon,
-    keywords: `configure settings ${page}`,
+    keywords: `configure settings ${page} ${keywords}`.trim(),
     perform: () => openSettings(page),
   }
 }
