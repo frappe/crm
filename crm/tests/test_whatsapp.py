@@ -52,7 +52,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		doc.get.return_value = "+15551234567"
 
 		with patch(
-			"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
+			"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 			return_value=("LEAD-0001", "CRM Lead"),
 		):
 			validate(doc, None)
@@ -69,7 +69,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 		doc.reference_name = None
 
 		with patch(
-			"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
+			"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 			return_value=(None, None),
 		):
 			validate(doc, None)
@@ -85,7 +85,7 @@ class TestWhatsAppHooks(FrappeTestCase):
 
 		with (
 			patch(
-				"crm.api.whatsapp.get_contact_lead_or_deal_from_number",
+				"crm.api.whatsapp.find_contact_lead_or_deal_from_number",
 				side_effect=Exception("parse error"),
 			),
 			patch("frappe.log_error") as mock_log,
