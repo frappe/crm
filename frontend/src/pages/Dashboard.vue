@@ -1,5 +1,5 @@
 <template>
-  <InsightsDashboard v-if="isInsightsInstalled" dashboard="crm" />
+  <InsightsDashboard v-if="isInsightsInstalled" />
   <div v-else class="flex flex-col h-full overflow-hidden">
     <LayoutHeader>
       <template #left-header>
