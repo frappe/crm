@@ -18,6 +18,7 @@ from crm.api.whatsapp import (
 	add_roles,
 	count_conversation,
 	get_account_usage,
+	installed,
 	guard_doc_recipient_change,
 	guard_recipient_change,
 	is_whatsapp_enabled,
@@ -307,7 +308,10 @@ class TestAddRoles(FrappeTestCase):
 	def test_adds_permissions_only_for_roles_without_them(self):
 		with (
 			patch("frappe.get_installed_apps", return_value=["frappe", "crm", "whatsapp"]),
-			patch("frappe.db.exists", side_effect=lambda _doctype, filters: filters["role"] == "Sales User"),
+			patch(
+				"frappe.db.exists",
+				side_effect=lambda doctype, filters: doctype == "DocType" or filters["role"] == "Sales User",
+			),
 			patch("crm.api.whatsapp.add_permission") as mock_add,
 			patch("crm.api.whatsapp.update_permission_property"),
 		):
@@ -326,10 +330,14 @@ class TestAddRoles(FrappeTestCase):
 		)
 
 	@requires_whatsapp
+	def test_doctypes_the_installed_whatsapp_lacks_are_skipped(self):
+		self.assertEqual(installed(["WA Account", "WA Not In This Release"]), ["WA Account"])
+
+	@requires_whatsapp
 	def test_sales_roles_can_read_but_not_write_accounts_and_flows(self):
 		add_roles()
 
-		for doctype in ("WA Account", "WA Flow"):
+		for doctype in installed(["WA Account", "WA Flow"]):
 			for role in ("Sales Manager", "Sales User"):
 				perm = frappe.db.get_value(
 					"Custom DocPerm",

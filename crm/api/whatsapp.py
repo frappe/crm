@@ -336,7 +336,7 @@ def add_roles():
 		"WA Settings",
 		"WA Profile",
 	]
-	for doctype in doctypes:
+	for doctype in installed(doctypes):
 		for role in role_list:
 			if frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role}):
 				continue
@@ -350,7 +350,12 @@ def add_roles():
 			update_permission_property(doctype, role, 0, "export", 1)
 
 	# Read only: the template form links to accounts and Flows, and accounts hold Meta credentials.
-	for doctype in ("WA Account", "WA Flow"):
+	for doctype in installed(["WA Account", "WA Flow"]):
 		for role in role_list:
 			if not frappe.db.exists("Custom DocPerm", {"parent": doctype, "role": role}):
 				add_permission(doctype, role, 0, "read")
+
+
+def installed(doctypes: list[str]) -> list[str]:
+	"""An older whatsapp release lacks some DocTypes, such as WA Flow, and CRM may update first."""
+	return [doctype for doctype in doctypes if frappe.db.exists("DocType", doctype)]
