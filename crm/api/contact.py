@@ -28,39 +28,30 @@ def update_deals_email_mobile_no(doc):
 
 @frappe.whitelist()
 def get_linked_deals(contact: str):
-	"""Get linked deals for a contact"""
+	"""The deals that list the contact and that the user can read, the last changed first."""
 
 	if not frappe.has_permission("Contact", "read", contact):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
-	deal_names = frappe.get_all(
-		"CRM Contacts",
-		filters={"contact": contact, "parenttype": "CRM Deal"},
-		fields=["parent"],
+	return frappe.get_list(
+		"CRM Deal",
+		filters=[["CRM Contacts", "contact", "=", contact]],
+		fields=[
+			"name",
+			"organization",
+			"organization.organization_logo as organization_logo",
+			"currency",
+			"deal_value",
+			"status",
+			"email",
+			"mobile_no",
+			"deal_owner",
+			"deal_owner.full_name as deal_owner_name",
+			"modified",
+		],
+		order_by="modified desc",
 		distinct=True,
 	)
-
-	# get deals data
-	deals = []
-	for d in deal_names:
-		deal = frappe.get_cached_doc(
-			"CRM Deal",
-			d.parent,
-			fields=[
-				"name",
-				"organization",
-				"currency",
-				"deal_value",
-				"status",
-				"email",
-				"mobile_no",
-				"deal_owner",
-				"modified",
-			],
-		)
-		deals.append(deal.as_dict())
-
-	return deals
 
 
 @frappe.whitelist()
