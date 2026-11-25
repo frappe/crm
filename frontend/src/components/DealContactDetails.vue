@@ -6,7 +6,7 @@
       class="group flex items-center gap-1 pl-1"
     >
       <component :is="field.icon" class="h-4 w-4 shrink-0" />
-      <div class="min-w-0 flex-1">
+      <div class="relative min-w-0 flex-1">
         <PrimaryDropdown
           v-if="contact.can_write"
           :value="contactDoc.doc[field.fieldname]"
@@ -20,17 +20,19 @@
         <div v-else class="truncate px-2.5 py-1.5">
           {{ contactDoc.doc[field.fieldname] }}
         </div>
+        <!-- Floats over the dropdown, left of its chevron, so the chevron
+          keeps its place. Left visible on touch, which has no hover. -->
+        <Button
+          v-if="contactDoc.doc[field.fieldname]"
+          variant="ghost"
+          icon="lucide-copy"
+          class="absolute top-1/2 -translate-y-1/2 transition-opacity focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+          :class="contact.can_write ? 'right-7' : 'right-1'"
+          :tooltip="field.copyLabel"
+          :aria-label="field.copyLabel"
+          @click="copyToClipboard(contactDoc.doc[field.fieldname])"
+        />
       </div>
-      <!-- Left visible on touch, which has no hover to reveal it -->
-      <Button
-        v-if="contactDoc.doc[field.fieldname]"
-        variant="ghost"
-        icon="lucide-copy"
-        class="shrink-0 transition-opacity focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
-        :tooltip="field.copyLabel"
-        :aria-label="field.copyLabel"
-        @click="copyToClipboard(contactDoc.doc[field.fieldname])"
-      />
     </div>
     <div
       v-if="!visibleFields.length"
