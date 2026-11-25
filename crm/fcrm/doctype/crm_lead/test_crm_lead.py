@@ -627,6 +627,46 @@ class TestCRMLead(IntegrationTestCase):
 				create_lead(first_name="Duplicate", email="unique.lead@example.com")
 			lead.save()
 
+	def test_status_change_log_records_lead_status_types(self):
+		"""Status change log rows store the CRM Lead Status type of each status"""
+		lead = create_lead(first_name="Status Log", status="New")
+		lead.status = "Contacted"
+		lead.save()
+		lead.reload()
+
+		new_type = frappe.db.get_value("CRM Lead Status", "New", "type")
+		contacted_type = frappe.db.get_value("CRM Lead Status", "Contacted", "type")
+		log = lead.status_change_log
+		self.assertEqual(len(log), 2)
+		self.assertEqual(log[0].get("from"), "New")
+		self.assertEqual(log[0].from_type, new_type)
+		self.assertEqual(log[0].to, "Contacted")
+		self.assertEqual(log[0].to_type, contacted_type)
+		self.assertEqual(log[1].get("from"), "Contacted")
+		self.assertEqual(log[1].from_type, contacted_type)
+
+	def test_status_change_log_ignores_deal_status_with_same_name(self):
+		"""A CRM Deal Status with the same name as a lead status must not set the type in the lead's log"""
+		frappe.get_doc(
+			{"doctype": "CRM Deal Status", "deal_status": "_Test Shared Status", "type": "Won"}
+		).insert()
+		frappe.get_doc(
+			{"doctype": "CRM Lead Status", "lead_status": "_Test Shared Status", "type": "Ongoing"}
+		).insert()
+		frappe.get_doc(
+			{"doctype": "CRM Lead Status", "lead_status": "_Test Lead Only Status", "type": "On Hold"}
+		).insert()
+
+		lead = create_lead(first_name="Shared Status", status="_Test Shared Status")
+		lead.status = "_Test Lead Only Status"
+		lead.save()
+		lead.reload()
+
+		log = lead.status_change_log
+		self.assertEqual(log[0].from_type, "Ongoing")
+		self.assertEqual(log[0].to_type, "On Hold")
+		self.assertEqual(log[1].from_type, "On Hold")
+
 
 def create_lead(**kwargs):
 	"""Helper function to create a CRM Lead for testing"""
