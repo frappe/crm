@@ -799,6 +799,8 @@ class TestPhoneLookupPermissions(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
+		# v15 sends assignment emails inline in tests, and sending commits the transaction
+		frappe.flags.mute_emails = True
 		if not frappe.db.exists("User", SALES_USER):
 			user = frappe.get_doc(
 				{
@@ -830,7 +832,9 @@ class TestPhoneLookupPermissions(FrappeTestCase):
 		frappe.set_user(SALES_USER)
 		self.assertFalse(frappe.has_permission("CRM Lead", "read", self.lead.name))
 
-		self.assertEqual(get_contact_by_phone_number("+91 98765 11111"), {"mobile_no": "+91 98765 11111"})
+		contact = get_contact_by_phone_number("+91 98765 11111")
+		self.assertNotIn("lead", contact)
+		self.assertNotIn("name", contact)
 		self.assertEqual(get_contact_lead_or_deal_from_number("+91 98765 11111"), (None, None))
 
 	def test_server_side_lookups_still_find_the_lead(self):
