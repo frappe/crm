@@ -22,6 +22,8 @@ class TestActivityPermlevel(CRMTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
+		# v15 sends assignment emails inline in tests, and sending commits the transaction
+		frappe.flags.mute_emails = True
 		make_user("rep@permlevel.test", roles=["Sales User"])
 		make_user("mgr@permlevel.test", roles=["Sales Manager"])
 
