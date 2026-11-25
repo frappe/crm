@@ -38,7 +38,7 @@
       <span
         class="shrink-0 truncate text-base"
         :class="[
-          'w-44 [[data-links]_&]:w-[148px]',
+          'w-44 [[data-links]_&]:w-36',
           isSubmenu && 'font-medium',
           isMuted ? 'text-ink-gray-5' : 'text-ink-gray-9',
         ]"
