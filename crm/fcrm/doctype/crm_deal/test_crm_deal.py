@@ -14,11 +14,8 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 	remove_contact,
 	set_primary_contact,
 )
-<<<<<<< HEAD
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from crm.permissions.test_org_hierarchy import make_user
->>>>>>> 7f3e144 (fix: check access when a ToDo edit assigns a lead or deal)
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
 class TestCRMDeal(FrappeTestCase):
