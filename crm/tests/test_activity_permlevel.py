@@ -3,15 +3,15 @@
 
 import frappe
 from frappe.permissions import add_permission, update_permission_property
-from frappe.tests import IntegrationTestCase
 
 from crm.api.activities import get_activities
+from crm.tests import CRMTestCase
 
 RESTRICTED_FIELD = "permlevel_secret"
 RESTRICTED_VALUE = "salary is 100000"
 
 
-class TestActivityPermlevel(IntegrationTestCase):
+class TestActivityPermlevel(CRMTestCase):
 	"""A permlevel-restricted field is hidden on the form layout, so its values
 	must not leak through the activity timeline either (frappe/crm#805).
 
