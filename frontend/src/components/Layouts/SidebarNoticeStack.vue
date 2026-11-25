@@ -49,9 +49,9 @@
       <div
         v-for="(notice, index) in backToFront"
         :key="notice.key"
-        class="overflow-hidden transition-all duration-300 ease-out [&_[data-slot]]:transition-opacity [&_[data-slot]]:duration-300"
+        class="overflow-hidden border border-outline-alpha-gray-1 bg-surface-base transition-all duration-300 ease-out [&>[data-slot=sidebar-card]]:rounded-none [&>[data-slot=sidebar-card]]:border-0 [&_[data-slot]]:transition-opacity [&_[data-slot]]:duration-300"
         :class="[
-          isEdge(notice) ? 'rounded-t-6' : 'rounded-6',
+          isEdge(notice) ? 'rounded-t-6 border-b-0' : 'rounded-6',
           isCompact(notice) && COMPACT,
         ]"
         :style="cardStyle(notice, backToFront.length - 1 - index)"
@@ -79,9 +79,12 @@ defineProps({
 // The stack keeps the open sidebar's inner width (w-56), so while the sidebar's
 // width animates the cards are uncovered instead of rewrapping.
 // A compact card hides everything below its title row; the parts fade as it opens.
+// Its hidden dismiss button gives back the space it reserves, so the title stays on one line.
+// The wrapper, not the clipped card, draws the border, so a compact card keeps its bottom edge.
 const COMPACT =
-  '[&_[data-slot=actions]]:opacity-0 [&_[data-slot=description]]:opacity-0 [&_[data-slot=dismiss]]:opacity-0'
+  '[&_[data-slot=actions]]:opacity-0 [&_[data-slot=description]]:opacity-0 [&_[data-slot=dismiss]]:opacity-0 [&_div:has(>[data-slot=title])]:pr-0'
 const EDGE = 6
+const BORDER = 2
 const GAP = 6
 const STAGGER = 40
 const MAX_EDGES = 2
@@ -131,12 +134,13 @@ const heights = reactive({})
 const observer = new ResizeObserver((entries) => {
   for (const { target } of entries) {
     const row = target.querySelector('[data-slot=title]')?.parentElement
+    // Wrapper heights: the card plus the wrapper's top and bottom border.
     heights[target.dataset.notice] = {
-      full: target.offsetHeight,
+      full: target.offsetHeight + BORDER,
       // The title row plus the card's padding below it.
-      compact: row
-        ? row.offsetTop + row.offsetHeight + 12
-        : target.offsetHeight,
+      compact:
+        (row ? row.offsetTop + row.offsetHeight + 12 : target.offsetHeight) +
+        BORDER,
     }
   }
 })
