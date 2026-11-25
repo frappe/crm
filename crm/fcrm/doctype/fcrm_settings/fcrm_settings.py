@@ -233,8 +233,12 @@ def sync_table(key, hook):
 	# add new items
 	count = 0  # maintain count because list may come from separate apps
 	for item in frappe.get_hooks(hook):
-		if item.get("name1") not in existing_items:
+		existing = existing_items.get(item.get("name1"))
+		if not existing:
 			crm_settings.append(key, item, count)
+		elif existing.is_standard:
+			# The hook owns where a built-in sits, such as About inside Help.
+			existing.parent_submenu = item.get("parent_submenu") or ""
 		new_standard_items[item.get("name1")] = True
 		count += 1
 

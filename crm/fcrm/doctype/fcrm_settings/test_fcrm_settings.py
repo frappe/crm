@@ -6,6 +6,8 @@ import json
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.fcrm.doctype.fcrm_settings.fcrm_settings import after_migrate
+
 FORECASTING_FIELDS = ["expected_closure_date", "probability", "expected_deal_value"]
 
 
@@ -142,3 +144,16 @@ class TestFCRMSettings(IntegrationTestCase):
 		self.assertEqual(about.parent_submenu, "help")
 		about.parent_submenu = ""
 		self.assertRaises(frappe.ValidationError, settings.save)
+
+	def test_migrate_moves_about_into_help(self):
+		"""Sites from before Help have About at the top level; migrate must move it, not fail."""
+		frappe.db.set_value(
+			"CRM Dropdown Item",
+			{"name1": "about", "parenttype": "FCRM Settings"},
+			"parent_submenu",
+			"",
+		)
+		after_migrate()
+		settings = frappe.get_single("FCRM Settings")
+		about = next(item for item in settings.dropdown_items if item.name1 == "about")
+		self.assertEqual(about.parent_submenu, "help")
