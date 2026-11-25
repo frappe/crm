@@ -17,7 +17,7 @@ from crm.utils import sales_user_only
 
 
 # Incoming Call
-@frappe.whitelist(allow_guest=True)  # nosemgrep: guest-whitelisted-method
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"], rate_limit=None)  # nosemgrep: guest-whitelisted-method  # fmt: skip
 def handle_request(**kwargs):
 	validate_request()
 	if not is_integration_enabled():
