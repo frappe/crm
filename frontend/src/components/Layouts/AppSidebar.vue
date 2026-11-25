@@ -37,9 +37,12 @@
               <span class="flex-1 truncate text-sm leading-tighter">
                 {{ __('Search') }}
               </span>
-              <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
-                K
-              </KeyboardShortcut>
+              <span
+                v-if="!mobile"
+                class="mr-2 rounded-1 bg-surface-gray-2 px-1 py-0.5"
+              >
+                <KeyboardShortcut combo="Mod+K" />
+              </span>
             </SidebarItem>
 
             <SidebarItem
@@ -84,9 +87,12 @@
               <span class="flex-1 truncate text-sm leading-tighter">
                 {{ __('Flow') }}
               </span>
-              <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
-                I
-              </KeyboardShortcut>
+              <span
+                v-if="!mobile"
+                class="mr-2 rounded-1 bg-surface-gray-2 px-1 py-0.5"
+              >
+                <KeyboardShortcut combo="Mod+I" />
+              </span>
             </SidebarItem>
           </div>
 
@@ -179,7 +185,6 @@ import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
 import Notifications from '@/components/Notifications.vue'
-import KeyboardShortcut from '@/components/KeyboardShortcut.vue'
 import LucideSearch from '~icons/lucide/search'
 import FlowIcon from '@/components/Icons/FlowIcon.vue'
 import { hasFlowLauncher } from '@/utils/flowLauncher'
@@ -191,7 +196,13 @@ import {
   notificationsStore,
 } from '@/stores/notifications'
 import { mobileSidebarOpened, closeMobileSidebar } from '@/composables/settings'
-import { Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
+import {
+  KeyboardShortcut,
+  Sidebar,
+  SidebarItem,
+  SidebarLabel,
+  Tooltip,
+} from 'frappe-ui'
 import UserMenu from '@/components/Layouts/UserMenu.vue'
 import SidebarNotices from '@/components/Layouts/SidebarNotices.vue'
 import SidebarEdge from '@/components/Layouts/SidebarEdge.vue'
