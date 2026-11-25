@@ -169,14 +169,7 @@ import {
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 import { getFormat } from '@/utils'
-<<<<<<< HEAD
-=======
-import {
-  isMultiValueFilter,
-  supportsTreeFilter,
-  toFilterValueArray,
-} from '@/utils/fieldTransforms'
->>>>>>> 2a3b4d5 (feat: filter tree Link fields by descendants (inclusive))
+import { supportsTreeFilter } from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
