@@ -61,6 +61,7 @@
           newEmailEditor.bccEmails = []
           newEmailEditor.cc = false
           newEmailEditor.bcc = false
+          newEmailEditor.inReplyTo = ''
           newEmail = ''
         },
       }"
@@ -293,6 +294,7 @@ async function sendMail(sendAfter = null) {
     sender: fromEmail,
     sender_full_name: getUser()?.full_name || undefined,
     send_after: sendAfter || undefined,
+    in_reply_to: newEmailEditor.value.inReplyTo || undefined,
   })
 }
 
@@ -388,6 +390,7 @@ async function afterSend(sending) {
     return false
   }
   newEmail.value = ''
+  newEmailEditor.value.inReplyTo = ''
   attachments.value = []
   reload.value = true
   emit('scroll')
@@ -464,6 +467,7 @@ function restoreDraft(draft) {
   // The draft already carries its signature
   signatureAdded.value = true
   editor.subject = draft.subject
+  editor.inReplyTo = draft.in_reply_to || ''
   editor.toEmails = split(draft.recipients)
   editor.ccEmails = split(draft.cc)
   editor.bccEmails = split(draft.bcc)
