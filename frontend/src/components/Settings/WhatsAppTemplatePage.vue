@@ -46,7 +46,7 @@
         :flow-chrome="flowChrome"
         :on-new-flow="flowPermissions.write ? newFlow : undefined"
         :on-manage-flows="
-          flowPermissions.read ? () => emit('manage-flows') : undefined
+          canLeaveForFlows ? () => emit('manage-flows') : undefined
         "
       />
     </div>
@@ -103,6 +103,11 @@ const flowBuilderChrome = builderChrome()
 const openFlow = ref('')
 const creatingFlow = ref(false)
 const newFlowList = shallowRef(null)
+
+// Manage Flows leaves this page, so it waits until nothing is left to lose.
+const canLeaveForFlows = computed(
+  () => flowPermissions.read && !template.isNew && !template.isDirty,
+)
 
 if (template.isNew && props.referenceDoctype) {
   template.doc.reference_doctype = props.referenceDoctype
