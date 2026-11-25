@@ -12,14 +12,17 @@
         </span>
       </div>
       <div
-        class="flex flex-col rounded-6 bg-surface-elevation-2 p-1 shadow-lg ring-1 ring-black/5"
+        class="relative flex flex-col rounded-6 bg-surface-elevation-2 p-1 shadow-lg ring-1 ring-black/5"
+        @mouseleave="openOption = null"
       >
         <template v-for="(group, index) in visibleGroups" :key="index">
           <div v-if="index" class="my-1 border-t border-outline-gray-2" />
           <div
             v-for="option in group.options"
             :key="option.label"
-            class="flex h-7 items-center gap-2 px-2 text-base text-ink-gray-8"
+            class="flex h-7 items-center gap-2 rounded-4 px-2 text-base text-ink-gray-8"
+            :class="{ 'bg-surface-gray-2': option === openOption }"
+            @mouseenter="hover(option, $event)"
           >
             <component :is="option.icon" class="size-4 text-ink-gray-6" />
             <span class="flex-1 truncate">{{ option.label }}</span>
@@ -36,6 +39,24 @@
         >
           {{ __('Every item is hidden.') }}
         </div>
+        <!-- No room beside the menu here, so the submenu opens just under its row. -->
+        <div
+          v-if="openOption"
+          class="absolute -right-2 z-10 flex w-40 flex-col rounded-6 bg-surface-elevation-2 p-1 shadow-xl ring-1 ring-black/5"
+          :style="{ top: `${submenuTop}px` }"
+        >
+          <div
+            v-for="entry in openOption.submenu"
+            :key="entry.label"
+            class="flex h-7 items-center gap-2 px-2 text-base text-ink-gray-8"
+          >
+            <component
+              :is="entry.icon || entry.slots?.prefix"
+              class="size-4 text-ink-gray-6"
+            />
+            <span class="flex-1 truncate">{{ entry.label }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </aside>
@@ -45,7 +66,7 @@
 import BrandLogo from '@/components/BrandLogo.vue'
 import { useAppMenu } from '@/composables/appMenu'
 import { getSettings } from '@/stores/settings'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({ items: { type: Array, required: true } })
 
@@ -62,4 +83,13 @@ const visibleGroups = computed(() =>
     }))
     .filter((group) => group.options.length),
 )
+
+const openOption = ref(null)
+const submenuTop = ref(0)
+
+function hover(option, event) {
+  openOption.value = option.submenu?.length ? option : null
+  const row = event.currentTarget
+  submenuTop.value = row.offsetTop + row.offsetHeight + 2
+}
 </script>

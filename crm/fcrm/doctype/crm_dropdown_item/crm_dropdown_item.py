@@ -21,10 +21,11 @@ class CRMDropdownItem(Document):
 		name1: DF.Data | None
 		open_in_new_window: DF.Check
 		parent: DF.Data
+		parent_submenu: DF.Data | None
 		parentfield: DF.Data
 		parenttype: DF.Data
 		route: DF.Data | None
-		type: DF.Literal["Route", "Separator"]
+		type: DF.Literal["Route", "Separator", "Submenu"]
 	# end: auto-generated types
 
 	pass
