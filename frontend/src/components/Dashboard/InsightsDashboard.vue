@@ -15,6 +15,7 @@
         <Button
           v-if="actions.length"
           :label="actions[0].label"
+          :iconLeft="ACTION_ICONS[actions[0].icon]"
           :href="actions[0].href"
           @click="actions[0].onClick?.()"
         />
@@ -60,10 +61,15 @@ import {
 } from 'frappe-ui'
 import { computed, ref, watch } from 'vue'
 
-type Action = { label: string } & (
+type Action = { label: string; icon?: string } & (
   | { onClick: () => void; href?: never }
   | { href: string; onClick?: never }
 )
+
+// written out in full so Tailwind generates the icon classes
+const ACTION_ICONS: Record<string, string> = {
+  'refresh-cw': 'lucide-refresh-cw',
+}
 
 const { isAdmin } = usersStore()
 const { $dialog } = globalStore()
