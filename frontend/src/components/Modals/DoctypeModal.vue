@@ -13,7 +13,6 @@
       >
         <div class="mb-5 flex items-center justify-between">
           <div class="flex gap-2 items-center">
-<<<<<<< HEAD
             <Dialog.Title as-child>
               <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
                 {{
@@ -23,15 +22,6 @@
                 }}
               </h3>
             </Dialog.Title>
-=======
-            <h3 class="text-3xl-semibold leading-6 text-ink-gray-9">
-              {{
-                editMode
-                  ? __('Edit ', [doctypeTitle || doctype])
-                  : __('Create ', [doctypeTitle || doctype])
-              }}
-            </h3>
->>>>>>> 292a065 (fix: translate untranslated CRM user-facing messages)
           </div>
           <div class="flex items-center gap-1">
             <CustomActions
