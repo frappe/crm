@@ -6,7 +6,7 @@ from frappe.permissions import add_permission, update_permission_property
 
 from crm.api.doc import get_assignees
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
-from crm.integrations.api import get_contact_lead_or_deal_from_number
+from crm.integrations.api import find_contact_lead_or_deal_from_number
 
 ALLOWED_WHATSAPP_ROLES = ["System Manager", "Sales Manager", "Sales User"]
 
@@ -38,7 +38,7 @@ def validate(doc, method):
 	phone_number = doc.get("from") if doc.type == "Incoming" else doc.get("to")
 	if phone_number:
 		try:
-			name, doctype = get_contact_lead_or_deal_from_number(phone_number)
+			name, doctype = find_contact_lead_or_deal_from_number(phone_number)
 			if doctype and name is not None:
 				doc.reference_doctype = doctype
 				doc.reference_name = name
