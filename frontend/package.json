@@ -32,7 +32,7 @@
     "@whatsapp/ui": "link:../../whatsapp/ui",
     "cropperjs": "^2.1.1",
     "dompurify": "^3.3.3",
-    "frappe-ui": "1.0.0-rc.2",
+    "frappe-ui": "1.2.0",
     "gemoji": "^8.1.0",
     "grid-layout-plus": "^1.1.0",
     "leaflet": "^1.9.4",
