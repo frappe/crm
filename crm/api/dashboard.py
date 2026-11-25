@@ -105,11 +105,18 @@ def copy_insights_workbook(workbook: str) -> dict:
 
 
 def share_like_original(original, names: dict):
-	"""Readers of the shipped dashboard keep seeing the copy, with the rows its owner sees."""
+	"""Readers of the shipped dashboard keep seeing the copy.
+
+	Charts run as the reader, like the shipped ones, so readers can drill down. Only when
+	Insights team permissions are on do they run as the owner, since readers lack table grants.
+	"""
 	copy = frappe.get_doc("Insights Dashboard v3", names[original.name])
 	copy.visibility = original.visibility
 	copy.set("visible_to_roles", [{"role": row.role} for row in original.visible_to_roles])
 	copy.save()
+
+	if not frappe.db.get_single_value("Insights Settings", "enable_permissions"):
+		return copy
 
 	for chart in frappe.get_all("Insights Chart v3", {"workbook": copy.workbook}, pluck="name"):
 		chart_doc = frappe.get_doc("Insights Chart v3", chart)
