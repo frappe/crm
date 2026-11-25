@@ -283,6 +283,8 @@ const fromEmail = ref('')
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
+// Communication this email replies to; Frappe threads the email on its message_id
+const inReplyTo = ref('')
 const ccInput = ref(null)
 const bccInput = ref(null)
 
@@ -430,6 +432,7 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  inReplyTo,
   sendBlocked,
 })
 </script>

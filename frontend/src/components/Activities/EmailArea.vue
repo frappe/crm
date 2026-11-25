@@ -212,6 +212,7 @@ function reply(email, reply_all = false) {
     }
   }
   editor.replyAddresses = replyAddresses
+  editor.inReplyTo = props.activity.name
   editor.toEmails = [email.sender]
   editor.cc = editor.bcc = false
   editor.ccEmails = []
