@@ -14,6 +14,8 @@ import { sanitizeHTML } from '@/utils'
 import { createResource } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
 
+const DOCS_URL = 'https://docs.frappe.io/crm'
+
 /**
  * The menu under the app logo, built from FCRM Settings' `dropdown_items` rows.
  * `getItems` returns the rows, so the sidebar and the App menu settings preview
@@ -83,9 +85,24 @@ export function useAppMenu(getItems) {
           onClick: () => confirmLoginToFrappeCloud(),
           condition: () => !isMobileView.value && window.is_fc_site,
         }
-      case 'about':
-        return { icon, label, onClick: () => (showAboutModal.value = true) }
+      case 'help':
+        return { icon, label, submenu: helpSubmenu() }
     }
+  }
+
+  function helpSubmenu() {
+    return [
+      {
+        icon: spriteIcon('book-open'),
+        label: __('Documentation'),
+        onClick: () => window.open(DOCS_URL, '_blank', 'noopener'),
+      },
+      {
+        icon: spriteIcon('info'),
+        label: __('About'),
+        onClick: () => (showAboutModal.value = true),
+      },
+    ]
   }
 
   function appSubmenu() {

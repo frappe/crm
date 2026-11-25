@@ -11,12 +11,12 @@ import { createResource } from 'frappe-ui'
 import { computed } from 'vue'
 
 const URGENT_DAYS = 3
-const LEVELS = { gray: 1, blue: 1, amber: 2, red: 3 }
+const URGENCY = { gray: 1, blue: 1, amber: 2, red: 3 }
 
 /**
- * The notices behind the icon beside the avatar: the trial, the demo-site
- * signup and the sample data, each in `SidebarCard`'s shape. `level` is the
- * most urgent one's: 'none', 'info', 'soon' or 'urgent'.
+ * The notices above the avatar: the trial, the demo-site signup and the sample
+ * data, each in `SidebarCard`'s shape, most urgent first. A notice is `urgent`
+ * when the trial ends soon, is over its limit or has ended (amber or red).
  */
 export function useSidebarNotices() {
   const { capture } = useTelemetry()
@@ -31,15 +31,14 @@ export function useSidebarNotices() {
       siteTrial.value,
       window.is_demo_site && signupNotice(capture),
       isManager() && isDemoDataCreated.value && sampleDataNotice(clearDemoData),
-    ].filter(Boolean),
+    ]
+      .filter(Boolean)
+      .map((notice) => ({ ...notice, urgent: URGENCY[notice.theme] > 1 }))
+      // `sort` is stable, so notices of one urgency keep the order above.
+      .sort((a, b) => URGENCY[b.theme] - URGENCY[a.theme]),
   )
 
-  const level = computed(() => {
-    const highest = Math.max(0, ...notices.value.map((n) => LEVELS[n.theme]))
-    return ['none', 'info', 'soon', 'urgent'][highest]
-  })
-
-  return { notices, level }
+  return { notices }
 }
 
 /** The trial on a Frappe Cloud site that has Cloud Settings. */

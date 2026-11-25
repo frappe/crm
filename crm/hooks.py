@@ -504,10 +504,10 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
-		"name1": "about",
-		"label": "About",
+		"name1": "help",
+		"label": "Help",
 		"type": "Route",
-		"icon": "info",
+		"icon": "circle-question-mark",
 		"route": "#",
 		"is_standard": 1,
 	},
