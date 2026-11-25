@@ -12,11 +12,13 @@
     </span>
 
     <template v-if="isDivider">
-      <span class="flex flex-1 items-center gap-3 pl-1">
-        <span class="text-xs uppercase tracking-wider text-ink-gray-5">
-          {{ __('Divider') }}
-        </span>
-        <span class="flex-1 border-t border-outline-gray-2" />
+      <span class="w-7 shrink-0" />
+      <span
+        class="flex-1 text-base"
+        :class="item.hidden ? 'text-ink-gray-4' : 'text-ink-gray-5'"
+      >
+        {{ __('Divider') }}
+        <template v-if="item.hidden"> · {{ __('Hidden') }}</template>
       </span>
     </template>
     <template v-else>
