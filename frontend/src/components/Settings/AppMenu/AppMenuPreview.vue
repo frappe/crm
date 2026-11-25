@@ -39,10 +39,10 @@
         >
           {{ __('Every item is hidden.') }}
         </div>
-        <!-- No room beside the menu here, so the submenu opens just under its row. -->
         <div
           v-if="openOption"
-          class="absolute -right-2 z-10 flex w-40 flex-col rounded-6 bg-surface-elevation-2 p-1 shadow-xl ring-1 ring-black/5"
+          class="absolute z-10 flex w-40 flex-col rounded-6 bg-surface-elevation-2 p-1 shadow-xl ring-1 ring-black/5"
+          :class="opensLeft ? 'right-full mr-1' : 'left-full ml-1'"
           :style="{ top: `${submenuTop}px` }"
         >
           <div
@@ -86,10 +86,19 @@ const visibleGroups = computed(() =>
 
 const openOption = ref(null)
 const submenuTop = ref(0)
+const opensLeft = ref(false)
 
+// Matches the flyout's w-40, plus its gap.
+const SUBMENU_WIDTH = 164
+
+// Like the real menu, the submenu opens beside its row, on the left when the settings dialog has no room on the right.
 function hover(option, event) {
   openOption.value = option.submenu?.length ? option : null
   const row = event.currentTarget
-  submenuTop.value = row.offsetTop + row.offsetHeight + 2
+  submenuTop.value = row.offsetTop - 4
+  const right = row.closest('[role=dialog]')?.getBoundingClientRect().right
+  opensLeft.value =
+    row.parentElement.getBoundingClientRect().right + SUBMENU_WIDTH >
+    (right ?? window.innerWidth)
 }
 </script>
