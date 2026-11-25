@@ -109,16 +109,12 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
-<<<<<<< HEAD
 import { isContentEmpty, htmlToText } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
-=======
-import { isContentEmpty } from '@/utils'
 import {
   getEmailSubject,
   loadUserEmailSubjects,
 } from '@/composables/emailSubject'
->>>>>>> 3635368 (feat: let each user set the default email subject for leads and deals)
 import { usersStore } from '@/stores/users'
 import { useStorage, useWindowSize } from '@vueuse/core'
 import { useTelemetry } from '@framework/ui/telemetry'
