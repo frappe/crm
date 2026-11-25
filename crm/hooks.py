@@ -517,12 +517,4 @@ standard_dropdown_items = [
 		"type": "Separator",
 		"is_standard": 1,
 	},
-	{
-		"name1": "logout",
-		"label": "Log out",
-		"type": "Route",
-		"icon": "log-out",
-		"route": "#",
-		"is_standard": 1,
-	},
 ]
