@@ -12,6 +12,7 @@
       <Link
         class="form-control w-48"
         doctype="Insights Dashboard v3"
+        value=""
         :placeholder="__('Add Dashboard')"
         placement="bottom-end"
         @change="addDashboard"
