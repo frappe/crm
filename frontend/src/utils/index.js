@@ -327,6 +327,15 @@ export function isContentEmpty(html) {
   return htmlToText(html).trim() === ''
 }
 
+// signatureHTML is HTML; its source newlines are insignificant whitespace, so
+// turning them into <br> is what doubled the spacing of every line (#3570).
+export function composeSignatureContent(signatureHTML, editorHTML) {
+  const body = editorHTML?.startsWith('<p></p>')
+    ? editorHTML.slice(7)
+    : editorHTML || ''
+  return signatureHTML + body
+}
+
 export function startCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
