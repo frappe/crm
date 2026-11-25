@@ -111,7 +111,12 @@ export default defineConfig(() => {
         'prosemirror-state',
         'prosemirror-view',
         'prosemirror-transform',
+        '@codemirror/state',
         '@codemirror/view',
+        '@codemirror/autocomplete',
+        '@codemirror/commands',
+        '@codemirror/language',
+        '@codemirror/search',
         'marked',
       ],
     },
@@ -126,6 +131,14 @@ export default defineConfig(() => {
         'prosemirror-view',
         'lowlight',
         'interactjs',
+        // frappe-ui's code editor imports these as source; bundled together they
+        // share one @codemirror/state, which CodeMirror checks with instanceof
+        '@codemirror/state',
+        '@codemirror/view',
+        '@codemirror/autocomplete',
+        '@codemirror/commands',
+        '@codemirror/language',
+        '@codemirror/search',
       ],
       // frappe-ui ships source: pre-bundling it bundles the editor's scripts but
       // leaves its .vue files outside, so the editor code loads twice
