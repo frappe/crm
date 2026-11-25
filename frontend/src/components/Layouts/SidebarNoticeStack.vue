@@ -42,21 +42,24 @@
     @click="expanded = canExpand"
   >
     <!-- Fanned out, the cards open over the views instead of pushing them up. -->
-    <TransitionGroup
-      v-if="expanded"
-      appear
-      tag="div"
-      class="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 bg-surface-gray-1 pt-1.5"
-      enter-active-class="transition duration-200 ease-out"
+    <Transition
+      enter-active-class="transition duration-300 ease-out"
       enter-from-class="translate-y-3 opacity-0"
+      leave-active-class="transition duration-300 ease-in"
+      leave-to-class="translate-y-3 opacity-0"
     >
-      <SidebarCard
-        v-for="notice in fannedOut"
-        :key="notice.key"
-        v-bind="cardProps(notice)"
-        @dismiss="notice.onDismiss"
-      />
-    </TransitionGroup>
+      <div
+        v-if="expanded"
+        class="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 bg-surface-gray-1 pt-1.5"
+      >
+        <SidebarCard
+          v-for="notice in fannedOut"
+          :key="notice.key"
+          v-bind="cardProps(notice)"
+          @dismiss="notice.onDismiss"
+        />
+      </div>
+    </Transition>
     <!-- Kept while fanned out, so the sidebar foot keeps its height. -->
     <div
       class="relative"
