@@ -11,6 +11,7 @@ crm/public/frontend
 crm/www/crm.html
 build
 frontend/coverage
+frontend/.cache
 
 e2e/.auth
 test-results

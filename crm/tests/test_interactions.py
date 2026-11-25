@@ -7,6 +7,7 @@ from frappe.utils import add_to_date, get_datetime
 from crm.api.interactions import record
 from crm.patches.v1_0.backfill_interaction_timestamps import execute as backfill
 from crm.patches.v1_0.backfill_whatsapp_interaction_timestamps import execute as backfill_whatsapp
+from crm.tests import requires_whatsapp
 
 T0 = get_datetime("2026-01-01 10:00:00")
 
@@ -119,6 +120,7 @@ class TestEmailInteractions(IntegrationTestCase):
 		self.assertIsNone(self.state().last_inbound_at)
 
 
+@requires_whatsapp
 class TestWhatsAppInteractions(IntegrationTestCase):
 	def setUp(self):
 		self.lead = make_lead()
@@ -199,6 +201,7 @@ class TestBackfillInteractions(IntegrationTestCase):
 		self.assertEqual(frappe.db.get_value("CRM Deal", deal, "awaiting_reply_since"), at(10))
 		self.assertIsNone(frappe.db.get_value("CRM Deal", deal, "last_outbound_at"))
 
+	@requires_whatsapp
 	def test_whatsapp_backfill_merges_with_email_history(self):
 		lead = make_lead()
 		make_communication("CRM Lead", lead, "Received", at(0))

@@ -20,7 +20,13 @@ from frappe.utils import (
 from crm.extends.notification_log import CRM_ROUTES
 from crm.fcrm.doctype.crm_dashboard.brief import RecentFollowUpsDue, WaitingOnMe, brief_doctype
 from crm.fcrm.doctype.crm_dashboard.home_scope import Mine, sales_users
-from crm.fcrm.doctype.crm_dashboard.home_widgets import DOCTYPES, AssignedToMe, TaskWidget
+from crm.fcrm.doctype.crm_dashboard.home_widgets import (
+	DOCTYPES,
+	ROW_LIMIT,
+	AssignedToMe,
+	TaskWidget,
+	TodaysMeetings,
+)
 from crm.fcrm.doctype.crm_task.rules import TaskDue
 
 DIGEST_HOUR = 8
@@ -102,6 +108,7 @@ class MorningDigest:
 		return [
 			section.build()
 			for section in (
+				MeetingsSection(doctypes, mine),
 				FollowUpsSection(doctypes, mine),
 				RepliesSection(doctypes, mine),
 				NewlyAssignedSection(doctypes, mine, self.assigned_since()),
@@ -110,8 +117,11 @@ class MorningDigest:
 		]
 
 	def subject(self, sections: list) -> str:
-		follow_ups, replies = sections[0].total, sections[1].total
+		totals = {section.kind: section.total for section in sections}
+		meetings, follow_ups, replies = (totals.get(k, 0) for k in ("meetings", "follow_ups", "replies"))
 		parts = []
+		if meetings:
+			parts.append(_("1 meeting") if meetings == 1 else _("{0} meetings").format(capped(meetings)))
 		if follow_ups:
 			parts.append(
 				_("1 follow-up") if follow_ups == 1 else _("{0} follow-ups").format(capped(follow_ups))
@@ -135,11 +145,17 @@ class MorningDigest:
 
 
 class Section:
+	kind = None
+
 	def build(self) -> frappe._dict:
 		summary = self.summary()
 		items = [self.item(row) for row in summary["rows"]]
 		return frappe._dict(
-			title=self.title(), items=items, total=summary["total"], more=summary["total"] - len(items)
+			kind=self.kind,
+			title=self.title(),
+			items=items,
+			total=summary["total"],
+			more=summary["total"] - len(items),
 		)
 
 	def title(self) -> str:
@@ -149,7 +165,44 @@ class Section:
 		raise NotImplementedError
 
 
+class MeetingsSection(Section, TodaysMeetings):
+	kind = "meetings"
+	row_limit = ROW_LIMIT
+
+	def title(self) -> str:
+		return _("Today's meetings")
+
+	def query(self):
+		# only meetings still to come: the digest goes out in the morning
+		event = self.event
+		return (
+			super()
+			.query()
+			.where((event.all_day == 1) | (Coalesce(event.ends_on, event.starts_on) >= now_datetime()))
+		)
+
+	def item(self, row) -> dict:
+		if row.all_day:
+			when = _("All day")
+		else:
+			start, end = (self.due.user_time(t) for t in (row.starts_on, row.ends_on or row.starts_on))
+			when = f"{format_time(start, 'HH:mm')}–{format_time(end, 'HH:mm')}"
+		names = [person["name"] for person in row.attendees]
+		people = ", ".join(names[:2]) + (f" +{len(names) - 2}" if len(names) > 2 else "")
+		link = row.google_meet_link or (
+			row.location if (row.location or "").startswith(("https://", "http://")) else None
+		)
+		return {
+			"title": row.subject,
+			"detail": joined(when, _("with {0}").format(people) if names else None),
+			"url": get_url("/crm/calendar"),
+			"join_url": link,
+		}
+
+
 class FollowUpsSection(Section, RecentFollowUpsDue):
+	kind = "follow_ups"
+
 	def title(self) -> str:
 		return _("Follow-ups due")
 
@@ -163,6 +216,8 @@ class FollowUpsSection(Section, RecentFollowUpsDue):
 
 
 class RepliesSection(Section, WaitingOnMe):
+	kind = "replies"
+
 	def title(self) -> str:
 		return _("Replies waiting")
 

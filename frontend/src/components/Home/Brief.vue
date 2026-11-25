@@ -15,7 +15,7 @@
         </span>
       </div>
       <HomeTabs
-        v-if="isManager()"
+        v-if="isManager() && tab"
         v-model="tab"
         :tabs="tabs"
         :counts="shownCounts"
@@ -25,14 +25,14 @@
     <ol
       v-if="!loaded"
       :aria-label="__('Loading')"
-      class="divide-y divide-outline-gray-2 rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
+      class="divide-y divide-outline-elevation-2 rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
     >
       <li
         v-for="row in PLACEHOLDER_ROWS"
         :key="row"
-        class="flex h-[60px] animate-pulse items-center gap-3 pl-3.5 pr-3"
+        class="flex h-[60px] animate-pulse items-center gap-3 px-4"
       >
-        <span class="size-7 shrink-0 rounded-4 bg-surface-gray-2" />
+        <span class="size-8 shrink-0 rounded-4 bg-surface-gray-2" />
         <div class="flex flex-1 flex-col gap-2">
           <span class="h-3 w-1/3 rounded bg-surface-gray-2" />
           <span class="h-2.5 w-1/2 rounded bg-surface-gray-2" />
@@ -45,7 +45,7 @@
     >
       <span
         aria-hidden="true"
-        class="flex size-7 items-center justify-center rounded-4 bg-surface-gray-2 text-ink-gray-7"
+        class="flex size-8 items-center justify-center rounded-full bg-surface-gray-2 text-ink-gray-7"
       >
         <span class="lucide-check-check size-4" />
       </span>
@@ -68,12 +68,12 @@
     </div>
     <ol
       v-else
-      class="divide-y divide-outline-gray-2 rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
+      class="divide-y divide-outline-elevation-2 rounded-4 border border-outline-gray-2 bg-surface-elevation-2"
     >
       <li
         v-for="item in items"
         :key="item.kind + (item.name || item.member || '')"
-        class="grid h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 pl-3.5 pr-3"
+        class="grid h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-4"
       >
         <Avatar
           v-if="briefPerson(item)"
@@ -84,7 +84,7 @@
         <span
           v-else
           aria-hidden="true"
-          class="flex size-7 items-center justify-center rounded-4 bg-surface-gray-2 text-ink-gray-7"
+          class="flex size-8 items-center justify-center rounded-4 bg-surface-gray-2 text-ink-gray-7"
         >
           <span :class="briefIcon(item)" class="size-4" />
         </span>
@@ -92,7 +92,7 @@
           <div class="flex min-w-0 items-center gap-2">
             <router-link
               :to="briefRoute(item)"
-              class="truncate text-base-medium text-ink-gray-9 hover:underline"
+              class="truncate text-base-medium text-ink-gray-8 hover:underline"
             >
               {{ briefTitle(item, { name: fullName }) }}
             </router-link>
@@ -105,7 +105,7 @@
           </div>
           <p
             v-if="detail(item)"
-            class="truncate text-sm text-ink-gray-6"
+            class="truncate text-sm text-ink-gray-7"
             :title="detail(item)"
           >
             {{ detail(item) }}
@@ -161,17 +161,17 @@ import { Avatar, Badge } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
-  resource: { type: Object, required: true },
+  brief: { type: Object, default: null },
   counts: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:doctype'])
 
-const tab = defineModel('tab', { type: String, required: true })
+const tab = defineModel('tab', { type: String, default: null })
 
 const { getUser, isManager } = usersStore()
 
-const doctype = computed(() => props.resource.data?.doctype || 'Both')
+const doctype = computed(() => props.brief?.doctype || 'Both')
 
 const shownCounts = computed(() =>
   Object.fromEntries(
@@ -190,22 +190,22 @@ const tabs = [
 // As many rows as the Brief shows at most
 const PLACEHOLDER_ROWS = 5
 
-const loaded = computed(() => props.resource.data?.tab === tab.value)
+const loaded = computed(() => Boolean(props.brief))
 
-const items = computed(() => props.resource.data?.items || [])
+const items = computed(() => props.brief?.items || [])
 
 const emptyLine = computed(() =>
   briefEmptyLine({
     tab: tab.value,
     isManager: isManager(),
     counts: props.counts,
-    older: props.resource.data?.older,
+    older: props.brief?.older,
   }),
 )
 
 const footerLinks = computed(() => [
-  ...briefMoreLinks(props.resource.data?.more),
-  ...briefOlderLinks(props.resource.data),
+  ...briefMoreLinks(props.brief?.more),
+  ...briefOlderLinks(props.brief || {}),
 ])
 
 function fullName(user) {

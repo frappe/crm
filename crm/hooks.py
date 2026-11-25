@@ -13,7 +13,6 @@ app_icon_route = "/crm"
 # Apps
 # ------------------
 
-required_apps = ["whatsapp"]
 add_to_apps_screen = [
 	{
 		"name": "crm",
@@ -76,6 +75,7 @@ doctype_js = {
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
 	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
+	{"from_route": "/crm-book/<route>", "to_route": "crm_book"},
 ]
 
 # Generators
@@ -104,6 +104,7 @@ website_route_rules = [
 before_install = "crm.install.before_install"
 after_install = [
 	"crm.install.after_install",
+	"crm.api.connector.ensure_gateway_client",
 	"frappe.search.sqlite_search.build_index_in_background",
 ]
 
@@ -119,7 +120,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Name of the app being installed is passed as an argument
 
 # before_app_install = "crm.utils.before_app_install"
-# after_app_install = "crm.utils.after_app_install"
+after_app_install = "crm.install.after_app_install"
 
 # Integration Cleanup
 # -------------------
@@ -142,17 +143,22 @@ before_uninstall = "crm.uninstall.before_uninstall"
 permission_query_conditions = {
 	"CRM Lead": "crm.permissions.org_hierarchy.get_lead_permission_query_conditions",
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
+	"CRM Call Log": "crm.permissions.org_hierarchy.get_call_log_permission_query_conditions",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
 	"Data Import": "crm.permissions.data_import.get_permission_query_conditions",
+	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.get_permission_query_conditions",
 }
 
 has_permission = {
 	"CRM Lead": "crm.permissions.org_hierarchy.has_lead_permission",
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
+	"CRM Call Log": "crm.permissions.org_hierarchy.has_call_log_permission",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.has_permission",
 	"Data Import": "crm.permissions.data_import.has_permission",
+	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.has_permission",
+	"CRM Booking Page": "crm.fcrm.doctype.crm_booking_page.crm_booking_page.has_permission",
 }
 
 # Automation Engine
@@ -256,6 +262,12 @@ if int(frappe.__version__.split(".")[0]) < 16:
 # Hook on document methods and events
 
 doc_events = {
+	"Event": {
+		"before_validate": ["crm.api.event.hold_google_sync"],
+		"after_insert": ["crm.api.event.push_to_google"],
+		"on_update": ["crm.api.booking.sync_booking_from_event"],
+		"on_trash": ["crm.api.booking.sync_booking_from_event"],
+	},
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
@@ -354,7 +366,11 @@ whatsapp_managed_doctypes = ["CRM Lead", "CRM Deal"]
 # ---------------
 
 scheduler_events = {
-	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"all": [
+		"crm.api.event.trigger_offset_event_notifications",
+		"crm.api.booking.send_guest_reminders",
+		"crm.api.booking.cancel_bookings_closed_elsewhere",
+	],
 	"hourly": [
 		"crm.api.event.trigger_hourly_event_notifications",
 		"crm.automation.events.emit_overdue_tasks",
@@ -450,10 +466,11 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
-on_session_creation = ["crm.api.onboarding.complete_setup_for_fc_site"]
+setup_wizard_auto_complete = True
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
+	"crm.api.connector.ensure_gateway_client",
 	"crm.api.whatsapp.add_roles",
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 	"crm.install.add_default_scripts",

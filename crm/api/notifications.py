@@ -155,6 +155,9 @@ def get_hash(notification):
 	):
 		_hash = "#whatsapp"
 
+	if notification.type == "Booking":
+		_hash = "#events"
+
 	if notification.type == "Reply" and notification.notification_type_doctype == "Communication":
 		_hash = "#emails"
 

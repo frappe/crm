@@ -3,7 +3,6 @@ import {
   describeFailedRow,
   getColumnMappings,
   getUnmappedRequiredFields,
-  groupInvitesByRole,
   isLeadNameMapped,
   nameFromEmail,
   toColumnToFieldMap,
@@ -61,21 +60,6 @@ describe('isLeadNameMapped', () => {
     const mappings = getColumnMappings(preview)
     expect(isLeadNameMapped(mappings)).toBe(true)
     expect(isLeadNameMapped(mappings.slice(1))).toBe(false)
-  })
-})
-
-describe('groupInvitesByRole', () => {
-  it('groups trimmed emails by role, skipping blanks and duplicates', () => {
-    const rows = [
-      { email: ' Ann@Example.com ', role: 'Sales User' },
-      { email: '', role: 'Sales User' },
-      { email: 'ann@example.com', role: 'Sales Manager' },
-      { email: 'bob@example.com', role: 'Sales Manager' },
-    ]
-    expect(groupInvitesByRole(rows)).toEqual({
-      'Sales User': ['ann@example.com'],
-      'Sales Manager': ['bob@example.com'],
-    })
   })
 })
 

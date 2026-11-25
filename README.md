@@ -78,7 +78,7 @@ The motivation behind building Frappe CRM stems from the need for a simple, cust
 
 -   **Twilio:** Integrate Twilio to make and receive calls from the CRM. You can also record calls. It is a built-in integration.
 -   **Exotel:** Integrate Exotel to make and receive calls via agents mobile phone from the CRM. You can also record calls. It is a built-in integration.
--   **WhatsApp:** Integrate WhatsApp to send and receive messages from the CRM. [Frappe WhatsApp](https://github.com/shridarpatil/frappe_whatsapp) is used for this integration.
+-   **WhatsApp:** Integrate WhatsApp to send and receive messages from the CRM. It needs the optional [WhatsApp](https://github.com/frappe/whatsapp) app. If you add it after CRM, run `bench build --app crm` again.
 -   **ERPNext:** Integrate with [ERPNext](https://erpnext.com) to extend the CRM capabilities to include invoicing, accounting, and more.
 
 ### Under the Hood
@@ -100,7 +100,7 @@ This app is compatible with the following versions of Frappe and ERPNext:
 
 Get started with your personal or business site with a few clicks on Frappe Cloud - our official hosting service.
 <div>
-	<a href="https://frappecloud.com/crm/signup" target="_blank">
+	<a href="https://dashboard.frappe.io/dashboard/signup?product=crm" target="_blank">
 		<picture>
 			<source media="(prefers-color-scheme: dark)" srcset="https://frappe.io/files/try-on-fc-white.png">
 			<img src="https://frappe.io/files/try-on-fc-black.png" alt="Try on Frappe Cloud" height="28" />
@@ -145,7 +145,7 @@ The script will set up a production-ready instance of Frappe CRM with all the ne
 1. In the frappe-bench directory, run `bench start` and keep it running.
 1. Open a new terminal session and cd into `frappe-bench` directory and run following commands:
     ```sh
-    $ bench get-app whatsapp
+    $ bench get-app whatsapp # optional, for WhatsApp; get it before crm so crm builds with it
     $ bench get-app crm
     $ bench new-site sitename.localhost --install-app crm
     $ bench browse sitename.localhost --user Administrator

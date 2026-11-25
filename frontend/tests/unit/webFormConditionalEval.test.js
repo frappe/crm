@@ -2,12 +2,13 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-// Load the inline conditional-logic parser straight out of crm_form.html (the guest
-// page's security boundary) so we test the exact code that ships, not a copy.
+// Load the conditional-logic parser straight out of the include the guest web form
+// and booking pages inline (their security boundary), so we test the exact code
+// that ships, not a copy.
 const html = readFileSync(
   join(
     dirname(fileURLToPath(import.meta.url)),
-    '../../../crm/www/crm_form.html',
+    '../../../crm/templates/includes/crm_form_logic.js',
   ),
   'utf8',
 )

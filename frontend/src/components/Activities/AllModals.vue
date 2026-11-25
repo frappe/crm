@@ -1,4 +1,15 @@
+<template>
+  <EventModal
+    v-if="showEventModal"
+    v-model="showEventModal"
+    :event="activeEvent"
+    :doctype="doctype"
+    :docname="doc?.name"
+  />
+</template>
 <script setup>
+import EventModal from '@/components/Modals/EventModal.vue'
+import { showEventModal, activeEvent } from '@/composables/event'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
@@ -15,6 +26,12 @@ const activities = defineModel({ type: Object })
 const { showModal } = useDoctypeModal()
 const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
+
+// Event
+function showEvent(e) {
+  showEventModal.value = true
+  activeEvent.value = e
+}
 
 // Tasks
 function showTask(task) {
@@ -125,6 +142,7 @@ function redirect(tabName) {
 }
 
 defineExpose({
+  showEvent,
   showTask,
   deleteTask,
   updateTaskStatus,

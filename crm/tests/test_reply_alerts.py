@@ -3,6 +3,7 @@ from frappe.desk.form.assign_to import add as assign
 from frappe.tests import IntegrationTestCase
 
 from crm.api.interactions import record
+from crm.tests import requires_whatsapp
 from crm.tests.test_home import AGENT, MANAGER, make_user
 from crm.tests.test_interactions import at, make_communication, make_deal, make_lead, make_whatsapp_message
 
@@ -85,6 +86,7 @@ class TestReplyAlerts(IntegrationTestCase):
 		self.assertEqual(alerts(), [])
 
 
+@requires_whatsapp
 class TestWhatsAppReplyAlerts(IntegrationTestCase):
 	def setUp(self):
 		make_user(AGENT, "Sales User")

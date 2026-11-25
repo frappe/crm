@@ -23,6 +23,7 @@ const ICONS = {
   mentions: 'lucide-at-sign',
   assignments: 'lucide-user-plus',
   reminders: 'lucide-alarm-clock',
+  events: 'lucide-calendar',
 }
 
 const category = computed(() => notificationCategory(props.notification))

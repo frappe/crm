@@ -4,6 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 import frappeui from 'frappe-ui/vite'
+import { whatsappUISource } from './whatsapp-ui.js'
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -65,10 +66,7 @@ export default defineConfig(() => {
         ),
         // point at the package src dir (not index.ts) so subpath imports like
         // `@whatsapp/ui/components/Messages` resolve to a real file
-        '@whatsapp/ui': path.resolve(
-          import.meta.dirname,
-          '../../whatsapp/ui/src',
-        ),
+        '@whatsapp/ui': whatsappUISource(),
         // same shape for @framework/ui: its account form pieces (Grid, Link) are
         // what @whatsapp/ui's AccountForm is built on
         '@framework/ui': path.resolve(
@@ -155,7 +153,11 @@ export default defineConfig(() => {
 
   config.plugins.unshift(
     frappeui({
-      frappeProxy: true,
+      // the public web form and booking pages are server-rendered by Frappe,
+      // so dev must hand them to the web server instead of the SPA fallback
+      frappeProxy: {
+        source: '^/(desk|app|login|api|assets|files|private|crm-form|crm-book)',
+      },
       lucideIcons: true,
       jinjaBootData: true,
       // its esbuild helper breaks Vite 8's dependency scan

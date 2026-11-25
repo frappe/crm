@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 from typing import ClassVar
 
 import frappe
@@ -266,6 +266,106 @@ class UnlinkedTasks(OpenTasks):
 		return self.standalone() & super().condition()
 
 
+class TodaysMeetings(Widget):
+	"""Events the user hosts or attends today, in the user's time zone."""
+
+	row_limit = 50
+	FIELDS = (
+		"name",
+		"subject",
+		"starts_on",
+		"ends_on",
+		"all_day",
+		"color",
+		"owner",
+		"location",
+		"google_meet_link",
+	)
+
+	def __init__(self, doctypes: tuple, scope: Mine | Team):
+		super().__init__(doctypes, scope)
+		self.event = frappe.qb.DocType("Event")
+		self.due = TaskDue(scope.user)
+
+	def rows(self) -> list:
+		event = self.event
+		query = self.query().select(*self.FIELDS)
+		rows = (
+			query.orderby(event.all_day, order=Order.desc)
+			.orderby(event.starts_on)
+			.limit(self.row_limit)
+			.run(as_dict=True)
+		)
+		set_attendees(rows, self.scope.user)
+		return rows
+
+	def count(self) -> int:
+		return self.query().select(Count("*")).run()[0][0]
+
+	def query(self):
+		event = self.event
+		participant = frappe.qb.DocType("Event Participants")
+		attending = (
+			frappe.qb.from_(participant)
+			.select(participant.parent)
+			.where((participant.parenttype == "Event") & (participant.email == self.scope.user))
+		)
+		today = self.due.today
+		tomorrow = today + timedelta(days=1)
+		ends_on = Coalesce(event.ends_on, event.starts_on)
+		timed = (
+			(event.all_day == 0)
+			& (event.starts_on < self.due._day_start(tomorrow))
+			& (ends_on >= self.due._day_start(today))
+		)
+		# all-day events hold their dates as is, not shifted to system time
+		all_day = (
+			(event.all_day == 1)
+			& (event.starts_on < datetime.combine(tomorrow, time.min))
+			& (ends_on >= datetime.combine(today, time.min))
+		)
+		return frappe.qb.from_(event).where(
+			(event.status != "Cancelled")
+			& ((event.owner == self.scope.user) | event.name.isin(attending))
+			& (timed | all_day)
+		)
+
+
+def set_attendees(rows: list, user: str):
+	"""Everyone else in each meeting, its host first, named from their user or contact."""
+	emails = {}
+	for participant in frappe.get_all(
+		"Event Participants",
+		filters={"parenttype": "Event", "parent": ["in", [row.name for row in rows] or [""]]},
+		fields=["parent", "email"],
+		order_by="idx",
+	):
+		if participant.email:
+			emails.setdefault(participant.parent, []).append(participant.email)
+
+	people = {}
+	everyone = {email for row in rows for email in [row.owner, *emails.get(row.name, [])]}
+	for person in frappe.get_all(
+		"User",
+		filters={"name": ["in", list(everyone) or [""]]},
+		fields=["name", "full_name", "user_image"],
+	):
+		people[person.name] = {"email": person.name, "name": person.full_name, "image": person.user_image}
+	for contact in frappe.get_all(
+		"Contact",
+		filters={"email_id": ["in", list(everyone - set(people)) or [""]]},
+		fields=["email_id", "full_name", "image"],
+	):
+		people.setdefault(
+			contact.email_id, {"email": contact.email_id, "name": contact.full_name, "image": contact.image}
+		)
+
+	for row in rows:
+		others = dict.fromkeys(e for e in [row.owner, *emails.get(row.name, [])] if e != user)
+		row.attendees = [people.get(email) or {"email": email, "name": email} for email in others]
+		row.pop("owner")
+
+
 class TabbedWidget(Widget):
 	TABS: ClassVar[dict] = {}
 
@@ -296,6 +396,7 @@ class LeadsAndDeals(TabbedWidget):
 
 WIDGET_DATA = {
 	"no_next_step": NoNextStep,
+	"todays_meetings": TodaysMeetings,
 }
 
 TABBED_WIDGETS = {"tasks": Tasks, "leads_and_deals": LeadsAndDeals}

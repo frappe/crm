@@ -1,14 +1,11 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-from unittest.mock import patch
-
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import sha256_hash
 from frappe.utils.password import update_password
 
-from crm.api.user import has_password, needs_password_setup
 from crm.www.crm import get_context, redirect_to_set_password
 
 STRONG_PASSWORD = "Qx7#mLp2vT9!"
@@ -34,6 +31,7 @@ def make_user(email, roles=None):
 class TestPasswordSetup(IntegrationTestCase):
 	def setUp(self):
 		self.user = make_user("no-password@example.com", roles=["System Manager"])
+		frappe.db.set_single_value("FCRM Settings", "setup_completed", 1)
 		frappe.set_user(self.user.name)
 
 	def tearDown(self):
@@ -48,40 +46,6 @@ class TestPasswordSetup(IntegrationTestCase):
 		self.user.append("social_logins", {"provider": "google", "userid": "1234567890"})
 		self.user.save(ignore_permissions=True)
 		frappe.set_user(self.user.name)
-
-	# ---- needs_password_setup ----
-
-	def test_needs_setup_for_user_without_password(self):
-		self.assertTrue(needs_password_setup())
-
-	def test_does_not_need_setup_once_password_exists(self):
-		update_password(user=self.user.name, pwd=STRONG_PASSWORD)
-
-		self.assertTrue(has_password(self.user.name))
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_for_sso_user(self):
-		"""No password is the correct state for someone who signs in via SSO."""
-		self.make_sso_user()
-
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_for_ldap_user(self):
-		frappe.db.set_single_value("LDAP Settings", "enabled", 1)
-
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_when_password_login_is_disabled(self):
-		# not change_settings: it saves the doc, and validating System Settings
-		# fails on a bare site that has no language or time zone set
-		frappe.db.set_single_value("System Settings", "disable_user_pass_login", 1)
-		frappe.local.system_settings = None
-
-		self.assertFalse(needs_password_setup())
-
-	def test_does_not_need_setup_on_frappe_cloud_v2(self):
-		with patch.dict(frappe.conf, {"pilot_endpoint": "https://pilot.test", "pilot_auth_token": "token"}):
-			self.assertFalse(needs_password_setup())
 
 	# ---- redirect ----
 
@@ -121,3 +85,23 @@ class TestPasswordSetup(IntegrationTestCase):
 			get_context()
 
 		self.assertIn("/update-password?key=", frappe.local.flags.redirect_location)
+
+	# ---- guided setup ----
+
+	def test_no_redirect_while_guided_setup_is_pending(self):
+		"""The guided setup asks for the password in its first step."""
+		frappe.db.set_single_value("FCRM Settings", "setup_completed", 0)
+
+		redirect_to_set_password()
+
+		self.assertIsNone(frappe.local.flags.redirect_location)
+
+	def test_redirects_non_admin_while_guided_setup_is_pending(self):
+		frappe.db.set_single_value("FCRM Settings", "setup_completed", 0)
+		frappe.set_user("Administrator")
+		self.user.remove_roles("System Manager")
+		self.user.append_roles("Sales User")
+		frappe.set_user(self.user.name)
+
+		with self.assertRaises(frappe.Redirect):
+			redirect_to_set_password()

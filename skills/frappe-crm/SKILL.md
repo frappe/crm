@@ -54,3 +54,13 @@ CRM tracks sales in two documents. A `CRM Lead` is a prospect that is not yet qu
 - **Win rate.** Only won deals get a `closed_date`. For lost deals in a period, use the `status_change_log` row whose `to` status has type `Lost`, with its `to_date`.
 - **Whose people.** Read records as the user, so the Sales Hierarchy applies: a manager in the hierarchy sees their subtree only. Say so when the answer covers only part of the team.
 
+## 6. Links
+
+Each time an answer names a lead, deal, contact or organization, link it to its page in the CRM app, so the user can open it. Use the document `name` in the path and the person or company as the link text, for example `[Asha Rao](/crm/leads/CRM-LEAD-2026-00042)`.
+
+- Lead: `/crm/leads/<name>`
+- Deal: `/crm/deals/<name>`
+- Contact: `/crm/contacts/<name>`
+- Organization: `/crm/organizations/<name>`
+
+Do not link to `/app/...`. Sales users often cannot open desk pages.
