@@ -6,6 +6,8 @@ import json
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from crm.fcrm.doctype.fcrm_settings.fcrm_settings import after_migrate
+
 FORECASTING_FIELDS = ["expected_closure_date", "probability", "expected_deal_value"]
 
 
@@ -107,3 +109,51 @@ class TestFCRMSettings(IntegrationTestCase):
 		fields = self.get_quick_entry_fields()
 		for field in FORECASTING_FIELDS:
 			self.assertIn(field, fields)
+
+	def append_menu_item(self, settings, **values):
+		return settings.append(
+			"dropdown_items", {"label": "Item", "type": "Route", "route": "/crm", **values}
+		)
+
+	def test_submenu_gets_a_key_and_holds_links(self):
+		settings = frappe.get_single("FCRM Settings")
+		submenu = self.append_menu_item(settings, label="Team resources", type="Submenu", route=None)
+		settings.save()
+		self.assertTrue(submenu.name1.startswith("submenu-"))
+
+		self.append_menu_item(settings, label="Playbook", parent_submenu=submenu.name1)
+		self.append_menu_item(settings, label="Support desk", parent_submenu="help")
+		settings.save()
+
+	def test_link_cannot_go_in_a_missing_submenu(self):
+		settings = frappe.get_single("FCRM Settings")
+		self.append_menu_item(settings, parent_submenu="submenu-gone")
+		self.assertRaises(frappe.ValidationError, settings.save)
+
+	def test_submenu_cannot_nest(self):
+		settings = frappe.get_single("FCRM Settings")
+		self.append_menu_item(settings, label="Outer", type="Submenu", route=None, name1="submenu-outer")
+		self.append_menu_item(
+			settings, label="Inner", type="Submenu", route=None, parent_submenu="submenu-outer"
+		)
+		self.assertRaises(frappe.ValidationError, settings.save)
+
+	def test_built_in_help_items_stay_in_help(self):
+		settings = frappe.get_single("FCRM Settings")
+		about = next(item for item in settings.dropdown_items if item.name1 == "about")
+		self.assertEqual(about.parent_submenu, "help")
+		about.parent_submenu = ""
+		self.assertRaises(frappe.ValidationError, settings.save)
+
+	def test_migrate_moves_about_into_help(self):
+		"""Sites from before Help have About at the top level; migrate must move it, not fail."""
+		frappe.db.set_value(
+			"CRM Dropdown Item",
+			{"name1": "about", "parenttype": "FCRM Settings"},
+			"parent_submenu",
+			"",
+		)
+		after_migrate()
+		settings = frappe.get_single("FCRM Settings")
+		about = next(item for item in settings.dropdown_items if item.name1 == "about")
+		self.assertEqual(about.parent_submenu, "help")

@@ -2,16 +2,16 @@
   <Dropdown :options="dropdownItems" v-bind="$attrs">
     <template #default="{ open }">
       <button
-        class="flex h-12 items-center rounded-5 py-2 duration-300 ease-in-out"
+        class="flex h-9 items-center rounded-4 px-1 duration-300 ease-in-out"
         :class="
           isCollapsed
-            ? 'w-auto px-0'
+            ? 'w-auto'
             : open
-              ? 'w-full px-2 bg-surface-elevation-3 shadow-sm'
-              : 'w-full px-2 hover:bg-surface-gray-2'
+              ? 'w-full bg-surface-elevation-3 shadow-sm'
+              : 'w-full hover:bg-surface-gray-2'
         "
       >
-        <BrandLogo v-model="brand" class="h-8 max-w-16 flex-shrink-0" />
+        <BrandLogo v-model="brand" class="h-6 max-w-12 flex-shrink-0" />
         <div
           class="flex flex-1 flex-col text-left duration-300 ease-in-out truncate"
           :class="
@@ -23,16 +23,13 @@
           <div class="text-base-medium leading-none text-ink-gray-9 truncate">
             {{ __(brand.name || 'CRM') }}
           </div>
-          <div class="mt-1 text-sm leading-none text-ink-gray-7 truncate">
-            {{ user.full_name }}
-          </div>
         </div>
         <div
           class="duration-300 ease-in-out"
           :class="
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
-              : 'ml-2 w-auto opacity-100'
+              : 'ml-2 mr-1 w-auto opacity-100'
           "
         >
           <span
@@ -47,174 +44,16 @@
 
 <script setup>
 import BrandLogo from '@/components/BrandLogo.vue'
-import FrappeCloudIcon from '@/components/Icons/FrappeCloudIcon.vue'
-import AppsIcon from '@/components/Icons/AppsIcon.vue'
-import { sessionStore } from '@/stores/session'
-import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
-import { showSettings, isMobileView } from '@/composables/settings'
-import { showAboutModal } from '@/composables/modals'
-import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
-import { useCloudSettings } from '@/composables/cloudSettings'
-import CreditCardIcon from '~icons/lucide/credit-card'
-import { spriteIcon } from '@/utils/spriteIcon'
-import { sanitizeHTML } from '@/utils'
-import { createResource, Dropdown } from 'frappe-ui'
-import { computed, h, markRaw } from 'vue'
+import { useAppMenu } from '@/composables/appMenu'
+import { Dropdown } from 'frappe-ui'
 
 defineProps({
   isCollapsed: { type: Boolean, default: false },
 })
 
 const { settings, brand } = getSettings()
-const { logout } = sessionStore()
-const { available: canManageBilling, open: openBilling } = useCloudSettings()
-const { getUser } = usersStore()
-
-const user = computed(() => getUser() || {})
-
-const apps = createResource({
-  url: 'frappe.apps.get_apps',
-  cache: 'apps',
-  auto: true,
-  transform: (data) => [deskApp(), ...crmSiblingApps(data)],
-})
-
-const dropdownItems = computed(() => {
-  if (!settings.value?.dropdown_items) return []
-
-  let items = settings.value.dropdown_items
-
-  let _dropdownItems = [
-    {
-      group: 'Dropdown Items',
-      hideLabel: true,
-      options: [],
-    },
-  ]
-
-  items.forEach((item) => {
-    if (item.hidden) return
-    if (item.type !== 'Separator') {
-      _dropdownItems[_dropdownItems.length - 1].options.push(
-        dropdownItemObj(item),
-      )
-    } else {
-      _dropdownItems.push({
-        group: '',
-        hideLabel: true,
-        options: [],
-      })
-    }
-  })
-
-  return _dropdownItems
-})
-
-function dropdownItemObj(item) {
-  let _item = JSON.parse(JSON.stringify(item))
-  let icon = _item.icon || 'external-link'
-  if (typeof icon === 'string' && icon.startsWith('<svg')) {
-    icon = markRaw(h('div', { innerHTML: sanitizeHTML(icon) }))
-  }
-  _item.icon = spriteIcon(icon)
-
-  if (_item.is_standard) {
-    return getStandardItem(_item)
-  }
-
-  return {
-    icon: _item.icon,
-    label: __(_item.label),
-    onClick: () => {
-      const route = safeRoute(_item.route)
-      if (route) window.open(route, _item.open_in_new_window ? '_blank' : '')
-    },
-  }
-}
-
-function safeRoute(route) {
-  if (typeof route !== 'string' || !route) return ''
-  try {
-    const url = new URL(route, window.location.origin)
-    return ['http:', 'https:'].includes(url.protocol) ? url.href : ''
-  } catch {
-    return ''
-  }
-}
-
-function getStandardItem(item) {
-  switch (item.name1) {
-    case 'app_selector':
-      return {
-        icon: markRaw(AppsIcon),
-        label: __(item.label),
-        submenu: appMenuItems(),
-      }
-    case 'settings':
-      return {
-        icon: item.icon,
-        label: __(item.label),
-        onClick: () => (showSettings.value = true),
-        condition: () => !isMobileView.value,
-      }
-    case 'login_to_fc':
-      if (canManageBilling) {
-        return {
-          icon: markRaw(CreditCardIcon),
-          label: __('Manage Billing'),
-          onClick: () => openBilling(),
-          condition: () => !isMobileView.value,
-        }
-      }
-      return {
-        icon: h(FrappeCloudIcon),
-        label: __(item.label),
-        onClick: () => confirmLoginToFrappeCloud(),
-        condition: () => !isMobileView.value && window.is_fc_site,
-      }
-    case 'about':
-      return {
-        icon: item.icon,
-        label: __(item.label),
-        onClick: () => (showAboutModal.value = true),
-      }
-    case 'logout':
-      return {
-        icon: item.icon,
-        label: __(item.label),
-        onClick: () => logout.submit(),
-      }
-  }
-}
-
-function appMenuItems() {
-  return (apps.data || []).map((app) => ({
-    label: app.title,
-    onClick: () => (window.location.href = app.route),
-    slots: {
-      prefix: () => h('img', { class: 'size-5 rounded-4', src: app.logo }),
-    },
-  }))
-}
-
-function deskApp() {
-  return {
-    name: 'frappe',
-    logo: '/assets/frappe/images/framework.png',
-    title: __('Desk'),
-    route: '/desk',
-  }
-}
-
-function crmSiblingApps(data) {
-  return data
-    .filter((app) => app.name !== 'crm')
-    .map((app) => ({
-      name: app.name,
-      logo: app.logo,
-      title: __(app.title),
-      route: app.route,
-    }))
-}
+const { groups: dropdownItems } = useAppMenu(
+  () => settings.value?.dropdown_items,
+)
 </script>
