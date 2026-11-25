@@ -20,53 +20,10 @@
 
         <!-- overflow-y-auto forces overflow-x to clip too, which would slice the
              active row's shadow. Widen the scroll box to the sidebar edges and
-             pad the content back in so the shadow has room. -->
+             pad the content back in so the shadow has room.
+             Its rows are shrink-0: once the views overflow the box, flex would
+             otherwise squeeze them below their h-7. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-<<<<<<< HEAD
-          <SidebarItem :label="__('Search')" @click="onSearchClick">
-            <template #prefix>
-              <LucideSearch class="size-4 text-ink-gray-7" />
-            </template>
-            <span class="flex-1 truncate text-sm leading-tighter">
-              {{ __('Search') }}
-            </span>
-            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
-              K
-            </KeyboardShortcut>
-          </SidebarItem>
-
-          <SidebarItem
-            v-if="showFlow"
-            class="shrink-0"
-            :label="__('Flow')"
-            @click="onFlowClick"
-          >
-            <template #prefix>
-              <FlowIcon class="size-4 text-ink-gray-7" />
-            </template>
-            <span class="flex-1 truncate text-sm leading-tighter">
-              {{ __('Flow') }}
-            </span>
-            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
-              I
-            </KeyboardShortcut>
-          </SidebarItem>
-
-          <SidebarItem
-            id="notifications-btn"
-            :label="__('Notifications')"
-            :route="mobile ? { name: 'Notifications' } : undefined"
-            :active="mobile && activeItem === 'Notifications'"
-            @click="onNotificationsClick"
-          >
-            <template #prefix>
-              <span class="relative grid size-4 place-items-center">
-                <NotificationsIcon class="size-4 text-ink-gray-7" />
-                <span
-                  v-if="isCollapsed && unreadNotificationsCount"
-                  class="absolute -right-1 -top-1 size-1.5 rounded-full bg-surface-gray-9 ring-1 ring-[var(--surface-gray-1)]"
-                />
-=======
           <!-- Set apart from the views by the same gap as the app logo above. -->
           <div class="mb-3 flex shrink-0 flex-col gap-1">
             <SidebarItem
@@ -79,7 +36,6 @@
               </template>
               <span class="flex-1 truncate text-sm leading-tighter">
                 {{ __('Search') }}
->>>>>>> 586c6eb (feat: avatar menu, App menu settings and a notices icon in the sidebar)
               </span>
               <span
                 v-if="!mobile"

@@ -75,13 +75,7 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
-<<<<<<< HEAD
-import HomeActions from '@/components/Settings/HomeActions.vue'
-=======
-import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
-import BookingPagesSettings from '@/components/Settings/BookingPages/BookingPagesSettings.vue'
 import AppMenuSettings from '@/components/Settings/AppMenu/AppMenuSettings.vue'
->>>>>>> 586c6eb (feat: avatar menu, App menu settings and a notices icon in the sidebar)
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import EnrichmentSettings from '@/components/Settings/Enrichment/EnrichmentSettings.vue'
