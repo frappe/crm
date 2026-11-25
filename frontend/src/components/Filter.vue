@@ -61,9 +61,7 @@
                   <Combobox
                     v-model="f.operator"
                     trigger="button"
-                    :options="
-                      getOperators(f.field.fieldtype, f.field.fieldname)
-                    "
+                    :options="getOperators(f.field)"
                     :placeholder="__('Equals')"
                     @update:modelValue="() => updateOperator(f)"
                   />
@@ -95,9 +93,7 @@
                     <Combobox
                       v-model="f.operator"
                       trigger="button"
-                      :options="
-                        getOperators(f.field.fieldtype, f.field.fieldname)
-                      "
+                      :options="getOperators(f.field)"
                       :placeholder="__('Equals')"
                       @update:modelValue="() => updateOperator(f)"
                     />
@@ -173,6 +169,7 @@ import {
 import { h, computed, onMounted } from 'vue'
 import { isMobileView } from '@/composables/settings'
 import { getFormat } from '@/utils'
+import { supportsTreeFilter } from '@/utils/fieldTransforms'
 
 const typeCheck = ['Check']
 const typeLink = ['Link', 'Dynamic Link']
@@ -291,7 +288,8 @@ function convertFilters(data, allFilters) {
   return new Set(f)
 }
 
-function getOperators(fieldtype, fieldname) {
+function getOperators(field) {
+  const { fieldtype, fieldname } = field
   let options = []
   if (typeString.includes(fieldtype)) {
     options.push(
@@ -354,6 +352,12 @@ function getOperators(fieldtype, fieldname) {
         { label: __('Is'), value: 'is' },
       ],
     )
+    if (supportsTreeFilter(field)) {
+      options.push({
+        label: __('Descendants of (inclusive)'),
+        value: 'descendants of (inclusive)',
+      })
+    }
   }
   if (typeCheck.includes(fieldtype)) {
     options.push(...[{ label: __('Equals'), value: 'equals' }])
@@ -513,6 +517,7 @@ function setfilter(data) {
       fieldname: data.fieldname,
       fieldtype: data.fieldtype,
       options: data.options,
+      is_tree: data.is_tree,
     },
     fieldname: data.fieldname,
     operator: getDefaultOperator(data.fieldtype),
@@ -534,6 +539,7 @@ function updateFilter(data, index) {
       fieldname: data.fieldname,
       fieldtype: data.fieldtype,
       options: data.options,
+      is_tree: data.is_tree,
     },
   })
   apply()
@@ -660,6 +666,7 @@ const operatorMap = {
   '<=': '<=',
   between: 'between',
   timespan: 'timespan',
+  'descendants of (inclusive)': 'descendants of (inclusive)',
 }
 
 const oppositeOperatorMap = {
@@ -680,6 +687,7 @@ const oppositeOperatorMap = {
   '<=': '<=',
   between: 'between',
   timespan: 'timespan',
+  'descendants of (inclusive)': 'descendants of (inclusive)',
 }
 
 const timespanOptions = [
