@@ -49,7 +49,7 @@
       <div class="flex items-center gap-2">
         <Button
           v-if="link"
-          variant="ghost"
+          variant="subtle"
           theme="red"
           :label="__('Delete')"
           @click="remove"
