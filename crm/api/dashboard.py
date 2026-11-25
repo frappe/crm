@@ -25,6 +25,108 @@ def reset_to_default():
 	create_default_manager_dashboard(force=True)
 
 
+SHIPPED_INSIGHTS_DASHBOARD = "crm"
+SHIPPED_INSIGHTS_DASHBOARD_ROW = {"dashboard": SHIPPED_INSIGHTS_DASHBOARD, "label": "CRM", "is_default": 1}
+PICKED_INSIGHTS_DASHBOARD_KEY = "crm_insights_dashboard"
+
+
+@frappe.whitelist()
+def customize_insights_dashboard(dashboard: str) -> dict:
+	"""Copy a shipped Insights dashboard into a site-owned workbook and show the copy in CRM."""
+	frappe.only_for("System Manager")
+	original = frappe.get_doc("Insights Dashboard v3", dashboard)
+	if not original.is_standard:
+		frappe.throw(_("Only a dashboard shipped with an app can be customized"))
+
+	names = copy_insights_workbook(original.workbook)
+	copy = share_like_original(original, names)
+
+	settings = frappe.get_single("FCRM Settings")
+	row = get_insights_dashboard_row(settings, dashboard)
+	row.customized_from = row.customized_from or dashboard
+	row.dashboard = copy.name
+	settings.save()
+	return {"dashboard": copy.name, "workbook": copy.workbook}
+
+
+@frappe.whitelist()
+def reset_insights_dashboard(dashboard: str) -> str:
+	"""Show the shipped dashboard again in place of its customized copy. The copy stays in Insights."""
+	frappe.only_for("System Manager")
+	settings = frappe.get_single("FCRM Settings")
+	row = get_insights_dashboard_row(settings, dashboard)
+	if not row.customized_from:
+		frappe.throw(_("This dashboard is not customized"))
+
+	row.dashboard, row.customized_from = row.customized_from, None
+	settings.save()
+	return row.dashboard
+
+
+@frappe.whitelist()
+def get_insights_dashboards() -> dict:
+	"""The CRM dashboards this user may open, and the one they last picked."""
+	rows = frappe.get_single("FCRM Settings").insights_dashboards
+	rows = [row.as_dict() for row in rows] or [SHIPPED_INSIGHTS_DASHBOARD_ROW]
+	fields = ("dashboard", "label", "is_default", "customized_from")
+	return {
+		"dashboards": [
+			{field: row.get(field) for field in fields}
+			for row in rows
+			if can_open_insights_dashboard(row["dashboard"])
+		],
+		"picked": frappe.defaults.get_user_default(PICKED_INSIGHTS_DASHBOARD_KEY),
+	}
+
+
+@frappe.whitelist()
+def pick_insights_dashboard(dashboard: str) -> None:
+	"""Remember the dashboard this user last opened, across devices."""
+	frappe.defaults.set_user_default(PICKED_INSIGHTS_DASHBOARD_KEY, dashboard)
+
+
+def can_open_insights_dashboard(dashboard: str) -> bool:
+	from insights.resolver import DASHBOARD, resolve_for_read
+
+	try:
+		resolve_for_read(DASHBOARD, dashboard)
+		return True
+	except frappe.DoesNotExistError:
+		return False
+
+
+def copy_insights_workbook(workbook: str) -> dict:
+	from insights.insights.doctype.insights_workbook.insights_workbook import import_workbook
+
+	doc = frappe.get_doc("Insights Workbook", workbook)
+	contents = doc.export()
+	contents["title"] = _("{0} (Customized)").format(doc.title)
+	return import_workbook(contents)["names"]
+
+
+def share_like_original(original, names: dict):
+	"""Readers of the shipped dashboard keep seeing the copy, with the rows its owner sees."""
+	copy = frappe.get_doc("Insights Dashboard v3", names[original.name])
+	copy.visibility = original.visibility
+	copy.set("visible_to_roles", [{"role": row.role} for row in original.visible_to_roles])
+	copy.save()
+
+	for chart in frappe.get_all("Insights Chart v3", {"workbook": copy.workbook}, pluck="name"):
+		chart_doc = frappe.get_doc("Insights Chart v3", chart)
+		chart_doc.run_as_owner = 1
+		chart_doc.save()
+	return copy
+
+
+def get_insights_dashboard_row(settings, dashboard: str):
+	if not settings.insights_dashboards:
+		settings.append("insights_dashboards", dict(SHIPPED_INSIGHTS_DASHBOARD_ROW))
+	for row in settings.insights_dashboards:
+		if row.dashboard == dashboard:
+			return row
+	frappe.throw(_("Dashboard {0} is not added to CRM").format(dashboard))
+
+
 @frappe.whitelist()
 @sales_user_only
 def get_dashboard(from_date: str | None = None, to_date: str | None = None, user: str | None = None):
