@@ -24,18 +24,6 @@ export function isLeadNameMapped(mappings) {
   return mappings.some((m) => m.fieldname === LEAD_NAME_FIELD)
 }
 
-export function groupInvitesByRole(rows) {
-  const groups = {}
-  const seen = new Set()
-  for (const row of rows) {
-    const email = row.email?.trim().toLowerCase()
-    if (!email || seen.has(email)) continue
-    seen.add(email)
-    ;(groups[row.role] ||= []).push(email)
-  }
-  return groups
-}
-
 export function stripTags(html) {
   return String(html || '').replace(/<[^>]*>/g, '')
 }

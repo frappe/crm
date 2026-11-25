@@ -7,6 +7,7 @@ import {
 } from '@/components/Home/widgets'
 import { usersStore } from '@/stores/users'
 import { copy } from '@/utils'
+import { recall, remember } from '@/composables/homeWidget'
 import { call, toast } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
@@ -60,7 +61,9 @@ export function useHomeLayout() {
 
   async function load(nextTarget = 'mine') {
     target.value = nextTarget
-    loading.value = true
+    const kept = recall(['layout', nextTarget])
+    if (kept) apply(kept)
+    loading.value = !kept
     try {
       apply(await endpoints().get())
     } finally {
@@ -69,6 +72,7 @@ export function useHomeLayout() {
   }
 
   function apply(home) {
+    remember(['layout', target.value], home)
     saved.value = home.layout.map((item) => withMinSize(item))
     items.value = copy(saved.value)
   }

@@ -110,11 +110,11 @@ import HomeHeader from '@/components/Home/HomeHeader.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import { getWidget } from '@/components/Home/widgets'
-import { useBrief } from '@/composables/homeWidget'
+import { useAskFlow, useBrief } from '@/composables/homeWidget'
 import { useHomeLayout } from '@/composables/homeLayout'
 import { getSettings } from '@/stores/settings'
 import { usersStore } from '@/stores/users'
-import { Badge, Dropdown, createResource, usePageMeta } from 'frappe-ui'
+import { Badge, Dropdown, usePageMeta } from 'frappe-ui'
 import { computed, nextTick, ref } from 'vue'
 
 const { brand } = getSettings()
@@ -146,7 +146,7 @@ const {
   setDoctype: setBriefDoctype,
 } = useBrief()
 
-const askFlow = createResource({ url: 'crm.api.home.get_ask_flow', auto: true })
+const askFlow = useAskFlow()
 
 const defaultLabels = {
   agent: __('Agent default'),

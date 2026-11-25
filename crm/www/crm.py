@@ -35,7 +35,7 @@ def redirect_to_set_password():
 	expires. Invited users are already routed here by `accept_invitation`; this
 	covers everyone else, on the same page.
 	"""
-	from crm.api.user import needs_password_setup
+	from frappe.core.doctype.user.user import needs_password_setup
 
 	if not needs_password_setup() or will_see_guided_setup():
 		return
@@ -71,7 +71,7 @@ def get_context_for_dev():
 
 
 def get_boot():
-	from crm.api.user import needs_password_setup
+	from frappe.core.doctype.user.user import needs_password_setup
 
 	return frappe._dict(
 		{

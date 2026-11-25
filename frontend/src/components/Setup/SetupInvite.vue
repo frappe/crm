@@ -6,6 +6,7 @@
     <p class="mt-2 text-p-base text-ink-gray-6">
       {{ __('The CRM works best when your whole sales team is in it.') }}
     </p>
+
     <p class="mt-3 text-p-sm text-ink-gray-6">
       <strong class="font-semibold text-ink-gray-9">{{
         __('No per-user pricing.')
@@ -13,93 +14,47 @@
       {{ __('Invite your whole team.') }}
     </p>
 
-    <div class="mt-8 flex flex-col gap-2">
-      <div
-        v-for="(row, index) in rows"
-        :key="row.id"
-        class="flex flex-col gap-1"
-      >
-        <div class="flex items-center gap-2">
-          <div class="min-w-0 flex-1">
-            <FormControl
-              v-model="row.email"
-              type="email"
-              placeholder="name@company.com"
-              :aria-label="__('Teammate email {0}', [index + 1])"
-              :aria-invalid="isInvalid(row)"
-            />
-          </div>
-          <div class="w-40 shrink-0">
-            <FormControl
-              v-model="row.role"
-              type="select"
-              :options="roleOptions"
-              :aria-label="__('Role for teammate {0}', [index + 1])"
-            />
-          </div>
-          <Button
-            variant="ghost"
-            icon="lucide-x"
-            :disabled="rows.length === 1"
-            :tooltip="__('Remove')"
-            :aria-label="__('Remove teammate {0}', [index + 1])"
-            @click="rows.splice(index, 1)"
-          />
-        </div>
-        <ErrorMessage
-          v-if="isInvalid(row)"
-          :message="__('Enter a valid email address')"
-        />
-      </div>
-      <Button
-        variant="ghost"
-        class="self-start"
-        :label="__('Add more')"
-        icon-left="lucide-user-plus"
-        @click="addRow"
-      />
-    </div>
-
-    <ErrorMessage v-if="error" class="mt-3" :message="error" />
-
-    <div class="mt-auto flex items-center gap-2 pt-8">
-      <Button
-        variant="ghost"
-        :label="__('Skip for now')"
-        :disabled="sending"
-        @click="emit('skip')"
-      />
-      <Button
-        class="flex-1"
-        variant="solid"
-        :label="__('Send invites')"
-        :loading="sending"
-        :disabled="!canSend"
-        @click="sendInvites"
-      />
-    </div>
+    <InviteStep
+      class="mt-8"
+      :roles="roleOptions"
+      default-role="Sales User"
+      :send="send"
+      :labels="labels"
+      @invitees="showInPreview"
+      @done="finish"
+      @skip="emit('skip')"
+    >
+      <template v-if="noMailbox" #error>
+        <p class="text-sm text-ink-red-7" role="alert">
+          {{ __('Invites go out by email, and no email account is set up.') }}
+          <button
+            type="button"
+            class="font-medium underline underline-offset-2"
+            @click="emit('connectEmail')"
+          >
+            {{ __('Connect email') }}
+          </button>
+        </p>
+      </template>
+    </InviteStep>
   </div>
 </template>
 
 <script setup>
 import { useCrmOnboarding } from '@/composables/onboarding'
 import { usersStore } from '@/stores/users'
-import { validateEmail } from '@/utils'
-import { groupInvitesByRole } from '@/utils/setup'
-import { Button, ErrorMessage, FormControl, call } from 'frappe-ui'
+import { call } from 'frappe-ui'
+import { InviteStep } from '@framework/ui/components/SetupFlow'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { computed, inject, ref, watchEffect } from 'vue'
+import { computed, inject, onActivated, ref } from 'vue'
 
-const emit = defineEmits(['done', 'skip'])
+const emit = defineEmits(['done', 'skip', 'connectEmail'])
+const noMailbox = ref(false)
+onActivated(() => (noMailbox.value = false))
 
 const { isAdmin } = usersStore()
 const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
-
-let nextRowId = 0
-const rows = ref([newRow(), newRow()])
-const sending = ref(false)
-const error = ref('')
 
 const roleOptions = computed(() => [
   { value: 'Sales User', label: __('Sales User') },
@@ -111,51 +66,43 @@ const roleOptions = computed(() => [
     : []),
 ])
 
-const filledRows = computed(() => rows.value.filter((r) => r.email.trim()))
+const labels = {
+  placeholder: 'name@company.com',
+  email: (row) => __('Teammate email {0}', [row]),
+  role: (row) => __('Role for teammate {0}', [row]),
+  remove: (row) => __('Remove teammate {0}', [row]),
+  add: __('Add another'),
+  send: __('Send invites'),
+  skip: __('Skip this step'),
+  invalid: __('Enter a valid email address'),
+  duplicate: __('This email is already in the list'),
+  failed: __('Could not send invites'),
+}
 
 const preview = inject('setupPreview', null)
-watchEffect(() => {
-  if (!preview) return
-  preview.invites = filledRows.value
-    .filter((row) => !isInvalid(row))
-    .map((row) => ({ email: row.email.trim(), role: row.role }))
-})
-
-const canSend = computed(
-  () => filledRows.value.length && !filledRows.value.some(isInvalid),
-)
-
-function newRow() {
-  return { id: nextRowId++, email: '', role: 'Sales User' }
+function showInPreview(invitees) {
+  if (preview) preview.invites = invitees
 }
 
-function addRow() {
-  rows.value.push(newRow())
-}
-
-function isInvalid(row) {
-  const email = row.email.trim()
-  return Boolean(email) && !validateEmail(email)
-}
-
-async function sendInvites() {
-  sending.value = true
-  error.value = ''
+// CRM invites through its own CRM Invitation, which adds the roles below the one picked
+// and the Flow role when the person joins.
+async function send(role, emails) {
+  noMailbox.value = false
   try {
-    const groups = groupInvitesByRole(filledRows.value)
-    for (const [role, emails] of Object.entries(groups)) {
-      await call('crm.api.invite_by_email', { emails: emails.join(','), role })
-    }
-    completeStep('invite_your_team')
-    capture('user_invited')
-    emit('done', {
-      invited: filledRows.value.length,
-      roles: Object.keys(groups),
+    const result = await call('crm.api.invite_by_email', {
+      emails: emails.join(','),
+      role,
     })
+    return result?.to_invite?.length ?? 0
   } catch (e) {
-    error.value = e.messages?.[0] || __('Could not send invites')
-  } finally {
-    sending.value = false
+    noMailbox.value = e?.exc_type === 'OutgoingEmailError'
+    throw e
   }
+}
+
+function finish(result) {
+  completeStep('invite_your_team')
+  capture('user_invited')
+  emit('done', result)
 }
 </script>

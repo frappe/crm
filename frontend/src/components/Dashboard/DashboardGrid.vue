@@ -3,7 +3,7 @@
     <GridLayout
       v-if="items.length > 0"
       class="h-fit w-full"
-      :class="[editing ? 'mb-[20rem] !select-none' : '']"
+      :class="[editing ? 'mb-[20rem] !select-none' : 'dashboard-grid--still']"
       :col-num="20"
       :cols="{ lg: 20, md: 20, sm: 20, xs: 1, xxs: 1 }"
       :row-height="42"
@@ -107,6 +107,13 @@ function remove(index) {
   --vgl-resizer-size: 10px;
   --vgl-resizer-border-color: #444;
   --vgl-resizer-border-width: 2px;
+}
+
+/* Cards move smoothly only while being arranged. Out of edit mode they would also slide in
+   from the left on first draw, while the grid measures its width. */
+.dashboard-grid--still,
+.dashboard-grid--still :deep(.vgl-item) {
+  transition: none;
 }
 
 /* Inset by the item's p-2, so the drop shadow matches the card it stands for */

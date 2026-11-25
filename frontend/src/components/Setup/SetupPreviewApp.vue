@@ -29,7 +29,8 @@
             v-for="(item, i) in NAV"
             :key="item.label"
             :label="__(item.label)"
-            :active="item.label === 'Leads'"
+            :active="item.label === (page === 'home' ? 'Home' : 'Leads')"
+            :data-preview-cursor="item.label === 'Home' ? 'home' : undefined"
             :class="i === 0 && 'mt-4'"
           >
             <template #prefix>
@@ -42,7 +43,8 @@
 
     <div class="relative flex min-w-0 flex-1 flex-col overflow-hidden">
       <Transition v-bind="slide">
-        <SetupPreviewLeads v-if="page === 'leads'" key="leads" :state />
+        <SetupPreviewHome v-if="page === 'home'" key="home" />
+        <SetupPreviewLeads v-else-if="page === 'leads'" key="leads" :state />
         <SetupPreviewLead v-else key="lead" :state />
       </Transition>
     </div>
@@ -51,6 +53,7 @@
 
 <script setup>
 import BrandLogo from '@/components/BrandLogo.vue'
+import SetupPreviewHome from '@/components/Setup/SetupPreviewHome.vue'
 import SetupPreviewLead from '@/components/Setup/SetupPreviewLead.vue'
 import SetupPreviewLeads from '@/components/Setup/SetupPreviewLeads.vue'
 import { getSettings } from '@/stores/settings'
@@ -68,15 +71,15 @@ const { brand } = getSettings()
 const { getUser } = usersStore()
 const user = computed(() => getUser() || {})
 
-const NAV = navigationItems.filter((item) => item.label !== 'Call Logs')
+const NAV = navigationItems
 
 const slide = computed(() => ({
   enterActiveClass:
     'transition duration-500 delay-100 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none',
   enterFromClass:
-    props.page === 'leads'
-      ? 'opacity-0 -translate-x-6'
-      : 'opacity-0 translate-x-6',
+    props.page === 'lead'
+      ? 'opacity-0 translate-x-6'
+      : 'opacity-0 -translate-x-6',
   leaveActiveClass:
     'absolute inset-0 transition duration-150 ease-in motion-reduce:transition-none',
   leaveToClass: 'opacity-0',

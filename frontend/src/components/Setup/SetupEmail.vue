@@ -209,7 +209,7 @@
           @click="next"
         />
       </div>
-      <div v-else>
+      <div v-else ref="skipQuestion">
         <Alert
           :title="__('Skip email for now?')"
           :description="
@@ -257,7 +257,7 @@ import {
   useOneClick,
 } from '@framework/ui/components/EmailAccounts/useEmailAccounts'
 import { useTelemetry } from '@framework/ui/telemetry'
-import { computed, inject, ref, shallowRef, watch } from 'vue'
+import { computed, inject, nextTick, ref, shallowRef, watch } from 'vue'
 
 const emit = defineEmits(['done', 'skip'])
 
@@ -277,6 +277,13 @@ const error = ref('')
 const saving = ref(false)
 const connecting = ref(false)
 const confirmSkip = ref(false)
+// On a short screen the question opens below the fold; the step scrolls to show it.
+const skipQuestion = ref(null)
+watch(confirmSkip, async (open) => {
+  if (!open) return
+  await nextTick()
+  skipQuestion.value?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+})
 const connected = shallowRef(null)
 // Gmail with one-click sign-in: a Workspace address signs in, a personal one needs an app password
 const googleSignIn = ref(false)
