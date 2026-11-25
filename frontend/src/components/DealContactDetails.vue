@@ -3,7 +3,7 @@
     <div
       v-for="field in visibleFields"
       :key="field.fieldname"
-      class="flex items-center gap-1 pl-1"
+      class="group flex items-center gap-1 pl-1"
     >
       <component :is="field.icon" class="h-4 w-4 shrink-0" />
       <div class="min-w-0 flex-1">
@@ -21,6 +21,16 @@
           {{ contactDoc.doc[field.fieldname] }}
         </div>
       </div>
+      <!-- Left visible on touch, which has no hover to reveal it -->
+      <Button
+        v-if="contactDoc.doc[field.fieldname]"
+        variant="ghost"
+        icon="lucide-copy"
+        class="shrink-0 transition-opacity focus-visible:opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+        :tooltip="field.copyLabel"
+        :aria-label="field.copyLabel"
+        @click="copyToClipboard(contactDoc.doc[field.fieldname])"
+      />
     </div>
     <div
       v-if="!visibleFields.length"
@@ -36,6 +46,7 @@ import PrimaryDropdown from '@/components/PrimaryDropdown.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import { useContactFields } from '@/composables/useContactFields'
+import { copyToClipboard } from '@/utils'
 import { computed, reactive, watch } from 'vue'
 
 // Email and mobile rows of a deal's contact, edited with the same dropdown as
@@ -73,11 +84,13 @@ const fields = computed(() => [
     ...transformField({ fieldname: 'email_id', label: __('Email') }),
     icon: Email2Icon,
     placeholder: __('Add email...'),
+    copyLabel: __('Copy email'),
   },
   {
     ...transformField({ fieldname: 'mobile_no', label: __('Mobile No') }),
     icon: PhoneIcon,
     placeholder: __('Add mobile no...'),
+    copyLabel: __('Copy mobile no'),
   },
 ])
 
