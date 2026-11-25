@@ -98,7 +98,7 @@
           </div>
           <div
             v-else-if="column.type === 'Text Editor'"
-            class="truncate text-base h-4 [&>p]:truncate"
+            class="truncate overflow-hidden text-base h-4 [&>p]:truncate"
             v-html="sanitizeHTML(item)"
           />
           <div v-else-if="column.type === 'Check'">
