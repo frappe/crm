@@ -89,10 +89,13 @@ The motivation behind building Frappe CRM stems from the need for a simple, cust
 ### Compatibility
 This app is compatible with the following versions of Frappe and ERPNext:
 
-| CRM branch            | Stability | Frappe branch        | ERPNext branch       |
-| :-------------------- | :-------- | :------------------- | :------------------- |
-| main - v1.x           | stable    | v15.x & v16.x        | v15.x & v16.x        |
-| develop - future/v2.x | unstable  | develop - future/v17 | develop - future/v17 |
+| CRM branch | Stability | Frappe branch | ERPNext branch |
+| :--------- | :-------- | :------------ | :------------- |
+| version-15 | stable    | version-15    | version-15     |
+| version-16 | stable    | version-16    | version-16     |
+| develop    | unstable  | develop       | develop        |
+
+`main` stopped at v1.92 and gets no more updates. Move to `version-15` or `version-16`, the one that matches your Frappe version.
 
 ## Getting Started (Production)
 
