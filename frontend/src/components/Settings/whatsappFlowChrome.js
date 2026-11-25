@@ -3,7 +3,6 @@
 export function flowButtonChrome() {
   return {
     untitledButton: __('Flow button'),
-    flowHeading: __('Flow'),
     flowLabel: __('Flow to open'),
     flowPlaceholder: __('Choose a Flow'),
     noAccount: __('Choose a WhatsApp account to list its Flows'),
@@ -21,21 +20,16 @@ export function flowButtonChrome() {
     actionDataExchange: __('Data exchange'),
     previewLabel: __('Preview'),
     newFlow: __('New flow'),
-    editFlow: __('Edit flow'),
+    manageFlows: __('Manage Flows'),
     emptyOutline: __(
       "This Flow's JSON could not be read, so its inputs and answers can't be listed until the Flow syncs.",
     ),
     outlineError: __("Couldn't load this Flow's screens and answers"),
-    inputsHeading: __('Flow inputs'),
+    inputsHeading: __('Prefilled questions'),
     inputsHint: __(
-      'Filled from the reference document when the message is sent',
+      'Filled from the reference document before the customer sees them',
     ),
-    noFlowChosen: __('Choose a Flow first'),
-    noInputs: __('This screen takes no inputs'),
-    inputsUnlisted: __('None listed until the Flow syncs'),
-    noReference: __(
-      'Set a Reference DocType above to fill inputs from a document',
-    ),
+    noReference: __('Set a Reference DocType above to choose what fills them'),
     fieldPlaceholder: __('Choose a field'),
     actionsHeading: __('Response actions'),
     actionsHint: __(
@@ -44,6 +38,7 @@ export function flowButtonChrome() {
     noActions: __('Nothing happens with the answers yet'),
     addAction: __('Add action'),
     removeAction: __('Remove action'),
+    confirmRemove: __('Click again to remove'),
     kindLabel: __('Do'),
     updateReference: __('Update reference document'),
     createDocument: __('Create a document'),
@@ -57,8 +52,11 @@ export function flowButtonChrome() {
     doctypeLabel: __('DocType'),
     conditionLabel: __('Condition'),
     conditionHint: __(
-      'Optional. A Python expression over response, doc and message',
+      'Optional. Python over response (the answers), doc (the reference document) and message',
     ),
+    conditionResponse: __('The answers'),
+    conditionDoc: __('The reference document'),
+    conditionMessage: __('The response message'),
     sourceLabel: __('From'),
     targetLabel: __('To field'),
     sourcePlaceholder: __('Answer or message detail'),

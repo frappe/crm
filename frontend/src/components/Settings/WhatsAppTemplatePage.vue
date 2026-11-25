@@ -45,7 +45,9 @@
         :controller="template"
         :flow-chrome="flowChrome"
         :on-new-flow="flowPermissions.write ? newFlow : undefined"
-        :on-edit-flow="flowPermissions.read ? editFlow : undefined"
+        :on-manage-flows="
+          flowPermissions.read ? () => emit('manage-flows') : undefined
+        "
       />
     </div>
     <NewFlowDialog
@@ -92,14 +94,11 @@ const props = defineProps({
   referenceDoctype: { type: String, default: '' },
 })
 
-const emit = defineEmits(['back', 'created'])
+const emit = defineEmits(['back', 'created', 'manage-flows'])
 
 const template = useTemplate({ name: () => props.name })
 const preview = ref(false)
-const flowChrome = computed(() => ({
-  ...flowButtonChrome(),
-  ...(!flowPermissions.write && { editFlow: __('View flow') }),
-}))
+const flowChrome = flowButtonChrome()
 const flowBuilderChrome = builderChrome()
 const openFlow = ref('')
 const creatingFlow = ref(false)
@@ -131,10 +130,6 @@ async function save() {
   } else {
     toast.success(__('Template updated'))
   }
-}
-
-function editFlow(name) {
-  openFlow.value = name
 }
 
 // New flow from a Flow button: created in the template's account, then opened in the builder.
