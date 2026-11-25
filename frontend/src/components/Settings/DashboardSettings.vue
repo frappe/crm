@@ -167,6 +167,7 @@
   </div>
 </template>
 <script setup>
+import Link from '@/components/Controls/Link.vue'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { useBroadcast } from '@/composables/useBroadcast'
