@@ -1,25 +1,16 @@
 # Copyright (c) 2024, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
-<<<<<<< HEAD
-# import frappe
-from crm.tests import CRMTestCase as FrappeTestCase
-=======
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
 import frappe
-from frappe.tests import UnitTestCase
->>>>>>> 0a65ad7 (fix: url encode the values of the quotation link)
 
 from crm.fcrm.doctype.erpnext_crm_settings import erpnext_crm_settings
+from crm.tests import CRMTestCase as FrappeTestCase
 
 
-<<<<<<< HEAD
 class TestERPNextCRMSettings(FrappeTestCase):
-	pass
-=======
-class TestERPNextCRMSettings(UnitTestCase):
 	def test_quotation_url_encodes_values(self):
 		settings = frappe._dict(is_erpnext_in_different_site=0, erpnext_company="Acme & Co")
 		with patch.multiple(
@@ -41,4 +32,3 @@ class TestERPNextCRMSettings(UnitTestCase):
 				"company": ["Acme & Co"],
 			},
 		)
->>>>>>> 0a65ad7 (fix: url encode the values of the quotation link)
