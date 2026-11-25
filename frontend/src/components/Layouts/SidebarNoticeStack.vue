@@ -15,7 +15,7 @@
         <span :class="ICON[front.theme]" class="size-4" aria-hidden="true" />
         <span
           v-if="notices.length > 1"
-          class="absolute -right-1.5 -top-1.5 grid h-3.5 min-w-3.5 place-items-center rounded-full bg-surface-gray-9 px-1 text-[10px] font-semibold leading-none text-ink-white"
+          class="absolute -right-1 -top-1 grid h-3 min-w-3 place-items-center rounded-full bg-surface-gray-9 px-0.5 text-[9px] font-semibold leading-none text-ink-base ring-2 ring-[var(--surface-gray-1)]"
         >
           {{ notices.length }}
         </span>
@@ -33,55 +33,35 @@
     </template>
   </Popover>
 
+  <!-- The foot keeps the folded height, and the cards grow upward over the views. -->
   <div
     v-else-if="front"
     ref="stack"
-    class="relative w-56 shrink-0"
+    class="relative w-56 shrink-0 transition-[height] duration-300"
+    :style="{ height: `${foldedHeight}px` }"
     @pointerenter="hover(true)"
     @pointerleave="hover(false)"
     @click="expanded = canExpand"
   >
-    <!-- Fanned out, the cards open over the views instead of pushing them up. -->
-    <Transition
-      enter-active-class="transition duration-300 ease-out"
-      enter-from-class="translate-y-3 opacity-0"
-      leave-active-class="transition duration-300 ease-in"
-      leave-to-class="translate-y-3 opacity-0"
+    <div
+      class="absolute inset-x-0 bottom-0 z-10 flex flex-col bg-surface-gray-1"
     >
       <div
-        v-if="expanded"
-        class="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 bg-surface-gray-1 pt-1.5"
+        v-for="(notice, index) in backToFront"
+        :key="notice.key"
+        class="overflow-hidden transition-all duration-300 ease-out [&_[data-slot]]:transition-opacity [&_[data-slot]]:duration-300"
+        :class="[
+          isEdge(notice) ? 'rounded-t-6' : 'rounded-6',
+          isCompact(notice) && COMPACT,
+        ]"
+        :style="cardStyle(notice, backToFront.length - 1 - index)"
       >
         <SidebarCard
-          v-for="notice in fannedOut"
-          :key="notice.key"
+          :ref="(card) => measure(notice.key, card)"
           v-bind="cardProps(notice)"
           @dismiss="notice.onDismiss"
         />
       </div>
-    </Transition>
-    <!-- Kept while fanned out, so the sidebar foot keeps its height. -->
-    <div
-      class="relative"
-      :class="expanded && 'invisible'"
-      :style="{ paddingTop: `${edges * EDGE}px` }"
-    >
-      <div
-        v-for="edge in edges"
-        :key="edge"
-        class="absolute h-10 rounded-6 border border-outline-alpha-gray-1 bg-surface-base"
-        :style="edgeStyle(edge)"
-        aria-hidden="true"
-      />
-      <SidebarCard
-        class="relative"
-        v-bind="
-          front.urgent
-            ? cardProps(front)
-            : { theme: front.theme, title: front.title }
-        "
-        @dismiss="front.onDismiss"
-      />
     </div>
   </div>
 </template>
@@ -90,7 +70,7 @@
 import { useSidebarNotices } from '@/composables/sidebarNotices'
 import { onClickOutside } from '@vueuse/core'
 import { Popover, SidebarCard } from 'frappe-ui'
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, reactive, ref } from 'vue'
 
 defineProps({
   isCollapsed: { type: Boolean, default: false },
@@ -98,7 +78,12 @@ defineProps({
 
 // The stack keeps the open sidebar's inner width (w-56), so while the sidebar's
 // width animates the cards are uncovered instead of rewrapping.
+// A compact card hides everything below its title row; the parts fade as it opens.
+const COMPACT =
+  '[&_[data-slot=actions]]:opacity-0 [&_[data-slot=description]]:opacity-0 [&_[data-slot=dismiss]]:opacity-0'
 const EDGE = 6
+const GAP = 6
+const STAGGER = 40
 const MAX_EDGES = 2
 const OPEN_DELAY = 150
 const CLOSE_DELAY = 250
@@ -118,8 +103,8 @@ const ICON = {
 const { notices } = useSidebarNotices()
 const front = computed(() => notices.value[0])
 const edges = computed(() => Math.min(notices.value.length - 1, MAX_EDGES))
-// Fanned out, the most urgent card stays nearest the avatar.
-const fannedOut = computed(() => notices.value.slice().reverse())
+// Top to bottom: the most urgent card sits nearest the avatar.
+const backToFront = computed(() => notices.value.slice().reverse())
 
 // A lone urgent notice already shows its whole card, so there is nothing to fan out.
 const canExpand = computed(
@@ -139,10 +124,68 @@ function cardProps(notice) {
   }
 }
 
-// Edge 1 sits just behind the front card, edge 2 behind and above it.
-function edgeStyle(edge) {
-  const inset = `${edge * EDGE}px`
-  return { top: `${(edges.value - edge) * EDGE}px`, left: inset, right: inset }
+// Each card always renders whole; its wrapper's height shows all of it, only its title
+// row (a compact card) or only its top edge (a card behind). Animating that height is
+// the fan-out, so nothing is swapped or re-rendered.
+const heights = reactive({})
+const observer = new ResizeObserver((entries) => {
+  for (const { target } of entries) {
+    const row = target.querySelector('[data-slot=title]')?.parentElement
+    heights[target.dataset.notice] = {
+      full: target.offsetHeight,
+      // The title row plus the card's padding below it.
+      compact: row
+        ? row.offsetTop + row.offsetHeight + 12
+        : target.offsetHeight,
+    }
+  }
+})
+const observed = {}
+function measure(key, card) {
+  const element = card?.$el
+  if (!element || observed[key] === element) return
+  if (observed[key]) observer.unobserve(observed[key])
+  element.dataset.notice = key
+  observer.observe(element)
+  observed[key] = element
+}
+onUnmounted(() => observer.disconnect())
+
+const isEdge = (notice) => !expanded.value && notice !== front.value
+const isCompact = (notice) =>
+  !expanded.value && notice === front.value && !notice.urgent
+
+function foldedCardHeight(notice) {
+  const height = heights[notice.key]
+  if (!height) return undefined
+  return notice.urgent ? height.full : height.compact
+}
+
+const foldedHeight = computed(() => {
+  const frontHeight = front.value && foldedCardHeight(front.value)
+  return frontHeight === undefined
+    ? undefined
+    : frontHeight + edges.value * EDGE
+})
+
+// `depth` is 0 for the front card, 1 for the card behind it, and so on.
+function cardStyle(notice, depth) {
+  const height = heights[notice.key]
+  if (expanded.value) {
+    return {
+      height: height && `${height.full}px`,
+      marginBottom: depth ? `${GAP}px` : 0,
+      transitionDelay: `${depth * STAGGER}ms`,
+    }
+  }
+  if (depth === 0) return { height: height && `${foldedCardHeight(notice)}px` }
+  const hidden = depth > MAX_EDGES
+  return {
+    height: hidden ? 0 : `${EDGE}px`,
+    marginInline: `${depth * EDGE}px`,
+    opacity: hidden ? 0 : 1,
+    transitionDelay: `${(MAX_EDGES - depth) * STAGGER}ms`,
+  }
 }
 
 let timer = null
