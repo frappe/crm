@@ -36,6 +36,7 @@
     "gemoji": "^8.1.0",
     "grid-layout-plus": "^1.1.0",
     "leaflet": "^1.9.4",
+    "marked": "^15.0.12",
     "leaflet-draw": "^1.0.4",
     "leaflet.locatecontrol": "^0.89.0",
     "lodash": "^4.18.1",

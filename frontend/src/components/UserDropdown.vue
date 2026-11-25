@@ -49,11 +49,13 @@
 import BrandLogo from '@/components/BrandLogo.vue'
 import FrappeCloudIcon from '@/components/Icons/FrappeCloudIcon.vue'
 import AppsIcon from '@/components/Icons/AppsIcon.vue'
+import UnseenDot from '@/components/Changelog/UnseenDot.vue'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
+import { hasUnseenEntries, openChangelog } from '@/data/changelog'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { useCloudSettings } from '@/composables/cloudSettings'
 import CreditCardIcon from '~icons/lucide/credit-card'
@@ -178,6 +180,15 @@ function getStandardItem(item) {
         icon: item.icon,
         label: __(item.label),
         onClick: () => (showAboutModal.value = true),
+      }
+    case 'whats_new':
+      return {
+        icon: item.icon,
+        label: __(item.label),
+        onClick: openChangelog,
+        slots: {
+          suffix: () => (hasUnseenEntries.value ? h(UnseenDot) : null),
+        },
       }
     case 'logout':
       return {
