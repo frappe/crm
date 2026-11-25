@@ -7,6 +7,7 @@
     :reference-doctype="templateReferenceDoctype"
     @back="showHome"
     @created="showHome"
+    @manage-flows="showFlows"
   />
   <WhatsAppAccountPage
     v-else-if="step === 'account'"
@@ -28,7 +29,9 @@
           />
         </h2>
         <p class="text-p-base text-ink-gray-6">
-          {{ __('Templates, accounts and the Meta Cloud API connection.') }}
+          {{
+            __('Templates, Flows, accounts and the Meta Cloud API connection.')
+          }}
         </p>
       </div>
       <Button
@@ -37,6 +40,13 @@
         icon-left="lucide-plus"
         variant="solid"
         @click="newTemplate()"
+      />
+      <Button
+        v-else-if="activeTab === 'flows' && flowsTab?.canWrite"
+        :label="__('New Flow')"
+        icon-left="lucide-plus"
+        variant="solid"
+        @click="flowsTab.newFlow()"
       />
       <Button
         v-else-if="activeTab === 'accounts'"
@@ -67,6 +77,7 @@
             @edit="editTemplate"
             @create="newTemplate()"
           />
+          <WhatsAppFlows v-else-if="tab.value === 'flows'" ref="flowsTab" />
           <WhatsAppAccountList
             v-else-if="tab.value === 'accounts'"
             @edit="editAccount"
@@ -89,6 +100,7 @@
 import SettingsPage from '@/components/Settings/SettingsPage.vue'
 import WhatsAppAccountList from '@/components/Settings/WhatsAppAccountList.vue'
 import WhatsAppAccountPage from '@/components/Settings/WhatsAppAccountPage.vue'
+import WhatsAppFlows from '@/components/Settings/WhatsAppFlows.vue'
 import WhatsAppTemplateList from '@/components/Settings/WhatsAppTemplateList.vue'
 import WhatsAppTemplatePage from '@/components/Settings/WhatsAppTemplatePage.vue'
 import { useBroadcast } from '@/composables/useBroadcast'
@@ -98,6 +110,7 @@ import { ref, useTemplateRef } from 'vue'
 // Templates first: they change far more often than the account or the connection.
 const tabs = [
   { value: 'templates', label: __('Templates') },
+  { value: 'flows', label: __('Flows') },
   { value: 'accounts', label: __('Accounts') },
   { value: 'advanced', label: __('Advanced') },
 ]
@@ -108,6 +121,7 @@ const templateName = ref('')
 const templateReferenceDoctype = ref('')
 
 const settingsPage = useTemplateRef('settingsPage')
+const flowsTab = useTemplateRef('flowsTab')
 const { on } = useBroadcast()
 
 const activeTab = ref('templates')
@@ -139,6 +153,11 @@ function showHome() {
   step.value = 'home'
   accountName.value = ''
   templateName.value = ''
+}
+
+function showFlows() {
+  showHome()
+  activeTab.value = 'flows'
 }
 
 // The template picker on a document opens this page straight onto a new template.

@@ -4,7 +4,7 @@ import path from 'path'
 
 // The whatsapp release that CRM builds @whatsapp/ui from when the app is not beside CRM,
 // as in the prebuilt assets. Bump it when CRM starts using code from a newer release.
-const WHATSAPP_TAG = 'v1.3.0'
+const WHATSAPP_TAG = 'v1.4.0'
 
 const sibling = path.resolve(import.meta.dirname, '../../whatsapp')
 const pinned = path.resolve(

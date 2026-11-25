@@ -41,8 +41,28 @@
     <!-- p-1/-m-1 leaves the scroll box a little slack beyond the content, so a
          focused control's ring isn't clipped by the edge it sits flush against. -->
     <div v-else class="-m-1 flex-1 overflow-y-auto p-1">
-      <TemplateForm :controller="template" />
+      <TemplateForm
+        :controller="template"
+        :flow-chrome="flowChrome"
+        :on-new-flow="flowPermissions.write ? newFlow : undefined"
+        :on-manage-flows="
+          canLeaveForFlows ? () => emit('manage-flows') : undefined
+        "
+      />
     </div>
+    <NewFlowDialog
+      v-if="newFlowList"
+      v-model:open="creatingFlow"
+      :controller="newFlowList"
+      :account="newFlowList.account"
+      :chrome="flowBuilderChrome"
+      @created="(name) => (openFlow = name)"
+    />
+    <WhatsAppFlowBuilderDialog
+      v-model:flow="openFlow"
+      :back-label="__('Template')"
+      @changed="template.refreshFlows()"
+    />
     <Dialog v-model:open="preview" :title="__('Preview')" size="sm">
       <template #default>
         <TemplatePreview :controller="template" />
@@ -52,14 +72,20 @@
 </template>
 
 <script setup>
+import { flowPermissions } from '@/composables/whatsapp'
 import {
+  NewFlowDialog,
   serverErrorMessage,
   TemplateForm,
   TemplatePreview,
+  useFlowList,
   useTemplate,
 } from '@whatsapp/ui'
 import { Dialog, LoadingIndicator, toast } from 'frappe-ui'
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef } from 'vue'
+import WhatsAppFlowBuilderDialog from './WhatsAppFlowBuilderDialog.vue'
+import { flowBuilderChrome as builderChrome } from './whatsappFlowBuilderChrome'
+import { flowButtonChrome } from './whatsappFlowChrome'
 
 const props = defineProps({
   // Empty renders a blank template that the first save creates.
@@ -68,10 +94,20 @@ const props = defineProps({
   referenceDoctype: { type: String, default: '' },
 })
 
-const emit = defineEmits(['back', 'created'])
+const emit = defineEmits(['back', 'created', 'manage-flows'])
 
 const template = useTemplate({ name: () => props.name })
 const preview = ref(false)
+const flowChrome = flowButtonChrome()
+const flowBuilderChrome = builderChrome()
+const openFlow = ref('')
+const creatingFlow = ref(false)
+const newFlowList = shallowRef(null)
+
+// Manage Flows leaves this page, so it waits until nothing is left to lose.
+const canLeaveForFlows = computed(
+  () => flowPermissions.read && !template.isNew && !template.isDirty,
+)
 
 if (template.isNew && props.referenceDoctype) {
   template.doc.reference_doctype = props.referenceDoctype
@@ -99,5 +135,14 @@ async function save() {
   } else {
     toast.success(__('Template updated'))
   }
+}
+
+// New flow from a Flow button: created in the template's account, then opened in the builder.
+function newFlow() {
+  const account = template.doc.whatsapp_account
+  if (newFlowList.value?.account !== account) {
+    newFlowList.value = useFlowList({ account })
+  }
+  creatingFlow.value = true
 }
 </script>
