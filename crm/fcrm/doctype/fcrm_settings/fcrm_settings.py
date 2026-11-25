@@ -57,6 +57,7 @@ class FCRMSettings(Document):
 
 	def validate(self):
 		self.do_not_allow_to_delete_if_standard()
+		self.validate_submenus()
 		self.setup_forecasting()
 		self.make_currency_read_only()
 
@@ -72,6 +73,25 @@ class FCRMSettings(Document):
 			if not deleted_standard_items.intersection(standard_dropdown_items):
 				return
 			frappe.throw(_("Cannot delete standard items {0}").format(", ".join(deleted_standard_items)))
+
+	def validate_submenus(self):
+		"""Give each submenu a key, and keep each row where a submenu can hold it."""
+		for item in self.dropdown_items:
+			if item.type == "Submenu" and not item.name1:
+				item.name1 = f"submenu-{frappe.generate_hash(length=10)}"
+
+		keys = {item.name1 for item in self.dropdown_items if item.type == "Submenu"} | {"help"}
+		standard_parents = {
+			item.get("name1"): item.get("parent_submenu") or ""
+			for item in frappe.get_hooks("standard_dropdown_items")
+		}
+		for item in self.dropdown_items:
+			if not is_in_valid_submenu(item, keys, standard_parents):
+				frappe.throw(
+					_("Row {0}: {1} can't go in {2}.").format(
+						item.idx, item.label or item.type, item.parent_submenu or _("the top level")
+					)
+				)
 
 	def setup_forecasting(self):
 		if self.has_value_changed("enable_forecasting"):
@@ -187,6 +207,14 @@ class FCRMSettings(Document):
 			layout = [section for section in layout if section.get("name") != "forecasted_sales_section"]
 		doc.layout = json.dumps(layout)
 		doc.save(ignore_permissions=True)
+
+
+def is_in_valid_submenu(item, keys, standard_parents):
+	"""Built-ins stay where the hook puts them; only custom links go in a submenu."""
+	parent = item.parent_submenu or ""
+	if item.is_standard:
+		return parent == standard_parents.get(item.name1, parent)
+	return not parent or (item.type == "Route" and parent in keys)
 
 
 def get_standard_dropdown_items():

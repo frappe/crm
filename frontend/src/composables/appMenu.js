@@ -32,24 +32,41 @@ export function useAppMenu(getItems) {
   })
 
   const groups = computed(() => {
+    const items = (getItems() || []).filter((item) => !item.hidden)
     const _groups = [{ group: '', hideLabel: true, options: [] }]
-    for (const item of getItems() || []) {
-      if (item.hidden) continue
+    for (const item of items) {
+      if (item.parent_submenu) continue
       if (item.type === 'Separator') {
         _groups.push({ group: '', hideLabel: true, options: [] })
-      } else {
-        _groups.at(-1).options.push(menuOption(item))
+        continue
       }
+      const links = holdsLinks(item)
+        ? items.filter((link) => link.parent_submenu === item.name1)
+        : []
+      const option = menuOption(item, links.map(childOption))
+      if (option) _groups.at(-1).options.push(option)
     }
     // A separator with nothing after it must not draw a trailing divider.
     return _groups.filter((group) => group.options.length)
   })
 
-  function menuOption(item) {
+  /** `links` are the options of the links shown inside this item. */
+  function menuOption(item, links) {
     const icon = menuItemIcon(item)
-    if (item.is_standard) return standardOption(item, icon)
+    if (item.is_standard) return standardOption(item, icon, links)
+    if (item.type !== 'Submenu') return linkOption(item)
+    // An empty submenu stays out of the menu.
+    return links.length ? { icon, label: __(item.label), submenu: links } : null
+  }
+
+  function childOption(item) {
+    if (!item.is_standard) return linkOption(item)
+    return standardOption(item, menuItemIcon(item), [])
+  }
+
+  function linkOption(item) {
     return {
-      icon,
+      icon: menuItemIcon(item),
       label: __(item.label),
       onClick: () => {
         const route = safeRoute(item.route)
@@ -58,7 +75,7 @@ export function useAppMenu(getItems) {
     }
   }
 
-  function standardOption(item, icon) {
+  function standardOption(item, icon, links) {
     const label = __(item.label)
     switch (item.name1) {
       case 'app_selector':
@@ -86,23 +103,16 @@ export function useAppMenu(getItems) {
           condition: () => !isMobileView.value && window.is_fc_site,
         }
       case 'help':
-        return { icon, label, submenu: helpSubmenu() }
+        return links.length ? { icon, label, submenu: links } : null
+      case 'documentation':
+        return {
+          icon,
+          label,
+          onClick: () => window.open(DOCS_URL, '_blank', 'noopener'),
+        }
+      case 'about':
+        return { icon, label, onClick: () => (showAboutModal.value = true) }
     }
-  }
-
-  function helpSubmenu() {
-    return [
-      {
-        icon: spriteIcon('book-open'),
-        label: __('Documentation'),
-        onClick: () => window.open(DOCS_URL, '_blank', 'noopener'),
-      },
-      {
-        icon: spriteIcon('info'),
-        label: __('About'),
-        onClick: () => (showAboutModal.value = true),
-      },
-    ]
   }
 
   function appSubmenu() {
@@ -118,6 +128,11 @@ export function useAppMenu(getItems) {
   return { groups }
 }
 
+/** Whether the row opens a submenu that can hold links: a Submenu row, or the built-in Help. */
+export function holdsLinks(item) {
+  return item.type === 'Submenu' || (item.is_standard && item.name1 === 'help')
+}
+
 /** The icon a menu row shows: a built-in's own, a lucide name, or a saved SVG. */
 export function menuItemIcon(item) {
   if (item.is_standard && item.name1 === 'app_selector')
@@ -125,7 +140,8 @@ export function menuItemIcon(item) {
   if (item.is_standard && item.name1 === 'login_to_fc') {
     return markRaw(FrappeCloudIcon)
   }
-  const icon = item.icon || 'external-link'
+  const icon =
+    item.icon || (item.type === 'Submenu' ? 'folder' : 'external-link')
   if (icon.startsWith('<svg')) {
     return markRaw(h('div', { innerHTML: sanitizeHTML(icon) }))
   }
