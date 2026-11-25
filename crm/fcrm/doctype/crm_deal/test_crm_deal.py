@@ -6,7 +6,12 @@ from frappe.desk.form.assign_to import add as assign_add
 from frappe.desk.form.assign_to import remove as assign_remove
 from frappe.permissions import add_permission, update_permission_property
 
-from crm.api.doc import get_assigned_users, get_linked_docs_of_document, remove_assignments
+from crm.api.doc import (
+	delete_bulk_docs,
+	get_assigned_users,
+	get_linked_docs_of_document,
+	remove_assignments,
+)
 from crm.fcrm.doctype.crm_deal.api import get_deal_contacts
 from crm.fcrm.doctype.crm_deal.crm_deal import (
 	add_contact,
@@ -14,6 +19,7 @@ from crm.fcrm.doctype.crm_deal.crm_deal import (
 	remove_contact,
 	set_primary_contact,
 )
+from crm.permissions.test_org_hierarchy import make_user
 from crm.tests import CRMTestCase as FrappeTestCase
 
 
@@ -320,6 +326,38 @@ class TestCRMDeal(FrappeTestCase):
 		self.assertEqual(contacts[0]["is_primary"], 1)
 		self.assertEqual([c["name"] for c in contacts[1:]], [contact1.name, contact2.name])
 
+	def test_get_deal_contacts_includes_all_emails_and_phones(self):
+		"""Test that get_deal_contacts returns every email and phone of a
+		contact, with row names the side panel needs to edit them"""
+		contact = create_test_contact(
+			first_name="Multi", email="multi@example.com", mobile_no="+91-9000000001"
+		)
+		contact.append("phone_nos", {"phone": "+91-8000000002"})
+		contact.save(ignore_permissions=True)
+
+		deal = create_test_deal(organization="Contact Details Org")
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.save()
+
+		result = get_deal_contacts(deal.name)[0]
+
+		self.assertEqual([e["email_id"] for e in result["email_ids"]], ["multi@example.com"])
+		self.assertEqual([p["phone"] for p in result["phone_nos"]], ["+91-9000000001", "+91-8000000002"])
+		self.assertEqual({p["name"] for p in result["phone_nos"]}, {p.name for p in contact.phone_nos})
+
+	def test_get_deal_contacts_reports_contact_write_permission(self):
+		"""A deal reader without Contact write access gets can_write off, so the panel stays read-only"""
+		reader = create_test_user_with_role("deal-reader@example.com", "CRM Deal")
+		contact = create_test_contact(first_name="ReadOnly", email="readonly@example.com")
+		deal = create_test_deal(organization="Contact Write Org", deal_owner=reader)
+		deal.append("contacts", {"contact": contact.name, "is_primary": 1})
+		deal.save()
+
+		self.assertTrue(get_deal_contacts(deal.name)[0]["can_write"])
+
+		frappe.set_user(reader)
+		self.assertFalse(get_deal_contacts(deal.name)[0]["can_write"])
+
 	def test_create_deal_api(self):
 		"""Test create_deal API function"""
 		deal_name = create_deal(
@@ -552,6 +590,19 @@ class TestGetDealContacts(FrappeTestCase):
 		frappe.set_user(create_test_user_without_deal_access())
 		with self.assertRaises(frappe.PermissionError):
 			get_linked_docs_of_document("CRM Organization", deal.organization)
+
+	def test_delete_bulk_docs_leaves_linked_docs_when_parent_delete_is_denied(self):
+		deal = create_test_deal(organization="Bulk Delete Org")
+		task = frappe.get_doc(
+			doctype="CRM Task", title="Linked task", reference_doctype="CRM Deal", reference_docname=deal.name
+		).insert()
+
+		frappe.set_user(make_user("bulk.delete@example.com", ["Sales User"]).name)
+		with self.assertRaises(frappe.PermissionError):
+			delete_bulk_docs("CRM Deal", [deal.name], delete_linked=True)
+
+		frappe.set_user("Administrator")
+		self.assertEqual(frappe.db.get_value("CRM Task", task.name, "reference_docname"), deal.name)
 
 	def test_get_linked_docs_of_document_omits_unreadable_links(self):
 		deal = create_test_deal(organization="Linked Docs Filter Org")
