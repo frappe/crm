@@ -799,6 +799,8 @@ class TestPhoneLookupPermissions(FrappeTestCase):
 	@classmethod
 	def setUpClass(cls):
 		super().setUpClass()
+		# v15 sends assignment emails inline in tests, and sending commits the transaction
+		frappe.flags.mute_emails = True
 		if not frappe.db.exists("User", SALES_USER):
 			user = frappe.get_doc(
 				{
