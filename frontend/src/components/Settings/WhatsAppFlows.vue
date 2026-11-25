@@ -23,6 +23,11 @@
   </div>
 </template>
 
+<script>
+// The default account outlives the tab, so the list opens at once with the last one known.
+let lastAccount = null
+</script>
+
 <script setup>
 import { flowPermissions } from '@/composables/whatsapp'
 import { FlowList, NewFlowDialog, useFlowList } from '@whatsapp/ui'
@@ -40,23 +45,25 @@ const openFlow = ref('')
 
 const canWrite = computed(() => flowPermissions.write && Boolean(account.value))
 
+if (lastAccount !== null) start(lastAccount)
+
 createResource({
   url: 'frappe.client.get_single_value',
   params: { doctype: 'WA Settings', field: 'default_account' },
   auto: true,
-  onSuccess: (defaultAccount) => start(defaultAccount),
-  onError: () => start(''),
+  onSuccess: (defaultAccount) => start(defaultAccount || ''),
+  onError: () => start(lastAccount ?? ''),
 })
 
 function start(defaultAccount) {
-  account.value = defaultAccount || ''
-  flows.value = useFlowList({ account: account.value || undefined })
+  if (flows.value && defaultAccount === account.value) return
+  lastAccount = defaultAccount
+  account.value = defaultAccount
+  flows.value = useFlowList({ account: defaultAccount || undefined })
 }
 
 defineExpose({
   canWrite,
   newFlow: () => (creating.value = true),
-  sync: () => flows.value?.sync(),
-  syncing: computed(() => Boolean(flows.value?.syncing)),
 })
 </script>

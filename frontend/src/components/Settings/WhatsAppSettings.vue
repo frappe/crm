@@ -7,6 +7,7 @@
     :reference-doctype="templateReferenceDoctype"
     @back="showHome"
     @created="showHome"
+    @manage-flows="showFlows"
   />
   <WhatsAppAccountPage
     v-else-if="step === 'account'"
@@ -40,23 +41,13 @@
         variant="solid"
         @click="newTemplate()"
       />
-      <div
+      <Button
         v-else-if="activeTab === 'flows' && flowsTab?.canWrite"
-        class="flex items-center gap-2"
-      >
-        <Button
-          :label="__('Sync from WhatsApp')"
-          icon-left="lucide-refresh-cw"
-          :loading="flowsTab.syncing"
-          @click="flowsTab.sync()"
-        />
-        <Button
-          :label="__('New Flow')"
-          icon-left="lucide-plus"
-          variant="solid"
-          @click="flowsTab.newFlow()"
-        />
-      </div>
+        :label="__('New Flow')"
+        icon-left="lucide-plus"
+        variant="solid"
+        @click="flowsTab.newFlow()"
+      />
       <Button
         v-else-if="activeTab === 'accounts'"
         :label="__('Add Account')"
@@ -162,6 +153,11 @@ function showHome() {
   step.value = 'home'
   accountName.value = ''
   templateName.value = ''
+}
+
+function showFlows() {
+  showHome()
+  activeTab.value = 'flows'
 }
 
 // The template picker on a document opens this page straight onto a new template.
