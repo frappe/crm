@@ -2,16 +2,16 @@
   <Dropdown :options="dropdownItems" v-bind="$attrs">
     <template #default="{ open }">
       <button
-        class="flex h-12 items-center rounded-5 py-2 duration-300 ease-in-out"
+        class="flex h-9 items-center rounded-4 px-1 duration-300 ease-in-out"
         :class="
           isCollapsed
-            ? 'w-auto px-0'
+            ? 'w-auto'
             : open
-              ? 'w-full px-2 bg-surface-elevation-3 shadow-sm'
-              : 'w-full px-2 hover:bg-surface-gray-2'
+              ? 'w-full bg-surface-elevation-3 shadow-sm'
+              : 'w-full hover:bg-surface-gray-2'
         "
       >
-        <BrandLogo v-model="brand" class="h-8 max-w-16 flex-shrink-0" />
+        <BrandLogo v-model="brand" class="h-6 max-w-12 flex-shrink-0" />
         <div
           class="flex flex-1 flex-col text-left duration-300 ease-in-out truncate"
           :class="
@@ -23,16 +23,13 @@
           <div class="text-base-medium leading-none text-ink-gray-9 truncate">
             {{ __(brand.name || 'CRM') }}
           </div>
-          <div class="mt-1 text-sm leading-none text-ink-gray-7 truncate">
-            {{ user.full_name }}
-          </div>
         </div>
         <div
           class="duration-300 ease-in-out"
           :class="
             isCollapsed
               ? 'ml-0 w-0 overflow-hidden opacity-0'
-              : 'ml-2 w-auto opacity-100'
+              : 'ml-2 mr-1 w-auto opacity-100'
           "
         >
           <span
@@ -47,11 +44,8 @@
 
 <script setup>
 import BrandLogo from '@/components/BrandLogo.vue'
-import FrappeCloudIcon from '@/components/Icons/FrappeCloudIcon.vue'
-import AppsIcon from '@/components/Icons/AppsIcon.vue'
-import { sessionStore } from '@/stores/session'
-import { usersStore } from '@/stores/users'
 import { getSettings } from '@/stores/settings'
+<<<<<<< HEAD
 import { showSettings, isMobileView } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
@@ -60,12 +54,17 @@ import CreditCardIcon from '~icons/lucide/credit-card'
 import { spriteIcon } from '@/utils/spriteIcon'
 import { createResource, Dropdown } from 'frappe-ui'
 import { computed, h, markRaw } from 'vue'
+=======
+import { useAppMenu } from '@/composables/appMenu'
+import { Dropdown } from 'frappe-ui'
+>>>>>>> 586c6eb (feat: avatar menu, App menu settings and a notices icon in the sidebar)
 
 defineProps({
   isCollapsed: { type: Boolean, default: false },
 })
 
 const { settings, brand } = getSettings()
+<<<<<<< HEAD
 const { logout } = sessionStore()
 const { available: canManageBilling, open: openBilling } = useCloudSettings()
 const { getUser } = usersStore()
@@ -204,4 +203,9 @@ function crmSiblingApps(data) {
       route: app.route,
     }))
 }
+=======
+const { groups: dropdownItems } = useAppMenu(
+  () => settings.value?.dropdown_items,
+)
+>>>>>>> 586c6eb (feat: avatar menu, App menu settings and a notices icon in the sidebar)
 </script>
