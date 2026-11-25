@@ -57,6 +57,10 @@ def create_demo_users():
 				}
 			).insert(ignore_permissions=True)
 
+	# demo users have fake addresses; seeding assigns records to them, which would email them
+	for email in DEMO_USER_EMAILS:
+		frappe.db.set_value("Notification Settings", email, "enable_email_notifications", 0)
+
 	# Backdate auto-created contacts and set their image
 	_ts = datetime.now() - timedelta(days=70)
 	_avatar_by_email = {u["email"]: u["avatar"] for u in DEMO_USERS}
