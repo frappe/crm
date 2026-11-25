@@ -23,6 +23,7 @@ class FCRMSettings(Document):
 		from frappe.types import DF
 
 		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
+		from crm.fcrm.doctype.crm_insights_dashboard.crm_insights_dashboard import CRMInsightsDashboard
 
 		access_key: DF.Data | None
 		all_day_event_notifications: DF.Table[EventNotifications]
@@ -39,6 +40,7 @@ class FCRMSettings(Document):
 		enable_morning_digest: DF.Check
 		event_notifications: DF.Table[EventNotifications]
 		favicon: DF.Attach | None
+		insights_dashboards: DF.Table[CRMInsightsDashboard]
 		service_provider: DF.Literal[
 			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
 		]
