@@ -190,15 +190,9 @@
           </CollapsibleSection>
         </div>
 
-        <!-- Collapsed, the notices icon sits above the avatar instead of beside it. -->
-        <div
-          class="mt-auto flex gap-1 pt-2"
-          :class="isCollapsed ? 'flex-col-reverse items-start' : 'items-center'"
-        >
-          <div :class="!isCollapsed && 'min-w-0 flex-1'">
-            <UserMenu :isCollapsed="isCollapsed" />
-          </div>
-          <SidebarNotices v-if="!mobile" class="mx-0.5" />
+        <div class="mt-auto flex flex-col gap-2 pt-2">
+          <SidebarNoticeStack v-if="!mobile" :isCollapsed="isCollapsed" />
+          <UserMenu :isCollapsed="isCollapsed" />
         </div>
       </div>
     </Sidebar>
@@ -248,7 +242,7 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import UserMenu from '@/components/Layouts/UserMenu.vue'
-import SidebarNotices from '@/components/Layouts/SidebarNotices.vue'
+import SidebarNoticeStack from '@/components/Layouts/SidebarNoticeStack.vue'
 import SidebarEdge from '@/components/Layouts/SidebarEdge.vue'
 import { useStorage } from '@vueuse/core'
 import { ref, computed, watch } from 'vue'
