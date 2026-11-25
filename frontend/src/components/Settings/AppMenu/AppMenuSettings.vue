@@ -31,8 +31,8 @@
       </div>
     </div>
 
-    <div class="flex min-h-0 flex-1 gap-10 overflow-y-auto p-1 -m-1">
-      <div class="flex min-w-0 flex-1 flex-col gap-3">
+    <div class="flex min-h-0 flex-1 gap-10">
+      <div class="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
         <Draggable
           v-model="tree"
           tag="ul"
@@ -41,7 +41,7 @@
           v-bind="dragOptions"
           :group="{ name: 'app-menu', put: acceptsAtTop }"
           :aria-label="__('Menu items')"
-          class="select-none rounded-6 border border-outline-gray-2 p-1"
+          class="min-h-0 select-none overflow-y-auto rounded-6 border border-outline-gray-2 p-1"
           :data-dragging="dragging || undefined"
           @start="dragging = true"
           @end="dragging = false"
@@ -92,7 +92,7 @@
             </li>
           </template>
         </Draggable>
-        <div class="flex gap-2">
+        <div class="flex shrink-0 gap-2">
           <Button
             :label="__('Add link')"
             icon-left="lucide-plus"
