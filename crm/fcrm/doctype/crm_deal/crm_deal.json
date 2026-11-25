@@ -515,11 +515,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
-<<<<<<< HEAD
- "modified": "2026-04-04 12:34:10.808282",
-=======
  "modified": "2026-11-25 14:53:55.000000",
->>>>>>> 5d8210d (fix: show deal id instead of empty organization in deal links)
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
