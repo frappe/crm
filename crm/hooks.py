@@ -104,6 +104,7 @@ website_route_rules = [
 before_install = "crm.install.before_install"
 after_install = [
 	"crm.install.after_install",
+	"crm.api.connector.ensure_gateway_client",
 	"frappe.search.sqlite_search.build_index_in_background",
 ]
 
@@ -432,6 +433,7 @@ on_session_creation = ["crm.api.onboarding.complete_setup_for_fc_site"]
 
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
+	"crm.api.connector.ensure_gateway_client",
 	"crm.api.whatsapp.add_roles",
 	"crm.install.add_default_scripts",
 	"crm.install.add_web_form_custom_fields",
