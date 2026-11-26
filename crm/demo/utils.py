@@ -104,9 +104,9 @@ def insert_communication(reference_doctype, reference_name, data, full_names, ts
 			"subject": data["subject"],
 			"content": data["content"],
 			# demo users are passed by ID, leads by email
-			"sender": comment_email(data["sender"]) or data["sender"],
+			"sender": frappe.utils.get_email_address(data["sender"]) or data["sender"],
 			"sender_full_name": full_names.get(data["sender"], data["sender"]),
-			"recipients": comment_email(data["recipients"]) or data["recipients"],
+			"recipients": frappe.utils.get_email_address(data["recipients"]) or data["recipients"],
 			"communication_date": ts,
 		}
 	).insert(ignore_permissions=True)
