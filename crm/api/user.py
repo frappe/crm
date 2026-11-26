@@ -2,6 +2,7 @@ import frappe
 from frappe import _
 from frappe.auth import LoginAttemptTracker
 from frappe.rate_limiter import rate_limit
+from frappe.utils import get_user_by_email
 from frappe.utils.password import check_password, update_password
 
 from crm.fcrm.doctype.crm_dashboard.home_scope import SALES_ROLES
@@ -60,7 +61,7 @@ def validate_password_strength(password: str):
 def add_existing_users(users: str | list, role: str = "Sales User"):
 	"""
 	Add existing users to the CRM by assigning them a role (Sales User or Sales Manager).
-	:param users: List of user names to be added
+	:param users: List of user IDs or emails to be added
 	"""
 	frappe.only_for(["System Manager", "Sales Manager"], True)
 	is_system_manager = "System Manager" in frappe.get_roles()
@@ -74,7 +75,8 @@ def add_existing_users(users: str | list, role: str = "Sales User"):
 	users = frappe.parse_json(users)
 
 	for user in users:
-		update_user_role(user, role)
+		# the picker sends emails
+		update_user_role(get_user_by_email(user) or user, role)
 
 
 @frappe.whitelist()
@@ -164,7 +166,7 @@ def remove_crm_roles_from_user(user: str):
 	if node_name:
 		frappe.delete_doc("CRM Sales Hierarchy", node_name, ignore_permissions=True)
 
-	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user))
+	frappe.msgprint(_("User {0} has been removed from CRM roles.").format(user_doc.email))
 
 
 def validate_no_role_profile(user_doc):
@@ -176,7 +178,7 @@ def validate_no_role_profile(user_doc):
 	if user_doc.get("role_profiles") or user_doc.get("role_profile_name"):
 		frappe.throw(
 			_("Roles of user {0} are managed by a Role Profile. Update the Role Profile instead.").format(
-				frappe.bold(user_doc.name)
+				frappe.bold(user_doc.email)
 			),
 			title=_("Role Profile Assigned"),
 		)

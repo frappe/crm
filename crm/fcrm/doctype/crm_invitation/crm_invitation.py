@@ -4,6 +4,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import get_user_by_email
 
 from crm.api.user import add_flow_role_on_joining, validate_no_role_profile
 
@@ -62,11 +63,11 @@ class CRMInvitation(Document):
 	@frappe.whitelist()
 	def accept_invitation(self):
 		frappe.only_for(["System Manager", "Sales Manager"], True)
-		if frappe.db.exists("User", self.email):
+		if get_user_by_email(self.email):
 			frappe.only_for("System Manager")
 		if self.accept():
 			# the invitee was not around to set a password, mail them a link to do it
-			frappe.get_doc("User", self.email).send_welcome_mail_to_user()
+			frappe.get_doc("User", get_user_by_email(self.email)).send_welcome_mail_to_user()
 
 	def accept(self):
 		if self.status != "Pending":
@@ -104,11 +105,11 @@ class CRMInvitation(Document):
 
 	def validate_existing_user(self):
 		# the invite would be accepted but the role never applied, so fail early
-		if frappe.db.exists("User", self.email):
-			validate_no_role_profile(frappe.get_doc("User", self.email))
+		if user := get_user_by_email(self.email):
+			validate_no_role_profile(frappe.get_doc("User", user))
 
 	def create_user_if_not_exists(self):
-		if not frappe.db.exists("User", self.email):
+		if not (existing_user := get_user_by_email(self.email)):
 			first_name = self.email.split("@")[0].title()
 			user = frappe.get_doc(
 				doctype="User",
@@ -120,7 +121,7 @@ class CRMInvitation(Document):
 			).insert(ignore_permissions=True)
 			return user, True
 
-		return frappe.get_doc("User", self.email), False
+		return frappe.get_doc("User", existing_user), False
 
 
 def validate_can_invite(role: str):

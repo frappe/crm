@@ -248,3 +248,55 @@ class TestCRMInvitation(FrappeTestCase):
 	def insert_as_session_user(self, email, role):
 		with patch.object(frappe, "sendmail"):
 			return frappe.get_doc(doctype="CRM Invitation", email=email, role=role).insert()
+
+	def test_accept_finds_an_existing_user_by_email(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		with test_user(roles=[], generated_id=True) as user:
+			invitation = self.make_invitation(email=user.email)
+
+			with keep_user_emails():
+				self.assertFalse(invitation.accept())
+			self.assertIn("Sales User", frappe.get_roles(user.name))
+
+	def test_accept_invitation_finds_the_user_by_email(self):
+		from frappe.core.doctype.user.test_user import test_user
+		from frappe.core.doctype.user.user import User
+
+		from crm.api import accept_invitation
+
+		with test_user(roles=[], generated_id=True) as user:
+			invitation = self.make_invitation(email=user.email)
+			# the invitee is signed in as themselves, so they aren't sent to log in again
+			frappe.set_user(user.name)
+			self.addCleanup(frappe.set_user, "Administrator")
+			with keep_user_emails():
+				accept_invitation(key=invitation.key)
+			frappe.set_user("Administrator")
+
+			self.assertEqual(frappe.local.response["location"], "/crm")
+			self.assertEqual(frappe.db.get_value("CRM Invitation", invitation.name, "status"), "Accepted")
+
+		# a new user gets a random ID too, outside tests
+		invitation = self.make_invitation(email="hashed-invitee@example.com")
+		with (
+			keep_user_emails(),
+			patch.object(User, "autoname", lambda doc: setattr(doc, "name", frappe.generate_hash())),
+		):
+			accept_invitation(key=invitation.key)
+
+		self.assertIn("/update-password?key=", frappe.local.response["location"])
+
+
+def keep_user_emails():
+	"""Frappe still copies a user's ID into their email when the user is saved, which breaks a user
+	with a random ID. frappe/frappe#47933 removes that; until then, keep the email as it is."""
+	from frappe.core.doctype.user.user import User
+
+	validate = User.validate
+
+	def validate_keeping_email(doc):
+		doc.flags.skip_email_from_name = True
+		return validate(doc)
+
+	return patch.object(User, "validate", validate_keeping_email)

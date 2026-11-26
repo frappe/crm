@@ -302,6 +302,20 @@ class TestTodaysMeetings(HomeWidgetTestCase):
 
 		self.assertEqual(names(self.meetings()), [spanning])
 
+	def test_meetings_and_attendees_of_users_with_a_generated_id(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		with (
+			test_user(roles=["Sales User"], generated_id=True) as viewer,
+			test_user(roles=["Sales User"], generated_id=True) as host,
+		):
+			attending = self.meeting("13:00", "13:30", owner=host.name, attendee=viewer.email)
+			with IntegrationTestCase.freeze_time(get_datetime(f"{nowdate()} 12:00:00")):
+				data = get_widget_data("todays_meetings", user=viewer.name)
+
+		self.assertEqual(names(data), [attending])
+		self.assertEqual([person["email"] for person in data["rows"][0]["attendees"]], [host.email])
+
 
 class TestLeadsAndDealsWidget(HomeWidgetTestCase):
 	def test_new_lists_my_open_records_newest_first_with_tab_counts(self):

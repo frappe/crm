@@ -267,3 +267,34 @@ class TestEventReminders(IntegrationTestCase):
 		self.assertFalse(frappe.db.count("CRM Event Reminder Log", {"event": event.name}))
 
 		self.assertCountEqual(self.run_scheduler_job(event), [self.owner, self.participant])
+
+	def test_an_email_reminder_reaches_the_owner_at_their_email(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		with test_user(roles=["Sales User"], generated_id=True) as owner:
+			event = self.make_event()
+			frappe.db.set_value("Event", event.name, "owner", owner.name)
+			frappe.db.set_value("Event Notifications", {"parent": event.name}, "type", "Email")
+
+			with patch("frappe.sendmail") as sendmail:
+				self.run_scheduler_job(event)
+
+		self.assertEqual(sendmail.call_args.kwargs["recipients"], [owner.email])
+
+	def test_a_participant_listed_by_email_gets_the_reminder_on_their_user_id(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		with test_user(roles=["Sales User"], generated_id=True) as participant:
+			event = self.make_event(
+				customers=[
+					{
+						"reference_doctype": "User",
+						"reference_docname": participant.name,
+						"email": participant.email,
+					}
+				]
+			)
+
+			recipients = self.run_scheduler_job(event)
+
+		self.assertCountEqual(recipients, [self.owner, participant.name])

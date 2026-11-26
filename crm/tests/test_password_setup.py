@@ -1,6 +1,8 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import sha256_hash
@@ -105,3 +107,21 @@ class TestPasswordSetup(IntegrationTestCase):
 
 		with self.assertRaises(frappe.Redirect):
 			redirect_to_set_password()
+
+	def test_demo_user_cannot_change_password(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		from crm.api.live_demo import validate_reset_password, validate_user
+
+		with (
+			test_user(roles=["Sales User"], generated_id=True) as user,
+			patch.dict(frappe.conf, {"demo_username": user.email}),
+		):
+			frappe.set_user(user.name)
+
+			with self.assertRaises(frappe.PermissionError):
+				validate_user(frappe._dict(new_password=STRONG_PASSWORD), "before_validate")
+			with self.assertRaises(frappe.PermissionError):
+				validate_reset_password(None, "validate_reset_password")
+
+			frappe.set_user(self.user.name)

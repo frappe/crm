@@ -510,7 +510,8 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 				"organization": doc.organization,
 				"lead_name": doc.lead_name,
 				"no_of_employees": doc.no_of_employees,
-				"deal_owner": doc.deal_owner,
+				# the other site knows the user by email, not by ID
+				"deal_owner": doc.deal_owner and frappe.utils.get_email_address(doc.deal_owner),
 				"crm_deal": doc.name,
 				"territory": doc.territory,
 				"industry": doc.industry,

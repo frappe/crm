@@ -241,6 +241,11 @@ class SendEmailToRecord(AutomationAction):
 			raise AutomationParamError(_("{0} has no email address").format(doc.doctype if doc else ""))
 		subject, message = self._content(doc, params)
 		sender = params.get("sender")
+		if sender and sender not in frappe.STANDARD_USERS:
+			# Administrator is passed as is, so frappe sends from the outgoing account
+			sender_email = frappe.utils.get_email_address(sender)
+		else:
+			sender_email = sender
 		# an email a flow sends is not a person's reply, so the customer is still waiting on one
 		frappe.flags.crm_automated_email = True
 		try:
@@ -252,7 +257,7 @@ class SendEmailToRecord(AutomationAction):
 				recipients=recipient,
 				communication_type="Communication",
 				send_email=True,
-				sender=sender or None,
+				sender=sender_email or None,
 				sender_full_name=frappe.db.get_value("User", sender, "full_name") if sender else None,
 			)
 		finally:
@@ -320,7 +325,9 @@ class SendCRMNotification(AutomationAction):
 		message = render_value(params.get("message") or "", doc, context)
 		for user in recipients:
 			self._notify(doc, user, text, message)
-		return _("Notified {0}").format(", ".join(recipients))
+		return _("Notified {0}").format(
+			", ".join(frappe.utils.get_user_display_id(user) for user in recipients)
+		)
 
 	def _notify(self, doc, user, text, message):
 		"""Written straight rather than through `notify_user`, which drops a notification a user
