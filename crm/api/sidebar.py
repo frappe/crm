@@ -27,7 +27,7 @@ def get_sidebar_layer(scope: Literal["user", "site"] = "user") -> dict:
 	scope: "user" for the current user's own changes, or "site" for everyone's (System
 	Manager and Sales Manager only).
 	Returns the items as this layer shows them, the items of the layer below, and the layer's
-	`modified`, which save_sidebar_layer needs.
+	`modified` (and, for "user", the site layer's `site_modified`), which save_sidebar_layer needs.
 	"""
 	check_crm_user()
 	return Sidebar().get_layer(scope)
@@ -35,19 +35,23 @@ def get_sidebar_layer(scope: Literal["user", "site"] = "user") -> dict:
 
 @frappe.whitelist(methods=["POST"])
 def save_sidebar_layer(
-	scope: Literal["user", "site"], items: list[dict], modified: str | None = None
+	scope: Literal["user", "site"],
+	items: list[dict],
+	modified: str | None = None,
+	site_modified: str | None = None,
 ) -> dict:
 	"""Save the whole ordered sidebar a layer should show; the server stores only the changes.
 
 	scope: "user" or "site", as in get_sidebar_layer.
 	items: every item in order, as get_sidebar_layer returned them, after the edits. Items a
 	layer adds have the key "<scope>:" followed by 4 to 16 lowercase letters or digits.
-	modified: the layer's `modified` from get_sidebar_layer. The save fails if the layer
-	changed since.
-	Sending the items of the layer below removes the layer.
+	modified: the layer's `modified` from get_sidebar_layer.
+	site_modified: for scope "user", the `site_modified` from get_sidebar_layer.
+	The save fails with TimestampMismatchError if either layer changed since. Sending the items
+	of the layer below removes the layer.
 	"""
 	check_crm_user()
-	return Sidebar().save_layer(scope, items, modified)
+	return Sidebar().save_layer(scope, items, modified, site_modified)
 
 
 @frappe.whitelist(methods=["GET"])

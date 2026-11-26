@@ -98,6 +98,10 @@ describe('Customize sidebar rows', () => {
     ])
   })
 
+  it('leaves a section where it is when dropped on its own item', () => {
+    expect(drop(ROWS, 'user:abc123', 'site:prd001')).toBe(ROWS)
+  })
+
   it('adds a section before Public Views and a DocType into the selected section', () => {
     const withSection = add(ROWS, section('user:new001'))
     expect(keys(withSection).slice(-3)).toEqual([

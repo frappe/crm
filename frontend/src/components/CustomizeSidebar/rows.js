@@ -121,6 +121,7 @@ export function drop(rows, key, onKey) {
     const anchor =
       target.type === 'Section' ? target : find(rows, target.parent_key)
     if (!anchor) return __('Sections sit below the main list.')
+    if (anchor === dragged) return rows
     return placeBefore(rows, dragged, anchor)
   }
   if (target.type === 'Section') return nest(rows, key, target.key)
@@ -244,6 +245,7 @@ function isSibling(entry, row) {
 function placeBefore(rows, row, before) {
   const rest = rows.filter((entry) => entry.key !== row.key)
   const at = rest.findIndex((entry) => entry.key === before.key)
+  if (at < 0) return rows
   return ordered([...rest.slice(0, at), row, ...rest.slice(at)])
 }
 

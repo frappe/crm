@@ -5,7 +5,7 @@ from frappe.tests import IntegrationTestCase
 
 from crm.api.sidebar import get_sidebar, get_sidebar_layer, save_sidebar_layer
 from crm.fcrm.doctype.crm_sidebar.crm_sidebar import get_permission_query_conditions, has_permission
-from crm.fcrm.doctype.crm_sidebar.layers import resolve
+from crm.fcrm.doctype.crm_sidebar.layers import as_item, resolve
 from crm.fcrm.doctype.crm_sidebar.reduction import reduce_layer
 from crm.patches.v1_0 import add_customize_sidebar_menu_item
 
@@ -67,7 +67,7 @@ class TestSidebarLayers(IntegrationTestCase):
 		self.addCleanup(frappe.set_user, "Administrator")
 
 	def save(self, scope, layer, items):
-		return save_sidebar_layer(scope, items, layer["modified"])
+		return save_sidebar_layer(scope, items, layer["modified"], layer["site_modified"])
 
 	def test_an_untouched_site_draws_todays_sidebar(self):
 		frappe.set_user(AGENT)
@@ -138,9 +138,37 @@ class TestSidebarLayers(IntegrationTestCase):
 		self.assertTrue(frappe.db.exists("CRM Sidebar", {"user": AGENT}))
 
 		layer = get_sidebar_layer("user")
-		save_sidebar_layer("user", layer["below"], layer["modified"])
+		self.save("user", layer, layer["below"])
 		self.assertFalse(frappe.db.exists("CRM Sidebar", {"user": AGENT}))
 		self.assertEqual(keys(get_sidebar()), TODAY)
+
+	def test_a_user_save_fails_when_the_site_layer_changed(self):
+		frappe.set_user(AGENT)
+		layer, items = edit("user")
+		by_key(items, "leads")["label"] = "Prospects"
+
+		frappe.set_user(MANAGER)
+		site, site_items = edit("site")
+		by_key(site_items, "call_logs")["hidden"] = 1
+		self.save("site", site, site_items)
+
+		frappe.set_user(AGENT)
+		with self.assertRaises(frappe.TimestampMismatchError):
+			save_sidebar_layer("user", items, layer["modified"], layer["site_modified"])
+
+	def test_a_desk_write_is_validated_too(self):
+		frappe.set_user(MANAGER)
+		doc = frappe.get_doc(
+			{
+				"doctype": "CRM Sidebar",
+				"items": [{"key": "site:lead01", "added": 1, "link_type": "DocType", "link_to": "CRM Lead"}],
+			}
+		)
+		with self.assertRaises(frappe.ValidationError):
+			doc.insert()
+		doc.items[0].update({"key": "user:prd001", "link_to": "CRM Product"})
+		with self.assertRaises(frappe.ValidationError):
+			doc.insert()
 
 	def test_a_stale_save_fails(self):
 		frappe.set_user(AGENT)
@@ -257,6 +285,27 @@ class TestAnchors(IntegrationTestCase):
 	def test_an_anchor_to_a_removed_item_keeps_the_hook_order(self):
 		rows = [{"key": "d", "anchors": json.dumps([{"after": "gone"}])}]
 		self.assertEqual(keys(resolve(BASE, [rows])), ["a", "b", "c", "d"])
+
+	def test_a_section_anchored_after_a_lower_section_stays_above_the_views(self):
+		standard = [
+			*BASE,
+			{"key": "public_views", "type": "Section"},
+			{"key": "pinned_views", "type": "Section"},
+		]
+		sales = {"key": "site:sales1", "type": "Section", "label": "Sales"}
+		site_rows = reduce_layer(resolve(standard, []), [*BASE, sales, *standard[4:]], "site")
+		below = resolve(standard, [site_rows])
+
+		added = [
+			{"key": "user:docta1", "link_type": "DocType", "link_to": "A", "parent_key": "site:sales1"},
+			{"key": "user:doctb1", "link_type": "DocType", "link_to": "B", "parent_key": "site:sales1"},
+			{"key": "user:mine01", "type": "Section", "label": "Mine"},
+		]
+		desired = [*below[:5], *added, *below[5:]]
+		user_rows = reduce_layer(below, desired, "user")
+		self.assertEqual(
+			keys(resolve(standard, [site_rows, user_rows])), keys([as_item(item) for item in desired])
+		)
 
 	def test_the_reduction_round_trips(self):
 		desired = [{"key": key} for key in ("d", "b", "a", "c")]

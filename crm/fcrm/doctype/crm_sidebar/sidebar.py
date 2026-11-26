@@ -2,8 +2,8 @@ import frappe
 from frappe import _
 from frappe.permissions import get_doctypes_with_read
 
-from crm.fcrm.doctype.crm_sidebar.crm_sidebar import can_edit_site_sidebar
-from crm.fcrm.doctype.crm_sidebar.layers import as_item, resolve
+from crm.fcrm.doctype.crm_sidebar.crm_sidebar import can_edit_site_sidebar, get_built_in_doctypes
+from crm.fcrm.doctype.crm_sidebar.layers import resolve
 from crm.fcrm.doctype.crm_sidebar.reduction import reduce_layer
 
 SCOPES = ("user", "site")
@@ -57,36 +57,33 @@ class Sidebar:
 			if scope == "user" and item["hidden"] and item["key"] in hidden_below:
 				item["hidden_by"] = "site"
 
-		layer = self.get_layer_name(scope)
 		return {
 			"scope": scope,
 			"items": items,
 			"below": below,
-			"modified": str(frappe.db.get_value("CRM Sidebar", layer, "modified")) if layer else None,
+			"modified": self.get_modified(scope),
+			"site_modified": self.get_modified("site") if scope == "user" else None,
 			"can_edit_site": can_edit_site_sidebar(self.user),
-			"built_in_doctypes": {
-				item["opens_doctype"]: item["label"]
-				for item in self.standard_items
-				if item.get("opens_doctype")
-			},
+			"built_in_doctypes": get_built_in_doctypes(),
 		}
 
-	def save_layer(self, scope: str, items: list[dict], modified: str | None) -> dict:
-		"""Store `items` as the smallest layer that makes them; fail if the layer changed since `modified`."""
+	def save_layer(
+		self, scope: str, items: list[dict], modified: str | None, site_modified: str | None = None
+	) -> dict:
+		"""Store `items` as the smallest layer that makes them.
+
+		Fails if this layer changed since `modified`, or, for a user's layer, if the site layer
+		changed since `site_modified`: the items were arranged over a site layer that is gone.
+		"""
 		self.check_scope(scope)
 		doc = self.get_locked_layer(scope)
-		if (None if doc.is_new() else str(doc.modified)) != (modified or None):
-			frappe.throw(
-				_(
-					"Someone else saved this sidebar after you opened it. Reload to get their changes, then make yours again."
-				),
-				frappe.TimestampMismatchError,
-				title=_("Sidebar Changed"),
-			)
+		self.check_unchanged(None if doc.is_new() else str(doc.modified), modified)
+		if scope == "user":
+			self.check_unchanged(self.get_modified("site"), site_modified)
 
-		below = self.resolve("site" if scope == "user" else None)
-		rows = reduce_layer(below, items, scope)
-		self.check_added_rows(rows, doc, [as_item(item) for item in items])
+		below_rows = [self.get_layer_rows("site")] if scope == "user" else []
+		rows = reduce_layer(resolve(self.standard_items, below_rows), items, scope)
+		self.check_duplicate_doctypes(rows, doc, resolve(self.standard_items, [*below_rows, rows]))
 		self.write(doc, rows)
 		return {**self.get_layer(scope), "sidebar": self.get_items()}
 
@@ -108,6 +105,14 @@ class Sidebar:
 		if scope == "user":
 			layers.append(self.get_layer_rows("user"))
 		return resolve(self.standard_items, layers)
+
+	def get_modified(self, scope: str) -> str | None:
+		layer = self.get_layer_name(scope)
+		return str(frappe.db.get_value("CRM Sidebar", layer, "modified")) if layer else None
+
+	def check_unchanged(self, current: str | None, opened: str | None):
+		if current != (opened or None):
+			raise_sidebar_changed()
 
 	def get_layer_name(self, scope: str) -> str | None:
 		user = self.user if scope == "user" else ("is", "not set")
@@ -134,7 +139,11 @@ class Sidebar:
 		"""An empty layer is no layer, so it is deleted rather than kept empty."""
 		if rows:
 			doc.set("items", rows)
-			doc.save()
+			try:
+				doc.save()
+			except frappe.DuplicateEntryError:
+				# Another first save of this layer won the insert.
+				raise_sidebar_changed()
 		elif not doc.is_new():
 			frappe.delete_doc("CRM Sidebar", doc.name, delete_permanently=True)
 
@@ -147,49 +156,28 @@ class Sidebar:
 				frappe.PermissionError,
 			)
 
-	def check_added_rows(self, rows: list[dict], doc, items: list[dict]):
-		"""A row this layer adds is a section or a DocType; a new or changed DocType is checked again."""
+	def check_duplicate_doctypes(self, rows: list[dict], doc, resolved: list[dict]):
+		"""A DocType opens from one row only: refuse a row this save adds or points at another DocType."""
 		stored = {row.key: row.link_to for row in doc.get("items", []) if row.added}
 		for row in rows:
-			if not row.get("added"):
+			if not row.get("added") or not row.get("link_to") or stored.get(row["key"]) == row["link_to"]:
 				continue
-			if row["type"] == "Section":
-				if not (row.get("label") or "").strip():
-					frappe.throw(_("Give the section a label."))
-				row.update(link_type=None, link_to=None, icon=None)
-				continue
-			if row.get("link_type") != "DocType" or not row.get("link_to"):
-				frappe.throw(_("A row you add opens a DocType."))
-			if stored.get(row["key"]) != row["link_to"]:
-				self.check_doctype(row, items)
-			row["label"] = row.get("label") or row["link_to"]
-
-	def check_doctype(self, row: dict, items: list[dict]):
-		doctype = row["link_to"]
-		if not frappe.db.exists("DocType", doctype):
-			frappe.throw(_("DocType {0} does not exist.").format(frappe.bold(doctype)))
-		meta = frappe.get_meta(doctype)
-		if meta.istable or meta.issingle or meta.is_virtual:
-			frappe.throw(
-				_("{0} cannot be in the sidebar: it has no list of records.").format(frappe.bold(doctype))
+			other = next(
+				(
+					item
+					for item in resolved
+					if item["key"] != row["key"]
+					and item["link_type"] == "DocType"
+					and item["link_to"] == row["link_to"]
+				),
+				None,
 			)
-		built_in = next((item for item in self.standard_items if item.get("opens_doctype") == doctype), None)
-		if built_in:
-			frappe.throw(_("{0} already opens {1}.").format(_(built_in["label"]), doctype))
-		other = next(
-			(
-				i
-				for i in items
-				if i["key"] != row["key"] and i["link_type"] == "DocType" and i["link_to"] == doctype
-			),
-			None,
-		)
-		if other:
-			frappe.throw(
-				_("{0} is already in the sidebar, as {1}.").format(doctype, other["label"] or doctype)
-			)
-		if not self.can_read(doctype):
-			frappe.throw(_("You cannot read {0}.").format(doctype), frappe.PermissionError)
+			if other:
+				frappe.throw(
+					_("{0} is already in the sidebar, as {1}.").format(
+						row["link_to"], other["label"] or row["link_to"]
+					)
+				)
 
 	def has_no_access(self, item: dict) -> bool:
 		return item["link_type"] == "DocType" and not self.can_read(item["link_to"])
@@ -201,3 +189,13 @@ class Sidebar:
 				readable = frappe.has_permission(doctype, "read", user=self.user)
 			self.readable[doctype] = readable
 		return self.readable[doctype]
+
+
+def raise_sidebar_changed():
+	frappe.throw(
+		_(
+			"Someone else saved the sidebar after you opened it. Reload to get their changes, then make yours again."
+		),
+		frappe.TimestampMismatchError,
+		title=_("Sidebar Changed"),
+	)

@@ -22,6 +22,7 @@ export const editor = reactive({
   canEditSite: false,
   builtInDoctypes: {},
   modified: null,
+  siteModified: null,
   opened: [],
   rows: [],
   below: [],
@@ -66,6 +67,7 @@ function applyLayer(layer) {
     canEditSite: layer.can_edit_site,
     builtInDoctypes: layer.built_in_doctypes,
     modified: layer.modified,
+    siteModified: layer.site_modified,
     opened: layer.items,
     rows: layer.items,
     below: layer.below,
@@ -217,6 +219,7 @@ export async function save() {
       scope: editor.scope,
       items: Rows.toPayload(editor.rows),
       modified: editor.modified,
+      site_modified: editor.siteModified,
     })
     sidebarItems.value = saved.sidebar
     editor.open = false

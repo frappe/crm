@@ -5,14 +5,14 @@ against a copy of the layer below that may be stale.
 """
 
 import json
-import re
 
 import frappe
 from frappe import _
 
+from crm.fcrm.doctype.crm_sidebar.crm_sidebar import OWN_KEY, OWN_ROWS_PER_LAYER
 from crm.fcrm.doctype.crm_sidebar.layers import OVERRIDABLE, as_item, is_own_key
 
-OWN_ROWS_PER_LAYER = 50
+TEXT_FIELDS = ("key", "type", "label", "icon", "link_type", "link_to", "parent_key")
 OWN_FIELDS = ("key", "type", "label", "link_type", "link_to", "parent_key", "collapsible", "keep_closed")
 CHECKS = ("collapsible", "keep_closed", "hidden")
 BELOW = {"user": "site:", "site": None}
@@ -39,20 +39,21 @@ def reduce_layer(below: list[dict], desired: list[dict], scope: str) -> list[dic
 
 def known_items(desired: list[dict], below: dict[str, dict], scope: str) -> list[dict]:
 	"""The items the layer below holds and the ones this layer adds, each key once."""
-	pattern = re.compile(rf"{scope}:[a-z0-9]{{4,16}}")
 	seen, kept = set(), []
 
 	for raw in desired:
+		if not isinstance(raw, dict) or any(not isinstance(raw.get(f), str | None) for f in TEXT_FIELDS):
+			frappe.throw(_("Each sidebar row must be an object with text fields."))
 		item = as_item(raw)
 		key = item["key"]
 		if not isinstance(key, str) or key in seen:
 			continue
-		if key not in below and not pattern.fullmatch(key):
+		if key not in below and not (OWN_KEY.fullmatch(key) and key.startswith(f"{scope}:")):
 			# Dropped quietly: an item a release removed, or a row the layer below deleted
 			# while the dialog was open.
 			dropped_below = BELOW[scope] and key.startswith(BELOW[scope])
 			if is_own_key(key) and not dropped_below:
-				frappe.throw(_("{0} is not a key this layer can add.").format(frappe.bold(key)))
+				frappe.throw(_("{0} is not a key this layer can add.").format(key))
 			continue
 		seen.add(key)
 		kept.append(item)
@@ -74,7 +75,7 @@ def check_nesting(desired: list[dict]):
 		if item["type"] == "Section" or parent not in custom_sections:
 			frappe.throw(
 				_("{0} cannot go under {1}. Items go only into a section you added.").format(
-					frappe.bold(item.get("label") or item["key"]), frappe.bold(parent)
+					item.get("label") or item["key"], parent
 				)
 			)
 

@@ -27,7 +27,7 @@ def resolve(base: list[dict], layers: list[list[dict]]) -> list[dict]:
 	"""The sidebar these layers make, in the order it draws."""
 	items = [as_item(item) for item in base]
 	for rows in layers:
-		items = apply_layer(items, rows)
+		items = ordered(apply_layer(items, rows))
 	return ordered(items)
 
 
@@ -170,6 +170,12 @@ def index_of(items: list[dict], key: str) -> int:
 
 
 def end_of(items: list[dict], key: str) -> int:
-	"""The index of the last item in `key`'s section, or of `key` itself."""
-	inside = [index for index, entry in enumerate(items) if entry.get("parent_key") == key]
-	return max([index_of(items, key), *inside])
+	"""The index of the last item right under `key`, or of `key` itself.
+
+	Only the run right after `key` counts: a layer's added rows wait at the end of the list
+	with their `parent_key` set until they are placed.
+	"""
+	at = index_of(items, key)
+	while at + 1 < len(items) and items[at + 1].get("parent_key") == key:
+		at += 1
+	return at
