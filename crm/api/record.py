@@ -64,11 +64,11 @@ def get_linked_records(doctype: str, name: str | int) -> list[dict]:
 
 @frappe.whitelist(methods=["POST"])
 def unlink_records(records: list[dict], remove_contact: bool = False, delete: bool = False) -> list[dict]:
-	"""Clear each record's link to its parent and return the records it unlinked.
+	"""Unlink each record from its parent, delete it if asked, and return those done.
 
 	records: the records to unlink, each a dict with "doctype" and "docname".
 	remove_contact: clear the records' contact instead of their reference.
-	delete: delete each record after it is unlinked.
+	delete: also delete each record after it is unlinked.
 	"""
 	# crm.api.whatsapp imports this module at load time
 	from crm.api.whatsapp import WhatsAppRecipientChangeError
@@ -81,12 +81,9 @@ def unlink_records(records: list[dict], remove_contact: bool = False, delete: bo
 		if not frappe.has_permission(item["doctype"], "write", item["docname"]):
 			continue
 
+		remove_link = remove_contact_link if remove_contact else remove_doc_link
 		try:
-			if remove_contact:
-				remove_contact_link(item["doctype"], item["docname"])
-			else:
-				remove_doc_link(item["doctype"], item["docname"])
-
+			is_unlinked = remove_link(item["doctype"], item["docname"])
 			if delete:
 				frappe.delete_doc(item["doctype"], item["docname"])
 		except WhatsAppRecipientChangeError:
@@ -94,7 +91,8 @@ def unlink_records(records: list[dict], remove_contact: bool = False, delete: bo
 		except (frappe.DoesNotExistError, frappe.ValidationError):
 			continue
 
-		unlinked.append({"doctype": item["doctype"], "docname": item["docname"]})
+		if is_unlinked or delete:
+			unlinked.append({"doctype": item["doctype"], "docname": item["docname"]})
 
 	return unlinked
 
@@ -103,6 +101,7 @@ def unlink_records(records: list[dict], remove_contact: bool = False, delete: bo
 def delete_records(doctype: str, names: list[str | int], delete_linked: bool = False) -> None:
 	"""Delete records and unlink, or delete, the records that link to them.
 
+	More than 10 records are deleted in a background job.
 	doctype: the records' DocType.
 	names: the names of the records to delete.
 	delete_linked: delete the linked records instead of unlinking them.
@@ -113,7 +112,7 @@ def delete_records(doctype: str, names: list[str | int], delete_linked: bool = F
 		frappe.throw(_("Doctype is required"))
 
 	if not names:
-		frappe.throw(_("Items are required"))
+		frappe.throw(_("Names are required"))
 
 	for name in names:
 		if frappe.db.exists(doctype, name):
@@ -202,7 +201,7 @@ def get_linked_docs_data(doc):
 
 def remove_doc_link(doctype, docname):
 	if not doctype or not docname:
-		return
+		return False
 
 	try:
 		linked_doc_data = frappe.get_doc(doctype, docname)
@@ -228,8 +227,9 @@ def remove_doc_link(doctype, docname):
 				}
 			)
 		linked_doc_data.save(ignore_permissions=True)
+		return True
 	except (frappe.DoesNotExistError, frappe.ValidationError):
-		pass
+		return False
 
 
 def remove_contact_link(doctype, docname):
@@ -237,7 +237,7 @@ def remove_contact_link(doctype, docname):
 	from crm.api.whatsapp import WhatsAppRecipientChangeError
 
 	if not doctype or not docname:
-		return
+		return False
 
 	try:
 		linked_doc_data = frappe.get_doc(doctype, docname)
@@ -248,7 +248,8 @@ def remove_contact_link(doctype, docname):
 			}
 		)
 		linked_doc_data.save(ignore_permissions=True)
+		return True
 	except WhatsAppRecipientChangeError:
 		raise
 	except (frappe.DoesNotExistError, frappe.ValidationError):
-		pass
+		return False

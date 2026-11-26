@@ -86,12 +86,37 @@ class TestDeprecatedDocMethods(IntegrationTestCase):
 			reference_doctype="CRM Deal",
 			reference_docname=deal.name,
 		).insert()
+		linked = doc.get_linked_docs_of_document("CRM Deal", deal.name)
+		self.assertIn(task.name, [d["reference_docname"] for d in linked])
 		items = frappe.as_json([{"doctype": "CRM Task", "docname": task.name}])
 		self.assertEqual(doc.remove_linked_doc_reference(items), "success")
 		self.assertFalse(frappe.db.get_value("CRM Task", task.name, "reference_docname"))
 
+		doc.add_seen("CRM Deal", deal.name)
+		self.assertIn("Administrator", frappe.parse_json(frappe.db.get_value("CRM Deal", deal.name, "_seen")))
+
 		self.assertEqual(doc.delete_bulk_docs("CRM Deal", frappe.as_json([deal.name])), "success")
 		self.assertFalse(frappe.db.exists("CRM Deal", deal.name))
+
+
+class TestUnlinkRecords(IntegrationTestCase):
+	def test_returns_only_the_records_it_unlinked(self):
+		deal = create_test_deal(organization="Record API Unlink Org")
+		task = frappe.get_doc(
+			doctype="CRM Task",
+			title="Unlink task",
+			reference_doctype="CRM Deal",
+			reference_docname=deal.name,
+		).insert()
+
+		unlinked = record.unlink_records(
+			[
+				{"doctype": "CRM Task", "docname": task.name},
+				{"doctype": "CRM Task", "docname": "missing-task"},
+			]
+		)
+
+		self.assertEqual(unlinked, [{"doctype": "CRM Task", "docname": task.name}])
 
 
 def whitelisted_functions(module):
