@@ -37,9 +37,9 @@ export const confirmLoginToFrappeCloud = () => {
   })
 }
 
-const loginToFrappeCloud = () => {
+export const loginToFrappeCloud = (path = '') => {
   window.open(
-    `${baseEndpoint.value}/dashboard/sites/${siteName.value}`,
+    `${baseEndpoint.value}/dashboard/sites/${siteName.value}${path}`,
     '_blank',
   )
 }

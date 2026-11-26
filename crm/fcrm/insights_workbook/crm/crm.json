@@ -904,7 +904,7 @@
       "i": "chart-forecasted-revenue",
       "w": 10,
       "x": 10,
-      "y": 10
+      "y": 12
      },
      "layouts": {
       "sm": {
@@ -942,7 +942,7 @@
       "i": "chart-deals-by-stage",
       "w": 10,
       "x": 10,
-      "y": 28
+      "y": 30
      },
      "layouts": {
       "sm": {
@@ -980,7 +980,7 @@
       "i": "chart-deals-by-source",
       "w": 10,
       "x": 10,
-      "y": 46
+      "y": 48
      },
      "layouts": {
       "sm": {
@@ -1018,7 +1018,7 @@
       "i": "chart-deals-by-salesperson",
       "w": 10,
       "x": 10,
-      "y": 64
+      "y": 66
      },
      "layouts": {
       "sm": {
@@ -1069,7 +1069,7 @@
  "folders": [],
  "idx": 0,
  "is_standard": 1,
- "modified": "2026-10-06 14:48:16.035285",
+ "modified": "2026-11-26 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "crm",
