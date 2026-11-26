@@ -538,7 +538,7 @@ class TestRecipientChangePaths(FrappeTestCase):
 		self.assertIn(["mobile_no", OLD, NEW], frappe.parse_json(version.data)["changed"])
 
 	def test_unlinking_a_contact_is_not_silently_skipped(self):
-		from crm.api.doc import remove_linked_doc_reference
+		from crm.api.record import unlink_records
 
 		contact = self._contact(OLD)
 		deal = self._deal(contact)
@@ -546,7 +546,7 @@ class TestRecipientChangePaths(FrappeTestCase):
 		with patch(COUNT, return_value=2):
 			self.assertRaises(
 				WhatsAppRecipientChangeError,
-				remove_linked_doc_reference,
+				unlink_records,
 				[{"doctype": "CRM Deal", "docname": deal.name}],
 				remove_contact=True,
 			)

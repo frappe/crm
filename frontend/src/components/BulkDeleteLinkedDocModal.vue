@@ -146,8 +146,8 @@ const confirmUnlink = () => {
 }
 
 const deleteDocs = () => {
-  call('crm.api.doc.delete_bulk_docs', {
-    items: props.items,
+  call('crm.api.record.delete_records', {
+    names: props.items,
     doctype: props.doctype,
     delete_linked: confirmDeleteInfo.value.delete,
   }).then(() => {

@@ -12,7 +12,7 @@ export function useVisitedRecords(doctype: string) {
 
   function markVisited(name?: string) {
     if (!name) return
-    call('crm.api.doc.add_seen', { doctype, name })
+    call('crm.api.record.mark_as_seen', { doctype, name })
   }
 
   return { isVisited, markVisited }

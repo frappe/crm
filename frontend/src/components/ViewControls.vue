@@ -992,7 +992,7 @@ function removeQuickFilter(f) {
 }
 
 const updateQuickFilters = createResource({
-  url: 'crm.api.doc.update_quick_filters',
+  url: 'crm.api.list_view.set_quick_filters',
   onSuccess() {
     customizeQuickFilter.value = false
 
@@ -1003,15 +1003,11 @@ const updateQuickFilters = createResource({
 })
 
 function saveQuickFilters() {
-  let new_filters =
-    newQuickFilters.value?.map((filter) => filter.fieldname) || []
-  let old_filters = quickFilters.data?.map((filter) => filter.fieldname) || []
-
   updateQuickFilters.update({
     params: {
-      quick_filters: JSON.stringify(new_filters),
-      old_filters: JSON.stringify(old_filters),
       doctype: props.doctype,
+      fieldnames:
+        newQuickFilters.value?.map((filter) => filter.fieldname) || [],
     },
   })
 
@@ -1073,7 +1069,8 @@ const quickFilterList = computed(() => {
 })
 
 const quickFilters = createResource({
-  url: 'crm.api.doc.get_quick_filters',
+  url: 'crm.api.list_view.get_quick_filters',
+  method: 'GET',
   params: { doctype: props.doctype },
   cache: ['Quick Filters', props.doctype],
   onSuccess(filters) {
@@ -1084,7 +1081,8 @@ const quickFilters = createResource({
 if (!quickFilters.data) quickFilters.fetch()
 
 const filterableFields = createResource({
-  url: 'crm.api.doc.get_filterable_fields',
+  url: 'crm.api.list_view.get_filter_fields',
+  method: 'GET',
   params: { doctype: props.doctype },
   cache: ['filterableFields', props.doctype],
 })
