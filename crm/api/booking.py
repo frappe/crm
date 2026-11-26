@@ -507,7 +507,7 @@ def pick_host(page, free_hosts: list[str]) -> str:
 		.groupby(Booking.host)
 		.run(as_dict=True)
 	)
-	last_booked = {row.host: row.last for row in rows}
+	last_booked = {row.host: get_datetime(row.last) for row in rows}
 	order = {h.user: h.idx for h in page.hosts}
 	return min(free_hosts, key=lambda h: (last_booked.get(h) or datetime.min, order.get(h, 0)))
 
