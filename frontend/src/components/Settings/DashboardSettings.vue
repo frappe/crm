@@ -160,6 +160,10 @@
           />
         </div>
       </div>
+      <template v-if="isInsightsInstalled">
+        <div class="h-px border-t mx-2 border-outline-elevation-2" />
+        <InsightsDashboardList />
+      </template>
     </div>
     <div v-if="errorMessage" class="px-3">
       <ErrorMessage :message="__(errorMessage)" />
@@ -167,6 +171,7 @@
   </div>
 </template>
 <script setup>
+import InsightsDashboardList from '@/components/Settings/InsightsDashboardList.vue'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { useBroadcast } from '@/composables/useBroadcast'
@@ -181,6 +186,7 @@ const { $dialog } = globalStore()
 const { send } = useBroadcast()
 
 const errorMessage = ref('')
+const isInsightsInstalled = Boolean(window.is_insights_installed)
 
 const PROVIDERS_REQUIRING_KEY = ['exchangerate.host', 'exchangerate-api']
 
