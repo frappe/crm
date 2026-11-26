@@ -194,3 +194,22 @@ class TestDemoData(IntegrationTestCase):
 		comment = insert_comment("ToDo", todo.name, "Administrator", "Hello", {}, frappe.utils.now_datetime())
 
 		self.assertEqual(frappe.db.get_value("Comment", comment, "comment_email"), "Administrator")
+
+	def test_demo_email_from_administrator_keeps_the_name(self):
+		from crm.demo.utils import insert_communication
+
+		todo = frappe.get_doc({"doctype": "ToDo", "description": "demo email"}).insert()
+		data = {
+			"sent_or_received": "Sent",
+			"subject": "Hello",
+			"content": "Hello",
+			"sender": "Administrator",
+			"recipients": "lead@example.com",
+			"owner": "Administrator",
+		}
+		comm = insert_communication("ToDo", todo.name, data, {}, frappe.utils.now_datetime())
+
+		self.assertEqual(
+			frappe.db.get_value("Communication", comm, ["sender", "recipients"]),
+			("Administrator", "lead@example.com"),
+		)
