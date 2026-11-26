@@ -1,7 +1,6 @@
 import frappe
 from frappe.desk.form.assign_to import add as assign
 from frappe.desk.form.assign_to import remove as unassign
-from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_counts, get_tab_data, get_widget_data
@@ -13,6 +12,7 @@ from crm.fcrm.doctype.crm_dashboard.home_widgets import (
 	NoNextStep,
 	RepliesWaiting,
 )
+from crm.tests import CRMTestCase as IntegrationTestCase
 from crm.tests.test_home import (
 	AGENT,
 	MANAGER,

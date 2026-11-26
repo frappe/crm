@@ -1,7 +1,6 @@
 import frappe
 from frappe.cache_manager import clear_defaults_cache
 from frappe.desk.form.assign_to import add as assign
-from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.api.home import get_tab_data, set_brief_doctype, set_brief_tab
@@ -15,6 +14,7 @@ from crm.fcrm.doctype.crm_dashboard.brief import (
 	get_brief_count,
 	get_brief_records,
 )
+from crm.tests import CRMTestCase as IntegrationTestCase
 from crm.tests.test_home import AGENT, MANAGER, make_lead, make_task
 from crm.tests.test_home_widgets import HomeWidgetTestCase
 from crm.tests.test_team_widgets import BOSS, TeamWidgetTestCase

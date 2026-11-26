@@ -1,11 +1,11 @@
 from unittest.mock import MagicMock, patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.user import FLOW_ROLE, update_user_role
 from crm.fcrm.doctype.crm_dashboard import ask_flow
 from crm.patches.v1_0.give_sales_users_flow_role import execute as give_sales_users_flow_role
+from crm.tests import CRMTestCase as IntegrationTestCase
 from crm.tests.test_home import AGENT, make_user
 from crm.tests.test_user_role_profile import make_user as make_plain_user
 from crm.tests.test_user_role_profile import user_roles

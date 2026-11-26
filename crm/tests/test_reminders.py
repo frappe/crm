@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, add_to_date, now_datetime, nowdate
 
 from crm.fcrm.doctype.crm_task.reminders import send_follow_up_reminders
+from crm.tests import CRMTestCase as IntegrationTestCase
 from crm.tests.test_home import AGENT, make_lead, make_task, make_user
 
 

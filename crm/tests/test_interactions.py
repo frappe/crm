@@ -1,12 +1,12 @@
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 from frappe.utils import add_to_date, get_datetime
 
 from crm.api.interactions import record
 from crm.patches.v1_0.backfill_interaction_timestamps import execute as backfill
 from crm.patches.v1_0.backfill_whatsapp_interaction_timestamps import execute as backfill_whatsapp
+from crm.tests import CRMTestCase as IntegrationTestCase
 
 T0 = get_datetime("2026-01-01 10:00:00")
 

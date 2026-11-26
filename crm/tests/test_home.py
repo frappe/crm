@@ -2,7 +2,6 @@ import json
 
 import frappe
 from frappe.desk.form.assign_to import add as assign
-from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, now_datetime, nowdate
 
 from crm.api.home import (
@@ -23,6 +22,7 @@ from crm.fcrm.doctype.crm_dashboard.home_layout import (
 	manager_default,
 	validate_layout,
 )
+from crm.tests import CRMTestCase as IntegrationTestCase
 
 
 class TestLandingPage(IntegrationTestCase):

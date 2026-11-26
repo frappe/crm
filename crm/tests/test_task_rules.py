@@ -2,10 +2,10 @@ from functools import partial
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 from frappe.utils import get_datetime
 
 from crm.fcrm.doctype.crm_task.rules import TaskDue, is_follow_up, went_overdue_between
+from crm.tests import CRMTestCase as IntegrationTestCase
 
 RULES = "crm.fcrm.doctype.crm_task.rules"
 

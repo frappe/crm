@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import frappe
-from frappe.tests import IntegrationTestCase
 
 from crm.api.notifications import (
 	NOTIFICATIONS_PAGE_LENGTH,
@@ -9,6 +8,7 @@ from crm.api.notifications import (
 	get_unread_count,
 	mark_as_read,
 )
+from crm.tests import CRMTestCase as IntegrationTestCase
 
 USER1 = "crm.user1@example.com"
 USER2 = "crm.user2@example.com"
