@@ -15,15 +15,18 @@
 <script setup>
 import InsightsIcon from '@/components/Icons/InsightsIcon.vue'
 import { useCloudSettings } from '@/composables/cloudSettings'
-import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
+import { currentSiteInfo, loginToFrappeCloud } from '@/composables/frappecloud'
 import { Button, Tooltip } from 'frappe-ui'
 
 // both are only set for System Managers
 const cloud = useCloudSettings()
 const isFcSite = Boolean(window.is_fc_site)
 
+// fetched up front so the click can open the tab before a popup blocker steps in
+if (isFcSite && !cloud.available) currentSiteInfo.fetch()
+
 function install() {
   if (cloud.available) cloud.open('marketplace')
-  else confirmLoginToFrappeCloud('/apps')
+  else loginToFrappeCloud('/apps')
 }
 </script>
