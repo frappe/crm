@@ -14,7 +14,7 @@ export const currentSiteInfo = createResource({
   },
 })
 
-export const confirmLoginToFrappeCloud = () => {
+export const confirmLoginToFrappeCloud = (path = '') => {
   currentSiteInfo.fetch()
 
   const { $dialog } = globalStore()
@@ -29,7 +29,7 @@ export const confirmLoginToFrappeCloud = () => {
         label: __('Confirm'),
         variant: 'solid',
         onClick({ close }) {
-          loginToFrappeCloud()
+          loginToFrappeCloud(path)
           close()
         },
       },
@@ -37,9 +37,9 @@ export const confirmLoginToFrappeCloud = () => {
   })
 }
 
-const loginToFrappeCloud = () => {
+const loginToFrappeCloud = (path) => {
   window.open(
-    `${baseEndpoint.value}/dashboard/sites/${siteName.value}`,
+    `${baseEndpoint.value}/dashboard/sites/${siteName.value}${path}`,
     '_blank',
   )
 }
