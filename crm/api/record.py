@@ -15,6 +15,45 @@ def get_assignees(doctype: str, name: str | int) -> list[str]:
 	return get_open_assignees(doctype, name)
 
 
+@frappe.whitelist(methods=["GET"])
+def get_activities(doctype: str, name: str | int) -> dict[str, list[dict]]:
+	"""Return a record's timeline, notes, tasks and attachments.
+
+	The timeline holds field changes, comments, emails, attachment logs and notes.
+	doctype: the record's DocType.
+	name: the record's name.
+	"""
+	# crm.api.activities imports this module at load time
+	from crm.api.activities import get_record_activities
+
+	doc = frappe.get_doc(doctype, name)
+	doc.check_permission("read")
+	return get_record_activities(doc)
+
+
+@frappe.whitelist(methods=["POST"])
+def update_record(doctype: str, name: str | int, values: dict, modified: str) -> str:
+	"""Save values on a record unless it changed after the caller read it.
+
+	Returns the record's new `modified`. Raises frappe.TimestampMismatchError
+	when the record was saved after `modified`.
+	doctype: the record's DocType.
+	name: the record's name.
+	values: the fields to change, by fieldname; standard fields such as name or owner are refused.
+	modified: the record's `modified` timestamp when the caller read it.
+	"""
+	standard_fields = set(values) & {*frappe.model.default_fields, *frappe.model.child_table_fields}
+	if standard_fields:
+		frappe.throw(_("Cannot edit standard fields: {0}").format(", ".join(sorted(standard_fields))))
+
+	doc = frappe.get_doc(doctype, name)
+	doc.update(values)
+	# save() compares this with the stored value and raises TimestampMismatchError
+	doc.modified = modified
+	doc.save()
+	return doc.modified
+
+
 @frappe.whitelist(methods=["POST"])
 def remove_assignees(doctype: str, name: str | int, assignees: list[str]) -> None:
 	"""Remove users from a record's assignees.
