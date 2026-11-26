@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "creation": "2026-11-26 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "key",
+  "type",
+  "label",
+  "icon",
+  "link_type",
+  "link_to",
+  "parent_key",
+  "column_break_layer",
+  "collapsible",
+  "keep_closed",
+  "hidden",
+  "added",
+  "overrides",
+  "anchors"
+ ],
+ "fields": [
+  {
+   "fieldname": "key",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Key",
+   "reqd": 1
+  },
+  {
+   "default": "Link",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Link\nSection"
+  },
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Link'",
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Link'",
+   "fieldname": "link_type",
+   "fieldtype": "Select",
+   "label": "Link Type",
+   "options": "\nBuilt-in\nDocType"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Link'",
+   "fieldname": "link_to",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Link To"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Link'",
+   "fieldname": "parent_key",
+   "fieldtype": "Data",
+   "label": "Parent Key"
+  },
+  {
+   "fieldname": "column_break_layer",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Section'",
+   "fieldname": "collapsible",
+   "fieldtype": "Check",
+   "label": "Collapsible"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Section'",
+   "fieldname": "keep_closed",
+   "fieldtype": "Check",
+   "label": "Keep Closed"
+  },
+  {
+   "fieldname": "hidden",
+   "fieldtype": "Check",
+   "label": "Hidden"
+  },
+  {
+   "description": "Set on a row this layer adds. Other rows change a row of the layer below.",
+   "fieldname": "added",
+   "fieldtype": "Check",
+   "label": "Added"
+  },
+  {
+   "description": "The fields this row changes on the row below, as a JSON list.",
+   "fieldname": "overrides",
+   "fieldtype": "Small Text",
+   "label": "Overrides"
+  },
+  {
+   "description": "Where the row moved, as a JSON list such as [{\"after\": \"leads\"}].",
+   "fieldname": "anchors",
+   "fieldtype": "Small Text",
+   "label": "Anchors"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Sidebar Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

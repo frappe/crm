@@ -51,3 +51,4 @@ crm.patches.v1_0.enable_morning_digest
 crm.patches.v1_0.give_sales_users_flow_role
 crm.patches.v1_0.set_booking_meeting_links
 crm.patches.v1_0.move_booking_page_links_to_hosts
+crm.patches.v1_0.add_customize_sidebar_menu_item

@@ -6,6 +6,7 @@ import {
   isMobileView,
 } from '@/composables/settings'
 import { showAboutModal } from '@/composables/modals'
+import { openEditor as openCustomizeSidebar } from '@/components/CustomizeSidebar/editor'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { useCloudSettings } from '@/composables/cloudSettings'
 import CreditCardIcon from '~icons/lucide/credit-card'
@@ -85,6 +86,13 @@ export function useAppMenu(getItems) {
           icon,
           label,
           onClick: openGeneralSettings,
+          condition: () => !isMobileView.value,
+        }
+      case 'customize_sidebar':
+        return {
+          icon,
+          label,
+          onClick: openCustomizeSidebar,
           condition: () => !isMobileView.value,
         }
       case 'login_to_fc':
