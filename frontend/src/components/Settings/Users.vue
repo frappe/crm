@@ -109,7 +109,7 @@
                   {{ user.full_name }}
                 </div>
                 <div class="text-p-sm text-ink-gray-5">
-                  {{ user.name }}
+                  {{ user.email }}
                 </div>
               </div>
             </div>
@@ -210,6 +210,7 @@ const usersList = computed(() => {
     .filter(
       (user) =>
         user.name?.includes(search.value) ||
+        user.email?.includes(search.value) ||
         user.full_name?.includes(search.value),
     )
     .filter((user) => {

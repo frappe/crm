@@ -120,7 +120,7 @@ const userExistMessage = computed(() => {
   if (!inviteesSet.size) return null
 
   if (!users.data?.crmUsers?.length) return null
-  const existingEmails = users.data.crmUsers.map((user) => user.name)
+  const existingEmails = users.data.crmUsers.map((user) => user.email)
   const existingUsersSet = new Set(existingEmails)
 
   const existingInvitees = inviteesSet.intersection(existingUsersSet)

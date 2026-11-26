@@ -254,6 +254,7 @@ const peopleOptions = computed(() => [
     items: (people.data || []).map((name) => ({
       label: getUser(name).full_name,
       value: name,
+      email: getUser(name).email,
     })),
   },
 ])
@@ -282,16 +283,22 @@ function buildEventFilters(range) {
   return filters
 }
 
+// owner is a user ID, participants are listed by email
 function buildEventOrFilters() {
   if (currentUser.value === TEAM) {
     return [
       ['owner', 'in', people.data],
-      ['Event Participants', 'email', 'in', people.data],
+      [
+        'Event Participants',
+        'email',
+        'in',
+        people.data.map((u) => getUser(u).email),
+      ],
     ]
   }
   return [
     ['owner', '=', currentUser.value],
-    ['Event Participants', 'email', '=', currentUser.value],
+    ['Event Participants', 'email', '=', getUser(currentUser.value).email],
   ]
 }
 

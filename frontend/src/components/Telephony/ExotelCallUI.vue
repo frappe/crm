@@ -234,7 +234,7 @@ import TaskPanel from '@/components/Telephony/TaskPanel.vue'
 import CountUpTimer from '@/components/CountUpTimer.vue'
 import RichTextField from '@/components/RichTextField.vue'
 import { globalStore } from '@/stores/global'
-import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/users'
 import { useDraggable, useWindowSize } from '@vueuse/core'
 import { Avatar, Button, createResource, toast } from 'frappe-ui'
 import { ref, onBeforeUnmount, watch, nextTick } from 'vue'
@@ -415,10 +415,10 @@ function setup() {
     callData.value = data
 
     callStatus.value = updateStatus(data)
-    const { user } = sessionStore()
+    const { getUser } = usersStore()
 
     if (!showCallPopup.value && !showSmallCallPopup.value) {
-      if (data.AgentEmail && data.AgentEmail == (user || user.value)) {
+      if (data.AgentEmail && data.AgentEmail == getUser().email) {
         // Incoming call
         phoneNumber.value = data.CallFrom || data.From
         showCallPopup.value = true
