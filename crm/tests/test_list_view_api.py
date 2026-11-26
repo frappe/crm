@@ -83,6 +83,10 @@ class TestDeprecatedListMethods(IntegrationTestCase):
 		self.assertFalse(meta.get_field("status").in_standard_filter)
 		self.assertTrue(meta.get_field("deal_owner").in_standard_filter)
 
+	def test_set_quick_filters_rejects_unknown_fields(self):
+		with self.assertRaises(frappe.ValidationError):
+			list_view.set_quick_filters("CRM Deal", ["no_such_field"])
+
 	def test_set_quick_filters_needs_a_manager(self):
 		frappe.set_user("crm.user1@example.com")
 		with self.assertRaises(frappe.PermissionError):
@@ -90,7 +94,7 @@ class TestDeprecatedListMethods(IntegrationTestCase):
 
 
 class TestBuiltInDoctypes(IntegrationTestCase):
-	"""Built-in doctypes get from the new methods exactly what get_data returns."""
+	"""Built-in doctypes get from the new methods what get_data returns, and get_data keeps its rules."""
 
 	def setUp(self):
 		frappe.set_user("Administrator")
@@ -128,6 +132,74 @@ class TestBuiltInDoctypes(IntegrationTestCase):
 			self.assertEqual([c["name"] for c in new["columns"]], [c["column"]["name"] for c in old["data"]])
 			self.assertEqual([c["records"] for c in new["columns"]], [c["data"] for c in old["data"]])
 
+	def test_standard_view_row_comes_before_the_controller(self):
+		frappe.get_doc(
+			doctype="CRM View Settings",
+			label="My deals",
+			dt="CRM Deal",
+			user="Administrator",
+			type="list",
+			is_standard=1,
+			columns='[{"key": "organization", "label": "Organization", "type": "Link", "width": "10rem"}]',
+			rows='["name", "organization"]',
+		).insert()
+
+		old = get_data("CRM Deal", "list")
+		new = list_view.get_list_view("CRM Deal", filters={}, order_by="modified desc")
+
+		self.assertFalse(old["is_default"])
+		self.assertEqual([c["key"] for c in old["columns"]], ["organization"])
+		self.assertEqual(new["columns"], [lean(c) for c in old["columns"]])
+
+	def test_custom_view_with_default_columns_is_default(self):
+		view = frappe.get_doc(
+			doctype="CRM View Settings", label="Defaults", dt="CRM Deal", type="list", load_default_columns=1
+		).insert()
+		columns = frappe.as_json([{"key": "status", "label": "Status", "type": "Link", "width": "8rem"}])
+
+		old = get_data("CRM Deal", "list", custom_view_name=view.name, columns=columns, rows='["name"]')
+
+		self.assertEqual(old["is_default"], 1)
+
+	def test_kanban_column_order_and_deleted_columns(self):
+		statuses = frappe.get_all("CRM Deal Status", pluck="name", order_by="position asc")[:2]
+		deals = [create_test_deal(organization=f"Kanban Order Org {i}", status=statuses[0]) for i in range(2)]
+		kanban_columns = [
+			{"name": statuses[0], "order": [deals[0].name, deals[1].name]},
+			{"name": statuses[1], "delete": True},
+		]
+
+		old = get_data(
+			"CRM Deal", "kanban", column_field="status", kanban_columns=frappe.as_json(kanban_columns)
+		)
+
+		first, deleted = old["data"]
+		self.assertEqual([d["name"] for d in first["data"][:2]], [deals[0].name, deals[1].name])
+		self.assertEqual(deleted["data"], [])
+		self.assertNotIn("count", deleted["column"])
+
+	def test_group_by_link_options_follow_the_sort(self):
+		orgs = ["Group Sort Org A", "Group Sort Org B"]
+		for org in orgs:
+			create_test_deal(organization=org)
+
+		old = doc.get_data(
+			doctype="CRM Deal",
+			filters={"organization": ["in", orgs]},
+			order_by="organization desc",
+			view={"view_type": "group_by", "group_by_field": "organization"},
+		)
+
+		self.assertEqual(old["group_by_field"]["options"], list(reversed(orgs)))
+
+	def test_list_view_adds_extra_fields_to_the_defaults(self):
+		result = list_view.get_list_view("CRM Deal", fields=["probability"])
+
+		default_keys = [c["key"] for c in get_controller("CRM Deal").default_list_data()["columns"]]
+		self.assertEqual([c["key"] for c in result["columns"]], default_keys)
+		self.assertIn("probability", result["records"][0])
+		self.assertIn("organization", result["records"][0])
+
 	def test_get_data_keeps_the_parts_moved_out(self):
 		old = get_data("CRM Deal", "list")
 		scripts = list_view.get_list_scripts("CRM Deal")
@@ -163,6 +235,20 @@ class TestListViewDefaults(IntegrationTestCase):
 	def test_group_by_defaults_to_the_status_select(self):
 		result = list_view.get_list_view("ToDo", view_type="group_by")
 		self.assertEqual(result["view"]["group_by_field"], "status")
+
+	def test_kanban_cards_have_a_name(self):
+		result = list_view.get_kanban_view("ToDo")
+		records = [r for column in result["columns"] for r in column["records"]]
+
+		self.assertTrue(records)
+		self.assertTrue(all(r["name"] for r in records))
+		self.assertNotIn("", [column["name"] for column in result["columns"]])
+
+	def test_kanban_column_field_must_be_a_select_or_link(self):
+		with self.assertRaises(frappe.ValidationError):
+			list_view.get_kanban_view("ToDo", column_field="description")
+		with self.assertRaises(frappe.ValidationError):
+			list_view.get_kanban_view("ToDo", column_field="no_such_field")
 
 	def test_kanban_without_a_select_field_has_no_columns(self):
 		result = list_view.get_kanban_view("Note")
@@ -272,7 +358,11 @@ GET_DATA_KEYS = {
 
 
 def get_data(doctype, view_type, **kwargs):
-	view = {"view_type": view_type, "group_by_field": kwargs.pop("group_by_field", None)}
+	view = {
+		"view_type": view_type,
+		"group_by_field": kwargs.pop("group_by_field", None),
+		"custom_view_name": kwargs.pop("custom_view_name", None),
+	}
 	return doc.get_data(doctype=doctype, filters={}, order_by="modified desc", view=view, **kwargs)
 
 

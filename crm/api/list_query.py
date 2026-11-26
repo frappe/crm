@@ -31,12 +31,12 @@ class ListQuery:
 		self.meta = frappe.get_meta(doctype)
 		self.is_default = True
 
-	def run(self, columns=None, rows=None):
+	def run(self, columns=None, rows=None, extra_fields=None):
 		"""Fetch the records; sets columns, rows, records and is_default."""
 		columns, rows = self.get_columns_and_rows(columns, rows)
 		self.columns = self.get_visible_columns(columns, rows)
 		self.rows = rows
-		self.add_extra_rows()
+		self.add_extra_rows(extra_fields or [])
 		records = frappe.get_list(
 			self.doctype,
 			fields=self.rows,
@@ -95,9 +95,10 @@ class ListQuery:
 			visible.append(column)
 		return visible
 
-	def add_extra_rows(self):
-		if self.group_by_field and self.group_by_field not in self.rows:
-			self.rows.append(self.group_by_field)
+	def add_extra_rows(self, extra_fields):
+		for field in [*extra_fields, self.group_by_field]:
+			if field and field not in self.rows:
+				self.rows.append(field)
 		if self.meta.track_seen and "_seen" not in self.rows:
 			self.rows.append("_seen")
 		add_task_all_day(self.doctype, self.rows)
@@ -120,7 +121,8 @@ class KanbanQuery:
 
 	def run(self, kanban_columns=None, title_field=None, kanban_fields=None, rows=None):
 		"""Fetch each column's records; sets kanban_columns, title_field, kanban_fields, rows and columns."""
-		self.rows = rows or self.default_rows
+		# get_list adds name only when no fields are given
+		self.rows = rows or self.default_rows or ["name"]
 		self.kanban_columns = kanban_columns or self.get_column_names()
 		self.title_field = title_field or self.kanban_settings.get("title_field") or self.defaults.title_field
 		self.kanban_fields = kanban_fields or self.default_kanban_fields
@@ -164,11 +166,11 @@ class KanbanQuery:
 		if not self.column_field:
 			return []
 		field = self.defaults.meta.get_field(self.column_field)
+		if not field or field.fieldtype not in ("Link", "Select"):
+			frappe.throw(_("Kanban columns need a Select or Link field, not {0}").format(self.column_field))
 		if field.fieldtype == "Link":
 			return frappe.get_all(field.options, fields=["name"], order_by="modified asc")
-		if field.fieldtype == "Select":
-			return [{"name": option} for option in field.options.split("\n")]
-		return []
+		return [{"name": option} for option in (field.options or "").split("\n") if option]
 
 	def get_column(self, kanban_column):
 		"""Fetch one column's records; adds count and all_count to the column."""

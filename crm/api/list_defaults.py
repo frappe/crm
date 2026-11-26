@@ -53,7 +53,7 @@ class MetaListDefaults:
 
 	@property
 	def order_by(self):
-		return f"{self.meta.sort_field or 'modified'} {self.meta.sort_order or 'desc'}".lower()
+		return f"{self.meta.sort_field or 'modified'} {(self.meta.sort_order or 'desc').lower()}"
 
 	def get_card_fields(self, column_field=None):
 		skipped = {"name", "modified", "docstatus", self.title_field, column_field}

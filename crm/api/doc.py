@@ -157,7 +157,7 @@ def get_quick_filters(doctype: str, cached: bool = True):
 
 
 @replaced_by("crm.api.list_view.set_quick_filters")
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def update_quick_filters(quick_filters: str | list, old_filters: str | list, doctype: str):
 	"""Deprecated: use crm.api.list_view.set_quick_filters."""
 	list_view.set_quick_filters(doctype, frappe.parse_json(quick_filters) or [])

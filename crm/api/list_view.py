@@ -7,8 +7,8 @@ from frappe import _
 from frappe.custom.doctype.property_setter.property_setter import make_property_setter
 from frappe.model import no_value_fields
 from frappe.model.document import get_controller
-from pypika import Criterion
 
+from crm.api import views
 from crm.api.list_defaults import MetaListDefaults
 from crm.api.list_query import KanbanQuery, ListQuery, prepare_filters
 from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
@@ -60,7 +60,7 @@ def get_list_view(
 		page_length,
 		view_type,
 		group_by_field,
-	).run(columns or view.columns, fields or view.rows)
+	).run(copy.deepcopy(columns) or view.columns, view.rows, fields)
 	return {
 		"records": query.records,
 		"columns": [{key: column.get(key) for key in LEAN_COLUMN_KEYS} for column in query.columns],
@@ -101,6 +101,9 @@ def get_kanban_view(
 	kanban_columns: the columns, each a dict with name and optional page_length.
 	"""
 	view = get_saved_view(doctype, view_name)
+	if view_name and view.type != "kanban":
+		frappe.throw(_("Use get_list_view for a list or group by view"))
+
 	defaults = MetaListDefaults(frappe.get_meta(doctype))
 	filters = filters if filters is not None else view.filters or {}
 	order_by = order_by or view.order_by or defaults.order_by
@@ -236,9 +239,14 @@ def set_quick_filters(doctype: str, fieldnames: list[str]) -> None:
 	fieldnames: the fields to show as quick filters, in order.
 	"""
 	frappe.only_for(("System Manager", "Sales Manager"))
+	meta = frappe.get_meta(doctype)
+	for fieldname in fieldnames:
+		if fieldname != "name" and not meta.get_field(fieldname):
+			frappe.throw(_("{0} is not a field of {1}").format(fieldname, doctype))
+
 	old_fieldnames = get_quick_filter_fieldnames(doctype)
 	if old_fieldnames is None:
-		old_fieldnames = [f.fieldname for f in frappe.get_meta(doctype).fields if f.in_standard_filter]
+		old_fieldnames = [f.fieldname for f in meta.fields if f.in_standard_filter]
 
 	save_quick_filter_fieldnames(doctype, fieldnames)
 	for fieldname in old_fieldnames:
@@ -247,6 +255,7 @@ def set_quick_filters(doctype: str, fieldnames: list[str]) -> None:
 	for fieldname in fieldnames:
 		if fieldname not in old_fieldnames:
 			set_in_standard_filter(doctype, fieldname, 1)
+	frappe.clear_cache(doctype=doctype)
 
 
 @frappe.whitelist(methods=["GET"])
@@ -277,14 +286,7 @@ def get_views(doctype: str) -> list[dict]:
 
 	doctype: the DocType.
 	"""
-	View = frappe.qb.DocType("CRM View Settings")
-	return (
-		frappe.qb.from_(View)
-		.select("*")
-		.where(Criterion.any([View.user == "", View.user == frappe.session.user]))
-		.where(View.dt == doctype)
-		.run(as_dict=True)
-	)
+	return views.get_views(doctype)
 
 
 @frappe.whitelist(methods=["GET"])
