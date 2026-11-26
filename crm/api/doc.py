@@ -7,7 +7,7 @@ from frappe.desk.form.assign_to import set_status
 from frappe.model import no_value_fields
 from frappe.model.delete_doc import get_dynamic_linked_docs, get_linked_docs
 from frappe.model.document import get_controller
-from frappe.utils import make_filter_tuple
+from frappe.utils import escape_html, make_filter_tuple
 from pypika import Criterion
 
 from crm.api.views import get_views
@@ -894,10 +894,16 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 		if frappe.db.exists(doctype, doc):
 			frappe.get_doc(doctype, doc).check_permission("delete")
 
+	# Failures used to be swallowed by the bare except below and only ever
+	# reached the error log ("Bulk Delete Error"): a delete click looked
+	# like a no-op to the user. Each failure is now collected, with its
+	# reason, and reported together at the end of the request.
+	failed = []
+
 	for doc in items:
 		try:
 			if not frappe.db.exists(doctype, doc):
-				frappe.log_error(f"Document {doctype} {doc} does not exist", "Bulk Delete Error")
+				failed.append((doctype, doc, _("does not exist")))
 				continue
 
 			linked_docs = get_linked_docs_data(frappe.get_doc(doctype, doc))
@@ -905,21 +911,71 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 				if not linked_doc.get("reference_doctype") or not linked_doc.get("reference_docname"):
 					continue
 
-				remove_linked_doc_reference(
-					[
-						{
-							"doctype": linked_doc["reference_doctype"],
-							"docname": linked_doc["reference_docname"],
-						}
-					],
-					remove_contact=doctype == "Contact",
-					delete=delete_linked,
-				)
+				try:
+					remove_linked_doc_reference(
+						[
+							{
+								"doctype": linked_doc["reference_doctype"],
+								"docname": linked_doc["reference_docname"],
+							}
+						],
+						remove_contact=doctype == "Contact",
+						delete=delete_linked,
+					)
+				except Exception as e:
+					# One link that cannot be detached must not abandon the
+					# others, but it must not stay silent either.
+					frappe.log_error(
+						f"Error unlinking {linked_doc['reference_doctype']} {linked_doc['reference_docname']} from {doctype} {doc}: {e!s}",
+						"Bulk Delete Error",
+					)
+					failed.append(
+						(
+							linked_doc["reference_doctype"],
+							linked_doc["reference_docname"],
+							_("could not be unlinked"),
+						)
+					)
 		except Exception as e:
 			frappe.log_error(f"Error processing linked docs for {doctype} {doc}: {e!s}", "Bulk Delete Error")
+			failed.append((doctype, doc, str(e)))
 
 	if len(items) > 10:
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=items)
+		# Deletion is a background job from here on: without this message
+		# the click went without any visible response.
+		frappe.msgprint(
+			_("{0} {1} deletions have been queued. The list will update as they are processed.").format(
+				len(items), _(doctype)
+			),
+			title=_("Bulk Delete"),
+			indicator="blue",
+			alert=True,
+		)
 	else:
 		delete_bulk(doctype, items)
+		# `delete_bulk` msgprints with realtime=True only: those messages
+		# never travel back in this request's response. Re-checking
+		# existence is the only reliable way to know what survived.
+		for doc in items:
+			if frappe.db.exists(doctype, doc):
+				failed.append((doctype, doc, _("could not be deleted")))
+
+	if failed:
+		frappe.log_error(
+			"\n".join(f"{dt} {nm}: {why}" for dt, nm, why in failed),
+			"Bulk Delete Error",
+		)
+		details = [
+			f"<li>{escape_html(dt)} <b>{escape_html(str(nm))}</b> — {escape_html(str(why))}</li>"
+			for dt, nm, why in failed[:12]
+		]
+		if len(failed) > 12:
+			details.append(f"<li>{_('… and {0} more').format(len(failed) - 12)}</li>")
+		frappe.clear_messages()
+		frappe.throw(
+			_("The following documents could not be deleted:") + "<ul>" + "".join(details) + "</ul>",
+			title=_("Bulk Delete"),
+		)
+
 	return "success"
