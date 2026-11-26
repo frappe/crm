@@ -38,8 +38,6 @@
   "insights_dashboards",
   "dropdown_items_tab",
   "dropdown_items",
-  "sidebar_items_tab",
-  "sidebar_items",
   "setup_completed"
  ],
  "fields": [
@@ -79,16 +77,6 @@
    "fieldtype": "Table",
    "label": "Insights Dashboards",
    "options": "CRM Insights Dashboard"
-  },
-  {
-   "fieldname": "sidebar_items_tab",
-   "fieldtype": "Tab Break",
-   "label": "Sidebar items"
-  },
-  {
-   "fieldname": "sidebar_items",
-   "fieldtype": "Table",
-   "options": "CRM Sidebar Item"
   },
   {
    "fieldname": "dropdown_items_tab",
@@ -265,7 +253,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-26 12:00:00.000000",
+ "modified": "2026-11-25 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

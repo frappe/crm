@@ -79,7 +79,6 @@ import BrandSettings from '@/components/Settings/BrandSettings.vue'
 import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
 import BookingPagesSettings from '@/components/Settings/BookingPages/BookingPagesSettings.vue'
 import AppMenuSettings from '@/components/Settings/AppMenu/AppMenuSettings.vue'
-import SidebarSettings from '@/components/Settings/Sidebar/SidebarSettings.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import EnrichmentSettings from '@/components/Settings/Enrichment/EnrichmentSettings.vue'
@@ -248,11 +247,6 @@ const allTabs = computed(() => {
           label: __('App menu'),
           component: markRaw(AppMenuSettings),
           icon: 'menu',
-        },
-        {
-          label: __('Sidebar'),
-          component: markRaw(SidebarSettings),
-          icon: 'panel-left',
         },
       ],
       condition: () => isManager(),
