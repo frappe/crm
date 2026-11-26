@@ -151,16 +151,20 @@ const newType = ref('Route')
 // The row's own slot shows where it will land, indented inside a submenu.
 const dragOptions = { ghostClass: 'app-menu-drop-slot' }
 
-const savedRows = computed(() => settings.doc?.dropdown_items || [])
+const baseline = ref([])
 
-watch(savedRows, discard, { immediate: true })
+watch(
+  () => Boolean(settings.doc),
+  (isLoaded) => isLoaded && load(),
+  { immediate: true },
+)
 
 /** The rows to save: each submenu's links follow it, and know its key. */
 const rows = computed(() => flatten(tree.value))
 
 const isDirty = computed(
   () =>
-    fingerprint(rows.value) !== fingerprint(flatten(toTree(savedRows.value))),
+    fingerprint(rows.value) !== fingerprint(flatten(toTree(baseline.value))),
 )
 
 const submenus = computed(() =>
@@ -207,8 +211,13 @@ function fingerprint(items) {
   )
 }
 
+function load() {
+  baseline.value = settings.doc.dropdown_items || []
+  discard()
+}
+
 function discard() {
-  tree.value = toTree(savedRows.value)
+  tree.value = toTree(baseline.value)
   error.value = ''
 }
 
@@ -302,7 +311,10 @@ function save() {
   settings.setValue.submit(
     { dropdown_items: rows.value },
     {
-      onSuccess: () => (liveSettings.value = settings.doc),
+      onSuccess: () => {
+        load()
+        liveSettings.value = settings.doc
+      },
       onError: (err) => (error.value = err.messages?.join('\n') || err.message),
     },
   )
