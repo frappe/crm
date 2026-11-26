@@ -769,14 +769,6 @@ function updateSelections(selections) {
 
 function resolveCurrentUser(filters) {
   const userId = getUser()?.name
-<<<<<<< HEAD
-  let filters = {
-    ...list.value.params.filters,
-    ...defaultFilters.value,
-  }
-
-=======
->>>>>>> 96b3976 (feat: save group by settings on CRM View Settings)
   // Only resolve @me placeholders when we know the current user; otherwise
   // leave filters untouched rather than emitting undefined / "%undefined%".
   if (!userId) return filters
@@ -799,8 +791,8 @@ function resolveCurrentUser(filters) {
 
 const currentFilters = computed(() =>
   resolveCurrentUser({
-    ...props.filters,
     ...(list.value.params?.filters || {}),
+    ...defaultFilters.value,
   }),
 )
 
