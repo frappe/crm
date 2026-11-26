@@ -368,7 +368,9 @@ def make_lead(**kwargs) -> str:
 
 
 def make_deal(**kwargs) -> str:
-	deal = frappe.get_doc({"doctype": "CRM Deal", **kwargs})
+	# in the base currency, or ERPNext's global default currency (INR on CI) converts the values
+	currency = frappe.db.get_single_value("FCRM Settings", "currency") or "USD"
+	deal = frappe.get_doc({"doctype": "CRM Deal", "currency": currency, **kwargs})
 	deal.flags.ignore_mandatory = True
 	return deal.insert().name
 
