@@ -9,6 +9,10 @@ from frappe.custom.doctype.property_setter.property_setter import delete_propert
 from frappe.model.document import Document
 
 from crm.demo.api import create_demo_data
+from crm.fcrm.doctype.crm_sidebar_item.crm_sidebar_item import (
+	sync_standard_sidebar_items,
+	validate_sidebar_items,
+)
 from crm.install import after_install
 
 
@@ -24,6 +28,7 @@ class FCRMSettings(Document):
 
 		from crm.fcrm.doctype.crm_dropdown_item.crm_dropdown_item import CRMDropdownItem
 		from crm.fcrm.doctype.crm_insights_dashboard.crm_insights_dashboard import CRMInsightsDashboard
+		from crm.fcrm.doctype.crm_sidebar_item.crm_sidebar_item import CRMSidebarItem
 
 		access_key: DF.Data | None
 		all_day_event_notifications: DF.Table[EventNotifications]
@@ -44,6 +49,7 @@ class FCRMSettings(Document):
 		service_provider: DF.Literal[
 			"frankfurter.app", "fawazahmed-exchange-api", "exchangerate.host", "exchangerate-api"
 		]
+		sidebar_items: DF.Table[CRMSidebarItem]
 		update_timestamp_on_new_communication: DF.Check
 	# end: auto-generated types
 
@@ -58,6 +64,7 @@ class FCRMSettings(Document):
 	def validate(self):
 		self.do_not_allow_to_delete_if_standard()
 		self.validate_submenus()
+		validate_sidebar_items(self)
 		self.setup_forecasting()
 		self.make_currency_read_only()
 
@@ -222,11 +229,14 @@ def get_standard_dropdown_items():
 
 
 def after_migrate():
-	sync_table("dropdown_items", "standard_dropdown_items")
-
-
-def sync_table(key, hook):
+	"""Sync both tables, then save once: a save validates every table, so each must be fixed first."""
 	crm_settings = FCRMSettings("FCRM Settings")
+	sync_table(crm_settings, "dropdown_items", "standard_dropdown_items")
+	sync_standard_sidebar_items(crm_settings)
+	crm_settings.save()
+
+
+def sync_table(crm_settings, key, hook):
 	existing_items = {d.name1: d for d in crm_settings.get(key)}
 	new_standard_items = {}
 
@@ -246,8 +256,6 @@ def sync_table(key, hook):
 	items = crm_settings.get(key)
 	items = [item for item in items if not (item.is_standard and (item.name1 not in new_standard_items))]
 	crm_settings.set(key, items)
-
-	crm_settings.save()
 
 
 def create_forecasting_script():

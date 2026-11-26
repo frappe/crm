@@ -219,7 +219,7 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 // even when the stored rail state says otherwise.
 const isCollapsed = computed(() => isSidebarCollapsed.value && !props.mobile)
 
-const links = getNavigationItems({ mobile: props.mobile })
+const links = computed(() => getNavigationItems({ mobile: props.mobile }))
 const showFlow = hasFlowLauncher()
 
 const allViews = computed(() => {
@@ -228,7 +228,7 @@ const allViews = computed(() => {
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links.map((link) => ({
+      views: links.value.map((link) => ({
         label: link.label,
         icon: link.icon,
         key: link.route,

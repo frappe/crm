@@ -128,7 +128,7 @@ after_app_install = "crm.install.after_app_install"
 # Name of the app being uninstalled is passed as an argument
 
 # before_app_uninstall = "crm.utils.before_app_uninstall"
-# after_app_uninstall = "crm.utils.after_app_uninstall"
+after_app_uninstall = "crm.install.after_app_uninstall"
 
 # Desk Notifications
 # ------------------
@@ -536,4 +536,18 @@ standard_dropdown_items = [
 		"type": "Separator",
 		"is_standard": 1,
 	},
+]
+
+# Built-in pages in CRM's sidebar, in their default order. The frontend owns their icons.
+standard_sidebar_items = [
+	{"name1": "home", "label": "Home", "type": "Page", "route": "Home"},
+	{"name1": "dashboard", "label": "Dashboard", "type": "Page", "route": "Dashboard"},
+	{"name1": "leads", "label": "Leads", "type": "Page", "route": "Leads"},
+	{"name1": "deals", "label": "Deals", "type": "Page", "route": "Deals"},
+	{"name1": "contacts", "label": "Contacts", "type": "Page", "route": "Contacts"},
+	{"name1": "organizations", "label": "Organizations", "type": "Page", "route": "Organizations"},
+	{"name1": "notes", "label": "Notes", "type": "Page", "route": "Notes"},
+	{"name1": "tasks", "label": "Tasks", "type": "Page", "route": "Tasks"},
+	{"name1": "calendar", "label": "Calendar", "type": "Page", "route": "Calendar"},
+	{"name1": "call_logs", "label": "Call Logs", "type": "Page", "route": "Call Logs"},
 ]

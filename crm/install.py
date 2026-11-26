@@ -10,6 +10,7 @@ from frappe.permissions import add_permission, update_permission_property
 from crm.domain_enrichment.install import seed_default_rules_and_mappings
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
+from crm.fcrm.doctype.crm_sidebar_item.crm_sidebar_item import sync_standard_sidebar_items
 from crm.permissions.data_import import CRM_IMPORT_DOCTYPES
 
 
@@ -30,6 +31,13 @@ def after_app_install(app_name: str) -> None:
 	migrate_from_frappe_whatsapp()
 
 
+def after_app_uninstall(app_name: str) -> None:
+	"""The app's DocTypes are gone. Sync FCRM Settings so sidebar items that point at them go too."""
+	from crm.fcrm.doctype.fcrm_settings.fcrm_settings import after_migrate
+
+	after_migrate()
+
+
 def after_install(force=False):
 	add_default_lead_statuses()
 	add_default_deal_statuses()
@@ -44,6 +52,7 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_default_quick_filters()
 	add_standard_dropdown_items()
+	add_standard_sidebar_items()
 	add_user_email_subject_fields()
 	add_default_availability_statuses()
 	add_availability_user_fields()
@@ -548,6 +557,12 @@ def add_standard_dropdown_items():
 	for item in frappe.get_hooks("standard_dropdown_items"):
 		crm_settings.append("dropdown_items", item)
 
+	crm_settings.save()
+
+
+def add_standard_sidebar_items():
+	crm_settings = frappe.get_single("FCRM Settings")
+	sync_standard_sidebar_items(crm_settings)
 	crm_settings.save()
 
 
