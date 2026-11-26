@@ -1,10 +1,10 @@
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from crm.api.doc import get_quick_filters, update_quick_filters
 
 
-class TestUpdateQuickFilters(IntegrationTestCase):
+class TestUpdateQuickFilters(FrappeTestCase):
 	"""Only managers change a doctype's quick filters, and only to its own fields."""
 
 	def setUp(self):
