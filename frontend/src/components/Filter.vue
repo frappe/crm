@@ -202,7 +202,8 @@ const emit = defineEmits(['update'])
 const list = defineModel({ type: Object, default: () => ({}) })
 
 const filterableFields = createResource({
-  url: 'crm.api.doc.get_filterable_fields',
+  url: 'crm.api.list_view.get_filter_fields',
+  method: 'GET',
   cache: ['filterableFields', props.doctype],
   params: { doctype: props.doctype },
 })

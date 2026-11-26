@@ -19,14 +19,23 @@ REPLACED = {
 }
 
 
-class TestRecordApiRules(IntegrationTestCase):
-	"""Every whitelisted method in crm.api.record follows the agent-first API rules."""
+class AgentApiRules:
+	"""Every whitelisted method in `api_module` follows the agent-first API rules.
 
-	def test_record_api_has_the_six_methods(self):
-		self.assertEqual({fn.__name__ for fn in whitelisted_functions(record)}, set(REPLACED.values()))
+	Reads are GET only, writes POST only; `reads_with_post` are reads whose
+	arguments do not fit a query string, so they take POST too.
+	"""
+
+	api_module = None
+	methods = frozenset()
+	reads = frozenset()
+	reads_with_post = frozenset()
+
+	def test_module_has_exactly_its_methods(self):
+		self.assertEqual({fn.__name__ for fn in whitelisted_functions(self.api_module)}, set(self.methods))
 
 	def test_first_docstring_line_is_short_and_every_argument_has_a_line(self):
-		for fn in whitelisted_functions(record):
+		for fn in whitelisted_functions(self.api_module):
 			docstring = inspect.getdoc(fn)
 			self.assertTrue(docstring, fn.__name__)
 			self.assertLess(len(docstring.splitlines()[0]), 80, fn.__name__)
@@ -35,17 +44,27 @@ class TestRecordApiRules(IntegrationTestCase):
 				self.assertTrue(any(line.startswith(f"{name}: ") for line in lines), f"{fn.__name__}({name})")
 
 	def test_arguments_have_real_types_not_json_text(self):
-		for fn in whitelisted_functions(record):
+		for fn in whitelisted_functions(self.api_module):
 			for name, parameter in inspect.signature(fn).parameters.items():
 				self.assertIsNot(parameter.annotation, inspect.Parameter.empty, f"{fn.__name__}({name})")
 				self.assertFalse(is_json_text(parameter.annotation), f"{fn.__name__}({name})")
 
 	def test_reads_are_get_only_and_writes_are_post_only(self):
-		reads = {"get_assignees", "get_linked_records"}
-		for fn in whitelisted_functions(record):
+		for fn in whitelisted_functions(self.api_module):
 			methods = frappe.allowed_http_methods_for_whitelisted_func[fn]
-			expected = ("GET", "QUERY") if fn.__name__ in reads else ("POST",)
+			if fn.__name__ in self.reads_with_post:
+				expected = ("GET", "POST", "QUERY")
+			elif fn.__name__ in self.reads:
+				expected = ("GET", "QUERY")
+			else:
+				expected = ("POST",)
 			self.assertEqual(methods, expected, fn.__name__)
+
+
+class TestRecordApiRules(AgentApiRules, IntegrationTestCase):
+	api_module = record
+	methods = frozenset(REPLACED.values())
+	reads = frozenset({"get_assignees", "get_linked_records"})
 
 	def test_reads_do_not_write(self):
 		deal = create_test_deal(organization="Record API Read Org")
