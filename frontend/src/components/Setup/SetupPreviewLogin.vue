@@ -1,6 +1,6 @@
 <template>
   <SetupPreviewLogin
-    :email="session.user"
+    :email="getUser().email"
     :password-length="state.passwordLength || 0"
     :ready="state.passwordReady"
     :email-link="false"
@@ -14,14 +14,14 @@
 
 <script setup>
 import CRMLogo from '@/components/Icons/CRMLogo.vue'
-import { sessionStore } from '@/stores/session'
+import { usersStore } from '@/stores/users'
 import { SetupPreviewLogin } from '@framework/ui/components/SetupFlow'
 
 defineProps({
   state: { type: Object, required: true },
 })
 
-const session = sessionStore()
+const { getUser } = usersStore()
 
 const labels = {
   title: __('Sign In'),

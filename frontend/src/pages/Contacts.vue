@@ -79,6 +79,7 @@ import ContactsListView from '@/components/ListViews/ContactsListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
+import { usersStore } from '@/stores/users'
 import { organizationsStore } from '@/stores/organizations.js'
 import { formatDate } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
@@ -87,6 +88,7 @@ import { ref, computed } from 'vue'
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('Contact')
 const { getOrganization } = organizationsStore()
+const { getUser } = usersStore()
 
 const showContactModal = ref(false)
 
@@ -109,6 +111,13 @@ const rows = computed(() => {
     let _rows = {}
     contacts.value?.data.rows.forEach((row) => {
       _rows[row] = contact[row]
+
+      if (['owner', 'modified_by'].includes(row) && contact[row]) {
+        _rows[row] = {
+          ...getUser(contact[row]),
+          label: getUser(contact[row]).full_name,
+        }
+      }
 
       let fieldType = contacts.value?.data.columns?.find(
         (col) => (col.key || col.value) == row,

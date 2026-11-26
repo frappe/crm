@@ -15,7 +15,7 @@
             <div v-if="group.group == ' '" class="text-ink-gray-4">
               {{ __('Empty') }}
             </div>
-            <div v-else>{{ group.group }}</div>
+            <div v-else>{{ group.title || group.group }}</div>
           </div>
         </div>
       </ListGroupHeader>

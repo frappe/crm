@@ -74,6 +74,7 @@ import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
 import OrganizationsListView from '@/components/ListViews/OrganizationsListView.vue'
 import ViewControls from '@/components/ViewControls.vue'
 import { getMeta } from '@/stores/meta'
+import { usersStore } from '@/stores/users'
 import { formatDate, website } from '@/utils'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { ref, computed } from 'vue'
@@ -81,6 +82,7 @@ import EmptyState from '../components/ListViews/EmptyState.vue'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Organization')
+const { getUser } = usersStore()
 
 const organizationsListView = ref(null)
 const showOrganizationModal = ref(false)
@@ -102,6 +104,13 @@ const rows = computed(() => {
     let _rows = {}
     organizations.value?.data.rows.forEach((row) => {
       _rows[row] = organization[row]
+
+      if (['owner', 'modified_by'].includes(row) && organization[row]) {
+        _rows[row] = {
+          ...getUser(organization[row]),
+          label: getUser(organization[row]).full_name,
+        }
+      }
 
       let fieldType = organizations.value?.data.columns?.find(
         (col) => (col.key || col.value) == row,

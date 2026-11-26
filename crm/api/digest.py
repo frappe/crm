@@ -13,6 +13,7 @@ from frappe.utils import (
 	format_time,
 	get_datetime,
 	get_url,
+	get_user_display_id,
 	now_datetime,
 	pretty_date,
 )
@@ -65,7 +66,7 @@ def send_digests(users: list):
 				digest.send()
 		except Exception:
 			frappe.db.rollback(save_point="morning_digest")
-			frappe.log_error(title=f"CRM morning digest failed for {user}")
+			frappe.log_error(title=f"CRM morning digest failed for {get_user_display_id(user)}")
 
 
 def is_opted_out(user: str) -> bool:

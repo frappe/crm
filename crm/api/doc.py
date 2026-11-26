@@ -576,6 +576,7 @@ def get_data(
 					"label": field.get("label"),
 					"fieldname": field.get("fieldname"),
 					"fieldtype": field.get("fieldtype"),
+					"link_doctype": field.get("fieldtype") == "Link" and field.get("options"),
 					"options": get_options(field.get("fieldtype"), field.get("options")),
 				}
 

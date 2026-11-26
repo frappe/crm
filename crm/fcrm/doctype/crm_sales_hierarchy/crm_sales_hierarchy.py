@@ -40,7 +40,9 @@ class CRMSalesHierarchy(NestedSet):
 			)
 			if existing:
 				frappe.throw(
-					frappe._("User {0} is already mapped to hierarchy node {1}.").format(self.user, existing)
+					frappe._("User {0} is already mapped to hierarchy node {1}.").format(
+						frappe.utils.get_user_display_id(self.user), existing
+					)
 				)
 
 		# A node with reports_to becomes a child so its parent must be a group

@@ -891,9 +891,9 @@ const hostOptions = computed(() => {
   return (users.data?.crmUsers || [])
     .filter((u) => u.name !== 'Administrator' && !hosts.has(u.name))
     .map((u) => ({
-      label: u.full_name || u.name,
+      label: u.full_name || u.email || u.name,
       value: u.name,
-      description: u.name,
+      description: u.email || u.name,
       image: u.user_image,
     }))
 })

@@ -14,6 +14,7 @@
 import { MultiSelect, createResource } from 'frappe-ui'
 import { watchDebounced } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
+import { usersStore } from '@/stores/users'
 
 const props = defineProps({
   doctype: { type: String, required: true },
@@ -27,6 +28,13 @@ const query = ref('')
 // labels of options seen so far, so already selected values keep their label
 // once the search results move on to a different query
 const labels = ref({})
+const { getUser } = usersStore()
+
+function userLabel(v) {
+  return props.doctype == 'User' && !String(v).startsWith('@')
+    ? getUser(v).full_name
+    : v
+}
 
 const search = createResource({
   url: 'frappe.desk.search.search_link',
@@ -57,7 +65,7 @@ const options = computed(() => {
   const found = new Set(results.map((o) => o.value))
   const selected = values.value
     .filter((v) => !found.has(v))
-    .map((v) => ({ label: labels.value[v] || v, value: v }))
+    .map((v) => ({ label: labels.value[v] || userLabel(v), value: v }))
   return [...selected, ...results]
 })
 </script>

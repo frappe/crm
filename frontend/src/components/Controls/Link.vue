@@ -78,6 +78,7 @@
 
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import { usersStore } from '@/stores/users'
 import { isTranslatable } from '@/utils'
 import { watchDebounced } from '@vueuse/core'
 import { createResource } from 'frappe-ui'
@@ -100,6 +101,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
+const { getUser } = usersStore()
 
 const attrs = useAttrs()
 const controlId = useId()
@@ -237,7 +239,12 @@ function stripHtml(html) {
 }
 
 function retainSelectedOption(options) {
-  const selected = selectedOption.value
+  // a user not in this page of results would otherwise show by their ID
+  const selected =
+    selectedOption.value ||
+    (props.doctype == 'User' && value.value && !value.value.startsWith('@')
+      ? { label: getUser(value.value).full_name, value: value.value }
+      : null)
   if (!selected || options.some((option) => option.value === selected.value))
     return
   options.unshift(selected)
