@@ -5,7 +5,7 @@ from frappe import _
 from twilio.twiml.voice_response import VoiceResponse
 from werkzeug.wrappers import Response
 
-from crm.integrations.api import get_contact_by_phone_number
+from crm.integrations.api import find_contact_by_phone_number
 
 from .twilio_handler import IncomingCall, Twilio, TwilioCallDetails
 
@@ -124,7 +124,7 @@ def create_call_log(call_details: TwilioCallDetails):
 
 
 def link(contact_number, call_log):
-	contact = get_contact_by_phone_number(contact_number)
+	contact = find_contact_by_phone_number(contact_number)
 	if contact.get("name"):
 		doctype = "Contact"
 		docname = contact.get("name")

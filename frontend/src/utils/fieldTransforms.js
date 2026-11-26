@@ -176,3 +176,15 @@ export function findMissingMandatory(fields, doc, options = {}) {
 
   return missingFields
 }
+
+/**
+ * Whether a filter field can use the `descendants of (inclusive)` operator.
+ *
+ * Frappe resolves it through the target's `lft` / `rgt`, so filtering a lead by
+ * a parent territory also matches its child territories. It only applies to a
+ * Link whose target is a tree — `get_filterable_fields` flags those with
+ * `is_tree`. Frappe takes a single node here, not a list.
+ */
+export function supportsTreeFilter(field) {
+  return field?.fieldtype === 'Link' && Boolean(field.is_tree)
+}

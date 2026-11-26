@@ -99,11 +99,16 @@ def get_filterable_fields(doctype: str):
 		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
 	]
 
+	# nested set doctypes, found the same way frappe's boot builds `nested_set_doctypes`;
+	# Link fields to them can use the "descendants of" filter operators
+	tree_doctypes = set(frappe.get_all("DocField", {"fieldname": "lft"}, pluck="parent"))
+
 	for field in standard_fields + meta.get("fields", []):
 		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
 			field["name"] = field.get("fieldname")
 			field["label"] = _(field.get("label"))
 			field["value"] = field.get("fieldname")
+			field["is_tree"] = field.get("fieldtype") == "Link" and field.get("options") in tree_doctypes
 			fields.append(field)
 
 	return fields
@@ -204,10 +209,16 @@ def get_quick_filters(doctype: str, cached: bool = True):
 	return quick_filters
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
+	frappe.only_for(("System Manager", "Sales Manager"))
 	quick_filters = json.loads(quick_filters)
 	old_filters = json.loads(old_filters)
+
+	meta = frappe.get_meta(doctype)
+	for fieldname in {*quick_filters, *old_filters}:
+		if fieldname != "name" and not meta.get_field(fieldname):
+			frappe.throw(_("{0} is not a field of {1}").format(fieldname, doctype))
 
 	new_filters = [filter for filter in quick_filters if filter not in old_filters]
 	removed_filters = [filter for filter in old_filters if filter not in quick_filters]
@@ -868,6 +879,10 @@ def delete_bulk_docs(doctype: str, items: str | list, delete_linked: bool = Fals
 	items = frappe.parse_json(items)
 	if not isinstance(items, list):
 		frappe.throw(_("Items must be a list"))
+
+	for doc in items:
+		if frappe.db.exists(doctype, doc):
+			frappe.get_doc(doctype, doc).check_permission("delete")
 
 	for doc in items:
 		try:

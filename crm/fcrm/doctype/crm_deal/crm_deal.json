@@ -515,7 +515,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-04 12:34:10.808282",
+ "modified": "2026-11-25 14:53:55.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Deal",
@@ -560,7 +560,7 @@
   }
  ],
  "row_format": "Dynamic",
- "show_title_field_in_link": 1,
+ "show_title_field_in_link": 0,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
