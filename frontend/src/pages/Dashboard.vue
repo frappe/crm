@@ -6,6 +6,7 @@
         <ViewBreadcrumbs routeName="Dashboard" />
       </template>
       <template #right-header>
+        <InstallInsightsButton v-if="!editing" />
         <Button
           v-if="!editing"
           :label="__('Refresh')"
@@ -141,6 +142,7 @@ import LucideUndo2 from '~icons/lucide/undo-2'
 import LucidePenLine from '~icons/lucide/pen-line'
 import DashboardGrid from '@/components/Dashboard/DashboardGrid.vue'
 import InsightsDashboard from '@/components/Dashboard/InsightsDashboard.vue'
+import InstallInsightsButton from '@/components/Dashboard/InstallInsightsButton.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
