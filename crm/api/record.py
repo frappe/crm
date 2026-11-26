@@ -5,7 +5,6 @@ from frappe.model.delete_doc import get_dynamic_linked_docs, get_linked_docs
 
 
 @frappe.whitelist(methods=["GET"])
-@frappe.read_only()
 def get_assignees(doctype: str, name: str | int) -> list[str]:
 	"""Return the users assigned to a record.
 
@@ -42,7 +41,6 @@ def mark_as_seen(doctype: str, name: str | int) -> None:
 
 
 @frappe.whitelist(methods=["GET"])
-@frappe.read_only()
 def get_linked_records(doctype: str, name: str | int) -> list[dict]:
 	"""Return the records that link to a record and that the user can read.
 

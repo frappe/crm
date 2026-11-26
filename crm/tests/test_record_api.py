@@ -40,13 +40,12 @@ class TestRecordApiRules(IntegrationTestCase):
 				self.assertIsNot(parameter.annotation, inspect.Parameter.empty, f"{fn.__name__}({name})")
 				self.assertFalse(is_json_text(parameter.annotation), f"{fn.__name__}({name})")
 
-	def test_reads_are_read_only_and_writes_are_post_only(self):
+	def test_reads_are_get_only_and_writes_are_post_only(self):
+		reads = {"get_assignees", "get_linked_records"}
 		for fn in whitelisted_functions(record):
 			methods = frappe.allowed_http_methods_for_whitelisted_func[fn]
-			if getattr(fn, "read_only", False):
-				self.assertNotIn("POST", methods, fn.__name__)
-			else:
-				self.assertEqual(methods, ("POST",), fn.__name__)
+			expected = ("GET", "QUERY") if fn.__name__ in reads else ("POST",)
+			self.assertEqual(methods, expected, fn.__name__)
 
 	def test_reads_do_not_write(self):
 		deal = create_test_deal(organization="Record API Read Org")
