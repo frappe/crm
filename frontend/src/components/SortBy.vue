@@ -172,7 +172,8 @@ const emit = defineEmits(['update'])
 const list = defineModel({ type: Object, default: () => ({}) })
 
 const sortOptions = createResource({
-  url: 'crm.api.doc.sort_options',
+  url: 'crm.api.list_view.get_sort_fields',
+  method: 'GET',
   cache: ['sortOptions', props.doctype],
   params: { doctype: props.doctype },
 })

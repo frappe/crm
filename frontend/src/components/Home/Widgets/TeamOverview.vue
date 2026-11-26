@@ -96,7 +96,8 @@ const DOCTYPE_OPTIONS = [
 
 const filterableFields = (doctype) =>
   createResource({
-    url: 'crm.api.doc.get_filterable_fields',
+    url: 'crm.api.list_view.get_filter_fields',
+    method: 'GET',
     cache: ['filterableFields', doctype],
     params: { doctype },
     auto: true,

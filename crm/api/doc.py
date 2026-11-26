@@ -1,297 +1,22 @@
-import json
-
 import frappe
-from frappe import _
-from frappe.custom.doctype.property_setter.property_setter import make_property_setter
-from frappe.model import no_value_fields
-from frappe.model.document import get_controller
-from frappe.utils import make_filter_tuple
-from pypika import Criterion
 
+from crm.api import list_view
 from crm.api import record as record_api
+from crm.api.list_query import KanbanQuery, ListQuery, get_count, prepare_filters
 from crm.api.views import get_views
-from crm.fcrm.doctype.crm_form_script.crm_form_script import get_form_script
-from crm.utils import is_frappe_version
-
-COUNT_NAME = (
-	{"COUNT": "name", "as": "total_count"}
-	if is_frappe_version("16", above=True)
-	else "count(name) as total_count"
-)
 
 
-@frappe.whitelist()
-def sort_options(doctype: str):
-	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in no_value_fields]
-	fields = [
-		{
-			"label": _(field.label),
-			"value": field.fieldname,
-			"fieldname": field.fieldname,
-		}
-		for field in fields
-		if field.label and field.fieldname
-	]
+def replaced_by(path):
+	"""Mark a whitelisted method as kept for old callers, naming the method that replaces it."""
 
-	standard_fields = [
-		{"label": "Name", "fieldname": "name"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldname": "modified"},
-		{"label": "Modified By", "fieldname": "modified_by"},
-		{"label": "Owner", "fieldname": "owner"},
-	]
+	def decorate(fn):
+		fn.replaced_by = path
+		return fn
 
-	for field in standard_fields:
-		field["label"] = _(field["label"])
-		field["value"] = field["fieldname"]
-		fields.append(field)
-
-	return fields
+	return decorate
 
 
-@frappe.whitelist()
-def get_filterable_fields(doctype: str):
-	allowed_fieldtypes = [
-		"Check",
-		"Data",
-		"Float",
-		"Int",
-		"Currency",
-		"Dynamic Link",
-		"Link",
-		"Long Text",
-		"Select",
-		"Small Text",
-		"Text Editor",
-		"Text",
-		"Duration",
-		"Rating",
-		"Date",
-		"Datetime",
-	]
-
-	c = get_controller(doctype)
-	restricted_fields = []
-	if hasattr(c, "get_non_filterable_fields"):
-		restricted_fields = c.get_non_filterable_fields()
-
-	fields = []
-
-	meta = frappe.get_meta(doctype).as_dict()
-
-	# append standard fields (getting error when using frappe.model.std_fields)
-	standard_fields = [
-		{"fieldname": "name", "fieldtype": "Link", "label": "Name", "options": doctype},
-		{"fieldname": "owner", "fieldtype": "Link", "label": "Created By", "options": "User"},
-		{
-			"fieldname": "modified_by",
-			"fieldtype": "Link",
-			"label": "Last Updated By",
-			"options": "User",
-		},
-		{"fieldname": "_user_tags", "fieldtype": "Data", "label": "Tags"},
-		{"fieldname": "_liked_by", "fieldtype": "Data", "label": "Like"},
-		{"fieldname": "_comments", "fieldtype": "Text", "label": "Comments"},
-		{"fieldname": "_assign", "fieldtype": "Text", "label": "Assigned To"},
-		{"fieldname": "creation", "fieldtype": "Datetime", "label": "Created On"},
-		{"fieldname": "modified", "fieldtype": "Datetime", "label": "Last Updated On"},
-	]
-
-	# nested set doctypes, found the same way frappe's boot builds `nested_set_doctypes`;
-	# Link fields to them can use the "descendants of" filter operators
-	tree_doctypes = set(frappe.get_all("DocField", {"fieldname": "lft"}, pluck="parent"))
-
-	for field in standard_fields + meta.get("fields", []):
-		if field.get("fieldname") not in restricted_fields and field.get("fieldtype") in allowed_fieldtypes:
-			field["name"] = field.get("fieldname")
-			field["label"] = _(field.get("label"))
-			field["value"] = field.get("fieldname")
-			field["is_tree"] = field.get("fieldtype") == "Link" and field.get("options") in tree_doctypes
-			fields.append(field)
-
-	return fields
-
-
-@frappe.whitelist()
-def get_group_by_fields(doctype: str):
-	allowed_fieldtypes = [
-		"Check",
-		"Data",
-		"Float",
-		"Int",
-		"Currency",
-		"Dynamic Link",
-		"Link",
-		"Select",
-		"Duration",
-		"Date",
-		"Datetime",
-	]
-
-	fields = frappe.get_meta(doctype).fields
-	fields = [
-		field
-		for field in fields
-		if field.fieldtype not in no_value_fields and field.fieldtype in allowed_fieldtypes
-	]
-	fields = [
-		{
-			"label": _(field.label),
-			"fieldname": field.fieldname,
-		}
-		for field in fields
-		if field.label and field.fieldname
-	]
-
-	standard_fields = [
-		{"label": "Name", "fieldname": "name"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldname": "modified"},
-		{"label": "Modified By", "fieldname": "modified_by"},
-		{"label": "Owner", "fieldname": "owner"},
-		{"label": "Like", "fieldname": "_liked_by"},
-		{"label": "Assigned To", "fieldname": "_assign"},
-		{"label": "Comments", "fieldname": "_comments"},
-		{"label": "Created On", "fieldname": "creation"},
-		{"label": "Modified On", "fieldname": "modified"},
-	]
-
-	for field in standard_fields:
-		field["label"] = _(field["label"])
-		fields.append(field)
-
-	return fields
-
-
-@frappe.whitelist()
-def get_quick_filters(doctype: str, cached: bool = True):
-	meta = frappe.get_meta(doctype, cached)
-	quick_filters = []
-
-	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
-		_quick_filters = frappe.db.get_value("CRM Global Settings", global_settings, "json")
-		_quick_filters = json.loads(_quick_filters) or []
-
-		fields = []
-
-		for filter in _quick_filters:
-			if filter == "name":
-				fields.append({"label": "Name", "fieldname": "name", "fieldtype": "Data"})
-			else:
-				field = next((f for f in meta.fields if f.fieldname == filter), None)
-				if field:
-					fields.append(field)
-
-	else:
-		fields = [field for field in meta.fields if field.in_standard_filter]
-
-	for field in fields:
-		options = field.get("options")
-		if field.get("fieldtype") == "Select" and options and isinstance(options, str):
-			options = options.split("\n")
-			options = [{"label": option, "value": option} for option in options]
-			if not any([not option.get("value") for option in options]):
-				options.insert(0, {"label": "", "value": ""})
-		quick_filters.append(
-			{
-				"label": _(field.get("label")),
-				"fieldname": field.get("fieldname"),
-				"fieldtype": field.get("fieldtype"),
-				"options": options,
-			}
-		)
-
-	if doctype == "CRM Lead":
-		quick_filters = [filter for filter in quick_filters if filter.get("fieldname") != "converted"]
-
-	return quick_filters
-
-
-@frappe.whitelist()
-def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
-	quick_filters = json.loads(quick_filters)
-	old_filters = json.loads(old_filters)
-
-	new_filters = [filter for filter in quick_filters if filter not in old_filters]
-	removed_filters = [filter for filter in old_filters if filter not in quick_filters]
-
-	# update or create global quick filter settings
-	create_update_global_settings(doctype, quick_filters)
-
-	# remove old filters
-	for filter in removed_filters:
-		update_in_standard_filter(filter, doctype, 0)
-
-	# add new filters
-	for filter in new_filters:
-		update_in_standard_filter(filter, doctype, 1)
-
-
-def create_update_global_settings(doctype, quick_filters):
-	if global_settings := frappe.db.exists("CRM Global Settings", {"dt": doctype, "type": "Quick Filters"}):
-		frappe.db.set_value("CRM Global Settings", global_settings, "json", json.dumps(quick_filters))
-	else:
-		# create CRM Global Settings doc
-		doc = frappe.new_doc("CRM Global Settings")
-		doc.dt = doctype
-		doc.type = "Quick Filters"
-		doc.json = json.dumps(quick_filters)
-		doc.insert()
-
-
-def update_in_standard_filter(fieldname, doctype, value):
-	if property_name := frappe.db.exists(
-		"Property Setter",
-		{"doc_type": doctype, "field_name": fieldname, "property": "in_standard_filter"},
-	):
-		frappe.db.set_value("Property Setter", property_name, "value", value)
-	else:
-		make_property_setter(
-			doctype,
-			fieldname,
-			"in_standard_filter",
-			value,
-			"Check",
-			validate_fields_for_doctype=False,
-		)
-
-
-def apply_comments_filter(doctype, filters):
-	"""Match the Comments filter against the Comment doctype instead of `_comments`.
-
-	`_comments` is a cache Frappe keeps on the parent doc and it only stores the
-	first ~100 characters of each comment, so `like` on it misses later text.
-	"""
-	value = filters.get("_comments")
-	if not isinstance(value, list | tuple) or len(value) != 2:
-		return
-
-	operator, text = str(value[0]).lower(), value[1]
-	if operator not in ("like", "not like"):
-		return
-
-	commented = frappe.get_all(
-		"Comment",
-		filters={"reference_doctype": doctype, "comment_type": "Comment", "content": ["like", text]},
-		pluck="reference_name",
-		distinct=True,
-		limit_page_length=0,
-	)
-	filters.pop("_comments")
-
-	if "name" not in filters:
-		filters["name"] = ["in" if operator == "like" else "not in", commented]
-		return
-
-	# a "name" filter is already set, keep it and combine both
-	scoped = set(
-		frappe.get_all(doctype, filters={"name": filters["name"]}, pluck="name", limit_page_length=0)
-	)
-	names = scoped & set(commented) if operator == "like" else scoped - set(commented)
-	filters["name"] = ["in", list(names)]
-
-
+@replaced_by("crm.api.list_view.get_list_view")
 @frappe.whitelist()
 def get_data(
 	doctype: str,
@@ -308,276 +33,45 @@ def get_data(
 	view: str | dict | None = None,
 	default_filters: dict | None = None,
 ):
-	custom_view = False
-	filters = frappe._dict(filters)
-	rows = frappe.parse_json(rows or "[]")
+	"""Deprecated: use crm.api.list_view.get_list_view."""
+	view = frappe.parse_json(view) or {}
+	view_type = view.get("view_type")
+	group_by_field = view.get("group_by_field")
+	filters = prepare_filters(doctype, filters, default_filters)
 	columns = frappe.parse_json(columns or "[]")
-	kanban_fields = frappe.parse_json(kanban_fields or "[]")
+	rows = frappe.parse_json(rows or "[]")
 	kanban_columns = frappe.parse_json(kanban_columns or "[]")
-
-	custom_view_name = view.get("custom_view_name") if view else None
-	view_type = view.get("view_type") if view else None
-	group_by_field = view.get("group_by_field") if view else None
-
-	for key in filters:
-		value = filters[key]
-		if isinstance(value, list):
-			if "@me" in value:
-				value[value.index("@me")] = frappe.session.user
-			elif "%@me%" in value:
-				index = [i for i, v in enumerate(value) if v == "%@me%"]
-				for i in index:
-					value[i] = "%" + frappe.session.user + "%"
-		elif value == "@me":
-			filters[key] = frappe.session.user
-
-	if default_filters:
-		default_filters = frappe.parse_json(default_filters)
-		filters.update(default_filters)
-
-	apply_comments_filter(doctype, filters)
-
+	kanban_fields = frappe.parse_json(kanban_fields or "[]")
 	is_default = True
-	data = []
-	_list = get_controller(doctype)
-	default_rows = []
-	default_column_keys = []
-	if hasattr(_list, "default_list_data"):
-		default_list_data = _list.default_list_data()
-		default_rows = default_list_data.get("rows")
-		default_column_keys = [column.get("key") for column in default_list_data.get("columns", [])]
-
-	meta = frappe.get_meta(doctype)
-
-	if view_type != "kanban":
-		if columns or rows:
-			custom_view = True
-			is_default = False
-			columns = frappe.parse_json(columns)
-			rows = frappe.parse_json(rows)
-
-		if not columns:
-			columns = [
-				{"label": "Name", "type": "Data", "key": "name", "width": "16rem"},
-				{"label": "Last Modified", "type": "Datetime", "key": "modified", "width": "8rem"},
-			]
-
-		if not rows:
-			rows = ["name"]
-
-		default_view_filters = {
-			"dt": doctype,
-			"type": view_type or "list",
-			"is_standard": 1,
-			"user": frappe.session.user,
-		}
-
-		if not custom_view and frappe.db.exists("CRM View Settings", default_view_filters):
-			list_view_settings = frappe.get_doc("CRM View Settings", default_view_filters)
-			columns = frappe.parse_json(list_view_settings.columns)
-			rows = frappe.parse_json(list_view_settings.rows)
-			is_default = False
-		elif not custom_view and hasattr(_list, "default_list_data"):
-			rows = default_rows
-			columns = _list.default_list_data().get("columns")
-
-		visible_columns = []
-		for column in columns:
-			key = column.get("key")
-			# hidden fields are dropped unless the doctype lists them in its own defaults
-			column_meta = meta.get_field(key)
-			if column_meta and column_meta.get("hidden") and key not in default_column_keys:
-				continue
-
-			if key not in rows:
-				rows.append(key)
-			column["label"] = _(column.get("label"))
-
-			if key == "_liked_by" and column.get("width") == "10rem":
-				column["width"] = "50px"
-
-			visible_columns.append(column)
-		columns = visible_columns
-
-		# check if rows has group_by_field if not add it
-		if group_by_field and group_by_field not in rows:
-			rows.append(group_by_field)
-
-		if meta.track_seen and "_seen" not in rows:
-			rows.append("_seen")
-
-		add_task_all_day(doctype, rows)
-
-		data = (
-			frappe.get_list(
-				doctype,
-				fields=rows,
-				filters=filters,
-				order_by=order_by,
-				page_length=page_length,
-			)
-			or []
-		)
-		data = parse_list_data(data, doctype)
 
 	if view_type == "kanban":
-		if not rows:
-			rows = default_rows
+		query = KanbanQuery(doctype, filters, order_by, column_field)
+		query.run(kanban_columns, title_field, kanban_fields, rows)
+		data, rows = query.columns, query.rows
+		kanban_columns, title_field, kanban_fields = (
+			query.kanban_columns,
+			query.title_field,
+			query.kanban_fields,
+		)
+	else:
+		query = ListQuery(doctype, filters, order_by, page_length, view_type, group_by_field)
+		query.run(columns, rows)
+		data, columns, rows, is_default = query.records, query.columns, query.rows, query.is_default
 
-		if not kanban_columns and column_field:
-			field_meta = frappe.get_meta(doctype).get_field(column_field)
-			if field_meta.fieldtype == "Link":
-				kanban_columns = frappe.get_all(
-					field_meta.options,
-					fields=["name"],
-					order_by="modified asc",
-				)
-			elif field_meta.fieldtype == "Select":
-				kanban_columns = [{"name": option} for option in field_meta.options.split("\n")]
+	fields = list_view.get_column_fields(doctype)
+	for field in list_view.STANDARD_COLUMN_FIELDS:
+		if field["fieldname"] not in rows:
+			rows.append(field["fieldname"])
 
-		if not title_field:
-			title_field = "name"
-			if hasattr(_list, "default_kanban_settings"):
-				title_field = _list.default_kanban_settings().get("title_field")
-
-		if title_field not in rows:
-			rows.append(title_field)
-
-		if not kanban_fields:
-			kanban_fields = ["name"]
-			if hasattr(_list, "default_kanban_settings"):
-				kanban_fields = json.loads(_list.default_kanban_settings().get("kanban_fields"))
-
-		for field in kanban_fields:
-			if field not in rows:
-				rows.append(field)
-
-		add_task_all_day(doctype, rows)
-
-		for kc in kanban_columns:
-			# Start with base filters
-			column_filters = []
-
-			# Convert and add the main filters first
-			if filters:
-				base_filters = convert_filter_to_tuple(doctype, filters)
-				column_filters.extend(base_filters)
-
-			# Add the column-specific filter
-			if column_field and kc.get("name"):
-				column_filters.append([doctype, column_field, "=", kc.get("name")])
-
-			order = kc.get("order")
-			if kc.get("delete"):
-				column_data = []
-			else:
-				# don't shadow the top-level page_length echoed in the response
-				column_page_length = kc.get("page_length", 20)
-
-				if order:
-					column_data = get_records_based_on_order(
-						doctype, rows, column_filters, column_page_length, order
-					)
-				else:
-					column_data = frappe.get_list(
-						doctype,
-						fields=rows,
-						filters=column_filters,
-						order_by=order_by,
-						page_length=column_page_length,
-					)
-
-				all_count = frappe.get_list(
-					doctype,
-					filters=column_filters,
-					fields=[COUNT_NAME],
-				)[0].total_count
-
-				kc["all_count"] = all_count
-				kc["count"] = len(column_data)
-
-				set_activity_counts(column_data, doctype)
-
-			if order:
-				column_data = sorted(
-					column_data,
-					key=lambda x: order.index(x.get("name")) if x.get("name") in order else len(order),
-				)
-
-			data.append({"column": kc, "fields": kanban_fields, "data": column_data})
-
-	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in no_value_fields]
-	fields = [
-		{
-			"label": _(field.label),
-			"fieldtype": field.fieldtype,
-			"fieldname": field.fieldname,
-			"options": field.options,
-		}
-		for field in fields
-		if field.label and field.fieldname
-	]
-
-	std_fields = [
-		{"label": "Name", "fieldtype": "Data", "fieldname": "name"},
-		{"label": "Created On", "fieldtype": "Datetime", "fieldname": "creation"},
-		{"label": "Last Modified", "fieldtype": "Datetime", "fieldname": "modified"},
-		{
-			"label": "Modified By",
-			"fieldtype": "Link",
-			"fieldname": "modified_by",
-			"options": "User",
-		},
-		{"label": "Assigned To", "fieldtype": "Text", "fieldname": "_assign"},
-		{"label": "Owner", "fieldtype": "Link", "fieldname": "owner", "options": "User"},
-		{"label": "Like", "fieldtype": "Data", "fieldname": "_liked_by"},
-	]
-
-	for field in std_fields:
-		if field.get("fieldname") not in rows:
-			rows.append(field.get("fieldname"))
-		if field not in fields:
-			field["label"] = _(field["label"])
-			fields.append(field)
-
-	if not is_default and custom_view_name:
-		is_default = frappe.db.get_value("CRM View Settings", custom_view_name, "load_default_columns")
+	if not is_default and view.get("custom_view_name"):
+		is_default = frappe.db.get_value(
+			"CRM View Settings", view["custom_view_name"], "load_default_columns"
+		)
 
 	if group_by_field and view_type == "group_by":
+		group_by_field = get_group_by_field(fields, group_by_field, data, order_by)
 
-		def get_options(type, options):
-			if type == "Select":
-				return [option for option in options.split("\n")]
-			else:
-				has_empty_values = any([not d.get(group_by_field) for d in data])
-				options = list(set([d.get(group_by_field) for d in data]))
-				options = [u for u in options if u]
-				if has_empty_values:
-					options.append("")
-
-				if order_by and group_by_field in order_by:
-					order_by_fields = order_by.split(",")
-					order_by_fields = [
-						(field.split(" ")[0], field.split(" ")[1]) for field in order_by_fields
-					]
-					if (group_by_field, "asc") in order_by_fields:
-						options.sort()
-					elif (group_by_field, "desc") in order_by_fields:
-						options.sort(reverse=True)
-				else:
-					options.sort()
-				return options
-
-		for field in fields:
-			if field.get("fieldname") == group_by_field:
-				group_by_field = {
-					"label": field.get("label"),
-					"fieldname": field.get("fieldname"),
-					"fieldtype": field.get("fieldtype"),
-					"options": get_options(field.get("fieldtype"), field.get("options")),
-				}
-
+	scripts = list_view.get_list_scripts(doctype)
 	return {
 		"data": data,
 		"columns": columns,
@@ -592,62 +86,81 @@ def get_data(
 		"page_length_count": page_length_count,
 		"is_default": is_default,
 		"views": get_views(doctype),
-		"total_count": frappe.get_list(doctype, filters=filters, fields=[COUNT_NAME])[0].total_count,
+		"total_count": get_count(doctype, filters),
 		"row_count": len(data),
-		"form_script": get_form_script(doctype),
-		"list_script": get_form_script(doctype, "List"),
+		"form_script": scripts["form_script"],
+		"list_script": scripts["list_script"],
 		"view_type": view_type,
 	}
 
 
-def add_task_all_day(doctype, rows):
-	if doctype == "CRM Task" and "due_date" in rows and "all_day" not in rows:
-		rows.append("all_day")
+def get_group_by_field(fields, fieldname, data, order_by):
+	"""The group by field with its group values, as get_data returns it."""
+	field = next((f for f in fields if f.get("fieldname") == fieldname), None)
+	if not field:
+		return fieldname
+
+	if field.get("fieldtype") == "Select":
+		options = field.get("options").split("\n")
+	else:
+		options = get_group_values(data, fieldname, order_by)
+
+	return {
+		"label": field.get("label"),
+		"fieldname": fieldname,
+		"fieldtype": field.get("fieldtype"),
+		"options": options,
+	}
 
 
-def parse_list_data(data, doctype):
-	_list = get_controller(doctype)
-	if hasattr(_list, "parse_list_data"):
-		data = _list.parse_list_data(data)
-	return data
+def get_group_values(data, fieldname, order_by):
+	values = [value for value in {d.get(fieldname) for d in data} if value]
+	if any(not d.get(fieldname) for d in data):
+		values.append("")
+	if not (order_by and fieldname in order_by):
+		return sorted(values)
+
+	order_by_fields = [(part.split(" ")[0], part.split(" ")[1]) for part in order_by.split(",")]
+	if (fieldname, "asc") in order_by_fields:
+		return sorted(values)
+	if (fieldname, "desc") in order_by_fields:
+		return sorted(values, reverse=True)
+	return values
 
 
-def convert_filter_to_tuple(doctype, filters):
-	if isinstance(filters, dict):
-		filters_items = filters.items()
-		filters = []
-		for key, value in filters_items:
-			filters.append(make_filter_tuple(doctype, key, value))
-	return filters
+@replaced_by("crm.api.list_view.get_sort_fields")
+@frappe.whitelist()
+def sort_options(doctype: str):
+	"""Deprecated: use crm.api.list_view.get_sort_fields."""
+	return list_view.get_sort_fields(doctype)
 
 
-def get_records_based_on_order(doctype, rows, filters, page_length, order):
-	records = []
-	filters = convert_filter_to_tuple(doctype, filters)
-	in_filters = filters.copy()
-	in_filters.append([doctype, "name", "in", order[:page_length]])
-	records = frappe.get_list(
-		doctype,
-		fields=rows,
-		filters=in_filters,
-		order_by="creation desc",
-		page_length=page_length,
-	)
+@replaced_by("crm.api.list_view.get_filter_fields")
+@frappe.whitelist()
+def get_filterable_fields(doctype: str):
+	"""Deprecated: use crm.api.list_view.get_filter_fields."""
+	return list_view.get_filter_fields(doctype)
 
-	if len(records) < page_length:
-		not_in_filters = filters.copy()
-		not_in_filters.append([doctype, "name", "not in", order])
-		remaining_records = frappe.get_list(
-			doctype,
-			fields=rows,
-			filters=not_in_filters,
-			order_by="creation desc",
-			page_length=page_length - len(records),
-		)
-		for record in remaining_records:
-			records.append(record)
 
-	return records
+@replaced_by("crm.api.list_view.get_group_by_fields")
+@frappe.whitelist()
+def get_group_by_fields(doctype: str):
+	"""Deprecated: use crm.api.list_view.get_group_by_fields."""
+	return list_view.get_group_by_fields(doctype)
+
+
+@replaced_by("crm.api.list_view.get_quick_filters")
+@frappe.whitelist()
+def get_quick_filters(doctype: str, cached: bool = True):
+	"""Deprecated: use crm.api.list_view.get_quick_filters."""
+	return list_view.get_quick_filters(doctype, cached)
+
+
+@replaced_by("crm.api.list_view.set_quick_filters")
+@frappe.whitelist()
+def update_quick_filters(quick_filters: str | list, old_filters: str | list, doctype: str):
+	"""Deprecated: use crm.api.list_view.set_quick_filters."""
+	list_view.set_quick_filters(doctype, frappe.parse_json(quick_filters) or [])
 
 
 @frappe.whitelist()
@@ -664,49 +177,6 @@ def get_fields(doctype: str, allow_all_fieldtypes: bool = False):
 			_fields.append(field)
 
 	return _fields
-
-
-def set_activity_counts(rows, doctype):
-	# one grouped query per activity type instead of one query per card
-	names = [d.get("name") for d in rows]
-	if not names:
-		return rows
-
-	def count_by(activity_doctype, link_field, filters=None):
-		result = frappe.get_all(
-			activity_doctype,
-			filters={"reference_doctype": doctype, link_field: ["in", names], **(filters or {})},
-			fields=[link_field, COUNT_NAME],
-			group_by=link_field,
-		)
-		return {r.get(link_field): r.total_count for r in result}
-
-	email_counts = count_by(
-		"Communication",
-		"reference_name",
-		{"communication_type": ["in", ["Communication", "Automated Message"]]},
-	)
-	comment_counts = count_by("Comment", "reference_name", {"comment_type": "Comment"})
-	task_counts = count_by("CRM Task", "reference_docname")
-	note_counts = count_by("FCRM Note", "reference_docname")
-
-	for d in rows:
-		name = d.get("name")
-		d["_email_count"] = email_counts.get(name, 0)
-		d["_comment_count"] = comment_counts.get(name, 0)
-		d["_task_count"] = task_counts.get(name, 0)
-		d["_note_count"] = note_counts.get(name, 0)
-	return rows
-
-
-def replaced_by(path):
-	"""Mark a whitelisted method as kept for old callers, naming the method that replaces it."""
-
-	def decorate(fn):
-		fn.replaced_by = path
-		return fn
-
-	return decorate
 
 
 @replaced_by("crm.api.record.get_assignees")
