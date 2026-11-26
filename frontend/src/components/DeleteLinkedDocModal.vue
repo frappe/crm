@@ -179,14 +179,15 @@ const confirmDeleteInfo = ref({
 })
 
 const linkedDocsResource = createResource({
-  url: 'crm.api.doc.get_linked_docs_of_document',
+  url: 'crm.api.record.get_linked_records',
+  method: 'GET',
   params: {
     doctype: props.doctype,
-    docname: props.docname,
+    name: props.docname,
   },
   auto: true,
   validate(params) {
-    if (!params?.doctype || !params?.docname) {
+    if (!params?.doctype || !params?.name) {
       return false
     }
   },
@@ -224,8 +225,8 @@ const unlinkLinkedDoc = (doc) => {
   }
 
   withRecipientConfirmation((confirm) =>
-    call('crm.api.doc.remove_linked_doc_reference', {
-      items: selectedDocs,
+    call('crm.api.record.unlink_records', {
+      records: selectedDocs,
       remove_contact: props.doctype == 'Contact',
       delete: doc.delete,
       ...confirm,

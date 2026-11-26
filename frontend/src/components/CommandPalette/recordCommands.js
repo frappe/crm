@@ -83,7 +83,7 @@ function addAssignee(context, user) {
 }
 
 function removeAssignee(context, user) {
-  return call('crm.api.doc.remove_assignments', {
+  return call('crm.api.record.remove_assignees', {
     doctype: context.doctype,
     name: context.docname,
     assignees: [user],

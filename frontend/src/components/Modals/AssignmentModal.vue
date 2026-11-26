@@ -147,10 +147,10 @@ async function updateAssignees() {
     .map((assignee) => assignee.name)
 
   if (removedAssignees.length) {
-    await call('crm.api.doc.remove_assignments', {
+    await call('crm.api.record.remove_assignees', {
       doctype: props.doctype,
       name: props.doc.name,
-      assignees: JSON.stringify(removedAssignees),
+      assignees: removedAssignees,
     })
   }
 
