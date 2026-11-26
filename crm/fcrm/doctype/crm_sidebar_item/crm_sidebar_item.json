@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-11-26 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "name1",
+  "label",
+  "type",
+  "route",
+  "dt",
+  "hidden",
+  "is_standard",
+  "column_break_icon",
+  "icon"
+ ],
+ "fields": [
+  {
+   "description": "A stable key for the item.",
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label"
+  },
+  {
+   "default": "DocType",
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Page\nDocType",
+   "read_only_depends_on": "eval:doc.is_standard"
+  },
+  {
+   "depends_on": "eval:doc.type == 'Page'",
+   "description": "The name of a built-in page's route.",
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Route",
+   "read_only_depends_on": "eval:doc.is_standard"
+  },
+  {
+   "depends_on": "eval:doc.type == 'DocType'",
+   "fieldname": "dt",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "DocType",
+   "mandatory_depends_on": "eval:doc.type == 'DocType'",
+   "options": "DocType"
+  },
+  {
+   "default": "0",
+   "fieldname": "hidden",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Hidden"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Is Standard",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_icon",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "A lucide icon name, such as 'briefcase'. Empty keeps a built-in page's own icon.",
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "FCRM",
+ "name": "CRM Sidebar Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
