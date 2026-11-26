@@ -25,8 +25,13 @@ class TestUpdateQuickFilters(FrappeTestCase):
 	def test_sales_user_cannot_set_quick_filters(self):
 		frappe.set_user("crm.user1@example.com")
 
-		with self.assertRaises(frappe.PermissionError):
-			update_quick_filters('["status"]', "[]", "CRM Deal")
+		# frappe v15's only_for skips its check while tests run
+		frappe.flags.in_test = False
+		try:
+			with self.assertRaises(frappe.PermissionError):
+				update_quick_filters('["status"]', "[]", "CRM Deal")
+		finally:
+			frappe.flags.in_test = True
 
 		self.assertFalse(frappe.db.exists("CRM Global Settings", {"dt": "CRM Deal", "type": "Quick Filters"}))
 
