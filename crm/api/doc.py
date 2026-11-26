@@ -204,10 +204,16 @@ def get_quick_filters(doctype: str, cached: bool = True):
 	return quick_filters
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def update_quick_filters(quick_filters: str, old_filters: str, doctype: str):
+	frappe.only_for(("System Manager", "Sales Manager"))
 	quick_filters = json.loads(quick_filters)
 	old_filters = json.loads(old_filters)
+
+	meta = frappe.get_meta(doctype)
+	for fieldname in {*quick_filters, *old_filters}:
+		if fieldname != "name" and not meta.get_field(fieldname):
+			frappe.throw(_("{0} is not a field of {1}").format(fieldname, doctype))
 
 	new_filters = [filter for filter in quick_filters if filter not in old_filters]
 	removed_filters = [filter for filter in old_filters if filter not in quick_filters]
