@@ -70,6 +70,7 @@
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
    "label": "Parent CRM Territory",
+   "link_filters": "[[\"CRM Territory\",\"is_group\",\"=\",1]]",
    "options": "CRM Territory"
   },
   {
@@ -84,7 +85,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-03-05 12:44:13.642717",
+ "modified": "2026-09-17 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "CRM Territory",

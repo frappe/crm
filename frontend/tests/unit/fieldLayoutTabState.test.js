@@ -7,7 +7,7 @@ vi.mock('frappe-ui', async () => {
   return {
     Tabs: defineComponent({
       props: {
-        modelValue: { type: Number, default: 0 },
+        modelValue: { type: [String, Number], default: undefined },
         tabs: { type: Array, default: () => [] },
       },
       emits: ['update:modelValue'],
@@ -17,13 +17,13 @@ vi.mock('frappe-ui', async () => {
             h(
               'div',
               { role: 'tablist' },
-              props.tabs.map((tab, index) =>
+              props.tabs.map((tab) =>
                 h(
                   'button',
                   {
                     role: 'tab',
-                    'aria-selected': props.modelValue === index,
-                    onClick: () => emit('update:modelValue', index),
+                    'aria-selected': props.modelValue === tab.value,
+                    onClick: () => emit('update:modelValue', tab.value),
                   },
                   tab.label,
                 ),
@@ -32,7 +32,9 @@ vi.mock('frappe-ui', async () => {
             h(
               'div',
               { role: 'tabpanel' },
-              slots['tab-panel']?.({ tab: props.tabs[props.modelValue] }),
+              slots['tab-panel']?.({
+                tab: props.tabs.find((tab) => tab.value === props.modelValue),
+              }),
             ),
           ])
       },

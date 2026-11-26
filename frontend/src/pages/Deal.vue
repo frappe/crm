@@ -23,16 +23,12 @@
         @done="onEnriched"
       />
       <AssignTo v-model="assignees.data" doctype="CRM Deal" :docname="dealId" />
-      <Dropdown
-        v-if="doc && document.statuses"
-        :options="statuses"
-        placement="right"
-      >
+      <Dropdown v-if="doc && document.statuses" :options="statuses" align="end">
         <template #default="{ open }">
           <Button
             v-if="doc.status"
             :label="statusLabel(doc.status)"
-            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           >
             <template #prefix>
               <IndicatorIcon :class="getDealStatus(doc.status).color" />
@@ -44,16 +40,17 @@
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      v-model="tabIndex"
+      ref="dealTabsRef"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel>
         <Activities
           ref="activities"
           v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
+          v-model:activeTab="activeTab"
           doctype="CRM Deal"
           :docname="dealId"
           :tabs="tabs"
@@ -96,6 +93,7 @@
 
             <Button
               :tooltip="__('Send an Email')"
+              :disabled="!emailTab"
               :icon="Email2Icon"
               @click="
                 doc.email
@@ -122,6 +120,13 @@
               @click="showFilesUploader = true"
             />
 
+            <FollowUpPopover
+              doctype="CRM Deal"
+              :docname="dealId"
+              :title="followUpTitle"
+              @created="reloadActivities"
+            />
+
             <Button
               v-if="canDelete"
               :tooltip="__('Delete')"
@@ -133,6 +138,11 @@
           </div>
         </div>
       </div>
+      <NextFollowUp
+        :tasks="activities?.all_activities?.data?.tasks"
+        @open="(task) => activities.modalRef.showTask(task)"
+        @change="reloadActivities"
+      />
       <SLASection
         v-if="doc.sla_status"
         v-model="doc"
@@ -156,6 +166,15 @@
               <Link
                 value=""
                 doctype="Contact"
+                :grouping="
+                  doc.organization
+                    ? {
+                        filters: { company_name: doc.organization },
+                        label: __('Contacts at {0}', [doc.organization]),
+                        otherLabel: __('Other contacts'),
+                      }
+                    : null
+                "
                 :onCreate="
                   (value, close) => {
                     _contact = {
@@ -251,28 +270,10 @@
                         </div>
                       </div>
                     </template>
-                    <div class="flex flex-col gap-1.5 text-base">
-                      <div
-                        v-if="contact.email"
-                        class="flex items-center gap-3 pb-1.5 pl-1 pt-4 text-ink-gray-8"
-                      >
-                        <Email2Icon class="h-4 w-4" />
-                        {{ contact.email }}
-                      </div>
-                      <div
-                        v-if="contact.mobile_no"
-                        class="flex items-center gap-3 p-1 py-1.5 text-ink-gray-8"
-                      >
-                        <PhoneIcon class="h-4 w-4" />
-                        {{ contact.mobile_no }}
-                      </div>
-                      <div
-                        v-if="!contact.email && !contact.mobile_no"
-                        class="flex items-center justify-center py-4 text-sm text-ink-gray-4"
-                      >
-                        {{ __('No Details Added') }}
-                      </div>
-                    </div>
+                    <DealContactDetails
+                      :contact="contact"
+                      :reload="reloadContactDetails"
+                    />
                   </CollapsibleSection>
                 </div>
                 <div
@@ -352,6 +353,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -361,6 +363,7 @@ import LinkIcon from '@/components/Icons/LinkIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
+import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
 import OrganizationModal from '@/components/Modals/OrganizationModal.vue'
@@ -370,10 +373,13 @@ import FilesUploader from '@/components/FilesUploader/FilesUploader.vue'
 import ContactModal from '@/components/Modals/ContactModal.vue'
 import Link from '@/components/Controls/Link.vue'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
+import DealContactDetails from '@/components/DealContactDetails.vue'
 import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
+import FollowUpPopover from '@/components/FollowUp/FollowUpPopover.vue'
+import NextFollowUp from '@/components/FollowUp/NextFollowUp.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -381,12 +387,15 @@ import {
   isTranslatable,
 } from '@/utils'
 import { getView } from '@/utils/view'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { mergeFormTabs, composerTab } from '@/utils/formTabs'
 import { whatsappEnabled } from '@/composables/whatsapp'
+import { canViewQuotations } from '@/composables/erpnext'
 import { callEnabled } from '@/composables/telephony'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
 import { flattenCommandActions } from '@/utils/commandPalette'
@@ -403,7 +412,6 @@ import {
   usePageMeta,
   toast,
 } from 'frappe-ui'
-import { useOnboarding } from 'frappe-ui/frappe'
 import {
   ref,
   computed,
@@ -423,9 +431,6 @@ const { brand } = getSettings()
 const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
-
-const { updateOnboardingStep, isOnboardingStepsCompleted } =
-  useOnboarding('frappecrm')
 
 const route = useRoute()
 const router = useRouter()
@@ -477,9 +482,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField,
-        createToast: toast.create,
         deleteDoc: deleteDeal,
         call,
       })
@@ -560,6 +563,17 @@ const title = computed(() => {
   let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.dealId
 })
+
+const followUpTitle = computed(() => {
+  const primaryContact = dealContacts.data?.find((c) => c.is_primary)
+  return __('Follow up with {0}', [
+    doc.value.organization || primaryContact?.full_name || title.value,
+  ])
+})
+
+function reloadActivities() {
+  activities.value?.all_activities?.reload()
+}
 
 const statuses = computed(() => {
   let customStatuses = document.statuses?.length
@@ -750,55 +764,90 @@ const tabs = computed(() => {
   let tabOptions = [
     {
       name: 'Activity',
+      value: 'activity',
       label: __('Activity'),
-      icon: ActivityIcon,
+      iconLeft: ActivityIcon,
     },
     {
       name: 'Emails',
+      value: 'emails',
       label: __('Emails'),
-      icon: EmailIcon,
+      iconLeft: EmailIcon,
     },
     {
       name: 'Comments',
+      value: 'comments',
       label: __('Comments'),
-      icon: CommentIcon,
+      iconLeft: CommentIcon,
     },
     {
       name: 'Data',
+      value: 'data',
       label: __('Data'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
+    },
+    {
+      name: 'Events',
+      value: 'events',
+      label: __('Events'),
+      iconLeft: EventIcon,
     },
     {
       name: 'Calls',
+      value: 'calls',
       label: __('Calls'),
-      icon: PhoneIcon,
+      iconLeft: PhoneIcon,
     },
     {
       name: 'Tasks',
+      value: 'tasks',
       label: __('Tasks'),
-      icon: TaskIcon,
+      iconLeft: TaskIcon,
     },
     {
       name: 'Notes',
+      value: 'notes',
       label: __('Notes'),
-      icon: NoteIcon,
+      iconLeft: NoteIcon,
     },
     {
       name: 'Attachments',
+      value: 'attachments',
       label: __('Attachments'),
-      icon: AttachmentIcon,
+      iconLeft: AttachmentIcon,
     },
     {
       name: 'WhatsApp',
+      value: 'whatsapp',
       label: __('WhatsApp'),
-      icon: WhatsAppIcon,
+      iconLeft: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
+    {
+      name: 'Quotations',
+      value: 'quotations',
+      label: __('Quotations'),
+      iconLeft: FileTextIcon,
+      condition: () => canViewQuotations.value,
+    },
   ]
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+  return mergeFormTabs(tabOptions, document.tabs)
 })
 
-const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
+const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastDealTab')
+
+// keep the active tab visible — later tabs (e.g. Quotations) otherwise stay
+// scrolled out of view behind the right panel
+const dealTabsRef = ref(null)
+function scrollActiveTabIntoView() {
+  nextTick(() => {
+    dealTabsRef.value?.$el
+      ?.querySelector('[role="tab"][aria-selected="true"]')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  })
+}
+watch(activeTab, scrollActiveTabIntoView)
+onMounted(scrollActiveTabIntoView)
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
@@ -835,13 +884,21 @@ const showContactModal = ref(false)
 const _contact = ref({})
 
 function contactOptions(contact) {
-  let options = [
-    {
-      label: __('Remove'),
-      icon: 'trash-2',
-      onClick: () => removeContact(contact.name),
-    },
-  ]
+  let options = []
+
+  if (callEnabled.value && contact.mobile_no) {
+    options.push({
+      label: __('Make a Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(contact.mobile_no),
+    })
+  }
+
+  options.push({
+    label: __('Remove'),
+    icon: 'lucide-trash-2',
+    onClick: () => removeContact(contact.name),
+  })
 
   if (!contact.is_primary) {
     options.push({
@@ -871,10 +928,13 @@ async function addContact(contact) {
 }
 
 async function removeContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
-    deal: props.dealId,
-    contact,
-  })
+  let d = await withRecipientConfirmation((confirm) =>
+    call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
+      deal: props.dealId,
+      contact,
+      ...confirm,
+    }),
+  )
   if (d) {
     dealContacts.reload()
     toast.success(__('Contact Removed'))
@@ -882,10 +942,13 @@ async function removeContact(contact) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
-    deal: props.dealId,
-    contact,
-  })
+  let d = await withRecipientConfirmation((confirm) =>
+    call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
+      deal: props.dealId,
+      contact,
+      ...confirm,
+    }),
+  )
   if (d) {
     dealContacts.reload()
     toast.success(__('Primary Contact Set'))
@@ -907,6 +970,11 @@ const dealContacts = createResource({
 })
 
 if (!dealContacts.data) dealContacts.fetch()
+
+// A contact's primary email/mobile is copied onto the deal, so reload both
+function reloadContactDetails() {
+  return Promise.all([dealContacts.reload(), document.reload()])
+}
 
 function triggerCall() {
   let primaryContact = dealContacts.data?.find((c) => c.is_primary)
@@ -931,10 +999,6 @@ async function triggerStatusChange(value) {
 }
 
 function updateField(name, value) {
-  if (name == 'status' && !isOnboardingStepsCompleted.value) {
-    updateOnboardingStep('change_deal_status')
-  }
-
   value = Array.isArray(name) ? '' : value
   let oldValues = Array.isArray(name) ? {} : doc.value[name]
 
@@ -962,12 +1026,12 @@ function deleteDeal() {
 
 const activities = ref(null)
 
+const emailTab = computed(() => composerTab(tabs.value, activeTab.value))
+
 function openEmailBox() {
-  let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
-    activities.value.changeTabTo('emails')
-  }
-  nextTick(() => activities.value.emailBox?.openEmailBox())
+  if (!emailTab.value) return
+  changeTabTo(emailTab.value)
+  nextTick(() => activities.value?.emailBox?.openEmailBox())
 }
 
 function statusLabel(status) {

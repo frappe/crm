@@ -1,7 +1,10 @@
 <template>
   <div class="flex h-full flex-col text-ink-gray-8">
     <!-- header -->
-    <div class="flex items-center justify-between px-6 pt-8 pb-4">
+    <div
+      v-if="!embedded"
+      class="flex items-center justify-between px-6 pt-8 pb-4"
+    >
       <div class="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -14,7 +17,7 @@
         <Badge
           v-if="dirty"
           variant="subtle"
-          theme="orange"
+          theme="amber"
           size="sm"
           :label="__('Not Saved')"
         />
@@ -47,15 +50,22 @@
       </div>
     </div>
 
-    <div v-if="loaded" class="flex-1 overflow-y-auto px-6 pb-6">
+    <div
+      v-if="loaded"
+      :class="embedded ? '' : 'flex-1 overflow-y-auto px-6 pb-6'"
+    >
       <!-- EDIT MODE -->
-      <div v-if="mode === 'edit'" class="wf-tabs">
-        <Tabs v-model="tabIndex" as="div" :tabs="tabs">
+      <div
+        v-if="mode === 'edit'"
+        class="wf-tabs"
+        :class="{ 'wf-embedded': embedded }"
+      >
+        <Tabs v-model="activeTab" as="div" :tabs="visibleTabs">
           <template #tab-panel="{ tab }">
             <!-- EDITOR TAB -->
-            <div v-if="tab.name === 'editor'" class="pt-5">
+            <div v-if="tab.value === 'editor'" :class="{ 'pt-5': !embedded }">
               <!-- form masthead (title + description) — typed right on the canvas -->
-              <div class="mb-5 px-1">
+              <div v-if="!embedded" class="mb-5 px-1">
                 <input
                   v-model="form.title"
                   :placeholder="__('Form title')"
@@ -96,7 +106,7 @@
                 >
                   <template #item="{ element: sec }">
                     <div
-                      class="flex flex-col gap-1.5 rounded bg-surface-gray-2 p-2.5"
+                      class="flex flex-col gap-1.5 rounded-4 bg-surface-gray-2 p-2.5"
                     >
                       <div class="flex h-7 items-center justify-between">
                         <div
@@ -129,7 +139,7 @@
                         <div class="flex items-center gap-1.5">
                           <span
                             v-if="sectionFieldCount(sec)"
-                            class="rounded bg-surface-gray-3 px-1.5 py-0.5 text-xs leading-none text-ink-gray-4"
+                            class="rounded-4 bg-surface-gray-3 px-1.5 py-0.5 text-xs leading-none text-ink-gray-4"
                           >
                             {{ sectionFieldCount(sec) }}
                             {{
@@ -154,7 +164,7 @@
                         <div
                           v-for="col in sec.columns"
                           :key="columnKey(col)"
-                          class="flex min-w-0 flex-1 flex-col gap-1.5 rounded border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
+                          class="flex min-w-0 flex-1 flex-col gap-1.5 rounded-4 border border-dashed border-outline-gray-2 bg-surface-elevation-2 p-2"
                         >
                           <Draggable
                             :list="col.items"
@@ -175,6 +185,9 @@
                                 :field="f"
                                 :expanded="expanded === f.fieldname"
                                 :locked="isMandatory(f.fieldname)"
+                                :always-asked="
+                                  lockedFields.includes(f.fieldname)
+                                "
                                 :guest-select-missing="
                                   f.fieldtype === 'Link' &&
                                   guestSelect[f.options] === false
@@ -201,7 +214,7 @@
                                 class="!h-8 w-full !bg-surface-elevation-2"
                                 variant="outline"
                                 :label="__('Add Field')"
-                                icon-left="plus"
+                                icon-left="lucide-plus"
                                 @click="openFieldPicker(open, setOpen)"
                               />
                             </template>
@@ -216,7 +229,7 @@
                   class="!h-8 w-full"
                   variant="subtle"
                   :label="__('Add Section')"
-                  icon-left="plus"
+                  icon-left="lucide-plus"
                   @click="addBreak('Section Break')"
                 />
               </div>
@@ -230,7 +243,7 @@
                   <LucideEyeOff class="h-3.5 w-3.5 text-ink-gray-5" />
                   {{ __('Hidden required fields') }}
                 </div>
-                <div class="rounded bg-surface-gray-2 p-2.5">
+                <div class="rounded-4 bg-surface-gray-2 p-2.5">
                   <p class="mb-2.5 text-p-sm text-ink-gray-5">
                     {{
                       __(
@@ -242,7 +255,7 @@
                     <div
                       v-for="h in hiddenFields"
                       :key="h.fieldname"
-                      class="flex items-center gap-2.5 rounded border border-outline-gray-2 bg-surface-elevation-2 px-2.5 py-2"
+                      class="flex items-center gap-2.5 rounded-4 border border-outline-gray-2 bg-surface-elevation-2 px-2.5 py-2"
                     >
                       <component
                         :is="fieldTypeIcon(h)"
@@ -291,7 +304,10 @@
             </div>
 
             <!-- SETTINGS TAB -->
-            <div v-else-if="tab.name === 'settings'" class="flex flex-col pt-5">
+            <div
+              v-else-if="tab.value === 'settings'"
+              class="flex flex-col pt-5"
+            >
               <!-- form details -->
               <div>
                 <div class="flex flex-col gap-1">
@@ -309,7 +325,7 @@
                         {{ __('Route') }}
                       </div>
                       <div
-                        class="flex h-7 cursor-text items-center rounded border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base"
+                        class="flex h-7 cursor-text items-center rounded-4 border border-transparent bg-surface-gray-2 px-2.5 text-base transition-colors hover:bg-surface-gray-3 focus-within:border-outline-gray-4 focus-within:bg-surface-base"
                         @click="focusRouteEnd"
                       >
                         <span class="shrink-0 text-ink-gray-4">/crm-form/</span>
@@ -441,7 +457,7 @@
                       <textarea
                         readonly
                         rows="3"
-                        class="w-full resize-none rounded-md border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                        class="w-full resize-none rounded-5 border border-outline-gray-2 bg-surface-gray-1 py-2 pl-3 pr-10 font-mono text-xs text-ink-gray-7 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                         :value="iframeSnippet"
                       />
                       <button
@@ -482,12 +498,12 @@
                   rows="3"
                   spellcheck="false"
                   placeholder="https://www.example.com"
-                  class="mt-3.5 w-full resize-none rounded-md border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                  class="mt-3.5 w-full resize-none rounded-5 border border-outline-gray-2 px-3 py-2 font-mono text-xs text-ink-gray-8 focus:border-outline-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none"
                   @input="markDirty"
                 />
                 <p
                   v-if="invalidEmbeddingDomains.length"
-                  class="mt-1.5 text-xs text-ink-red-6"
+                  class="mt-1.5 text-xs text-ink-red-5"
                 >
                   {{
                     __('Not a valid domain and will be ignored: {0}', [
@@ -513,14 +529,14 @@
 
       <!-- PREVIEW MODE -->
       <div v-else class="max-w-2xl pt-6">
-        <div class="rounded-xl border bg-surface-white p-7">
+        <div class="rounded-7 border bg-surface-white p-7">
           <!-- simulated success screen -->
           <div
             v-if="previewSubmitted"
             class="flex flex-col items-center gap-3 py-10 text-center"
           >
             <div
-              class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-green-2 text-ink-green-3"
+              class="flex h-12 w-12 items-center justify-center rounded-full bg-surface-green-2 text-ink-green-2"
             >
               <LucideCheck class="h-6 w-6" />
             </div>
@@ -570,7 +586,7 @@
                         class="mb-1.5 text-sm text-ink-gray-5"
                       >
                         {{ f.label
-                        }}<span v-if="fieldRequired(f)" class="text-ink-red-5"
+                        }}<span v-if="fieldRequired(f)" class="text-ink-red-4"
                           >*</span
                         >
                       </div>
@@ -608,7 +624,7 @@
                         />
                         <span class="text-sm text-ink-gray-5"
                           >{{ f.label
-                          }}<span v-if="fieldRequired(f)" class="text-ink-red-5"
+                          }}<span v-if="fieldRequired(f)" class="text-ink-red-4"
                             >*</span
                           ></span
                         >
@@ -685,7 +701,7 @@ import LucideCheck from '~icons/lucide/check'
 import LucideLayoutList from '~icons/lucide/layout-list'
 import LucideSettings from '~icons/lucide/settings'
 import { globalStore } from '@/stores/global'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { copyToClipboard } from '@/utils'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 
@@ -694,7 +710,14 @@ const { capture } = useTelemetry()
 
 const BREAK_TYPES = ['Section Break', 'Column Break']
 
-const props = defineProps({ name: { type: String, required: true } })
+const props = defineProps({
+  name: { type: String, required: true },
+  // just the field editor, for a page that holds its own form (booking pages):
+  // no header, title, settings or share; the host page calls save()
+  embedded: { type: Boolean, default: false },
+  // fields that can't be removed or made optional beyond the doctype's own
+  lockedFields: { type: Array, default: () => [] },
+})
 const emit = defineEmits(['back', 'saved'])
 
 const targetOptions = [
@@ -709,12 +732,13 @@ const dirty = ref(false)
 
 const savedPublished = ref(false)
 const mode = ref('edit') // edit | preview
-const tabIndex = ref(0)
+const activeTab = ref('editor')
 const tabs = [
-  { name: 'editor', label: __('Editor'), icon: LucideLayoutList },
-  { name: 'settings', label: __('Settings'), icon: LucideSettings },
-  { name: 'share', label: __('Share'), icon: LucideShare2 },
+  { value: 'editor', label: __('Editor'), iconLeft: LucideLayoutList },
+  { value: 'settings', label: __('Settings'), iconLeft: LucideSettings },
+  { value: 'share', label: __('Share'), iconLeft: LucideShare2 },
 ]
+const visibleTabs = computed(() => (props.embedded ? tabs.slice(0, 1) : tabs))
 const expanded = ref(null) // fieldname of the expanded field editor
 const descInput = ref(null)
 // while a draft still has an auto-generated route, keep it in sync with the
@@ -786,7 +810,9 @@ const mandatorySet = computed(
     ),
 )
 function isMandatory(fieldname) {
-  return mandatorySet.value.has(fieldname)
+  return (
+    mandatorySet.value.has(fieldname) || props.lockedFields.includes(fieldname)
+  )
 }
 function catalogDefault(fieldname) {
   const c = (availableFields.data || []).find((f) => f.fieldname === fieldname)
@@ -1027,7 +1053,7 @@ function goBack() {
         {
           label: __('Go Back'),
           variant: 'solid',
-          onClick: (close) => {
+          onClick: ({ close }) => {
             emit('back')
             close()
           },
@@ -1107,13 +1133,13 @@ function columnOps(cols) {
   return [
     {
       label: __('Add Column'),
-      icon: 'columns',
+      icon: 'lucide-columns',
       onClick: () => addColumn(cols),
       condition: () => cols.length < MAX_COLUMNS,
     },
     {
       label: __('Remove Last Column'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => removeLastColumn(cols),
       condition: () => cols.length > 1,
     },
@@ -1125,20 +1151,20 @@ function sectionMenu(sec) {
   return [
     {
       group: __('Section'),
-      items: [
+      options: [
         {
           label: __('Rename'),
-          icon: 'edit',
+          icon: 'lucide-edit',
           onClick: () => (sec.editingLabel = true),
         },
         {
           label: __('Remove Section'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () => removeBreak(sec.secField),
         },
       ],
     },
-    { group: __('Column'), items: columnOps(sec.columns) },
+    { group: __('Column'), options: columnOps(sec.columns) },
   ]
 }
 function optionList(f) {
@@ -1319,6 +1345,10 @@ function updateField(f, patch) {
 }
 
 function removeField(f) {
+  if (props.lockedFields.includes(f.fieldname)) {
+    toast.info(__('{0} is always asked on this form', [f.label || f.fieldname]))
+    return
+  }
   form.fields = form.fields.filter((x) => x !== f)
   if (expanded.value === f.fieldname) expanded.value = null
   // a mandatory field isn't deleted — it moves to the hidden section so its
@@ -1386,7 +1416,7 @@ async function requestDoctypeChange(newDt) {
         label: __('Change & remove fields'),
         variant: 'solid',
         theme: 'red',
-        onClick: (close) => {
+        onClick: ({ close }) => {
           commitDoctype(newDt, valid)
           close()
         },
@@ -1532,6 +1562,8 @@ function togglePublish() {
   form.published = form.published ? 0 : 1
   markDirty()
 }
+
+defineExpose({ save, dirty })
 </script>
 
 <style>
@@ -1544,6 +1576,10 @@ function togglePublish() {
 
 /* The frappe-ui Tabs root is overflow-hidden, which would trap a sticky child;
    relax it so the tab list can stick to the outer scroll container. */
+.wf-embedded [role='tablist'] {
+  display: none;
+}
+
 .wf-tabs > div {
   overflow: visible;
 }

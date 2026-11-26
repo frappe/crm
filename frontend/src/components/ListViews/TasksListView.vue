@@ -42,11 +42,15 @@
       doctype="CRM Task"
     >
       <div v-if="column.key === 'due_date' && item">
-        <Tooltip :text="item && formatDate(item, 'ddd, MMM D, YYYY | hh:mm a')">
+        <Tooltip
+          :text="
+            formatTaskDue({ due_date: item, all_day: row.all_day }, 'long')
+          "
+        >
           <div class="flex items-center gap-2 truncate text-base">
             <div><CalendarIcon /></div>
             <div class="truncate">
-              {{ formatDate(item, 'D MMM, hh:mm a') }}
+              {{ formatTaskDue({ due_date: item, all_day: row.all_day }) }}
             </div>
           </div>
         </Tooltip>
@@ -65,11 +69,10 @@
             <TaskPriorityIcon :priority="item" />
           </div>
           <div v-else-if="column.key === 'assigned_to'">
-            <Avatar
+            <UserAvatar
               v-if="item.full_name"
               class="flex items-center"
-              :image="item.user_image"
-              :label="item.full_name"
+              :user="item.name"
               size="sm"
             />
           </div>
@@ -95,7 +98,7 @@
           </div>
           <div
             v-else-if="column.type === 'Text Editor'"
-            class="truncate text-base h-4 [&>p]:truncate"
+            class="truncate overflow-hidden text-base h-4 [&>p]:truncate"
             v-html="sanitizeHTML(item)"
           />
           <div v-else-if="column.type === 'Check'">
@@ -184,6 +187,7 @@
   />
 </template>
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import HeartIcon from '@/components/Icons/HeartIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
@@ -191,23 +195,17 @@ import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import RatingInput from '@/components/Controls/RatingInput.vue'
 import ListBulkActions from '@/components/ListBulkActions.vue'
 import ListRows from '@/components/ListViews/ListRows.vue'
+import { isTranslatable, formatDuration, sanitizeHTML } from '@/utils'
+import { formatTaskDue } from '@/utils/task'
+import { Dropdown, Tooltip } from 'frappe-ui'
 import {
-  formatDate,
-  isTranslatable,
-  formatDuration,
-  sanitizeHTML,
-} from '@/utils'
-import {
-  Avatar,
   ListView,
   ListHeader,
   ListHeaderItem,
   ListSelectBanner,
   ListRowItem,
   ListFooter,
-  Dropdown,
-  Tooltip,
-} from 'frappe-ui'
+} from 'frappe-ui/experimental'
 import { sessionStore } from '@/stores/session'
 import { ref, computed, watch } from 'vue'
 

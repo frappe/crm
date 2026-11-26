@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex min-h-0 flex-1 flex-col">
     <!-- header -->
     <div class="flex justify-between text-ink-gray-8">
       <div class="flex flex-col gap-1 w-9/12">
@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Manage your email accounts to send and receive emails directly from CRM. You can add multiple accounts and set one as default for incoming and outgoing emails.',
+              'Connect email accounts to send and receive emails from CRM. Set one as the default for incoming and outgoing emails.',
             )
           }}
         </p>
@@ -28,7 +28,7 @@
     <!-- list accounts -->
     <div
       v-if="!emailAccounts.loading && Boolean(emailAccounts.data?.length)"
-      class="mt-4"
+      class="mt-4 min-h-0 flex-1 overflow-y-auto"
     >
       <div
         v-for="(emailAccount, i) in emailAccounts.data"
@@ -78,6 +78,9 @@ const emailAccounts = createListResource({
       account.enable_outgoing = Boolean(account.enable_outgoing)
       account.default_incoming = Boolean(account.default_incoming)
       account.default_outgoing = Boolean(account.default_outgoing)
+      account.create_lead_from_incoming_email = Boolean(
+        account.create_lead_from_incoming_email,
+      )
     })
   },
 })

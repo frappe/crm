@@ -28,6 +28,11 @@ vi.mock('@/utils/fetchFrom', () => ({
   getPendingFetchFields: vi.fn(),
   getSourceFieldnames: vi.fn(),
 }))
+vi.mock('@/utils/whatsappRecipient', () => ({
+  CONFIRM_RECIPIENT_CHANGE: {},
+  confirmRecipientChange: vi.fn(),
+  isRecipientChangeRefusal: () => false,
+}))
 
 const { toast, captured } = vi.hoisted(() => ({
   toast: { error: vi.fn(), success: vi.fn() },

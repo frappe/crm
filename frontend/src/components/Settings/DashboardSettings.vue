@@ -7,9 +7,7 @@
         </h2>
         <p class="text-p-base text-ink-gray-6">
           {{
-            __(
-              'Configure how your dashboard calculates, formats, and displays key metrics, including forecasting, deal values, and currency settings',
-            )
+            __('Choose how the dashboard forecasts deals and shows currency.')
           }}
         </p>
       </div>
@@ -72,7 +70,7 @@
           <div class="text-p-sm text-ink-gray-5">
             {{
               __(
-                'Dashboard number cards & charts will show currency in the selected format. Once set, cannot be edited.',
+                "Currency for dashboard cards and charts. Can't be changed once set.",
               )
             }}
           </div>
@@ -162,6 +160,10 @@
           />
         </div>
       </div>
+      <template v-if="isInsightsInstalled">
+        <div class="h-px border-t mx-2 border-outline-elevation-2" />
+        <InsightsDashboardList />
+      </template>
     </div>
     <div v-if="errorMessage" class="px-3">
       <ErrorMessage :message="__(errorMessage)" />
@@ -169,6 +171,7 @@
   </div>
 </template>
 <script setup>
+import InsightsDashboardList from '@/components/Settings/InsightsDashboardList.vue'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { useBroadcast } from '@/composables/useBroadcast'
@@ -183,6 +186,7 @@ const { $dialog } = globalStore()
 const { send } = useBroadcast()
 
 const errorMessage = ref('')
+const isInsightsInstalled = Boolean(window.is_insights_installed)
 
 const PROVIDERS_REQUIRING_KEY = ['exchangerate.host', 'exchangerate-api']
 
@@ -243,7 +247,7 @@ function setCurrency(value) {
       {
         label: __('Save'),
         variant: 'solid',
-        onClick: (close) => {
+        onClick: ({ close }) => {
           settings.doc.currency = value
           settings.save.submit(null, {
             onSuccess: () => {

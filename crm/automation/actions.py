@@ -11,13 +11,19 @@ from typing import ClassVar
 
 import frappe
 from frappe import _
-from frappe.automation_engine.actions.base import (
-	USER_CONTROL,
-	AutomationAction,
-	AutomationParamError,
-	render_value,
-)
-from frappe.automation_engine.actions.core import resolve_recipients
+
+try:
+	from frappe.automation_engine.actions.base import (
+		USER_CONTROL,
+		AutomationAction,
+		AutomationParamError,
+		render_value,
+	)
+	from frappe.automation_engine.actions.core import resolve_recipients
+except ImportError:  # automation engine ships with frappe v16+
+	USER_CONTROL = render_value = resolve_recipients = None
+	AutomationAction = object
+	AutomationParamError = Exception
 
 from crm.automation.scoring import adjust_lead_score, set_lead_temperature, temperature_options
 from crm.fcrm.doctype.crm_lead.crm_lead import convert_to_deal, existing_deal
@@ -235,17 +241,22 @@ class SendEmailToRecord(AutomationAction):
 			raise AutomationParamError(_("{0} has no email address").format(doc.doctype if doc else ""))
 		subject, message = self._content(doc, params)
 		sender = params.get("sender")
-		sent = make(
-			doctype=doc.doctype,
-			name=doc.name,
-			subject=subject,
-			content=message,
-			recipients=recipient,
-			communication_type="Communication",
-			send_email=True,
-			sender=sender or None,
-			sender_full_name=frappe.db.get_value("User", sender, "full_name") if sender else None,
-		)
+		# an email a flow sends is not a person's reply, so the customer is still waiting on one
+		frappe.flags.crm_automated_email = True
+		try:
+			sent = make(
+				doctype=doc.doctype,
+				name=doc.name,
+				subject=subject,
+				content=message,
+				recipients=recipient,
+				communication_type="Communication",
+				send_email=True,
+				sender=sender or None,
+				sender_full_name=frappe.db.get_value("User", sender, "full_name") if sender else None,
+			)
+		finally:
+			frappe.flags.crm_automated_email = False
 		return {
 			"detail": _("Emailed {0}: {1}").format(recipient, subject),
 			"communication": sent.get("name"),

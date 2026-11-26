@@ -31,6 +31,11 @@ setup('authenticate', async ({ page }) => {
 	expect(userData.message).not.toBe('Guest')
 	console.log(`Authenticated as: ${userData.message}`)
 
+	// Skip the guided setup so tests land on the CRM.
+	await page.addInitScript(() =>
+		localStorage.setItem('crm_setup_completed', '1'),
+	)
+
 	// Load the CRM app so window.frappe.csrf_token is available.
 	await page.goto('/crm')
 	await page.waitForLoadState('networkidle')

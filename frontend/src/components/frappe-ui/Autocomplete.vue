@@ -1,7 +1,13 @@
 <template>
   <Combobox v-model="selectedValue" nullable>
-    <Popover v-model:show="showOptions" class="w-full" :placement="placement">
-      <template #target="{ open: openPopover, togglePopover }">
+    <Popover
+      v-model:open="showOptions"
+      trigger="manual"
+      :side="side"
+      :align="align"
+      bare
+    >
+      <template #trigger>
         <slot
           name="target"
           v-bind="{
@@ -15,7 +21,7 @@
           <div class="w-full">
             <button
               :id="buttonId"
-              class="relative flex h-7 w-full items-center justify-between gap-2 rounded px-2 py-1 transition-colors pr-7"
+              class="relative flex h-7 w-full items-center justify-between gap-2 rounded-4 px-2 py-1 transition-colors pr-7"
               :class="inputClasses"
               @click="() => !disabled && togglePopover()"
             >
@@ -43,10 +49,10 @@
           </div>
         </slot>
       </template>
-      <template #body="{ isOpen }">
-        <div v-show="isOpen">
+      <template #default>
+        <div>
           <div
-            class="relative mt-1 rounded-lg bg-surface-elevation-2 text-base shadow-2xl max-w-[350px]"
+            class="relative mt-1 rounded-6 bg-surface-elevation-2 text-base shadow-2xl max-w-[350px]"
           >
             <div class="relative px-1.5 pt-1.5">
               <ComboboxInput
@@ -94,7 +100,7 @@
                 >
                   <li
                     :class="[
-                      'flex cursor-pointer items-center rounded px-2.5 py-1.5 text-base',
+                      'flex cursor-pointer items-center rounded-4 px-2.5 py-1.5 text-base',
                       { 'bg-surface-gray-3': active },
                     ]"
                   >
@@ -115,7 +121,7 @@
               </div>
               <li
                 v-if="groups.length == 0"
-                class="my-1.5 rounded-md px-2.5 py-1.5 text-base text-ink-gray-5"
+                class="my-1.5 rounded-5 px-2.5 py-1.5 text-base text-ink-gray-5"
               >
                 {{ __('No results found') }}
               </li>
@@ -212,9 +218,20 @@ const selectedValue = computed({
   },
 })
 
+function openPopover() {
+  showOptions.value = true
+}
+
+function togglePopover() {
+  showOptions.value = !showOptions.value
+}
+
 function close() {
   showOptions.value = false
 }
+
+const side = computed(() => props.placement.split('-')[0])
+const align = computed(() => props.placement.split('-')[1] || 'center')
 
 const groups = computed(() => {
   if (!props.options || props.options.length == 0) return []
@@ -274,10 +291,10 @@ const textColor = computed(() => {
 
 const inputClasses = computed(() => {
   let sizeClasses = {
-    sm: 'text-base rounded h-7',
-    md: 'text-base rounded h-8',
-    lg: 'text-lg rounded-md h-10',
-    xl: 'text-2xl rounded-md h-10',
+    sm: 'text-base rounded-4 h-7',
+    md: 'text-base rounded-4 h-8',
+    lg: 'text-lg rounded-5 h-10',
+    xl: 'text-2xl rounded-5 h-10',
   }[props.size]
 
   let paddingClasses = {

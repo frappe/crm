@@ -9,7 +9,7 @@
         <p class="text-p-base text-ink-gray-6">
           {{
             __(
-              'Manage CRM users by adding or inviting them, and assign roles to control their access and permissions',
+              'Add or invite users and choose their role to control what they can see and do.',
             )
           }}
         </p>
@@ -28,10 +28,10 @@
           ]"
           :button="{
             label: __('New'),
-            iconLeft: 'plus',
+            iconLeft: 'lucide-plus',
             variant: 'solid',
           }"
-          placement="right"
+          align="end"
         />
       </div>
     </div>
@@ -92,11 +92,18 @@
         <template v-for="user in usersList" :key="user.name">
           <li class="flex items-center justify-between py-2">
             <div class="flex items-center">
-              <Avatar
-                :image="user.user_image"
-                :label="user.full_name"
-                size="xl"
-              />
+              <div class="relative shrink-0">
+                <Avatar
+                  :image="user.user_image"
+                  :label="user.full_name"
+                  size="xl"
+                />
+                <div
+                  class="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-elevation-2 p-0.5"
+                >
+                  <AvailabilityDot :user="user.name" class="!size-2.5" />
+                </div>
+              </div>
               <div class="flex flex-col ml-3">
                 <div class="flex items-center text-p-base text-ink-gray-8">
                   {{ user.full_name }}
@@ -110,13 +117,13 @@
               <Dropdown
                 :options="getMoreOptions(user)"
                 :button="{
-                  icon: 'more-horizontal',
+                  icon: 'lucide-more-horizontal',
                   onblur: (e) => {
                     e.stopPropagation()
                     confirmRemove = false
                   },
                 }"
-                placement="right"
+                align="end"
               />
               <Tooltip
                 v-if="isManager() && user.role == 'System Manager'"
@@ -129,15 +136,15 @@
                 :options="getDropdownOptions(user)"
                 :button="{
                   label: roleMap[user.role],
-                  iconRight: 'chevron-down',
+                  iconRight: 'lucide-chevron-down',
                   iconLeft:
                     user.role === 'System Manager'
-                      ? 'shield'
+                      ? 'lucide-shield'
                       : user.role === 'Sales Manager'
-                        ? 'briefcase'
-                        : 'user-check',
+                        ? 'lucide-briefcase'
+                        : 'lucide-user-check',
                 }"
-                placement="right"
+                align="end"
               />
             </div>
           </li>
@@ -166,10 +173,10 @@
 
 <script setup>
 import AddExistingUserModal from '@/components/Modals/AddExistingUserModal.vue'
+import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { usersStore } from '@/stores/users'
-import { DropdownOption } from '@/utils'
 import {
   Dropdown,
   Avatar,
@@ -227,34 +234,22 @@ function getDropdownOptions(user) {
   let options = [
     {
       label: __('Admin'),
-      component: () =>
-        DropdownOption({
-          option: __('Admin'),
-          icon: 'shield',
-          selected: user.role === 'System Manager',
-        }),
+      icon: 'lucide-shield',
+      selected: user.role === 'System Manager',
       onClick: () => updateRole(user, 'System Manager'),
       condition: () => isAdmin(),
     },
     {
       label: __('Manager'),
-      component: () =>
-        DropdownOption({
-          option: __('Manager'),
-          icon: 'briefcase',
-          selected: user.role === 'Sales Manager',
-        }),
+      icon: 'lucide-briefcase',
+      selected: user.role === 'Sales Manager',
       onClick: () => updateRole(user, 'Sales Manager'),
       condition: () => isAdmin(),
     },
     {
       label: __('Sales User'),
-      component: () =>
-        DropdownOption({
-          option: __('Sales User'),
-          icon: 'user-check',
-          selected: user.role === 'Sales User',
-        }),
+      icon: 'lucide-user-check',
+      selected: user.role === 'Sales User',
       onClick: () => updateRole(user, 'Sales User'),
     },
   ]
@@ -298,7 +293,7 @@ function removeUser(user) {
 
 onMounted(() => {
   if (searchRef.value) {
-    searchRef.value.el.focus()
+    searchRef.value.focus()
   }
 })
 </script>

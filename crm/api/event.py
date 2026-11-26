@@ -14,10 +14,16 @@ to events that don't have custom notifications set. This ensures all events can 
 reminders even if users don't configure them individually.
 """
 
+import hashlib
+import re
 from datetime import datetime, timedelta
 
 import frappe
-from frappe.utils import add_to_date, now_datetime
+from frappe import _
+from frappe.query_builder.functions import Max
+from frappe.utils import add_to_date, cint, now_datetime
+
+from crm.fcrm.doctype.crm_dashboard.home_scope import Team
 
 
 def trigger_offset_event_notifications():
@@ -53,7 +59,7 @@ def _process_event_notifications_by_interval(interval):
 		return
 
 	current_time = now_datetime()
-	current_user = frappe.session.user
+	scan_until = _get_scan_horizon(interval, current_time)
 	all_events_data = frappe.db.sql(
 		"""
 		SELECT
@@ -68,23 +74,20 @@ def _process_event_notifications_by_interval(interval):
 			en.before as before_value,
 			en.time as time_of_day,
 			en.interval as notification_interval,
-			ep.email as participant_email,
 			ep_all.participant_emails_csv,
 			CASE WHEN en.parent IS NULL THEN 0 ELSE 1 END as has_custom_notifications
 		FROM `tabEvent` e
 		LEFT JOIN `tabEvent Notifications` en ON e.name = en.parent AND en.interval = %s
-		LEFT JOIN `tabEvent Participants` ep ON e.name = ep.parent AND ep.email = %s
 		LEFT JOIN (
 			SELECT parent, GROUP_CONCAT(email) AS participant_emails_csv
 			FROM `tabEvent Participants`
 			GROUP BY parent
 		) AS ep_all ON ep_all.parent = e.name
-		WHERE (e.starts_on >= %s OR (%s >= e.starts_on AND %s < e.ends_on))
-		AND (e.owner = %s OR ep.email = %s)
+		WHERE ((e.starts_on >= %s AND e.starts_on <= %s) OR (%s >= e.starts_on AND %s < e.ends_on))
 		AND e.status != 'Cancelled'
 		ORDER BY e.starts_on, e.name
 	""",
-		(interval, current_user, current_time, current_time, current_time, current_user, current_user),
+		(interval, current_time, scan_until, current_time, current_time),
 		as_dict=True,
 	)
 
@@ -95,6 +98,7 @@ def _process_event_notifications_by_interval(interval):
 	notifications = _process_unified_event_data(all_events_data, interval)
 
 	for notification in notifications:
+		frappe.db.savepoint("send_event_reminder")
 		try:
 			event_start = notification.get("starts_on")
 			event_end = notification.get("ends_on")
@@ -127,13 +131,36 @@ def _process_event_notifications_by_interval(interval):
 			if notification.get("notification_type") == "Email":
 				_send_email_notification(notification, event_start, before_value, interval)
 			elif notification.get("notification_type") == "Notification":
-				_send_system_notification(notification)
+				_send_system_notification(notification, interval)
 
 		except Exception as e:
+			# Drop the markers of a reminder that did not go out, so the next run retries it.
+			frappe.db.rollback(save_point="send_event_reminder")
 			frappe.log_error(
 				f"Error processing {interval} notification for event {notification.get('event_name', 'Unknown')}: {e!s}"
 			)
 			continue
+
+
+def _get_scan_horizon(interval, current_time):
+	"""
+	Latest event start whose reminder for this interval can fire now: the longest offset
+	(event and CRM Settings rows share one table), the trigger window, and a day for
+	all-day events, whose trigger is the start date at a time of day.
+	"""
+
+	notifications = frappe.qb.DocType("Event Notifications")
+	longest_offset = (
+		frappe.qb.from_(notifications)
+		.select(Max(notifications.before))
+		.where(notifications.interval == interval)
+		.run()[0][0]
+		or 0
+	)
+
+	horizon = add_to_date(current_time, **{interval: longest_offset})
+	horizon = add_to_date(horizon, **_get_trigger_window_duration(interval))
+	return add_to_date(horizon, days=1)
 
 
 def _process_unified_event_data(all_events_data, interval):
@@ -297,6 +324,65 @@ def _split_participant_emails(participant_emails_csv):
 	return [email.strip() for email in participant_emails_csv.split(",") if email and email.strip()]
 
 
+def _claim_new_recipients(notification, interval, recipients):
+	"""
+	Return the recipients that have not had this reminder yet, and record them as sent.
+
+	The marker is per event start, reminder row and recipient. It is written before the
+	send so that overlapping job runs cannot both send.
+	"""
+
+	new_recipients = []
+	for recipient in recipients:
+		key = _get_reminder_key(notification, interval, recipient)
+		frappe.db.savepoint("claim_event_reminder")
+		marker = frappe.new_doc("CRM Event Reminder Log")
+		marker.update(
+			{
+				"reminder_key": key,
+				"event": notification.get("event_name"),
+				"recipient": recipient,
+				"sent_on": now_datetime(),
+			}
+		)
+		marker.set_new_name()
+		marker.set_user_and_timestamp()
+		try:
+			# db_insert skips the realtime list update a normal insert publishes per marker.
+			marker.db_insert()
+		except frappe.DuplicateEntryError:
+			frappe.db.rollback(save_point="claim_event_reminder")
+			continue
+		new_recipients.append(recipient)
+
+	return new_recipients
+
+
+def _get_reminder_key(notification, interval, recipient):
+	parts = (
+		notification.get("event_name"),
+		notification.get("starts_on"),
+		notification.get("notification_type"),
+		interval,
+		notification.get("before_value"),
+		notification.get("time_of_day"),
+		recipient,
+	)
+	return hashlib.sha256("|".join(str(part) for part in parts).encode()).hexdigest()
+
+
+def purge_event_reminder_logs():
+	"""Delete the markers of events that are gone or ended more than a day ago."""
+
+	log = frappe.qb.DocType("CRM Event Reminder Log")
+	event = frappe.qb.DocType("Event")
+	cutoff = add_to_date(now_datetime(), days=-1)
+	live_events = (
+		frappe.qb.from_(event).select(event.name).where((event.ends_on > cutoff) | (event.starts_on > cutoff))
+	)
+	frappe.qb.from_(log).delete().where(log.event.notin(live_events)).run()
+
+
 def _send_email_notification(notification, event_start, before_value, interval):
 	"""Send email notification for an event"""
 
@@ -317,7 +403,11 @@ def _send_email_notification(notification, event_start, before_value, interval):
 				if email:
 					recipients.add(email)
 
-		recipients = [email for email in recipients if email]
+		# a booking page sends its guest reminders of its own
+		recipients -= _booking_guests(notification.event_name)
+		recipients = _claim_new_recipients(
+			notification, interval, sorted(email for email in recipients if email)
+		)
 
 		if not recipients:
 			return
@@ -347,7 +437,12 @@ def _send_email_notification(notification, event_start, before_value, interval):
 		)
 
 	except Exception as e:
+		frappe.db.rollback(save_point="send_event_reminder")
 		frappe.log_error(f"Failed to send email for event {notification.event_name}: {e!s}")
+
+
+def _booking_guests(event_name) -> set[str]:
+	return set(frappe.get_all("CRM Booking", filters={"event": event_name}, pluck="guest_email"))
 
 
 def _format_time_remaining(before_value, interval):
@@ -367,6 +462,212 @@ def _format_time_remaining(before_value, interval):
 	return f"{before_value} {interval_label}"
 
 
-def _send_system_notification(notification):
+def _send_system_notification(notification, interval):
 	"""Send system notification for an event"""
-	frappe.publish_realtime("event_notification", notification)
+	recipients = {notification.get("owner"), *notification.get("event_participants", [])}
+	for user in _claim_new_recipients(notification, interval, sorted(recipients - {None})):
+		frappe.publish_realtime("event_notification", notification, user=user)
+
+
+# Seeing events. Frappe shows a private Event only to its owner and participants, so a
+# meeting a host has on a lead (a booking, say) would be invisible on that lead to the
+# rest of the team. These endpoints stand in for frappe.client.get_list on the CRM's
+# event lists: anything the user may see as usual, plus events linked to a lead or deal
+# the user can read. Writes still go through Frappe's own Event permissions.
+
+EVENT_DOCTYPES = ("Event", "Event Participants", "Event Notifications")
+MAX_EVENT_ROWS = 2000
+
+
+@frappe.whitelist()
+def get_event_list(
+	doctype: str,
+	fields: list | str | None = None,
+	filters: dict | list | str | None = None,
+	or_filters: dict | list | str | None = None,
+	order_by: str | None = None,
+	limit: int | None = None,
+	limit_start: int = 0,
+	parent: str | None = None,
+	**kwargs,
+) -> list[dict]:
+	if doctype not in EVENT_DOCTYPES:
+		frappe.throw(_("Not an event list"), frappe.PermissionError)
+	frappe.has_permission("Event", "read", throw=True)
+	limit = min(cint(limit) or MAX_EVENT_ROWS, MAX_EVENT_ROWS)
+	fields = plain_fields(doctype, frappe.parse_json(fields) or ["*"])
+	table = frappe.qb.DocType(doctype)
+	event_of = table.name if doctype == "Event" else table.parent
+
+	# Visibility is part of the query, so the caller's filters, order and limit only
+	# ever see rows the user may read: no answer depends on a hidden row.
+	query = frappe.get_all(
+		doctype,
+		fields=fields,
+		filters=plain_filters(frappe.parse_json(filters)),
+		or_filters=plain_filters(frappe.parse_json(or_filters)),
+		order_by=plain_order_by(order_by) or "creation desc",
+		limit_start=cint(limit_start),
+		limit_page_length=limit,
+		run=False,
+	)
+	rows = query.where(event_of.isin(visible_events())).run(as_dict=True)
+	return add_booking_guests(rows) if doctype == "Event" else rows
+
+
+def visible_events():
+	"""Names of the events the user may see, as a subquery: by Frappe's own Event rules,
+	or by reading the lead or deal the event is linked to."""
+	Event = frappe.qb.DocType("Event")
+	visible = Event.name.isin(frappe.get_list("Event", fields=["name"], limit_page_length=0, run=False))
+	for doctype in ("CRM Lead", "CRM Deal"):
+		readable = frappe.get_list(doctype, fields=["name"], limit_page_length=0, run=False)
+		visible |= (Event.reference_doctype == doctype) & Event.reference_docname.isin(readable)
+	return frappe.qb.from_(Event).select(Event.name).where(visible)
+
+
+def plain_fields(doctype: str, fields: list) -> list[str]:
+	"""Only the doctype's own columns: no aliases, child-table or linked fields that
+	could read rows outside the visibility check."""
+	columns = set(frappe.get_meta(doctype).get_valid_columns())
+	for field in fields:
+		if field != "*" and field not in columns:
+			frappe.throw(_("Field not allowed: {0}").format(field), frappe.PermissionError)
+	return fields
+
+
+def plain_filters(filters):
+	"""Only plain fields of the event doctypes. Frappe also takes `link.field`, which
+	would read the linked record without checking the user may."""
+	if isinstance(filters, dict):
+		for field in filters:
+			plain_filter_field(field)
+	elif isinstance(filters, list | tuple):
+		if filters and isinstance(filters[0], str) and filters[0].lower() not in ("and", "or"):
+			# a condition: [field, ...] or, with 4 or more items, [doctype, field, ...]
+			if len(filters) >= 4:
+				if filters[0] not in EVENT_DOCTYPES:
+					frappe.throw(_("Filter not allowed: {0}").format(filters[0]), frappe.PermissionError)
+				plain_filter_field(filters[1])
+			else:
+				plain_filter_field(filters[0])
+		else:
+			for item in filters:
+				if not isinstance(item, str):
+					plain_filters(item)
+	return filters
+
+
+def plain_order_by(order_by: str | None) -> str | None:
+	"""Only plain fields, each with an optional direction, for the same reason."""
+	for term in (order_by or "").split(","):
+		if order_by and not re.fullmatch(r"\s*\w+(\s+(asc|desc))?\s*", term, re.IGNORECASE):
+			frappe.throw(_("Order not allowed: {0}").format(term.strip()), frappe.PermissionError)
+	return order_by
+
+
+def plain_filter_field(field):
+	if not re.fullmatch(r"\w+", str(field)):
+		frappe.throw(_("Filter not allowed: {0}").format(field), frappe.PermissionError)
+
+
+@frappe.whitelist()
+def get_calendar_people() -> list[str]:
+	"""Whose calendars the user can open: their sales team, or all of sales if not limited."""
+	user = frappe.session.user
+	return sorted(set(Team(user).members) | {user})
+
+
+@frappe.whitelist(methods=["POST"])
+def delete_event(name: str):
+	"""Frappe lets only System Managers delete an Event; in the CRM its owner may too."""
+	event = frappe.get_doc("Event", name)
+	if frappe.has_permission("Event", "delete", doc=event):
+		event.delete()
+		return
+	if event.owner != frappe.session.user:
+		frappe.throw(_("Only the event's owner can delete it"), frappe.PermissionError)
+	event.delete(ignore_permissions=True)  # its owner, checked above  # nosemgrep: frappe-ignore-permissions
+
+
+@frappe.whitelist()
+def get_event(name: str) -> dict:
+	"""An event to look at, under the same rule as get_event_list."""
+	Event = frappe.qb.DocType("Event")
+	if not visible_events().where(Event.name == name).run():
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+	return add_booking_guests([frappe.get_doc("Event", name).as_dict()])[0]
+
+
+def add_booking_guests(rows: list[dict]) -> list[dict]:
+	"""Mark booked meetings with the guest (moves and deletes email them) and their answers."""
+	names = [row.get("name") for row in rows if row.get("name")]
+	bookings = {
+		b.event: b
+		for b in frappe.get_all(
+			"CRM Booking",
+			filters={"event": ["in", names or [""]], "status": "Confirmed"},
+			fields=["event", "guest_email", "guest_name", "guest_phone", "answers"],
+		)
+	}
+	for row in rows:
+		booking = bookings.get(row.get("name"))
+		row["booking_guest"] = booking and booking.guest_email
+		# who booked and what they answered, shown on the meeting; it used to be its description
+		row["booking_details"] = booking and {
+			"name": booking.guest_name,
+			"email": booking.guest_email,
+			"phone": booking.guest_phone,
+			"answers": frappe.parse_json(booking.answers) or {},
+		}
+	return rows
+
+
+def connected_google_calendar(user: str) -> str | None:
+	"""The user's Google Calendar record, if it's enabled, pushes, and has been authorized."""
+	if not frappe.db.get_single_value("Google Settings", "enable"):
+		return None
+	name = frappe.db.get_value(
+		"Google Calendar", {"user": user, "enable": 1, "push_to_google_calendar": 1}, "name"
+	)
+	if name and frappe.get_doc("Google Calendar", name).get_password("refresh_token", raise_exception=False):
+		return name
+
+
+def hold_google_sync(doc, method=None):
+	"""Event before_validate: a CRM event asks for sync without picking a calendar, which
+	Frappe rejects. Pick the creator's after insert; on later saves, leave it unsynced."""
+	if doc.sync_with_google_calendar and not doc.google_calendar and not doc.pulled_from_google_calendar:
+		doc.sync_with_google_calendar = 0
+		doc.flags.push_to_google = True
+
+
+def push_to_google(doc, method=None):
+	"""Event after_insert: put the event on its creator's Google Calendar, if connected."""
+	if not doc.flags.push_to_google:
+		return
+	calendar = connected_google_calendar(doc.owner)
+	if not calendar:
+		return
+	calendar_id = frappe.db.get_value("Google Calendar", calendar, "google_calendar_id")
+	if not calendar_id:
+		# Frappe makes the calendar in Google on its first sync and commits mid-request,
+		# which would end the savepoint below; the next scheduled sync makes it
+		return
+
+	from frappe.integrations.doctype.google_calendar.google_calendar import insert_event_in_google_calendar
+
+	from crm.api.booking import without_messages
+
+	google = {"sync_with_google_calendar": 1, "google_calendar": calendar, "google_calendar_id": calendar_id}
+	frappe.db.savepoint("crm_event_google")
+	try:
+		doc.update(google)
+		with without_messages():
+			insert_event_in_google_calendar(doc)
+		doc.db_set(google, update_modified=False)
+	except Exception:
+		# a Google error shouldn't stop the event being created; it just won't sync
+		frappe.db.rollback(save_point="crm_event_google")
+		doc.update({"sync_with_google_calendar": 0, "google_calendar": None, "google_calendar_id": None})
+		frappe.log_error(title=f"CRM: Google Calendar sync failed for event {doc.name}")

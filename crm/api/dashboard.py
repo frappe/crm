@@ -2,12 +2,15 @@ import json
 
 import frappe
 from frappe import _
-from frappe.query_builder import Case, DocType
-from frappe.query_builder.functions import Avg, Coalesce, Count, Date, DateFormat, IfNull, Sum
+from frappe.query_builder import Case, DocType, Field
+from frappe.query_builder.functions import Avg, Coalesce, Count, Date, DateFormat, IfNull, Max, Sum
 from pypika.functions import Function
 
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.utils import sales_user_only
+
+# Lost and On Hold are exits from the pipeline, not steps in it.
+FUNNEL_STAGE_TYPES = ("Open", "Ongoing", "Won")
 
 
 # Custom function for TIMESTAMPDIFF (MySQL/MariaDB)
@@ -20,6 +23,115 @@ class TimestampDiff(Function):
 def reset_to_default():
 	frappe.only_for("System Manager", True)
 	create_default_manager_dashboard(force=True)
+
+
+SHIPPED_INSIGHTS_DASHBOARD = "crm"
+SHIPPED_INSIGHTS_DASHBOARD_ROW = {"dashboard": SHIPPED_INSIGHTS_DASHBOARD, "label": "CRM", "is_default": 1}
+PICKED_INSIGHTS_DASHBOARD_KEY = "crm_insights_dashboard"
+
+
+@frappe.whitelist()
+def customize_insights_dashboard(dashboard: str) -> dict:
+	"""Copy a shipped Insights dashboard into a site-owned workbook and show the copy in CRM."""
+	frappe.only_for("System Manager")
+	original = frappe.get_doc("Insights Dashboard v3", dashboard)
+	if not original.is_standard:
+		frappe.throw(_("Only a dashboard shipped with an app can be customized"))
+
+	names = copy_insights_workbook(original.workbook)
+	copy = share_like_original(original, names)
+
+	settings = frappe.get_single("FCRM Settings")
+	row = get_insights_dashboard_row(settings, dashboard)
+	row.customized_from = row.customized_from or dashboard
+	row.dashboard = copy.name
+	settings.save()
+	return {"dashboard": copy.name, "workbook": copy.workbook}
+
+
+@frappe.whitelist()
+def reset_insights_dashboard(dashboard: str) -> str:
+	"""Show the shipped dashboard again in place of its customized copy. The copy stays in Insights."""
+	frappe.only_for("System Manager")
+	settings = frappe.get_single("FCRM Settings")
+	row = get_insights_dashboard_row(settings, dashboard)
+	if not row.customized_from:
+		frappe.throw(_("This dashboard is not customized"))
+
+	row.dashboard, row.customized_from = row.customized_from, None
+	settings.save()
+	return row.dashboard
+
+
+@frappe.whitelist()
+def get_insights_dashboards() -> dict:
+	"""The CRM dashboards this user may open, and the one they last picked."""
+	rows = frappe.get_single("FCRM Settings").insights_dashboards
+	rows = [row.as_dict() for row in rows] or [SHIPPED_INSIGHTS_DASHBOARD_ROW]
+	fields = ("dashboard", "label", "is_default", "customized_from")
+	return {
+		"dashboards": [
+			{field: row.get(field) for field in fields}
+			for row in rows
+			if can_open_insights_dashboard(row["dashboard"])
+		],
+		"picked": frappe.defaults.get_user_default(PICKED_INSIGHTS_DASHBOARD_KEY),
+	}
+
+
+@frappe.whitelist()
+def pick_insights_dashboard(dashboard: str) -> None:
+	"""Remember the dashboard this user last opened, across devices."""
+	frappe.defaults.set_user_default(PICKED_INSIGHTS_DASHBOARD_KEY, dashboard)
+
+
+def can_open_insights_dashboard(dashboard: str) -> bool:
+	from insights.resolver import DASHBOARD, resolve_for_read
+
+	try:
+		resolve_for_read(DASHBOARD, dashboard)
+		return True
+	except frappe.DoesNotExistError:
+		return False
+
+
+def copy_insights_workbook(workbook: str) -> dict:
+	from insights.insights.doctype.insights_workbook.insights_workbook import import_workbook
+
+	doc = frappe.get_doc("Insights Workbook", workbook)
+	contents = doc.export()
+	contents["title"] = _("{0} (Customized)").format(doc.title)
+	return import_workbook(contents)["names"]
+
+
+def share_like_original(original, names: dict):
+	"""Readers of the shipped dashboard keep seeing the copy.
+
+	Charts run as the reader, like the shipped ones, so readers can drill down. Only when
+	Insights team permissions are on do they run as the owner, since readers lack table grants.
+	"""
+	copy = frappe.get_doc("Insights Dashboard v3", names[original.name])
+	copy.visibility = original.visibility
+	copy.set("visible_to_roles", [{"role": row.role} for row in original.visible_to_roles])
+	copy.save()
+
+	if not frappe.db.get_single_value("Insights Settings", "enable_permissions"):
+		return copy
+
+	for chart in frappe.get_all("Insights Chart v3", {"workbook": copy.workbook}, pluck="name"):
+		chart_doc = frappe.get_doc("Insights Chart v3", chart)
+		chart_doc.run_as_owner = 1
+		chart_doc.save()
+	return copy
+
+
+def get_insights_dashboard_row(settings, dashboard: str):
+	if not settings.insights_dashboards:
+		settings.append("insights_dashboards", dict(SHIPPED_INSIGHTS_DASHBOARD_ROW))
+	for row in settings.insights_dashboards:
+		if row.dashboard == dashboard:
+			return row
+	frappe.throw(_("Dashboard {0} is not added to CRM").format(dashboard))
 
 
 @frappe.whitelist()
@@ -46,7 +158,7 @@ def get_dashboard(from_date: str | None = None, to_date: str | None = None, user
 
 	if not dashboard:
 		layout = json.loads(create_default_manager_dashboard())
-		frappe.db.commit()
+		frappe.db.commit()  # persist the auto-created default dashboard  # nosemgrep
 	else:
 		layout = json.loads(frappe.db.get_value("CRM Dashboard", "Manager Dashboard", "layout") or "[]")
 
@@ -539,7 +651,6 @@ def get_average_deal_value(from_date: str | None = None, to_date: str | None = N
 		"value": current_month_avg,
 		"prefix": get_base_currency_symbol(),
 		"delta": delta,
-		"deltaSuffix": "%",
 	}
 
 
@@ -793,7 +904,7 @@ def get_forecasted_revenue(from_date: str | None = None, to_date: str | None = N
 
 	forecasted_value = (
 		Case()
-		.when(CRMDealStatus.type == "Lost", CRMDeal.expected_deal_value * IfNull(CRMDeal.exchange_rate, 1))
+		.when(CRMDealStatus.type == "Lost", 0)
 		.else_(
 			CRMDeal.expected_deal_value
 			* IfNull(CRMDeal.probability, 0)
@@ -852,54 +963,47 @@ def get_forecasted_revenue(from_date: str | None = None, to_date: str | None = N
 	}
 
 
-def get_funnel_conversion(from_date: str | None = None, to_date: str | None = None, user: str | None = None):
+def owned_by(owner_field, user: str | None = None, owners: list | None = None):
+	"""One user's records, or those of a list of owners; None when neither narrows them."""
+	if owners is not None:
+		return owner_field.isin(owners or [None])
+	if user:
+		return owner_field == user
+	return None
+
+
+def get_funnel_conversion(
+	from_date: str | None = None,
+	to_date: str | None = None,
+	user: str | None = None,
+	owners: list | None = None,
+):
 	"""
-	Get funnel conversion data for the dashboard.
+	Leads created in the period, then the deals created in it counted at each stage. `owners`
+	narrows to the records of a list of users, such as a manager's team on Home.
 	[
 		{ stage: 'Leads', count: 120 },
 		{ stage: 'Qualification', count: 100 },
-		{ stage: 'Negotiation', count: 80 },
-		{ stage: 'Ready to Close', count: 60 },
+		{ stage: 'Proposal/Quotation', count: 80 },
 		{ stage: 'Won', count: 30 },
-		...
 	]
 	"""
-	lead_conds = ""
-	deal_conds = ""
-
 	if not from_date or not to_date:
 		from_date = frappe.utils.get_first_day(from_date or frappe.utils.nowdate())
 		to_date = frappe.utils.get_last_day(to_date or frappe.utils.nowdate())
 
-	lead_filters = {"from": from_date, "to": to_date}
-	deal_filters = {"from": from_date, "to": to_date}
-
-	if user:
-		lead_conds += " AND lead_owner = %(user)s"
-		deal_conds += " AND deal_owner = %(user)s"
-		lead_filters["user"] = user
-		deal_filters["user"] = user
-
-	result = []
-
-	# Get total leads using Query Builder
 	CRMLead = DocType("CRM Lead")
-
 	query = (
 		frappe.qb.from_(CRMLead)
 		.select(Count("*").as_("count"))
 		.where(Date(CRMLead.creation).between(from_date, to_date))
 	)
+	owned = owned_by(CRMLead.lead_owner, user, owners)
+	if owned is not None:
+		query = query.where(owned)
 
-	if user:
-		query = query.where(CRMLead.lead_owner == user)
-
-	total_leads = query.run(as_dict=True)
-	total_leads_count = total_leads[0].count if total_leads else 0
-
-	result.append({"stage": "Leads", "count": total_leads_count})
-
-	result += get_deal_status_change_counts(from_date, to_date, deal_conds, deal_filters)
+	result = [{"stage": "Leads", "count": query.run()[0][0]}]
+	result += get_funnel_stage_counts(from_date, to_date, user, owners)
 
 	return {
 		"data": result or [],
@@ -1274,50 +1378,57 @@ def get_base_currency_symbol():
 	return frappe.db.get_value("Currency", base_currency, "symbol") or ""
 
 
-def get_deal_status_change_counts(
-	from_date: str | None = None,
-	to_date: str | None = None,
-	deal_conds: str = "",
-	filters: dict | None = None,
-):
-	"""
-	Get count of each status change (to) for each deal, excluding deals with current status type 'Lost'.
-	Order results by status position.
-	Returns:
-	[
-	  {"status": "Qualification", "count": 120},
-	  {"status": "Negotiation", "count": 85},
-	  ...
-	]
-	"""
-	# Using Frappe Query Builder with multiple JOINs and table aliases
-	CRMStatusChangeLog = DocType("CRM Status Change Log")
-	CRMDeal = DocType("CRM Deal")
-	CurrentStatus = DocType("CRM Deal Status").as_("s")
-	TargetStatus = DocType("CRM Deal Status").as_("st")
-
-	query = (
-		frappe.qb.from_(CRMStatusChangeLog)
-		.join(CRMDeal)
-		.on(CRMStatusChangeLog.parent == CRMDeal.name)
-		.join(CurrentStatus)
-		.on(CRMDeal.status == CurrentStatus.name)
-		.join(TargetStatus)
-		.on(CRMStatusChangeLog.to == TargetStatus.name)
-		.select(CRMStatusChangeLog.to.as_("stage"), Count("*").as_("count"))
-		.where(
-			(CRMStatusChangeLog.to.isnotnull())
-			& (CRMStatusChangeLog.to != "")
-			& (CurrentStatus.type != "Lost")
-			& (Date(CRMDeal.creation).between(from_date, to_date))
-		)
-		.groupby(CRMStatusChangeLog.to, TargetStatus.position)
-		.orderby(TargetStatus.position)
+def get_funnel_stage_counts(from_date, to_date, user: str | None = None, owners: list | None = None) -> list:
+	"""Count each deal at every stage up to the furthest it reached, so the funnel always narrows:
+	a deal that skipped a stage still passed it, and a lost deal still counts where it got to."""
+	reached = get_furthest_stages(from_date, to_date, user, owners)
+	stages = frappe.get_all(
+		"CRM Deal Status",
+		filters={"type": ["in", FUNNEL_STAGE_TYPES]},
+		fields=["name", "position"],
+		order_by="position asc",
 	)
+	return [
+		{"stage": stage.name, "count": sum(row.position >= stage.position for row in reached)}
+		for stage in stages
+	]
 
-	# Handle optional user filter if deal_conds contains user condition
-	if filters and filters.get("user"):
-		query = query.where(CRMDeal.deal_owner == filters["user"])
 
-	result = query.run(as_dict=True)
-	return result or []
+def get_furthest_stages(from_date, to_date, user: str | None = None, owners: list | None = None) -> list:
+	"""The furthest stage position each deal created in the period reached."""
+	deal = DocType("CRM Deal")
+	log = DocType("CRM Status Change Log")
+	status = DocType("CRM Deal Status")
+
+	in_period = Date(deal.creation).between(from_date, to_date)
+	owned = owned_by(deal.deal_owner, user, owners)
+	if owned is not None:
+		in_period &= owned
+
+	def logged(column):
+		return (
+			frappe.qb.from_(log)
+			.join(deal)
+			.on(log.parent == deal.name)
+			.select(log.parent.as_("deal"), log[column].as_("status"))
+			.where((log.parenttype == "CRM Deal") & in_period)
+		)
+
+	# A deal's first status is logged only as `from`, so both ends of each change count.
+	visits = (
+		frappe.qb.from_(deal)
+		.select(deal.name.as_("deal"), deal.status.as_("status"))
+		.where(in_period)
+		.union_all(logged("from"))
+		.union_all(logged("to"))
+	)
+	visit_deal, visit_status = Field("deal", table=visits), Field("status", table=visits)
+	return (
+		frappe.qb.from_(visits)
+		.join(status)
+		.on(status.name == visit_status)
+		.select(visit_deal, Max(status.position).as_("position"))
+		.where(status.type.isin(FUNNEL_STAGE_TYPES))
+		.groupby(visit_deal)
+		.run(as_dict=True)
+	)

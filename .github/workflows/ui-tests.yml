@@ -1,40 +1,37 @@
 name: UI Tests
 
-# E2E (Playwright) suite. Heavy gate: runs on the main-hotfix staging lane
-# before promoting to main, plus on demand. Develop stays on the fast lane.
+# E2E (Playwright) suite. Heavy gate: runs on the hotfix staging lanes
+# before promoting to their stable branch, plus on demand. Develop stays on the fast lane.
 on:
   push:
     branches:
       - main-hotfix
+      - version-15-hotfix
+      - version-16-hotfix
   pull_request:
     branches:
       - main-hotfix
+      - version-15-hotfix
+      - version-16-hotfix
   workflow_dispatch:
 
 concurrency:
-  group: ui-tests-crm-${{ github.event.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FRAPPE_BRANCH: develop
 
 jobs:
   ui-tests:
-    runs-on: ubuntu-latest
+    runs-on: frappe-arc
     timeout-minutes: 60
     name: Playwright E2E Tests
 
+    # Pilot's own MariaDB is a systemd user unit, and frappe-arc pods have no systemd.
     services:
-      redis-cache:
-        image: redis:alpine
-        ports:
-          - 13000:6379
-      redis-queue:
-        image: redis:alpine
-        ports:
-          - 11000:6379
       mariadb:
-        image: mariadb:10.6
+        image: mariadb:11.8
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
@@ -46,15 +43,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.14"
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           check-latest: true
+
+      - name: Install Yarn
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
 
       - name: Add to Hosts
         run: echo "127.0.0.1 crm.test" | sudo tee -a /etc/hosts
@@ -87,36 +88,70 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      - name: Install MariaDB Client
-        run: |
-          sudo apt update
-          sudo apt-get install mariadb-client
+      - name: Week number
+        id: week
+        run: echo "week=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
 
-      - name: Setup Bench
+      - name: Restore Pilot bench
+        id: bench-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ~/pilot/benches
+            ~/.local/share/uv/python
+          key: ${{ runner.os }}-pilot-bench-${{ env.FRAPPE_BRANCH }}-py${{ steps.setup-python.outputs.python-version }}-${{ steps.week.outputs.week }}-arc
+
+      - name: Setup Pilot bench
         run: |
-          pip install frappe-bench
-          bench init --skip-redis-config-generation --skip-assets --frappe-branch "$FRAPPE_BRANCH" --python "$(which python)" ~/frappe-bench
+          export PATH="$HOME/pilot/bin:$HOME/.local/bin:$PATH"
+          printf '%s\n' "$HOME/pilot/bin" "$HOME/.local/bin" >> "$GITHUB_PATH"
+          curl -fsSL "https://raw.githubusercontent.com/frappe/pilot/develop/install.sh" | sh -s -- --ci
+          if [ ! -d "$HOME/pilot/benches/frappe-bench" ]; then
+            pilot new frappe-bench --frappe-branch "$FRAPPE_BRANCH"
+            pilot -b frappe-bench set-bench-config admin_allow_site_to_pilot_communication false
+            pilot -b frappe-bench set-bench-config mariadb_existing true
+            pilot -b frappe-bench set-bench-config mariadb_host 127.0.0.1
+            pilot -b frappe-bench set-bench-config mariadb_port 3306
+            pilot -b frappe-bench set-bench-config mariadb_admin_user root
+            pilot -b frappe-bench set-bench-config mariadb_password root
+          fi
+          pilot -b frappe-bench init
+          # The external MariaDB service has no utf8mb4 defaults; Frappe needs them.
+          printf '[client]\nskip-ssl\n' > ~/.my.cnf
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+        env:
+          CI: "Yes"
+
+      - name: Save Pilot bench
+        if: steps.bench-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/pilot/benches
+            ~/.local/share/uv/python
+          key: ${{ steps.bench-cache.outputs.cache-primary-key }}
 
       - name: Install CRM
-        working-directory: /home/runner/frappe-bench
+        working-directory: /home/runner/pilot/benches/frappe-bench
         run: |
-          bench get-app crm $GITHUB_WORKSPACE
-          bench setup requirements --dev
-          bench new-site --db-root-password root --admin-password admin crm.test
-          bench --site crm.test install-app crm
-          bench build --app crm
+          uv pip install --python env/bin/python -e "apps/frappe[test]"
+          pilot get-app https://github.com/frappe/whatsapp
+          pilot get-app "$GITHUB_WORKSPACE" --branch "$GITHUB_SHA"
+          pilot -b frappe-bench start > "$RUNNER_TEMP/pilot.log" 2>&1 &
+          curl --fail --silent --show-error --retry 30 --retry-connrefused --retry-delay 1 \
+            http://127.0.0.1:7000/api/v1/health
+          pilot new-site crm.test --admin-password admin --apps frappe whatsapp crm
         env:
           CI: "Yes"
 
       - name: Configure Site for UI Tests
-        working-directory: /home/runner/frappe-bench
+        working-directory: /home/runner/pilot/benches/frappe-bench
         run: |
-          bench --site crm.test set-config allow_tests true
-          bench --site crm.test set-config host_name "http://crm.test:8000"
+          pilot frappe --site crm.test set-config allow_tests true
+          pilot frappe --site crm.test set-config host_name "http://crm.test:8000"
           # Dummy default-outgoing account so send-email queues without real SMTP.
-          bench --site crm.test console <<'PY'
+          pilot frappe --site crm.test console <<'PY'
           import frappe
           if not frappe.db.exists("Email Account", {"default_outgoing": 1}):
               frappe.get_doc({
@@ -132,12 +167,8 @@ jobs:
               frappe.db.commit()
           PY
 
-      - name: Start Frappe Server
-        working-directory: /home/runner/frappe-bench
+      - name: Wait for site
         run: |
-          sed -i 's/^watch:/# watch:/g' Procfile
-          sed -i 's/^schedule:/# schedule:/g' Procfile
-          bench start &> bench_start.log &
           echo "Waiting for Frappe server to start..."
           timeout 60 bash -c 'until curl -s http://crm.test:8000 > /dev/null; do sleep 2; done'
           echo "Frappe server is ready!"
@@ -170,12 +201,10 @@ jobs:
           path: test-results/
           retention-days: 7
 
-      - name: Show Bench Logs on Failure
+      - name: Show Pilot logs on failure
         if: failure()
-        working-directory: /home/runner/frappe-bench
         run: |
-          echo "=== Bench Start Log ==="
-          cat bench_start.log || true
+          cat "$RUNNER_TEMP/pilot.log" || true
           echo ""
           echo "=== Frappe Logs ==="
-          cat logs/*.log || true
+          cat ~/pilot/benches/frappe-bench/logs/*.log || true

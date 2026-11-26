@@ -5,14 +5,29 @@ import json
 import click
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+from frappe.permissions import add_permission, update_permission_property
 
 from crm.domain_enrichment.install import seed_default_rules_and_mappings
 from crm.fcrm.doctype.crm_dashboard.crm_dashboard import create_default_manager_dashboard
 from crm.fcrm.doctype.crm_products.crm_products import create_product_details_script
+from crm.permissions.data_import import CRM_IMPORT_DOCTYPES
 
 
 def before_install():
 	pass
+
+
+def after_app_install(app_name: str) -> None:
+	"""WhatsApp is optional. A site that adds it after CRM already ran the patches that
+	set it up, while it was missing, so they run again here."""
+	if app_name != "whatsapp":
+		return
+
+	from crm.api.whatsapp import add_roles
+	from crm.patches.v1_0.migrate_from_frappe_whatsapp import execute as migrate_from_frappe_whatsapp
+
+	add_roles()
+	migrate_from_frappe_whatsapp()
 
 
 def after_install(force=False):
@@ -29,12 +44,17 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_default_quick_filters()
 	add_standard_dropdown_items()
+	add_user_email_subject_fields()
+	add_default_availability_statuses()
+	add_availability_user_fields()
 	add_default_scripts()
 	create_default_manager_dashboard(force)
 	create_assignment_rule_custom_fields()
 	add_assignment_rule_property_setters()
+	add_data_import_permissions()
 	seed_default_rules_and_mappings()
-	frappe.db.commit()
+	add_assignment_index()
+	frappe.db.commit()  # persist seeded defaults, also run from restore_defaults  # nosemgrep
 
 
 def add_default_lead_statuses():
@@ -191,7 +211,7 @@ def add_default_fields_layout(force=False):
 		},
 		"CRM Task-Quick Entry": {
 			"doctype": "CRM Task",
-			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
+			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date","all_day"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
 		},
 	}
 
@@ -445,6 +465,7 @@ def add_default_lead_sources():
 		"Facebook",
 		"Website",
 		"Web Form",
+		"WhatsApp",
 	]
 
 	for source in lead_sources:
@@ -502,6 +523,7 @@ def add_default_quick_filters():
 		"CRM Organization": ["organization_name", "no_of_employees", "territory", "industry"],
 		"CRM Task": ["title", "priority", "assigned_to", "status", "due_date"],
 		"CRM Call Log": ["telephony_medium", "type", "status", "from", "to"],
+		"Data Import": ["name", "reference_doctype", "status"],
 	}
 
 	for quick_filter in quick_filters:
@@ -529,12 +551,94 @@ def add_standard_dropdown_items():
 	crm_settings.save()
 
 
+def add_user_email_subject_fields():
+	"""Each user's default subject for new emails from a lead or deal."""
+	meta = frappe.get_meta("User")
+
+	fields = [
+		{
+			"fieldname": "crm_lead_email_subject",
+			"fieldtype": "Data",
+			"label": "Lead Email Subject",
+			"insert_after": "email_signature",
+		},
+		{
+			"fieldname": "crm_deal_email_subject",
+			"fieldtype": "Data",
+			"label": "Deal Email Subject",
+			"insert_after": "crm_lead_email_subject",
+		},
+	]
+
+	fields = [field for field in fields if not meta.has_field(field["fieldname"])]
+	if not fields:
+		return
+
+	click.secho("* Installing Custom Fields in User")
+	create_custom_fields({"User": fields})
+	frappe.clear_cache(doctype="User")
+
+
+def add_default_availability_statuses():
+	statuses = [
+		{"availability_status": "Active", "category": "Active", "color": "green", "position": 1},
+		{"availability_status": "Away", "category": "Away", "color": "amber", "position": 2},
+		{"availability_status": "Unavailable", "category": "Unavailable", "color": "red", "position": 3},
+	]
+	for status in statuses:
+		if not frappe.db.exists("CRM Availability Status", status["availability_status"]):
+			frappe.get_doc({"doctype": "CRM Availability Status", **status}).insert(ignore_permissions=True)
+
+
+def add_availability_user_fields():
+	"""Each user's availability, used by assignment rules and shown next to their avatar."""
+	meta = frappe.get_meta("User")
+
+	fields = [
+		{
+			"fieldname": "crm_availability",
+			"fieldtype": "Link",
+			"options": "CRM Availability Status",
+			"label": "CRM Availability",
+			"insert_after": "crm_deal_email_subject",
+		},
+		{
+			"fieldname": "crm_availability_changed_on",
+			"fieldtype": "Datetime",
+			"label": "CRM Availability Changed On",
+			"read_only": 1,
+			"insert_after": "crm_availability",
+		},
+		{
+			"fieldname": "crm_availability_changed_by",
+			"fieldtype": "Link",
+			"options": "User",
+			"label": "CRM Availability Changed By",
+			"read_only": 1,
+			"insert_after": "crm_availability_changed_on",
+		},
+	]
+
+	fields = [field for field in fields if not meta.has_field(field["fieldname"])]
+	if not fields:
+		return
+
+	click.secho("* Installing Custom Fields in User")
+	create_custom_fields({"User": fields})
+	frappe.clear_cache(doctype="User")
+
+
 def add_default_scripts():
 	from crm.fcrm.doctype.fcrm_settings.fcrm_settings import create_forecasting_script
 
 	for doctype in ["CRM Lead", "CRM Deal"]:
 		create_product_details_script(doctype)
 	create_forecasting_script()
+
+
+def add_assignment_index():
+	# ToDo is a framework doctype, so its index for CRM's assignment lookups is added here
+	frappe.db.add_index("ToDo", ["reference_type", "status", "allocated_to", "reference_name"])
 
 
 def add_assignment_rule_property_setters():
@@ -612,3 +716,22 @@ def create_assignment_rule_custom_fields():
 		)
 
 		frappe.clear_cache(doctype="Assignment Rule")
+
+
+DATA_IMPORT_PERMS = {
+	"Sales Manager": ("write", "create", "delete"),
+	"Sales User": ("write", "create"),
+}
+
+
+def add_data_import_permissions():
+	for role, ptypes in DATA_IMPORT_PERMS.items():
+		if not frappe.db.exists("Custom DocPerm", {"parent": "Data Import", "role": role, "permlevel": 0}):
+			add_permission("Data Import", role, 0)
+			for ptype in ptypes:
+				update_permission_property("Data Import", role, 0, ptype, 1)
+
+		# CRM doctypes grant import in their JSON, but custom perms on a site override it
+		customized = [dt for dt in CRM_IMPORT_DOCTYPES if frappe.db.exists("Custom DocPerm", {"parent": dt})]
+		for doctype in ("Contact", *customized):
+			update_permission_property(doctype, role, 0, "import", 1)

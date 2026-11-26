@@ -1,6 +1,8 @@
 # Copyright (c) 2023, Frappe Technologies Pvt. Ltd. and Contributors
 # See license.txt
 
+from unittest.mock import patch
+
 import frappe
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 from frappe.desk.form.assign_to import add as assign_add
@@ -578,6 +580,19 @@ class TestCRMLead(IntegrationTestCase):
 		self.assertIn("Administrator", deal_assignees)
 		self.assertIn("crm.user1@example.com", deal_assignees)
 
+	def test_deal_owner_kept_on_conversion_with_co_assignees(self):
+		"""Transferring co-assignees must not take ownership of the converted deal."""
+		lead = create_lead(first_name="KeepOwner", lead_owner="crm.user1@example.com")
+		assign_add({"assign_to": ["crm.user2@example.com"], "doctype": "CRM Lead", "name": lead.name})
+		lead.reload()
+		self.assertEqual(lead.lead_owner, "crm.user2@example.com")
+
+		deal_name = lead.convert_to_deal()
+
+		self.assertEqual(frappe.db.get_value("CRM Deal", deal_name, "deal_owner"), "crm.user2@example.com")
+		deal = frappe.get_doc("CRM Deal", deal_name)
+		self.assertEqual(set(deal.get_assigned_users()), {"crm.user1@example.com", "crm.user2@example.com"})
+
 	def test_owner_cleared_on_unassign(self):
 		"""Unassigning the current owner clears lead_owner"""
 		lead = create_lead(first_name="Owner", lead_owner="crm.user1@example.com")
@@ -602,6 +617,55 @@ class TestCRMLead(IntegrationTestCase):
 					email=f"negative.{fieldname}@example.com",
 					**{fieldname: -100},
 				)
+
+	def test_unique_email_rejects_duplicates(self):
+		"""A Unique field set via Customize Form is enforced even when the DB index stays non-unique"""
+		email_field = frappe.get_meta("CRM Lead").get_field("email")
+		with patch.object(email_field, "unique", 1):
+			lead = create_lead(first_name="Unique", email="unique.lead@example.com")
+			with self.assertRaises(frappe.UniqueValidationError):
+				create_lead(first_name="Duplicate", email="unique.lead@example.com")
+			lead.save()
+
+	def test_status_change_log_records_lead_status_types(self):
+		"""Status change log rows store the CRM Lead Status type of each status"""
+		lead = create_lead(first_name="Status Log", status="New")
+		lead.status = "Contacted"
+		lead.save()
+		lead.reload()
+
+		new_type = frappe.db.get_value("CRM Lead Status", "New", "type")
+		contacted_type = frappe.db.get_value("CRM Lead Status", "Contacted", "type")
+		log = lead.status_change_log
+		self.assertEqual(len(log), 2)
+		self.assertEqual(log[0].get("from"), "New")
+		self.assertEqual(log[0].from_type, new_type)
+		self.assertEqual(log[0].to, "Contacted")
+		self.assertEqual(log[0].to_type, contacted_type)
+		self.assertEqual(log[1].get("from"), "Contacted")
+		self.assertEqual(log[1].from_type, contacted_type)
+
+	def test_status_change_log_ignores_deal_status_with_same_name(self):
+		"""A CRM Deal Status with the same name as a lead status must not set the type in the lead's log"""
+		frappe.get_doc(
+			{"doctype": "CRM Deal Status", "deal_status": "_Test Shared Status", "type": "Won"}
+		).insert()
+		frappe.get_doc(
+			{"doctype": "CRM Lead Status", "lead_status": "_Test Shared Status", "type": "Ongoing"}
+		).insert()
+		frappe.get_doc(
+			{"doctype": "CRM Lead Status", "lead_status": "_Test Lead Only Status", "type": "On Hold"}
+		).insert()
+
+		lead = create_lead(first_name="Shared Status", status="_Test Shared Status")
+		lead.status = "_Test Lead Only Status"
+		lead.save()
+		lead.reload()
+
+		log = lead.status_change_log
+		self.assertEqual(log[0].from_type, "Ongoing")
+		self.assertEqual(log[0].to_type, "On Hold")
+		self.assertEqual(log[1].from_type, "On Hold")
 
 
 def create_lead(**kwargs):

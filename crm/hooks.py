@@ -1,3 +1,5 @@
+import frappe
+
 app_name = "crm"
 app_title = "Frappe CRM"
 app_publisher = "Frappe Technologies Pvt. Ltd."
@@ -11,7 +13,6 @@ app_icon_route = "/crm"
 # Apps
 # ------------------
 
-# required_apps = []
 add_to_apps_screen = [
 	{
 		"name": "crm",
@@ -74,6 +75,7 @@ doctype_js = {
 website_route_rules = [
 	{"from_route": "/crm/<path:app_path>", "to_route": "crm"},
 	{"from_route": "/crm-form/<route>", "to_route": "crm_form"},
+	{"from_route": "/crm-book/<route>", "to_route": "crm_book"},
 ]
 
 # Generators
@@ -94,14 +96,17 @@ website_route_rules = [
 # Setup wizard
 # setup_wizard_requires = "assets/crm/js/setup_wizard.js"
 # setup_wizard_stages = "crm.setup.setup_wizard.setup_wizard.get_setup_stages"
-setup_wizard_complete = "crm.demo.api.create_demo_data"
 # setup_wizard_test = "crm.setup.setup_wizard.test_setup_wizard.run_setup_wizard_test"
 
 # Installation
 # ------------
 
 before_install = "crm.install.before_install"
-after_install = "crm.install.after_install"
+after_install = [
+	"crm.install.after_install",
+	"crm.api.connector.ensure_gateway_client",
+	"frappe.search.sqlite_search.build_index_in_background",
+]
 
 # Uninstallation
 # ------------
@@ -115,7 +120,7 @@ before_uninstall = "crm.uninstall.before_uninstall"
 # Name of the app being installed is passed as an argument
 
 # before_app_install = "crm.utils.before_app_install"
-# after_app_install = "crm.utils.after_app_install"
+after_app_install = "crm.install.after_app_install"
 
 # Integration Cleanup
 # -------------------
@@ -138,13 +143,22 @@ before_uninstall = "crm.uninstall.before_uninstall"
 permission_query_conditions = {
 	"CRM Lead": "crm.permissions.org_hierarchy.get_lead_permission_query_conditions",
 	"CRM Deal": "crm.permissions.org_hierarchy.get_deal_permission_query_conditions",
+	"CRM Call Log": "crm.permissions.org_hierarchy.get_call_log_permission_query_conditions",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.get_permission_query_conditions",
+	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
+	"Data Import": "crm.permissions.data_import.get_permission_query_conditions",
+	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.get_permission_query_conditions",
 }
 
 has_permission = {
 	"CRM Lead": "crm.permissions.org_hierarchy.has_lead_permission",
 	"CRM Deal": "crm.permissions.org_hierarchy.has_deal_permission",
+	"CRM Call Log": "crm.permissions.org_hierarchy.has_call_log_permission",
 	"CRM Notification": "crm.fcrm.doctype.crm_notification.crm_notification.has_permission",
+	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.has_permission",
+	"Data Import": "crm.permissions.data_import.has_permission",
+	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.has_permission",
+	"CRM Booking Page": "crm.fcrm.doctype.crm_booking_page.crm_booking_page.has_permission",
 }
 
 # Automation Engine
@@ -233,11 +247,27 @@ override_doctype_class = {
 	"Email Template": "crm.overrides.email_template.CustomEmailTemplate",
 }
 
+# Mixins stack with other apps' overrides, e.g. Helpdesk's Assignment Rule
+extend_doctype_class = {
+	"Data Import": ["crm.overrides.data_import.DataImportListView"],
+	"Assignment Rule": ["crm.overrides.assignment_rule.CRMAssignmentRule"],
+}
+
+# Frappe v15, still supported on main-hotfix, has no extend_doctype_class
+if int(frappe.__version__.split(".")[0]) < 16:
+	override_doctype_class["Data Import"] = "crm.overrides.data_import.DataImportV15"
+
 # Document Events
 # ---------------
 # Hook on document methods and events
 
 doc_events = {
+	"Event": {
+		"before_validate": ["crm.api.event.hold_google_sync"],
+		"after_insert": ["crm.api.event.push_to_google"],
+		"on_update": ["crm.api.booking.sync_booking_from_event"],
+		"on_trash": ["crm.api.booking.sync_booking_from_event"],
+	},
 	"Contact": {
 		"validate": ["crm.api.contact.validate"],
 	},
@@ -255,17 +285,22 @@ doc_events = {
 			"crm.automation.events.on_communication",
 		],
 		"on_update": ["crm.utils.on_communication_update"],
+		"on_change": ["crm.api.email.stamp_send_time"],
 	},
 	"Comment": {
 		"after_insert": ["crm.utils.on_comment_insert"],
 		"on_update": ["crm.api.comment.on_update"],
 	},
-	"WhatsApp Message": {
+	"WA Account": {
+		"validate": ["crm.api.whatsapp.validate_account"],
+	},
+	"WA Message": {
 		"validate": ["crm.api.whatsapp.validate"],
-		"on_update": [
-			"crm.api.whatsapp.on_update",
-			"crm.automation.events.on_whatsapp_message",
+		"on_submit": [
+			"crm.api.whatsapp.update_reference_modified",
+			"crm.api.whatsapp.record_interaction",
 		],
+		"on_update": ["crm.automation.events.on_whatsapp_message"],
 	},
 	"CRM Deal": {
 		"on_update": [
@@ -279,6 +314,17 @@ doc_events = {
 	"Sales Order": {
 		"before_validate": [
 			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.create_customer_on_sales_order"
+		],
+	},
+	"Quotation": {
+		"after_insert": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+		"on_update": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
+		],
+		"on_trash": [
+			"crm.fcrm.doctype.erpnext_crm_settings.erpnext_crm_settings.notify_deal_quotation_change"
 		],
 	},
 	"Item": {
@@ -302,21 +348,37 @@ doc_events = {
 	},
 	"User": {
 		"before_validate": ["crm.api.live_demo.validate_user"],
+		"validate": ["crm.api.availability.validate_user"],
+		"on_update": ["crm.api.availability.on_user_update"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
 	},
 }
+
+# The whatsapp app has no role model of its own; this gates its whitelisted
+# endpoints on CRM's sales roles.
+whatsapp_access_guard = ["crm.api.whatsapp.validate_access"]
+
+# CRM creates these from new senders itself; their WA Account append action rows are the
+# switch set from CRM's WhatsApp account settings.
+whatsapp_managed_doctypes = ["CRM Lead", "CRM Deal"]
 
 # Scheduled Tasks
 # ---------------
 
 scheduler_events = {
-	"all": ["crm.api.event.trigger_offset_event_notifications"],
+	"all": [
+		"crm.api.event.trigger_offset_event_notifications",
+		"crm.api.booking.send_guest_reminders",
+		"crm.api.booking.cancel_bookings_closed_elsewhere",
+	],
 	"hourly": [
 		"crm.api.event.trigger_hourly_event_notifications",
 		"crm.automation.events.emit_overdue_tasks",
+		"crm.api.digest.send_morning_digests",
 	],
 	"daily": [
 		"crm.api.event.trigger_daily_event_notifications",
+		"crm.api.event.purge_event_reminder_logs",
 		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
 		"crm.telemetry.capture_feature_state",
@@ -326,7 +388,10 @@ scheduler_events = {
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
 	"cron": {
-		"*/5 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes"],
+		"*/5 * * * *": [
+			"crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes",
+			"crm.fcrm.doctype.crm_task.reminders.send_follow_up_reminders",
+		],
 		"*/10 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_10_minutes"],
 		"*/15 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_15_minutes"],
 	},
@@ -401,13 +466,19 @@ ignore_links_on_delete = ["Failed Lead Sync Log"]
 # "crm.auth.validate"
 # ]
 
+setup_wizard_auto_complete = True
+
 after_migrate = [
 	"crm.fcrm.doctype.fcrm_settings.fcrm_settings.after_migrate",
+	"crm.api.connector.ensure_gateway_client",
 	"crm.api.whatsapp.add_roles",
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
 	"crm.install.add_default_scripts",
 	"crm.install.add_web_form_custom_fields",
+	"crm.install.add_assignment_index",
 ]
+
+sqlite_search = ["crm.search_sqlite.CRMSearch"]
 
 standard_dropdown_items = [
 	{
@@ -433,25 +504,36 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
+		"name1": "help",
+		"label": "Help",
+		"type": "Route",
+		"icon": "circle-question-mark",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "documentation",
+		"label": "Documentation",
+		"type": "Route",
+		"icon": "book-open",
+		"route": "https://docs.frappe.io/crm",
+		"open_in_new_window": 1,
+		"parent_submenu": "help",
+		"is_standard": 1,
+	},
+	{
 		"name1": "about",
 		"label": "About",
 		"type": "Route",
 		"icon": "info",
 		"route": "#",
+		"parent_submenu": "help",
 		"is_standard": 1,
 	},
 	{
 		"name1": "separator",
 		"label": "",
 		"type": "Separator",
-		"is_standard": 1,
-	},
-	{
-		"name1": "logout",
-		"label": "Log out",
-		"type": "Route",
-		"icon": "log-out",
-		"route": "#",
 		"is_standard": 1,
 	},
 ]

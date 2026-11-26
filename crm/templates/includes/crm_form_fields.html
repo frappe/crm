@@ -1,0 +1,54 @@
+{#- The fields of a CRM web form, laid out in sections and columns. Shared by the
+public web form (www/crm_form.html) and booking pages (www/crm_book.html); the
+context needs `layout` and `link_options` from crm.www.crm_form.form_fields_context. -#}
+          {% for section in layout %}
+          <div class="section">
+            {% if section.label %}<div class="section-title">{{ section.label|e }}</div>{% endif %}
+            <div class="cols" style="grid-template-columns: repeat({{ section.columns|length }}, minmax(0, 1fr))">
+              {% for col in section.columns %}
+              <div class="col">
+                {% for f in col %}
+                <div class="field">
+                  {% if f.fieldtype == "Check" %}
+                  <div class="check">
+                    <input type="checkbox" id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" />
+                    <label for="{{ f.fieldname|e }}">{{ f.label|e }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
+                  </div>
+                  {% else %}
+                  <label for="{{ f.fieldname|e }}">{{ f.label|e }}{% if f.reqd or f.mandatory_depends_on %}<span class="req"{% if not f.reqd %} style="display: none"{% endif %}>*</span>{% endif %}</label>
+                  {% if f.fieldtype in ("Small Text", "Text", "Long Text", "Text Editor", "HTML Editor", "Markdown Editor") %}
+                  <textarea id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" placeholder="{{ f.placeholder|e }}" {% if f.reqd %}required{% endif %}></textarea>
+                  {% elif f.fieldtype == "Select" %}
+                  <select id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" {% if f.reqd %}required{% endif %}>
+                    <option value="">Select…</option>
+                    {% for opt in f.options.split("\n") %}{% if opt %}<option value="{{ opt|e }}">{{ opt|e }}</option>{% endif %}{% endfor %}
+                  </select>
+                  {% elif f.fieldtype == "Link" %}
+                  <select id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" {% if f.reqd %}required{% endif %}>
+                    <option value="">{{ (f.placeholder or "Select…")|e }}</option>
+                    {% for opt in link_options.get(f.fieldname, []) %}<option value="{{ opt.value|e }}">{{ opt.label|e }}</option>{% endfor %}
+                  </select>
+                  {% elif f.fieldtype in ("Int", "Float", "Currency", "Percent") %}
+                  <input type="number" id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" placeholder="{{ f.placeholder|e }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Date" %}
+                  <input type="date" id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Datetime" %}
+                  <input type="datetime-local" id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Time" %}
+                  <input type="time" id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" {% if f.reqd %}required{% endif %} />
+                  {% elif f.fieldtype == "Color" %}
+                  <input type="color" id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" {% if f.reqd %}required{% endif %} />
+                  {% else %}
+                  <input
+                    type="{% if f.options == 'Email' %}email{% elif f.options == 'Phone' or f.fieldtype == 'Phone' %}tel{% else %}text{% endif %}"
+                    id="{{ f.fieldname|e }}" name="{{ f.fieldname|e }}" placeholder="{{ f.placeholder|e }}" {% if f.reqd %}required{% endif %} />
+                  {% endif %}
+                  {% endif %}
+                  {% if f.description %}<div class="desc">{{ f.description|e }}</div>{% endif %}
+                </div>
+                {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}

@@ -5,16 +5,26 @@ from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
 
 def validate(doc, method):
-	"""Require write access when directly assigning a CRM lead or deal."""
-	# assign_to and assignment rules insert with ignore_permissions after their
-	# own permission check.
+	"""Require write access when a ToDo starts to assign a CRM lead or deal."""
+	# assign_to and assignment rules save with ignore_permissions after their own permission check.
 	if (
-		doc.is_new()
-		and doc.reference_type in ["CRM Lead", "CRM Deal"]
+		doc.reference_type in ["CRM Lead", "CRM Deal"]
 		and doc.reference_name
 		and not doc.flags.ignore_permissions
+		and (doc.is_new() or assignment_changed(doc))
 	):
 		frappe.get_doc(doc.reference_type, doc.reference_name).check_permission("write")
+
+
+def assignment_changed(doc):
+	"""An open ToDo gives its assignee access to the record, so each of these edits assigns anew."""
+	before = doc.get_doc_before_save()
+	if not before:
+		return True
+	return any(
+		(before.get(field) or None) != (doc.get(field) or None)
+		for field in ["reference_type", "reference_name", "allocated_to"]
+	) or (before.status == "Cancelled" and doc.status != "Cancelled")
 
 
 def after_insert(doc, method):
@@ -52,6 +62,9 @@ def clear_owner_on_unassign(doc):
 
 
 def notify_assigned_user(doc, is_cancelled=False):
+	# a booking assigns its lead or deal as Guest; it sends the host its own notification
+	if frappe.flags.in_crm_booking:
+		return
 	_doc = frappe.get_doc(doc.reference_type, doc.reference_name)
 	owner = frappe.get_cached_value("User", frappe.session.user, "full_name")
 	notification_text = get_notification_text(owner, doc, _doc, is_cancelled)

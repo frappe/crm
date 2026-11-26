@@ -40,7 +40,12 @@
       </div>
     </div>
 
-    <Tabs v-model="tabIndex" as="div" :tabs="tabs" class="mt-2">
+    <Tabs
+      v-model="activeTab"
+      as="div"
+      :tabs="tabs"
+      class="mt-2 flex-1 overflow-hidden [&>[data-slot=tab-panel]]:flex [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
+    >
       <template #tab-panel="{ tab }">
         <div
           v-if="tab.label == 'Details'"
@@ -194,22 +199,24 @@ const emit = defineEmits(['updateStep'])
 const tabs = computed(() => {
   const tabList = [
     {
+      value: 'details',
       label: __('Details'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
     },
   ]
 
   if (!isLocal.value) {
     tabList.push({
+      value: 'failure_logs',
       label: __('Failure Logs'),
-      icon: RefreshIcon,
+      iconLeft: RefreshIcon,
     })
   }
 
   return tabList
 })
 
-const tabIndex = ref(0)
+const activeTab = ref('details')
 
 const docResource = ref(null)
 const mappingFormDocResource = ref(null)

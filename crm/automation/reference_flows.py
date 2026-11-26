@@ -1,7 +1,7 @@
 # Copyright (c) 2026, Frappe Technologies Pvt. Ltd. and contributors
 # For license information, please see license.txt
 
-"""Nine reference Automation Flows, installable on any CRM site.
+"""Ten reference Automation Flows, installable on any CRM site.
 
 	bench --site <site> execute crm.automation.reference_flows.install
 	bench --site <site> execute crm.automation.reference_flows.install --kwargs "{'enable': 1}"
@@ -62,6 +62,7 @@ def builders() -> tuple:
 		profile_scoring,
 		assign_on_outreach,
 		lead_routing,
+		qualified_routing,
 		engagement_scoring,
 		qualified_conversion,
 		stalled_deal,
@@ -239,8 +240,9 @@ def _total_at_least(threshold) -> str:
 # ---------------------------------------------------------------------------
 # 4. Ownership follows the lead: whoever should be on it next gets assigned.
 #
-# A flow has one trigger, so routing is two flows: one on the outreach itself, one on the
-# lead changing. Neither waits, so both land the moment you act in the UI.
+# A flow has one trigger, so routing is three flows: one on the outreach itself, one on the
+# lead changing, one on it reaching Qualified. None waits, so each lands the moment you act
+# in the UI.
 # ---------------------------------------------------------------------------
 OUTREACH_OWNER = "crm.rep1@example.com"
 HOT_LEAD_OWNER = "crm.supervisor@example.com"
@@ -276,7 +278,6 @@ def assign_on_outreach() -> dict:
 
 
 def lead_routing() -> dict:
-	"""Two independent checks on every lead update, so one save can fire both."""
 	return {
 		**flow("Route the lead as it changes", "CRM Lead", "Doc Updated"),
 		"actions": [
@@ -289,16 +290,18 @@ def lead_routing() -> dict:
 				parent=1,
 				branch="If",
 			),
-			step(3, "is_qualified", "If", condition='doc.status == "Qualified"'),
-			assign_step(4, "assign_qualified", QUALIFIED_OWNER, "Lead is qualified", parent=3, branch="If"),
-			email_step(
-				5,
-				"qualified_email",
-				"CRM Lead Follow Up",
-				sender=QUALIFIED_OWNER,
-				parent=3,
-				branch="If",
-			),
+		],
+	}
+
+
+def qualified_routing() -> dict:
+	return {
+		**flow("Route the lead once qualified", "CRM Lead", "Field Value Changed"),
+		"trigger_field": "status",
+		"to_value": "Qualified",
+		"actions": [
+			assign_step(1, "assign_qualified", QUALIFIED_OWNER, "Lead is qualified"),
+			email_step(2, "qualified_email", "CRM Lead Follow Up", sender=QUALIFIED_OWNER),
 		],
 	}
 

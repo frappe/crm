@@ -22,6 +22,7 @@ bench set-redis-socketio-host redis://redis:6379
 sed -i '/redis/d' ./Procfile
 sed -i '/watch/d' ./Procfile
 
+bench get-app whatsapp
 bench get-app crm --branch main
 
 bench new-site crm.localhost \

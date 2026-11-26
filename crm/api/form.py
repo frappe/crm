@@ -231,12 +231,33 @@ def _seed_hidden_fields(document_type: str) -> list[dict]:
 	return hidden
 
 
-def _check_manager():
+def _check_manager(form_name: str | None = None, booking_editors: bool = False):
 	"""CRM forms are managed by CRM managers, not Website Managers. Gate here and
-	then write the Web Form with ignore_permissions (the role mismatch, in code)."""
+	then write the Web Form with ignore_permissions (the role mismatch, in code).
+
+	A booking page's own form can also be edited by whoever can edit that page
+	(`form_name`), and the builder's lookups are open to them (`booking_editors`)."""
 	roles = set(frappe.get_roles())
-	if not roles & {"System Manager", "Sales Manager"}:
-		frappe.throw(_("Not permitted"), frappe.PermissionError)
+	if roles & {"System Manager", "Sales Manager"}:
+		return
+	if form_name:
+		from crm.fcrm.doctype.crm_booking_page.crm_booking_page import is_own_form
+
+		page = frappe.db.get_value("CRM Booking Page", {"web_form": form_name})
+		if (
+			page
+			and is_own_form(form_name, page)
+			and frappe.has_permission("CRM Booking Page", "write", doc=page)
+		):
+			return
+	elif booking_editors and frappe.has_permission("CRM Booking Page", "write"):
+		return
+	frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+
+def booking_page_forms() -> list[str]:
+	"""Forms owned by booking pages, which are edited there rather than in Forms."""
+	return frappe.get_all("CRM Booking Page", filters={"web_form": ["is", "set"]}, pluck="web_form")
 
 
 @frappe.whitelist()
@@ -261,7 +282,7 @@ def link_field_guest_access(doctype: str) -> dict:
 	"""Whether guests can already select `doctype`. Drives the builder's Link-field
 	notice: if False, the author is warned that the public dropdown will be empty and
 	is offered a one-click grant (grant_guest_link_access)."""
-	_check_manager()
+	_check_manager(booking_editors=True)
 	return {"doctype": doctype, "guest_can_select": guest_can_select(doctype)}
 
 
@@ -329,7 +350,11 @@ def list_forms() -> list[dict]:
 	_check_manager()
 	return frappe.get_all(
 		"Web Form",
-		filters={"module": FORM_MODULE, "doc_type": ["in", ALLOWED_DOCTYPES]},
+		filters={
+			"module": FORM_MODULE,
+			"doc_type": ["in", ALLOWED_DOCTYPES],
+			"name": ["not in", booking_page_forms() or [""]],
+		},
 		fields=[
 			"name",
 			"title",
@@ -345,7 +370,7 @@ def list_forms() -> list[dict]:
 @frappe.whitelist()
 def get_form_config(name: str) -> dict:
 	"""Full config for the builder, read from the native Web Form record."""
-	_check_manager()
+	_check_manager(name)
 	doc = _get_crm_form(name)
 	return {
 		"name": doc.name,
@@ -432,7 +457,43 @@ def _validated_hidden_fields(document_type: str, hidden: list[dict]) -> list[dic
 @frappe.whitelist()
 def save_form(name: str | None, form: dict | str) -> dict:
 	"""Create/update a native Web Form scoped to CRM doctypes."""
-	_check_manager()
+	_check_manager(name)
+	if isinstance(form, str):
+		form = json.loads(form or "{}")
+	if name and frappe.db.exists("CRM Booking Page", {"web_form": name}):
+		if not set(frappe.get_roles()) & {"System Manager", "Sales Manager"}:
+			form = _booking_form_edit(name, form)
+		_always_ask_email(form)
+	return _save_form(name, form)
+
+
+def _booking_form_edit(name: str, form: dict) -> dict:
+	"""A booking page's host edits only the questions on its form. Publishing, the
+	route, the redirect and the target doctype stay as the page set them."""
+	saved = _get_crm_form(name)
+	return {
+		**form,
+		"published": saved.crm_published,
+		"route": saved.route,
+		"document_type": saved.doc_type,
+		"redirect_url": saved.success_url,
+		"allowed_embedding_domains": saved.allowed_embedding_domains,
+	}
+
+
+def _always_ask_email(form: dict):
+	"""Every booking needs the guest's email, so a booking form always asks for it:
+	required, and never hidden or locked by a condition."""
+	fields = form.get("fields")
+	if fields is None:
+		return
+	email = next((f for f in fields if f.get("fieldname") == "email"), None)
+	if not email:
+		frappe.throw(_("A booking form must ask for an email"))
+	email.update({"reqd": 1, "depends_on": "", "mandatory_depends_on": "", "read_only_depends_on": ""})
+
+
+def _save_form(name: str | None, form: dict | str) -> dict:
 	if isinstance(form, str):
 		form = json.loads(form or "{}")
 
@@ -575,6 +636,7 @@ def enrich_form_submission(doc):
 	if doc.doctype not in ALLOWED_DOCTYPES:
 		return
 
+	_check_form_answers(doc)
 	_apply_hidden_defaults(doc)
 
 	# stamp the source so form records are identifiable/filterable
@@ -605,6 +667,35 @@ def enrich_form_submission(doc):
 		contact = create_contact(doc)
 		if contact:
 			doc.append("contacts", {"contact": contact, "is_primary": 1})
+
+
+def _check_form_answers(doc):
+	"""Enforce the form's required fields, including "required if" ones, as the page
+	shows them. The framework's accept() only checks what the doctype itself makes
+	mandatory, so a direct API call could otherwise skip the form's own rules."""
+	from crm.utils.form_conditions import check_form_values
+
+	web_form = frappe.form_dict.get("web_form")
+	doc_type = web_form and frappe.db.get_value("Web Form", web_form, "doc_type")
+	# the posted form name is client-controlled; only a form for this doctype counts
+	if doc_type != doc.doctype:
+		return
+	fields = frappe.get_all(
+		"Web Form Field",
+		filters={"parent": web_form, "parenttype": "Web Form"},
+		fields=[
+			"fieldname",
+			"fieldtype",
+			"label",
+			"reqd",
+			"depends_on",
+			"mandatory_depends_on",
+			"read_only_depends_on",
+		],
+		order_by="idx",
+	)
+	fields = [f for f in fields if f.fieldname and doc.meta.has_field(f.fieldname)]
+	check_form_values(fields, {f.fieldname: doc.get(f.fieldname) for f in fields})
 
 
 def _apply_hidden_defaults(doc):

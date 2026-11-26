@@ -11,7 +11,6 @@ import App from './App.vue'
 import {
   FrappeUI,
   Button,
-  Input,
   TextInput,
   FormControl,
   ErrorMessage,
@@ -20,24 +19,21 @@ import {
   Badge,
   setConfig,
   frappeRequest,
-  FeatherIcon,
 } from 'frappe-ui'
 
-import { telemetryPlugin } from 'frappe-ui/frappe'
+import { telemetryPlugin } from '@framework/ui/telemetry'
 // injects the lucide SVG sprite into the DOM so the IconPicker and lucide Icons
 // (used for view icons) can render from it
-import { spritePlugin } from 'frappe-ui/icons'
+import { spritePlugin } from 'frappe-ui/experimental'
 
 let globalComponents = {
   Button,
   TextInput,
-  Input,
   FormControl,
   ErrorMessage,
   Dialog,
   Alert,
   Badge,
-  FeatherIcon,
 }
 
 // create a pinia instance
@@ -49,7 +45,6 @@ setConfig('resourceFetcher', frappeRequest)
 app.use(FrappeUI)
 app.use(spritePlugin)
 app.use(pinia)
-app.use(router)
 app.use(translationPlugin)
 for (let key in globalComponents) {
   app.component(key, globalComponents[key])
@@ -67,12 +62,15 @@ if (import.meta.env.DEV) {
       }
       socket = initSocket()
       app.config.globalProperties.$socket = socket
+      // after the boot, so the first navigation sees it
+      app.use(router)
       app.mount('#app')
     },
   )
 } else {
   socket = initSocket()
   app.config.globalProperties.$socket = socket
+  app.use(router)
   app.mount('#app')
 }
 

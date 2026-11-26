@@ -58,7 +58,7 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 				allowed_fields.extend(column.get("fields"))
 
 	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldname in allowed_fields]
+	fields = {field.fieldname: field for field in fields if field.fieldname in allowed_fields}
 
 	required_fields = []
 
@@ -72,23 +72,26 @@ def get_fields_layout(doctype: str, type: str, parent_doctype: str | None = None
 			if section.get("columns"):
 				section["columns"] = [column for column in section.get("columns") if column]
 			for column in section.get("columns") if section.get("columns") else []:
-				column["fields"] = [field for field in column.get("fields") if field]
-				for field in column.get("fields") if column.get("fields") else []:
-					field = next((f for f in fields if f.fieldname == field), None)
-					if field:
-						field = field.as_dict()
-						handle_perm_level_restrictions(field, doctype, parent_doctype)
-						column["fields"][column.get("fields").index(field["fieldname"])] = field
+				resolved_fields = []
+				for fieldname in column.get("fields") or []:
+					field = fields.get(fieldname)
+					if not field:
+						continue
 
-						# remove field from required_fields if it is already present
-						if (
-							type == "Required Fields"
-							and field.reqd
-							and any(f.get("fieldname") == field.get("fieldname") for f in required_fields)
-						):
-							required_fields = [
-								f for f in required_fields if f.get("fieldname") != field.get("fieldname")
-							]
+					field = field.as_dict()
+					handle_perm_level_restrictions(field, doctype, parent_doctype)
+					resolved_fields.append(field)
+
+					# remove field from required_fields if it is already present
+					if (
+						type == "Required Fields"
+						and field.reqd
+						and any(f.get("fieldname") == field.get("fieldname") for f in required_fields)
+					):
+						required_fields = [
+							f for f in required_fields if f.get("fieldname") != field.get("fieldname")
+						]
+				column["fields"] = resolved_fields
 
 	if type == "Required Fields" and required_fields and tabs:
 		tabs[-1].get("sections").append(
@@ -127,21 +130,21 @@ def get_sidepanel_sections(doctype: str):
 	]
 
 	fields = frappe.get_meta(doctype).fields
-	fields = [field for field in fields if field.fieldtype not in not_allowed_fieldtypes]
+	fields = {field.fieldname: field for field in fields if field.fieldtype not in not_allowed_fieldtypes}
 
 	for section in layout:
 		section["name"] = section.get("name") or section.get("label")
 		for column in section.get("columns") if section.get("columns") else []:
-			for field in column.get("fields") if column.get("fields") else []:
-				field_obj = next((f for f in fields if f.fieldname == field), None)
-				if field_obj:
-					field_obj = field_obj.as_dict()
-					handle_perm_level_restrictions(field_obj, doctype)
-					column["fields"][column.get("fields").index(field)] = get_field_obj(field_obj)
+			resolved_fields = []
+			for fieldname in column.get("fields") or []:
+				field_obj = fields.get(fieldname)
+				if not field_obj:
+					continue
 
-	fields_meta = {}
-	for field in fields:
-		fields_meta[field.fieldname] = field
+				field_obj = field_obj.as_dict()
+				handle_perm_level_restrictions(field_obj, doctype)
+				resolved_fields.append(get_field_obj(field_obj))
+			column["fields"] = resolved_fields
 
 	return layout
 

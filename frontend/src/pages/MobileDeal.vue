@@ -8,7 +8,7 @@
           <Icon v-if="item.icon" :icon="item.icon" class="mr-2 h-4" />
         </template>
       </Breadcrumbs>
-      <div class="absolute right-0">
+      <div class="shrink-0">
         <Dropdown
           v-if="doc"
           :options="
@@ -25,7 +25,7 @@
             <Button
               v-if="doc.status"
               :label="statusLabel(doc.status)"
-              :iconRight="open ? 'chevron-up' : 'chevron-down'"
+              :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
             >
               <template #prefix>
                 <IndicatorIcon :class="getDealStatus(doc.status).color" />
@@ -54,13 +54,13 @@
   </div>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       as="div"
       :tabs="tabs"
-      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-auto flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-3 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel="{ tab }">
-        <div v-if="tab.name == 'Details'">
+        <div v-if="tab.name == 'Details' && !tab.component">
           <SLASection
             v-if="doc.sla_status"
             v-model="doc"
@@ -83,6 +83,15 @@
                   <Link
                     value=""
                     doctype="Contact"
+                    :grouping="
+                      doc.organization
+                        ? {
+                            filters: { company_name: doc.organization },
+                            label: __('Contacts at {0}', [doc.organization]),
+                            otherLabel: __('Other contacts'),
+                          }
+                        : null
+                    "
                     :onCreate="
                       (value, close) => {
                         _contact = {
@@ -155,7 +164,7 @@
                               />
                             </div>
                             <div class="flex items-center">
-                              <Dropdown :options="contactOptions(contact.name)">
+                              <Dropdown :options="contactOptions(contact)">
                                 <Button
                                   icon="lucide-more-horizontal"
                                   class="text-ink-gray-5"
@@ -183,18 +192,10 @@
                             </div>
                           </div>
                         </template>
-                        <div
-                          class="flex flex-col gap-1.5 text-base text-ink-gray-8"
-                        >
-                          <div class="flex items-center gap-3 pb-1.5 pl-1 pt-4">
-                            <Email2Icon class="h-4 w-4" />
-                            {{ contact.email }}
-                          </div>
-                          <div class="flex items-center gap-3 p-1 py-1.5">
-                            <PhoneIcon class="h-4 w-4" />
-                            {{ contact.mobile_no }}
-                          </div>
-                        </div>
+                        <DealContactDetails
+                          :contact="contact"
+                          :reload="reloadContactDetails"
+                        />
                       </CollapsibleSection>
                     </div>
                     <div
@@ -216,7 +217,7 @@
         <Activities
           v-else
           v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
+          v-model:activeTab="activeTab"
           doctype="CRM Deal"
           :docname="dealId"
           :tabs="tabs"
@@ -269,10 +270,11 @@ import DeleteLinkedDocModal from '@/components/DeleteLinkedDocModal.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import Icon from '@/components/Icon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import LoadingIndicator from '@/components/Icons/LoadingIndicator.vue'
 import ActivityIcon from '@/components/Icons/ActivityIcon.vue'
 import EmailIcon from '@/components/Icons/EmailIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import DealContactDetails from '@/components/DealContactDetails.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
@@ -281,6 +283,7 @@ import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import IndicatorIcon from '@/components/Icons/IndicatorIcon.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
+import FileTextIcon from '@/components/Icons/FileTextIcon.vue'
 import SuccessIcon from '@/components/Icons/SuccessIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import Activities from '@/components/Activities/Activities.vue'
@@ -294,15 +297,18 @@ import SidePanelLayout from '@/components/SidePanelLayout.vue'
 import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import { setupCustomizations, isTranslatable } from '@/utils'
+import { withRecipientConfirmation } from '@/utils/whatsappRecipient'
 import { getView } from '@/utils/view'
 import { getSettings } from '@/stores/settings'
 import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { mergeFormTabs } from '@/utils/formTabs'
 import { isMobileView } from '@/composables/settings'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
+import { canViewQuotations } from '@/composables/erpnext'
 import { useActiveTabManager } from '@/composables/useActiveTabManager'
 import { useVisitedRecords } from '@/composables/useVisitedRecords'
 import {
@@ -319,7 +325,7 @@ import { ref, computed, h, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { brand } = getSettings()
-const { $dialog, $socket } = globalStore()
+const { $dialog, $socket, makeCall } = globalStore()
 const { statusOptions, getDealStatus } = statusesStore()
 const { doctypeMeta } = getMeta('CRM Deal')
 
@@ -375,9 +381,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField,
-        createToast: toast.create,
         deleteDoc: deleteDeal,
         call,
       })
@@ -437,61 +441,84 @@ const tabs = computed(() => {
   let tabOptions = [
     {
       name: 'Details',
+      value: 'details',
       label: __('Details'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
       condition: () => isMobileView.value,
     },
     {
       name: 'Activity',
+      value: 'activity',
       label: __('Activity'),
-      icon: ActivityIcon,
+      iconLeft: ActivityIcon,
     },
     {
       name: 'Emails',
+      value: 'emails',
       label: __('Emails'),
-      icon: EmailIcon,
+      iconLeft: EmailIcon,
     },
     {
       name: 'Comments',
+      value: 'comments',
       label: __('Comments'),
-      icon: CommentIcon,
+      iconLeft: CommentIcon,
     },
     {
       name: 'Data',
+      value: 'data',
       label: __('Data'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
+    },
+    {
+      name: 'Events',
+      value: 'events',
+      label: __('Events'),
+      iconLeft: EventIcon,
     },
     {
       name: 'Calls',
+      value: 'calls',
       label: __('Calls'),
-      icon: PhoneIcon,
+      iconLeft: PhoneIcon,
       condition: () => callEnabled.value,
     },
     {
       name: 'Tasks',
+      value: 'tasks',
       label: __('Tasks'),
-      icon: TaskIcon,
+      iconLeft: TaskIcon,
     },
     {
       name: 'Notes',
+      value: 'notes',
       label: __('Notes'),
-      icon: NoteIcon,
+      iconLeft: NoteIcon,
     },
     {
       name: 'Attachments',
+      value: 'attachments',
       label: __('Attachments'),
-      icon: AttachmentIcon,
+      iconLeft: AttachmentIcon,
     },
     {
       name: 'WhatsApp',
+      value: 'whatsapp',
       label: __('WhatsApp'),
-      icon: WhatsAppIcon,
+      iconLeft: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
+    {
+      name: 'Quotations',
+      value: 'quotations',
+      label: __('Quotations'),
+      iconLeft: FileTextIcon,
+      condition: () => canViewQuotations.value,
+    },
   ]
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+  return mergeFormTabs(tabOptions, document.tabs)
 })
-const { tabIndex } = useActiveTabManager(tabs, 'lastDealTab')
+const { activeTab } = useActiveTabManager(tabs, 'lastDealTab')
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
@@ -526,13 +553,21 @@ const showContactModal = ref(false)
 const _contact = ref({})
 
 function contactOptions(contact) {
-  let options = [
-    {
-      label: __('Delete'),
-      icon: 'trash-2',
-      onClick: () => removeContact(contact),
-    },
-  ]
+  let options = []
+
+  if (callEnabled.value && contact.mobile_no) {
+    options.push({
+      label: __('Make a Call'),
+      icon: h(PhoneIcon, { class: 'h-4 w-4' }),
+      onClick: () => makeCall(contact.mobile_no),
+    })
+  }
+
+  options.push({
+    label: __('Delete'),
+    icon: 'lucide-trash-2',
+    onClick: () => removeContact(contact.name),
+  })
 
   if (!contact.is_primary) {
     options.push({
@@ -562,10 +597,13 @@ async function addContact(contact) {
 }
 
 async function removeContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
-    deal: props.dealId,
-    contact,
-  })
+  let d = await withRecipientConfirmation((confirm) =>
+    call('crm.fcrm.doctype.crm_deal.crm_deal.remove_contact', {
+      deal: props.dealId,
+      contact,
+      ...confirm,
+    }),
+  )
   if (d) {
     dealContacts.reload()
     toast.success(__('Contact Removed'))
@@ -573,10 +611,13 @@ async function removeContact(contact) {
 }
 
 async function setPrimaryContact(contact) {
-  let d = await call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
-    deal: props.dealId,
-    contact,
-  })
+  let d = await withRecipientConfirmation((confirm) =>
+    call('crm.fcrm.doctype.crm_deal.crm_deal.set_primary_contact', {
+      deal: props.dealId,
+      contact,
+      ...confirm,
+    }),
+  )
   if (d) {
     dealContacts.reload()
     toast.success(__('Primary Contact Set'))
@@ -601,6 +642,9 @@ const dealContacts = createResource({
         full_name: contact.full_name,
         email: contact.email,
         mobile_no: contact.mobile_no,
+        email_ids: contact.email_ids,
+        phone_nos: contact.phone_nos,
+        can_write: contact.can_write,
         image: contact.image,
         is_primary: contact.is_primary,
         opened: index === 0,
@@ -608,6 +652,11 @@ const dealContacts = createResource({
     })
   },
 })
+
+// A contact's primary email/mobile is copied onto the deal, so reload both
+function reloadContactDetails() {
+  return Promise.all([dealContacts.reload(), document.reload()])
+}
 
 function updateField(name, value) {
   value = Array.isArray(name) ? '' : value

@@ -1,5 +1,5 @@
 <template>
-  <Tooltip :text="tooltipText" placement="right" :hoverDelay="0">
+  <Tooltip :text="tooltipText" side="right" :hoverDelay="0">
     <div
       class="rating-stars inline-flex flex-wrap items-center gap-0.5 transition-opacity"
       :class="disabled ? 'opacity-50' : ''"
@@ -54,7 +54,7 @@ const emit = defineEmits(['change'])
 const nStars = computed(() => Number(props.max) || 5)
 const hoveredStarValue = ref(null)
 
-// Saved value in star-units, rounded to nearest 0.5
+// Saved value in star-units, to the nearest 0.5
 const savedStarValue = computed(() => {
   const raw = (props.value || 0) * nStars.value
   return Math.round(raw * 2) / 2

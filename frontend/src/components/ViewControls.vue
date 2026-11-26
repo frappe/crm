@@ -23,6 +23,13 @@
         <div class="-ml-2 h-[70%] border-l" />
         <div class="flex shrink-0 gap-2">
           <Button
+            v-if="filterChip"
+            :label="filterChip.label"
+            iconRight="lucide-x"
+            :tooltip="__('Show all records')"
+            @click="filterChip.clear"
+          />
+          <Button
             :tooltip="__('Refresh')"
             icon="lucide-refresh-ccw"
             :loading="isLoading"
@@ -35,14 +42,22 @@
             :hideLabel="isMobileView"
             @update="updateGroupBy"
           />
+          <GroupSummaryButton
+            v-if="canGroup"
+            :modelValue="groupSummary"
+            :doctype="doctype"
+            :exclude="options.groupByExclude"
+            hideLabel
+            @update:modelValue="updateGroupSummary"
+          />
           <Filter
             v-model="list"
             :doctype="doctype"
-            :default_filters="filters"
+            :default_filters="defaultFilters"
             @update="updateFilter"
           />
           <SortBy
-            v-if="route.params.viewType !== 'kanban'"
+            v-if="route.params.viewType !== 'kanban' && !groupSummary"
             v-model="list"
             :doctype="doctype"
             :hideLabel="isMobileView"
@@ -118,12 +133,12 @@
               class="whitespace-nowrap mr-2"
               variant="ghost"
               :label="__('Add Filter')"
-              iconLeft="plus"
+              iconLeft="lucide-plus"
               @click="setOpen(!open)"
             />
           </template>
           <template #item-label="{ item }">
-            <Tooltip :text="item.value" :hover-delay="1">
+            <Tooltip :text="item.value" :hover-delay="1000">
               <div class="flex-1 truncate text-ink-gray-7">
                 {{ item.label }}
               </div>
@@ -169,6 +184,13 @@
       </div>
       <div class="flex items-center gap-2">
         <Button
+          v-if="filterChip"
+          :label="filterChip.label"
+          iconRight="lucide-x"
+          :tooltip="__('Show all records')"
+          @click="filterChip.clear"
+        />
+        <Button
           :tooltip="__('Refresh')"
           icon="lucide-refresh-ccw"
           :loading="isLoading"
@@ -180,14 +202,22 @@
           :doctype="doctype"
           @update="updateGroupBy"
         />
+        <GroupSummaryButton
+          v-if="canGroup"
+          :modelValue="groupSummary"
+          :doctype="doctype"
+          :exclude="options.groupByExclude"
+          @update:modelValue="updateGroupSummary"
+        />
         <Filter
           v-model="list"
           :doctype="doctype"
-          :default_filters="filters"
+          :default_filters="defaultFilters"
           @update="updateFilter"
         />
+        <!-- a grouped list sorts from its column headers instead -->
         <SortBy
-          v-if="route.params.viewType !== 'kanban'"
+          v-if="route.params.viewType !== 'kanban' && !groupSummary"
           v-model="list"
           :doctype="doctype"
           @update="updateSort"
@@ -206,12 +236,12 @@
         />
         <Dropdown
           v-if="route.params.viewType !== 'kanban' || isManager()"
-          placement="right"
+          align="end"
           :options="[
             {
               group: __('Options'),
               hideLabel: true,
-              items: [
+              options: [
                 {
                   label: __('Import'),
                   icon: () => h(ImportIcon, { class: 'h-4 w-4' }),
@@ -222,6 +252,7 @@
                     }),
                   condition: () =>
                     !options.hideColumnsButton &&
+                    doctype !== 'Data Import' &&
                     route.params.viewType !== 'kanban',
                 },
                 {
@@ -302,7 +333,7 @@
         ]"
         :placeholder="__('Excel')"
       />
-      <div class="mt-3">
+      <div v-if="!groupSummary" class="mt-3">
         <FormControl
           v-model="export_all"
           type="checkbox"
@@ -325,6 +356,11 @@ import ListIcon from '@/components/Icons/ListIcon.vue'
 import KanbanIcon from '@/components/Icons/KanbanIcon.vue'
 import GroupByIcon from '@/components/Icons/GroupByIcon.vue'
 import QuickFilterField from '@/components/QuickFilterField.vue'
+import {
+  GroupBy as GroupSummaryButton,
+  parseGroupBy,
+  serializeGroupBy,
+} from '@framework/ui/components/GroupBy'
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import DuplicateIcon from '@/components/Icons/DuplicateIcon.vue'
 import CheckIcon from '@/components/Icons/CheckIcon.vue'
@@ -355,7 +391,6 @@ import {
   Dropdown,
   toast,
   call,
-  FeatherIcon,
   usePageMeta,
 } from 'frappe-ui'
 import {
@@ -379,11 +414,14 @@ import {
 } from '@/utils/commandPalette'
 import Draggable from 'vuedraggable'
 import _ from 'lodash'
+import { importListFilters, withoutImportQuery } from '@/utils/dataImport'
 import ImportIcon from '~icons/lucide/import'
 
 const props = defineProps({
   doctype: { type: String, required: true },
   filters: { type: Object, default: () => ({}) },
+  // names the page's own `filters` in a chip that emits clearFilters
+  filtersLabel: { type: String, default: '' },
   options: {
     type: Object,
     default: () => ({
@@ -393,6 +431,8 @@ const props = defineProps({
     }),
   },
 })
+
+const emit = defineEmits(['clearFilters'])
 
 const { brand } = getSettings()
 const { $dialog, $socket } = globalStore()
@@ -411,6 +451,24 @@ const updatedPageCount = defineModel('updatedPageCount', { type: Boolean })
 
 const route = useRoute()
 const router = useRouter()
+
+const defaultFilters = computed(() => ({
+  ...props.filters,
+  ...importListFilters(route.query),
+}))
+
+const filterChip = computed(() => {
+  if (props.filtersLabel) {
+    return { label: props.filtersLabel, clear: () => emit('clearFilters') }
+  }
+  if (route.query.import) {
+    return {
+      label: __('From import'),
+      clear: () => router.replace({ query: withoutImportQuery(route.query) }),
+    }
+  }
+  return null
+})
 
 const defaultParams = ref('')
 
@@ -464,6 +522,20 @@ usePageMeta(() => {
   }
 })
 
+// a saved view carries its own type; otherwise the route's
+function viewTypeOf(_view) {
+  return _view?.type || route.params.viewType || 'list'
+}
+
+// only list views of a host that renders the grouped table can be grouped
+const canGroup = computed(
+  () =>
+    Boolean(props.options?.groupSummary) &&
+    viewTypeOf(
+      getView(route.query.view, route.params.viewType, props.doctype),
+    ) === 'list',
+)
+
 const view = ref({
   name: '',
   label: '',
@@ -510,7 +582,7 @@ watch(updatedPageCount, (value) => {
 function getParams() {
   let _view = getView(route.query.view, route.params.viewType, props.doctype)
   const view_name = _view?.name || ''
-  const view_type = _view?.type || route.params.viewType || 'list'
+  const view_type = viewTypeOf(_view)
   const filters = (_view?.filters && JSON.parse(_view.filters)) || {}
   const order_by = _view?.order_by || 'modified desc'
   const group_by_field = _view?.group_by_field || 'owner'
@@ -545,11 +617,12 @@ function getParams() {
     doctype: props.doctype,
     filters: filters,
     order_by: order_by,
-    default_filters: props.filters,
+    default_filters: defaultFilters.value,
     view: {
       custom_view_name: view_name,
       view_type: view_type,
       group_by_field: group_by_field,
+      group_by_settings: parseGroupBy(_view?.group_by_settings),
     },
     column_field: column_field,
     title_field: title_field,
@@ -563,11 +636,22 @@ function getParams() {
 }
 
 let listResource
+// set by reload() when it is called while a request is in flight
+let reloadQueued = false
+
+const pageFiltersKey = Object.keys(defaultFilters.value).length
+  ? [JSON.stringify(defaultFilters.value)]
+  : []
 
 listResource = createResource({
   url: 'crm.api.doc.get_data',
   params: getParams(),
-  cache: [props.doctype, route.query.view, route.params.viewType],
+  cache: [
+    props.doctype,
+    route.query.view,
+    route.params.viewType,
+    ...pageFiltersKey,
+  ],
   auto: true,
   onSuccess(data) {
     let cv = getView(route.query.view, route.params.viewType, props.doctype)
@@ -577,11 +661,12 @@ listResource = createResource({
       doctype: props.doctype,
       filters: params.filters,
       order_by: params.order_by,
-      default_filters: props.filters,
+      default_filters: defaultFilters.value,
       view: {
         custom_view_name: cv?.name || '',
-        view_type: cv?.type || route.params.viewType || 'list',
+        view_type: viewTypeOf(cv),
         group_by_field: params?.view?.group_by_field || 'owner',
+        group_by_settings: params?.view?.group_by_settings || null,
       },
       column_field: data.column_field,
       title_field: data.title_field,
@@ -596,6 +681,12 @@ listResource = createResource({
 })
 
 list.value = listResource
+
+// one summary row per group, like desk's report view; stored on the list params
+const groupSummary = computed(() =>
+  canGroup.value ? listResource.params?.view?.group_by_settings || null : null,
+)
+
 // Keep an unsaved view change on cached re-entry; don't reset to the saved view (frappe/crm#2833).
 // kanban_columns is excluded: pagination (load more) mutates it without being a user edit.
 const dirtySignature = (p) =>
@@ -603,6 +694,7 @@ const dirtySignature = (p) =>
     p.filters || {},
     p.order_by,
     p.view?.group_by_field,
+    parseGroupBy(p.view?.group_by_settings),
     p.column_field,
     p.title_field,
     p.kanban_fields,
@@ -645,8 +737,21 @@ function getListParams() {
   return listResource.params
 }
 
+// A reload asked for while a request is in flight (e.g. the saved views load
+// after the first list request went out without the view's filters) must not
+// be dropped, or the list stays unfiltered. Run it once the request settles.
+// frappe-ui sets loading to false after onSuccess, so wait on loading itself.
+watch(isLoading, (loading) => {
+  if (loading || !reloadQueued) return
+  reloadQueued = false
+  reload()
+})
+
 function reload() {
-  if (isLoading.value) return
+  if (isLoading.value) {
+    reloadQueued = true
+    return
+  }
   listResource.params = getParams()
   listResource.reload()
 }
@@ -660,34 +765,62 @@ function updateSelections(selections) {
   selectedRows.value = Array.from(selections)
 }
 
-async function exportRows() {
-  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
+function resolveCurrentUser(filters) {
   const userId = getUser()?.name
-  let filters = {
-    ...props.filters,
-    ...list.value.params.filters,
-  }
-
   // Only resolve @me placeholders when we know the current user; otherwise
   // leave filters untouched rather than emitting undefined / "%undefined%".
-  if (userId) {
-    Object.keys(filters).forEach((key) => {
-      const value = filters[key]
+  if (!userId) return filters
+  Object.keys(filters).forEach((key) => {
+    const value = filters[key]
 
-      // Handle direct filter format: { owner: "@me" }
-      if (value === '@me') {
-        filters[key] = userId
-        return
-      }
-      if (!Array.isArray(value)) return
-      // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
-      filters[key] = value.map((entry) =>
-        entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
-      )
-    })
-  }
+    // Handle direct filter format: { owner: "@me" }
+    if (value === '@me') {
+      filters[key] = userId
+      return
+    }
+    if (!Array.isArray(value)) return
+    // Handle all operator-based filter format: { owner: ["=", "@me"], _assign: ["LIKE", "%@me%"] }
+    filters[key] = value.map((entry) =>
+      entry === '@me' ? userId : entry === '%@me%' ? `%${userId}%` : entry,
+    )
+  })
+  return filters
+}
 
-  filters = JSON.stringify(filters)
+const currentFilters = computed(() =>
+  resolveCurrentUser({
+    ...(list.value.params?.filters || {}),
+    ...defaultFilters.value,
+  }),
+)
+
+async function exportRows() {
+  let filters = JSON.stringify(currentFilters.value)
+
+  // a grouped list exports what it shows: one row per group, every group
+  window.location.href = groupSummary.value
+    ? groupedExportUrl(filters)
+    : listExportUrl(filters)
+
+  showExportDialog.value = false
+  export_all.value = false
+  export_type.value = 'Excel'
+}
+
+function groupedExportUrl(filters) {
+  const grouped = serializeGroupBy(groupSummary.value)
+  return (
+    `/api/method/frappe.desk.reportview.export_query?file_format_type=${export_type.value}` +
+    `&title=${encodeURIComponent(props.doctype)}&doctype=${encodeURIComponent(props.doctype)}` +
+    `&fields=${encodeURIComponent(JSON.stringify(grouped.fields))}` +
+    `&filters=${encodeURIComponent(filters)}` +
+    `&group_by=${encodeURIComponent(grouped.group_by)}` +
+    `&order_by=${encodeURIComponent(grouped.order_by || '')}&view=Report`
+  )
+}
+
+function listExportUrl(filters) {
+  let fields = JSON.stringify(list.value.data.columns.map((f) => f.key))
 
   let order_by = list.value.params.order_by
   let page_length = list.value.params.page_length
@@ -701,12 +834,7 @@ async function exportRows() {
   if (selectedRows.value?.length && !export_all.value) {
     url += `&selected_items=${JSON.stringify(selectedRows.value)}`
   }
-
-  window.location.href = url
-
-  showExportDialog.value = false
-  export_all.value = false
-  export_type.value = 'Excel'
+  return url
 }
 
 let standardViews = []
@@ -755,8 +883,8 @@ function getIcon(icon, type) {
     return markRaw(KanbanIcon)
   } else if (icon && typeof icon === 'string') {
     // a lucide icon name (from the IconPicker) — render it through Icon so it
-    // resolves from the injected lucide sprite. The Dropdown renders a bare
-    // string via FeatherIcon, which lacks the newer lucide names and shows blank.
+    // resolves from the injected lucide sprite. The Dropdown shows nothing for
+    // a bare icon name.
     return () => h(Icon, { icon, class: 'h-4 w-4' })
   }
   return icon || markRaw(ListIcon)
@@ -767,9 +895,10 @@ const viewsDropdownOptions = computed(() => {
     {
       group: __('Standard Views'),
       hideLabel: true,
-      items: standardViews.map((item) => ({
+      options: standardViews.map((item) => ({
         ...item,
         selected: item.name === currentView.value.name,
+        isDefault: isStandardDefault(item.name),
       })),
     },
   ]
@@ -780,6 +909,7 @@ const viewsDropdownOptions = computed(() => {
       view.type = view.type || 'list'
       view.icon = getIcon(view.icon, view.type)
       view.selected = view.name === currentView.value.name
+      view.isDefault = isDefaultView(view)
       view.filters =
         typeof view.filters == 'string'
           ? JSON.parse(view.filters)
@@ -802,19 +932,19 @@ const viewsDropdownOptions = computed(() => {
     if (savedViews.length) {
       _views.push({
         group: __('Saved Views'),
-        items: savedViews,
+        options: savedViews,
       })
     }
     if (publicViews.length) {
       _views.push({
         group: __('Public Views'),
-        items: publicViews,
+        options: publicViews,
       })
     }
     if (pinnedViews.length) {
       _views.push({
         group: __('Pinned Views'),
-        items: pinnedViews,
+        options: pinnedViews,
       })
     }
   }
@@ -822,10 +952,10 @@ const viewsDropdownOptions = computed(() => {
   _views.push({
     group: __('Actions'),
     hideLabel: true,
-    items: [
+    options: [
       {
         label: __('Create View'),
-        icon: 'plus',
+        icon: 'lucide-plus',
         onClick: () => createView(),
       },
     ],
@@ -1034,7 +1164,7 @@ async function loadFlatFilterOptions() {
 
 function viewCommands() {
   return viewsDropdownOptions.value
-    .flatMap((group) => group.items || [])
+    .flatMap((group) => group.options || [])
     .filter((item) => item.onClick && (!item.condition || item.condition()))
     .map((item, index) => ({
       id: `list-view-${index}-${item.name || item.label}`,
@@ -1164,6 +1294,20 @@ function updateSort(order_by) {
   }
 }
 
+function updateGroupSummary(settings) {
+  viewUpdated.value = true
+  if (!defaultParams.value) {
+    defaultParams.value = getParams()
+  }
+  // set in place: swapping the params object makes the grouped table refetch
+  defaultParams.value.view.group_by_settings = settings
+  getListParams().view.group_by_settings = settings
+
+  if (!route.query.view) {
+    createOrUpdateStandardView()
+  }
+}
+
 function updateGroupBy(group_by_field) {
   viewUpdated.value = true
   if (!defaultParams.value) {
@@ -1215,10 +1359,15 @@ function updateColumns(obj) {
   }
 }
 
+// saves read the grouping from the list params, its only copy
+function groupBySettingsToSave() {
+  return getListParams().view?.group_by_settings || null
+}
+
 function persistCustomView() {
   view.value.doctype = props.doctype
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.update', {
-    view: view.value,
+    view: { ...view.value, group_by_settings: groupBySettingsToSave() },
   }).then(() => {
     reloadView()
     viewUpdated.value = false
@@ -1382,7 +1531,7 @@ function createOrUpdateStandardView() {
   call(
     'crm.fcrm.doctype.crm_view_settings.crm_view_settings.create_or_update_standard_view',
     {
-      view: view.value,
+      view: { ...view.value, group_by_settings: groupBySettingsToSave() },
     },
   ).then(() => {
     reloadViewAfterSave()
@@ -1448,7 +1597,7 @@ const viewActions = (view, close) => {
     {
       group: __('Actions'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Duplicate'),
           icon: () => h(DuplicateIcon, { class: 'h-4 w-4' }),
@@ -1459,22 +1608,22 @@ const viewActions = (view, close) => {
   ]
 
   if (isStandard && !isDefaultView(_view)) {
-    actions[0].items.unshift({
+    actions[0].options.unshift({
       label: __('Set As Default'),
       icon: () => h(CheckIcon, { class: 'h-4 w-4' }),
-      onClick: () => setAsDefault(_view),
+      onClick: () => setAsDefault(_view, close),
     })
   }
 
   if (!isStandard && (!_view.public || isManager())) {
-    actions[0].items.push({
+    actions[0].options.push({
       label: __('Edit'),
       icon: () => h(EditIcon, { class: 'h-4 w-4' }),
       onClick: () => editView(_view, close),
     })
 
     if (!_view.public) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.pinned ? __('Unpin View') : __('Pin View'),
         icon: () => h(_view.pinned ? UnpinIcon : PinIcon, { class: 'h-4 w-4' }),
         onClick: () => pinView(_view),
@@ -1482,12 +1631,12 @@ const viewActions = (view, close) => {
     }
 
     if (isManager()) {
-      actions[0].items.push({
+      actions[0].options.push({
         label: _view.public ? __('Make Private') : __('Make Public'),
         icon: () =>
-          h(FeatherIcon, {
-            name: _view.public ? 'lock' : 'unlock',
-            class: 'h-4 w-4',
+          h('span', {
+            class: [_view.public ? 'lucide-lock' : 'lucide-unlock', 'h-4 w-4'],
+            'aria-hidden': true,
           }),
         onClick: () => publicView(_view),
       })
@@ -1496,10 +1645,10 @@ const viewActions = (view, close) => {
     actions.push({
       group: __('Delete View'),
       hideLabel: true,
-      items: [
+      options: [
         {
           label: __('Delete'),
-          icon: 'trash-2',
+          icon: 'lucide-trash-2',
           onClick: () =>
             $dialog({
               title: __('Delete View'),
@@ -1512,7 +1661,7 @@ const viewActions = (view, close) => {
                   label: __('Delete'),
                   variant: 'solid',
                   theme: 'red',
-                  onClick: (close) => deleteView(_view, close),
+                  onClick: ({ close }) => deleteView(_view, close),
                 },
               ],
             }),
@@ -1531,18 +1680,28 @@ function isDefaultView(v) {
   return defaultView.name == v.name
 }
 
+// List opens by default when no view has been set as default
+function isStandardDefault(type) {
+  if (!getDefaultView(route.name)) return type === 'list'
+  return isDefaultView(getView(null, type, props.doctype) || {})
+}
+
 const viewModalObj = ref({})
 
 function createView() {
   view.value.name = ''
   view.value.label = ''
   view.value.icon = ''
-  viewModalObj.value = view.value
+  viewModalObj.value = {
+    ...view.value,
+    group_by_settings: groupBySettingsToSave(),
+  }
   viewModalObj.value.mode = 'create'
   showViewModal.value = true
 }
 
-function setAsDefault(v) {
+function setAsDefault(v, close) {
+  close?.()
   call('crm.fcrm.doctype.crm_view_settings.crm_view_settings.set_as_default', {
     name: v.name,
     type: v.type,
@@ -1636,6 +1795,7 @@ function saveView() {
     rows: defaultParams.value.rows,
     route_name: route.name,
     load_default_columns: view.value.load_default_columns,
+    group_by_settings: groupBySettingsToSave(),
   }
   viewModalObj.value = view.value
   viewModalObj.value.mode = 'edit'
@@ -1694,6 +1854,9 @@ function likeDoc({ name, liked }) {
 }
 
 defineExpose({
+  groupSummary,
+  currentFilters,
+  updateGroupSummary,
   applyFilter,
   applyLikeFilter,
   likeDoc,

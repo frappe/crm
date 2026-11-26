@@ -1,98 +1,125 @@
 <template>
   <Dialog
-    v-model="commandPaletteOpen"
+    v-model:open="commandPaletteOpen"
     bare
-    :options="{ size: '2xl', position: 'top', paddingTop: '10vh' }"
+    size="2xl"
+    position="top"
+    padding-top="10vh"
   >
-    <Combobox
-      as="div"
-      class="crm-command-palette"
-      nullable
-      @update:model-value="onSelection"
-    >
-      <div class="flex items-center border-b border-outline-gray-1 px-1">
-        <LucideSearch class="ms-3 size-4 shrink-0 text-ink-gray-4" />
-        <button
-          v-if="currentStep"
-          type="button"
-          class="ms-3 flex shrink-0 items-center gap-2 py-1 text-base font-semibold text-ink-gray-7"
-          @click="backCommandPalette"
-        >
-          {{ __(currentStep) }}
-          <LucideChevronRight class="size-3 text-ink-gray-4" />
-        </button>
-        <ComboboxInput
-          ref="inputRef"
-          :placeholder="__('Search records or type a command...')"
-          class="w-full border-none bg-transparent py-3.5 pe-4 ps-3 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-          autofocus
-          autocomplete="off"
-          spellcheck="false"
-          @input="onInput"
-          @keydown.backspace="onBackspace"
-          @keydown.esc="onEscape"
-        />
-      </div>
-
-      <ComboboxOptions
-        class="crm-command-palette-list max-h-[380px] min-h-[7rem] overflow-y-auto py-2"
-        static
-        :hold="true"
+    <FlowChatCard v-if="askFlow.open" surface="palette" />
+    <!-- hidden, not removed: re-mounting the Combobox re-selects its active option -->
+    <div v-show="!askFlow.open">
+      <Combobox
+        as="div"
+        class="crm-command-palette"
+        nullable
+        @update:model-value="onSelection"
       >
-        <div
-          v-if="commandPaletteLoading || !commandPaletteItems.length"
-          class="flex flex-col items-center py-12 text-ink-gray-4"
-        >
-          <component
-            :is="emptyIcon"
-            class="mb-2.5 size-8 opacity-40"
-            :class="{ 'animate-spin': isBusy }"
-          />
-          <span class="text-base">{{ emptyMessage }}</span>
-        </div>
-        <template v-else>
-          <div v-for="group in commandPaletteGroups" :key="group.title">
-            <div
-              v-if="group.title"
-              class="px-4 pb-1 pt-2 text-xs font-medium text-ink-gray-4"
-            >
-              {{ __(group.title) }}
-            </div>
-            <ComboboxOption
-              v-for="(item, index) in group.items"
-              :key="item.id"
-              v-slot="{ active }"
-              :value="item"
-              class="cursor-pointer scroll-my-10 px-2"
-              :class="{ 'scroll-mt-16': index === 0 }"
-              :disabled="item.disabled"
-            >
-              <CommandPaletteRow :command="item" :active="active" />
-            </ComboboxOption>
-          </div>
-        </template>
-      </ComboboxOptions>
-
-      <div
-        class="flex items-center gap-4 border-t border-outline-gray-1 px-4 py-2.5 text-xs text-ink-gray-4"
-      >
-        <span
-          v-for="(hint, index) in hints"
-          :key="index"
-          class="flex items-center gap-1.5"
-          :class="{ 'ms-auto': hint.trailing }"
-        >
-          <kbd
-            v-for="key in hint.keys"
-            :key="key"
-            class="rounded-sm bg-surface-gray-2 px-1 py-0.5 font-sans text-ink-gray-5"
+        <div class="flex items-center border-b border-outline-gray-1 px-1">
+          <LucideSearch class="ms-3 size-4 shrink-0 text-ink-gray-4" />
+          <button
+            v-if="currentStep"
+            type="button"
+            class="ms-3 flex shrink-0 items-center gap-2 py-1 text-base font-semibold text-ink-gray-7"
+            @click="backCommandPalette"
           >
-            {{ key }}
-          </kbd>
-          {{ __(hint.label) }}
-        </span>
-      </div>
-    </Combobox>
+            {{ __(currentStep) }}
+            <LucideChevronRight class="size-3 text-ink-gray-4" />
+          </button>
+          <ComboboxInput
+            ref="inputRef"
+            :display-value="() => commandPaletteQuery"
+            :placeholder="__('Search records or type a command...')"
+            class="w-full border-none bg-transparent py-3.5 pe-4 ps-3 text-base text-ink-gray-8 placeholder-ink-gray-4 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+            autofocus
+            autocomplete="off"
+            spellcheck="false"
+            @input="onInput"
+            @keydown.backspace="onBackspace"
+            @keydown.esc="onEscape"
+            @keydown.tab="onTab"
+            @keydown.enter.capture="onEnter"
+          />
+        </div>
+        <CurrentFlowChat
+          v-if="askFlow.session && !currentStep"
+          :show-key="!commandPaletteQuery.trim()"
+        />
+
+        <ComboboxOptions
+          class="crm-command-palette-list max-h-[380px] min-h-[7rem] overflow-y-auto py-2"
+          static
+          :hold="true"
+        >
+          <div
+            v-if="commandPaletteLoading || !listedItems.length"
+            class="flex flex-col items-center py-12 text-ink-gray-4"
+          >
+            <component
+              :is="emptyIcon"
+              class="mb-2.5 size-8 opacity-40"
+              :class="{ 'animate-spin': isBusy }"
+            />
+            <span class="text-base">{{ emptyMessage }}</span>
+            <button
+              v-if="askRow && !isBusy"
+              type="button"
+              class="mt-3 flex items-center gap-1.5 text-sm text-ink-gray-6 hover:text-ink-gray-8"
+              @mousedown.prevent
+              @click="runCommandPaletteItem(askRow)"
+            >
+              <kbd
+                class="rounded-1 bg-surface-gray-2 px-1 py-0.5 font-sans text-xs text-ink-gray-5"
+              >
+                Tab
+              </kbd>
+              {{ __('Ask Flow') }}
+            </button>
+          </div>
+          <template v-else>
+            <div v-for="group in commandPaletteGroups" :key="group.title">
+              <div
+                v-if="group.title"
+                class="px-4 pb-1 pt-2 text-xs font-medium text-ink-gray-4"
+              >
+                {{ __(group.title) }}
+              </div>
+              <ComboboxOption
+                v-for="(item, index) in group.items"
+                :key="item.id"
+                v-slot="{ active }"
+                :value="item"
+                class="cursor-pointer scroll-my-10 px-2"
+                :class="{ 'scroll-mt-16': index === 0 }"
+                :disabled="item.disabled"
+              >
+                <CommandPaletteRow :command="item" :active="active" />
+              </ComboboxOption>
+            </div>
+          </template>
+        </ComboboxOptions>
+
+        <div
+          class="flex items-center gap-4 border-t border-outline-gray-1 px-4 py-2.5 text-xs text-ink-gray-4"
+        >
+          <span
+            v-for="(hint, index) in hints"
+            :key="index"
+            class="flex items-center gap-1.5"
+            :class="{ 'ms-auto': hint.trailing }"
+          >
+            <kbd
+              v-for="key in hint.keys"
+              :key="key"
+              class="rounded-1 bg-surface-gray-2 px-1 py-0.5 font-sans text-ink-gray-5"
+            >
+              {{ key }}
+            </kbd>
+            {{ __(hint.label) }}
+          </span>
+        </div>
+      </Combobox>
+    </div>
   </Dialog>
 </template>
 
@@ -103,13 +130,23 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from '@headlessui/vue'
-import { Dialog } from 'frappe-ui'
+import { Dialog, toast } from 'frappe-ui'
 import { computed, nextTick, ref, watch } from 'vue'
 import LucideChevronRight from '~icons/lucide/chevron-right'
 import LucideLoaderCircle from '~icons/lucide/loader-circle'
 import LucideSearch from '~icons/lucide/search'
 import LucideSearchX from '~icons/lucide/search-x'
+import FlowChatCard from '@/components/FlowChat/FlowChatCard.vue'
+import CurrentFlowChat from './CurrentFlowChat.vue'
 import CommandPaletteRow from './CommandPaletteRow.vue'
+import {
+  askFlow,
+  hideAskFlow,
+  loadAskFlowAvailability,
+  setAskFlowSocket,
+  showAskFlow,
+} from '@/components/FlowChat/askFlow'
+import { globalStore } from '@/stores/global'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import {
   backCommandPalette,
@@ -129,16 +166,17 @@ import {
 import { useCRMCommands } from './useCRMCommands'
 
 useCRMCommands()
+setAskFlowSocket(globalStore().$socket)
 
 const inputRef = ref(null)
 
 const currentStep = computed(() => commandPaletteBreadcrumbs.value.at(-1))
 
 // Never re-key the Combobox: headlessui selects the active option on blur.
-watch([commandPaletteOpen, commandPaletteDepth], () =>
+watch([commandPaletteOpen, commandPaletteDepth, () => askFlow.open], () =>
   nextTick(() => {
     const input = inputRef.value?.$el
-    if (!input) return
+    if (!input || askFlow.open) return
     input.value = commandPaletteQuery.value
     input.focus()
   }),
@@ -156,6 +194,7 @@ const emptyIcon = computed(() => {
 const hints = computed(() => [
   { keys: ['↑', '↓'], label: 'Navigate' },
   { keys: ['↵'], label: 'Select' },
+  ...(askRow.value ? [{ keys: ['Tab'], label: 'Ask Flow' }] : []),
   ...(currentStep.value ? [{ keys: ['⌫'], label: 'Back' }] : []),
   {
     keys: ['esc'],
@@ -163,6 +202,17 @@ const hints = computed(() => [
     trailing: true,
   },
 ])
+
+const askRow = computed(() =>
+  commandPaletteItems.value.find((item) => item.id === 'ask-flow'),
+)
+
+// The ask row alone would be the active option, so Enter would send a half-typed question.
+const listedItems = computed(() =>
+  commandPaletteItems.value.length === 1 && askRow.value
+    ? []
+    : commandPaletteItems.value,
+)
 
 const emptyMessage = computed(() => {
   if (commandPaletteLoading.value) return __('Loading...')
@@ -176,8 +226,17 @@ function onInput(event) {
   commandPaletteQuery.value = event.target.value
 }
 
+// headlessui also selects the active option when the input loses focus, as it
+// does when the Flow answer takes over
 function onSelection(command) {
-  if (command) runCommandPaletteItem(command)
+  if (command && !askFlow.open) runCommandPaletteItem(command)
+}
+
+// With nothing to pick, headlessui's Enter would clear the typed text.
+function onEnter(event) {
+  if (listedItems.value.length) return
+  event.preventDefault()
+  event.stopImmediatePropagation()
 }
 
 function onBackspace(event) {
@@ -191,6 +250,20 @@ function onEscape(event) {
   event.preventDefault()
   event.stopPropagation()
   backCommandPalette()
+}
+
+// Tab opens the Flow card at once, so the dialog's focus trap must not see this
+// Tab too: it would take the card's input for the last stop and wrap to the first.
+function onTab(event) {
+  if (askRow.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    runCommandPaletteItem(askRow.value)
+  } else if (askFlow.session && !commandPaletteQuery.value.trim()) {
+    event.preventDefault()
+    event.stopPropagation()
+    showAskFlow()
+  }
 }
 
 function togglePalette() {
@@ -212,8 +285,23 @@ useKeyboardShortcuts({
 })
 
 watch(commandPaletteOpen, (open) => {
-  if (!open) restoreCommandPaletteFocus()
+  if (open) return loadAskFlowAvailability()
+  restoreCommandPaletteFocus()
+  if (askFlow.open && askFlow.status === 'working') notifyStillAnswering()
+  hideAskFlow()
 })
+
+function notifyStillAnswering() {
+  toast.info(__('Flow is still answering'), {
+    action: {
+      label: __('Show'),
+      onClick: () => {
+        openCommandPalette()
+        showAskFlow()
+      },
+    },
+  })
+}
 </script>
 
 <style>

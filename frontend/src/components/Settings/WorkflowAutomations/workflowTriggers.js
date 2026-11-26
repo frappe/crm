@@ -14,7 +14,6 @@ import MailIcon from '~icons/lucide/mail'
 import ScheduleIcon from '~icons/lucide/clock'
 import SubmitIcon from '~icons/lucide/send'
 import StageIcon from '~icons/lucide/git-branch'
-import TrophyIcon from '~icons/lucide/trophy'
 import UpdatedIcon from '~icons/lucide/refresh-cw'
 import { capabilitiesFor } from './workflowCapabilities'
 import { ICON_TONES } from './workflowIcons'
@@ -115,7 +114,7 @@ const EVENT_STYLES = {
   'crm.lead_qualified': { icon: BadgeCheckIcon, ...ICON_TONES.green },
   'crm.lead_converted': { icon: HandshakeIcon, ...ICON_TONES.purple },
   'crm.deal_stage_changed': { icon: StageIcon, ...ICON_TONES.violet },
-  'crm.deal_won': { icon: TrophyIcon, ...ICON_TONES.green },
+  'crm.deal_won': { icon: HandshakeIcon, ...ICON_TONES.green },
   'crm.deal_lost': { icon: DealLostIcon, ...ICON_TONES.red },
   'crm.task_overdue': { icon: AlarmIcon, ...ICON_TONES.amber },
 }

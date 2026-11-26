@@ -2,14 +2,16 @@
   <Dialog
     v-model:open="showSettings"
     :size="'5xl'"
-    :disableOutsideClickToClose="disableSettingModalOutsideClick"
+    :dismissible="!disableSettingModalOutsideClick"
+    bare
     @close="activeSettingsPage = ''"
   >
-    <template #body>
+    <template #default>
+      <Dialog.Title class="sr-only">{{ __('Settings') }}</Dialog.Title>
       <div class="flex h-[calc(100vh_-_8rem)] bg-surface-gray-1">
         <div
           ref="sidebarContainer"
-          class="flex flex-col m-1 rounded-l-lg w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
+          class="flex flex-col m-1 rounded-l-6 w-56 shrink-0 bg-surface-gray-1 overflow-y-auto"
         >
           <template v-for="(tab, i) in tabs" :key="tab.label">
             <div v-if="!tab.hideLabel && i != 0" class="mx-1 mb-0.5 mt-[5px]" />
@@ -56,6 +58,7 @@ import MonitorCogIcon from '~icons/lucide/monitor-cog'
 import LucideTextCursorInput from '~icons/lucide/text-cursor-input'
 import SlidersIcon from '@/components/Icons/SlidersIcon.vue'
 import SparkleIcon from '@/components/Icons/SparkleIcon.vue'
+import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import ERPNextIcon from '@/components/Icons/ERPNextIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -73,10 +76,12 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
-import HomeActions from '@/components/Settings/HomeActions.vue'
+import CalendarSettings from '@/components/Settings/CalendarSettings.vue'
+import BookingPagesSettings from '@/components/Settings/BookingPages/BookingPagesSettings.vue'
+import AppMenuSettings from '@/components/Settings/AppMenu/AppMenuSettings.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
-import EnrichmentSettings from '@/components/Settings/EnrichmentSettings.vue'
+import EnrichmentSettings from '@/components/Settings/Enrichment/EnrichmentSettings.vue'
 import DashboardSettings from '@/components/Settings/DashboardSettings.vue'
 import WorkflowAutomationPage from '@/components/Settings/WorkflowAutomations/WorkflowAutomationPage.vue'
 import EmailTemplatePage from '@/components/Settings/EmailTemplate/EmailTemplatePage.vue'
@@ -89,7 +94,7 @@ import {
   activeSettingsPage,
   disableSettingModalOutsideClick,
 } from '@/composables/settings'
-import { isWhatsappInstalled } from '@/composables/whatsapp'
+import { isWhatsAppInstalled } from '@/composables/whatsapp'
 import { Dialog, Avatar, SidebarItem } from 'frappe-ui'
 import { ref, markRaw, computed, watch, h, nextTick } from 'vue'
 import AssignmentRulePage from './AssignmentRules/AssignmentRulePage.vue'
@@ -101,7 +106,7 @@ const { isManager, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
-const tabs = computed(() => {
+const allTabs = computed(() => {
   let _tabs = [
     {
       label: __('User Configuration'),
@@ -145,6 +150,11 @@ const tabs = computed(() => {
           label: __('Brand'),
           icon: SparkleIcon,
           component: markRaw(BrandSettings),
+        },
+        {
+          label: __('Calendar'),
+          icon: CalendarIcon,
+          component: markRaw(CalendarSettings),
         },
       ],
       condition: () => isManager(),
@@ -191,42 +201,52 @@ const tabs = computed(() => {
     },
     {
       label: __('Automation & Rules'),
+      // managers see every item; sales users only their booking pages
       items: [
         {
           label: __('Workflow Automations'),
           icon: LucideWorkflow,
           component: markRaw(WorkflowAutomationPage),
+          condition: () => isManager(),
         },
         {
           label: __('Assignment Rules'),
           icon: markRaw(h(SettingsIcon2, { class: 'rotate-90' })),
           component: markRaw(AssignmentRulePage),
+          condition: () => isManager(),
         },
         {
           label: __('SLA Policies'),
           icon: markRaw(h(ShieldCheck)),
           component: markRaw(SlaConfig),
+          condition: () => isManager(),
         },
         {
           label: __('Forms'),
           component: markRaw(FormsSettings),
           icon: markRaw(LucideTextCursorInput),
+          condition: () => isManager(),
+        },
+        {
+          label: __('Booking Pages'),
+          icon: CalendarIcon,
+          component: markRaw(BookingPagesSettings),
         },
         {
           label: __('Enrichment'),
           component: markRaw(EnrichmentSettings),
           icon: markRaw(LucideZap),
+          condition: () => isManager(),
         },
       ],
-      condition: () => isManager(),
     },
     {
       label: __('Customization'),
       items: [
         {
-          label: __('Home Actions'),
-          component: markRaw(HomeActions),
-          icon: 'house',
+          label: __('App menu'),
+          component: markRaw(AppMenuSettings),
+          icon: 'menu',
         },
       ],
       condition: () => isManager(),
@@ -243,7 +263,7 @@ const tabs = computed(() => {
           label: __('WhatsApp'),
           icon: WhatsAppIcon,
           component: markRaw(WhatsAppSettings),
-          condition: () => isWhatsappInstalled.value && isManager(),
+          condition: () => isWhatsAppInstalled.value && isManager(),
         },
         {
           label: __('ERPNext'),
@@ -261,29 +281,39 @@ const tabs = computed(() => {
     },
   ]
 
-  return _tabs.filter((tab) => {
-    if (tab.condition && !tab.condition()) return false
-    if (tab.items) {
-      tab.items = tab.items.filter((item) => {
-        if (item.condition && !item.condition()) return false
-        return true
-      })
-    }
-    return true
-  })
+  return _tabs
 })
+
+const isVisible = (entry) => !entry.condition || entry.condition()
+
+const tabs = computed(() =>
+  allTabs.value
+    .filter(isVisible)
+    .map((tab) => ({ ...tab, items: tab.items.filter(isVisible) })),
+)
 
 const activeTab = ref(tabs.value[0].items[0])
 const sidebarContainer = ref(null)
 
 function setActiveTab(tabName) {
+  const pages = tabs.value.flatMap((tab) => tab.items)
   activeTab.value =
-    (tabName &&
-      tabs.value
-        .map((tab) => tab.items)
-        .flat()
-        .find((tab) => tab.label === tabName)) ||
-    tabs.value[0].items[0]
+    pages.find((page) => page.label === tabName) ||
+    nextVisiblePage(tabName, pages) ||
+    pages[0]
+}
+
+// A page the user cannot see opens the first one they can see after it.
+function nextVisiblePage(tabName, pages) {
+  const order = allTabs.value.flatMap((tab) =>
+    tab.items.map((item) => item.label),
+  )
+  const start = order.indexOf(tabName)
+  if (!tabName || start === -1) return null
+  return order
+    .slice(start + 1)
+    .map((label) => pages.find((page) => page.label === label))
+    .find(Boolean)
 }
 
 // Scroll the settings sidebar so the active page is in view (e.g. when opened

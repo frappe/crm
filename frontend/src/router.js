@@ -1,30 +1,28 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { call } from 'frappe-ui'
+import { createRouter, createWebHistory, START_LOCATION } from 'vue-router'
 import { usersStore } from '@/stores/users'
 import { sessionStore } from '@/stores/session'
 import { viewsStore } from '@/stores/views'
+import { getLandingPage, landingRoute, viewRoute } from '@/utils/landingPage'
 
-let personaChecked = false
-export const PERSONA_DONE_KEY = 'crm_persona_captured'
+let setupChecked = false
 
-async function shouldCapturePersona() {
-  // Client-side flag guards against re-prompting if the server persist failed.
-  if (localStorage.getItem(PERSONA_DONE_KEY)) return false
-  const captured = await call('frappe.client.get_single_value', {
-    doctype: 'FCRM Settings',
-    field: 'persona_captured',
-  })
-  if (captured) return false
-  // The wizard only feeds telemetry; skip it entirely if the user opted out.
-  const { enabled } =
-    (await call('frappe.utils.telemetry.pulse.client.boot_config')) || {}
-  return !!enabled
+// sent with the page boot, so the redirect needs no request and nothing renders first
+function needsSetup() {
+  return Boolean(window.crm_setup_pending)
+}
+
+function getSetupRedirect(to) {
+  if (to.name === 'Setup') return needsSetup() ? null : { name: 'Home' }
+  if (setupChecked) return null
+  setupChecked = true
+  return needsSetup() ? { name: 'Setup' } : null
 }
 
 const routes = [
   {
     path: '/',
     name: 'Home',
+    component: () => import('@/pages/Home.vue'),
   },
   {
     path: '/notifications',
@@ -103,21 +101,29 @@ const routes = [
     component: () => import('@/pages/CallLogs.vue'),
   },
   {
-    path: '/data-import',
-    name: 'DataImportList',
-    component: () => import('@/pages/DataImport.vue'),
+    alias: '/data-import',
+    path: '/data-import/view/:viewType?',
+    name: 'Data Imports',
+    component: () => import('@/pages/DataImports.vue'),
   },
   {
-    path: '/data-import/doctype/:doctype',
+    path: '/calendar',
+    name: 'Calendar',
+    component: () => import('@/pages/Calendar.vue'),
+  },
+  // one page across these routes, so an import stays open when its URL changes
+  // after the first save
+  {
+    path: '/data-import/doctype/:doctype?',
     name: 'NewDataImport',
     component: () => import('@/pages/DataImport.vue'),
-    props: true,
+    meta: { viewKey: 'data-import' },
   },
   {
     path: '/data-import/:importName',
     name: 'DataImport',
     component: () => import('@/pages/DataImport.vue'),
-    props: true,
+    meta: { viewKey: 'data-import' },
   },
   {
     path: '/welcome',
@@ -125,9 +131,9 @@ const routes = [
     component: () => import('@/pages/Welcome.vue'),
   },
   {
-    path: '/onboarding',
-    name: 'Onboarding',
-    component: () => import('@/pages/PersonaForm.vue'),
+    path: '/setup',
+    name: 'Setup',
+    component: () => import('@/pages/Setup.vue'),
   },
   {
     path: '/:invalidpath',
@@ -141,8 +147,27 @@ const routes = [
   },
 ]
 
+const isMobileView = () => window.innerWidth < 768
+
 const handleMobileView = (componentName) => {
-  return window.innerWidth < 768 ? `Mobile${componentName}` : componentName
+  return isMobileView() ? `Mobile${componentName}` : componentName
+}
+
+async function mobileHomeRoute() {
+  const { views, getDefaultView } = viewsStore()
+  await views.promise
+
+  const defaultView = getDefaultView()
+  return defaultView ? viewRoute(defaultView) : { name: 'Leads' }
+}
+
+async function landingPageRoute() {
+  const page = getLandingPage()
+  if (page === 'Home') return null
+
+  const { views } = viewsStore()
+  await views.promise
+  return landingRoute(page, views.data, (name) => router.hasRoute(name))
 }
 
 let router = createRouter({
@@ -153,8 +178,13 @@ let router = createRouter({
 router.beforeEach(async (to, from, next) => {
   router.previousRoute = from
 
-  const { isLoggedIn, user } = sessionStore()
-  const { users, isCrmUser, isAdmin } = usersStore()
+  const { isLoggedIn } = sessionStore()
+  const { users, isCrmUser } = usersStore()
+
+  if (isLoggedIn) {
+    const redirect = getSetupRedirect(to)
+    if (redirect) return next(redirect)
+  }
 
   if (isLoggedIn && !users.fetched) {
     try {
@@ -167,62 +197,16 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  const isAdminUser = isLoggedIn && (isAdmin() || user === 'Administrator')
-
-  // Only admins who haven't finished may reach the wizard, even via direct URL.
-  if (isLoggedIn && to.name === 'Onboarding') {
-    try {
-      if (!isAdminUser || !(await shouldCapturePersona())) {
-        return next({ name: 'Home' })
-      }
-    } catch {
-      return next({ name: 'Home' })
-    }
-  }
-
-  if (
-    isLoggedIn &&
-    isCrmUser() &&
-    !personaChecked &&
-    to.name !== 'Onboarding' &&
-    isAdminUser
-  ) {
-    personaChecked = true
-    try {
-      if (await shouldCapturePersona()) {
-        return next({ name: 'Onboarding' })
-      }
-    } catch (error) {
-      // fail open
-    }
-  }
-
   if (isLoggedIn && to.name !== 'Not Permitted' && !isCrmUser()) {
     next({ name: 'Not Permitted' })
   } else if (to.name === 'Not Permitted' && isLoggedIn && isCrmUser()) {
     next({ name: 'Home' })
-  } else if (to.name === 'Home' && isLoggedIn) {
-    const { views, getDefaultView } = viewsStore()
-    await views.promise
-
-    let defaultView = getDefaultView()
-    if (!defaultView) {
-      next({ name: 'Leads' })
-      return
-    }
-
-    let { route_name, type, name, is_standard } = defaultView
-    route_name = route_name || 'Leads'
-
-    if (name && !is_standard) {
-      next({
-        name: route_name,
-        params: { viewType: type },
-        query: { view: name },
-      })
-    } else {
-      next({ name: route_name, params: { viewType: type } })
-    }
+  } else if (to.name === 'Home' && isLoggedIn && isMobileView()) {
+    next(await mobileHomeRoute())
+  } else if (to.name === 'Home' && isLoggedIn && from === START_LOCATION) {
+    const landing = await landingPageRoute()
+    if (landing) next(landing)
+    else next()
   } else if (!isLoggedIn) {
     window.location.href = '/login?redirect-to=/crm'
   } else if (to.matched.length === 0) {
@@ -241,6 +225,7 @@ router.beforeEach(async (to, from, next) => {
       'Notes',
       'Tasks',
       'Call Logs',
+      'Data Imports',
     ].includes(to.name) &&
     !to.query?.view
   ) {
@@ -259,6 +244,7 @@ router.beforeEach(async (to, from, next) => {
         Notes: 'FCRM Note',
         Tasks: 'CRM Task',
         'Call Logs': 'CRM Call Log',
+        'Data Imports': 'Data Import',
       }
 
       const doctype = doctypeMap[to.name]

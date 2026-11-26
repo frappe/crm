@@ -1,16 +1,16 @@
-import frappeUIPreset from 'frappe-ui/tailwind'
+import frappeUIPreset, { content as frappeUIContent } from 'frappe-ui/tailwind'
 
 export default {
   presets: [frappeUIPreset],
   content: [
     './index.html',
     './src/**/*.{vue,js,ts,jsx,tsx}',
-    './node_modules/frappe-ui/src/**/*.{vue,js,ts,jsx,tsx}',
-    '../node_modules/frappe-ui/src/**/*.{vue,js,ts,jsx,tsx}',
-    './node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
-    '../node_modules/frappe-ui/frappe/**/*.{vue,js,ts,jsx,tsx}',
-    // linked @framework/ui source (apps/frappe/ui/src) — scan so its utility and
-    // arbitrary-variant classes (e.g. Notifications TabButtons overrides) are generated
+    ...frappeUIContent,
+    // @whatsapp/ui source, beside CRM or the pinned release whatsapp-ui.js clones — its icons
+    // are `lucide-*` utility classes, and unscanned source fails silently as blank icons
+    '../../whatsapp/ui/src/**/*.{vue,js,ts,jsx,tsx}',
+    './.cache/whatsapp/*/ui/src/**/*.{vue,js,ts,jsx,tsx}',
+    // linked @framework/ui source, for the Grid and Link the account form uses
     '../../frappe/ui/src/**/*.{vue,js,ts,jsx,tsx}',
   ],
   safelist: [

@@ -18,9 +18,14 @@
                   :image="user.doc.user_image"
                   :label="fullName"
                 />
+                <div
+                  class="absolute -bottom-0.5 -right-0.5 flex rounded-full bg-surface-elevation-2 p-0.5"
+                >
+                  <AvailabilityDot class="!size-3" />
+                </div>
                 <Tooltip
                   :hoverDelay="0"
-                  placement="bottom"
+                  side="bottom"
                   :text="profileTooltipText"
                 >
                   <div
@@ -93,6 +98,50 @@
         <div class="flex items-center justify-between mt-6">
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
+              {{ __('Availability') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{
+                __(
+                  "Set your availability so your team knows when you're reachable.",
+                )
+              }}
+            </span>
+          </div>
+          <AvailabilitySelect />
+        </div>
+        <div class="flex items-center justify-between mt-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-base-medium text-ink-gray-8">
+              {{ __('Landing page') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{ __('Choose the page CRM opens to.') }}
+            </span>
+          </div>
+          <LandingPageSelect />
+        </div>
+        <div
+          v-if="settings.doc?.enable_morning_digest"
+          class="flex items-center justify-between mt-6"
+        >
+          <div class="flex flex-col gap-1">
+            <span class="text-base-medium text-ink-gray-8">
+              {{ __('Morning digest email') }}
+            </span>
+            <span class="text-p-sm text-ink-gray-6">
+              {{
+                __(
+                  'Get your follow-ups, replies, new assignments and tasks by email at about 8 AM.',
+                )
+              }}
+            </span>
+          </div>
+          <MorningDigestSwitch />
+        </div>
+        <div class="flex items-center justify-between mt-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-base-medium text-ink-gray-8">
               {{ __('Emails & Signature') }}
             </span>
             <span class="text-p-sm text-ink-gray-6">
@@ -135,7 +184,12 @@
 import EditIcon from '@/components/Icons/EditIcon.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import ChangePasswordModal from '@/components/Modals/ChangePasswordModal.vue'
+import AvailabilitySelect from './AvailabilitySelect.vue'
+import LandingPageSelect from './LandingPageSelect.vue'
+import MorningDigestSwitch from './MorningDigestSwitch.vue'
+import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
+import { getSettings } from '@/stores/settings'
 import { validateIsImageFile } from '@/utils'
 import {
   Avatar,
@@ -149,6 +203,8 @@ import {
 import { ref, computed, inject, useTemplateRef, nextTick } from 'vue'
 
 const emit = defineEmits(['updateStep'])
+
+const { _settings: settings } = getSettings()
 
 const { user: sessionUser } = inject('session')
 const user = createDocumentResource({ doctype: 'User', name: sessionUser })
@@ -175,7 +231,7 @@ const fullName = computed({
 
 function editFullName() {
   editName.value = true
-  nextTick(() => fullNameRef.value?.el?.focus())
+  nextTick(() => fullNameRef.value?.focus())
 }
 
 const isDirty = computed(() => {

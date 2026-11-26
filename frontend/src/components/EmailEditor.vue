@@ -98,13 +98,32 @@
         </div>
       </div>
       <EditorContent
+        data-resizable-editor
         :class="[
           'prose-sm max-w-none [&_p.reply-to-content]:hidden',
-          editable && 'mx-4 max-h-[35vh] overflow-y-auto border-t py-3',
+          editable && 'mx-4 overflow-y-auto border-t py-3',
+          editable && !height && 'max-h-[35vh]',
         ]"
+        :style="editable && height ? { height: `${height}px` } : null"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
+        <div
+          v-if="unsubscribedEmails.length"
+          role="status"
+          class="mx-4 flex items-center gap-2 rounded-6 bg-surface-gray-2 px-3 py-2 text-sm text-ink-gray-7"
+        >
+          <span
+            class="lucide-info size-4 shrink-0 text-ink-amber-5"
+            aria-hidden="true"
+          />
+          {{
+            __(
+              "{0} unsubscribed from emails for this record, so they won't receive this email.",
+              [unsubscribedEmails.join(', ')],
+            )
+          }}
+        </div>
         <div class="flex flex-wrap gap-2 px-4">
           <AttachmentItem
             v-for="a in attachments"
@@ -131,11 +150,9 @@
               @click="showEmailTemplateSelectorModal = true"
             />
             <FileUploader
-              :upload-args="{
-                doctype: doctype,
-                docname: modelValue.name,
-                private: true,
-              }"
+              :doctype="doctype"
+              :docname="modelValue.name"
+              private
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
@@ -149,7 +166,6 @@
             </FileUploader>
             <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
-              v-slot="{ togglePopover }"
               v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
@@ -157,17 +173,26 @@
                 :tooltip="__('Insert Emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
-                @click="togglePopover()"
               />
             </IconPicker>
           </div>
           <div class="mt-2 flex items-center justify-end space-x-2 sm:mt-0">
+            <slot name="actions" />
             <Button v-bind="discardButtonProps || {}" :label="__('Discard')" />
-            <Button
-              variant="solid"
-              v-bind="submitButtonProps || {}"
-              :label="`${__('Send')} (${submitShortcutLabel})`"
-            />
+            <div class="flex">
+              <Button
+                variant="solid"
+                v-bind="submitButtonProps || {}"
+                :class="{ 'rounded-r-none': scheduleSend }"
+                :disabled="submitButtonProps?.disabled || sendBlocked"
+                :label="`${__('Send')} (${submitShortcutLabel})`"
+              />
+              <ScheduleSendButton
+                v-if="scheduleSend"
+                :disabled="submitButtonProps?.disabled || sendBlocked"
+                @schedule="scheduleSend"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -182,6 +207,7 @@
 
 <script setup>
 import IconPicker from '@/components/IconPicker.vue'
+import ScheduleSendButton from '@/components/ScheduleSendButton.vue'
 import SmileIcon from '@/components/Icons/SmileIcon.vue'
 import EmailTemplateIcon from '@/components/Icons/EmailTemplateIcon.vue'
 import AttachmentIcon from '@/components/Icons/AttachmentIcon.vue'
@@ -200,7 +226,7 @@ import {
   EditorFixedMenu,
   EditorTableMenu,
 } from 'frappe-ui/editor'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { useDocument } from '@/data/document'
 import { validateEmail, submitShortcutLabel } from '@/utils'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -214,6 +240,9 @@ const props = defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  // (sendAfter, label, confirmed) => void; shows the schedule-send menu next to Send
+  scheduleSend: { type: Function, default: null },
+  height: { type: Number, default: 0 },
 })
 
 const CustomParagraph = Paragraph.extend({
@@ -255,6 +284,8 @@ const fromEmail = ref('')
 const toEmails = ref(modelValue.value.email ? [modelValue.value.email] : [])
 const ccEmails = ref([])
 const bccEmails = ref([])
+// Communication this email replies to; Frappe threads the email on its message_id
+const inReplyTo = ref('')
 const ccInput = ref(null)
 const bccInput = ref(null)
 
@@ -265,12 +296,15 @@ const extensions = buildEditorExtensions({
 
 const from = computed(() => {
   if (!user.doc || !user.doc.user_emails?.length) return []
-  let emails = user.doc.user_emails.map((e) => {
-    return {
-      label: e.email_account + ' <' + e.email_id + '>',
-      value: e.email_id,
-    }
-  })
+  // accounts without outgoing can't send; the backend would fall back to the default account
+  let emails = user.doc.user_emails
+    .filter((e) => e.enable_outgoing)
+    .map((e) => {
+      return {
+        label: e.email_account + ' <' + e.email_id + '>',
+        value: e.email_id,
+      }
+    })
 
   if (emails.length == 1 && emails[0].email_id === sessionUser) return []
 
@@ -294,6 +328,46 @@ watch(
 )
 
 const editor = computed(() => textEditor.value?.editor)
+
+const unsubscribedEmails = ref([])
+const checkingRecipients = ref(false)
+const sendBlocked = computed(
+  () => checkingRecipients.value || !!unsubscribedEmails.value.length,
+)
+
+const allRecipients = computed(() => [
+  ...new Set([...toEmails.value, ...ccEmails.value, ...bccEmails.value]),
+])
+
+watch(
+  [allRecipients, () => modelValue.value.name],
+  async ([emails, name], _, onCleanup) => {
+    let stale = false
+    onCleanup(() => (stale = true))
+    if (!emails.length || !name) {
+      unsubscribedEmails.value = []
+      checkingRecipients.value = false
+      return
+    }
+    checkingRecipients.value = true
+    // Fail open: frappe drops unsubscribed recipients on its own, so a failed
+    // check should not stop every email from being sent.
+    const unsubscribed = await call('crm.api.get_unsubscribed_emails', {
+      emails,
+      doctype: props.doctype,
+      name,
+    }).catch(() => [])
+    if (stale) return
+    unsubscribedEmails.value = unsubscribed
+    checkingRecipients.value = false
+  },
+  { immediate: true },
+)
+
+watch(unsubscribedEmails, (emails) => {
+  if (emails.some((e) => ccEmails.value.includes(e))) cc.value = true
+  if (emails.some((e) => bccEmails.value.includes(e))) bcc.value = true
+})
 
 function removeAttachment(attachment) {
   attachments.value = attachments.value.filter((a) => a !== attachment)
@@ -359,5 +433,7 @@ defineExpose({
   toEmails,
   ccEmails,
   bccEmails,
+  inReplyTo,
+  sendBlocked,
 })
 </script>

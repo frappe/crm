@@ -9,11 +9,13 @@
   >
     <div class="relative w-full">
       <EditorContent
+        data-resizable-editor
         :class="[
           'prose-sm max-w-none',
-          editable &&
-            'mx-4 max-h-[50vh] min-h-[7rem] overflow-y-auto border-t py-3',
+          editable && 'mx-4 min-h-[7rem] overflow-y-auto border-t py-3',
+          editable && !height && 'max-h-[50vh]',
         ]"
+        :style="editable && height ? { height: `${height}px` } : null"
       />
       <EditorTableMenu />
       <div v-if="editable" class="flex flex-col gap-2">
@@ -37,11 +39,9 @@
         >
           <div class="flex gap-1 items-center overflow-x-auto">
             <FileUploader
-              :upload-args="{
-                doctype: doctype,
-                docname: modelValue.name,
-                private: true,
-              }"
+              :doctype="doctype"
+              :docname="modelValue.name"
+              private
               @success="(f) => attachments.push(f)"
             >
               <template #default="{ openFileSelector }">
@@ -55,7 +55,6 @@
             </FileUploader>
             <EditorFixedMenu :items="fullToolbar" />
             <IconPicker
-              v-slot="{ togglePopover }"
               v-model="emoji"
               @update:modelValue="() => appendEmoji()"
             >
@@ -63,7 +62,6 @@
                 :tooltip="__('Insert Emoji')"
                 :icon="SmileIcon"
                 variant="ghost"
-                @click="togglePopover()"
               />
             </IconPicker>
           </div>
@@ -92,7 +90,7 @@ import {
 } from '@/components/editor/config'
 import { submitShortcutLabel } from '@/utils'
 import { usersStore } from '@/stores/users'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import { FileUploader } from 'frappe-ui'
 import {
   Editor,
@@ -109,6 +107,7 @@ defineProps({
   editorProps: { type: Object, default: () => ({}) },
   submitButtonProps: { type: Object, default: () => ({}) },
   discardButtonProps: { type: Object, default: () => ({}) },
+  height: { type: Number, default: 0 },
 })
 
 const modelValue = defineModel({ type: Object })
@@ -131,7 +130,7 @@ const users = computed(
     usersList.data?.crmUsers
       ?.filter((user) => user.enabled)
       .map((user) => ({
-        id: user.name,
+        value: user.name,
         label: user.full_name?.trim() || user.name,
       })) || [],
 )

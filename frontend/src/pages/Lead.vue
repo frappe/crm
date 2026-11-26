@@ -23,16 +23,12 @@
         @done="onEnriched"
       />
       <AssignTo v-model="assignees.data" doctype="CRM Lead" :docname="leadId" />
-      <Dropdown
-        v-if="doc && document.statuses"
-        :options="statuses"
-        placement="right"
-      >
+      <Dropdown v-if="doc && document.statuses" :options="statuses" align="end">
         <template #default="{ open }">
           <Button
             v-if="doc.status"
             :label="statusLabel(doc.status)"
-            :iconRight="open ? 'chevron-up' : 'chevron-down'"
+            :iconRight="open ? 'lucide-chevron-up' : 'lucide-chevron-down'"
           >
             <template #prefix>
               <IndicatorIcon :class="getLeadStatus(doc.status).color" />
@@ -57,15 +53,15 @@
   </LayoutHeader>
   <div v-if="doc.name" class="flex h-full overflow-hidden">
     <Tabs
-      v-model="tabIndex"
+      v-model="activeTab"
       :tabs="tabs"
-      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-0 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-7.5 [&_[role='tabpanel']:not([hidden])]:flex [&_[role='tabpanel']:not([hidden])]:grow"
+      class="flex flex-1 overflow-hidden flex-col [&_[role='tab']]:px-1 [&_[role='tab']]:shrink-0 [&_[role='tablist']]:px-5 [&_[role='tablist']::-webkit-scrollbar]:h-0 [&_[role='tablist']]:min-h-[45px] [&_[role='tablist']]:gap-[22px] [&>[role='tabpanel']:not([hidden])]:flex [&>[role='tabpanel']:not([hidden])]:grow [&>[data-slot=tab-list]]:overflow-x-auto [&_[data-slot=tab-indicator]]:translate-y-0 [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel>
         <Activities
           ref="activities"
           v-model:reload="reload"
-          v-model:tabIndex="tabIndex"
+          v-model:activeTab="activeTab"
           doctype="CRM Lead"
           :docname="leadId"
           :tabs="tabs"
@@ -101,14 +97,14 @@
                     ? {
                         options: [
                           {
-                            icon: 'upload',
+                            icon: 'lucide-upload',
                             label: doc.image
                               ? __('Change Image')
                               : __('Upload Image'),
                             onClick: openFileSelector,
                           },
                           {
-                            icon: 'trash-2',
+                            icon: 'lucide-trash-2',
                             label: __('Remove Image'),
                             onClick: () => updateField('image', ''),
                           },
@@ -152,6 +148,7 @@
 
                 <Button
                   :tooltip="__('Send an Email')"
+                  :disabled="!emailTab"
                   :icon="Email2Icon"
                   @click="
                     doc.email
@@ -177,6 +174,13 @@
                   @click="showFilesUploader = true"
                 />
 
+                <FollowUpPopover
+                  doctype="CRM Lead"
+                  :docname="leadId"
+                  :title="followUpTitle"
+                  @created="reloadActivities"
+                />
+
                 <Button
                   v-if="canDelete"
                   :tooltip="__('Delete')"
@@ -191,6 +195,11 @@
           </div>
         </template>
       </FileUploader>
+      <NextFollowUp
+        :tasks="activities?.all_activities?.data?.tasks"
+        @open="(task) => activities.modalRef.showTask(task)"
+        @change="reloadActivities"
+      />
       <SLASection
         v-if="doc.sla_status"
         v-model="doc"
@@ -257,6 +266,7 @@ import EmailIcon from '@/components/Icons/EmailIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import DetailsIcon from '@/components/Icons/DetailsIcon.vue'
+import EventIcon from '@/components/Icons/EventIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
@@ -275,6 +285,8 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
+import FollowUpPopover from '@/components/FollowUp/FollowUpPopover.vue'
+import NextFollowUp from '@/components/FollowUp/NextFollowUp.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -288,6 +300,7 @@ import { globalStore } from '@/stores/global'
 import { statusesStore } from '@/stores/statuses'
 import { getMeta } from '@/stores/meta'
 import { useDocument } from '@/data/document'
+import { mergeFormTabs, composerTab } from '@/utils/formTabs'
 import { whatsappEnabled } from '@/composables/whatsapp'
 import { callEnabled } from '@/composables/telephony'
 import { useCommandPaletteContext } from '@/composables/useCommandPalette'
@@ -380,9 +393,7 @@ watch(
         $dialog,
         $socket,
         router,
-        toast,
         updateField,
-        createToast: toast.create,
         deleteDoc: deleteLead,
         call,
       })
@@ -427,6 +438,16 @@ const title = computed(() => {
   return doc.value?.[t] || props.leadId
 })
 
+const followUpTitle = computed(() =>
+  __('Follow up with {0}', [
+    doc.value.lead_name || doc.value.organization || title.value,
+  ]),
+)
+
+function reloadActivities() {
+  activities.value?.all_activities?.reload()
+}
+
 const statuses = computed(() => {
   let customStatuses = document.statuses?.length
     ? document.statuses
@@ -444,13 +465,14 @@ function leadCommands() {
     ...communicationCommands(),
   ]
   commands.push(...scriptCommands())
-  commands.push({
-    id: 'lead-convert',
-    title: 'Convert to deal',
-    group: 'Lead',
-    icon: 'repeat-2',
-    perform: () => (showConvertToDealModal.value = true),
-  })
+  if (!isLeadConversionDisabled.value)
+    commands.push({
+      id: 'lead-convert',
+      title: 'Convert to deal',
+      group: 'Lead',
+      icon: 'repeat-2',
+      perform: () => (showConvertToDealModal.value = true),
+    })
   if (canDelete.value) commands.push(deleteLeadCommand())
   return commands
 }
@@ -567,55 +589,70 @@ const tabs = computed(() => {
   let tabOptions = [
     {
       name: 'Activity',
+      value: 'activity',
       label: __('Activity'),
-      icon: ActivityIcon,
+      iconLeft: ActivityIcon,
     },
     {
       name: 'Emails',
+      value: 'emails',
       label: __('Emails'),
-      icon: EmailIcon,
+      iconLeft: EmailIcon,
     },
     {
       name: 'Comments',
+      value: 'comments',
       label: __('Comments'),
-      icon: CommentIcon,
+      iconLeft: CommentIcon,
     },
     {
       name: 'Data',
+      value: 'data',
       label: __('Data'),
-      icon: DetailsIcon,
+      iconLeft: DetailsIcon,
+    },
+    {
+      name: 'Events',
+      value: 'events',
+      label: __('Events'),
+      iconLeft: EventIcon,
     },
     {
       name: 'Calls',
+      value: 'calls',
       label: __('Calls'),
-      icon: PhoneIcon,
+      iconLeft: PhoneIcon,
     },
     {
       name: 'Tasks',
+      value: 'tasks',
       label: __('Tasks'),
-      icon: TaskIcon,
+      iconLeft: TaskIcon,
     },
     {
       name: 'Notes',
+      value: 'notes',
       label: __('Notes'),
-      icon: NoteIcon,
+      iconLeft: NoteIcon,
     },
     {
       name: 'Attachments',
+      value: 'attachments',
       label: __('Attachments'),
-      icon: AttachmentIcon,
+      iconLeft: AttachmentIcon,
     },
     {
       name: 'WhatsApp',
+      value: 'whatsapp',
       label: __('WhatsApp'),
-      icon: WhatsAppIcon,
+      iconLeft: WhatsAppIcon,
       condition: () => whatsappEnabled.value,
     },
   ]
-  return tabOptions.filter((tab) => (tab.condition ? tab.condition() : true))
+  return mergeFormTabs(tabOptions, document.tabs)
 })
 
-const { tabIndex, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
+const { activeTab, changeTabTo } = useActiveTabManager(tabs, 'lastLeadTab')
 
 const sections = createResource({
   url: 'crm.fcrm.doctype.crm_fields_layout.crm_fields_layout.get_sidepanel_sections',
@@ -655,12 +692,12 @@ function deleteLead() {
   showDeleteLinkedDocModal.value = true
 }
 
+const emailTab = computed(() => composerTab(tabs.value, activeTab.value))
+
 function openEmailBox() {
-  let currentTab = tabs.value[tabIndex.value]
-  if (!['Emails', 'Comments', 'Activities'].includes(currentTab.name)) {
-    activities.value.changeTabTo('emails')
-  }
-  nextTick(() => activities.value.emailBox?.openEmailBox())
+  if (!emailTab.value) return
+  changeTabTo(emailTab.value)
+  nextTick(() => activities.value?.emailBox?.openEmailBox())
 }
 
 function statusLabel(status) {

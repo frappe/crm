@@ -10,10 +10,12 @@
   "restore_demo_data",
   "enable_forecasting",
   "enable_sales_hierarchy",
+  "disable_onboarding",
   "auto_update_expected_deal_value",
   "update_timestamp_on_new_communication",
   "auto_mark_replied_on_response",
   "auto_reopen_on_new_communication",
+  "enable_morning_digest",
   "activity_timeline_section",
   "crm_timeline_timestamp_format",
   "crm_timeline_sort_order",
@@ -32,9 +34,11 @@
   "default_calendar_view",
   "event_notifications",
   "all_day_event_notifications",
+  "insights_dashboards_tab",
+  "insights_dashboards",
   "dropdown_items_tab",
   "dropdown_items",
-  "persona_captured"
+  "setup_completed"
  ],
  "fields": [
   {
@@ -62,6 +66,17 @@
    "fieldname": "brand_logo",
    "fieldtype": "Attach",
    "label": "Logo"
+  },
+  {
+   "fieldname": "insights_dashboards_tab",
+   "fieldtype": "Tab Break",
+   "label": "Dashboards"
+  },
+  {
+   "fieldname": "insights_dashboards",
+   "fieldtype": "Table",
+   "label": "Insights Dashboards",
+   "options": "CRM Insights Dashboard"
   },
   {
    "fieldname": "dropdown_items_tab",
@@ -92,6 +107,13 @@
    "fieldname": "enable_sales_hierarchy",
    "fieldtype": "Check",
    "label": "Enable Sales Hierarchy Permissions"
+  },
+  {
+   "default": "0",
+   "description": "Hide the Getting Started checklist and Help panel for all users.",
+   "fieldname": "disable_onboarding",
+   "fieldtype": "Check",
+   "label": "Disable Onboarding"
   },
   {
    "fieldname": "currency",
@@ -167,24 +189,31 @@
   },
   {
    "default": "1",
-   "description": "Update the modified timestamp on new email communication & comment for leads & deals",
+   "description": "Update the modified timestamp on new emails, messages & comments for leads & deals",
    "fieldname": "update_timestamp_on_new_communication",
    "fieldtype": "Check",
    "label": "Update timestamp on new communication"
   },
   {
    "default": "0",
-   "description": "Automatically sets Communication Status to \u201cReplied\u201d for the lead or deal when a response is received. Applies only when SLA is enabled",
+   "description": "Automatically sets Communication Status to “Replied” for the lead or deal when a response is received. Applies only when SLA is enabled",
    "fieldname": "auto_mark_replied_on_response",
    "fieldtype": "Check",
    "label": "Mark lead/deal as replied on response"
   },
   {
    "default": "0",
-   "description": "Automatically sets Communication Status to \u201cOpen\u201d for the lead or deal when a new communication is created. Applies only when SLA is enabled",
+   "description": "Automatically sets Communication Status to “Open” for the lead or deal when a new communication is created. Applies only when SLA is enabled",
    "fieldname": "auto_reopen_on_new_communication",
    "fieldtype": "Check",
    "label": "Reopen lead/deal on new communication"
+  },
+  {
+   "default": "1",
+   "description": "Email each sales user a summary of their follow-ups, replies, new assignments and tasks at about 8 AM their time",
+   "fieldname": "enable_morning_digest",
+   "fieldtype": "Check",
+   "label": "Morning digest email"
   },
   {
    "fieldname": "restore_demo_data",
@@ -214,17 +243,17 @@
   },
   {
    "default": "0",
-   "description": "Set once the first admin completes the onboarding persona questionnaire",
-   "fieldname": "persona_captured",
+   "description": "Set once the first admin finishes or skips the setup flow",
+   "fieldname": "setup_completed",
    "fieldtype": "Check",
    "hidden": 1,
-   "label": "Persona Captured"
+   "label": "Setup Completed"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-03-27 18:02:14.802197",
+ "modified": "2026-11-25 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "FCRM",
  "name": "FCRM Settings",

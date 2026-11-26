@@ -14,7 +14,7 @@ def hierarchy_enabled() -> bool:
 	return bool(frappe.db.get_single_value("FCRM Settings", "enable_sales_hierarchy"))
 
 
-def _permission_query_conditions(user: str | None, doctype: str):
+def permission_query_conditions(user: str | None, doctype: str):
 	if not user:
 		user = frappe.session.user
 
@@ -37,7 +37,7 @@ def _permission_query_conditions(user: str | None, doctype: str):
 
 	if in_tree:
 		# Owner is the user themselves or any member of their subtree
-		q1 = (DT[owner_field] == user) | DT[owner_field].isin(_team_mem_query(user))
+		q1 = (DT[owner_field] == user) | DT[owner_field].isin(team_members_query(user))
 		# Assigned to the user or any member of their subtree by ToDo
 		q2 = DT.name.isin(
 			frappe.qb.from_(Todo)
@@ -45,7 +45,7 @@ def _permission_query_conditions(user: str | None, doctype: str):
 			.where(
 				(Todo.reference_type == doctype)
 				& (Todo.status != "Cancelled")
-				& ((Todo.allocated_to == user) | (Todo.allocated_to.isin(_team_mem_query(user))))
+				& ((Todo.allocated_to == user) | (Todo.allocated_to.isin(team_members_query(user))))
 			)
 		)
 		return q1 | q2
@@ -61,12 +61,12 @@ def _permission_query_conditions(user: str | None, doctype: str):
 
 
 def get_lead_permission_query_conditions(user=None):
-	cond = _permission_query_conditions(user, "CRM Lead")
+	cond = permission_query_conditions(user, "CRM Lead")
 	return cond.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'") if cond else ""
 
 
 def get_deal_permission_query_conditions(user=None):
-	cond = _permission_query_conditions(user, "CRM Deal")
+	cond = permission_query_conditions(user, "CRM Deal")
 	return cond.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'") if cond else ""
 
 
@@ -88,7 +88,7 @@ def _has_permission(doc, ptype, user, doctype: str) -> bool | None:
 	if "Sales Manager" in roles and not in_tree:
 		return True
 
-	conditions = _permission_query_conditions(user, doctype)
+	conditions = permission_query_conditions(user, doctype)
 	DT = frappe.qb.DocType(doctype)
 	return bool(
 		frappe.qb.from_(DT).select(DT.name).where(DT.name == doc.name).where(conditions).limit(1).run()
@@ -107,7 +107,7 @@ def _in_hierarchy(user: str) -> bool:
 	return bool(frappe.db.exists("CRM Sales Hierarchy", {"user": user}))
 
 
-def _team_mem_query(user: str):
+def team_members_query(user: str):
 	Mgr = frappe.qb.DocType("CRM Sales Hierarchy").as_("_sqmgr")
 	Member = frappe.qb.DocType("CRM Sales Hierarchy").as_("_sqmem")
 	return (
@@ -116,4 +116,64 @@ def _team_mem_query(user: str):
 		.on((Member.lft >= Mgr.lft) & (Member.lft <= Mgr.rgt))
 		.select(Member.user)
 		.where(Mgr.user == user)
+	)
+
+
+def call_log_query_conditions(user: str | None = None):
+	"""Caller, receiver, their managers, and anyone who can read the linked lead or deal."""
+	if not user:
+		user = frappe.session.user
+
+	if user == "Administrator":
+		return ""
+
+	roles = frappe.get_roles(user)
+	if "System Manager" in roles:
+		return ""
+
+	in_tree = hierarchy_enabled() and _in_hierarchy(user)
+	if "Sales Manager" in roles and not in_tree:
+		return ""
+
+	Call = frappe.qb.DocType("CRM Call Log")
+	Link = frappe.qb.DocType("Dynamic Link").as_("_link")
+
+	people = (Call.caller == user) | (Call.receiver == user)
+	if in_tree:
+		people |= Call.caller.isin(team_members_query(user)) | Call.receiver.isin(team_members_query(user))
+
+	conditions = people
+	for doctype in _OWNER_FIELD:
+		DT = frappe.qb.DocType(doctype)
+		readable = frappe.qb.from_(DT).select(DT.name).where(permission_query_conditions(user, doctype))
+		# manual logs set the reference, telephony integrations add links
+		conditions |= (Call.reference_doctype == doctype) & Call.reference_docname.isin(readable)
+		conditions |= Call.name.isin(
+			frappe.qb.from_(Link)
+			.select(Link.parent)
+			.where(
+				(Link.parenttype == "CRM Call Log")
+				& (Link.link_doctype == doctype)
+				& Link.link_name.isin(readable)
+			)
+		)
+	return conditions
+
+
+def get_call_log_permission_query_conditions(user=None):
+	cond = call_log_query_conditions(user)
+	return cond.get_sql(with_namespace=True, quote_char="`", secondary_quote_char="'") if cond else ""
+
+
+def has_call_log_permission(doc, ptype, user):
+	if ptype == "create" or not doc.name:
+		return True
+
+	conditions = call_log_query_conditions(user)
+	if not conditions:
+		return True
+
+	Call = frappe.qb.DocType("CRM Call Log")
+	return bool(
+		frappe.qb.from_(Call).select(Call.name).where(Call.name == doc.name).where(conditions).limit(1).run()
 	)

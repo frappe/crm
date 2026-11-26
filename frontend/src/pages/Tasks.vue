@@ -11,21 +11,25 @@
       <Button
         variant="solid"
         :label="__('Create')"
-        iconLeft="plus"
+        iconLeft="lucide-plus"
         @click="createTask"
       />
     </template>
   </LayoutHeader>
   <ViewControls
+    v-if="briefReady"
     ref="viewControls"
     v-model="tasks"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Task"
+    :filters="briefFilters"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'kanban'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="$route.params.viewType == 'kanban' && rows.length"
@@ -46,11 +50,10 @@
           <TaskPriorityIcon :priority="getRow(itemName, titleField).label" />
         </div>
         <div v-else-if="titleField === 'assigned_to'">
-          <Avatar
+          <UserAvatar
             v-if="getRow(itemName, titleField).full_name"
             class="flex items-center"
-            :image="getRow(itemName, titleField).user_image"
-            :label="getRow(itemName, titleField).full_name"
+            :user="getRow(itemName, titleField).name"
             size="sm"
           />
         </div>
@@ -86,11 +89,10 @@
           <TaskPriorityIcon :priority="getRow(itemName, fieldName).label" />
         </div>
         <div v-else-if="fieldName === 'assigned_to'">
-          <Avatar
+          <UserAvatar
             v-if="getRow(itemName, fieldName).full_name"
             class="flex items-center"
-            :image="getRow(itemName, fieldName).user_image"
-            :label="getRow(itemName, fieldName).full_name"
+            :user="getRow(itemName, fieldName).name"
             size="sm"
           />
         </div>
@@ -104,7 +106,7 @@
         </div>
         <div
           v-else-if="fieldName == 'description'"
-          class="truncate text-base max-h-44"
+          class="truncate overflow-hidden text-base max-h-44"
         >
           <!-- content is passed through sanitizeHTML() (DOMPurify) before rendering, so v-html is safe here -->
           <!-- eslint-disable vue/no-v-html -->
@@ -183,7 +185,16 @@
   <EmptyState
     v-else-if="tasks.data && !rows.length"
     name="Tasks"
-    :icon="Email2Icon"
+    :icon="TaskIcon"
+    :title="__('No tasks yet')"
+    :description="
+      __(
+        'Tasks are to-dos for you and your team, like a follow-up call or sending a quote. Add them here or from a lead or deal.',
+      )
+    "
+    :filtered="!!Object.keys(tasks.params?.filters || {}).length"
+    docsLink="https://docs.frappe.io/crm/task"
+    @create="createTask()"
   />
   <DeleteLinkedDocModal
     v-if="showDeleteTaskModal"
@@ -196,14 +207,16 @@
 </template>
 
 <script setup>
+import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ArrowUpRightIcon from '@/components/Icons/ArrowUpRightIcon.vue'
 import TaskStatusIcon from '@/components/Icons/TaskStatusIcon.vue'
 import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
-import Email2Icon from '@/components/Icons/Email2Icon.vue'
+import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
@@ -212,19 +225,28 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, sanitizeHTML } from '@/utils'
+import { formatTaskDue } from '@/utils/task'
 import { timestampCell } from '@/composables/useTimelinePreferences'
-import { useOnboarding, useTelemetry } from 'frappe-ui/frappe'
-import { Tooltip, Avatar, Dropdown } from 'frappe-ui'
+import { useTelemetry } from '@framework/ui/telemetry'
+import { useCrmOnboarding } from '@/composables/onboarding'
+import { Tooltip, Dropdown } from 'frappe-ui'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { getFormattedPercent, getFormattedFloat, getFormattedCurrency } =
   getMeta('CRM Task')
 const { getUser } = usersStore()
-const { updateOnboardingStep } = useOnboarding('frappecrm')
+const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 
 const router = useRouter()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  ready: briefReady,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 const tasksListView = ref(null)
 
@@ -319,6 +341,10 @@ function parseRows(rows, columns = []) {
         _rows[row] = getFormattedPercent(row, task)
       }
 
+      if (row == 'due_date' && view_type === 'kanban') {
+        _rows[row] = formatTaskDue(task)
+      }
+
       if (['modified', 'creation'].includes(row)) {
         _rows[row] = timestampCell(task[row])
       } else if (row == 'assigned_to') {
@@ -337,7 +363,7 @@ const { showModal } = useDoctypeModal()
 const taskCallbacks = {
   afterInsert: () => {
     tasks.value.reload()
-    updateOnboardingStep('create_first_task')
+    completeStep('create_first_task')
     capture('task_created')
   },
   afterUpdate: () => {
@@ -377,12 +403,12 @@ function actions(name) {
   return [
     {
       label: __('Edit'),
-      icon: 'edit-2',
+      icon: 'lucide-edit-2',
       onClick: () => showTask(name),
     },
     {
       label: __('Delete'),
-      icon: 'trash-2',
+      icon: 'lucide-trash-2',
       onClick: () => {
         taskToDelete.value = name
         showDeleteTaskModal.value = true

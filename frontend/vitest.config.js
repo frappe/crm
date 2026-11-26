@@ -9,7 +9,7 @@ export default defineConfig({
     environment: 'happy-dom',
     root: import.meta.dirname,
     setupFiles: ['./tests/setup.js'],
-    include: ['tests/**/*.test.js', 'src/**/*.test.js'],
+    include: ['tests/**/*.test.{js,ts}', 'src/**/*.test.{js,ts}'],
     server: {
       deps: {
         inline: ['frappe-ui'],
@@ -33,6 +33,13 @@ export default defineConfig({
       {
         find: /^~icons\/.*/,
         replacement: path.resolve(import.meta.dirname, 'tests/stubs/icon.js'),
+      },
+      {
+        find: /^@framework\/ui\/(.*)$/,
+        replacement: path.resolve(
+          import.meta.dirname,
+          'tests/stubs/framework/$1',
+        ),
       },
     ],
   },

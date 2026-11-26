@@ -2,7 +2,9 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
+from frappe.utils import escape_html
 
 
 class CRMNotification(Document):
@@ -24,12 +26,12 @@ class CRMNotification(Document):
 		reference_doctype: DF.Link | None
 		reference_name: DF.DynamicLink | None
 		to_user: DF.Link
-		type: DF.Literal["Mention", "Task", "Assignment", "WhatsApp"]
+		type: DF.Literal["Mention", "Task", "Assignment", "WhatsApp", "Automation", "Reply", "Reminder"]
 	# end: auto-generated types
 
 	def on_update(self):
 		if self.to_user:
-			frappe.publish_realtime("crm_notification", user=self.to_user)
+			frappe.publish_realtime("crm_notification", user=self.to_user, after_commit=True)
 
 
 def get_permission_query_conditions(user=None):
@@ -82,3 +84,34 @@ def notify_user(notification):
 	if frappe.db.exists("CRM Notification", values):
 		return
 	frappe.get_doc(values).insert(ignore_permissions=True)
+
+
+def get_record_title(doctype: str, name: str) -> str:
+	if doctype == "CRM Lead":
+		title = frappe.db.get_value(doctype, name, "lead_name")
+	elif doctype == "CRM Deal":
+		deal = frappe.db.get_value(doctype, name, ["organization", "lead_name"], as_dict=True)
+		title = deal and (deal.organization or deal.lead_name)
+	else:
+		title = None
+	return title or name
+
+
+def record_label(doctype: str) -> str:
+	return _("deal") if doctype == "CRM Deal" else _("lead")
+
+
+def highlight(text: str) -> str:
+	return f'<span class="font-medium text-ink-gray-9">{escape_html(text)}</span>'
+
+
+def notification_html(text: str) -> str:
+	return f'<div class="mb-2 leading-5 text-ink-gray-5"><span>{text}</span></div>'
+
+
+def on_doctype_update():
+	# Not search_index on to_user (what Notification Log uses): for a user with
+	# thousands of notifications the database skips that index and scans the whole
+	# table to count unread ones. Adding `read` lets the count come from the index
+	# alone. `read` is quoted because it is a reserved word in SQL.
+	frappe.db.add_index("CRM Notification", ["to_user", "`read`"], "to_user_read_index")

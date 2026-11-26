@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+      - version-15
+      - version-16
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Entire Repository
         uses: actions/checkout@v6

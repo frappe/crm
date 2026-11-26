@@ -6,8 +6,11 @@ from frappe.tests import IntegrationTestCase
 from frappe.utils.nestedset import rebuild_tree
 
 from crm.api.activities import get_activities
+from crm.api.event import get_calendar_people
 from crm.permissions.org_hierarchy import (
+	get_call_log_permission_query_conditions,
 	get_lead_permission_query_conditions,
+	has_call_log_permission,
 	has_deal_permission,
 	has_lead_permission,
 	hierarchy_enabled,
@@ -170,6 +173,68 @@ class TestOrgHierarchy(IntegrationTestCase):
 			frappe.set_user("Administrator")
 
 	# ------------------------------------------------------------------
+	# Call logs
+	# ------------------------------------------------------------------
+
+	def test_caller_and_receiver_can_read_call(self):
+		call = make_call_log(caller="rep1@hier.test", receiver="rep2@hier.test")
+		self.assertTrue(has_call_log_permission(call, "read", "rep1@hier.test"))
+		self.assertTrue(has_call_log_permission(call, "read", "rep2@hier.test"))
+
+	def test_manager_can_read_report_call(self):
+		call = make_call_log(caller="rep1@hier.test")
+		self.assertTrue(has_call_log_permission(call, "read", "manager@hier.test"))
+
+	def test_peer_cannot_read_sibling_call(self):
+		call = make_call_log(caller="rep1@hier.test")
+		self.assertFalse(has_call_log_permission(call, "read", "rep2@hier.test"))
+		self.assertFalse(has_call_log_permission(call, "read", "outsider@hier.test"))
+
+	def test_call_on_readable_lead_is_readable(self):
+		lead = make_lead("rep2@hier.test")
+		call = make_call_log(caller="outsider@hier.test", reference=("CRM Lead", lead.name))
+		self.assertTrue(has_call_log_permission(call, "read", "rep2@hier.test"))
+		self.assertFalse(has_call_log_permission(call, "read", "rep1@hier.test"))
+
+	def test_call_linked_to_readable_deal_is_readable(self):
+		deal = make_deal("rep2@hier.test")
+		call = make_call_log(caller="outsider@hier.test", link=("CRM Deal", deal.name))
+		self.assertTrue(has_call_log_permission(call, "read", "rep2@hier.test"))
+		self.assertTrue(has_call_log_permission(call, "read", "manager@hier.test"))
+		self.assertFalse(has_call_log_permission(call, "read", "rep1@hier.test"))
+
+	def test_call_log_list_follows_hierarchy(self):
+		mine = make_call_log(caller="rep1@hier.test")
+		peer = make_call_log(caller="rep2@hier.test")
+		frappe.set_user("rep1@hier.test")
+		try:
+			names = frappe.get_list("CRM Call Log", pluck="name", limit_page_length=0)
+		finally:
+			frappe.set_user("Administrator")
+		self.assertIn(mine.name, names)
+		self.assertNotIn(peer.name, names)
+
+	def test_sales_manager_outside_tree_sees_all_calls(self):
+		frappe.db.delete("CRM Sales Hierarchy", {"user": "manager@hier.test"})
+		self.assertFalse(get_call_log_permission_query_conditions("manager@hier.test"))
+
+	# ------------------------------------------------------------------
+	# Calendar people
+	# ------------------------------------------------------------------
+
+	def test_calendar_people_follow_hierarchy(self):
+		for user, people in (
+			("manager@hier.test", ["manager@hier.test", "rep1@hier.test", "rep2@hier.test"]),
+			("rep1@hier.test", ["rep1@hier.test"]),
+			("outsider@hier.test", ["outsider@hier.test"]),
+		):
+			frappe.set_user(user)
+			try:
+				self.assertEqual(get_calendar_people(), people)
+			finally:
+				frappe.set_user("Administrator")
+
+	# ------------------------------------------------------------------
 	# Hierarchy disabled
 	# ------------------------------------------------------------------
 
@@ -255,3 +320,23 @@ def assign_todo(doctype, docname, allocated_to, status="Open"):
 			"description": f"Test assignment to {allocated_to}",
 		}
 	).insert(ignore_permissions=True)
+
+
+def make_call_log(caller=None, receiver=None, reference=None, link=None):
+	doc = frappe.get_doc(
+		{
+			"doctype": "CRM Call Log",
+			"id": frappe.generate_hash(length=12),
+			"from": "+911234567890",
+			"to": "+919876543210",
+			"type": "Outgoing",
+			"status": "Completed",
+			"caller": caller,
+			"receiver": receiver,
+		}
+	)
+	if reference:
+		doc.reference_doctype, doc.reference_docname = reference
+	if link:
+		doc.append("links", {"link_doctype": link[0], "link_name": link[1]})
+	return doc.insert(ignore_permissions=True)

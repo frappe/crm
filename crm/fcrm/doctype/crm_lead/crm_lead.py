@@ -9,6 +9,7 @@ from frappe.desk.form.assign_to import _add as assign
 from frappe.model.document import Document
 from frappe.utils import validate_email_address
 
+from crm.api.whatsapp import guard_doc_recipient_change
 from crm.automation.events import emit_lead_converted
 from crm.fcrm.doctype.crm_service_level_agreement.utils import get_sla
 from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import (
@@ -35,6 +36,7 @@ class CRMLead(Document):
 		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
 
 		annual_revenue: DF.Currency
+		awaiting_reply_since: DF.Datetime | None
 		communication_status: DF.Link | None
 		converted: DF.Check
 		email: DF.Data | None
@@ -47,7 +49,9 @@ class CRMLead(Document):
 		image: DF.AttachImage | None
 		industry: DF.Link | None
 		job_title: DF.Data | None
+		last_inbound_at: DF.Datetime | None
 		last_name: DF.Data | None
+		last_outbound_at: DF.Datetime | None
 		last_responded_on: DF.Datetime | None
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None
@@ -93,7 +97,9 @@ class CRMLead(Document):
 		self.set_lead_name()
 		self.set_title()
 		self.validate_email()
+		self.validate_unique_fields()
 		self.validate_lost_reason()
+		guard_doc_recipient_change(self)
 		if not self.is_new() and self.has_value_changed("lead_owner") and self.lead_owner:
 			self.share_with_agent(self.lead_owner)
 			self.assign_agent(self.lead_owner)
@@ -156,6 +162,16 @@ class CRMLead(Document):
 
 			if self.email == self.lead_owner:
 				frappe.throw(_("Lead Owner cannot be same as the Lead Email Address"))
+
+	def validate_unique_fields(self):
+		# DB may keep a non-unique index when Unique is set via Customize Form
+		for df in self.meta.get("fields", {"unique": 1}):
+			value = self.get(df.fieldname)
+			if value and frappe.db.exists(self.doctype, {df.fieldname: value, "name": ("!=", self.name)}):
+				frappe.throw(
+					_("{0} {1} already exists").format(_(df.label), frappe.bold(value)),
+					frappe.UniqueValidationError,
+				)
 
 	def validate_lost_reason(self):
 		"""
@@ -413,6 +429,12 @@ class CRMLead(Document):
 		for user in self.get_assigned_users():
 			if user and user != new_deal.deal_owner:
 				new_deal.assign_agent(user)
+
+		# Each co-assignee ToDo makes its user the owner (newest owns), so restore the lead's owner.
+		if new_deal.deal_owner:
+			frappe.db.set_value(
+				"CRM Deal", new_deal.name, "deal_owner", new_deal.deal_owner, update_modified=False
+			)
 
 		return new_deal.name
 

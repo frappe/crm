@@ -1,12 +1,12 @@
-import { call, dayjs, dayjsLocal } from 'frappe-ui'
+import { call } from 'frappe-ui'
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useTelemetry } from 'frappe-ui/frappe'
+import { useTelemetry } from '@framework/ui/telemetry'
 import router from '@/router'
 import { activeSettingsPage, showSettings } from '@/composables/settings'
 import { useBroadcast } from '@/composables/useBroadcast'
 import { useDoctypeModal } from '@/composables/doctypeModal'
-import { isWhatsappInstalled } from '@/composables/whatsapp'
+import { isWhatsAppInstalled } from '@/composables/whatsapp'
 import {
   commandPaletteOpen,
   commandPaletteQuery,
@@ -15,17 +15,24 @@ import {
   setCommandPaletteProvider,
 } from '@/composables/useCommandPalette'
 import { getNavigationItems } from '@/utils/navigation'
+import { activityHashFor } from '@/utils/activityHash'
+import { activityCommand } from './activityCommands'
+import { askFlowCommands } from './askFlowCommands'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import { prettyDate } from '@/utils'
+import {
+  readRecent,
+  recentNamesByDoctype,
+  rememberRoute,
+  sortByRecency,
+} from '@/utils/recentRecords'
+import { formatTaskDue, isTaskOverdue } from '@/utils/task'
 import { sessionStore } from '@/stores/session'
 import { usersStore } from '@/stores/users'
-
-const RECENT_TYPES = { Lead: 'CRM Lead', Deal: 'CRM Deal' }
-const RECENT_LIMIT = 5
 
 // Contextual groups are named after the page ('Lead', 'List'), not listed below.
 const CONTEXT_RANK = 350
@@ -62,7 +69,7 @@ const SETTINGS_SECTIONS = [
       ['Brand', 'palette'],
       ['Dashboard', 'layout-dashboard'],
       ['Defaults', 'list-checks'],
-      ['Home Actions', 'house'],
+      ['App menu', 'menu', 'customize dropdown logo links'],
     ],
   },
   {
@@ -101,8 +108,9 @@ export function useCRMCommands() {
     showModal,
     user,
     isManager,
-    whatsappInstalled: isWhatsappInstalled,
+    whatsappInstalled: isWhatsAppInstalled,
     state,
+    route: useRoute(),
   }
   setCommandPaletteProvider(() => buildCommands(context))
   installWatchers(context)
@@ -111,6 +119,7 @@ export function useCRMCommands() {
 function createSearchState() {
   return {
     records: ref([]),
+    activity: ref([]),
     recent: ref([]),
     upcoming: ref([]),
     error: ref(false),
@@ -136,6 +145,12 @@ function buildCommands(context) {
     ...state.records.value.map((item) =>
       recordCommand(item, 'Records', tracked),
     ),
+    ...state.activity.value.map((hit) =>
+      tracked(activityCommand(hit, openActivity), 'activity'),
+    ),
+    ...askFlowCommands(commandPaletteQuery.value, context.route).map(
+      (command) => tracked(command, 'ask-flow'),
+    ),
   ])
 }
 
@@ -160,7 +175,7 @@ function trackWith(capture) {
 }
 
 function installWatchers(context) {
-  const route = useRoute()
+  const { route } = context
   watch(commandPaletteOpen, (open) => onVisibility(open, context))
   watch(commandPaletteQuery, (query) => scheduleSearch(query, context))
   watch(route, () => rememberRoute(route, context.user), { immediate: true })
@@ -175,9 +190,10 @@ function onVisibility(open, context) {
 
 function scheduleSearch(query, context) {
   clearTimeout(context.state.timer)
+  context.state.requestId++
   commandPaletteSearching.value = query.trim().length >= 2
   if (!query.trim()) return fetchRecords('', context)
-  if (query.trim().length < 2) return (context.state.records.value = [])
+  if (query.trim().length < 2) return clearMatches(context.state)
   context.state.timer = setTimeout(() => fetchRecords(query, context), 180)
 }
 
@@ -193,15 +209,21 @@ async function fetchRecords(query, context) {
     commandPaletteSearching.value = false
     context.state.error.value = false
     context.state.records.value = data.matches || []
+    context.state.activity.value = data.activity || []
     context.state.recent.value = sortByRecency(data.recent || [], recent)
     context.state.upcoming.value = data.upcoming || []
   } catch (error) {
     if (currentRequest !== context.state.requestId) return
     commandPaletteSearching.value = false
     context.state.error.value = true
-    context.state.records.value = []
+    clearMatches(context.state)
     console.error('Command palette record search failed', error)
   }
+}
+
+function clearMatches(state) {
+  state.records.value = []
+  state.activity.value = []
 }
 
 function searchErrorCommand() {
@@ -225,8 +247,8 @@ function upcomingCommands(items, tracked) {
         group: 'Upcoming',
         icon: item.kind === 'task' ? TaskIcon : 'timer',
         subtitle: __(item.label),
-        badge: dueBadge(item.due),
-        badgeClass: isOverdue(item.due) ? 'text-ink-red-5' : 'text-ink-gray-5',
+        badge: dueBadge(item),
+        badgeClass: isOverdue(item) ? 'text-ink-red-7' : 'text-ink-gray-5',
         perform: () => router.push(upcomingRoute(item)),
       },
       'upcoming',
@@ -234,13 +256,19 @@ function upcomingCommands(items, tracked) {
   )
 }
 
-function isOverdue(due) {
-  return dayjsLocal(due).isBefore(dayjs())
+function isOverdue(item) {
+  return isTaskOverdue({ due_date: item.due, all_day: item.all_day })
 }
 
-function dueBadge(due) {
-  const relative = prettyDate(due, true)
-  return isOverdue(due) ? __('{0} overdue', [relative]) : relative
+function dueBadge(item) {
+  const due = item.all_day
+    ? formatTaskDue({ due_date: item.due, all_day: 1 })
+    : prettyDate(item.due, true)
+  return isOverdue(item) ? __('{0} overdue', [due]) : due
+}
+
+function openActivity(hit) {
+  router.push({ ...upcomingRoute(hit), hash: activityHashFor(hit) })
 }
 
 function upcomingRoute(item) {
@@ -324,7 +352,7 @@ function settingsCommands(tracked, isManager, whatsappInstalled) {
         group: 'Account',
         icon: 'settings',
         keywords:
-          'configure preferences profile users brand telephony erpnext automations',
+          'configure preferences profile users brand telephony erpnext automations app menu',
         children: () =>
           settingsChildren(tracked, isManager(), whatsappInstalled),
       },
@@ -338,8 +366,8 @@ function settingsChildren(tracked, isManager, whatsappInstalled) {
     (section) => isManager || !section.manager,
   )
   const commands = sections.flatMap((section) =>
-    section.pages.map(([page, icon]) =>
-      settingsChild(page, icon, section.title),
+    section.pages.map(([page, icon, keywords]) =>
+      settingsChild(page, icon, section.title, keywords),
     ),
   )
   if (isManager && whatsappInstalled) {
@@ -348,13 +376,13 @@ function settingsChildren(tracked, isManager, whatsappInstalled) {
   return commands.map((command) => tracked(command, 'settings'))
 }
 
-function settingsChild(page, icon, group) {
+function settingsChild(page, icon, group, keywords = '') {
   return {
     id: `settings-${page}`,
     title: page,
     group,
     icon,
-    keywords: `configure settings ${page}`,
+    keywords: `configure settings ${page} ${keywords}`.trim(),
     perform: () => openSettings(page),
   }
 }
@@ -387,49 +415,4 @@ function recordCommand(record, group, tracked) {
 function recordRoute(record) {
   const param = `${record.route.toLowerCase()}Id`
   return { name: record.route, params: { [param]: record.name } }
-}
-
-function rememberRoute(route, user) {
-  const doctype = RECENT_TYPES[route.name]
-  if (!doctype) return
-  const param = `${route.name.toLowerCase()}Id`
-  const name = route.params[param]
-  if (!name) return
-  const recent = [
-    { doctype, name },
-    ...readRecent(user).filter(
-      (item) => item.doctype !== doctype || item.name !== name,
-    ),
-  ].slice(0, RECENT_LIMIT)
-  localStorage.setItem(recentKey(user), JSON.stringify(recent))
-}
-
-// Newest first across doctypes, e.g. [{ doctype: 'CRM Deal', name: 'D-1' }].
-function readRecent(user) {
-  try {
-    const recent = JSON.parse(localStorage.getItem(recentKey(user)) || '[]')
-    return Array.isArray(recent) ? recent : []
-  } catch {
-    return []
-  }
-}
-
-function recentNamesByDoctype(recent) {
-  const names = {}
-  for (const { doctype, name } of recent) {
-    names[doctype] = [...(names[doctype] || []), name]
-  }
-  return names
-}
-
-function sortByRecency(records, recent) {
-  const position = (record) =>
-    recent.findIndex(
-      (item) => item.doctype === record.doctype && item.name === record.name,
-    )
-  return [...records].sort((a, b) => position(a) - position(b))
-}
-
-function recentKey(user) {
-  return `crm-command-palette-recent:${user || 'anonymous'}`
 }
