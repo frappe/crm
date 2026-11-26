@@ -464,6 +464,7 @@ def notify_deal_quotation_change(doc, method=None):
 @frappe.whitelist()
 def get_quotation_url(crm_deal: str, organization: str | None = None):
 	_check_deal_permission(crm_deal)
+	organization = _get_quotation_organization(crm_deal, organization)
 	erpnext_crm_settings = _get_enabled_settings()
 
 	contact = get_primary_contact(crm_deal)
@@ -498,6 +499,13 @@ def get_quotation_url(crm_deal: str, organization: str | None = None):
 	query_string = urlencode({key: value for key, value in params.items() if value is not None})
 
 	return f"{base_url}?{query_string}"
+
+
+def _get_quotation_organization(crm_deal: str, organization: str | None = None):
+	deal_organization = frappe.db.get_value("CRM Deal", crm_deal, "organization")
+	if organization and organization != deal_organization:
+		frappe.throw(_("Organization does not match the CRM Deal"), frappe.PermissionError)
+	return deal_organization
 
 
 def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
@@ -579,12 +587,19 @@ def get_contacts(doc):
 
 
 def get_organization_address(organization: str | None = None):
+	"""Return an organization's address only when both records are readable."""
 	if not organization:
 		return None
+	frappe.has_permission("CRM Organization", "read", doc=organization, throw=True)
 	address = frappe.db.get_value("CRM Organization", organization, "address")
 	address = frappe.get_cached_doc("Address", address) if address else None
 	if not address:
 		return None
+	address.check_permission("read")
+	return _get_address_details(address)
+
+
+def _get_address_details(address):
 	return {
 		"name": address.name,
 		"address_title": address.address_title,
