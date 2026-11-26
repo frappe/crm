@@ -4,6 +4,7 @@ from frappe.utils import add_to_date
 
 from crm.api import activities, record
 from crm.fcrm.doctype.crm_call_log.test_crm_call_log import create_test_lead
+from crm.fcrm.doctype.crm_deal.test_crm_deal import create_test_deal
 
 OTHER_USER = "crm.user1@example.com"
 
@@ -18,16 +19,16 @@ class TestRecordActivities(IntegrationTestCase):
 		todo.save(ignore_version=False)
 		todo.add_comment("Comment", "Spoke to them")
 		file = attach_file(todo)
+		add_communication(todo)
 		note = add_reference("FCRM Note", todo)
 		task = add_reference("CRM Task", todo)
 
 		result = record.get_activities("ToDo", todo.name)
 
-		types = [a["activity_type"] for a in result["activities"]]
-		self.assertIn("creation", types)
-		self.assertIn("changed", types)
-		self.assertIn("comment", types)
-		self.assertIn("note", types)
+		types = {a["activity_type"] for a in result["activities"]}
+		self.assertLessEqual(
+			{"creation", "changed", "comment", "attachment_log", "communication", "note"}, types
+		)
 		self.assertEqual([n.name for n in result["notes"]], [note.name])
 		self.assertEqual([t.name for t in result["tasks"]], [task.name])
 		self.assertEqual([a.name for a in result["attachments"]], [file.name])
@@ -64,6 +65,17 @@ class TestRecordActivities(IntegrationTestCase):
 		self.assertTrue(all(a["is_lead"] for a in timeline))
 		self.assertEqual([n.name for n in notes], [note.name])
 
+	def test_deal_timeline_is_unchanged(self):
+		deal = create_test_deal(organization="Record Activities Deal Org")
+		deal.add_comment("Comment", "Deal comment")
+
+		timeline, *_ = activities.get_activities(deal.name)
+
+		types = [a["activity_type"] for a in timeline]
+		self.assertEqual(types[-1], "creation")
+		self.assertIn("comment", types)
+		self.assertFalse(any(a["is_lead"] for a in timeline))
+
 
 class TestUpdateRecord(IntegrationTestCase):
 	"""crm.api.record.update_record refuses a save based on a stale `modified`."""
@@ -88,12 +100,15 @@ class TestUpdateRecord(IntegrationTestCase):
 			record.update_record("ToDo", todo.name, {"description": "Mine"}, str(todo.modified))
 		self.assertEqual(frappe.db.get_value("ToDo", todo.name, "description"), "Theirs")
 
-	def test_standard_fields_are_refused(self):
+	def test_only_writable_fields_are_accepted(self):
 		todo = create_todo()
 
-		with self.assertRaises(frappe.ValidationError):
-			record.update_record("ToDo", todo.name, {"owner": OTHER_USER}, str(todo.modified))
-		self.assertEqual(frappe.db.get_value("ToDo", todo.name, "owner"), "Administrator")
+		# standard, internal, read-only and unknown keys
+		for values in ({"owner": OTHER_USER}, {"__islocal": 1}, {"assignment_rule": "x"}, {"nope": 1}):
+			with self.subTest(values=values), self.assertRaises(frappe.ValidationError):
+				record.update_record("ToDo", todo.name, {"description": "Mine", **values}, str(todo.modified))
+		self.assertEqual(frappe.db.get_value("ToDo", todo.name, "description"), "Record activities test")
+		self.assertEqual(frappe.db.count("ToDo", {"description": "Record activities test"}), 1)
 
 	def test_refuses_a_record_the_user_cannot_write(self):
 		todo = create_todo()
@@ -123,3 +138,17 @@ def attach_file(doc):
 		attached_to_doctype=doc.doctype,
 		attached_to_name=doc.name,
 	).insert()
+
+
+def add_communication(doc):
+	return frappe.get_doc(
+		doctype="Communication",
+		communication_type="Communication",
+		communication_medium="Email",
+		sent_or_received="Received",
+		subject="Record activities email",
+		content="Hello",
+		sender="someone@example.com",
+		reference_doctype=doc.doctype,
+		reference_name=doc.name,
+	).insert(ignore_permissions=True)
