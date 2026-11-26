@@ -5,7 +5,7 @@
   >
     <Button
       :label="__('Install Insights')"
-      iconLeft="lucide-chart-pie"
+      :iconLeft="InsightsIcon"
       :loading="cloud.opening.value"
       @click="install"
     />
@@ -13,6 +13,7 @@
 </template>
 
 <script setup>
+import InsightsIcon from '@/components/Icons/InsightsIcon.vue'
 import { useCloudSettings } from '@/composables/cloudSettings'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { Button, Tooltip } from 'frappe-ui'
