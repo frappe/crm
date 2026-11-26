@@ -20,18 +20,15 @@ vi.mock('@framework/ui/telemetry', () => ({
   useTelemetry: () => ({ capture: vi.fn() }),
 }))
 
-vi.mock('@framework/ui/components/ActivityTimeline', async () => {
-  const { defineComponent, h } = await import('vue')
-  return {
-    EmailItem: defineComponent({
-      setup:
-        (_, { slots }) =>
-        () =>
-          h('div', slots.actions?.()),
-    }),
-  }
-})
-
+vi.mock('@/components/Activities/TimelineTimestamp.vue', () => ({
+  default: { render: () => null },
+}))
+vi.mock('@/components/Activities/EmailContent.vue', () => ({
+  default: { render: () => null },
+}))
+vi.mock('@/components/AttachmentItem.vue', () => ({
+  default: { render: () => null },
+}))
 vi.mock('@/composables/followUp', () => ({
   openFollowUpForm: vi.fn(),
   useAddFollowUp: () => ({ addFollowUp: vi.fn(), recordCreated: vi.fn() }),
