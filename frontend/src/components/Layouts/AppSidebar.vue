@@ -13,72 +13,88 @@
       v-model:collapsed="isSidebarCollapsed"
       :collapsible="!mobile"
       :width="mobile ? '260px' : undefined"
-      class="border-r border-outline-gray-1"
+      class="peer/sidebar border-r border-outline-gray-1"
     >
       <div class="flex h-full flex-col p-2">
         <UserDropdown :isCollapsed="isCollapsed" />
 
         <!-- overflow-y-auto forces overflow-x to clip too, which would slice the
              active row's shadow. Widen the scroll box to the sidebar edges and
-             pad the content back in so the shadow has room. -->
+             pad the content back in so the shadow has room.
+             Its rows are shrink-0: once the views overflow the box, flex would
+             otherwise squeeze them below their h-7. -->
         <div class="-mx-2 mt-2 flex flex-1 flex-col gap-1 overflow-y-auto px-2">
-          <SidebarItem :label="__('Search')" @click="onSearchClick">
-            <template #prefix>
-              <LucideSearch class="size-4 text-ink-gray-7" />
-            </template>
-            <span class="flex-1 truncate text-sm leading-tighter">
-              {{ __('Search') }}
-            </span>
-            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
-              K
-            </KeyboardShortcut>
-          </SidebarItem>
-
-          <SidebarItem
-            v-if="showFlow"
-            class="shrink-0"
-            :label="__('Flow')"
-            @click="onFlowClick"
-          >
-            <template #prefix>
-              <FlowIcon class="size-4 text-ink-gray-7" />
-            </template>
-            <span class="flex-1 truncate text-sm leading-tighter">
-              {{ __('Flow') }}
-            </span>
-            <KeyboardShortcut v-if="!mobile" class="mr-2" meta bg>
-              I
-            </KeyboardShortcut>
-          </SidebarItem>
-
-          <SidebarItem
-            id="notifications-btn"
-            :label="__('Notifications')"
-            :route="mobile ? { name: 'Notifications' } : undefined"
-            :active="mobile && activeItem === 'Notifications'"
-            @click="onNotificationsClick"
-          >
-            <template #prefix>
-              <span class="relative grid size-4 place-items-center">
-                <NotificationsIcon class="size-4 text-ink-gray-7" />
-                <span
-                  v-if="isCollapsed && unreadNotificationsCount"
-                  class="absolute -right-1 -top-1 size-1.5 rounded-full bg-surface-gray-9 ring-1 ring-[var(--surface-gray-1)]"
-                />
+          <!-- Set apart from the views by the same gap as the app logo above. -->
+          <div class="mb-3 flex shrink-0 flex-col gap-1">
+            <SidebarItem
+              class="shrink-0"
+              :label="__('Search')"
+              @click="onSearchClick"
+            >
+              <template #prefix>
+                <LucideSearch class="size-4 text-ink-gray-7" />
+              </template>
+              <span class="flex-1 truncate text-sm leading-tighter">
+                {{ __('Search') }}
               </span>
-            </template>
-            <!-- Not in #suffix: that slot sits outside the button, so a click on
-                 the count would not toggle the panel. -->
-            <span class="flex-1 truncate text-sm leading-tighter">
-              {{ __('Notifications') }}
-            </span>
-            <Badge
-              v-if="unreadNotificationsCount"
-              class="mr-2"
-              :label="unreadNotificationsCount"
-              variant="subtle"
-            />
-          </SidebarItem>
+              <span
+                v-if="!mobile"
+                class="mr-2 rounded-1 bg-surface-gray-2 px-1 py-0.5"
+              >
+                <KeyboardShortcut combo="Mod+K" />
+              </span>
+            </SidebarItem>
+
+            <SidebarItem
+              id="notifications-btn"
+              class="shrink-0"
+              :label="__('Notifications')"
+              :route="mobile ? { name: 'Notifications' } : undefined"
+              :active="mobile && activeItem === 'Notifications'"
+              @click="onNotificationsClick"
+            >
+              <template #prefix>
+                <span class="relative grid size-4 place-items-center">
+                  <NotificationsIcon class="size-4 text-ink-gray-7" />
+                  <span
+                    v-if="isCollapsed && unreadNotificationsCount"
+                    class="absolute -right-1 -top-1 size-1.5 rounded-full bg-surface-gray-9 ring-1 ring-[var(--surface-gray-1)]"
+                  />
+                </span>
+              </template>
+              <!-- Not in #suffix: that slot sits outside the button, so a click on
+                   the count would not toggle the panel. -->
+              <span class="flex-1 truncate text-sm leading-tighter">
+                {{ __('Notifications') }}
+              </span>
+              <Badge
+                v-if="unreadNotificationsCount"
+                class="mr-2"
+                :label="unreadNotificationsCount"
+                variant="subtle"
+              />
+            </SidebarItem>
+
+            <SidebarItem
+              v-if="showFlow"
+              class="shrink-0"
+              :label="__('Flow')"
+              @click="onFlowClick"
+            >
+              <template #prefix>
+                <FlowIcon class="size-4 text-ink-gray-7" />
+              </template>
+              <span class="flex-1 truncate text-sm leading-tighter">
+                {{ __('Flow') }}
+              </span>
+              <span
+                v-if="!mobile"
+                class="mr-2 rounded-1 bg-surface-gray-2 px-1 py-0.5"
+              >
+                <KeyboardShortcut combo="Mod+I" />
+              </span>
+            </SidebarItem>
+          </div>
 
           <CollapsibleSection
             v-for="section in allViews"
@@ -130,49 +146,17 @@
           </CollapsibleSection>
         </div>
 
-        <div v-if="!mobile" class="mt-auto flex flex-col gap-1 pt-2">
-          <div class="mb-1 flex flex-col gap-2">
-            <SignupBanner
-              v-if="isDemoSite"
-              :isSidebarCollapsed="isCollapsed"
-              :afterSignup="() => capture('signup_from_demo_site')"
-            />
-            <TrialBanner
-              v-if="isFCSite && !isCloudSettingsAvailable()"
-              :isSidebarCollapsed="isCollapsed"
-              :afterUpgrade="() => capture('upgrade_plan_from_trial_banner')"
-            />
-            <TrialCard v-if="!isCollapsed" />
-          </div>
-          <SidebarItem
-            v-if="isManager() && isDemoDataCreated"
-            :label="__('Clear Demo Data')"
-            class="!text-ink-red-5 hover:!bg-surface-red-2"
-            @click="() => clearDemoData()"
-          >
-            <template #prefix>
-              <BrushCleaningIcon class="size-4" />
-            </template>
-          </SidebarItem>
-          <SidebarItem :label="__('Help')" @click="openDocs">
-            <template #prefix>
-              <HelpIcon class="size-4 text-ink-gray-7" />
-            </template>
-          </SidebarItem>
-          <SidebarItem
-            :label="isCollapsed ? __('Expand') : __('Collapse')"
-            @click="isSidebarCollapsed = !isSidebarCollapsed"
-          >
-            <template #prefix>
-              <CollapseSidebar
-                class="size-4 text-ink-gray-7 duration-300 ease-in-out"
-                :class="{ '[transform:rotateY(180deg)]': isCollapsed }"
-              />
-            </template>
-          </SidebarItem>
+        <div class="mt-auto flex flex-col gap-2 pt-2">
+          <SidebarNoticeStack v-if="!mobile" :isCollapsed="isCollapsed" />
+          <UserMenu :isCollapsed="isCollapsed" />
         </div>
       </div>
     </Sidebar>
+    <SidebarEdge
+      v-if="!mobile"
+      :collapsed="isCollapsed"
+      @toggle="isSidebarCollapsed = !isSidebarCollapsed"
+    />
     <Notifications v-if="!mobile" />
   </div>
 
@@ -182,7 +166,6 @@
 </template>
 
 <script setup>
-import BrushCleaningIcon from '~icons/lucide/brush-cleaning'
 import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
@@ -194,11 +177,8 @@ import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
 import NoteIcon from '@/components/Icons/NoteIcon.vue'
 import OrganizationsIcon from '@/components/Icons/OrganizationsIcon.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
-import CollapseSidebar from '@/components/Icons/CollapseSidebar.vue'
 import NotificationsIcon from '@/components/Icons/NotificationsIcon.vue'
-import HelpIcon from '@/components/Icons/HelpIcon.vue'
 import Notifications from '@/components/Notifications.vue'
-import KeyboardShortcut from '@/components/KeyboardShortcut.vue'
 import LucideSearch from '~icons/lucide/search'
 import FlowIcon from '@/components/Icons/FlowIcon.vue'
 import { hasFlowLauncher } from '@/utils/flowLauncher'
@@ -209,16 +189,18 @@ import {
   unreadNotificationsCount,
   notificationsStore,
 } from '@/stores/notifications'
-import { usersStore } from '@/stores/users'
 import { mobileSidebarOpened, closeMobileSidebar } from '@/composables/settings'
-import { Sidebar, SidebarItem, SidebarLabel, Tooltip } from 'frappe-ui'
-import { SignupBanner } from '@framework/ui/components/SignupBanner'
-import { TrialBanner } from '@framework/ui/components/TrialBanner'
-import TrialCard from '@/components/Layouts/TrialCard.vue'
-import { isCloudSettingsAvailable } from '@/composables/cloudSettings'
-import { useTelemetry } from '@framework/ui/telemetry'
+import {
+  KeyboardShortcut,
+  Sidebar,
+  SidebarItem,
+  SidebarLabel,
+  Tooltip,
+} from 'frappe-ui'
+import UserMenu from '@/components/Layouts/UserMenu.vue'
+import SidebarNoticeStack from '@/components/Layouts/SidebarNoticeStack.vue'
+import SidebarEdge from '@/components/Layouts/SidebarEdge.vue'
 import { useStorage } from '@vueuse/core'
-import { useDemoData } from '@/composables/demoData'
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -230,18 +212,12 @@ const route = useRoute()
 
 const { getPinnedViews, getPublicViews } = viewsStore()
 const { toggle: toggleNotificationPanel } = notificationsStore()
-const { capture } = useTelemetry()
-const { isManager } = usersStore()
-const { clearDemoData, isDemoDataCreated } = useDemoData()
 
 const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 
 // The mobile drawer pins the sidebar open, so it is never visually collapsed
 // even when the stored rail state says otherwise.
 const isCollapsed = computed(() => isSidebarCollapsed.value && !props.mobile)
-
-const isFCSite = ref(window.is_fc_site)
-const isDemoSite = ref(window.is_demo_site)
 
 const links = getNavigationItems({ mobile: props.mobile })
 const showFlow = hasFlowLauncher()
@@ -364,9 +340,5 @@ function onNotificationsClick(event) {
   } else {
     toggleNotificationPanel()
   }
-}
-
-function openDocs() {
-  window.open('https://docs.frappe.io/crm', '_blank', 'noopener')
 }
 </script>

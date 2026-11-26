@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import json
+from urllib.parse import urlencode
 
 import frappe
 from frappe import _
@@ -488,7 +489,7 @@ def get_quotation_url(crm_deal: str, organization: str | None = None):
 		}
 
 	# Filter out None values and build query string
-	query_string = "&".join(f"{key}={value}" for key, value in params.items() if value is not None)
+	query_string = urlencode({key: value for key, value in params.items() if value is not None})
 
 	return f"{base_url}?{query_string}"
 

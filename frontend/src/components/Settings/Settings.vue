@@ -75,7 +75,7 @@ import ERPNextSettings from '@/components/Settings/ERPNextSettings.vue'
 import LeadSyncSourcePage from '@/components/Settings/LeadSyncing/LeadSyncSourcePage.vue'
 import DefaultsSettings from '@/components/Settings/DefaultsSettings.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
-import HomeActions from '@/components/Settings/HomeActions.vue'
+import AppMenuSettings from '@/components/Settings/AppMenu/AppMenuSettings.vue'
 import FormsSettings from '@/components/Settings/Forms/FormsSettings.vue'
 import GeneralSettings from '@/components/Settings/GeneralSettings.vue'
 import EnrichmentSettings from '@/components/Settings/Enrichment/EnrichmentSettings.vue'
@@ -103,7 +103,7 @@ const { isManager, getUser } = usersStore()
 
 const user = computed(() => getUser() || {})
 
-const tabs = computed(() => {
+const allTabs = computed(() => {
   let _tabs = [
     {
       label: __('User Configuration'),
@@ -227,9 +227,9 @@ const tabs = computed(() => {
       label: __('Customization'),
       items: [
         {
-          label: __('Home Actions'),
-          component: markRaw(HomeActions),
-          icon: 'house',
+          label: __('App menu'),
+          component: markRaw(AppMenuSettings),
+          icon: 'menu',
         },
       ],
       condition: () => isManager(),
@@ -264,29 +264,39 @@ const tabs = computed(() => {
     },
   ]
 
-  return _tabs.filter((tab) => {
-    if (tab.condition && !tab.condition()) return false
-    if (tab.items) {
-      tab.items = tab.items.filter((item) => {
-        if (item.condition && !item.condition()) return false
-        return true
-      })
-    }
-    return true
-  })
+  return _tabs
 })
+
+const isVisible = (entry) => !entry.condition || entry.condition()
+
+const tabs = computed(() =>
+  allTabs.value
+    .filter(isVisible)
+    .map((tab) => ({ ...tab, items: tab.items.filter(isVisible) })),
+)
 
 const activeTab = ref(tabs.value[0].items[0])
 const sidebarContainer = ref(null)
 
 function setActiveTab(tabName) {
+  const pages = tabs.value.flatMap((tab) => tab.items)
   activeTab.value =
-    (tabName &&
-      tabs.value
-        .map((tab) => tab.items)
-        .flat()
-        .find((tab) => tab.label === tabName)) ||
-    tabs.value[0].items[0]
+    pages.find((page) => page.label === tabName) ||
+    nextVisiblePage(tabName, pages) ||
+    pages[0]
+}
+
+// A page the user cannot see opens the first one they can see after it.
+function nextVisiblePage(tabName, pages) {
+  const order = allTabs.value.flatMap((tab) =>
+    tab.items.map((item) => item.label),
+  )
+  const start = order.indexOf(tabName)
+  if (!tabName || start === -1) return null
+  return order
+    .slice(start + 1)
+    .map((label) => pages.find((page) => page.label === label))
+    .find(Boolean)
 }
 
 // Scroll the settings sidebar so the active page is in view (e.g. when opened

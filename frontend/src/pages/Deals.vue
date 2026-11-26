@@ -17,15 +17,21 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    v-if="briefReady"
     ref="viewControls"
     v-model="deals"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Deal"
+    :filters="briefFilters"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
+      groupSummary: true,
+      groupByExclude: ['naming_series', 'docstatus'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
@@ -188,6 +194,13 @@
       </div>
     </template>
   </KanbanView>
+  <GroupSummaryTable
+    v-else-if="viewControls?.groupSummary"
+    doctype="CRM Deal"
+    :settings="viewControls.groupSummary"
+    :filters="viewControls.currentFilters"
+    @update:settings="(s) => viewControls.updateGroupSummary(s)"
+  />
   <DealsListView
     v-else-if="deals.data && rows.length"
     ref="dealsListView"
@@ -236,6 +249,7 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
+import GroupSummaryTable from '@/components/GroupSummaryTable.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -250,6 +264,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import KanbanActivityCounts from '@/components/Kanban/KanbanActivityCounts.vue'
 import DealModal from '@/components/Modals/DealModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -278,6 +293,13 @@ const { showModal } = useDoctypeModal()
 const { on } = useBroadcast()
 
 const route = useRoute()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  ready: briefReady,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 function getRoute(name) {
   return {

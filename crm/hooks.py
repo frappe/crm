@@ -343,7 +343,10 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-	"hourly": ["crm.automation.events.emit_overdue_tasks"],
+	"hourly": [
+		"crm.automation.events.emit_overdue_tasks",
+		"crm.api.digest.send_morning_digests",
+	],
 	"daily": [
 		"crm.fcrm.doctype.crm_invitation.crm_invitation.expire_invitations",
 		"crm.fcrm.doctype.crm_view_settings.crm_view_settings.clear_old_versions",
@@ -353,7 +356,10 @@ scheduler_events = {
 	"hourly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_hourly"],
 	"monthly_long": ["crm.lead_syncing.background_sync.sync_leads_from_sources_monthly"],
 	"cron": {
-		"*/5 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes"],
+		"*/5 * * * *": [
+			"crm.lead_syncing.background_sync.sync_leads_from_sources_5_minutes",
+			"crm.fcrm.doctype.crm_task.reminders.send_follow_up_reminders",
+		],
 		"*/10 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_10_minutes"],
 		"*/15 * * * *": ["crm.lead_syncing.background_sync.sync_leads_from_sources_15_minutes"],
 	},
@@ -436,6 +442,7 @@ after_migrate = [
 	"crm.install.add_default_scripts",
 	"crm.install.add_web_form_custom_fields",
 	"crm.domain_enrichment.install.seed_default_rules_and_mappings",
+	"crm.install.add_assignment_index",
 ]
 
 sqlite_search = ["crm.search_sqlite.CRMSearch"]
@@ -464,25 +471,36 @@ standard_dropdown_items = [
 		"is_standard": 1,
 	},
 	{
+		"name1": "help",
+		"label": "Help",
+		"type": "Route",
+		"icon": "circle-question-mark",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "documentation",
+		"label": "Documentation",
+		"type": "Route",
+		"icon": "book-open",
+		"route": "https://docs.frappe.io/crm",
+		"open_in_new_window": 1,
+		"parent_submenu": "help",
+		"is_standard": 1,
+	},
+	{
 		"name1": "about",
 		"label": "About",
 		"type": "Route",
 		"icon": "info",
 		"route": "#",
+		"parent_submenu": "help",
 		"is_standard": 1,
 	},
 	{
 		"name1": "separator",
 		"label": "",
 		"type": "Separator",
-		"is_standard": 1,
-	},
-	{
-		"name1": "logout",
-		"label": "Log out",
-		"type": "Route",
-		"icon": "log-out",
-		"route": "#",
 		"is_standard": 1,
 	},
 ]

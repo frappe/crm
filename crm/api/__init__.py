@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 import frappe
 from bs4 import BeautifulSoup
 from frappe import _
@@ -107,38 +109,33 @@ def accept_invitation(key: str | None = None):
 	if not result:
 		frappe.throw(_("Invalid or expired key"))
 	invitation = frappe.get_doc("CRM Invitation", result[0])
+
+	frappe.local.response["type"] = "redirect"
+	if frappe.db.exists("User", invitation.email) and frappe.session.user != invitation.email:
+		accept_url = f"/api/method/crm.api.accept_invitation?key={key}"
+		frappe.local.response["location"] = "/login?" + urlencode({"redirect-to": accept_url})
+		return
+
 	is_new_user = invitation.accept()
-	invitation.reload()
 
 	# this is a GET request, which is rolled back unless a commit is requested
 	frappe.local.flags.commit = True
 
-	if invitation.status == "Accepted":
-		frappe.local.response["type"] = "redirect"
-		if is_new_user:
-			# a new user has no password yet, send them to the set password page
-			# which logs them in and redirects to /crm once the password is set
-			user = frappe.get_doc("User", invitation.email)
-			frappe.local.response["location"] = user._reset_password()
-		else:
-			frappe.local.login_manager.login_as(invitation.email)
-			frappe.local.response["location"] = "/crm"
+	if is_new_user:
+		# a new user has no password yet, send them to the set password page
+		# which logs them in and redirects to /crm once the password is set
+		user = frappe.get_doc("User", invitation.email)
+		frappe.local.response["location"] = user._reset_password()
+	else:
+		frappe.local.response["location"] = "/crm"
 
 
 @frappe.whitelist()
 def invite_by_email(emails: str, role: str):
+	from crm.fcrm.doctype.crm_invitation.crm_invitation import validate_can_invite
+
 	frappe.only_for(["Sales Manager", "System Manager"], True)
-
-	user_roles = frappe.get_roles(frappe.session.user)
-
-	if role == "System Manager" and "System Manager" not in user_roles:
-		frappe.throw(_("You are not allowed to invite System Managers"), frappe.PermissionError)
-
-	if role == "Sales Manager" and "System Manager" not in user_roles:
-		frappe.throw(_("You are not allowed to invite Sales Managers"), frappe.PermissionError)
-
-	if role not in ["System Manager", "Sales Manager", "Sales User"]:
-		frappe.throw(_("Cannot invite for this role"), frappe.PermissionError)
+	validate_can_invite(role)
 
 	if not emails:
 		return

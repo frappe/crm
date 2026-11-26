@@ -10,6 +10,7 @@ describe('navigationItems', () => {
     const mobileRoutes = getNavigationItems({ mobile: true }).map(
       (item) => item.route,
     )
+    expect(mobileRoutes).not.toContain('Home')
     expect(mobileRoutes).not.toContain('Dashboard')
     expect(mobileRoutes).not.toContain('Calendar')
     expect(mobileRoutes).toContain('Leads')

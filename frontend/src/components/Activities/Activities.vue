@@ -188,6 +188,8 @@
             <EmailArea
               :activity="activity"
               :emailBox="emailBox"
+              :doctype="doctype"
+              :docname="docname"
               @reload="all_activities.reload()"
             />
           </div>

@@ -150,30 +150,44 @@ def add_task_to_call_log(call_sid: str, task: dict):
 
 @frappe.whitelist()
 def get_contact_lead_or_deal_from_number(number: str):
-	"""Get contact, lead or deal from the given number."""
-	contact = get_contact_by_phone_number(number)
-	if contact.get("name"):
-		doctype = "Contact"
-		docname = contact.get("name")
-		if contact.get("lead"):
-			doctype = "CRM Lead"
-			docname = contact.get("lead")
-		elif contact.get("deal"):
-			doctype = "CRM Deal"
-			docname = contact.get("deal")
-		return docname, doctype
-	return None, None
+	"""Name and doctype of the best match the user can read, or (None, None)."""
+	return _name_and_doctype(_contact_by_phone_number(number, readable_only=True))
+
+
+def find_contact_lead_or_deal_from_number(number: str):
+	"""Name and doctype of the best match whatever the user can read, or (None, None).
+	For server-side linking only, never return it to the user."""
+	return _name_and_doctype(_contact_by_phone_number(number))
 
 
 @frappe.whitelist()
 def get_contact_by_phone_number(phone_number: str):
-	"""Get contact by phone number."""
-	number = parse_phone_number(phone_number)
+	"""Contact for the best match the user can read, carrying `lead` or `deal`
+	when the match is one, so telephony callers can pick the record to link."""
+	return _contact_by_phone_number(phone_number, readable_only=True)
 
+
+def find_contact_by_phone_number(phone_number: str):
+	"""Like get_contact_by_phone_number, but whatever the user can read.
+	For server-side linking only, never return it to the user."""
+	return _contact_by_phone_number(phone_number)
+
+
+def _contact_by_phone_number(phone_number: str, readable_only: bool = False):
+	number = parse_phone_number(phone_number)
 	if number.get("is_valid"):
-		return get_contact(number.get("national_number"), number.get("country"))
-	else:
-		return get_contact(phone_number, number.get("country"), exact_match=True)
+		return get_contact(number.get("national_number"), number.get("country"), readable_only=readable_only)
+	return get_contact(phone_number, number.get("country"), exact_match=True, readable_only=readable_only)
+
+
+def _name_and_doctype(contact: dict):
+	if not contact.get("name"):
+		return None, None
+	if contact.get("lead"):
+		return contact["lead"], "CRM Lead"
+	if contact.get("deal"):
+		return contact["deal"], "CRM Deal"
+	return contact["name"], "Contact"
 
 
 def _resolve_validated_ip(hostname: str, port: int) -> str:
@@ -312,7 +326,12 @@ def get_recording_url(call_log_name: str):
 	return response
 
 
-def get_contact(phone_number: str, country: str = "IN", exact_match: bool = False):
+def get_contact(
+	phone_number: str, country: str = "IN", exact_match: bool = False, readable_only: bool = False
+):
+	def readable(doctype: str, name: str) -> bool:
+		return not readable_only or frappe.has_permission(doctype, "read", name)
+
 	if not phone_number:
 		return {"mobile_no": phone_number}
 
@@ -360,7 +379,7 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 				)
 				if are_same_phone_number(
 					contact.matched_phone, phone_number, country, validate=not exact_match
-				):
+				) and readable("CRM Deal", deal):
 					contact["deal"] = deal
 					return contact
 
@@ -381,13 +400,17 @@ def get_contact(phone_number: str, country: str = "IN", exact_match: bool = Fals
 
 	if len(leads):
 		for lead in leads:
-			if are_same_phone_number(lead.mobile_no, phone_number, country, validate=not exact_match):
+			if are_same_phone_number(
+				lead.mobile_no, phone_number, country, validate=not exact_match
+			) and readable("CRM Lead", lead.name):
 				lead["lead"] = lead.name
 				lead["full_name"] = lead.lead_name
 				return lead
 
-	if len(contacts) and are_same_phone_number(
-		contacts[0].matched_phone, phone_number, country, validate=not exact_match
+	if (
+		len(contacts)
+		and are_same_phone_number(contacts[0].matched_phone, phone_number, country, validate=not exact_match)
+		and readable("Contact", contacts[0].name)
 	):
 		return contacts[0]
 

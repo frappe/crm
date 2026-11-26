@@ -31,6 +31,7 @@ def after_install(force=False):
 	add_default_lost_reasons()
 	add_default_quick_filters()
 	add_standard_dropdown_items()
+	add_user_email_subject_fields()
 	add_default_availability_statuses()
 	add_availability_user_fields()
 	add_default_scripts()
@@ -39,6 +40,7 @@ def after_install(force=False):
 	add_assignment_rule_property_setters()
 	add_data_import_permissions()
 	seed_default_rules_and_mappings()
+	add_assignment_index()
 	frappe.db.commit()  # persist seeded defaults, also run from restore_defaults  # nosemgrep
 
 
@@ -196,7 +198,7 @@ def add_default_fields_layout(force=False):
 		},
 		"CRM Task-Quick Entry": {
 			"doctype": "CRM Task",
-			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
+			"layout": '[{"name":"first_tab","sections":[{"name":"details_section","columns":[{"name":"column_X9sG","fields":["title","description"]}]},{"name":"assignment_section","columns":[{"name":"column_9XjK","fields":["priority","due_date","all_day"]},{"name":"column_7s8n","fields":["assigned_to","status"]}],"hideBorder":true}]}]',
 		},
 	}
 
@@ -550,6 +552,34 @@ def add_standard_dropdown_items():
 	crm_settings.save()
 
 
+def add_user_email_subject_fields():
+	"""Each user's default subject for new emails from a lead or deal."""
+	meta = frappe.get_meta("User")
+
+	fields = [
+		{
+			"fieldname": "crm_lead_email_subject",
+			"fieldtype": "Data",
+			"label": "Lead Email Subject",
+			"insert_after": "email_signature",
+		},
+		{
+			"fieldname": "crm_deal_email_subject",
+			"fieldtype": "Data",
+			"label": "Deal Email Subject",
+			"insert_after": "crm_lead_email_subject",
+		},
+	]
+
+	fields = [field for field in fields if not meta.has_field(field["fieldname"])]
+	if not fields:
+		return
+
+	click.secho("* Installing Custom Fields in User")
+	create_custom_fields({"User": fields})
+	frappe.clear_cache(doctype="User")
+
+
 def add_default_availability_statuses():
 	statuses = [
 		{"availability_status": "Active", "category": "Active", "color": "green", "position": 1},
@@ -605,6 +635,11 @@ def add_default_scripts():
 	for doctype in ["CRM Lead", "CRM Deal"]:
 		create_product_details_script(doctype)
 	create_forecasting_script()
+
+
+def add_assignment_index():
+	# ToDo is a framework doctype, so its index for CRM's assignment lookups is added here
+	frappe.db.add_index("ToDo", ["reference_type", "status", "allocated_to", "reference_name"])
 
 
 def add_assignment_rule_property_setters():

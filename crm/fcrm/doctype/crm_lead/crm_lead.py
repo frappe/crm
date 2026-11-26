@@ -35,6 +35,7 @@ class CRMLead(Document):
 		from crm.fcrm.doctype.crm_status_change_log.crm_status_change_log import CRMStatusChangeLog
 
 		annual_revenue: DF.Currency
+		awaiting_reply_since: DF.Datetime | None
 		communication_status: DF.Link | None
 		converted: DF.Check
 		email: DF.Data | None
@@ -47,7 +48,9 @@ class CRMLead(Document):
 		image: DF.AttachImage | None
 		industry: DF.Link | None
 		job_title: DF.Data | None
+		last_inbound_at: DF.Datetime | None
 		last_name: DF.Data | None
+		last_outbound_at: DF.Datetime | None
 		last_responded_on: DF.Datetime | None
 		last_response_time: DF.Duration | None
 		lead_name: DF.Data | None

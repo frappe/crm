@@ -17,15 +17,19 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    v-if="briefReady"
     ref="viewControls"
     v-model="tasks"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Task"
+    :filters="briefFilters"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'kanban'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="$route.params.viewType == 'kanban' && rows.length"
@@ -212,6 +216,7 @@ import TaskPriorityIcon from '@/components/Icons/TaskPriorityIcon.vue'
 import TaskIcon from '@/components/Icons/TaskIcon.vue'
 import LayoutHeader from '@/components/LayoutHeader.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import TasksListView from '@/components/ListViews/TasksListView.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import KanbanView from '@/components/Kanban/KanbanView.vue'
@@ -220,6 +225,7 @@ import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { usersStore } from '@/stores/users'
 import { formatDate, sanitizeHTML } from '@/utils'
+import { formatTaskDue } from '@/utils/task'
 import { timestampCell } from '@/composables/useTimelinePreferences'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
@@ -234,6 +240,13 @@ const { completeStep } = useCrmOnboarding()
 const { capture } = useTelemetry()
 
 const router = useRouter()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  ready: briefReady,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 const tasksListView = ref(null)
 
@@ -326,6 +339,10 @@ function parseRows(rows, columns = []) {
 
       if (fieldType && fieldType == 'Percent') {
         _rows[row] = getFormattedPercent(row, task)
+      }
+
+      if (row == 'due_date' && view_type === 'kanban') {
+        _rows[row] = formatTaskDue(task)
       }
 
       if (['modified', 'creation'].includes(row)) {

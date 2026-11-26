@@ -17,16 +17,21 @@
     </template>
   </LayoutHeader>
   <ViewControls
+    v-if="briefReady"
     ref="viewControls"
     v-model="leads"
     v-model:loadMore="loadMore"
     v-model:resizeColumn="triggerResize"
     v-model:updatedPageCount="updatedPageCount"
     doctype="CRM Lead"
-    :filters="{ converted: 0 }"
+    :filters="{ converted: 0, ...briefFilters }"
+    :filtersLabel="briefFiltersLabel"
     :options="{
       allowedViews: ['list', 'group_by', 'kanban'],
+      groupSummary: true,
+      groupByExclude: ['naming_series', 'docstatus'],
     }"
+    @clearFilters="clearBriefFilters"
   />
   <KanbanView
     v-if="route.params.viewType == 'kanban'"
@@ -214,6 +219,13 @@
       </div>
     </template>
   </KanbanView>
+  <GroupSummaryTable
+    v-else-if="viewControls?.groupSummary"
+    doctype="CRM Lead"
+    :settings="viewControls.groupSummary"
+    :filters="viewControls.currentFilters"
+    @update:settings="(s) => viewControls.updateGroupSummary(s)"
+  />
   <LeadsListView
     v-else-if="leads.data && rows.length"
     ref="leadsListView"
@@ -262,6 +274,7 @@
 <script setup>
 import UserAvatar from '@/components/UserAvatar.vue'
 import ViewBreadcrumbs from '@/components/ViewBreadcrumbs.vue'
+import GroupSummaryTable from '@/components/GroupSummaryTable.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import PhoneIcon from '@/components/Icons/PhoneIcon.vue'
@@ -276,6 +289,7 @@ import KanbanView from '@/components/Kanban/KanbanView.vue'
 import KanbanActivityCounts from '@/components/Kanban/KanbanActivityCounts.vue'
 import LeadModal from '@/components/Modals/LeadModal.vue'
 import ViewControls from '@/components/ViewControls.vue'
+import { useBriefFilter } from '@/composables/briefFilter'
 import { useDoctypeModal } from '@/composables/doctypeModal'
 import { getMeta } from '@/stores/meta'
 import { globalStore } from '@/stores/global'
@@ -302,6 +316,13 @@ const { capture } = useTelemetry()
 const { showModal } = useDoctypeModal()
 
 const route = useRoute()
+
+const {
+  filters: briefFilters,
+  label: briefFiltersLabel,
+  ready: briefReady,
+  clear: clearBriefFilters,
+} = useBriefFilter()
 
 function getRoute(name) {
   return {

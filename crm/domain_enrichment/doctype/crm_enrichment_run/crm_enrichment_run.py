@@ -6,7 +6,7 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import cast, cstr, now_datetime
 
-from crm.permissions.org_hierarchy import _permission_query_conditions
+from crm.permissions.org_hierarchy import permission_query_conditions
 
 
 class CRMEnrichmentRun(Document):
@@ -91,7 +91,7 @@ def get_permission_query_conditions(user=None):
 	Run = frappe.qb.DocType("CRM Enrichment Run")
 	restricted, visible = [], None
 	for doctype in ("CRM Lead", "CRM Deal"):
-		conditions = _permission_query_conditions(user, doctype)
+		conditions = permission_query_conditions(user, doctype)
 		if not conditions:
 			continue
 		restricted.append(doctype)

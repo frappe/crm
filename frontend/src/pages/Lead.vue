@@ -173,6 +173,13 @@
                   @click="showFilesUploader = true"
                 />
 
+                <FollowUpPopover
+                  doctype="CRM Lead"
+                  :docname="leadId"
+                  :title="followUpTitle"
+                  @created="reloadActivities"
+                />
+
                 <Button
                   v-if="canDelete"
                   :tooltip="__('Delete')"
@@ -187,6 +194,11 @@
           </div>
         </template>
       </FileUploader>
+      <NextFollowUp
+        :tasks="activities?.all_activities?.data?.tasks"
+        @open="(task) => activities.modalRef.showTask(task)"
+        @change="reloadActivities"
+      />
       <SLASection
         v-if="doc.sla_status"
         v-model="doc"
@@ -271,6 +283,8 @@ import SLASection from '@/components/SLASection.vue'
 import CustomActions from '@/components/CustomActions.vue'
 import ConvertToDealModal from '@/components/Modals/ConvertToDealModal.vue'
 import EnrichFromWebsite from '@/components/EnrichFromWebsite.vue'
+import FollowUpPopover from '@/components/FollowUp/FollowUpPopover.vue'
+import NextFollowUp from '@/components/FollowUp/NextFollowUp.vue'
 import {
   openWebsite,
   setupCustomizations,
@@ -420,6 +434,16 @@ const title = computed(() => {
   let t = doctypeMeta.value?.title_field || 'name'
   return doc.value?.[t] || props.leadId
 })
+
+const followUpTitle = computed(() =>
+  __('Follow up with {0}', [
+    doc.value.lead_name || doc.value.organization || title.value,
+  ]),
+)
+
+function reloadActivities() {
+  activities.value?.all_activities?.reload()
+}
 
 const statuses = computed(() => {
   let customStatuses = document.statuses?.length
