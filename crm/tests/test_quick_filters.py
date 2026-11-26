@@ -37,4 +37,5 @@ class TestUpdateQuickFilters(IntegrationTestCase):
 			update_quick_filters("[]", '["no_such_field"]', "CRM Deal")
 
 	def test_quick_filters_accept_post_only(self):
-		self.assertEqual(frappe.allowed_http_methods_for_whitelisted_func[update_quick_filters], ("POST",))
+		methods = frappe.allowed_http_methods_for_whitelisted_func[update_quick_filters]
+		self.assertEqual(tuple(methods), ("POST",))
