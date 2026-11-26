@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { Dialog, call } from 'frappe-ui'
+import { Dialog, call, toast } from 'frappe-ui'
 import { ref } from 'vue'
 
 const show = defineModel({ type: Boolean })
@@ -150,13 +150,25 @@ const deleteDocs = () => {
     names: props.items,
     doctype: props.doctype,
     delete_linked: confirmDeleteInfo.value.delete,
-  }).then(() => {
-    confirmDeleteInfo.value = {
-      show: false,
-      title: '',
-    }
-    show.value = false
-    props.reload()
   })
+    .then(() => {
+      confirmDeleteInfo.value = {
+        show: false,
+        title: '',
+      }
+      show.value = false
+      props.reload()
+    })
+    // The server now enumerates the documents it refused; without this
+    // catch the user would never see them.
+    .catch((err) => {
+      let msg = null
+      try {
+        const s = err?._server_messages
+        if (typeof s === 'string' && s) msg = JSON.parse(s)[0]
+        else if (Array.isArray(s) && s.length) msg = s[0]
+      } catch {}
+      toast.error(msg ? __(msg) : __('Failed to delete the selected documents'))
+    })
 }
 </script>

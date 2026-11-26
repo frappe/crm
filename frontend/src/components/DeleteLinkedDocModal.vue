@@ -231,14 +231,26 @@ const unlinkLinkedDoc = (doc) => {
       delete: doc.delete,
       ...confirm,
     }),
-  ).then((removed) => {
-    if (!removed) return
-    linkedDocsResource.reload()
-    confirmDeleteInfo.value = {
-      show: false,
-      title: '',
-    }
-  })
+  )
+    .then((removed) => {
+      if (!removed) return
+      linkedDocsResource.reload()
+      confirmDeleteInfo.value = {
+        show: false,
+        title: '',
+      }
+    })
+    // Unlinking can fail too (permissions, protected links); without a
+    // .catch nothing ever showed it.
+    .catch((err) => {
+      let msg = null
+      try {
+        const s = err?._server_messages
+        if (typeof s === 'string' && s) msg = JSON.parse(s)[0]
+        else if (Array.isArray(s) && s.length) msg = s[0]
+      } catch {}
+      toast.error(msg ? __(msg) : __('Failed to unlink linked documents'))
+    })
 }
 
 const confirmDelete = () => {
@@ -288,6 +300,15 @@ const deleteDoc = async () => {
     })
   } catch (err) {
     unmarkDocumentAsDeleted(props.doctype, props.docname)
+    // Without this toast the modal simply stays open: the server's
+    // refusal used to live only in the server error log.
+    let msg = null
+    try {
+      const s = err?._server_messages
+      if (typeof s === 'string' && s) msg = JSON.parse(s)[0]
+      else if (Array.isArray(s) && s.length) msg = s[0]
+    } catch {}
+    toast.error(msg ? __(msg) : __('Failed to delete {0}', [props.docname]))
     throw err
   }
   expireDeletionMarker(props.doctype, props.docname)
