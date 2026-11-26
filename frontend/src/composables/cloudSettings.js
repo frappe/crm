@@ -11,12 +11,12 @@ let dialogOwner = null
 export const isCloudSettingsAvailable = () =>
   window.cloud_settings?.enabled === true
 
-export async function openBillingDialog() {
+export async function openBillingDialog(tab = 'billing') {
   cloudSettingsOpen.value = true
   try {
     await openCloudSettings({
       panels: ['billing', 'marketplace', 'domains', 'advanced'],
-      tab: 'billing',
+      tab,
       theme: 'auto',
       onClose: () => (cloudSettingsOpen.value = false),
     })
@@ -38,12 +38,12 @@ export function useCloudSettings() {
     cloudSettingsOpen.value = false
   })
 
-  async function open() {
+  async function open(tab) {
     if (opening.value) return
     dialogOwner = consumer
     opening.value = true
     try {
-      await openBillingDialog()
+      await openBillingDialog(tab)
     } catch (error) {
       toast.error(error?.message || __('Could not open Cloud Settings'))
     } finally {
