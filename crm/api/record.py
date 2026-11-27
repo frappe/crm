@@ -1,9 +1,20 @@
 import frappe
 from frappe import _
+from frappe.desk.form.activity import get_author_info
 from frappe.desk.form.assign_to import set_status
 from frappe.model.delete_doc import get_dynamic_linked_docs, get_linked_docs
 
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
+
+TIMELINE_METHOD = "frappe.desk.form.activity.get_activity_timeline"
+REFERENCE_ROWS = (
+	("note", "FCRM Note", ["title", "content", "pinned", "pinned_by", "pinned_on"]),
+	(
+		"task",
+		"CRM Task",
+		["title", "description", "status", "priority", "start_date", "due_date", "assigned_to"],
+	),
+)
 
 
 @frappe.whitelist(methods=["GET"])
@@ -15,6 +26,38 @@ def get_assignees(doctype: str, name: str | int) -> list[str]:
 	"""
 	frappe.get_doc(doctype, name).check_permission("read")
 	return get_open_assignees(doctype, name)
+
+
+@frappe.whitelist(methods=["GET"])
+def get_activities(
+	doctype: str,
+	name: str | int,
+	visible_types: list[str | dict[str, list[str]]] | None = None,
+	with_notes_and_tasks: bool = False,
+) -> dict:
+	"""Return a record's timeline, plus its notes and tasks when asked.
+
+	The response is frappe.desk.form.activity.get_activity_timeline's, unchanged; more emails
+	and milestones load through Frappe's get_more_email_activities and get_more_milestone_activities.
+	Note and task rows have type "note" or "task" and the same shape: type, key, timestamp, author, data.
+	doctype: the record's DocType.
+	name: the record's name.
+	visible_types: activity types to load, such as ["email", {"version": ["status"]}]; default all.
+	with_notes_and_tasks: also return the record's FCRM Note and CRM Task rows.
+	"""
+	# an app's override of Frappe's timeline applies here too
+	timeline = frappe.call(  # nosemgrep
+		frappe.override_whitelisted_method(TIMELINE_METHOD),
+		doctype=doctype,
+		name=name,
+		visible_types=visible_types,
+	)
+	if with_notes_and_tasks:
+		timeline["activities"] = sorted(
+			timeline["activities"] + get_note_and_task_rows(doctype, name),
+			key=lambda row: (row.get("timestamp") or "", row["key"]),
+		)
+	return timeline
 
 
 @frappe.whitelist(methods=["POST"])
@@ -145,6 +188,32 @@ def delete_records(doctype: str, names: list[str | int], delete_linked: bool = F
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=names)
 	else:
 		delete_bulk(doctype, names)
+
+
+def get_note_and_task_rows(doctype: str, name: str | int) -> list[dict]:
+	"""Timeline rows for the notes and tasks linked to this doctype and name, that the user can read."""
+	user_info: dict = {}
+	rows = []
+	for row_type, reference_doctype, fields in REFERENCE_ROWS:
+		if not frappe.has_permission(reference_doctype, "read"):
+			continue
+		records = frappe.get_list(
+			reference_doctype,
+			filters={"reference_doctype": doctype, "reference_docname": name},
+			fields=["name", "owner", "creation", "modified", *fields],
+		)
+		frappe.utils.add_user_info({record.owner for record in records}, user_info)
+		rows += [
+			{
+				"type": row_type,
+				"key": f"{row_type}:{record.name}",
+				"timestamp": str(record.creation),
+				"author": get_author_info(record.owner, user_info),
+				"data": record,
+			}
+			for record in records
+		]
+	return rows
 
 
 def check_fields_are_writable(doctype: str, fieldnames) -> None:

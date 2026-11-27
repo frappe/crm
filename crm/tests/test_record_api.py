@@ -63,8 +63,8 @@ class AgentApiRules:
 
 class TestRecordApiRules(AgentApiRules, IntegrationTestCase):
 	api_module = record
-	methods = frozenset({*REPLACED.values(), "update_record"})
-	reads = frozenset({"get_assignees", "get_linked_records"})
+	methods = frozenset({*REPLACED.values(), "get_activities", "update_record"})
+	reads = frozenset({"get_assignees", "get_linked_records", "get_activities"})
 
 	def test_reads_do_not_write(self):
 		deal = create_test_deal(organization="Record API Read Org")
