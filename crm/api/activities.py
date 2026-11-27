@@ -23,34 +23,6 @@ def get_activities(name: str):
 		frappe.throw(_("Document not found"), frappe.DoesNotExistError)
 
 
-def get_record_activities(doc) -> dict[str, list[dict]]:
-	"""Timeline, notes, tasks and attachments of any record the caller has checked it can read."""
-	get_docinfo(doc)
-	docinfo = frappe.response.pop("docinfo")
-	activities = [
-		{
-			"activity_type": "creation",
-			"creation": doc.creation,
-			"owner": doc.owner,
-			"data": _("created this record"),
-			"is_lead": False,
-		}
-	]
-	activities += get_docinfo_activities(docinfo, get_readable_fields(doc.doctype), [], is_lead=False)
-
-	notes = get_linked_notes(doc.name, doc.doctype) if frappe.has_permission("FCRM Note", "read") else []
-	tasks = get_linked_tasks(doc.name, doc.doctype) if frappe.has_permission("CRM Task", "read") else []
-	activities += get_note_activities(notes, is_lead=False)
-
-	activities.sort(key=lambda x: x["creation"], reverse=True)
-	return {
-		"activities": group_note_activities(handle_multiple_versions(activities)),
-		"notes": notes,
-		"tasks": tasks,
-		"attachments": get_attachments(doc.doctype, doc.name),
-	}
-
-
 def get_deal_activities(name: str):
 	if not frappe.has_permission("CRM Deal", "read", name):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
@@ -95,7 +67,61 @@ def get_deal_activities(name: str):
 		}
 	)
 
-	activities += get_docinfo_activities(docinfo, deal_fields, avoid_fields, is_lead=False)
+	docinfo.versions.reverse()
+
+	for version in docinfo.versions:
+		activities += get_field_change_activities(version, deal_fields, avoid_fields, is_lead=False)
+
+	for comment in docinfo.comments:
+		activity = {
+			"name": comment.name,
+			"activity_type": "comment",
+			"creation": comment.creation,
+			"owner": comment.owner,
+			"content": comment.content,
+			"attachments": get_attachments("Comment", comment.name),
+			"is_lead": False,
+		}
+		activities.append(activity)
+
+	for communication in docinfo.communications + docinfo.automated_messages:
+		activity = {
+			"activity_type": "communication",
+			"name": communication.name,
+			"communication_type": communication.communication_type,
+			"communication_date": communication.communication_date or communication.creation,
+			# a scheduled email belongs where it was sent, not where it was written
+			"creation": max(
+				communication.creation,
+				get_datetime(communication.communication_date or communication.creation),
+			),
+			"data": {
+				"subject": communication.subject,
+				"content": communication.content,
+				"sender_full_name": communication.sender_full_name,
+				"sender": communication.sender,
+				"recipients": communication.recipients,
+				"cc": communication.cc,
+				"bcc": communication.bcc,
+				"attachments": get_attachments("Communication", communication.name),
+				"read_by_recipient": communication.read_by_recipient,
+				"delivery_status": communication.delivery_status,
+				"send_after": get_send_after(communication),
+			},
+			"is_lead": False,
+		}
+		activities.append(activity)
+
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_lead": False,
+		}
+		activities.append(activity)
 
 	linked_calls = get_linked_calls(name)
 	calls = calls + linked_calls.get("calls", [])
@@ -143,7 +169,61 @@ def get_lead_activities(name: str):
 		}
 	]
 
-	activities += get_docinfo_activities(docinfo, lead_fields, avoid_fields, is_lead=True)
+	docinfo.versions.reverse()
+
+	for version in docinfo.versions:
+		activities += get_field_change_activities(version, lead_fields, avoid_fields, is_lead=True)
+
+	for comment in docinfo.comments:
+		activity = {
+			"name": comment.name,
+			"activity_type": "comment",
+			"creation": comment.creation,
+			"owner": comment.owner,
+			"content": comment.content,
+			"attachments": get_attachments("Comment", comment.name),
+			"is_lead": True,
+		}
+		activities.append(activity)
+
+	for communication in docinfo.communications + docinfo.automated_messages:
+		activity = {
+			"activity_type": "communication",
+			"name": communication.name,
+			"communication_type": communication.communication_type,
+			"communication_date": communication.communication_date or communication.creation,
+			# a scheduled email belongs where it was sent, not where it was written
+			"creation": max(
+				communication.creation,
+				get_datetime(communication.communication_date or communication.creation),
+			),
+			"data": {
+				"subject": communication.subject,
+				"content": communication.content,
+				"sender_full_name": communication.sender_full_name,
+				"sender": communication.sender,
+				"recipients": communication.recipients,
+				"cc": communication.cc,
+				"bcc": communication.bcc,
+				"attachments": get_attachments("Communication", communication.name),
+				"read_by_recipient": communication.read_by_recipient,
+				"delivery_status": communication.delivery_status,
+				"send_after": get_send_after(communication),
+			},
+			"is_lead": True,
+		}
+		activities.append(activity)
+
+	for attachment_log in docinfo.attachment_logs:
+		activity = {
+			"name": attachment_log.name,
+			"activity_type": "attachment_log",
+			"creation": attachment_log.creation,
+			"owner": attachment_log.owner,
+			"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
+			"is_lead": True,
+		}
+		activities.append(activity)
 
 	linked_calls = get_linked_calls(name)
 	calls = linked_calls.get("calls", [])
@@ -157,71 +237,6 @@ def get_lead_activities(name: str):
 	activities = group_note_activities(activities)
 
 	return activities, calls, notes, tasks, attachments
-
-
-def get_docinfo_activities(docinfo, fields: dict, avoid_fields: list, is_lead: bool):
-	"""Timeline entries for a record's field changes, comments, emails and attachment logs."""
-	docinfo.versions.reverse()
-	activities = []
-	for version in docinfo.versions:
-		activities += get_field_change_activities(version, fields, avoid_fields, is_lead=is_lead)
-
-	for comment in docinfo.comments:
-		activities.append(
-			{
-				"name": comment.name,
-				"activity_type": "comment",
-				"creation": comment.creation,
-				"owner": comment.owner,
-				"content": comment.content,
-				"attachments": get_attachments("Comment", comment.name),
-				"is_lead": is_lead,
-			}
-		)
-
-	for communication in docinfo.communications + docinfo.automated_messages:
-		activities.append(get_communication_activity(communication, is_lead))
-
-	for attachment_log in docinfo.attachment_logs:
-		activities.append(
-			{
-				"name": attachment_log.name,
-				"activity_type": "attachment_log",
-				"creation": attachment_log.creation,
-				"owner": attachment_log.owner,
-				"data": parse_attachment_log(attachment_log.content, attachment_log.comment_type),
-				"is_lead": is_lead,
-			}
-		)
-	return activities
-
-
-def get_communication_activity(communication, is_lead: bool):
-	return {
-		"activity_type": "communication",
-		"name": communication.name,
-		"communication_type": communication.communication_type,
-		"communication_date": communication.communication_date or communication.creation,
-		# a scheduled email belongs where it was sent, not where it was written
-		"creation": max(
-			communication.creation,
-			get_datetime(communication.communication_date or communication.creation),
-		),
-		"data": {
-			"subject": communication.subject,
-			"content": communication.content,
-			"sender_full_name": communication.sender_full_name,
-			"sender": communication.sender,
-			"recipients": communication.recipients,
-			"cc": communication.cc,
-			"bcc": communication.bcc,
-			"attachments": get_attachments("Communication", communication.name),
-			"read_by_recipient": communication.read_by_recipient,
-			"delivery_status": communication.delivery_status,
-			"send_after": get_send_after(communication),
-		},
-		"is_lead": is_lead,
-	}
 
 
 def get_readable_fields(doctype: str):
@@ -476,10 +491,10 @@ def get_linked_calls(name: str):
 	return {"calls": calls, "notes": notes, "tasks": tasks}
 
 
-def get_linked_notes(name: str, doctype: str | None = None):
+def get_linked_notes(name: str):
 	notes = frappe.db.get_all(
 		"FCRM Note",
-		filters=reference_filters(name, doctype),
+		filters={"reference_docname": name},
 		fields=[
 			"name",
 			"title",
@@ -541,10 +556,10 @@ def get_note_activities(notes: list, is_lead: bool):
 	return activities
 
 
-def get_linked_tasks(name: str, doctype: str | None = None):
+def get_linked_tasks(name: str):
 	tasks = frappe.db.get_all(
 		"CRM Task",
-		filters=reference_filters(name, doctype),
+		filters={"reference_docname": name},
 		fields=[
 			"name",
 			"title",
@@ -559,14 +574,6 @@ def get_linked_tasks(name: str, doctype: str | None = None):
 		],
 	)
 	return tasks or []
-
-
-def reference_filters(name: str, doctype: str | None):
-	# the Lead and Deal timelines leave out the doctype, as they always have
-	filters = {"reference_docname": name}
-	if doctype:
-		filters["reference_doctype"] = doctype
-	return filters
 
 
 def parse_attachment_log(html: str, type: str):

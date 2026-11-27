@@ -17,22 +17,6 @@ def get_assignees(doctype: str, name: str | int) -> list[str]:
 	return get_open_assignees(doctype, name)
 
 
-@frappe.whitelist(methods=["GET"])
-def get_activities(doctype: str, name: str | int) -> dict[str, list[dict]]:
-	"""Return a record's timeline, notes, tasks and attachments.
-
-	The timeline holds field changes, comments, emails, attachment logs and notes.
-	doctype: the record's DocType.
-	name: the record's name.
-	"""
-	# crm.api.activities imports this module at load time
-	from crm.api.activities import get_record_activities
-
-	doc = frappe.get_doc(doctype, name)
-	doc.check_permission("read")
-	return get_record_activities(doc)
-
-
 @frappe.whitelist(methods=["POST"])
 def update_record(doctype: str, name: str | int, values: dict, modified: str) -> str:
 	"""Save values on a record unless it changed after the caller read it.
