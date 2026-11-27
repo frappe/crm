@@ -484,6 +484,31 @@ class TestCRMServiceLevelAgreement(IntegrationTestCase):
 		# Should be Tuesday morning
 		self.assertEqual(end_time.day, 2)
 
+	def test_calc_time_starts_on_weekend(self):
+		"""Test calc_time counts from the start of the next working day"""
+		sla = create_test_sla_with_working_hours()
+
+		start_time = get_datetime("2024-01-06 23:30:00")  # Saturday 11:30 PM
+		duration_seconds = 3600  # 1 hour
+
+		end_time = sla.calc_time(start_time, duration_seconds)
+
+		# Should be Monday 10 AM
+		self.assertEqual(end_time, get_datetime("2024-01-08 10:00:00"))
+
+	def test_calc_time_starts_on_holiday(self):
+		"""Test calc_time skips a holiday without losing the next day's hours"""
+		holiday_list = create_test_holiday_list()
+		sla = create_test_sla_with_working_hours(holiday_list=holiday_list.name)
+
+		start_time = get_datetime("2024-01-15 14:00:00")  # Monday 2 PM, a holiday
+		duration_seconds = 3600  # 1 hour
+
+		end_time = sla.calc_time(start_time, duration_seconds)
+
+		# Should be Tuesday 10 AM
+		self.assertEqual(end_time, get_datetime("2024-01-16 10:00:00"))
+
 	def test_calc_elapsed_time_same_day(self):
 		"""Test calc_elapsed_time within same working day"""
 		sla = create_test_sla_with_working_hours()
