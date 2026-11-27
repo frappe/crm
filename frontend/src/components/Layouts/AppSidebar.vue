@@ -96,9 +96,10 @@
             </SidebarItem>
           </div>
 
+          <!-- Keyed on `opened` too, so a saved Starts closed applies at once. -->
           <CollapsibleSection
             v-for="section in allViews"
-            :key="section.name"
+            :key="`${section.key}:${section.opened}`"
             :label="section.name"
             :hideLabel="section.hideLabel"
             :opened="section.opened"
@@ -108,11 +109,12 @@
                 v-if="!hide"
                 divider
                 class="mb-1 mt-4 select-none"
-                :class="!isCollapsed && 'cursor-pointer'"
-                @click="toggle()"
+                :class="!isCollapsed && section.collapsible && 'cursor-pointer'"
+                @click="section.collapsible && toggle()"
               >
                 <span class="flex items-center gap-1.5">
                   <span
+                    v-if="section.collapsible"
                     class="lucide-chevron-right -ml-0.5 size-4 shrink-0 text-ink-gray-9 transition-transform duration-300 ease-in-out"
                     :class="{ 'rotate-90': opened }"
                     aria-hidden="true"
@@ -162,6 +164,7 @@
 
   <template v-if="!mobile">
     <Settings />
+    <CustomizeSidebarDialog />
   </template>
 </template>
 
@@ -170,7 +173,9 @@ import CollapsibleSection from '@/components/CollapsibleSection.vue'
 import Icon from '@/components/Icon.vue'
 import PinIcon from '@/components/Icons/PinIcon.vue'
 import UserDropdown from '@/components/UserDropdown.vue'
-import { getNavigationItems } from '@/utils/navigation'
+import { getSidebarLayout } from '@/utils/navigation'
+import { sidebarItems } from '@/stores/sidebar'
+import CustomizeSidebarDialog from '@/components/CustomizeSidebar/CustomizeSidebarDialog.vue'
 import ContactsIcon from '@/components/Icons/ContactsIcon.vue'
 import DealsIcon from '@/components/Icons/DealsIcon.vue'
 import LeadsIcon from '@/components/Icons/LeadsIcon.vue'
@@ -219,39 +224,37 @@ const isSidebarCollapsed = useStorage('isSidebarCollapsed', false)
 // even when the stored rail state says otherwise.
 const isCollapsed = computed(() => isSidebarCollapsed.value && !props.mobile)
 
-const links = getNavigationItems({ mobile: props.mobile })
 const showFlow = hasFlowLauncher()
 
+// The main list, then each section that has something in it. Public Views and
+// Pinned Views fill themselves from saved views.
 const allViews = computed(() => {
-  let _views = [
+  const { main, sections } = getSidebarLayout(sidebarItems.value, {
+    mobile: props.mobile,
+  })
+  const filledFrom = {
+    public_views: () => parseView(getPublicViews()),
+    pinned_views: () => parseView(getPinnedViews()),
+  }
+  return [
     {
+      key: 'main',
       name: 'All Views',
       hideLabel: true,
       opened: true,
-      views: links.map((link) => ({
-        label: link.label,
-        icon: link.icon,
-        key: link.route,
-        to: { name: link.route },
-      })),
+      collapsible: true,
+      views: main,
     },
-  ]
-  if (getPublicViews().length) {
-    _views.push({
-      name: 'Public Views',
-      opened: true,
-      views: parseView(getPublicViews()),
-    })
-  }
-
-  if (getPinnedViews().length) {
-    _views.push({
-      name: 'Pinned Views',
-      opened: true,
-      views: parseView(getPinnedViews()),
-    })
-  }
-  return _views
+    ...sections.map((section) => ({
+      key: section.key,
+      name: section.label,
+      opened: section.opened,
+      collapsible: section.collapsible,
+      views: section.fillsFrom
+        ? filledFrom[section.fillsFrom]()
+        : section.links,
+    })),
+  ].filter((section) => section.views.length)
 })
 
 function parseView(views) {

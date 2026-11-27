@@ -73,6 +73,8 @@ def get_context_for_dev():
 def get_boot():
 	from frappe.core.doctype.user.user import needs_password_setup
 
+	from crm.api.sidebar import get_sidebar_for_boot
+
 	return frappe._dict(
 		{
 			"frappe_version": frappe.__version__,
@@ -98,6 +100,7 @@ def get_boot():
 			},
 			"state_options": get_state_options(),
 			"is_insights_installed": is_insights_installed(),
+			"crm_sidebar": get_sidebar_for_boot(),
 		}
 	)
 

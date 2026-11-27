@@ -148,6 +148,7 @@ permission_query_conditions = {
 	"CRM Enrichment Run": "crm.domain_enrichment.doctype.crm_enrichment_run.crm_enrichment_run.get_permission_query_conditions",
 	"Data Import": "crm.permissions.data_import.get_permission_query_conditions",
 	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.get_permission_query_conditions",
+	"CRM Sidebar": "crm.fcrm.doctype.crm_sidebar.crm_sidebar.get_permission_query_conditions",
 }
 
 has_permission = {
@@ -159,6 +160,7 @@ has_permission = {
 	"Data Import": "crm.permissions.data_import.has_permission",
 	"CRM Booking": "crm.fcrm.doctype.crm_booking.crm_booking.has_permission",
 	"CRM Booking Page": "crm.fcrm.doctype.crm_booking_page.crm_booking_page.has_permission",
+	"CRM Sidebar": "crm.fcrm.doctype.crm_sidebar.crm_sidebar.has_permission",
 }
 
 # Automation Engine
@@ -351,6 +353,7 @@ doc_events = {
 		"validate": ["crm.api.availability.validate_user"],
 		"on_update": ["crm.api.availability.on_user_update"],
 		"validate_reset_password": ["crm.api.live_demo.validate_reset_password"],
+		"on_trash": ["crm.fcrm.doctype.crm_sidebar.crm_sidebar.delete_user_sidebar"],
 	},
 }
 
@@ -480,6 +483,66 @@ after_migrate = [
 
 sqlite_search = ["crm.search_sqlite.CRMSearch"]
 
+# The CRM sidebar before any layer changes it. Keys are fixed: layers name items by key.
+# `link_to` is the route name of a built-in page; `opens_doctype` is the DocType it lists,
+# which no layer can add again. Public Views and Pinned Views fill themselves from saved views.
+standard_sidebar_items = [
+	{"key": "home", "label": "Home", "link_type": "Built-in", "link_to": "Home"},
+	{"key": "dashboard", "label": "Dashboard", "link_type": "Built-in", "link_to": "Dashboard"},
+	{
+		"key": "leads",
+		"label": "Leads",
+		"link_type": "Built-in",
+		"link_to": "Leads",
+		"opens_doctype": "CRM Lead",
+	},
+	{
+		"key": "deals",
+		"label": "Deals",
+		"link_type": "Built-in",
+		"link_to": "Deals",
+		"opens_doctype": "CRM Deal",
+	},
+	{
+		"key": "contacts",
+		"label": "Contacts",
+		"link_type": "Built-in",
+		"link_to": "Contacts",
+		"opens_doctype": "Contact",
+	},
+	{
+		"key": "organizations",
+		"label": "Organizations",
+		"link_type": "Built-in",
+		"link_to": "Organizations",
+		"opens_doctype": "CRM Organization",
+	},
+	{
+		"key": "notes",
+		"label": "Notes",
+		"link_type": "Built-in",
+		"link_to": "Notes",
+		"opens_doctype": "FCRM Note",
+	},
+	{
+		"key": "tasks",
+		"label": "Tasks",
+		"link_type": "Built-in",
+		"link_to": "Tasks",
+		"opens_doctype": "CRM Task",
+	},
+	{"key": "calendar", "label": "Calendar", "link_type": "Built-in", "link_to": "Calendar"},
+	{
+		"key": "call_logs",
+		"label": "Call Logs",
+		"link_type": "Built-in",
+		"link_to": "Call Logs",
+		"opens_doctype": "CRM Call Log",
+	},
+	{"key": "public_views", "type": "Section", "label": "Public Views", "collapsible": 1},
+	{"key": "pinned_views", "type": "Section", "label": "Pinned Views", "collapsible": 1},
+]
+
 standard_dropdown_items = [
 	{
 		"name1": "app_selector",
@@ -493,6 +556,14 @@ standard_dropdown_items = [
 		"label": "Settings",
 		"type": "Route",
 		"icon": "settings",
+		"route": "#",
+		"is_standard": 1,
+	},
+	{
+		"name1": "customize_sidebar",
+		"label": "Customize sidebar",
+		"type": "Route",
+		"icon": "panel-left",
 		"route": "#",
 		"is_standard": 1,
 	},
