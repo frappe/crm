@@ -54,6 +54,31 @@ class TestCancelScheduledEmail(FrappeTestCase):
 		self.assertEqual(draft["cc"], "cc@example.com")
 		self.assertIn("following up on our call", draft["content"])
 
+	def test_cancelled_reply_keeps_the_email_it_replies_to(self):
+		"""Rescheduling the draft must still thread it on the original email."""
+		received = make(
+			doctype="CRM Lead",
+			name=self.lead.name,
+			subject="Your CRM trial",
+			content="<p>Can we see a demo?</p>",
+			recipients="scheduled@example.com",
+			send_email=1,
+		)["name"]
+		reply = make(
+			doctype="CRM Lead",
+			name=self.lead.name,
+			subject="Re: Your CRM trial",
+			content="<p>Sure, tomorrow?</p>",
+			recipients="scheduled@example.com",
+			send_email=1,
+			send_after=add_days(now_datetime(), 1),
+			in_reply_to=received,
+		)["name"]
+
+		draft = cancel_scheduled_email(reply)
+
+		self.assertEqual(draft["in_reply_to"], received)
+
 	def test_cancel_refuses_once_sending(self):
 		name = self.schedule()
 		frappe.db.set_value("Email Queue", {"communication": name}, "status", "Sending")
