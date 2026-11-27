@@ -37,13 +37,34 @@
         :icon="h(CalendarIcon)"
       />
       <div v-else class="w-full">
+        <div class="mb-2 px-2 pt-0.5">
+          <TextInput
+            v-model="search"
+            :placeholder="__('Search by page, link or host')"
+            class="w-full"
+            :debounce="300"
+          >
+            <template #prefix>
+              <span
+                class="lucide-search h-4 w-4 text-ink-gray-6"
+                aria-hidden="true"
+              />
+            </template>
+          </TextInput>
+        </div>
         <div class="flex items-center p-2 text-sm text-ink-gray-5">
           <div class="w-6/12">{{ __('Page') }}</div>
           <div class="w-3/12">{{ __('Hosts') }}</div>
           <div class="w-3/12">{{ __('Status') }}</div>
         </div>
         <div class="mx-2 h-px border-t border-outline-elevation-2" />
-        <template v-for="(page, i) in pages.data" :key="page.name">
+        <div
+          v-if="!shownPages.length"
+          class="p-6 text-center text-p-base text-ink-gray-5"
+        >
+          {{ __('No booking pages match "{0}"', [search]) }}
+        </div>
+        <template v-for="(page, i) in shownPages" :key="page.name">
           <div
             class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2"
           >
@@ -87,7 +108,7 @@
               </Dropdown>
             </div>
           </div>
-          <hr v-if="pages.data.length !== i + 1" class="mx-2" />
+          <hr v-if="shownPages.length !== i + 1" class="mx-2" />
         </template>
       </div>
     </div>
@@ -151,11 +172,12 @@ import {
   ErrorMessage,
   FormControl,
   LoadingIndicator,
+  TextInput,
   call,
   createResource,
   toast,
 } from 'frappe-ui'
-import { h, reactive, ref } from 'vue'
+import { computed, h, reactive, ref } from 'vue'
 import { ROUTE_PREFIX, copyPageLink, pageUrl, slugify } from './bookingPages'
 
 interface BookingPageRow {
@@ -178,6 +200,22 @@ function canChange(page: BookingPageRow) {
 }
 
 const pages = createResource({ url: 'crm.api.booking.list_pages', auto: true })
+
+// match the title, the link or a host's name or email
+const search = ref('')
+const shownPages = computed<BookingPageRow[]>(() => {
+  const all: BookingPageRow[] = pages.data || []
+  const q = search.value.trim().toLowerCase()
+  if (!q) return all
+  return all.filter((page) =>
+    [
+      page.title,
+      page.route,
+      ...page.hosts,
+      ...page.hosts.map((u) => getUser(u)?.full_name || ''),
+    ].some((text) => text?.toLowerCase().includes(q)),
+  )
+})
 const isConfirmingDelete = ref(false)
 
 function hostAvatar(email: string) {
