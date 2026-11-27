@@ -47,3 +47,15 @@ class TestERPNextCRMSettings(UnitTestCase):
 
 		payload = get_client.return_value.post_api.call_args.args[1]
 		self.assertEqual(payload["deal_owner"], owner.email)
+
+	def test_prospect_from_administrators_deal_keeps_the_name(self):
+		settings = frappe._dict(erpnext_company="_Test Company", erpnext_site_url="https://erpnext.test")
+		deal = frappe._dict(name="CRM-DEAL-TEST", deal_owner="Administrator", contacts=[], organization=None)
+		with (
+			patch.object(erpnext_crm_settings, "get_erpnext_site_client") as get_client,
+			patch.object(frappe, "get_cached_doc", return_value=deal),
+		):
+			erpnext_crm_settings.create_prospect_in_remote_site(deal.name, settings)
+
+		payload = get_client.return_value.post_api.call_args.args[1]
+		self.assertEqual(payload["deal_owner"], "Administrator")
