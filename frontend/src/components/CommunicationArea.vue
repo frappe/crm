@@ -110,7 +110,7 @@ import EmailEditor from '@/components/EmailEditor.vue'
 import CommentBox from '@/components/CommentBox.vue'
 import CommentIcon from '@/components/Icons/CommentIcon.vue'
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
-import { isContentEmpty, htmlToText } from '@/utils'
+import { isContentEmpty, htmlToText, composeSignatureContent } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
 import {
   getEmailSubject,
@@ -224,12 +224,9 @@ const signature = createResource({
 
 function setSignature(editor) {
   if (!signature.data || signatureAdded.value) return
-  const sig = signature.data.replace(/\n/g, '<br>')
-  let emailContent = editor.getHTML()
-  emailContent = emailContent.startsWith('<p></p>')
-    ? emailContent.slice(7)
-    : emailContent
-  editor.commands.setContent(sig + emailContent)
+  editor.commands.setContent(
+    composeSignatureContent(signature.data, editor.getHTML()),
+  )
   editor.commands.focus('start')
   signatureAdded.value = true
 }
