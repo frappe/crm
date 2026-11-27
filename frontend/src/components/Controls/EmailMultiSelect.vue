@@ -240,6 +240,10 @@ const options = computed(() => {
 const showSearchIcon = computed(() => effectiveMode.value !== 'free')
 const emptyStateText = computed(() => {
   if (effectiveMode.value === 'free') return __(props.emptyPlaceholder)
+  const contacts = filterOptions.value
+  if (contacts?.loading || (contacts && !contacts.data && !contacts.error)) {
+    return __('Loading...')
+  }
   return options.value.length ? '' : __(props.emptyPlaceholder)
 })
 
