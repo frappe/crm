@@ -1,7 +1,12 @@
 import frappe
 from frappe import _
+from frappe.desk.form.activity import parse_visible_types
 from frappe.desk.form.assign_to import set_status
 from frappe.model.delete_doc import get_dynamic_linked_docs, get_linked_docs
+
+from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
+
+TIMELINE_METHOD = "frappe.desk.form.activity.get_activity_timeline"
 
 
 @frappe.whitelist(methods=["GET"])
@@ -13,6 +18,58 @@ def get_assignees(doctype: str, name: str | int) -> list[str]:
 	"""
 	frappe.get_doc(doctype, name).check_permission("read")
 	return get_open_assignees(doctype, name)
+
+
+@frappe.whitelist(methods=["GET"])
+def get_activities(
+	doctype: str,
+	name: str | int,
+	visible_types: list[str | dict[str, list[str]]] | None = None,
+) -> dict:
+	"""Return a record's timeline: Frappe's, plus the rows its doctype adds.
+
+	The response is frappe.desk.form.activity.get_activity_timeline's; more emails and
+	milestones load through Frappe's get_more_email_activities and get_more_milestone_activities.
+	A doctype adds rows by defining get_additional_activities(self) on its controller; each row
+	has type, key, timestamp, author and data, like Frappe's.
+	doctype: the record's DocType.
+	name: the record's name.
+	visible_types: activity types to load, such as ["email", {"version": ["status"]}]; default all.
+	"""
+	# an app's override of Frappe's timeline applies here too
+	timeline = frappe.call(  # nosemgrep
+		frappe.override_whitelisted_method(TIMELINE_METHOD),
+		doctype=doctype,
+		name=name,
+		visible_types=visible_types,
+	)
+	if rows := get_controller_activities(
+		frappe.get_doc(doctype, name), timeline["activities"], visible_types
+	):
+		timeline["activities"] = sorted(
+			timeline["activities"] + rows, key=lambda row: (row.get("timestamp") or "", row["key"])
+		)
+	return timeline
+
+
+@frappe.whitelist(methods=["POST"])
+def update_record(doctype: str, name: str | int, values: dict, modified: str) -> str:
+	"""Save values on a record unless it changed after the caller read it.
+
+	Returns the record's new `modified`. Raises frappe.TimestampMismatchError
+	when the record was saved after `modified`.
+	doctype: the record's DocType.
+	name: the record's name.
+	values: the fields to change, by fieldname; standard, read-only and unknown fields are refused.
+	modified: the record's `modified` timestamp when the caller read it.
+	"""
+	check_fields_are_writable(doctype, values)
+	doc = frappe.get_doc(doctype, name)
+	doc.update(values)
+	# save() compares this with the stored value and raises TimestampMismatchError
+	doc.modified = modified
+	doc.save()
+	return doc.modified
 
 
 @frappe.whitelist(methods=["POST"])
@@ -123,6 +180,33 @@ def delete_records(doctype: str, names: list[str | int], delete_linked: bool = F
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=names)
 	else:
 		delete_bulk(doctype, names)
+
+
+def get_controller_activities(doc, activities: list[dict], visible_types) -> list[dict]:
+	"""The controller's extra timeline rows that Frappe did not return and the caller asked for."""
+	if not hasattr(doc, "get_additional_activities"):
+		return []
+	# once Frappe's timeline calls the controller itself, its rows come back already
+	known_keys = {row["key"] for row in activities}
+	visible, _ = parse_visible_types(visible_types)
+	return [
+		row
+		for row in doc.get_additional_activities()
+		if row["key"] not in known_keys and (visible is None or row["type"] in visible)
+	]
+
+
+def check_fields_are_writable(doctype: str, fieldnames) -> None:
+	"""Refuse anything but fields the user may edit, such as `name` or `__islocal`."""
+	meta = frappe.get_meta(doctype)
+	write_levels = get_permlevel_access("write", doctype)
+	refused = sorted(
+		fieldname
+		for fieldname in fieldnames
+		if not (field := meta.get_field(fieldname)) or field.read_only or field.permlevel not in write_levels
+	)
+	if refused:
+		frappe.throw(_("Cannot edit these fields of {0}: {1}").format(_(doctype), ", ".join(refused)))
 
 
 def unlink_records_linked_to(doctype, name, delete_linked):
