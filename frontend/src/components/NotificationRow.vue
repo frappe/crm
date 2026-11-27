@@ -39,6 +39,7 @@
 <script setup lang="ts">
 import NotificationIcon from '@/components/NotificationIcon.vue'
 import { formatDate, prettyDate } from '@/utils'
+import { notificationRoute } from '@/utils/notificationRoute'
 import { Tooltip } from 'frappe-ui'
 import type { NotificationGroup } from '@/utils/notifications'
 import { computed } from 'vue'
@@ -47,12 +48,5 @@ const props = defineProps<{ group: NotificationGroup }>()
 
 const n = computed(() => props.group.latest)
 
-const route = computed(() => ({
-  name: n.value.route_name,
-  params:
-    n.value.route_name === 'Deal'
-      ? { dealId: n.value.reference_name }
-      : { leadId: n.value.reference_name },
-  hash: n.value.hash,
-}))
+const route = computed(() => notificationRoute(n.value))
 </script>
