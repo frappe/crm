@@ -109,6 +109,7 @@ def get_group_by_field(fields, fieldname, data, order_by):
 		"label": field.get("label"),
 		"fieldname": fieldname,
 		"fieldtype": field.get("fieldtype"),
+		"link_doctype": field.get("fieldtype") == "Link" and field.get("options"),
 		"options": options,
 	}
 

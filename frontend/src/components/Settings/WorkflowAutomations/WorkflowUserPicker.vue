@@ -5,6 +5,7 @@
     variant="outline"
     :options="options"
     :loading="loading"
+    :filterable="false"
     :placeholder="__('Select users')"
     :empty-text="__('No users found')"
     @update:model-value="$emit('update:modelValue', $event)"
@@ -26,6 +27,7 @@ import TokenIcon from '~icons/lucide/at-sign'
 import { MultiSelect, call } from 'frappe-ui'
 import { watchDebounced } from '@vueuse/core'
 import { computed, ref } from 'vue'
+import { usersStore } from '@/stores/users'
 
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
@@ -37,6 +39,8 @@ const props = defineProps({
 })
 
 defineEmits(['update:modelValue'])
+
+const { getUser } = usersStore()
 
 const query = ref('')
 const loading = ref(false)
@@ -78,7 +82,8 @@ function isToken(value) {
 }
 
 function fallbackOption(value) {
-  return [value, { label: value, value }]
+  const label = isToken(value) ? value : getUser(value).full_name
+  return [value, { label, value }]
 }
 
 function userOption(user) {

@@ -6,7 +6,10 @@
       avatars?.length > 1 ? 'flex-row-reverse' : 'truncate [&>div]:truncate',
     ]"
   >
-    <Tooltip v-if="avatars?.length == 1" :text="avatars[0].name">
+    <Tooltip
+      v-if="avatars?.length == 1"
+      :text="getUser(avatars[0].name).email || avatars[0].name"
+    >
       <div class="flex items-center gap-2 text-base">
         <span class="relative inline-flex shrink-0">
           <Avatar
@@ -27,7 +30,7 @@
       v-for="avatar in reverseAvatars"
       v-else
       :key="avatar.name"
-      :text="avatar.name"
+      :text="getUser(avatar.name).email || avatar.name"
     >
       <span
         class="user-avatar relative -mr-1.5 inline-flex transform transition hover:z-10 hover:scale-110"
@@ -50,6 +53,7 @@
 </template>
 <script setup>
 import AvailabilityDot from '@/components/AvailabilityDot.vue'
+import { usersStore } from '@/stores/users'
 import { Avatar, Tooltip } from 'frappe-ui'
 import { computed } from 'vue'
 
@@ -58,5 +62,6 @@ const props = defineProps({
   size: { type: String, default: 'md' },
   labelClass: { type: String, default: '' },
 })
+const { getUser } = usersStore()
 const reverseAvatars = computed(() => [...props.avatars].reverse())
 </script>

@@ -408,6 +408,10 @@ function getGroupedByRows(listRows, groupByField, columns) {
     let groupDetail = {
       label: groupByField.label,
       group: option || __(' '),
+      title:
+        option && groupByField.link_doctype === 'User'
+          ? getUser(option).full_name
+          : option,
       collapsed: false,
       rows: parseRows(filteredRows, columns),
     }
@@ -442,6 +446,13 @@ function parseRows(rows, columns = []) {
     let _rows = {}
     leads.value?.data.rows.forEach((row) => {
       _rows[row] = lead[row]
+
+      if (['owner', 'modified_by'].includes(row) && lead[row]) {
+        _rows[row] = {
+          ...getUser(lead[row]),
+          label: getUser(lead[row]).full_name,
+        }
+      }
 
       let fieldType = columns?.find((col) => (col[key] || col.value) == row)?.[
         type

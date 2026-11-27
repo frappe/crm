@@ -36,9 +36,9 @@ function assigneeChildren(context) {
   const { users } = usersStore()
   return (users.data?.crmUsers || []).map((user) => ({
     id: `assign-${user.name}`,
-    title: user.full_name || user.name,
+    title: user.full_name || user.email || user.name,
     translate: false,
-    subtitle: user.name,
+    subtitle: user.email || user.name,
     checked: isAssigned(context, user.name),
     perform: () => toggleAssignee(context, user.name),
   }))

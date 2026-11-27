@@ -317,6 +317,13 @@ function parseRows(rows, columns = []) {
     tasks.value?.data.rows.forEach((row) => {
       _rows[row] = task[row]
 
+      if (['owner', 'modified_by'].includes(row) && task[row]) {
+        _rows[row] = {
+          ...getUser(task[row]),
+          label: getUser(task[row]).full_name,
+        }
+      }
+
       let fieldType = columns?.find((col) => (col[key] || col.value) == row)?.[
         type
       ]

@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import get_time
+from frappe.utils import get_time, get_user_display_id
 
 
 class CRMBookingPage(Document):
@@ -50,7 +50,9 @@ class CRMBookingPage(Document):
 		allowed = crm_users(hosts)
 		for host in hosts:
 			if host not in allowed:
-				frappe.throw(_("{0} can't host bookings: they aren't a CRM user").format(host))
+				frappe.throw(
+					_("{0} can't host bookings: they aren't a CRM user").format(get_user_display_id(host))
+				)
 
 	def validate_location(self):
 		if self.location_type != "Custom link":
