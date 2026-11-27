@@ -113,6 +113,7 @@
               },
               { label: 'Exchangerate Host', value: 'exchangerate.host' },
               { label: 'Exchangerate API', value: 'exchangerate-api' },
+              { label: 'AllRatesToday', value: 'allratestoday' },
             ]"
             :placeholder="__('Select Provider')"
             :disabled="!settings.doc?.currency"
@@ -188,7 +189,11 @@ const { send } = useBroadcast()
 const errorMessage = ref('')
 const isInsightsInstalled = Boolean(window.is_insights_installed)
 
-const PROVIDERS_REQUIRING_KEY = ['exchangerate.host', 'exchangerate-api']
+const PROVIDERS_REQUIRING_KEY = [
+  'exchangerate.host',
+  'exchangerate-api',
+  'allratestoday',
+]
 
 const PROVIDER_META = {
   'exchangerate.host': {
@@ -200,6 +205,11 @@ const PROVIDER_META = {
     label: 'Exchangerate API',
     docsUrl: 'https://www.exchangerate-api.com',
     docsLabel: 'exchangerate-api.com',
+  },
+  allratestoday: {
+    label: 'AllRatesToday',
+    docsUrl: 'https://allratestoday.com/docs/',
+    docsLabel: 'allratestoday.com',
   },
 }
 
