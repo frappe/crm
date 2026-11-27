@@ -8,9 +8,15 @@ import SlaPolicyList from './SlaPolicyList.vue'
 import SlaPolicyView from './SlaPolicyView.vue'
 import { ref, provide, onUnmounted } from 'vue'
 import { createListResource } from 'frappe-ui'
+import { slaToReopen } from './utils'
 
 const slaSearchQuery = ref('')
-const step = ref({ screen: 'list', data: null, fetchData: false })
+const step = ref(
+  slaToReopen.value
+    ? { screen: 'view', data: { name: slaToReopen.value }, fetchData: true }
+    : { screen: 'list', data: null, fetchData: false },
+)
+slaToReopen.value = null
 
 const slaPolicyListData = createListResource({
   doctype: 'CRM Service Level Agreement',

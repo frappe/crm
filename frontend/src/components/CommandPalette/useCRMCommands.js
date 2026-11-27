@@ -88,6 +88,7 @@ const SETTINGS_SECTIONS = [
     manager: true,
     pages: [
       ['SLA Policies', 'timer'],
+      ['Business Holidays', 'briefcase'],
       ['Accounts', 'at-sign'],
       ['ERPNext', 'blocks'],
       ['Lead Syncing', 'refresh-cw'],

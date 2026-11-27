@@ -19,9 +19,11 @@ class CRMHolidayList(Document):
 
 		from crm.fcrm.doctype.crm_holiday.crm_holiday import CRMHoliday
 
+		description: DF.SmallText | None
 		from_date: DF.Date
 		holiday_list_name: DF.Data
 		holidays: DF.Table[CRMHoliday]
+		recurring_holidays: DF.JSON | None
 		to_date: DF.Date
 		total_holidays: DF.Int
 		weekly_off: DF.Literal[
@@ -85,3 +87,22 @@ class CRMHolidayList(Document):
 			reference_date += timedelta(days=7)
 
 		return date_list
+
+
+# Saves and renames in one go, so a failed rename leaves the list as it was.
+@frappe.whitelist()
+def save_holiday_list(name: str, values: dict):
+	values = frappe.parse_json(values)
+	new_name = values.pop("holiday_list_name", name)
+
+	frappe.db.savepoint("save_holiday_list")
+	try:
+		doc = frappe.get_doc("CRM Holiday List", name)
+		doc.update(values)
+		doc.save()
+		if new_name != name:
+			name = frappe.rename_doc("CRM Holiday List", name, new_name)
+	except Exception:
+		frappe.db.rollback(save_point="save_holiday_list")
+		raise
+	return name

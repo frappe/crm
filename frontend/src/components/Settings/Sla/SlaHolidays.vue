@@ -174,14 +174,19 @@
 import {
   Button,
   createListResource,
+  dialog as confirmDialog,
   Dropdown,
   ErrorMessage,
   Popover,
 } from 'frappe-ui'
 import { ConfirmDelete, getGridTemplateColumnsForTable } from '../../../utils'
+import { openHolidayList } from '../BusinessHolidays/store'
 import { slaData, slaDataErrors } from './utils'
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import WorkDayModal from './WorkDayModal.vue'
+
+const step = inject('step')
+const slaIsDirty = inject('slaIsDirty', ref(false))
 
 const dialog = ref({
   show: false,
@@ -237,9 +242,20 @@ const workDayOptions = [
   { label: 'Sunday', value: 'Sunday' },
 ]
 
-const createNewHolidayList = () => {
-  window.open(`${window.location.origin}/app/crm-holiday-list`)
+// Back on the holiday list returns to this policy, once it has been saved.
+const goToHolidayList = (name) => {
+  const open = () => openHolidayList(name, step.value.data?.name || null)
+  if (!slaIsDirty.value) return open()
+  confirmDialog.confirm({
+    title: __('Unsaved Changes'),
+    message: __(
+      'Your changes to this SLA policy will be lost. Do you want to continue?',
+    ),
+    onConfirm: open,
+  })
 }
+
+const createNewHolidayList = () => goToHolidayList(null)
 
 const deleteWorkDay = (workDay) => {
   if (!isConfirmingDelete.value) {
@@ -279,11 +295,7 @@ const addWorkDay = () => {
   })
 }
 
-const editHolidayList = (holidayList) => {
-  window.open(
-    `${window.location.origin}/app/crm-holiday-list/${holidayList.name}`,
-  )
-}
+const editHolidayList = (holidayList) => goToHolidayList(holidayList.name)
 
 const formatTime = (time) => {
   if (!time) return '00:00'
