@@ -308,7 +308,11 @@ class TodaysMeetings(Widget):
 		attending = (
 			frappe.qb.from_(participant)
 			.select(participant.parent)
-			.where((participant.parenttype == "Event") & (participant.email == self.scope.user))
+			.where(
+				(participant.parenttype == "Event")
+				# participants are listed by email
+				& (participant.email == frappe.utils.get_email_address(self.scope.user))
+			)
 		)
 		today = self.due.today
 		tomorrow = today + timedelta(days=1)
@@ -343,14 +347,26 @@ def set_attendees(rows: list, user: str):
 		if participant.email:
 			emails.setdefault(participant.parent, []).append(participant.email)
 
+	# the host is a user ID and participants are emails, so everyone is matched by email
+	hosts = dict(
+		frappe.get_all(
+			"User",
+			filters={"name": ["in", list({row.owner for row in rows}) or [""]]},
+			fields=["name", "email"],
+			as_list=True,
+		)
+	)
+	for row in rows:
+		row.host = hosts.get(row.owner) or row.owner
+
 	people = {}
-	everyone = {email for row in rows for email in [row.owner, *emails.get(row.name, [])]}
+	everyone = {email for row in rows for email in [row.host, *emails.get(row.name, [])]}
 	for person in frappe.get_all(
 		"User",
-		filters={"name": ["in", list(everyone) or [""]]},
-		fields=["name", "full_name", "user_image"],
+		filters={"email": ["in", list(everyone) or [""]]},
+		fields=["email", "full_name", "user_image"],
 	):
-		people[person.name] = {"email": person.name, "name": person.full_name, "image": person.user_image}
+		people[person.email] = {"email": person.email, "name": person.full_name, "image": person.user_image}
 	for contact in frappe.get_all(
 		"Contact",
 		filters={"email_id": ["in", list(everyone - set(people)) or [""]]},
@@ -360,8 +376,9 @@ def set_attendees(rows: list, user: str):
 			contact.email_id, {"email": contact.email_id, "name": contact.full_name, "image": contact.image}
 		)
 
+	viewer = frappe.utils.get_email_address(user)
 	for row in rows:
-		others = dict.fromkeys(e for e in [row.owner, *emails.get(row.name, [])] if e != user)
+		others = dict.fromkeys(e for e in [row.pop("host"), *emails.get(row.name, [])] if e != viewer)
 		row.attendees = [people.get(email) or {"email": email, "name": email} for email in others]
 		row.pop("owner")
 

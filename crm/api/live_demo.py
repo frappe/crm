@@ -20,8 +20,13 @@ def login():
 	frappe.local.response["location"] = frappe.local.response["redirect_to"]
 
 
+def get_demo_user():
+	# demo_username is the login email
+	return frappe.utils.get_user_by_email(frappe.conf.demo_username)
+
+
 def validate_reset_password(doc, event):
-	if frappe.conf.demo_username and frappe.session.user == frappe.conf.demo_username:
+	if frappe.conf.demo_username and frappe.session.user == get_demo_user():
 		frappe.throw(
 			_("Password cannot be reset by Demo User {}").format(frappe.bold(frappe.conf.demo_username)),
 			frappe.PermissionError,
@@ -29,7 +34,7 @@ def validate_reset_password(doc, event):
 
 
 def validate_user(doc, event):
-	if frappe.conf.demo_username and frappe.session.user == frappe.conf.demo_username and doc.new_password:
+	if frappe.conf.demo_username and frappe.session.user == get_demo_user() and doc.new_password:
 		frappe.throw(
 			_("Password cannot be reset by Demo User {}").format(frappe.bold(frappe.conf.demo_username)),
 			frappe.PermissionError,

@@ -14,10 +14,15 @@ def resolve_owners(demo_users):
 
 
 def build_full_names(session_user):
-	"""Return {email: full_name} mapping for all demo users plus session_user."""
-	from crm.demo.users import DEMO_USERS
+	"""Return {user: full_name} mapping for all demo users plus session_user."""
+	from crm.demo.users import DEMO_USERS, demo_user_ids
 
-	names = {u["email"]: f"{u['first_name']} {u['last_name']}" for u in DEMO_USERS}
+	user_ids = demo_user_ids()
+	names = {
+		user_ids[u["email"]]: f"{u['first_name']} {u['last_name']}"
+		for u in DEMO_USERS
+		if u["email"] in user_ids
+	}
 	names[session_user] = frappe.utils.get_fullname(session_user)
 	return names
 
@@ -51,7 +56,7 @@ def fix_auto_records(doctype, docname, owner, ts):
 		frappe.qb.update(Comment)
 		.set(Comment.owner, owner)
 		.set(Comment.modified_by, owner)
-		.set(Comment.comment_email, owner)
+		.set(Comment.comment_email, comment_email(owner))
 		.set(Comment.creation, ts)
 		.set(Comment.modified, ts)
 		.where(
@@ -63,6 +68,11 @@ def fix_auto_records(doctype, docname, owner, ts):
 	)
 
 
+def comment_email(user):
+	"""Like frappe's Comment: Administrator and Guest by name, others by email."""
+	return user if user in frappe.STANDARD_USERS else frappe.utils.get_email_address(user)
+
+
 def insert_comment(reference_doctype, reference_name, owner, content, full_names, ts):
 	"""Insert a Comment, backdate it, and return its name."""
 	comment = frappe.get_doc(
@@ -72,7 +82,7 @@ def insert_comment(reference_doctype, reference_name, owner, content, full_names
 			"reference_doctype": reference_doctype,
 			"reference_name": reference_name,
 			"content": content,
-			"comment_email": owner,
+			"comment_email": comment_email(owner),
 			"comment_by": full_names.get(owner, owner),
 		}
 	).insert(ignore_permissions=True)
@@ -93,9 +103,10 @@ def insert_communication(reference_doctype, reference_name, data, full_names, ts
 			"reference_name": reference_name,
 			"subject": data["subject"],
 			"content": data["content"],
-			"sender": data["sender"],
+			# demo users are passed by ID, leads by email
+			"sender": comment_email(data["sender"]) or data["sender"],
 			"sender_full_name": full_names.get(data["sender"], data["sender"]),
-			"recipients": data["recipients"],
+			"recipients": comment_email(data["recipients"]) or data["recipients"],
 			"communication_date": ts,
 		}
 	).insert(ignore_permissions=True)

@@ -504,13 +504,18 @@ def create_prospect_in_remote_site(crm_deal, erpnext_crm_settings):
 		if address and not isinstance(address, dict):
 			address = address.as_dict()
 
+		# the other site knows the user by email, not by ID; Administrator by name
+		deal_owner = doc.deal_owner
+		if deal_owner and deal_owner not in frappe.STANDARD_USERS:
+			deal_owner = frappe.utils.get_email_address(deal_owner)
+
 		return client.post_api(
 			"erpnext.crm.frappe_crm_api.create_prospect_against_crm_deal",
 			{
 				"organization": doc.organization,
 				"lead_name": doc.lead_name,
 				"no_of_employees": doc.no_of_employees,
-				"deal_owner": doc.deal_owner,
+				"deal_owner": deal_owner,
 				"crm_deal": doc.name,
 				"territory": doc.territory,
 				"industry": doc.industry,

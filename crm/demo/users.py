@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import frappe
 from frappe.query_builder import DocType
+from frappe.utils import get_user_by_email
 
 from crm.api.digest import OPT_OUT_KEY as DIGEST_OPT_OUT_KEY
 
@@ -38,9 +39,14 @@ DEMO_USERS = [
 DEMO_USER_EMAILS = [u["email"] for u in DEMO_USERS]
 
 
+def demo_user_ids():
+	"""{email: user ID} of the demo users that exist."""
+	return {email: user for email in DEMO_USER_EMAILS if (user := get_user_by_email(email))}
+
+
 def create_demo_users():
 	for user_data in DEMO_USERS:
-		if not frappe.db.exists("User", user_data["email"]):
+		if not get_user_by_email(user_data["email"]):
 			frappe.get_doc(
 				{
 					"doctype": "User",
@@ -59,44 +65,45 @@ def create_demo_users():
 				}
 			).insert(ignore_permissions=True)
 
+	user_ids = demo_user_ids()
 	# demo users have fake addresses; seeding assigns records to them, which would email them
-	for email in DEMO_USER_EMAILS:
-		frappe.db.set_value("Notification Settings", email, "enable_email_notifications", 0)
+	for user in user_ids.values():
+		frappe.db.set_value("Notification Settings", user, "enable_email_notifications", 0)
 
 	# Backdate auto-created contacts and set their image
 	_ts = datetime.now() - timedelta(days=70)
-	_avatar_by_email = {u["email"]: u["avatar"] for u in DEMO_USERS}
+	_avatar_by_user = {user_ids[u["email"]]: u["avatar"] for u in DEMO_USERS if u["email"] in user_ids}
 	contact_names = frappe.get_all(
-		"Contact", filters={"user": ["in", DEMO_USER_EMAILS]}, fields=["name", "user"]
+		"Contact", filters={"user": ["in", list(user_ids.values())]}, fields=["name", "user"]
 	)
 	for row in contact_names:
 		frappe.db.set_value(
 			"Contact",
 			row.name,
-			{"image": _avatar_by_email.get(row.user, ""), "creation": _ts, "modified": _ts},
+			{"image": _avatar_by_user.get(row.user, ""), "creation": _ts, "modified": _ts},
 			update_modified=False,
 		)
 
 	# demo users have fake addresses and tasks due, so the digest would bounce daily
-	for email in DEMO_USER_EMAILS:
-		frappe.defaults.set_user_default(DIGEST_OPT_OUT_KEY, "0", email)
+	for user in user_ids.values():
+		frappe.defaults.set_user_default(DIGEST_OPT_OUT_KEY, "0", user)
 
-	return DEMO_USER_EMAILS
+	return list(user_ids.values())
 
 
 def delete_demo_users(demo_user_emails):
+	demo_users = [user for email in demo_user_emails if (user := get_user_by_email(email))]
 	# delete notifications first — they link to users and block deletion
 	Notification = DocType("CRM Notification")
 	frappe.qb.from_(Notification).delete().where(
-		(Notification.from_user.isin(demo_user_emails)) | (Notification.to_user.isin(demo_user_emails))
+		(Notification.from_user.isin(demo_users)) | (Notification.to_user.isin(demo_users))
 	).run()
 
 	# collect contact names before deleting users — User.on_trash NULLs contact.user
-	contact_names = frappe.get_all("Contact", filters={"user": ["in", demo_user_emails]}, pluck="name")
+	contact_names = frappe.get_all("Contact", filters={"user": ["in", demo_users]}, pluck="name")
 
-	for email in demo_user_emails:
-		if frappe.db.exists("User", email):
-			frappe.delete_doc("User", email, ignore_permissions=True, force=True)
+	for user in demo_users:
+		frappe.delete_doc("User", user, ignore_permissions=True, force=True)
 
 	if contact_names:
 		for child_doctype in ("Contact Email", "Contact Phone", "Dynamic Link"):

@@ -55,7 +55,7 @@ def handle_request(**kwargs):
 				to_number=call_payload.get("DialWhomNumber"),
 				medium=call_payload.get("To"),
 				status=get_call_log_status(call_payload),
-				agent=call_payload.get("AgentEmail"),
+				agent=get_agent_user(call_payload),
 			)
 		elif agent := frappe.request.args.get("agent"):
 			create_call_log(
@@ -250,8 +250,15 @@ def get_call_log(call_payload):
 		return frappe.get_doc("CRM Call Log", call_log_id)
 
 
+def get_agent_user(call_payload):
+	"""Exotel sends the agent's email; the call log and realtime room need the user ID."""
+	if email := call_payload.get("AgentEmail"):
+		user = frappe.utils.get_user_by_email(email, include_standard_users=True)
+		return user if user != "Guest" else None
+
+
 def get_call_agent(call_payload):
-	if agent := call_payload.get("AgentEmail") or frappe.request.args.get("agent"):
+	if agent := get_agent_user(call_payload) or frappe.request.args.get("agent"):
 		return agent
 
 	if call_log := get_call_log(call_payload):
@@ -341,8 +348,8 @@ def update_call_log(call_payload, status="Ringing", call_log=None):
 			call_log.start_time = call_payload.get("StartTime")
 			call_log.end_time = call_payload.get("EndTime")
 
-			if direction == "incoming" and call_payload.get("AgentEmail"):
-				call_log.receiver = call_payload.get("AgentEmail")
+			if direction == "incoming" and (agent := get_agent_user(call_payload)):
+				call_log.receiver = agent
 
 			call_log.save(ignore_permissions=True)
 			frappe.db.commit()

@@ -391,7 +391,8 @@ def _send_email_notification(notification, event_start, before_value, interval):
 		subject = f"Event Reminder: {notification.subject}"
 
 		if notification.owner and notification.owner != "Administrator":
-			recipients.add(notification.owner)
+			if owner_email := frappe.utils.get_email_address(notification.owner):
+				recipients.add(owner_email)
 
 		participant_emails = notification.get("event_participants") or []
 		if participant_emails:
@@ -464,8 +465,13 @@ def _format_time_remaining(before_value, interval):
 
 def _send_system_notification(notification, interval):
 	"""Send system notification for an event"""
-	recipients = {notification.get("owner"), *notification.get("event_participants", [])}
-	for user in _claim_new_recipients(notification, interval, sorted(recipients - {None})):
+	# participants are email addresses, the realtime room is the user ID
+	participants = {
+		frappe.utils.get_user_by_email(email, include_standard_users=True)
+		for email in notification.get("event_participants", [])
+	}
+	recipients = {notification.get("owner"), *participants}
+	for user in _claim_new_recipients(notification, interval, sorted(recipients - {None, "Guest"})):
 		frappe.publish_realtime("event_notification", notification, user=user)
 
 

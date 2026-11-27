@@ -684,7 +684,9 @@ class TestExotelRealtimeRouting(IntegrationTestCase):
 
 	def test_call_event_goes_only_to_the_agent_email(self):
 		recipients = self._exotel_call_recipients(
-			CallSid="test-routing-email", Status="free", AgentEmail="Administrator"
+			CallSid="test-routing-email",
+			Status="free",
+			AgentEmail=frappe.db.get_value("User", "Administrator", "email"),
 		)
 		self.assertEqual(recipients, ["Administrator"])
 
@@ -708,10 +710,30 @@ class TestExotelRealtimeRouting(IntegrationTestCase):
 			CallFrom="+0987654321",
 			To="+1234567890",
 			DialWhomNumber="+1234567890",
-			AgentEmail="Administrator",
+			AgentEmail=frappe.db.get_value("User", "Administrator", "email"),
 		)
 		recipients = self._exotel_call_recipients(CallSid=call_sid, Direction="incoming", To="+1234567890")
 		self.assertEqual(recipients, ["Administrator"])
+
+	def test_call_event_and_call_log_use_the_user_id_of_the_agent_email(self):
+		from frappe.core.doctype.user.test_user import test_user
+
+		call_sid = "test-routing-user-id"
+		frappe.db.delete("CRM Call Log", {"id": call_sid})
+		self.addCleanup(frappe.db.delete, "CRM Call Log", {"id": call_sid})
+
+		with test_user(roles=["Sales User"], generated_id=True) as agent:
+			recipients = self._exotel_call_recipients(
+				CallSid=call_sid,
+				Direction="incoming",
+				CallFrom="+0987654321",
+				To="+1234567890",
+				DialWhomNumber="+1234567890",
+				AgentEmail=agent.email,
+			)
+
+			self.assertEqual(recipients, [agent.name])
+			self.assertEqual(frappe.db.get_value("CRM Call Log", {"id": call_sid}, "receiver"), agent.name)
 
 
 class TestFindByPhone(IntegrationTestCase):

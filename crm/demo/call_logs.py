@@ -1,6 +1,6 @@
 import frappe
 
-from crm.demo.users import DEMO_USERS
+from crm.demo.users import DEMO_USERS, demo_user_ids
 from crm.demo.utils import resolve_owners
 
 
@@ -11,7 +11,8 @@ def create_demo_call_logs(lead_names, demo_users):
 	session_user, owner_1, owner_2, _ = resolve_owners(demo_users)
 
 	# Build rep phone number map from DEMO_USERS mobile numbers
-	_user_mobile = {u["email"]: u["mobile_no"] for u in DEMO_USERS}
+	user_ids = demo_user_ids()
+	_user_mobile = {user_ids.get(u["email"]): u["mobile_no"] for u in DEMO_USERS}
 	rep_numbers = {
 		session_user: _user_mobile.get(session_user, "+1 555 100 0001"),
 		owner_1: _user_mobile.get(owner_1, "+1 555 100 0002"),
