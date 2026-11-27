@@ -152,9 +152,11 @@ def get_user_info(users: str | list):
 	if not users:
 		return []
 
+	users = list(users)[:200]
+	# the frontend also looks users up by email (participants, mail senders)
 	return frappe.get_all(
 		"User",
-		filters={"name": ["in", list(users)[:200]]},
+		or_filters={"name": ["in", users], "email": ["in", users]},
 		fields=["name", "email", "full_name", "user_image", "user_type"],
 	)
 

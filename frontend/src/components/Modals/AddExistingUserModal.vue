@@ -32,7 +32,7 @@
           :validate="validateEmail"
           :fetchUsers="true"
           :existingEmails="[
-            ...users.data.crmUsers.map((user) => user.name),
+            ...users.data.crmUsers.map((user) => user.email),
             'admin@example.com',
           ]"
           :error-message="

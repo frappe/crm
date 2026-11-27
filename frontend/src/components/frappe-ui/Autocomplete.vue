@@ -257,7 +257,7 @@ function filterOptions(options) {
     return options
   }
   return options.filter((option) => {
-    let searchTexts = [option.label, option.value]
+    let searchTexts = [option.label, option.value, option.email]
     return searchTexts.some((text) =>
       (text || '').toString().toLowerCase().includes(query.value.toLowerCase()),
     )
