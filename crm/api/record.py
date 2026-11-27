@@ -1,20 +1,12 @@
 import frappe
 from frappe import _
-from frappe.desk.form.activity import get_author_info
+from frappe.desk.form.activity import parse_visible_types
 from frappe.desk.form.assign_to import set_status
 from frappe.model.delete_doc import get_dynamic_linked_docs, get_linked_docs
 
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
 
 TIMELINE_METHOD = "frappe.desk.form.activity.get_activity_timeline"
-REFERENCE_ROWS = (
-	("note", "FCRM Note", ["title", "content", "pinned", "pinned_by", "pinned_on"]),
-	(
-		"task",
-		"CRM Task",
-		["title", "description", "status", "priority", "start_date", "due_date", "assigned_to"],
-	),
-)
 
 
 @frappe.whitelist(methods=["GET"])
@@ -33,17 +25,16 @@ def get_activities(
 	doctype: str,
 	name: str | int,
 	visible_types: list[str | dict[str, list[str]]] | None = None,
-	with_notes_and_tasks: bool = False,
 ) -> dict:
-	"""Return a record's timeline, plus its notes and tasks when asked.
+	"""Return a record's timeline: Frappe's, plus the rows its doctype adds.
 
-	The response is frappe.desk.form.activity.get_activity_timeline's, unchanged; more emails
-	and milestones load through Frappe's get_more_email_activities and get_more_milestone_activities.
-	Note and task rows have type "note" or "task" and the same shape: type, key, timestamp, author, data.
+	The response is frappe.desk.form.activity.get_activity_timeline's; more emails and
+	milestones load through Frappe's get_more_email_activities and get_more_milestone_activities.
+	A doctype adds rows by defining get_additional_activities(self) on its controller; each row
+	has type, key, timestamp, author and data, like Frappe's.
 	doctype: the record's DocType.
 	name: the record's name.
 	visible_types: activity types to load, such as ["email", {"version": ["status"]}]; default all.
-	with_notes_and_tasks: also return the record's FCRM Note and CRM Task rows.
 	"""
 	# an app's override of Frappe's timeline applies here too
 	timeline = frappe.call(  # nosemgrep
@@ -52,10 +43,11 @@ def get_activities(
 		name=name,
 		visible_types=visible_types,
 	)
-	if with_notes_and_tasks:
+	if rows := get_controller_activities(
+		frappe.get_doc(doctype, name), timeline["activities"], visible_types
+	):
 		timeline["activities"] = sorted(
-			timeline["activities"] + get_note_and_task_rows(doctype, name),
-			key=lambda row: (row.get("timestamp") or "", row["key"]),
+			timeline["activities"] + rows, key=lambda row: (row.get("timestamp") or "", row["key"])
 		)
 	return timeline
 
@@ -190,30 +182,18 @@ def delete_records(doctype: str, names: list[str | int], delete_linked: bool = F
 		delete_bulk(doctype, names)
 
 
-def get_note_and_task_rows(doctype: str, name: str | int) -> list[dict]:
-	"""Timeline rows for the notes and tasks linked to this doctype and name, that the user can read."""
-	user_info: dict = {}
-	rows = []
-	for row_type, reference_doctype, fields in REFERENCE_ROWS:
-		if not frappe.has_permission(reference_doctype, "read"):
-			continue
-		records = frappe.get_list(
-			reference_doctype,
-			filters={"reference_doctype": doctype, "reference_docname": name},
-			fields=["name", "owner", "creation", "modified", *fields],
-		)
-		frappe.utils.add_user_info({record.owner for record in records}, user_info)
-		rows += [
-			{
-				"type": row_type,
-				"key": f"{row_type}:{record.name}",
-				"timestamp": str(record.creation),
-				"author": get_author_info(record.owner, user_info),
-				"data": record,
-			}
-			for record in records
-		]
-	return rows
+def get_controller_activities(doc, activities: list[dict], visible_types) -> list[dict]:
+	"""The controller's extra timeline rows that Frappe did not return and the caller asked for."""
+	if not hasattr(doc, "get_additional_activities"):
+		return []
+	# once Frappe's timeline calls the controller itself, its rows come back already
+	known_keys = {row["key"] for row in activities}
+	visible, _ = parse_visible_types(visible_types)
+	return [
+		row
+		for row in doc.get_additional_activities()
+		if row["key"] not in known_keys and (visible is None or row["type"] in visible)
+	]
 
 
 def check_fields_are_writable(doctype: str, fieldnames) -> None:
