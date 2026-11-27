@@ -9,6 +9,9 @@ from frappe.utils import escape_html, get_fullname
 from crm.api.comment import extract_mentions
 from crm.fcrm.doctype.crm_notification.crm_notification import notify_user
 
+# Notes on these doctypes are as visible as the record they belong to.
+PERMISSIONED_REFERENCES = ("CRM Lead", "CRM Deal")
+
 
 class FCRMNote(Document):
 	# begin: auto-generated types
@@ -46,7 +49,7 @@ class FCRMNote(Document):
 
 	def notify_mentions(self):
 		"""Notify people mentioned in the note, once, when they are first added."""
-		if self.reference_doctype not in ("CRM Lead", "CRM Deal") or not self.reference_docname:
+		if self.reference_doctype not in PERMISSIONED_REFERENCES or not self.reference_docname:
 			return
 
 		before = self.get_doc_before_save()
@@ -66,6 +69,12 @@ class FCRMNote(Document):
 					pluck="to_user",
 				)
 			)
+		# the notification carries the note, so it only goes to people who can read the record
+		mentioned = {
+			email
+			for email in mentioned
+			if can_read_reference(self.reference_doctype, self.reference_docname, email)
+		}
 		if not mentioned:
 			return
 
@@ -100,6 +109,55 @@ class FCRMNote(Document):
 					"redirect_to_docname": self.reference_docname,
 				}
 			)
+
+
+def get_permission_query_conditions(user=None):
+	"""List a note on a lead or deal only if the user can read that record."""
+	user = user or frappe.session.user
+	if user == "Administrator":
+		return ""
+
+	conditions = [
+		"coalesce(`tabFCRM Note`.`reference_docname`, '') = ''",
+		"coalesce(`tabFCRM Note`.`reference_doctype`, '') not in ({})".format(
+			", ".join(frappe.db.escape(doctype) for doctype in PERMISSIONED_REFERENCES)
+		),
+	]
+	for doctype in PERMISSIONED_REFERENCES:
+		if not frappe.has_permission(doctype, "read", user=user):
+			continue
+		# get_list covers roles, user permissions, shares and the permission hooks of the record
+		readable = frappe.get_list(
+			doctype, fields=["name"], limit_page_length=0, order_by="", user=user, run=0
+		)
+		conditions.append(
+			f"(`tabFCRM Note`.`reference_doctype` = {frappe.db.escape(doctype)}"
+			f" and `tabFCRM Note`.`reference_docname` in ({readable}))"
+		)
+	return "({})".format(" or ".join(conditions))
+
+
+def has_permission(doc, ptype=None, user=None):
+	"""Allow a note on a lead or deal only if the user can read that record."""
+	user = user or frappe.session.user
+	if user == "Administrator":
+		return True
+
+	references = {(doc.reference_doctype, doc.reference_docname)}
+	# a save is checked with the new values, so moving a note also needs access to where it was
+	saved = doc.name and frappe.db.get_value(
+		"FCRM Note", doc.name, ["reference_doctype", "reference_docname"]
+	)
+	if saved:
+		references.add(tuple(saved))
+
+	return all(can_read_reference(*reference, user) for reference in references)
+
+
+def can_read_reference(doctype, name, user):
+	if doctype not in PERMISSIONED_REFERENCES or not name:
+		return True
+	return bool(frappe.db.exists(doctype, name)) and frappe.has_permission(doctype, "read", name, user=user)
 
 
 @frappe.whitelist()
