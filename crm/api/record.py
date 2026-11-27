@@ -3,6 +3,7 @@ from frappe import _
 from frappe.desk.form.activity import parse_visible_types
 from frappe.desk.form.assign_to import set_status
 from frappe.model.delete_doc import get_dynamic_linked_docs, get_linked_docs
+from frappe.utils import escape_html
 
 from crm.fcrm.doctype.crm_fields_layout.crm_fields_layout import get_permlevel_access
 
@@ -156,7 +157,8 @@ def unlink_records(records: list[dict], remove_contact: bool = False, delete: bo
 def delete_records(doctype: str, names: list[str | int], delete_linked: bool = False) -> None:
 	"""Delete records and unlink, or delete, the records that link to them.
 
-	More than 10 records are deleted in a background job.
+	More than 10 records are deleted in a background job. Any failure raises
+	once, at the end, listing up to 12 refused documents.
 	doctype: the records' DocType.
 	names: the names of the records to delete.
 	delete_linked: delete the linked records instead of unlinking them.
@@ -173,13 +175,52 @@ def delete_records(doctype: str, names: list[str | int], delete_linked: bool = F
 		if frappe.db.exists(doctype, name):
 			frappe.get_doc(doctype, name).check_permission("delete")
 
+	# Failures used to be swallowed one by one and only ever reached the
+	# error log ("Bulk Delete Error"): a delete click looked like a no-op
+	# to the user. Each failure is now collected, with its reason, and
+	# reported together at the end of the request.
+	failed = []
+
 	for name in names:
-		unlink_records_linked_to(doctype, name, delete_linked)
+		unlink_records_linked_to(doctype, name, delete_linked, failed)
 
 	if len(names) > 10:
 		frappe.enqueue("frappe.desk.reportview.delete_bulk", doctype=doctype, items=names)
+		# Deletion is a background job from here on: without this message
+		# the click went without any visible response.
+		frappe.msgprint(
+			_("{0} {1} deletions have been queued. The list will update as they are processed.").format(
+				len(names), _(doctype)
+			),
+			title=_("Bulk Delete"),
+			indicator="blue",
+			alert=True,
+		)
 	else:
 		delete_bulk(doctype, names)
+		# `delete_bulk` msgprints with realtime=True only: those messages
+		# never travel back in this request's response. Re-checking
+		# existence is the only reliable way to know what survived.
+		for name in names:
+			if frappe.db.exists(doctype, name):
+				failed.append((doctype, name, _("could not be deleted")))
+
+	if failed:
+		frappe.log_error(
+			"\n".join(f"{dt} {nm}: {why}" for dt, nm, why in failed),
+			"Bulk Delete Error",
+		)
+		details = [
+			f"<li>{escape_html(dt)} <b>{escape_html(str(nm))}</b> — {escape_html(str(why))}</li>"
+			for dt, nm, why in failed[:12]
+		]
+		if len(failed) > 12:
+			details.append(f"<li>{_('… and {0} more').format(len(failed) - 12)}</li>")
+		frappe.clear_messages()
+		frappe.throw(
+			_("The following documents could not be deleted:") + "<ul>" + "".join(details) + "</ul>",
+			title=_("Bulk Delete"),
+		)
 
 
 def get_controller_activities(doc, activities: list[dict], visible_types) -> list[dict]:
@@ -209,20 +250,51 @@ def check_fields_are_writable(doctype: str, fieldnames) -> None:
 		frappe.throw(_("Cannot edit these fields of {0}: {1}").format(_(doctype), ", ".join(refused)))
 
 
-def unlink_records_linked_to(doctype, name, delete_linked):
+def unlink_records_linked_to(doctype, name, delete_linked, failed=None):
+	"""Unlink every record that links to `name`, appending refusals to `failed`.
+
+	`failed` collects (doctype, name, reason) tuples for the caller to report.
+	"""
+	# crm.api.whatsapp imports this module at load time
+	from crm.api.whatsapp import WhatsAppRecipientChangeError
+
+	if failed is None:
+		failed = []
+
 	try:
 		if not frappe.db.exists(doctype, name):
-			frappe.log_error(f"Document {doctype} {name} does not exist", "Bulk Delete Error")
+			failed.append((doctype, name, _("does not exist")))
 			return
 
 		for linked_doc in get_linked_docs_data(frappe.get_doc(doctype, name)):
-			unlink_records(
-				[{"doctype": linked_doc["reference_doctype"], "docname": linked_doc["reference_docname"]}],
-				remove_contact=doctype == "Contact",
-				delete=delete_linked,
-			)
+			ref_dt = linked_doc["reference_doctype"]
+			ref_nm = linked_doc["reference_docname"]
+			try:
+				removed = unlink_records(
+					[{"doctype": ref_dt, "docname": ref_nm}],
+					remove_contact=doctype == "Contact",
+					delete=delete_linked,
+				)
+				if not removed:
+					# unlink_records refuses silently (missing permission,
+					# dead link); an empty result is the only trace left.
+					failed.append((ref_dt, ref_nm, _("could not be unlinked")))
+			except WhatsAppRecipientChangeError:
+				raise
+			except Exception as e:
+				# One link that cannot be detached must not abandon the
+				# others, but it must not stay silent either.
+				frappe.log_error(
+					f"Error unlinking {ref_dt} {ref_nm} from {doctype} {name}: {e!s}",
+					"Bulk Delete Error",
+				)
+				failed.append((ref_dt, ref_nm, _("could not be unlinked")))
+	except WhatsAppRecipientChangeError:
+		# a refusal the user must read as-is, not folded into the summary
+		raise
 	except Exception as e:
 		frappe.log_error(f"Error processing linked docs for {doctype} {name}: {e!s}", "Bulk Delete Error")
+		failed.append((doctype, name, str(e)))
 
 
 def get_open_assignees(doctype, name, default_assigned_to=None):
