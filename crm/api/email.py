@@ -38,6 +38,7 @@ def cancel_scheduled_email(name: str):
 		"recipients": communication.recipients,
 		"cc": communication.cc,
 		"bcc": communication.bcc,
+		"in_reply_to": communication.in_reply_to,
 		"attachments": attachments,
 	}
 
