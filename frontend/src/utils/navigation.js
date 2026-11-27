@@ -62,9 +62,13 @@ export function builtInPage(item) {
 }
 
 /**
- * Where a DocType item goes. Null until the generic list page has a route
- * (frappe/crm#3648), so the sidebar leaves DocType items out for now.
+ * Whether DocType items open a page yet. False until the generic list page has
+ * a route (frappe/crm#3648): the sidebar leaves DocType items out, and the
+ * Customize sidebar dialog shows Add › DocType as coming soon.
  */
+export const doctypeItemsOpen = false
+
+/** Where a DocType item goes; null while `doctypeItemsOpen` is false. */
 export function doctypeRoute() {
   return null
 }

@@ -164,8 +164,16 @@ import {
   switchTo,
 } from './editor'
 import { isListed } from './rows'
-import { Checkbox, Dialog, Dropdown, TabButtons, Tooltip } from 'frappe-ui'
-import { computed } from 'vue'
+import { doctypeItemsOpen } from '@/utils/navigation'
+import {
+  Badge,
+  Checkbox,
+  Dialog,
+  Dropdown,
+  TabButtons,
+  Tooltip,
+} from 'frappe-ui'
+import { computed, h } from 'vue'
 
 const open = computed({
   get: () => editor.open,
@@ -194,10 +202,20 @@ const itemCount = computed(
     ).length,
 )
 
+const comingSoon = () =>
+  h(Badge, {
+    label: __('Coming soon'),
+    theme: 'gray',
+    variant: 'subtle',
+    size: 'sm',
+  })
+
 const addOptions = computed(() => [
   {
     label: __('DocType'),
     icon: 'lucide-table',
+    disabled: !doctypeItemsOpen,
+    slots: doctypeItemsOpen ? undefined : { suffix: comingSoon },
     onClick: () => startAdding('DocType'),
   },
   {
