@@ -498,15 +498,13 @@
                     "
                   />
                   <FormControl
-                    :model-value="String(doc.slot_interval || 0)"
+                    :model-value="intervalValue"
                     type="select"
                     :disabled="!canEdit"
                     :label="__('Offer a time every')"
                     :description="startTimesHint"
                     :options="intervalOptions"
-                    @update:model-value="
-                      (v: string) => set('slot_interval', Number(v))
-                    "
+                    @update:model-value="setSlotStep"
                   />
                 </div>
               </section>
@@ -835,6 +833,7 @@ interface BookingPageDoc {
   max_days_ahead: number
   buffer: number
   slot_interval: number
+  slot_includes_buffer: 0 | 1
   create_lead: 0 | 1
   lead_source?: string
   confirmation_message?: string
@@ -1042,20 +1041,44 @@ const durationOptions = [15, 20, 30, 45, 60, 90, 120].map((m) => ({
   label: __('{0} minutes', [m]),
   value: String(m),
 }))
-// 0 steps by the meeting's own length, so that length isn't listed twice
+// 0 steps by the meeting's length and 'buffer' by meeting + buffer, so neither is listed twice
 const intervalOptions = computed(() => {
   const duration = doc.value?.duration || 30
+  const buffer = doc.value?.buffer || 0
   return [
     { label: __('{0} minutes (meeting length)', [duration]), value: '0' },
+    ...(buffer > 0
+      ? [
+          {
+            label: __('{0} minutes (meeting + buffer)', [duration + buffer]),
+            value: 'buffer',
+          },
+        ]
+      : []),
     ...[15, 30, 60]
       .filter((m) => m !== duration)
       .map((m) => ({ label: __('{0} minutes', [m]), value: String(m) })),
   ]
 })
+const intervalValue = computed(() => {
+  if (
+    !doc.value?.slot_interval &&
+    doc.value?.slot_includes_buffer &&
+    doc.value?.buffer
+  )
+    return 'buffer'
+  return String(doc.value?.slot_interval || 0)
+})
+function setSlotStep(value: string) {
+  set('slot_includes_buffer', value === 'buffer' ? 1 : 0)
+  set('slot_interval', value === 'buffer' ? 0 : Number(value))
+}
 // Spells out the setting with sample times, e.g. "9:00, 9:30, 10:00"
 const startTimesHint = computed(() => {
   const duration = doc.value?.duration || 30
-  const step = doc.value?.slot_interval || duration
+  const step =
+    doc.value?.slot_interval ||
+    duration + (doc.value?.slot_includes_buffer ? doc.value?.buffer || 0 : 0)
   const times = [0, 1, 2].map((i) => {
     const m = 9 * 60 + i * step
     return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`

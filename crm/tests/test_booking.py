@@ -145,6 +145,30 @@ class TestBooking(IntegrationTestCase):
 			self.assertNotIn(to_iso(blocked), slots)
 		self.assertIn(to_iso(self.at(9)), slots)
 
+	def test_slots_can_step_by_meeting_plus_buffer(self):
+		# 10:00–13:00 with 60-minute meetings and buffer fits two meetings, not one at 11:00
+		page = self.make_page(
+			[HOSTS[0]],
+			duration=60,
+			buffer=60,
+			slot_includes_buffer=1,
+			availability=[{"workday": "Monday", "start_time": "10:00:00", "end_time": "13:00:00"}],
+		)
+		self.assertEqual(self.slots_on_monday(page), [to_iso(self.at(h)) for h in (10, 12)])
+		self.book_as_guest(self.at(10), page=page)
+		self.assertEqual(self.slots_on_monday(page), [to_iso(self.at(12))])
+
+	def test_a_set_interval_wins_over_meeting_plus_buffer(self):
+		page = self.make_page(
+			[HOSTS[0]],
+			duration=60,
+			buffer=60,
+			slot_interval=60,
+			slot_includes_buffer=1,
+			availability=[{"workday": "Monday", "start_time": "10:00:00", "end_time": "13:00:00"}],
+		)
+		self.assertEqual(self.slots_on_monday(page), [to_iso(self.at(h)) for h in (10, 11, 12)])
+
 	def test_weekly_repeating_event_blocks_slots(self):
 		week_before = self.at(11, days=-7)
 		self.add_event(

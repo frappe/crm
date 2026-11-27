@@ -633,7 +633,7 @@ def candidate_slots(page, start_utc, end_utc):
 	"""Slot starts from the page's weekly hours, minus holidays, in [start_utc, end_utc)."""
 	tz = ZoneInfo(page_timezone(page))
 	duration = timedelta(minutes=page.duration)
-	step = timedelta(minutes=cint(page.slot_interval) or page.duration)
+	step = timedelta(minutes=slot_step(page))
 	holidays = holiday_dates(page)
 	hours = {}
 	for row in page.availability:
@@ -652,6 +652,13 @@ def candidate_slots(page, start_utc, end_utc):
 						yield slot_utc
 					slot += step
 		day += timedelta(days=1)
+
+
+def slot_step(page) -> int:
+	"""Minutes between slot starts; meeting + buffer keeps one booking from blocking the next."""
+	if cint(page.slot_interval):
+		return cint(page.slot_interval)
+	return page.duration + (cint(page.buffer) if page.slot_includes_buffer else 0)
 
 
 def holiday_dates(page) -> set:
