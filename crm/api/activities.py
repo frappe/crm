@@ -35,11 +35,14 @@ def get_deal_activities(name: str):
 		"response_by",
 		"sla_creation",
 		"sla",
+		"sla_status",
 		"first_response_time",
 		"first_responded_on",
+		"last_response_time",
+		"last_responded_on",
 	]
 
-	doc = frappe.db.get_values("CRM Deal", name, ["creation", "owner", "lead"])[0]
+	doc = frappe.db.get_values("CRM Deal", name, ["creation", "owner", "lead", "currency"])[0]
 	lead = doc[2]
 
 	activities = []
@@ -54,8 +57,8 @@ def get_deal_activities(name: str):
 		# a user can have access to the deal but not the lead it came from, so
 		# skip the lead's history instead of failing the whole timeline
 		if frappe.has_permission("CRM Lead", "read", lead):
-			activities, calls, notes, tasks, attachments = get_lead_activities(lead)
-			activities = ungroup_note_activities(activities)
+			# ungrouped, so the merged lead + deal timeline is grouped only once below
+			activities, calls, notes, tasks, attachments = get_lead_activities(lead, group=False)
 
 	activities.append(
 		{
@@ -69,8 +72,8 @@ def get_deal_activities(name: str):
 
 	docinfo.versions.reverse()
 
-	for version in docinfo.versions:
-		activities += get_field_change_activities(version, deal_fields, avoid_fields, is_lead=False)
+	deal = frappe._dict(doctype="CRM Deal", name=name, currency=doc[3])
+	activities += _version_activities(docinfo.versions, deal_fields, avoid_fields, is_lead=False, doc=deal)
 
 	for comment in docinfo.comments:
 		activity = {
@@ -86,8 +89,8 @@ def get_deal_activities(name: str):
 
 	for communication in docinfo.communications + docinfo.automated_messages:
 		activity = {
-			"activity_type": "communication",
 			"name": communication.name,
+			"activity_type": "communication",
 			"communication_type": communication.communication_type,
 			"communication_date": communication.communication_date or communication.creation,
 			# a scheduled email belongs where it was sent, not where it was written
@@ -138,11 +141,12 @@ def get_deal_activities(name: str):
 	activities.sort(key=lambda x: x["creation"], reverse=True)
 	activities = handle_multiple_versions(activities)
 	activities = group_note_activities(activities)
+	frappe.response.pop("docinfo", None)
 
 	return activities, calls, notes, tasks, attachments
 
 
-def get_lead_activities(name: str):
+def get_lead_activities(name: str, group: bool = True):
 	if not frappe.has_permission("CRM Lead", "read", name):
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 
@@ -151,11 +155,16 @@ def get_lead_activities(name: str):
 	lead_fields = get_readable_fields("CRM Lead")
 	avoid_fields = [
 		"converted",
+		# rebuilt from salutation / first / middle / last name on every save
+		"lead_name",
 		"response_by",
 		"sla_creation",
 		"sla",
+		"sla_status",
 		"first_response_time",
 		"first_responded_on",
+		"last_response_time",
+		"last_responded_on",
 	]
 
 	doc = frappe.db.get_values("CRM Lead", name, ["creation", "owner"])[0]
@@ -171,8 +180,8 @@ def get_lead_activities(name: str):
 
 	docinfo.versions.reverse()
 
-	for version in docinfo.versions:
-		activities += get_field_change_activities(version, lead_fields, avoid_fields, is_lead=True)
+	lead = frappe._dict(doctype="CRM Lead", name=name)
+	activities += _version_activities(docinfo.versions, lead_fields, avoid_fields, is_lead=True, doc=lead)
 
 	for comment in docinfo.comments:
 		activity = {
@@ -188,8 +197,8 @@ def get_lead_activities(name: str):
 
 	for communication in docinfo.communications + docinfo.automated_messages:
 		activity = {
-			"activity_type": "communication",
 			"name": communication.name,
+			"activity_type": "communication",
 			"communication_type": communication.communication_type,
 			"communication_date": communication.communication_date or communication.creation,
 			# a scheduled email belongs where it was sent, not where it was written
@@ -233,8 +242,10 @@ def get_lead_activities(name: str):
 	activities += get_note_activities(notes, is_lead=True)
 
 	activities.sort(key=lambda x: x["creation"], reverse=True)
-	activities = handle_multiple_versions(activities)
-	activities = group_note_activities(activities)
+	if group:
+		activities = handle_multiple_versions(activities)
+		activities = group_note_activities(activities)
+	frappe.response.pop("docinfo", None)
 
 	return activities, calls, notes, tasks, attachments
 
@@ -248,7 +259,7 @@ def get_readable_fields(doctype: str):
 	allowed_permlevels = get_permlevel_access("read", doctype)
 
 	return {
-		field.fieldname: {"label": field.label, "options": field.options}
+		field.fieldname: {"label": field.label, "options": field.options, "df": field}
 		for field in frappe.get_meta(doctype).fields
 		if field.permlevel == 0 or field.permlevel in allowed_permlevels
 	}
@@ -282,69 +293,138 @@ def get_send_after(communication) -> str | None:
 	return frappe.db.get_value("Communication", communication.name, "send_after")
 
 
-def get_field_change_activities(version, fields: dict, avoid_fields: list, is_lead: bool):
-	activities = []
-	for fieldname, old_value, value in json.loads(version.data).get("changed") or []:
-		field = fields.get(fieldname)
-		if not field or fieldname in avoid_fields or (not old_value and not value):
-			continue
+def _version_activities(
+	versions: list, fields: dict, avoid_fields: list, is_lead: bool, doc: dict | None = None
+) -> list:
+	"""Convert a docinfo versions list into activity dicts, one per changed field.
 
-		data = {"field": fieldname, "field_label": field.get("label") or fieldname}
-		if not old_value:
-			activity_type = "added"
-			data["value"] = value
-		elif not value:
-			activity_type = "removed"
-			data["value"] = old_value
-		else:
+	Fields absent from *fields* (permlevel-restricted or outside the doctype) are
+	silently skipped, as are entries in *avoid_fields* and no-op changes where
+	both sides are blank (None, "" or 0). A value going to 0 is still a change.
+	"""
+	translated_doctypes = set(get_translated_doctypes())
+	docs_at_save = _docs_at_save(versions, doc)
+	result = []
+	for version, doc_at_save in zip(versions, docs_at_save, strict=True):
+		version_data = json.loads(version.data)
+		for fieldname, old_value, new_value in version_data.get("changed") or []:
+			field = fields.get(fieldname)
+			if not field or fieldname in avoid_fields:
+				continue
+			# numeric fields flip between 0 and None on plain saves; that is not a change
+			if is_blank(old_value) and is_blank(new_value):
+				continue
+
+			# Frappe stores numbers formatted ("₹ 1,000.00") but leaves 0 raw; match them
+			old_value = format_zero(old_value, field.get("df"), doc_at_save)
+			new_value = format_zero(new_value, field.get("df"), doc_at_save)
+
+			field_label = field.get("label") or fieldname
+			field_option = field.get("options") or None
+
 			activity_type = "changed"
-			data.update(old_value=old_value, value=value)
-
-		field_option = field.get("options") or None
-		if data.get("value") and field_option and is_translatable(field_option):
-			data["value"] = _(data["value"])
-			if data.get("old_value"):
-				data["old_value"] = _(data["old_value"])
-
-		activities.append(
-			{
-				"activity_type": activity_type,
-				"creation": version.creation,
-				"owner": version.owner,
-				"data": data,
-				"is_lead": is_lead,
-				"options": field_option,
+			activity_data = {
+				"field": fieldname,
+				"field_label": field_label,
+				"old_value": old_value,
+				"value": new_value,
 			}
-		)
-	return activities
+
+			if is_empty(old_value):
+				activity_type = "added"
+				activity_data = {"field": fieldname, "field_label": field_label, "value": new_value}
+			elif is_empty(new_value):
+				activity_type = "removed"
+				activity_data = {"field": fieldname, "field_label": field_label, "value": old_value}
+
+			if field_option in translated_doctypes:
+				activity_data["value"] = _(activity_data["value"])
+				if not is_empty(activity_data.get("old_value")):
+					activity_data["old_value"] = _(activity_data["old_value"])
+
+			result.append(
+				{
+					"activity_type": activity_type,
+					"creation": version.creation,
+					"owner": version.owner,
+					"data": activity_data,
+					"is_lead": is_lead,
+					"options": field_option,
+				}
+			)
+	return result
 
 
-def handle_multiple_versions(versions: list):
-	activities = []
-	grouped_versions = []
-	old_version = None
-	for version in versions:
-		is_version = version["activity_type"] in ["changed", "added", "removed"]
-		if not is_version:
-			activities.append(version)
-		if not old_version:
-			old_version = version
-			if is_version:
-				grouped_versions.append(version)
+def _docs_at_save(versions: list, doc: dict | None) -> list:
+	"""Return *doc* as it was at each of *versions* (oldest first), for formatting.
+
+	Only the currency is tracked: walking back from the current value, each
+	version that changed it restores the old one for every earlier save.
+	"""
+	currency = doc.get("currency") if doc else None
+	docs = []
+	for version in reversed(versions):
+		docs.append(frappe._dict(doc, currency=currency) if doc else None)
+		for fieldname, old_value, _new_value in json.loads(version.data).get("changed") or []:
+			if fieldname == "currency":
+				currency = old_value
+	docs.reverse()
+	return docs
+
+
+def is_empty(value) -> bool:
+	return value is None or value == ""
+
+
+def is_blank(value) -> bool:
+	return is_empty(value) or value == 0
+
+
+NUMBER_FIELDTYPES = ("Currency", "Int", "Long Int", "Float", "Percent")
+
+
+def format_zero(value, df, doc=None):
+	if value == 0 and not isinstance(value, bool) and df and df.fieldtype in NUMBER_FIELDTYPES:
+		return frappe.format_value(value, df, doc)
+	return value
+
+
+def handle_multiple_versions(activities: list):
+	"""Group the field changes of each save into one timeline entry.
+
+	Entries from one save share owner, creation and record (lead or deal); the
+	first becomes the head and the rest go in its ``other_versions``. Expects
+	*activities* sorted by creation and not grouped yet, so groups never nest.
+	"""
+	result = []
+	group = []
+	for activity in activities:
+		if activity["activity_type"] not in ("changed", "added", "removed"):
+			if group:
+				result.append(parse_grouped_versions(group))
+				group = []
+			result.append(activity)
 			continue
-		if is_version and old_version.get("owner") and version["owner"] == old_version["owner"]:
-			grouped_versions.append(version)
-		else:
-			if grouped_versions:
-				activities.append(parse_grouped_versions(grouped_versions))
-			grouped_versions = []
-			if is_version:
-				grouped_versions.append(version)
-		old_version = version
-		if version == versions[-1] and grouped_versions:
-			activities.append(parse_grouped_versions(grouped_versions))
 
-	return activities
+		if group and not is_same_save(group[0], activity):
+			result.append(parse_grouped_versions(group))
+			group = []
+		group.append(activity)
+
+	if group:
+		result.append(parse_grouped_versions(group))
+
+	return result
+
+
+def is_same_save(a: dict, b: dict) -> bool:
+	# a deal timeline also holds its lead's changes, which are a different save
+	return (
+		bool(a.get("owner"))
+		and a.get("owner") == b.get("owner")
+		and a["creation"] == b["creation"]
+		and a.get("is_lead") == b.get("is_lead")
+	)
 
 
 def group_note_activities(activities: list):
@@ -375,10 +455,8 @@ def ungroup_note_activities(activities: list):
 
 def parse_grouped_versions(versions: list):
 	version = versions[0]
-	if len(versions) == 1:
-		return version
-	other_versions = versions[1:]
-	version["other_versions"] = other_versions
+	if len(versions) > 1:
+		version["other_versions"] = versions[1:]
 	return version
 
 
@@ -598,7 +676,3 @@ def parse_attachment_log(html: str, type: str):
 		"file_url": a_tag["href"],
 		"is_private": is_private,
 	}
-
-
-def is_translatable(doctype: str) -> bool:
-	return doctype in get_translated_doctypes()
