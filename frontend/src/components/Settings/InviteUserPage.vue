@@ -1,6 +1,6 @@
 <template>
-  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
-    <div class="flex px-2 justify-between">
+  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8 max-sm:p-4">
+    <div class="flex px-2 justify-between max-sm:hidden">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Send Invites To') }}
@@ -14,18 +14,20 @@
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
-        <Button
-          :label="__('Send Invites')"
-          variant="solid"
-          :disabled="
-            !invitees.length || userExistMessage || inviteeExistMessage
-          "
-          :loading="inviteByEmail.loading"
-          @click="inviteByEmail.submit()"
-        />
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            :label="__('Send Invites')"
+            variant="solid"
+            :disabled="
+              !invitees.length || userExistMessage || inviteeExistMessage
+            "
+            :loading="inviteByEmail.loading"
+            @click="inviteByEmail.submit()"
+          />
+        </Teleport>
       </div>
     </div>
-    <div class="flex-1 flex flex-col px-2 gap-8 overflow-y-auto">
+    <div class="flex-1 flex flex-col px-2 gap-8 overflow-y-auto max-sm:px-0">
       <div>
         <FormControl
           type="textarea"
@@ -46,10 +48,9 @@
         >
           {{ userExistMessage || inviteeExistMessage }}
         </div>
-        <FormControl
+        <Select
           v-model="role"
-          type="select"
-          class="mt-4"
+          class="mt-4 w-full"
           :label="__('Invite As')"
           :options="roleOptions"
           :description="description"
@@ -66,7 +67,7 @@
               :key="user.name"
               class="flex items-center justify-between px-2 py-1 rounded-6 bg-surface-gray-2"
             >
-              <div class="text-base">
+              <div class="text-base min-w-0 break-words">
                 <span class="text-ink-gray-8">
                   {{ user.email }}
                 </span>
@@ -95,6 +96,8 @@
   </div>
 </template>
 <script setup>
+import Select from '@/components/Controls/Select.vue'
+import { isPhone } from '@/composables/phone'
 import { validateEmail, convertArrayToString } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { useTelemetry } from '@framework/ui/telemetry'

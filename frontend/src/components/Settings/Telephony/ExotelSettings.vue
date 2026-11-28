@@ -1,7 +1,7 @@
 <template>
   <SettingsLayoutBase>
     <template #title>
-      <div class="flex gap-1 items-center">
+      <div class="flex gap-1 items-center max-sm:hidden">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
@@ -21,13 +21,16 @@
     <template #header-actions>
       <div v-if="exotel.doc?.enabled && !exotel.get.loading" class="flex gap-2">
         <Button
-          v-if="isDirty"
+          v-if="isDirty && !isPhone"
           :label="__('Discard Changes')"
           variant="subtle"
           @click="exotel.reload()"
         />
-        <Button :label="__('Disable')" variant="subtle" @click="disable" />
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button :label="__('Disable')" variant="subtle" @click="disable" />
+        </Teleport>
         <Button
+          v-if="!isPhone"
           variant="solid"
           :label="__('Update')"
           :loading="exotel.save.loading"
@@ -39,7 +42,7 @@
     <template #content>
       <div v-if="exotel.doc" class="h-full">
         <div v-if="exotel.doc.enabled" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormControl
               v-model="exotel.doc.api_key"
               :label="__('API Key')"
@@ -80,12 +83,12 @@
             />
           </div>
           <div class="h-px border-t border-outline-elevation-2" />
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between max-sm:gap-4">
             <div class="flex flex-col">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ __('Record Calls') }}
               </div>
-              <div class="text-p-sm text-ink-gray-5 truncate">
+              <div class="text-p-sm text-ink-gray-5 sm:truncate">
                 {{
                   __('Enable call recording for incoming and outgoing calls')
                 }}
@@ -129,6 +132,11 @@
   </SettingsLayoutBase>
 </template>
 <script setup>
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { Switch } from 'frappe-ui'
@@ -164,5 +172,17 @@ const isDirty = computed(() => {
     exotel.originalDoc &&
     JSON.stringify(exotel.doc) !== JSON.stringify(exotel.originalDoc)
   )
+})
+
+useSettingsSubpage({
+  title: () => __('Exotel Settings'),
+  back: () => emit('updateStep', 'telephony-settings'),
+})
+
+useSettingsSaveBar({
+  isDirty: () => Boolean(exotel.doc?.enabled && isDirty.value),
+  saving: () => exotel.save.loading,
+  save: update,
+  discard: () => exotel.reload(),
 })
 </script>

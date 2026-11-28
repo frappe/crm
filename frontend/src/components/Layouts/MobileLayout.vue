@@ -6,12 +6,14 @@
       <slot />
     </div>
     <GlobalModals />
+    <Settings />
   </div>
 </template>
 <script setup>
 import MobileSidebar from '@/components/Mobile/MobileSidebar.vue'
 import MobileAppHeader from '@/components/Mobile/MobileAppHeader.vue'
 import GlobalModals from '@/components/Modals/GlobalModals.vue'
+import Settings from '@/components/Settings/Settings.vue'
 import { availabilityStore } from '@/stores/availability'
 
 // listen for status changes from the start, not only once a picker opens

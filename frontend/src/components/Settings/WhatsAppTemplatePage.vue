@@ -1,13 +1,16 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-6">
-    <div class="flex justify-between">
+  <div class="flex h-full flex-col gap-6 p-6 max-sm:gap-4 max-sm:p-4">
+    <div
+      class="flex justify-between"
+      :class="{ 'max-sm:hidden': !template.indicator }"
+    >
       <div class="flex w-9/12 items-center gap-1">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
           :label="title"
           size="md"
-          class="cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
+          class="max-sm:hidden cursor-pointer -ml-4 hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:none active:bg-transparent active:outline-none active:ring-0 active:ring-offset-0 active:text-ink-gray-5 text-2xl-semibold hover:opacity-70 !pr-0 !max-w-96 !justify-start"
           @click="emit('back')"
         />
         <Badge
@@ -18,13 +21,19 @@
         />
       </div>
       <div class="flex w-3/12 justify-end gap-2">
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            :label="__('Preview')"
+            icon-left="lucide-eye"
+            @click="preview = true"
+          />
+        </Teleport>
         <Button
-          :label="__('Preview')"
-          icon-left="lucide-eye"
-          @click="preview = true"
-        />
-        <Button
-          v-if="template.editable && (template.isDirty || template.isNew)"
+          v-if="
+            template.editable &&
+            (template.isDirty || template.isNew) &&
+            !isPhone
+          "
           :loading="template.saving"
           :label="template.isNew ? __('Create') : __('Save')"
           variant="solid"
@@ -44,7 +53,7 @@
       <TemplateForm
         :controller="template"
         :flow-chrome="flowChrome"
-        :on-new-flow="flowPermissions.write ? newFlow : undefined"
+        :on-new-flow="flowPermissions.write && !isPhone ? newFlow : undefined"
         :on-manage-flows="
           canLeaveForFlows ? () => emit('manage-flows') : undefined
         "
@@ -63,15 +72,19 @@
       :back-label="__('Template')"
       @changed="template.refreshFlows()"
     />
-    <Dialog v-model:open="preview" :title="__('Preview')" size="sm">
-      <template #default>
-        <TemplatePreview :controller="template" />
-      </template>
-    </Dialog>
+    <SheetDialog v-model:open="preview" :title="__('Preview')" size="sm">
+      <TemplatePreview :controller="template" />
+    </SheetDialog>
   </div>
 </template>
 
 <script setup>
+import SheetDialog from '@/components/SheetDialog.vue'
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { flowPermissions } from '@/composables/whatsapp'
 import {
   NewFlowDialog,
@@ -81,7 +94,7 @@ import {
   useFlowList,
   useTemplate,
 } from '@whatsapp/ui'
-import { Dialog, LoadingIndicator, toast } from 'frappe-ui'
+import { LoadingIndicator, toast } from 'frappe-ui'
 import { computed, ref, shallowRef } from 'vue'
 import WhatsAppFlowBuilderDialog from './WhatsAppFlowBuilderDialog.vue'
 import { flowBuilderChrome as builderChrome } from './whatsappFlowBuilderChrome'
@@ -116,6 +129,15 @@ if (template.isNew && props.referenceDoctype) {
 const title = computed(() => {
   if (template.isNew) return __('New Template')
   return template.doc.template_label || template.doc.template_name || ''
+})
+
+useSettingsSubpage({ title: () => title.value, back: () => emit('back') })
+
+useSettingsSaveBar({
+  isDirty: () => template.editable && template.isDirty,
+  saving: () => template.saving,
+  save,
+  discard: () => template.reload(),
 })
 
 // Saving pushes the template to Meta. The form shows a refusal under itself,

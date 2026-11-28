@@ -43,41 +43,53 @@
         docsLink="https://docs.frappe.io/crm/whatsapp"
         @create="emit('create')"
       />
-      <div v-else class="-mx-2 overflow-y-auto">
+      <div v-else class="-mx-2 overflow-y-auto max-sm:-mx-4">
         <template
           v-for="(template, i) in filteredTemplates"
           :key="template.name"
         >
           <div
-            class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"
+            class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2 max-sm:min-h-14 max-sm:gap-3 max-sm:rounded-none max-sm:px-4 max-sm:py-2"
           >
             <div
-              class="min-w-0 cursor-pointer"
+              class="min-w-0 cursor-pointer max-sm:flex-1"
               @click="emit('edit', template.name)"
             >
-              <div class="truncate text-base-medium text-ink-gray-7">
+              <div
+                class="truncate text-base-medium text-ink-gray-7 max-sm:text-ink-gray-9"
+              >
                 {{ template.template_label || template.template_name }}
               </div>
-              <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
+              <div
+                class="mt-0.5 truncate text-p-base text-ink-gray-5 max-sm:text-sm"
+              >
                 {{ details(template) }}
               </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 max-sm:shrink-0">
               <Badge
                 variant="subtle"
                 :theme="templateStatusTheme(template.status)"
                 :label="__(template.status)"
               />
-              <Dropdown
+              <DropdownSheet
                 align="end"
+                :title="template.template_label || template.template_name"
                 :options="rowOptions(template)"
                 @update:open="(open) => open && (confirmDelete = false)"
               >
-                <Button icon="lucide-more-horizontal" variant="ghost" />
-              </Dropdown>
+                <Button
+                  icon="lucide-more-horizontal"
+                  variant="ghost"
+                  @click="isPhone && (confirmDelete = false)"
+                />
+              </DropdownSheet>
             </div>
           </div>
-          <hr v-if="filteredTemplates.length !== i + 1" class="mx-2" />
+          <hr
+            v-if="filteredTemplates.length !== i + 1"
+            class="mx-2 max-sm:mx-0 max-sm:border-outline-gray-1"
+          />
         </template>
       </div>
     </div>
@@ -85,14 +97,15 @@
 </template>
 
 <script setup>
+import DropdownSheet from '@/components/DropdownSheet.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
+import { isPhone } from '@/composables/phone'
 import { templateStatusTheme } from '@/composables/whatsapp'
 import { ConfirmDelete } from '@/utils'
 import {
   call,
   createListResource,
-  Dropdown,
   LoadingIndicator,
   TextInput,
   toast,

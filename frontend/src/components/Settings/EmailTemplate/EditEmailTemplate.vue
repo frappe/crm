@@ -1,8 +1,10 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-8 text-ink-gray-8">
+  <div
+    class="flex h-full flex-col gap-6 p-8 text-ink-gray-8 max-sm:gap-4 max-sm:p-4"
+  >
     <!-- Header -->
     <div class="flex justify-between">
-      <div class="flex gap-1 -ml-4 w-9/12">
+      <div class="flex gap-1 -ml-4 w-9/12 max-sm:hidden">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
@@ -12,12 +14,17 @@
           @click="() => emit('updateStep', 'template-list')"
         />
       </div>
-      <div class="flex item-center space-x-4 w-3/12 justify-end">
-        <div class="flex items-center space-x-2">
+      <div
+        class="flex item-center space-x-4 w-3/12 justify-end max-sm:w-full max-sm:space-x-0"
+      >
+        <div
+          class="flex items-center space-x-2 max-sm:h-7 max-sm:w-full max-sm:flex-row-reverse max-sm:justify-between max-sm:space-x-0"
+        >
           <Switch v-model="template.enabled" size="sm" />
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
         </div>
         <Button
+          v-if="!isPhone"
           :label="__('Save')"
           variant="solid"
           :disabled="!dirty"
@@ -40,9 +47,9 @@
           />
         </div>
         <div class="flex-1">
-          <FormControl
+          <Select
             v-model="template.reference_doctype"
-            type="select"
+            class="w-full"
             side="bottom"
             size="md"
             :label="__('For')"
@@ -71,9 +78,9 @@
         />
       </div>
       <div class="border-t pt-4">
-        <FormControl
+        <Select
           v-model="template.content_type"
-          type="select"
+          class="w-full"
           side="bottom"
           size="md"
           :label="__('Content Type')"
@@ -123,6 +130,12 @@
 </template>
 <script setup>
 import RichTextField from '@/components/RichTextField.vue'
+import Select from '@/components/Controls/Select.vue'
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { FormControl, Switch, toast, createResource } from 'frappe-ui'
 import { computed, inject, onMounted, ref } from 'vue'
 
@@ -234,8 +247,25 @@ const renameDoc = createResource({
   },
 })
 
-onMounted(() => {
+function loadSaved() {
   template.value = { ...props.templateData }
   template.value.content_type = template.value.use_html ? 'HTML' : 'Rich Text'
+}
+
+useSettingsSubpage({
+  title: () => props.templateData.name,
+  back: () => emit('updateStep', 'template-list'),
 })
+
+useSettingsSaveBar({
+  isDirty: () => dirty.value,
+  saving: () => renameDoc.loading || templates.setValue.loading,
+  save: updateTemplate,
+  discard: () => {
+    errorMessage.value = ''
+    loadSaved()
+  },
+})
+
+onMounted(loadSaved)
 </script>

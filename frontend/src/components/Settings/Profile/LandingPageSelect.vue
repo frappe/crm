@@ -1,6 +1,7 @@
 <template>
   <Select
-    class="w-48"
+    :sheet-title="__('Landing page')"
+    class="w-full sm:w-48"
     :model-value="page"
     :options="options"
     @update:model-value="save"
@@ -21,7 +22,8 @@ import {
   landingViews,
   setLandingPageLocally,
 } from '@/utils/landingPage'
-import { Select, call, toast } from 'frappe-ui'
+import Select from '@/components/Controls/Select.vue'
+import { call, toast } from 'frappe-ui'
 import { computed, ref } from 'vue'
 
 const { views } = viewsStore()

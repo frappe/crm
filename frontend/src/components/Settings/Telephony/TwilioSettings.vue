@@ -1,7 +1,7 @@
 <template>
   <SettingsLayoutBase>
     <template #title>
-      <div class="flex gap-1 items-center">
+      <div class="flex gap-1 items-center max-sm:hidden">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
@@ -21,13 +21,16 @@
     <template #header-actions>
       <div v-if="twilio.doc?.enabled && !twilio.get.loading" class="flex gap-2">
         <Button
-          v-if="isDirty"
+          v-if="isDirty && !isPhone"
           :label="__('Discard Changes')"
           variant="subtle"
           @click="twilio.reload()"
         />
-        <Button :label="__('Disable')" variant="subtle" @click="disable" />
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button :label="__('Disable')" variant="subtle" @click="disable" />
+        </Teleport>
         <Button
+          v-if="!isPhone"
           variant="solid"
           :label="__('Update')"
           :loading="twilio.save.loading"
@@ -39,7 +42,7 @@
     <template #content>
       <div v-if="twilio.doc" class="h-full">
         <div v-if="twilio.doc.enabled" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormControl
               v-model="twilio.doc.account_sid"
               :label="__('Account SID')"
@@ -61,7 +64,7 @@
           />
           <div
             v-if="twilio.originalDoc?.account_sid && twilioApps.length > 0"
-            class="flex items-center justify-between gap-8"
+            class="flex items-center justify-between gap-8 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
           >
             <div class="flex flex-col">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -71,8 +74,12 @@
                 {{ __('Select a Twilio app for your CRM') }}
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <Combobox v-model="twilio.doc.app_name" :options="twilioApps">
+            <div class="flex items-center gap-2 max-sm:w-full">
+              <Combobox
+                v-model="twilio.doc.app_name"
+                class="max-sm:w-full"
+                :options="twilioApps"
+              >
                 <template #footer>
                   <Button
                     :label="__('Refresh Apps')"
@@ -87,12 +94,12 @@
               </Combobox>
             </div>
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between max-sm:gap-4">
             <div class="flex flex-col">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ __('Record Calls') }}
               </div>
-              <div class="text-p-sm text-ink-gray-5 truncate">
+              <div class="text-p-sm text-ink-gray-5 sm:truncate">
                 {{
                   __('Enable call recording for incoming and outgoing calls')
                 }}
@@ -136,6 +143,11 @@
   </SettingsLayoutBase>
 </template>
 <script setup>
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { setEnabled } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { Combobox, Switch } from 'frappe-ui'
@@ -191,5 +203,17 @@ const isDirty = computed(() => {
     twilio.originalDoc &&
     JSON.stringify(twilio.doc) !== JSON.stringify(twilio.originalDoc)
   )
+})
+
+useSettingsSubpage({
+  title: () => __('Twilio Settings'),
+  back: () => emit('updateStep', 'telephony-settings'),
+})
+
+useSettingsSaveBar({
+  isDirty: () => Boolean(twilio.doc?.enabled && isDirty.value),
+  saving: () => twilio.save.loading,
+  save: update,
+  discard: () => twilio.reload(),
 })
 </script>

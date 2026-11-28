@@ -1,6 +1,6 @@
 <template>
   <div class="enrichment-tabs flex h-full flex-col text-ink-gray-8">
-    <div class="flex items-start justify-between px-8 pt-8 pb-4">
+    <div class="flex items-start justify-between px-8 pt-8 pb-4 max-sm:hidden">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Enrichment Settings') }}
@@ -20,6 +20,7 @@
         </p>
       </div>
       <Button
+        v-if="!isPhone"
         :label="__('Update')"
         variant="solid"
         :loading="saving"
@@ -36,7 +37,9 @@
       class="flex-1 overflow-hidden [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-1"
     >
       <template #tab-panel="{ tab }">
-        <div class="flex h-full flex-col overflow-y-auto px-8 py-5">
+        <div
+          class="flex h-full flex-col overflow-y-auto px-4 py-4 sm:px-8 sm:py-5"
+        >
           <GeneralTab
             v-if="tab.value === 'general'"
             v-model:max-pages="maxPages"
@@ -74,6 +77,8 @@ import {
   toast,
   type FrappeResourceError,
 } from 'frappe-ui'
+import { useSettingsSaveBar } from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import GeneralTab from './GeneralTab.vue'
 import RulesTab from './RulesTab.vue'
 import { useIndustryRules } from './useIndustryRules'
@@ -203,6 +208,19 @@ async function saveSettings() {
   return ok
 }
 
+useSettingsSaveBar({
+  isDirty: () => hasUnsavedChanges.value,
+  saving: () => saving.value,
+  save,
+  discard: () => {
+    settings.doc = JSON.parse(JSON.stringify(settings.originalDoc))
+    maxPages.value = undefined
+    maxPagesError.value = ''
+    social.discard()
+    industry.discard()
+  },
+})
+
 // Validate everything first so one bad row stops the whole Save before any
 // request goes out.
 async function save() {
@@ -256,5 +274,12 @@ async function save() {
   padding-right: 0;
   margin-left: 2rem;
   margin-right: 2rem;
+}
+
+@media (max-width: 639.98px) {
+  .enrichment-tabs :deep([role='tablist']) {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
 }
 </style>

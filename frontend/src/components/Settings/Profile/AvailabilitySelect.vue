@@ -1,5 +1,6 @@
 <template>
   <Select
+    :sheet-title="__('Availability')"
     :model-value="availability.myStatus"
     :options="options"
     :placeholder="__('Set status')"
@@ -14,7 +15,7 @@
 <script setup lang="ts">
 import AvailabilityDot from '@/components/AvailabilityDot.vue'
 import { availabilityStore } from '@/stores/availability'
-import { Select } from 'frappe-ui'
+import Select from '@/components/Controls/Select.vue'
 import { computed } from 'vue'
 
 const availability = availabilityStore()

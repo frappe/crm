@@ -1,7 +1,7 @@
 <template>
-  <div class="flex h-full flex-col gap-6 px-6 py-8">
+  <div class="flex h-full flex-col gap-6 px-4 py-4 sm:px-6 sm:py-8">
     <!-- Header -->
-    <div class="flex justify-between px-2 text-ink-gray-8">
+    <div class="flex justify-between px-2 text-ink-gray-8 max-sm:hidden">
       <div class="flex flex-col gap-1 w-9/12">
         <h2
           class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8"
@@ -32,7 +32,9 @@
     </div>
 
     <div v-if="telephonyAgent.doc" class="flex-1 flex flex-col overflow-y-auto">
-      <div class="flex items-center justify-between gap-8 py-3 pl-2 pr-1">
+      <div
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1 max-sm:flex-col max-sm:items-stretch max-sm:gap-2 max-sm:px-0"
+      >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
             {{ __('Default Medium') }}
@@ -41,18 +43,19 @@
             {{ __('Default calling medium for logged-in user') }}
           </div>
         </div>
-        <div class="flex items-center gap-1">
-          <FormControl
-            v-model="telephonyAgent.doc.default_medium"
-            type="select"
-            class="w-44 p-1"
-            :options="[
-              { label: __(''), value: '' },
-              { label: __('Twilio'), value: 'Twilio' },
-              { label: __('Exotel'), value: 'Exotel' },
-            ]"
-            :placeholder="__('Select Medium')"
-          />
+        <div class="flex w-full items-center gap-1 sm:w-auto">
+          <div class="min-w-0 flex-1 p-1 sm:w-44 sm:flex-none">
+            <Select
+              v-model="telephonyAgent.doc.default_medium"
+              class="w-full"
+              :options="[
+                { label: __(''), value: '' },
+                { label: __('Twilio'), value: 'Twilio' },
+                { label: __('Exotel'), value: 'Exotel' },
+              ]"
+              :placeholder="__('Select Medium')"
+            />
+          </div>
           <Button
             v-if="telephonyAgent.doc.default_medium"
             icon="lucide-x"
@@ -63,11 +66,11 @@
       </div>
       <div
         v-if="isEnabled('twilio')"
-        class="h-px border-t mx-2 border-outline-elevation-2"
+        class="h-px border-t mx-2 border-outline-elevation-2 max-sm:mx-0"
       />
       <div
         v-if="isEnabled('twilio')"
-        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1 max-sm:flex-col max-sm:items-stretch max-sm:gap-2 max-sm:px-0"
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -77,10 +80,10 @@
             {{ __('Set the Twilio number to be used for outgoing calls.') }}
           </div>
         </div>
-        <div>
+        <div class="w-full sm:w-auto">
           <FormControl
             v-model="telephonyAgent.doc.twilio_number"
-            class="flex-1 truncate w-44 p-1"
+            class="flex-1 truncate w-full p-1 sm:w-44"
             :placeholder="__('Enter Twilio Number')"
             :error="
               Boolean(telephonyAgent.doc.twilio_number) &&
@@ -94,11 +97,11 @@
       </div>
       <div
         v-if="isEnabled('exotel')"
-        class="h-px border-t mx-2 border-outline-elevation-2"
+        class="h-px border-t mx-2 border-outline-elevation-2 max-sm:mx-0"
       />
       <div
         v-if="isEnabled('exotel')"
-        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1 max-sm:flex-col max-sm:items-stretch max-sm:gap-2 max-sm:px-0"
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -108,10 +111,10 @@
             {{ __('Set the Exotel number to be used for outgoing calls.') }}
           </div>
         </div>
-        <div>
+        <div class="w-full sm:w-auto">
           <FormControl
             v-model="telephonyAgent.doc.exotel_number"
-            class="flex-1 truncate w-44 p-1"
+            class="flex-1 truncate w-full p-1 sm:w-44"
             :placeholder="__('Enter Exotel Number')"
             :error="
               Boolean(telephonyAgent.doc.exotel_number) &&
@@ -125,7 +128,7 @@
       </div>
       <div
         v-if="isEnabled('exotel')"
-        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1"
+        class="flex items-center justify-between gap-8 py-3 pl-2 pr-1 max-sm:flex-col max-sm:items-stretch max-sm:gap-2 max-sm:px-0"
       >
         <div class="flex flex-col">
           <div class="text-p-base-medium text-ink-gray-7 truncate">
@@ -139,10 +142,10 @@
             }}
           </div>
         </div>
-        <div>
+        <div class="w-full sm:w-auto">
           <FormControl
             v-model="telephonyAgent.doc.mobile_no"
-            class="flex-1 truncate w-44 p-1"
+            class="flex-1 truncate w-full p-1 sm:w-44"
             :placeholder="__('Enter Personal Mobile Number')"
             :error="
               Boolean(telephonyAgent.doc.mobile_no) &&
@@ -157,14 +160,14 @@
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3 px-2"
+        class="flex items-center justify-between text-lg-semibold text-ink-gray-8 mt-4 py-3 px-2 max-sm:px-0"
       >
         {{ __('Integrations') }}
       </div>
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between py-3 px-2"
+        class="flex items-center justify-between py-3 px-2 max-sm:gap-4 max-sm:px-0"
       >
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
@@ -177,6 +180,7 @@
           </span>
         </div>
         <Button
+          class="max-sm:shrink-0"
           :label="
             isEnabled('twilio') ? __('Update Configuration') : __('Configure')
           "
@@ -186,12 +190,12 @@
 
       <div
         v-if="isManager()"
-        class="h-px border-t mx-2 border-outline-elevation-2"
+        class="h-px border-t mx-2 border-outline-elevation-2 max-sm:mx-0"
       />
 
       <div
         v-if="isManager()"
-        class="flex items-center justify-between py-3 px-2"
+        class="flex items-center justify-between py-3 px-2 max-sm:gap-4 max-sm:px-0"
       >
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
@@ -204,6 +208,7 @@
           </span>
         </div>
         <Button
+          class="max-sm:shrink-0"
           :label="
             isEnabled('exotel') ? __('Update Configuration') : __('Configure')
           "
@@ -224,6 +229,8 @@ import {
   createResource,
   toast,
 } from 'frappe-ui'
+import Select from '@/components/Controls/Select.vue'
+import { useSettingsSaveBar } from '@/components/Settings/settingsPhone'
 import { useTelephony } from '@/composables/telephony'
 import { useDocument } from '@/data/document'
 import { usersStore } from '@/stores/users'
@@ -288,5 +295,15 @@ const isDirty = computed(() => {
     JSON.stringify(telephonyAgent.doc) !==
       JSON.stringify(telephonyAgent.originalDoc)
   )
+})
+
+useSettingsSaveBar({
+  isDirty: () => Boolean(isDirty.value),
+  saving: () =>
+    isNewDoc.value ? insertResource.loading : telephonyAgent.save?.loading,
+  save: update,
+  discard: () => {
+    telephonyAgent.doc = JSON.parse(JSON.stringify(telephonyAgent.originalDoc))
+  },
 })
 </script>

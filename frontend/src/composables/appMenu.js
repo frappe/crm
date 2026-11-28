@@ -4,7 +4,9 @@ import {
   showSettings,
   activeSettingsPage,
   isMobileView,
+  closeMobileSidebar,
 } from '@/composables/settings'
+import { isPhone } from '@/composables/phone'
 import { showAboutModal } from '@/composables/modals'
 import { confirmLoginToFrappeCloud } from '@/composables/frappecloud'
 import { useCloudSettings } from '@/composables/cloudSettings'
@@ -85,7 +87,6 @@ export function useAppMenu(getItems) {
           icon,
           label,
           onClick: openGeneralSettings,
-          condition: () => !isMobileView.value,
         }
       case 'login_to_fc':
         if (canManageBilling) {
@@ -159,9 +160,12 @@ export function safeRoute(route) {
   }
 }
 
+// On a phone Settings opens on its list of pages, once the drawer has let go of focus.
 function openGeneralSettings() {
-  activeSettingsPage.value = __('General')
-  showSettings.value = true
+  closeMobileSidebar(() => {
+    activeSettingsPage.value = isPhone.value ? '' : __('General')
+    showSettings.value = true
+  })
 }
 
 function deskApp() {

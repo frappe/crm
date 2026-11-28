@@ -1,8 +1,8 @@
 <template>
-  <div class="flex h-full flex-col text-ink-gray-8">
+  <div class="flex h-full flex-col text-ink-gray-8 max-sm:p-4">
     <!-- Header -->
-    <div class="flex justify-between px-2 pt-2">
-      <div class="flex gap-1 -ml-4 w-9/12">
+    <div class="flex justify-between px-2 pt-2 max-sm:p-0">
+      <div class="flex gap-1 -ml-4 w-9/12 max-sm:hidden">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
@@ -12,7 +12,9 @@
           @click="() => emit('updateStep', 'source-list')"
         />
       </div>
-      <div class="flex item-center space-x-4 w-3/12 justify-end">
+      <div
+        class="flex item-center space-x-4 w-3/12 justify-end max-sm:w-full max-sm:justify-between"
+      >
         <div class="flex items-center space-x-2">
           <Switch v-model="syncSource.enabled" size="sm" />
           <span class="text-sm text-ink-gray-7">{{ __('Enabled') }}</span>
@@ -26,17 +28,19 @@
           @click="docResource?.document?.syncLeads.submit()"
         />
 
-        <Button
-          :label="isLocal ? __('Create') : __('Update')"
-          icon-left="lucide-plus"
-          variant="solid"
-          :loading="
-            sources.setValue.loading ||
-            sources.insert.loading ||
-            docResource?.loading
-          "
-          @click="createOrUpdateSource"
-        />
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            :label="isLocal ? __('Create') : __('Update')"
+            icon-left="lucide-plus"
+            variant="solid"
+            :loading="
+              sources.setValue.loading ||
+              sources.insert.loading ||
+              docResource?.loading
+            "
+            @click="createOrUpdateSource"
+          />
+        </Teleport>
       </div>
     </div>
 
@@ -52,7 +56,7 @@
           class="overflow-hidden flex h-full flex-col gap-6 mt-4"
         >
           <!-- Form -->
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormControl
               v-model="syncSource.type"
               type="combobox"
@@ -79,11 +83,11 @@
               :placeholder="__('Enter Source Name')"
             />
 
-            <FormControl
+            <Select
               v-if="fieldsMap.background_sync_frequency"
               v-model="syncSource.background_sync_frequency"
-              type="select"
-              required="true"
+              class="w-full"
+              required
               :options="fieldsMap.background_sync_frequency.options"
               :label="__('Background Sync Frequency')"
             />
@@ -183,6 +187,9 @@ import {
 
 import { getMeta } from '@/stores/meta'
 import Link from '@/components/Controls/Link.vue'
+import Select from '@/components/Controls/Select.vue'
+import { useSettingsSubpage } from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import Grid from '@/components/Controls/Grid.vue'
 import LucideCircleQuestionMark from '~icons/lucide/circle-question-mark'
 import FailureLogs from './FailureLogs.vue'
@@ -195,6 +202,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['updateStep'])
+
+useSettingsSubpage({
+  title: () =>
+    isLocal.value ? __('New Lead Sync Source') : syncSource.value.name,
+  back: () => emit('updateStep', 'source-list'),
+})
 
 const tabs = computed(() => {
   const tabList = [

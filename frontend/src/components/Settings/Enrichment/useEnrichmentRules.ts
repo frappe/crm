@@ -151,6 +151,13 @@ export function useEnrichmentRules<R extends BaseRow>({
     row.serverError = ''
   }
 
+  // Drops unsaved edits, adds and deletes: the rows go back to the last load.
+  function discard() {
+    localRows.value = []
+    savedRows.value = []
+    buildRows(list.data || [])
+  }
+
   // Validate up front so a Save either starts with every row valid or doesn't
   // start at all.
   function validate() {
@@ -284,5 +291,6 @@ export function useEnrichmentRules<R extends BaseRow>({
     toggleEnabled,
     validate,
     save,
+    discard,
   }
 }

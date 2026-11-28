@@ -1,7 +1,7 @@
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-6 text-ink-gray-8">
+  <div class="flex min-h-0 flex-1 flex-col gap-6 text-ink-gray-8 max-sm:gap-0">
     <!-- Header -->
-    <div class="flex justify-between px-2 pt-2">
+    <div class="flex justify-between px-2 pt-2 max-sm:hidden">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 items-center">
           {{ __('Lead Sources') }}
@@ -16,12 +16,14 @@
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
-        <Button
-          :label="__('New')"
-          icon-left="lucide-plus"
-          variant="solid"
-          @click="emit('updateStep', 'new-source')"
-        />
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            :label="__('New')"
+            icon-left="lucide-plus"
+            variant="solid"
+            @click="emit('updateStep', 'new-source')"
+          />
+        </Teleport>
       </div>
     </div>
 
@@ -51,39 +53,53 @@
       v-if="!sources.loading && sources.data?.length"
       class="flex min-h-0 flex-1 flex-col overflow-hidden"
     >
-      <div class="flex items-center py-2 px-4 text-sm text-ink-gray-5">
+      <div
+        class="flex items-center py-2 px-4 text-sm text-ink-gray-5 max-sm:hidden"
+      >
         <div class="w-4/6">{{ __('Name') }}</div>
         <div class="w-1/6">{{ __('Source') }}</div>
         <div class="w-1/6">{{ __('Enabled') }}</div>
       </div>
-      <div class="h-px border-t mx-4 border-outline-elevation-2" />
-      <ul class="min-h-0 flex-1 overflow-y-auto px-2">
+      <div
+        class="h-px border-t mx-4 border-outline-elevation-2 max-sm:hidden"
+      />
+      <ul class="min-h-0 flex-1 overflow-y-auto px-2 max-sm:px-0">
         <template v-for="(source, i) in sourcesList" :key="source.name">
           <li
-            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded-4"
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-surface-sidebar rounded-4 max-sm:min-h-14 max-sm:gap-3 max-sm:rounded-none max-sm:border-b max-sm:border-outline-gray-1 max-sm:px-4 max-sm:py-2"
             @click="() => emit('updateStep', 'edit-source', { ...source })"
           >
-            <div class="flex flex-col w-4/6 pr-5">
-              <div class="text-p-base-medium text-ink-gray-7 truncate">
+            <div
+              class="flex flex-col w-4/6 pr-5 max-sm:w-auto max-sm:min-w-0 max-sm:flex-1 max-sm:pr-0"
+            >
+              <div
+                class="text-p-base-medium text-ink-gray-7 truncate max-sm:text-base-medium max-sm:text-ink-gray-9"
+              >
                 {{ source.name }}
+              </div>
+              <div class="truncate text-sm text-ink-gray-5 sm:hidden">
+                {{ source.type }}
               </div>
             </div>
 
-            <div class="flex flex-col w-1/6 pr-5">
+            <div class="flex flex-col w-1/6 pr-5 max-sm:hidden">
               <div class="text-p-base-medium text-ink-gray-7 truncate">
                 {{ source.type }}
               </div>
             </div>
 
-            <div class="flex items-center justify-between w-1/6">
+            <div
+              class="flex items-center justify-between w-1/6 max-sm:w-auto max-sm:shrink-0 max-sm:gap-2"
+            >
               <Switch
                 v-model="source.enabled"
                 size="sm"
                 @update:model-value="toggleLeadSyncSourceEnabled(source)"
                 @click.stop
               />
-              <Dropdown
+              <DropdownSheet
                 class=""
+                :title="source.name"
                 :options="getDropdownOptions(source)"
                 align="end"
                 :button="{
@@ -95,12 +111,21 @@
                   },
                 }"
                 @click.stop
-              />
+              >
+                <template v-if="isPhone" #default>
+                  <Button
+                    variant="ghost"
+                    icon="lucide-more-horizontal"
+                    :aria-label="__('More options')"
+                    @click="confirmDelete = false"
+                  />
+                </template>
+              </DropdownSheet>
             </div>
           </li>
           <div
             v-if="sourcesList.length !== i + 1"
-            class="h-px border-t mx-2 border-outline-elevation-2"
+            class="h-px border-t mx-2 border-outline-elevation-2 max-sm:hidden"
           />
         </template>
         <!-- Load More Button -->
@@ -121,7 +146,9 @@
   </div>
 </template>
 <script setup>
-import { Switch, Dropdown, toast, Badge } from 'frappe-ui'
+import DropdownSheet from '@/components/DropdownSheet.vue'
+import { isPhone } from '@/composables/phone'
+import { Switch, toast, Badge } from 'frappe-ui'
 import { ref, computed, inject } from 'vue'
 import EmptyState from '../../ListViews/EmptyState.vue'
 import { ConfirmDelete } from '../../../utils'

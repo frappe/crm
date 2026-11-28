@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-3">
     <div
-      class="flex-1 rounded-6 border cursor-pointer"
+      class="flex-1 min-w-0 overflow-hidden rounded-6 border cursor-pointer"
       :class="
         theme == 'light'
           ? 'border-outline-gray-7'
@@ -51,7 +51,7 @@
       </div>
     </div>
     <div
-      class="flex-1 rounded-6 border cursor-pointer"
+      class="flex-1 min-w-0 overflow-hidden rounded-6 border cursor-pointer"
       :class="
         theme == 'dark' ? 'border-outline-gray-7' : 'border-outline-elevation-2'
       "
@@ -99,7 +99,7 @@
       </div>
     </div>
     <div
-      class="flex-1 rounded-6 border cursor-pointer"
+      class="flex-1 min-w-0 overflow-hidden rounded-6 border cursor-pointer"
       :class="
         theme == 'system'
           ? 'border-outline-gray-7'

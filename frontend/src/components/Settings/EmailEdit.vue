@@ -1,7 +1,11 @@
 <template>
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
-    <div role="heading" aria-level="1" class="flex justify-between gap-1">
+    <div
+      role="heading"
+      aria-level="1"
+      class="flex justify-between gap-1 max-sm:hidden"
+    >
       <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
         {{ __('Edit Email') }}
       </h2>
@@ -44,7 +48,7 @@
           />
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <template v-for="field in incomingOutgoingFields" :key="field.name">
           <div
             v-if="field.condition ? field.condition(state) : true"
@@ -63,7 +67,7 @@
       <ErrorMessage v-if="error" class="ml-1" :message="error" />
     </div>
     <!-- action buttons -->
-    <div class="flex justify-between mt-auto">
+    <div v-if="!isPhone" class="flex justify-between mt-auto">
       <Button
         :label="__('Back')"
         theme="gray"
@@ -85,6 +89,8 @@
 import { computed, reactive, ref } from 'vue'
 import { call, toast } from 'frappe-ui'
 import EmailProviderIcon from './EmailProviderIcon.vue'
+import { useSettingsSaveBar, useSettingsSubpage } from './settingsPhone'
+import { isPhone } from '@/composables/phone'
 import {
   emailIcon,
   services,
@@ -101,21 +107,25 @@ const props = defineProps({
 
 const emit = defineEmits(['update:step'])
 
-const state = reactive({
-  email_account_name: props.accountData.email_account_name || '',
-  service: props.accountData.service || '',
-  email_id: props.accountData.email_id || '',
-  api_key: props.accountData?.api_key || null,
-  api_secret: props.accountData?.api_secret || null,
-  password: props.accountData?.password || null,
-  frappe_mail_site: props.accountData?.frappe_mail_site || '',
-  enable_incoming: props.accountData.enable_incoming || false,
-  enable_outgoing: props.accountData.enable_outgoing || false,
-  default_outgoing: props.accountData.default_outgoing || false,
-  default_incoming: props.accountData.default_incoming || false,
-  create_lead_from_incoming_email:
-    props.accountData.create_lead_from_incoming_email || false,
-})
+const state = reactive(savedState())
+
+function savedState() {
+  return {
+    email_account_name: props.accountData.email_account_name || '',
+    service: props.accountData.service || '',
+    email_id: props.accountData.email_id || '',
+    api_key: props.accountData?.api_key || null,
+    api_secret: props.accountData?.api_secret || null,
+    password: props.accountData?.password || null,
+    frappe_mail_site: props.accountData?.frappe_mail_site || '',
+    enable_incoming: props.accountData.enable_incoming || false,
+    enable_outgoing: props.accountData.enable_outgoing || false,
+    default_outgoing: props.accountData.default_outgoing || false,
+    default_incoming: props.accountData.default_incoming || false,
+    create_lead_from_incoming_email:
+      props.accountData.create_lead_from_incoming_email || false,
+  }
+}
 
 const info = {
   description: __('To know more about setting up email accounts, click'),
@@ -188,6 +198,21 @@ const isDirty = computed(() => {
       props.accountData.create_lead_from_incoming_email ||
     state.frappe_mail_site !== props.accountData.frappe_mail_site
   )
+})
+
+useSettingsSubpage({
+  title: () => props.accountData.email_account_name || __('Edit Email'),
+  back: () => emit('update:step', 'email-list'),
+})
+
+useSettingsSaveBar({
+  isDirty: () => JSON.stringify(state) !== JSON.stringify(savedState()),
+  saving: () => loading.value,
+  save: updateAccount,
+  discard: () => {
+    error.value = null
+    Object.assign(state, savedState())
+  },
 })
 
 async function callRenameDoc() {

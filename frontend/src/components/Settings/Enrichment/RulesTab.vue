@@ -37,7 +37,7 @@
             type="text"
             :placeholder="__('Platform')"
             :disabled="social.saving || row.removed"
-            class="w-40 shrink-0"
+            class="w-28 shrink-0 sm:w-40"
             :class="{ [INVALID]: row.platformError }"
             :data-invalid="row.platformError ? '' : undefined"
             @update:model-value="
@@ -130,7 +130,7 @@
         class="group/row flex flex-col"
       >
         <div class="flex items-start gap-2">
-          <div class="w-40 shrink-0">
+          <div class="w-28 shrink-0 sm:w-40">
             <div
               :class="{ [INVALID]: row.industryError }"
               :data-invalid="row.industryError ? '' : undefined"

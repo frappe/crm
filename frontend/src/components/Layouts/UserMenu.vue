@@ -30,7 +30,7 @@ import { usersStore } from '@/stores/users'
 import {
   showSettings,
   activeSettingsPage,
-  isMobileView,
+  closeMobileSidebar,
 } from '@/composables/settings'
 import { Avatar, Dropdown, useColorScheme } from 'frappe-ui'
 import { computed, h } from 'vue'
@@ -54,7 +54,6 @@ const menu = computed(() =>
         label: __('My settings'),
         icon: 'lucide-circle-user',
         onClick: openProfileSettings,
-        condition: () => !isMobileView.value,
       },
       themeRow(),
       availabilityRow(),
@@ -71,8 +70,10 @@ const menu = computed(() =>
 )
 
 function openProfileSettings() {
-  activeSettingsPage.value = __('Profile')
-  showSettings.value = true
+  closeMobileSidebar(() => {
+    activeSettingsPage.value = __('Profile')
+    showSettings.value = true
+  })
 }
 
 // The dot sits in a 16px box so the row's label lines up with the icon rows.

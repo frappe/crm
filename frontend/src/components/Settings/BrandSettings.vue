@@ -1,7 +1,9 @@
 <template>
-  <div class="flex h-full flex-col gap-6 px-6 py-8 text-ink-gray-8">
+  <div
+    class="flex h-full flex-col gap-6 px-6 py-8 text-ink-gray-8 max-sm:px-2 max-sm:py-4"
+  >
     <!-- Header -->
-    <div class="flex justify-between px-2 text-ink-gray-8">
+    <div class="flex justify-between px-2 text-ink-gray-8 max-sm:hidden">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Brand Settings') }}
@@ -24,9 +26,11 @@
     <!-- Fields -->
     <div class="flex flex-1 flex-col p-2 gap-4 overflow-y-auto">
       <!-- Brand Anm -->
-      <div class="flex items-center justify-between gap-8">
+      <div
+        class="flex items-center justify-between gap-8 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+      >
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Brand Name') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -36,6 +40,7 @@
         <div class="flex items-center gap-2">
           <FormControl
             v-model="settings.doc.brand_name"
+            class="max-sm:w-full"
             type="text"
             size="md"
             :placeholder="__('Enter Brand Name')"
@@ -46,9 +51,11 @@
 
       <!-- logo -->
       <div class="flex flex-col justify-between gap-4">
-        <div class="flex items-center flex-1 gap-5">
+        <div
+          class="flex items-center flex-1 gap-5 max-sm:grid max-sm:grid-cols-[auto_minmax(0,1fr)] max-sm:gap-x-3 max-sm:gap-y-2"
+        >
           <div
-            class="flex items-center justify-center rounded-4 border border-outline-elevation-2 size-20"
+            class="flex items-center justify-center rounded-4 border border-outline-elevation-2 size-20 max-sm:row-span-2 max-sm:size-16"
           >
             <img
               v-if="settings.doc?.brand_logo"
@@ -68,7 +75,7 @@
               }}
             </span>
           </div>
-          <div>
+          <div class="max-sm:col-start-2">
             <ImageUploader
               image_type="image/ico"
               :image_url="settings.doc?.brand_logo"
@@ -81,9 +88,11 @@
 
       <!-- favicon -->
       <div class="flex flex-col justify-between gap-4">
-        <div class="flex items-center flex-1 gap-5">
+        <div
+          class="flex items-center flex-1 gap-5 max-sm:grid max-sm:grid-cols-[auto_minmax(0,1fr)] max-sm:gap-x-3 max-sm:gap-y-2"
+        >
           <div
-            class="flex items-center justify-center rounded-4 border border-outline-elevation-2 size-20"
+            class="flex items-center justify-center rounded-4 border border-outline-elevation-2 size-20 max-sm:row-span-2 max-sm:size-16"
           >
             <img
               v-if="settings.doc?.favicon"
@@ -103,7 +112,7 @@
               }}
             </span>
           </div>
-          <div>
+          <div class="max-sm:col-start-2">
             <ImageUploader
               image_type="image/ico"
               :image_url="settings.doc?.favicon"
@@ -122,8 +131,17 @@ import ImageUploader from '@/components/Controls/ImageUploader.vue'
 import { FormControl } from 'frappe-ui'
 import { getSettings } from '@/stores/settings'
 import { showSettings } from '@/composables/settings'
+import { useSettingsSaveBar } from '@/components/Settings/settingsPhone'
 
 const { _settings: settings, setupBrand } = getSettings()
+
+useSettingsSaveBar({
+  isDirty: () => settings.isDirty,
+  saving: () => settings.save.loading,
+  save: updateSettings,
+  discard: () =>
+    (settings.doc = JSON.parse(JSON.stringify(settings.originalDoc))),
+})
 
 function updateSettings() {
   settings.save.submit(null, {

@@ -1,7 +1,9 @@
 <template>
   <div class="flex flex-col h-full w-full text-ink-gray-8">
     <!-- Header -->
-    <div class="flex justify-between items-start p-8 text-ink-gray-8">
+    <div
+      class="flex justify-between items-start p-8 text-ink-gray-8 max-sm:hidden"
+    >
       <div class="flex flex-col gap-1">
         <slot name="title">
           <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
@@ -19,10 +21,13 @@
       </div>
       <slot v-if="Boolean($slots['header-actions'])" name="header-actions" />
     </div>
-    <div v-if="Boolean($slots['header-bottom'])" class="p-8 pt-0">
+    <div
+      v-if="Boolean($slots['header-bottom'])"
+      class="p-8 pt-0 max-sm:p-4 max-sm:pb-0"
+    >
       <slot name="header-bottom" />
     </div>
-    <div class="h-full overflow-y-auto p-8 pt-0">
+    <div class="h-full overflow-y-auto p-8 pt-0 max-sm:p-4">
       <slot name="content" />
     </div>
   </div>

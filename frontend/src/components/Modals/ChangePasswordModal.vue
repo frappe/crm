@@ -1,5 +1,5 @@
 <template>
-  <Dialog v-model:open="show" :title="__('Change Password')">
+  <SheetDialog v-model:open="show" :title="__('Change Password')">
     <template #default>
       <div class="flex flex-col gap-4">
         <div>
@@ -38,7 +38,9 @@
       </div>
     </template>
     <template #actions>
-      <div class="flex justify-between items-center">
+      <div
+        class="flex justify-between items-center max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+      >
         <div>
           <p
             v-if="confirmPasswordMessage"
@@ -54,6 +56,7 @@
         </div>
 
         <Button
+          class="w-full sm:w-auto"
           variant="solid"
           :label="__('Update')"
           :disabled="
@@ -68,11 +71,12 @@
         />
       </div>
     </template>
-  </Dialog>
+  </SheetDialog>
 </template>
 <script setup>
 import LockKeyhole from '~icons/lucide/lock-keyhole'
-import { Dialog, toast, createResource, Password } from 'frappe-ui'
+import SheetDialog from '@/components/SheetDialog.vue'
+import { toast, createResource, Password } from 'frappe-ui'
 import { ref, watch } from 'vue'
 
 const show = defineModel({ type: Boolean })

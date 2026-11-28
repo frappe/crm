@@ -1,6 +1,6 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-6">
-    <div class="flex justify-between">
+  <div class="flex h-full flex-col gap-6 p-6 max-sm:gap-4 max-sm:p-4">
+    <div class="flex justify-between max-sm:hidden">
       <div class="flex w-9/12 items-center gap-1">
         <Button
           variant="ghost"
@@ -35,7 +35,9 @@
     <div v-else class="-m-1 flex-1 overflow-y-auto p-1">
       <AccountForm :controller="account" :show-append-actions="false">
         <template #settings>
-          <div class="flex items-center justify-between gap-4">
+          <div
+            class="flex items-center justify-between gap-4 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+          >
             <div class="flex min-w-0 flex-1 flex-col gap-1">
               <span class="text-base-medium text-ink-gray-8">
                 {{ __('Create from a new number') }}
@@ -48,10 +50,10 @@
                 }}
               </span>
             </div>
-            <div class="w-40 shrink-0">
-              <FormControl
+            <div class="w-full shrink-0 sm:w-40">
+              <Select
                 v-model="newSenders"
-                type="select"
+                class="w-full"
                 :aria-label="__('Create from a new number')"
                 :options="newSenderOptions"
               />
@@ -64,8 +66,13 @@
 </template>
 
 <script setup>
+import Select from '@/components/Controls/Select.vue'
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
 import { AccountForm, useAccount, useAppendToggle } from '@whatsapp/ui'
-import { FormControl, LoadingIndicator, toast } from 'frappe-ui'
+import { LoadingIndicator, toast } from 'frappe-ui'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -76,6 +83,18 @@ const props = defineProps({
 const emit = defineEmits(['back', 'created'])
 
 const account = useAccount({ name: () => props.name })
+
+useSettingsSubpage({
+  title: () => props.name || __('New Account'),
+  back: () => emit('back'),
+})
+
+useSettingsSaveBar({
+  isDirty: () => account.isDirty,
+  saving: () => account.saving,
+  save,
+  discard: () => account.reload(),
+})
 
 const createsLeads = useAppendToggle(account, {
   append_to: 'CRM Lead',

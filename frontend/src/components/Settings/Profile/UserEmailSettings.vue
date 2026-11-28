@@ -1,7 +1,7 @@
 <template>
   <SettingsLayoutBase v-if="user.doc">
     <template #title>
-      <div class="flex gap-1 items-center">
+      <div class="flex gap-1 items-center max-sm:hidden">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
@@ -20,7 +20,7 @@
     </template>
     <template #header-actions>
       <Button
-        v-if="isDirty"
+        v-if="isDirty && !isPhone"
         variant="solid"
         :label="__('Update')"
         @click="update"
@@ -28,10 +28,11 @@
     </template>
     <template #content>
       <EmailSubjectSettings
+        :key="discards"
         :doc="user.doc"
         @change="(field, val) => (user.doc[field] = val)"
       />
-      <div class="flex flex-col gap-4 mt-16">
+      <div class="flex flex-col gap-4 mt-16 max-sm:mt-10">
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
             {{ __('Signature') }}
@@ -48,7 +49,7 @@
           @change="(val) => (user.doc.email_signature = val)"
         />
       </div>
-      <div class="flex flex-col gap-4 mt-16">
+      <div class="flex flex-col gap-4 mt-16 max-sm:mt-10">
         <div class="flex flex-col gap-1">
           <span class="text-base-medium text-ink-gray-8">
             {{ __('Emails') }}
@@ -65,7 +66,7 @@
             class="w-full border rounded-5 mb-2 border-outline-elevation-2"
           >
             <div
-              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 px-4 py-3 text-sm-medium text-ink-gray-5 border-b border-outline-elevation-2"
+              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 px-4 py-3 text-sm-medium text-ink-gray-5 border-b border-outline-elevation-2 max-sm:hidden"
             >
               <span>{{ __('Email Account') }}</span>
               <span>{{ __('Email') }}</span>
@@ -74,13 +75,21 @@
             <div
               v-for="e in user.doc.user_emails"
               :key="e.name"
-              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 group items-center px-4 py-2.5 text-base border-b border-outline-elevation-2 last:border-b-0"
+              class="grid grid-cols-[4fr_4fr_0.3fr] gap-2 group items-center px-4 py-2.5 text-base border-b border-outline-elevation-2 last:border-b-0 max-sm:min-h-14 max-sm:grid-cols-[minmax(0,1fr)_auto] max-sm:gap-x-2 max-sm:gap-y-0.5"
             >
-              <span class="text-ink-gray-8 font-medium truncate">
+              <span
+                class="text-ink-gray-8 font-medium truncate max-sm:text-ink-gray-9"
+              >
                 {{ e.email_account }}
               </span>
-              <span class="text-ink-gray-6 truncate">{{ e.email_id }}</span>
-              <div class="group-hover:opacity-100 opacity-0 transition-opacity">
+              <span
+                class="text-ink-gray-6 truncate max-sm:col-start-1 max-sm:text-sm max-sm:text-ink-gray-5"
+              >
+                {{ e.email_id }}
+              </span>
+              <div
+                class="group-hover:opacity-100 opacity-0 transition-opacity max-sm:col-start-2 max-sm:row-span-2 max-sm:row-start-1 max-sm:opacity-100"
+              >
                 <Button
                   class="w-10"
                   variant="ghost"
@@ -124,6 +133,11 @@ import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import RichTextField from '@/components/RichTextField.vue'
 import EmailSubjectSettings from '@/components/Settings/Profile/EmailSubjectSettings.vue'
 import { userEmailSubjects } from '@/composables/emailSubject'
+import { isPhone } from '@/composables/phone'
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
 import {
   Badge,
   Button,
@@ -132,7 +146,7 @@ import {
   createListResource,
   toast,
 } from 'frappe-ui'
-import { computed, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 
 const emit = defineEmits(['updateStep'])
 
@@ -162,6 +176,23 @@ const filteredEmails = computed(() => {
 
 const isDirty = computed(() => {
   return JSON.stringify(user.doc) !== JSON.stringify(user.originalDoc)
+})
+
+const discards = ref(0)
+
+useSettingsSubpage({
+  title: () => __('Email Settings'),
+  back: () => emit('updateStep', 'profile-settings'),
+})
+
+useSettingsSaveBar({
+  isDirty: () => isDirty.value,
+  saving: () => user.save.loading,
+  save: update,
+  discard: () => {
+    user.doc = JSON.parse(JSON.stringify(user.originalDoc))
+    discards.value++
+  },
 })
 
 function addEmail(email) {

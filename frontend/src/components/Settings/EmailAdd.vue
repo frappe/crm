@@ -2,7 +2,9 @@
   <div class="flex flex-col h-full gap-4">
     <!-- title and desc -->
     <div role="heading" aria-level="1" class="flex flex-col gap-1">
-      <h2 class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8">
+      <h2
+        class="flex gap-2 text-2xl-semibold leading-none h-5 text-ink-gray-8 max-sm:hidden"
+      >
         {{ __('Setup Email') }}
       </h2>
       <p class="text-p-base text-ink-gray-6">
@@ -55,7 +57,7 @@
             />
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
           <template v-for="field in incomingOutgoingFields" :key="field.name">
             <div
               v-if="field.condition ? field.condition(state) : true"
@@ -77,17 +79,20 @@
     <!-- action button -->
     <div v-if="selectedService" class="flex justify-between mt-auto">
       <Button
+        v-if="!isPhone"
         :label="__('Back')"
         variant="outline"
         :disabled="addEmailRes.loading"
         @click="emit('update:step', 'email-list')"
       />
-      <Button
-        :label="__('Create')"
-        variant="solid"
-        :loading="addEmailRes.loading"
-        @click="createEmailAccount"
-      />
+      <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+        <Button
+          :label="__('Create')"
+          variant="solid"
+          :loading="addEmailRes.loading"
+          @click="createEmailAccount"
+        />
+      </Teleport>
     </div>
   </div>
 </template>
@@ -97,6 +102,8 @@ import { computed, reactive, ref } from 'vue'
 import { createResource, toast } from 'frappe-ui'
 import { useTelemetry } from '@framework/ui/telemetry'
 import { useCrmOnboarding } from '@/composables/onboarding'
+import { isPhone } from '@/composables/phone'
+import { useSettingsSubpage } from './settingsPhone'
 import CircleAlert from '~icons/lucide/circle-alert'
 import {
   customProviderFields,
@@ -125,6 +132,11 @@ const state = reactive({
 })
 const { capture } = useTelemetry()
 const { completeStep } = useCrmOnboarding()
+
+useSettingsSubpage({
+  title: () => __('Setup Email'),
+  back: () => emit('update:step', 'email-list'),
+})
 
 const selectedService = ref(null)
 const fields = computed(() =>
