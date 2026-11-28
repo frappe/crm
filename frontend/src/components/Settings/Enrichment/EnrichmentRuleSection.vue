@@ -37,7 +37,7 @@
     <div v-else class="flex flex-col gap-3 py-2">
       <!-- Widths match the row's so each label sits over its input. -->
       <div class="flex items-center gap-2 text-sm text-ink-gray-5">
-        <div class="w-40 shrink-0">{{ columns[0] }}</div>
+        <div class="w-28 shrink-0 sm:w-40">{{ columns[0] }}</div>
         <div class="flex-1 min-w-0">{{ columns[1] }}</div>
         <div class="ml-3 w-8 shrink-0" />
         <div class="w-7 shrink-0" />

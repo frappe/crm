@@ -45,13 +45,15 @@
             />
           </div>
           <Button
-            v-if="isDirty"
+            v-if="isDirty && !isPhone"
             :label="__('Save')"
             :loading="user.save.loading"
             @click="save()"
           />
         </div>
-        <div class="flex items-center justify-between mt-6">
+        <div
+          class="flex items-center justify-between mt-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+        >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
               {{ __('Language') }}
@@ -60,9 +62,16 @@
               {{ __('Change language of the application.') }}
             </span>
           </div>
-          <Link v-model="user.doc.language" doctype="Language" class="w-40" />
+          <Link
+            v-model="user.doc.language"
+            :sheet-title="__('Language')"
+            doctype="Language"
+            class="w-40 max-sm:w-full"
+          />
         </div>
-        <div class="flex items-center justify-between mt-6">
+        <div
+          class="flex items-center justify-between mt-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+        >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
               {{ __('Timezone') }}
@@ -73,7 +82,7 @@
           </div>
           <Combobox
             v-model="user.doc.time_zone"
-            class="w-40"
+            class="w-40 max-sm:w-full"
             :options="getTimezoneOptions()"
           />
         </div>
@@ -87,6 +96,8 @@ import CRMLogo from '@/components/Icons/CRMLogo.vue'
 import ThemeSwitcher from '@/components/Settings/ThemeSwitcher.vue'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
 import Link from '@/components/Controls/Link.vue'
+import { useSettingsSaveBar } from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 import { getSettings } from '@/stores/settings'
 import {
@@ -125,6 +136,13 @@ function save() {
 
 const isDirty = computed(() => {
   return JSON.stringify(user.doc) !== JSON.stringify(user.originalDoc)
+})
+
+useSettingsSaveBar({
+  isDirty: () => isDirty.value,
+  saving: () => user.save.loading,
+  save,
+  discard: () => (user.doc = JSON.parse(JSON.stringify(user.originalDoc))),
 })
 
 const timeZones = createResource({

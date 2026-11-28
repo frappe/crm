@@ -17,7 +17,7 @@
     @created="showHome"
   />
   <div v-else class="wa-tabs flex h-full flex-col text-ink-gray-8">
-    <div class="flex items-start justify-between px-8 pt-8 pb-4">
+    <div class="flex items-start justify-between px-8 pt-8 pb-4 max-sm:hidden">
       <div class="flex flex-col gap-1">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('WhatsApp') }}
@@ -34,13 +34,19 @@
           }}
         </p>
       </div>
-      <Button
+      <Teleport
         v-if="activeTab === 'templates'"
-        :label="__('New Template')"
-        icon-left="lucide-plus"
-        variant="solid"
-        @click="newTemplate()"
-      />
+        defer
+        to="#settings-phone-actions"
+        :disabled="!isPhone"
+      >
+        <Button
+          :label="__('New Template')"
+          icon-left="lucide-plus"
+          variant="solid"
+          @click="newTemplate()"
+        />
+      </Teleport>
       <Button
         v-else-if="activeTab === 'flows' && flowsTab?.canWrite"
         :label="__('New Flow')"
@@ -48,13 +54,19 @@
         variant="solid"
         @click="flowsTab.newFlow()"
       />
-      <Button
+      <Teleport
         v-else-if="activeTab === 'accounts'"
-        :label="__('Add Account')"
-        icon-left="lucide-plus"
-        variant="solid"
-        @click="addAccount"
-      />
+        defer
+        to="#settings-phone-actions"
+        :disabled="!isPhone"
+      >
+        <Button
+          :label="__('Add Account')"
+          icon-left="lucide-plus"
+          variant="solid"
+          @click="addAccount"
+        />
+      </Teleport>
       <Button
         v-else-if="settingsPage?.isDirty"
         :loading="settingsPage?.saving"
@@ -71,7 +83,7 @@
       class="flex-1 overflow-hidden [&>[data-slot=tab-panel]]:flex [&>[data-slot=tab-panel]]:min-h-0 [&>[data-slot=tab-panel]]:flex-col [&>[data-slot=tab-panel]]:overflow-auto"
     >
       <template #tab-panel="{ tab }">
-        <div class="flex h-full flex-col px-8 py-5">
+        <div class="flex h-full flex-col px-4 py-4 sm:px-8 sm:py-5">
           <WhatsAppTemplateList
             v-if="tab.value === 'templates'"
             @edit="editTemplate"
@@ -103,8 +115,10 @@ import WhatsAppAccountPage from '@/components/Settings/WhatsAppAccountPage.vue'
 import WhatsAppFlows from '@/components/Settings/WhatsAppFlows.vue'
 import WhatsAppTemplateList from '@/components/Settings/WhatsAppTemplateList.vue'
 import WhatsAppTemplatePage from '@/components/Settings/WhatsAppTemplatePage.vue'
+import { useSettingsSaveBar } from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { useBroadcast } from '@/composables/useBroadcast'
-import { Tabs } from 'frappe-ui'
+import { getCachedDocumentResource, Tabs } from 'frappe-ui'
 import { ref, useTemplateRef } from 'vue'
 
 // Templates first: they change far more often than the account or the connection.
@@ -125,6 +139,19 @@ const flowsTab = useTemplateRef('flowsTab')
 const { on } = useBroadcast()
 
 const activeTab = ref('templates')
+
+useSettingsSaveBar({
+  isDirty: () =>
+    step.value === 'home' &&
+    activeTab.value === 'advanced' &&
+    Boolean(settingsPage.value?.isDirty),
+  saving: () => Boolean(settingsPage.value?.saving),
+  save: () => settingsPage.value?.save(),
+  discard: () => {
+    const settings = getCachedDocumentResource('WA Settings', 'WA Settings')
+    settings.doc = JSON.parse(JSON.stringify(settings.originalDoc))
+  },
+})
 
 function editAccount(name) {
   accountName.value = name
@@ -175,6 +202,13 @@ on('whatsapp_template_page', (data) => {
   padding-right: 0;
   margin-left: 2rem;
   margin-right: 2rem;
+}
+
+@media (max-width: 639.98px) {
+  .wa-tabs :deep([role='tablist']) {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
 }
 
 /* reka-ui force-mounts every panel and marks the inactive ones `hidden`, but the

@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- header -->
-    <div class="flex justify-between text-ink-gray-8">
+    <div class="flex justify-between text-ink-gray-8 max-sm:hidden">
       <div class="flex flex-col gap-1 w-9/12">
         <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
           {{ __('Email Accounts') }}
@@ -15,20 +15,22 @@
         </p>
       </div>
       <div class="flex item-center space-x-2 w-3/12 justify-end">
-        <Button
-          :label="__('Add Account')"
-          theme="gray"
-          variant="solid"
-          icon-left="lucide-plus"
-          @click="emit('update:step', 'email-add')"
-        />
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            :label="isPhone ? __('Add') : __('Add Account')"
+            theme="gray"
+            variant="solid"
+            icon-left="lucide-plus"
+            @click="emit('update:step', 'email-add')"
+          />
+        </Teleport>
       </div>
     </div>
 
     <!-- list accounts -->
     <div
       v-if="!emailAccounts.loading && Boolean(emailAccounts.data?.length)"
-      class="mt-4 min-h-0 flex-1 overflow-y-auto"
+      class="mt-4 min-h-0 flex-1 overflow-y-auto max-sm:mt-0 max-sm:border-b max-sm:border-outline-gray-1"
     >
       <div
         v-for="(emailAccount, i) in emailAccounts.data"
@@ -40,7 +42,7 @@
         />
         <div
           v-if="emailAccounts.data.length !== i + 1"
-          class="h-px border-t mx-2 border-outline-elevation-2"
+          class="h-px border-t mx-2 border-outline-elevation-2 max-sm:mx-0 max-sm:border-outline-gray-1"
         />
       </div>
     </div>
@@ -57,6 +59,7 @@
 <script setup>
 import Email2Icon from '@/components/Icons/Email2Icon.vue'
 import EmptyState from '../ListViews/EmptyState.vue'
+import { isPhone } from '@/composables/phone'
 import EmailAccountCard from './EmailAccountCard.vue'
 import { createListResource } from 'frappe-ui'
 

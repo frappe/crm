@@ -52,7 +52,7 @@
                   <LoadingIndicator class="size-4" />
                 </div>
               </div>
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col gap-1 max-sm:min-w-0">
                 <div class="flex flex-col gap-1">
                   <div v-if="!editName" class="flex items-center gap-1">
                     <span
@@ -81,7 +81,7 @@
                       @click="save"
                     />
                   </div>
-                  <span class="text-p-sm text-ink-gray-6">
+                  <span class="text-p-sm text-ink-gray-6 max-sm:break-all">
                     {{ user.doc.email }}
                   </span>
                 </div>
@@ -95,7 +95,9 @@
         <div class="text-base-semibold text-ink-gray-9">
           {{ __('Account Info & Security') }}
         </div>
-        <div class="flex items-center justify-between mt-6">
+        <div
+          class="flex items-center justify-between mt-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+        >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
               {{ __('Availability') }}
@@ -110,7 +112,9 @@
           </div>
           <AvailabilitySelect />
         </div>
-        <div class="flex items-center justify-between mt-6">
+        <div
+          class="flex items-center justify-between mt-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+        >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
               {{ __('Landing page') }}
@@ -123,7 +127,7 @@
         </div>
         <div
           v-if="settings.doc?.enable_morning_digest"
-          class="flex items-center justify-between mt-6"
+          class="flex items-center justify-between mt-6 max-sm:gap-4"
         >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
@@ -139,7 +143,9 @@
           </div>
           <MorningDigestSwitch />
         </div>
-        <div class="flex items-center justify-between mt-6">
+        <div
+          class="flex items-center justify-between mt-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+        >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
               {{ __('Emails & Signature') }}
@@ -157,7 +163,9 @@
             @click="emit('updateStep', 'user-email-settings')"
           />
         </div>
-        <div class="flex items-center justify-between mt-6">
+        <div
+          class="flex items-center justify-between mt-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+        >
           <div class="flex flex-col gap-1">
             <span class="text-base-medium text-ink-gray-8">
               {{ __('Password') }}

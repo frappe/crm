@@ -2,7 +2,7 @@
   <div class="flex-1 flex flex-col">
     <div class="flex gap-4 items-center justify-between py-3">
       <div class="flex flex-col">
-        <div class="text-p-base-medium text-ink-gray-7 truncate">
+        <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
           {{ __('Enable enrichment') }}
         </div>
         <div class="text-p-sm text-ink-gray-5">
@@ -23,9 +23,11 @@
     </div>
 
     <template v-if="doc.enabled">
-      <div class="flex gap-4 items-start justify-between py-3">
+      <div
+        class="flex flex-col items-stretch gap-2 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+      >
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Maximum pages') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -36,21 +38,21 @@
             }}
           </div>
         </div>
-        <div class="flex flex-col items-end">
+        <div class="flex w-full flex-col sm:w-auto sm:items-end">
           <!-- Not :error: it renders inside the w-24 box and gets squeezed. -->
           <FormControl
             :model-value="maxPages ?? doc.max_pages"
             type="number"
             min="1"
             :max="maxPagesLimit"
-            class="w-24"
+            class="w-full sm:w-24"
             @update:model-value="
               (value: string | number) => emit('update:maxPages', value)
             "
           />
           <ErrorMessage
             v-if="maxPagesError"
-            class="mt-1 max-w-60 text-right"
+            class="mt-1 sm:max-w-60 sm:text-right"
             :message="maxPagesError"
           />
         </div>
@@ -58,7 +60,7 @@
 
       <div class="flex gap-4 items-center justify-between py-3">
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Auto-enrich new records') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">

@@ -1,7 +1,9 @@
 <template>
   <div class="flex h-full flex-col text-ink-gray-8">
-    <div class="flex items-center justify-between px-6 pt-8 pb-4">
-      <div class="flex min-w-0 items-center gap-2">
+    <div
+      class="flex items-center justify-between px-4 pt-3 pb-1 sm:px-6 sm:pt-8 sm:pb-4"
+    >
+      <div class="flex min-w-0 items-center gap-2 max-sm:hidden">
         <Button
           variant="ghost"
           icon-left="lucide-chevron-left"
@@ -18,7 +20,10 @@
           :label="__('Not Saved')"
         />
       </div>
-      <div v-if="doc" class="flex items-center gap-4">
+      <div
+        v-if="doc"
+        class="flex items-center gap-4 max-sm:w-full max-sm:justify-between"
+      >
         <div v-if="canEdit" class="flex h-7 items-center gap-2">
           <Switch
             size="sm"
@@ -31,7 +36,7 @@
           <template #prefix><LucideEye class="h-4 w-4" /></template>
         </Button>
         <Button
-          v-if="canEdit"
+          v-if="canEdit && !isPhone"
           variant="solid"
           :label="__('Save')"
           :disabled="!unsaved || hoursErrors.size > 0"
@@ -45,7 +50,7 @@
       <ErrorMessage v-if="loadError" :message="loadError" />
       <LoadingIndicator v-else class="w-4" />
     </div>
-    <div v-else class="bp-tabs flex-1 overflow-y-auto px-6 pb-8">
+    <div v-else class="bp-tabs flex-1 overflow-y-auto px-4 pb-8 sm:px-6">
       <ErrorMessage v-if="error" class="mt-2 mb-2" :message="error" />
       <p v-if="!canEdit" class="mt-2 mb-2 text-p-sm text-ink-gray-5">
         {{ __("Only this page's hosts and Sales Managers can change it.") }}
@@ -60,7 +65,7 @@
             <div v-if="tab.value === 'details'" class="pt-5">
               <!-- Details -->
               <section class="flex flex-col gap-4">
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormControl
                     :model-value="doc.title"
                     type="text"
@@ -93,9 +98,8 @@
                       />
                     </div>
                   </div>
-                  <FormControl
+                  <Select
                     :model-value="String(doc.duration)"
-                    type="select"
                     :disabled="!canEdit"
                     :label="__('Duration')"
                     :options="durationOptions"
@@ -103,9 +107,8 @@
                       (v: string) => set('duration', Number(v))
                     "
                   />
-                  <FormControl
+                  <Select
                     :model-value="doc.location_type"
-                    type="select"
                     :disabled="!canEdit"
                     :label="__('Location')"
                     :options="locationOptions"
@@ -113,7 +116,7 @@
                   />
                   <FormControl
                     v-if="doc.location_type === 'In person'"
-                    class="col-span-2"
+                    class="sm:col-span-2"
                     :model-value="doc.location"
                     type="text"
                     :label="__('Address')"
@@ -130,7 +133,7 @@
                   />
                   <div
                     v-if="doc.location_type === 'Google Meet'"
-                    class="col-span-2 text-p-sm text-ink-gray-5"
+                    class="text-p-sm text-ink-gray-5 sm:col-span-2"
                   >
                     {{
                       __(
@@ -207,8 +210,9 @@
                         "
                       />
                       <div class="flex justify-end">
-                        <Dropdown
+                        <DropdownSheet
                           align="end"
+                          :title="getUser(String(host.user)).full_name"
                           :options="[
                             {
                               label: __('Remove'),
@@ -221,7 +225,7 @@
                             icon="lucide-more-horizontal"
                             variant="ghost"
                           />
-                        </Dropdown>
+                        </DropdownSheet>
                       </div>
                     </div>
                     <hr
@@ -270,7 +274,7 @@
                 <!-- Google Calendar: the CRM has no connect screen yet, so point to the desk -->
                 <div
                   v-if="googleNote"
-                  class="mt-4 flex items-start justify-between gap-4 rounded-6 border border-outline-gray-2 p-3"
+                  class="mt-4 flex items-start justify-between gap-4 rounded-6 border border-outline-gray-2 p-3 max-sm:flex-col"
                 >
                   <div class="flex gap-2.5">
                     <LucideCalendarSync
@@ -313,7 +317,7 @@
                   <div
                     v-for="day in WEEKDAYS"
                     :key="day"
-                    class="group flex items-start gap-4 border-b border-outline-gray-1 py-2.5 last:border-0"
+                    class="group flex flex-col gap-2 border-b border-outline-gray-1 py-2.5 last:border-0 sm:flex-row sm:items-start sm:gap-4"
                   >
                     <div class="flex h-7 w-36 shrink-0 items-center gap-2.5">
                       <Switch
@@ -340,14 +344,14 @@
                     >
                       {{ __('Unavailable') }}
                     </div>
-                    <div v-else class="flex flex-col gap-2">
+                    <div v-else class="flex flex-col gap-2 max-sm:w-full">
                       <template
                         v-for="(row, i) in hoursFor(day)"
                         :key="row.name || row._key"
                       >
                         <div class="flex items-center gap-2">
                           <TimePicker
-                            class="w-28"
+                            class="w-28 max-sm:min-w-0 max-sm:flex-1"
                             :disabled="!canEdit"
                             :interval="15"
                             format="h:mm a"
@@ -358,7 +362,7 @@
                           />
                           <span class="text-ink-gray-4">–</span>
                           <TimePicker
-                            class="w-28"
+                            class="w-28 max-sm:min-w-0 max-sm:flex-1"
                             :disabled="!canEdit"
                             :interval="15"
                             format="h:mm a"
@@ -440,10 +444,9 @@
                     </div>
                   </div>
                 </div>
-                <div class="mt-4 grid grid-cols-2 gap-4">
-                  <FormControl
+                <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Select
                     :model-value="doc.timezone"
-                    type="select"
                     :disabled="!canEdit"
                     :label="__('Timezone')"
                     :options="timezoneOptions"
@@ -454,6 +457,7 @@
                       {{ __('Holidays') }}
                     </div>
                     <Link
+                      :sheet-title="__('Holidays')"
                       doctype="CRM Holiday List"
                       :disabled="!canEdit"
                       :model-value="doc.holiday_list"
@@ -469,7 +473,7 @@
               <!-- Limits -->
               <section class="mt-8">
                 <SectionTitle :title="__('Limits')" />
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormControl
                     :model-value="doc.min_notice"
                     type="number"
@@ -497,9 +501,8 @@
                       (v: string) => set('buffer', Number(v))
                     "
                   />
-                  <FormControl
+                  <Select
                     :model-value="String(doc.slot_interval || 0)"
-                    type="select"
                     :disabled="!canEdit"
                     :label="__('Offer a time every')"
                     :description="startTimesHint"
@@ -663,6 +666,7 @@
           />
           <FormBuilderPanel
             v-if="doc.web_form && canEdit"
+            :key="formKey"
             ref="formBuilder"
             :name="doc.web_form"
             embedded
@@ -696,11 +700,12 @@
                 "
               />
             </div>
-            <div v-if="doc.create_lead" class="w-1/2">
+            <div v-if="doc.create_lead" class="w-full sm:w-1/2">
               <div class="mb-1.5 text-sm text-ink-gray-5">
                 {{ __('Source') }}
               </div>
               <Link
+                :sheet-title="__('Source')"
                 doctype="CRM Lead Source"
                 :model-value="doc.lead_source"
                 :placeholder="__('None')"
@@ -732,17 +737,12 @@
                 (v: string) => set('confirmation_message', v)
               "
             />
-            <FormControl
+            <Select
               :model-value="doc.guest_reminder || 'No reminder'"
-              type="select"
               :disabled="!canEdit"
               :label="__('Remind guest')"
               :options="reminderOptions"
-              :description="
-                __(
-                  'An email before the meeting, with links to reschedule or cancel.',
-                )
-              "
+              :description="reminderHint"
               @update:model-value="(v: string) => set('guest_reminder', v)"
             />
           </div>
@@ -754,6 +754,13 @@
 
 <script setup lang="ts">
 import Link from '@/components/Controls/Link.vue'
+import Select from '@/components/Controls/Select.vue'
+import DropdownSheet from '@/components/DropdownSheet.vue'
+import {
+  useSettingsSaveBar,
+  useSettingsSubpage,
+} from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { usersStore } from '@/stores/users'
 import { copyToClipboard } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
@@ -763,7 +770,6 @@ import {
   Button,
   Checkbox,
   Combobox,
-  Dropdown,
   ErrorMessage,
   FormControl,
   LoadingIndicator,
@@ -948,6 +954,9 @@ function setHostLink(host: Row, link: string) {
   dirty.value = true
 }
 
+const reminderHint = __(
+  'An email before the meeting, with links to reschedule or cancel.',
+)
 const reminderOptions = [
   { label: __('No reminder'), value: 'No reminder' },
   { label: __('1 hour before'), value: '1 hour before' },
@@ -1161,7 +1170,7 @@ function toggleDay(day: string, on: boolean) {
 
 // row actions show on hover, or on keyboard focus
 const hoverAction =
-  'opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100'
+  'opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 max-sm:opacity-100'
 
 // the new range starts an hour after the day's last one ends
 function addHours(day: string) {
@@ -1204,6 +1213,8 @@ function copyTimes(day: string) {
 // Form
 
 const formBuilder = ref<InstanceType<typeof FormBuilderPanel> | null>(null)
+// a fresh panel reloads the saved form, which is how the phone's Discard resets it
+const formKey = ref(0)
 const recordLabel = computed(() =>
   doc.value?.document_type === 'CRM Deal' ? __('deal') : __('lead'),
 )
@@ -1274,6 +1285,25 @@ const iframeSnippet = computed(() =>
     : '',
 )
 
+useSettingsSubpage({
+  title: () => doc.value?.title || __('Booking Pages'),
+  back: goBack,
+})
+
+useSettingsSaveBar({
+  isDirty: () => canEdit.value && unsaved.value,
+  saving: () => saving.value,
+  save: () =>
+    hoursErrors.value.size
+      ? toast.error(__('Fix the hours marked in red first'))
+      : save(),
+  discard: () => {
+    error.value = ''
+    formKey.value++
+    load()
+  },
+})
+
 function openPage() {
   if (savedRoute.value) window.open(pageUrl(savedRoute.value), '_blank')
 }
@@ -1316,5 +1346,16 @@ function goBack() {
   padding-left: 0;
   padding-right: 0;
   background-color: var(--surface-elevation-2);
+}
+
+@media (max-width: 639.98px) {
+  .bp-tabs :deep([role='tablist']) {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .bp-tabs :deep([role='tab']) {
+    flex-shrink: 0;
+  }
 }
 </style>

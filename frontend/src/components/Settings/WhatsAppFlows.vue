@@ -1,5 +1,8 @@
 <template>
-  <div v-if="flows">
+  <p v-if="isPhone" class="text-p-base text-ink-gray-5">
+    {{ __('Edit flows on a computer.') }}
+  </p>
+  <div v-else-if="flows">
     <FlowList
       :controller="flows"
       :can-write="canWrite"
@@ -29,6 +32,7 @@ let lastAccount = null
 </script>
 
 <script setup>
+import { isPhone } from '@/composables/phone'
 import { flowPermissions } from '@/composables/whatsapp'
 import { FlowList, NewFlowDialog, useFlowList } from '@whatsapp/ui'
 import { createResource } from 'frappe-ui'

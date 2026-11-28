@@ -4,7 +4,7 @@
     :description="__('Manage ERPNext integration settings.')"
   >
     <template #title>
-      <div class="flex gap-2 items-center">
+      <div class="flex gap-2 items-center max-sm:hidden">
         <h2 class="flex text-2xl-semibold leading-none h-5">
           {{ __('ERPNext Settings') }}
         </h2>
@@ -15,6 +15,11 @@
         </Tooltip>
       </div>
     </template>
+    <template #description>
+      <p class="text-p-base text-ink-gray-6 max-sm:hidden">
+        {{ __('Manage ERPNext integration settings.') }}
+      </p>
+    </template>
     <template #header-actions>
       <div
         v-if="
@@ -24,15 +29,17 @@
         "
         class="flex gap-2 items-center"
       >
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            v-if="isDisableButtonVisible"
+            variant="subtle"
+            @click="toggleEnable(erpnextCRMSettingsResource.doc.enabled)"
+          >
+            {{ __('Disable') }}
+          </Button>
+        </Teleport>
         <Button
-          v-if="isDisableButtonVisible"
-          variant="subtle"
-          @click="toggleEnable(erpnextCRMSettingsResource.doc.enabled)"
-        >
-          {{ __('Disable') }}
-        </Button>
-        <Button
-          v-if="isUpdateButtonVisible"
+          v-if="isUpdateButtonVisible && !isPhone"
           variant="solid"
           :loading="erpnextCRMSettingsResource.setValue.loading"
           :disabled="!isDirty || isDisabled"
@@ -74,7 +81,7 @@
               "
               autocomplete="off"
             />
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormControl
                 v-model="erpnextCRMSettingsResource.doc.api_key"
                 :label="__('API Key')"
@@ -146,16 +153,18 @@
               </button>
             </div>
             <div v-show="activeSettingsTab === 'general'">
-              <div class="flex items-center justify-between pb-3 px-2">
+              <div
+                class="flex items-center justify-between pb-3 px-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+              >
                 <div class="flex flex-col">
                   <div class="text-p-base-medium text-ink-gray-7 truncate">
                     {{ __('Company Name') }}
                   </div>
-                  <div class="text-p-sm text-ink-gray-5 truncate">
+                  <div class="text-p-sm text-ink-gray-5 sm:truncate">
                     {{ __('Select your ERPNext company to connect with') }}
                   </div>
                 </div>
-                <div class="w-48">
+                <div class="w-full sm:w-48">
                   <Combobox
                     v-if="!erpnextCRMSettingsResource.isERPNextInstalled.data"
                     trigger="button"
@@ -196,10 +205,11 @@
                   <Link
                     v-else
                     v-model="erpnextCRMSettingsResource.doc.erpnext_company"
+                    :sheet-title="__('Company')"
                     :doc="'Company'"
                     :doctype="'Company'"
                     :placeholder="__('Select Company')"
-                    class="w-48 flex-shrink-0"
+                    class="w-full flex-shrink-0 sm:w-48"
                   />
                 </div>
               </div>
@@ -212,7 +222,7 @@
                 class="flex items-center justify-between py-3 px-2 gap-4"
               >
                 <div class="flex flex-col">
-                  <div class="text-p-base-medium text-ink-gray-7 truncate">
+                  <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
                     {{ __('Bidirectional Product Sync') }}
                   </div>
                   <div class="text-p-sm text-ink-gray-5">
@@ -256,6 +266,7 @@
                 </div>
                 <Button
                   variant="subtle"
+                  class="max-sm:shrink-0"
                   icon-left="lucide-refresh-cw"
                   :loading="erpnextCRMSettingsResource.runProductSync.loading"
                   @click="runProductSync"
@@ -264,12 +275,14 @@
                 </Button>
               </div>
               <div class="h-px border-t border-outline-elevation-2" />
-              <div class="flex items-center justify-between py-3 px-2">
+              <div
+                class="flex items-center justify-between py-3 px-2 max-sm:gap-4"
+              >
                 <div class="flex flex-col">
-                  <div class="text-p-base-medium text-ink-gray-7 truncate">
+                  <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
                     {{ __('Auto Create Customer') }}
                   </div>
-                  <div class="text-p-sm text-ink-gray-5 truncate">
+                  <div class="text-p-sm text-ink-gray-5 sm:truncate">
                     {{
                       __(
                         'Create customer in ERPNext when the deal status is changed',
@@ -294,7 +307,9 @@
                     .create_customer_on_status_change
                 "
               >
-                <div class="flex items-center justify-between py-3 px-2 gap-4">
+                <div
+                  class="flex items-center justify-between py-3 px-2 gap-4 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+                >
                   <div class="flex flex-col">
                     <div class="text-p-base-medium text-ink-gray-7">
                       {{ __('Deal Status') }}
@@ -309,13 +324,14 @@
                   </div>
                   <Link
                     v-model="erpnextCRMSettingsResource.doc.deal_status"
+                    :sheet-title="__('Deal Status')"
                     doctype="CRM Deal Status"
                     :placeholder="__('Won')"
                     :disabled="
                       !erpnextCRMSettingsResource.doc
                         .create_customer_on_status_change
                     "
-                    class="w-48 flex-shrink-0"
+                    class="w-full flex-shrink-0 sm:w-48"
                   />
                 </div>
               </div>
@@ -469,6 +485,8 @@ import {
   Tooltip,
 } from 'frappe-ui'
 import SettingsLayoutBase from '@/components/Layouts/SettingsLayoutBase.vue'
+import { useSettingsSaveBar } from '@/components/Settings/settingsPhone'
+import { isPhone } from '@/composables/phone'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Link from '../Controls/Link.vue'
 import { globalStore } from '@/stores/global'
@@ -653,6 +671,22 @@ const saveSettings = async () => {
     },
   )
 }
+
+useSettingsSaveBar({
+  isDirty: () =>
+    Boolean(
+      erpnextCRMSettingsResource.doc?.enabled &&
+        isUpdateButtonVisible.value &&
+        isDirty.value,
+    ),
+  saving: () => erpnextCRMSettingsResource.setValue.loading,
+  save: saveSettings,
+  discard: () => {
+    erpnextCRMSettingsResource.doc = JSON.parse(
+      JSON.stringify(erpnextCRMSettingsResource.originalDoc),
+    )
+  },
+})
 
 const toggleEnable = (value) => {
   if (value) {

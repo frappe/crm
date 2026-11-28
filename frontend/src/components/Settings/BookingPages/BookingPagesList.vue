@@ -1,7 +1,9 @@
 <template>
-  <div class="flex h-full flex-col gap-6 p-6 text-ink-gray-8">
-    <div class="flex justify-between px-2 pt-2">
-      <div class="flex w-9/12 flex-col gap-1">
+  <div
+    class="flex h-full flex-col gap-6 p-6 text-ink-gray-8 max-sm:gap-0 max-sm:p-0"
+  >
+    <div class="flex justify-between px-2 pt-2 max-sm:p-0">
+      <div class="flex w-9/12 flex-col gap-1 max-sm:hidden">
         <h2 class="flex h-5 text-2xl-semibold leading-none">
           {{ __('Booking Pages') }}
         </h2>
@@ -13,13 +15,15 @@
           }}
         </p>
       </div>
-      <div class="flex w-3/12 justify-end">
-        <Button
-          :label="__('New')"
-          icon-left="lucide-plus"
-          variant="solid"
-          @click="openCreate"
-        />
+      <div class="flex w-3/12 justify-end max-sm:hidden">
+        <Teleport defer to="#settings-phone-actions" :disabled="!isPhone">
+          <Button
+            :label="__('New')"
+            icon-left="lucide-plus"
+            variant="solid"
+            @click="openCreate"
+          />
+        </Teleport>
       </div>
     </div>
 
@@ -37,24 +41,32 @@
         :icon="h(CalendarIcon)"
       />
       <div v-else class="w-full">
-        <div class="flex items-center p-2 text-sm text-ink-gray-5">
+        <div
+          class="flex items-center p-2 text-sm text-ink-gray-5 max-sm:hidden"
+        >
           <div class="w-6/12">{{ __('Page') }}</div>
           <div class="w-3/12">{{ __('Hosts') }}</div>
           <div class="w-3/12">{{ __('Status') }}</div>
         </div>
-        <div class="mx-2 h-px border-t border-outline-elevation-2" />
+        <div
+          class="mx-2 h-px border-t border-outline-elevation-2 max-sm:hidden"
+        />
         <template v-for="(page, i) in pages.data" :key="page.name">
           <div
-            class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2"
+            class="flex w-full items-center rounded-4 px-2 py-3 hover:bg-surface-gray-2 max-sm:min-h-14 max-sm:gap-3 max-sm:rounded-none max-sm:border-b max-sm:border-outline-gray-1 max-sm:px-4 max-sm:py-2"
           >
             <div
-              class="w-6/12 min-w-0 cursor-pointer"
+              class="w-6/12 min-w-0 cursor-pointer max-sm:flex-1"
               @click="emit('open', page.name)"
             >
-              <div class="truncate text-base-medium text-ink-gray-7">
+              <div
+                class="truncate text-base-medium text-ink-gray-7 max-sm:text-ink-gray-9"
+              >
                 {{ page.title }}
               </div>
-              <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
+              <div
+                class="mt-0.5 truncate text-p-base text-ink-gray-5 max-sm:text-sm"
+              >
                 {{ __('{0} min', [page.duration]) }} ·
                 {{
                   page.document_type === 'CRM Deal' ? __('Deal') : __('Lead')
@@ -62,38 +74,44 @@
                 · {{ ROUTE_PREFIX }}{{ page.route }}
               </div>
             </div>
-            <div class="w-3/12 cursor-pointer" @click="emit('open', page.name)">
+            <div
+              class="w-3/12 cursor-pointer max-sm:hidden"
+              @click="emit('open', page.name)"
+            >
               <MultipleAvatar
                 class="w-fit"
                 :avatars="page.hosts.map((u: string) => hostAvatar(u))"
                 size="sm"
               />
             </div>
-            <div class="flex w-3/12 items-center justify-between">
+            <div
+              class="flex w-3/12 items-center justify-between max-sm:w-auto max-sm:shrink-0 max-sm:gap-1"
+            >
               <Badge
                 :theme="page.enabled ? 'green' : 'gray'"
                 variant="outline"
                 size="md"
                 :label="page.enabled ? __('Live') : __('Off')"
               />
-              <Dropdown
+              <DropdownSheet
                 align="end"
+                :title="page.title"
                 :options="rowOptions(page)"
                 @update:open="
                   (open: boolean) => open && (isConfirmingDelete = false)
                 "
               >
                 <Button icon="lucide-more-horizontal" variant="ghost" />
-              </Dropdown>
+              </DropdownSheet>
             </div>
           </div>
-          <hr v-if="pages.data.length !== i + 1" class="mx-2" />
+          <hr v-if="pages.data.length !== i + 1" class="mx-2 max-sm:hidden" />
         </template>
       </div>
     </div>
   </div>
 
-  <Dialog v-model:open="showCreate" :title="__('New booking page')">
+  <SheetDialog v-model:open="showCreate" :title="__('New booking page')">
     <div class="flex flex-col gap-4">
       <FormControl
         v-model="draft.title"
@@ -116,9 +134,8 @@
           />
         </div>
       </div>
-      <FormControl
+      <Select
         v-model="draft.document_type"
-        type="select"
         :label="__('Each booking creates a')"
         :options="createsOptions"
       />
@@ -133,21 +150,23 @@
         @click="createPage"
       />
     </template>
-  </Dialog>
+  </SheetDialog>
 </template>
 
 <script setup lang="ts">
+import Select from '@/components/Controls/Select.vue'
+import DropdownSheet from '@/components/DropdownSheet.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
 import MultipleAvatar from '@/components/MultipleAvatar.vue'
 import CalendarIcon from '@/components/Icons/CalendarIcon.vue'
+import SheetDialog from '@/components/SheetDialog.vue'
+import { isPhone } from '@/composables/phone'
 import { usersStore } from '@/stores/users'
 import { ConfirmDelete } from '@/utils'
 import { createDialog } from '@/utils/dialogs'
 import {
   Badge,
   Button,
-  Dialog,
-  Dropdown,
   ErrorMessage,
   FormControl,
   LoadingIndicator,

@@ -13,23 +13,27 @@
       :description="__('Add one to start messaging.')"
       :icon="WhatsAppIcon"
     />
-    <div v-else class="-mx-2">
+    <div v-else class="-mx-2 max-sm:-mx-4">
       <template v-for="(account, i) in accounts.data" :key="account.name">
         <div
-          class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2"
+          class="flex w-full items-center justify-between rounded-4 px-2 py-3 hover:bg-surface-gray-2 max-sm:min-h-14 max-sm:gap-3 max-sm:rounded-none max-sm:px-4 max-sm:py-2"
         >
           <div
-            class="min-w-0 cursor-pointer"
+            class="min-w-0 cursor-pointer max-sm:flex-1"
             @click="emit('edit', account.name)"
           >
-            <div class="truncate text-base-medium text-ink-gray-7">
+            <div
+              class="truncate text-base-medium text-ink-gray-7 max-sm:text-ink-gray-9"
+            >
               {{ account.account_name }}
             </div>
-            <div class="mt-0.5 truncate text-p-base text-ink-gray-5">
+            <div
+              class="mt-0.5 truncate text-p-base text-ink-gray-5 max-sm:text-sm"
+            >
               {{ __('Phone ID: {0}', [account.phone_id || '-']) }}
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 max-sm:shrink-0">
             <!-- With one account there is nothing to choose between, so the
                  default is implicit and not worth naming. -->
             <Badge
@@ -38,16 +42,24 @@
               theme="blue"
               :label="__('Default')"
             />
-            <Dropdown
+            <DropdownSheet
               align="end"
+              :title="account.account_name"
               :options="rowOptions(account)"
               @update:open="(open) => open && (confirmDelete = false)"
             >
-              <Button icon="lucide-more-horizontal" variant="ghost" />
-            </Dropdown>
+              <Button
+                icon="lucide-more-horizontal"
+                variant="ghost"
+                @click="isPhone && (confirmDelete = false)"
+              />
+            </DropdownSheet>
           </div>
         </div>
-        <hr v-if="accounts.data.length !== i + 1" class="mx-2" />
+        <hr
+          v-if="accounts.data.length !== i + 1"
+          class="mx-2 max-sm:mx-0 max-sm:border-outline-gray-1"
+        />
       </template>
     </div>
 
@@ -82,8 +94,10 @@
 </template>
 
 <script setup>
+import DropdownSheet from '@/components/DropdownSheet.vue'
 import WhatsAppIcon from '@/components/Icons/WhatsAppIcon.vue'
 import EmptyState from '@/components/ListViews/EmptyState.vue'
+import { isPhone } from '@/composables/phone'
 import { ConfirmDelete } from '@/utils'
 // Badge and Dialog are registered globally in main.js (like Button), so they're
 // used directly in the template. Only the non-global helpers are imported here.
@@ -91,7 +105,6 @@ import {
   createListResource,
   createResource,
   call,
-  Dropdown,
   LoadingIndicator,
   Tooltip,
   toast,
@@ -248,6 +261,11 @@ function setInactive() {
 function blockedDeleteOption(reason) {
   return {
     label: __('Delete'),
+    ...(isPhone.value && {
+      icon: 'lucide-trash-2',
+      description: reason,
+      disabled: true,
+    }),
     slots: {
       item: () =>
         h(Tooltip, { text: reason, side: 'left' }, () =>

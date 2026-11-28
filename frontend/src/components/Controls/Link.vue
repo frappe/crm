@@ -1,5 +1,26 @@
 <template>
-  <div class="-mx-[2px] space-y-1.5 px-[2px]">
+  <!-- the caller's @create reaches SheetPicker's create event through attrs -->
+  <SheetPicker
+    v-if="usesSheet"
+    :model-value="value"
+    :doctype="doctype"
+    :filters="filters"
+    :label="attrs.label ? __(attrs.label) : ''"
+    :placeholder="attrs.placeholder"
+    :sheet-title="sheetTitle"
+    :required="required"
+    :disabled="attrs.disabled"
+    :can-create="Boolean(attrs.onCreate)"
+    @update:model-value="pickFromSheet"
+  >
+    <template v-if="$slots.target" #target="slotProps">
+      <slot name="target" v-bind="slotProps" />
+    </template>
+    <template #prefix>
+      <slot name="prefix" />
+    </template>
+  </SheetPicker>
+  <div v-else class="-mx-[2px] space-y-1.5 px-[2px]">
     <label
       v-if="attrs.label"
       class="block"
@@ -78,6 +99,8 @@
 
 <script setup>
 import Autocomplete from '@/components/frappe-ui/Autocomplete.vue'
+import SheetPicker from '@/components/Controls/SheetPicker.vue'
+import { usePhonePickers } from '@/composables/phone'
 import { isTranslatable } from '@/utils'
 import { watchDebounced } from '@vueuse/core'
 import { createResource } from 'frappe-ui'
@@ -97,12 +120,15 @@ const props = defineProps({
    * Only supported alongside object (or empty) `filters`.
    */
   grouping: { type: Object, default: null },
+  /** The phone sheet's heading, for a field whose label sits outside it. */
+  sheetTitle: { type: String, default: '' },
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const attrs = useAttrs()
 const controlId = useId()
+const usesSheet = usePhonePickers()
 
 const valuePropPassed = computed(() => 'value' in attrs)
 const selectedOption = ref(null)
@@ -244,7 +270,8 @@ function retainSelectedOption(options) {
 }
 
 function reload(val, force = false) {
-  if (!props.doctype) return
+  // the sheet runs its own search when it opens
+  if (!props.doctype || usesSheet.value) return
   if (
     !force &&
     options.data?.length &&
@@ -296,6 +323,11 @@ function negateFilters(filters) {
       ['!=', value],
     ]),
   )
+}
+
+function pickFromSheet(val) {
+  selectedOption.value = null
+  emit(valuePropPassed.value ? 'change' : 'update:modelValue', val)
 }
 
 function clearValue(close) {

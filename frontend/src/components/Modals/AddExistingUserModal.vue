@@ -1,10 +1,6 @@
 <template>
-  <Dialog
-    v-model:open="show"
-    :title="__('Add Existing User')"
-    @close="show = false"
-  >
-    <template #default>
+  <SheetDialog v-model:open="show" :title="__('Add Existing User')">
+    <div>
       <div class="flex gap-1 border rounded-4 mb-4 p-2 text-ink-gray-5">
         <span class="lucide-info size-3.5 mt-0.5" aria-hidden="true" />
         <p class="text-p-sm">
@@ -41,18 +37,18 @@
           :emptyPlaceholder="__('No Users Found')"
         />
       </div>
-      <FormControl
+      <Select
         v-model="role"
-        type="select"
-        class="mt-4"
+        class="mt-4 w-full"
         :label="__('Role')"
         :options="roleOptions"
         :description="description"
       />
-    </template>
+    </div>
     <template #actions>
       <div class="flex justify-end gap-2">
         <Button
+          class="w-full sm:w-auto"
           variant="solid"
           :label="__('Add')"
           :disabled="!newUsers.length"
@@ -61,11 +57,13 @@
         />
       </div>
     </template>
-  </Dialog>
+  </SheetDialog>
 </template>
 
 <script setup>
 import EmailMultiSelect from '@/components/Controls/EmailMultiSelect.vue'
+import Select from '@/components/Controls/Select.vue'
+import SheetDialog from '@/components/SheetDialog.vue'
 import { validateEmail } from '@/utils'
 import { usersStore } from '@/stores/users'
 import { createResource, toast } from 'frappe-ui'

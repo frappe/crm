@@ -1,6 +1,8 @@
 <template>
-  <div class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8">
-    <div class="flex flex-col gap-1 px-2">
+  <div
+    class="flex h-full flex-col gap-6 py-8 px-6 text-ink-gray-8 max-sm:px-2 max-sm:py-4"
+  >
+    <div class="flex flex-col gap-1 px-2 max-sm:hidden">
       <h2 class="flex gap-2 text-2xl-semibold leading-none h-5">
         {{ __('General Settings') }}
       </h2>
@@ -10,12 +12,12 @@
     </div>
 
     <div class="flex-1 flex flex-col overflow-y-auto">
-      <div class="flex items-center justify-between py-3 px-2">
+      <div class="flex items-center justify-between py-3 px-2 max-sm:gap-4">
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Update timestamp on new communication') }}
           </div>
-          <div class="text-p-sm text-ink-gray-5 truncate">
+          <div class="text-p-sm text-ink-gray-5 sm:truncate">
             {{
               __(
                 'Update the modified timestamp on new emails, messages & comments for leads & deals',
@@ -34,7 +36,7 @@
       <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex gap-4 items-center justify-between py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Mark lead/deal as replied on response') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -56,7 +58,7 @@
       <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex gap-4 items-center justify-between py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Reopen lead/deal on new communication') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -78,7 +80,7 @@
       <div class="h-px border-t mx-2 border-outline-elevation-2" />
       <div class="flex gap-4 items-center justify-between py-3 px-2">
         <div class="flex flex-col">
-          <div class="text-p-base-medium text-ink-gray-7 truncate">
+          <div class="text-p-base-medium text-ink-gray-7 sm:truncate">
             {{ __('Morning digest email') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -113,9 +115,11 @@
         </div>
       </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div class="flex gap-4 items-center justify-between py-3 px-2">
+      <div
+        class="flex gap-4 items-center justify-between py-3 px-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+      >
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base font-medium text-ink-gray-7 sm:truncate">
             {{ __('Timeline timestamp format') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -127,10 +131,10 @@
           </div>
         </div>
         <div>
-          <FormControl
+          <Select
             v-model="settings.doc.crm_timeline_timestamp_format"
-            type="select"
-            class="w-40"
+            :sheet-title="__('Timeline timestamp format')"
+            class="w-40 max-sm:w-full"
             :options="timestampFormatOptions"
             :placeholder="__('Relative')"
             @update:modelValue="save()"
@@ -138,9 +142,11 @@
         </div>
       </div>
       <div class="h-px border-t mx-2 border-outline-gray-modals" />
-      <div class="flex gap-4 items-center justify-between py-3 px-2">
+      <div
+        class="flex gap-4 items-center justify-between py-3 px-2 max-sm:flex-col max-sm:items-stretch max-sm:gap-2"
+      >
         <div class="flex flex-col">
-          <div class="text-p-base font-medium text-ink-gray-7 truncate">
+          <div class="text-p-base font-medium text-ink-gray-7 sm:truncate">
             {{ __('Timeline sort order') }}
           </div>
           <div class="text-p-sm text-ink-gray-5">
@@ -152,10 +158,10 @@
           </div>
         </div>
         <div>
-          <FormControl
+          <Select
             v-model="settings.doc.crm_timeline_sort_order"
-            type="select"
-            class="w-40"
+            :sheet-title="__('Timeline sort order')"
+            class="w-40 max-sm:w-full"
             :options="sortOrderOptions"
             :placeholder="__('Oldest First')"
             @update:modelValue="save()"
@@ -167,9 +173,10 @@
 </template>
 
 <script setup>
+import Select from '@/components/Controls/Select.vue'
 import { activeSettingsPage } from '@/composables/settings'
 import { getSettings } from '@/stores/settings'
-import { FormControl, Switch, createResource, toast } from 'frappe-ui'
+import { Switch, createResource, toast } from 'frappe-ui'
 
 const { _settings: settings } = getSettings()
 
